@@ -170,16 +170,20 @@
         const translations = {{ translations|tojson|safe }};
         let currentIndex = 0;
 
-        function showFlashcard(category, subcategory, chinese, index) {
-            currentIndex = index;
-            loadFlashcard(category, subcategory, chinese);
-            highlightListItem(index);
+        function loadNextCard() {
+            currentIndex = (currentIndex + 1) % translations.length;
+            const nextTranslation = translations[currentIndex];
+            
+            // Properly encode the Chinese characters, including "&"
+            const encodedChinese = encodeURIComponent(nextTranslation.chinese).replace(/&/g, '%26');
+            
+            loadFlashcard('{{ category }}', '{{ subcategory }}', encodedChinese);
+            highlightListItem(currentIndex);
         }
 
-        function loadFlashcard(category, subcategory, chinese) {
+        function loadFlashcard(category, subcategory, encodedChinese) {
             const encodedCategory = encodeURIComponent(category);
             const encodedSubcategory = encodeURIComponent(subcategory);
-            const encodedChinese = encodeURIComponent(chinese);
             
             // Get the current origin and pathname
             const origin = window.location.origin;
@@ -205,12 +209,11 @@
             .catch(error => console.error('Error:', error));
         }
 
-
-        function loadNextCard() {
-            currentIndex = (currentIndex + 1) % translations.length;
-            const nextTranslation = translations[currentIndex];
-            loadFlashcard('{{ category }}', '{{ subcategory }}', nextTranslation.chinese);
-            highlightListItem(currentIndex);
+        function showFlashcard(category, subcategory, chinese, index) {
+            currentIndex = index;
+            const encodedChinese = encodeURIComponent(chinese).replace(/&/g, '%26');
+            loadFlashcard(category, subcategory, encodedChinese);
+            highlightListItem(index);
         }
 
         function highlightListItem(index) {

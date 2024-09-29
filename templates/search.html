@@ -108,18 +108,24 @@
             justify-content: center;
             align-items: center;
         }
-        #flashcard-content {
+        #flashcard_container {
             background-color: white;
-            padding: 20px;
-            border-radius: 0px;
-            max-width: 50%;
-            min-width: 300px;
-            max-height: 90%;
+            width: 50%;
+            height: 90%;
+            border: 2px dashed #000000;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
             align-items: center;
-            border: 2px dashed #000000;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        #flashcard_container::-webkit-scrollbar {
+            width: 0;
+            height: 0;
         }
         .character {
             font-size: 72px;
@@ -149,15 +155,23 @@
         .flashcard {
             font-size: 16px;
             margin: 30px;
-            max-height: calc(100% - 200px);
-            overflow-y: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            width: 100%; /* Add this line */
+            overflow-y: visible; /* Change this line */
             user-select: text;
         }
         .flashcard::-webkit-scrollbar {
             width: 0;
             height: 0;
+        }
+
+        .flashcard::selection {
+            background-color: black; /* Ensures the background of selected text is black */
+            color: white; /* Ensures the selected text color is white */
+        }
+
+        .flashcard ::-moz-selection {
+            background-color: black; /* For Firefox */
+            color: white;
         }
         .strokes-container {
             display: flex;
@@ -174,12 +188,26 @@
             .search-container.has-results {
                 width: 80%;
             }
-            #flashcard-content {
-                padding: 6px;
+            #flashcard_container {
                 width: 90%;
-                max-width: 90%;
                 height: 80%;
-                max-height: 80%;
+                padding: 10px;
+            }
+            .flashcard {
+                margin-left: 6px;
+                margin-right: 6px;
+                margin-top: 6px;
+                margin-bottom: 6px;
+                font-size: 14px;
+            }
+            .english, .pinyin {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .character {
+                font-size: 60px;
+                margin-top: 10px;
             }
         }
         
@@ -223,7 +251,7 @@
     </div>
 
     <div id="flashcard-overlay">
-        <div id="flashcard-content">
+        <div id="flashcard_container">
             <div class="character"></div>
             <div class="pinyin"></div>
             <div class="english"></div>
@@ -234,7 +262,7 @@
 
     <script>
         const overlay = document.getElementById('flashcard-overlay');
-        const flashcardContent = document.getElementById('flashcard-content');
+        const flashcardContent = document.getElementById('flashcard_container');
 
         function showFlashcard(character) {
             fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
@@ -295,6 +323,17 @@
             var vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         }
+
+        
+        document.addEventListener('keydown', function(event) {
+            if (event.key === ' ' || event.key === 'Spacebar') {
+                event.preventDefault(); // Prevent default scrolling behavior
+                if (overlay.style.display === 'flex') {
+                    isAnswerVisible = !isAnswerVisible;
+                    updateVisibility();
+                }
+            }
+        });
 
         window.addEventListener('resize', adjustHeight);
         window.addEventListener('orientationchange', adjustHeight);
