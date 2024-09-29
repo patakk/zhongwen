@@ -382,7 +382,7 @@
                     const grid = document.getElementById('character-grid');
 
                     grid.innerHTML = ''; // Clear existing characters
-                    const shuffledCharacters = shuffleArray([...data.characters]);
+                    //const shuffledCharacters = shuffleArray([...data.characters]);
 
                     const namesmap = {
                         'shas': 'Sha\'s Class',
@@ -395,7 +395,7 @@
                     };
                     document.getElementById('title').textContent = namesmap[currentDeck];  
             
-                    shuffledCharacters.forEach(char => {
+                    data.characters.forEach(char => {
                         const gridItem = document.createElement('div');
                         gridItem.className = 'grid-item';
                         gridItem.textContent = char;
