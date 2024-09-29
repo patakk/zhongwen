@@ -225,22 +225,32 @@ def convert_numerical_tones(pinyin):
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
-        query = request.form['query']
+        query = request.form['query'].strip().lower()
         results = []
         
         for deck in flashcard_app.decks:
             for hanzi, card in flashcard_app.cards[deck].items():
-                if query in hanzi:
+                if query in hanzi.lower():
                     results.append({'hanzi': hanzi, **card})
                 elif query.isalpha():
-                    pinyin_query = remove_tones(convert_numerical_tones(query.lower()))
+                    pinyin_query = remove_tones(convert_numerical_tones(query))
                     card_pinyin = remove_tones(card['pinyin'].lower())
                     if pinyin_query in card_pinyin:
                         results.append({'hanzi': hanzi, **card})
+                    elif query in card['english'].lower():
+                        results.append({'hanzi': hanzi, **card})
         
-        return render_template('search.html', results=results, query=query)
+        unique_results = []
+        seen_hanzi = set()
+        for result in results:
+            if result['hanzi'] not in seen_hanzi:
+                unique_results.append(result)
+                seen_hanzi.add(result['hanzi'])
+        
+        return render_template('search.html', results=unique_results, query=query)
     
     return render_template('search.html')
+
 
 
 
