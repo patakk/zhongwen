@@ -163,16 +163,19 @@ def translations():
     }
     return render_template('translations.html', categories=categories)
 
+from urllib.parse import unquote
+
 
 @app.route('/translations/<category>/<subcategory>')
 @session_required
 def translation_category(category, subcategory):
+    category = unquote(category)
+    subcategory = unquote(subcategory)
     if category not in parsed_data or subcategory not in parsed_data[category]:
         return "Category not found", 404
     translations = parsed_data[category][subcategory]
     return render_template('translation_category.html', category=category, subcategory=subcategory, translations=translations)
 
-from urllib.parse import unquote
 
 @app.route('/get_translation_data/<category>/<subcategory>/<chinese>')
 @session_required
