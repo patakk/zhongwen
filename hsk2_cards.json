@@ -1,0 +1,757 @@
+{
+    "吧": {
+        "pinyin": "ba",
+        "english": "particle indicating polite suggestion; | onomatopoeia | bar (serving drinks, providing internet access, etc.)",
+        "traditional": ""
+    },
+    "白": {
+        "pinyin": "bái",
+        "english": "white; snowy; pure; bright; empty (Kangxi radical 106)",
+        "traditional": ""
+    },
+    "百": {
+        "pinyin": "bǎi",
+        "english": "hundred",
+        "traditional": ""
+    },
+    "帮助": {
+        "pinyin": "bāngzhù",
+        "english": "help; assist; aid",
+        "traditional": "幫助"
+    },
+    "报纸": {
+        "pinyin": "bàozhǐ",
+        "english": "newspaper",
+        "traditional": "報紙"
+    },
+    "比": {
+        "pinyin": "bǐ",
+        "english": "compare; (indicates comparison) (Kangxi radical 81); to gesticulate as one talks",
+        "traditional": ""
+    },
+    "别": {
+        "pinyin": "bié",
+        "english": "don't do something; don't | depart; | other; difference; distinguish",
+        "traditional": "別"
+    },
+    "宾馆": {
+        "pinyin": "bīnguǎn",
+        "english": "guesthouse; hotel",
+        "traditional": "賓館"
+    },
+    "长": {
+        "pinyin": "cháng, zhǎng",
+        "english": "long; length | grow; chief (Kangxi radical 168)",
+        "traditional": "長"
+    },
+    "唱歌": {
+        "pinyin": "chànggē",
+        "english": "sing (a song)",
+        "traditional": ""
+    },
+    "出": {
+        "pinyin": "chū",
+        "english": "go out; occur",
+        "traditional": ""
+    },
+    "穿": {
+        "pinyin": "chuān",
+        "english": "to wear; put on; penetrate",
+        "traditional": ""
+    },
+    "次": {
+        "pinyin": "cì",
+        "english": "(mw for number of times of occurrence); nth; order",
+        "traditional": ""
+    },
+    "从": {
+        "pinyin": "cóng",
+        "english": "from; obey; observe",
+        "traditional": "從"
+    },
+    "错": {
+        "pinyin": "cuò",
+        "english": "mistake; error; blunder; miss an opportunity",
+        "traditional": "錯"
+    },
+    "打篮球": {
+        "pinyin": "dǎ lánqiú",
+        "english": "play basketball",
+        "traditional": "打籃球"
+    },
+    "大家": {
+        "pinyin": "dàjiā",
+        "english": "everyone",
+        "traditional": ""
+    },
+    "到": {
+        "pinyin": "dào",
+        "english": "arrive (at a place); until (a time)",
+        "traditional": ""
+    },
+    "得": {
+        "pinyin": "de",
+        "english": "(complement particle)",
+        "traditional": ""
+    },
+    "等": {
+        "pinyin": "děng",
+        "english": "to wait; rank; equal; etc.",
+        "traditional": ""
+    },
+    "弟弟": {
+        "pinyin": "dìdi",
+        "english": "younger brother",
+        "traditional": ""
+    },
+    "第一": {
+        "pinyin": "dìyī",
+        "english": "first; number 1",
+        "traditional": ""
+    },
+    "懂": {
+        "pinyin": "dǒng",
+        "english": "understand; know",
+        "traditional": ""
+    },
+    "对": {
+        "pinyin": "duì",
+        "english": "correct; a pair; to face; be opposite; to; towards",
+        "traditional": "對"
+    },
+    "房间": {
+        "pinyin": "fángjiān",
+        "english": "room",
+        "traditional": "房間"
+    },
+    "非常": {
+        "pinyin": "fēicháng",
+        "english": "extremely; extraordinary; very",
+        "traditional": ""
+    },
+    "服务员": {
+        "pinyin": "fúwùyuán",
+        "english": "waiter/waitress; server; attendant",
+        "traditional": "服務員"
+    },
+    "高": {
+        "pinyin": "gāo",
+        "english": "high; tall (Kangxi radical 189)",
+        "traditional": ""
+    },
+    "告诉": {
+        "pinyin": "gàosu",
+        "english": "to tell; inform",
+        "traditional": "告訴"
+    },
+    "哥哥": {
+        "pinyin": "gēge",
+        "english": "older brother",
+        "traditional": ""
+    },
+    "给": {
+        "pinyin": "gěi",
+        "english": "to give; to grant; (passive particle)",
+        "traditional": "給"
+    },
+    "公共汽车": {
+        "pinyin": "gōnggòng qìchē",
+        "english": "(public) bus",
+        "traditional": "公共汽車"
+    },
+    "公司": {
+        "pinyin": "gōngsī",
+        "english": "company; corporation",
+        "traditional": ""
+    },
+    "贵": {
+        "pinyin": "guì",
+        "english": "expensive; noble; honorable; Guizhou province (abbreviation)",
+        "traditional": "貴"
+    },
+    "过": {
+        "pinyin": "guò",
+        "english": "to pass; to cross; go over; (indicates a past experience)",
+        "traditional": "過"
+    },
+    "还": {
+        "pinyin": "hái",
+        "english": "still; yet; in addition; even",
+        "traditional": "還"
+    },
+    "孩子": {
+        "pinyin": "háizi",
+        "english": "child; children; son or daughter",
+        "traditional": ""
+    },
+    "好吃": {
+        "pinyin": "hǎochī",
+        "english": "tasty",
+        "traditional": ""
+    },
+    "黑": {
+        "pinyin": "hēi",
+        "english": "black; dark (Kangxi radical 203); Heilongjiang province (abbreviation)",
+        "traditional": ""
+    },
+    "红": {
+        "pinyin": "hóng",
+        "english": "red; symbol of success; bonus; popular",
+        "traditional": "紅"
+    },
+    "火车站": {
+        "pinyin": "huǒchēzhàn",
+        "english": "train station",
+        "traditional": "火車站"
+    },
+    "机场": {
+        "pinyin": "jīchǎng",
+        "english": "airport; airfield",
+        "traditional": "機場"
+    },
+    "鸡蛋": {
+        "pinyin": "jīdàn",
+        "english": "(chicken) egg",
+        "traditional": "雞蛋"
+    },
+    "件": {
+        "pinyin": "jiàn",
+        "english": "(mw for things, clothes, and items)",
+        "traditional": ""
+    },
+    "教室": {
+        "pinyin": "jiàoshì",
+        "english": "classroom",
+        "traditional": ""
+    },
+    "姐姐": {
+        "pinyin": "jiějie",
+        "english": "older sister",
+        "traditional": ""
+    },
+    "介绍": {
+        "pinyin": "jièshào",
+        "english": "to introduce; recommend; introduction",
+        "traditional": "介紹"
+    },
+    "进": {
+        "pinyin": "jìn",
+        "english": "enter; come in",
+        "traditional": "進"
+    },
+    "近": {
+        "pinyin": "jìn",
+        "english": "near; close (to)",
+        "traditional": ""
+    },
+    "就": {
+        "pinyin": "jiù",
+        "english": "then; at once; just; only; with regard to",
+        "traditional": ""
+    },
+    "觉得": {
+        "pinyin": "juéde",
+        "english": "feel; think",
+        "traditional": "覺得"
+    },
+    "咖啡": {
+        "pinyin": "kāfēi",
+        "english": "coffee",
+        "traditional": ""
+    },
+    "开始": {
+        "pinyin": "kāishǐ",
+        "english": "begin; to start; beginning",
+        "traditional": "開始"
+    },
+    "考试": {
+        "pinyin": "kǎoshì",
+        "english": "test; exam; to give or take a test",
+        "traditional": "考試"
+    },
+    "可能": {
+        "pinyin": "kěnéng",
+        "english": "possible; maybe",
+        "traditional": ""
+    },
+    "可以": {
+        "pinyin": "kěyǐ",
+        "english": "can; may; possible; okay",
+        "traditional": ""
+    },
+    "课": {
+        "pinyin": "kè",
+        "english": "class; subject; lesson; course",
+        "traditional": "課"
+    },
+    "快": {
+        "pinyin": "kuài",
+        "english": "fast; quick; swift",
+        "traditional": ""
+    },
+    "快乐": {
+        "pinyin": "kuàilè",
+        "english": "happy",
+        "traditional": "快樂"
+    },
+    "累": {
+        "pinyin": "lèi",
+        "english": "tired",
+        "traditional": ""
+    },
+    "离": {
+        "pinyin": "lí",
+        "english": "leave; depart; go away; apart from",
+        "traditional": "離"
+    },
+    "两": {
+        "pinyin": "liǎng",
+        "english": "two; 2; both; (unit of weight equal to 50 grams)",
+        "traditional": "兩"
+    },
+    "零": {
+        "pinyin": "líng",
+        "english": "zero; remnant",
+        "traditional": ""
+    },
+    "路": {
+        "pinyin": "lù",
+        "english": "road; path; journey; route",
+        "traditional": ""
+    },
+    "旅游": {
+        "pinyin": "lǚyóu",
+        "english": "trip; journey; tour",
+        "traditional": ""
+    },
+    "卖": {
+        "pinyin": "mài",
+        "english": "to sell",
+        "traditional": "賣"
+    },
+    "慢": {
+        "pinyin": "màn",
+        "english": "slow",
+        "traditional": ""
+    },
+    "忙": {
+        "pinyin": "máng",
+        "english": "busy",
+        "traditional": ""
+    },
+    "每": {
+        "pinyin": "měi",
+        "english": "each; every",
+        "traditional": ""
+    },
+    "妹妹": {
+        "pinyin": "mèimei",
+        "english": "younger sister",
+        "traditional": ""
+    },
+    "门": {
+        "pinyin": "mén",
+        "english": "door; opening; gate (Kangxi radical 169)",
+        "traditional": "門"
+    },
+    "面条": {
+        "pinyin": "miàntiáo",
+        "english": "noodles",
+        "traditional": "面條"
+    },
+    "男": {
+        "pinyin": "nán",
+        "english": "male",
+        "traditional": ""
+    },
+    "您": {
+        "pinyin": "nín",
+        "english": "you (polite)",
+        "traditional": ""
+    },
+    "牛奶": {
+        "pinyin": "niúnǎi",
+        "english": "cow's milk",
+        "traditional": ""
+    },
+    "女": {
+        "pinyin": "nǚ",
+        "english": "woman; female (Kangxi radical 38)",
+        "traditional": ""
+    },
+    "旁边": {
+        "pinyin": "pángbiān",
+        "english": "side, beside",
+        "traditional": "旁邊"
+    },
+    "跑步": {
+        "pinyin": "pǎobù",
+        "english": "to run; to jog",
+        "traditional": ""
+    },
+    "便宜": {
+        "pinyin": "piányi",
+        "english": "cheap",
+        "traditional": ""
+    },
+    "票": {
+        "pinyin": "piào",
+        "english": "ticket; bank note; a vote",
+        "traditional": ""
+    },
+    "妻子": {
+        "pinyin": "qīzi",
+        "english": "wife",
+        "traditional": ""
+    },
+    "起床": {
+        "pinyin": "qǐ chuáng",
+        "english": "get out of bed",
+        "traditional": ""
+    },
+    "千": {
+        "pinyin": "qiān",
+        "english": "one thousand",
+        "traditional": ""
+    },
+    "铅笔": {
+        "pinyin": "qiānbǐ",
+        "english": "pencil",
+        "traditional": "鉛筆"
+    },
+    "晴": {
+        "pinyin": "qíng",
+        "english": "clear; fine (as of weather)",
+        "traditional": ""
+    },
+    "去年": {
+        "pinyin": "qùnián",
+        "english": "last year",
+        "traditional": ""
+    },
+    "让": {
+        "pinyin": "ràng",
+        "english": "ask; let; yield",
+        "traditional": "讓"
+    },
+    "日": {
+        "pinyin": "rì",
+        "english": "sun; day; date; time (Kangxi radical 72)",
+        "traditional": ""
+    },
+    "上班": {
+        "pinyin": "shàngbān",
+        "english": "go to work; be on duty",
+        "traditional": ""
+    },
+    "身体": {
+        "pinyin": "shēntǐ",
+        "english": "health; (human) body",
+        "traditional": "身體"
+    },
+    "生病": {
+        "pinyin": "shēngbìng",
+        "english": "get sick; fall ill",
+        "traditional": ""
+    },
+    "生日": {
+        "pinyin": "shēngrì",
+        "english": "birthday",
+        "traditional": ""
+    },
+    "时间": {
+        "pinyin": "shíjiān",
+        "english": "time; period",
+        "traditional": "時間"
+    },
+    "事情": {
+        "pinyin": "shìqing",
+        "english": "matter; affair; thing; business",
+        "traditional": ""
+    },
+    "手表": {
+        "pinyin": "shǒubiǎo",
+        "english": "wristwatch",
+        "traditional": ""
+    },
+    "手机": {
+        "pinyin": "shǒujī",
+        "english": "mobile (cell) phone",
+        "traditional": "手機"
+    },
+    "说话": {
+        "pinyin": "shuōhuà",
+        "english": "to talk; speak",
+        "traditional": "說話"
+    },
+    "送": {
+        "pinyin": "sòng",
+        "english": "deliver; to carry; to give; send",
+        "traditional": ""
+    },
+    "虽然": {
+        "pinyin": "suīrán",
+        "english": "although; even though",
+        "traditional": "雖然"
+    },
+    "但是": {
+        "pinyin": "dànshì",
+        "english": "but; however",
+        "traditional": ""
+    },
+    "它": {
+        "pinyin": "tā",
+        "english": "it",
+        "traditional": ""
+    },
+    "踢足球": {
+        "pinyin": "tīzúqiú",
+        "english": "to play football/soccer",
+        "traditional": ""
+    },
+    "题": {
+        "pinyin": "tí",
+        "english": "topic; subject; question on a test or assignment",
+        "traditional": "題"
+    },
+    "跳舞": {
+        "pinyin": "tiàowǔ",
+        "english": "to dance",
+        "traditional": ""
+    },
+    "外": {
+        "pinyin": "wài",
+        "english": "outer; outside; in addition; foreign",
+        "traditional": ""
+    },
+    "完": {
+        "pinyin": "wán",
+        "english": "to finish; be over; complete",
+        "traditional": ""
+    },
+    "玩": {
+        "pinyin": "wán",
+        "english": "to play; have a good time; visit; enjoy",
+        "traditional": ""
+    },
+    "晚上": {
+        "pinyin": "wǎnshang",
+        "english": "evening; night",
+        "traditional": ""
+    },
+    "往": {
+        "pinyin": "wǎng",
+        "english": "to go (in a direction); towards; in the past",
+        "traditional": ""
+    },
+    "为什么": {
+        "pinyin": "wèishénme",
+        "english": "why?; for what reason?",
+        "traditional": "為什麼"
+    },
+    "问": {
+        "pinyin": "wèn",
+        "english": "ask; inquire",
+        "traditional": "問"
+    },
+    "问题": {
+        "pinyin": "wèntí",
+        "english": "question; problem",
+        "traditional": "問題"
+    },
+    "西瓜": {
+        "pinyin": "xīguā",
+        "english": "watermelon",
+        "traditional": ""
+    },
+    "希望": {
+        "pinyin": "xīwàng",
+        "english": "to hope; wish for; to desire",
+        "traditional": ""
+    },
+    "洗": {
+        "pinyin": "xǐ",
+        "english": "to wash; bathe",
+        "traditional": ""
+    },
+    "小时": {
+        "pinyin": "xiǎoshí",
+        "english": "hour",
+        "traditional": "小時"
+    },
+    "笑": {
+        "pinyin": "xiào",
+        "english": "to laugh; to smile",
+        "traditional": ""
+    },
+    "新": {
+        "pinyin": "xīn",
+        "english": "new; Xinjiang autonomous region (abbreviation)",
+        "traditional": ""
+    },
+    "姓": {
+        "pinyin": "xìng",
+        "english": "surname; family name",
+        "traditional": ""
+    },
+    "休息": {
+        "pinyin": "xiūxi",
+        "english": "to rest; take a break",
+        "traditional": ""
+    },
+    "雪": {
+        "pinyin": "xuě",
+        "english": "snow",
+        "traditional": ""
+    },
+    "颜色": {
+        "pinyin": "yánsè",
+        "english": "color",
+        "traditional": "顏色"
+    },
+    "眼睛": {
+        "pinyin": "yǎnjing",
+        "english": "eye",
+        "traditional": ""
+    },
+    "羊肉": {
+        "pinyin": "yángròu",
+        "english": "mutton; lamb",
+        "traditional": ""
+    },
+    "药": {
+        "pinyin": "yào",
+        "english": "medicine; drug; cure; chemical",
+        "traditional": "藥"
+    },
+    "要": {
+        "pinyin": "yào",
+        "english": "to want; to need; will/shall; important",
+        "traditional": ""
+    },
+    "也": {
+        "pinyin": "yě",
+        "english": "also; too",
+        "traditional": ""
+    },
+    "一起": {
+        "pinyin": "yìqǐ",
+        "english": "together; in the same place",
+        "traditional": ""
+    },
+    "一下": {
+        "pinyin": "yíxià",
+        "english": "a little bit/while; one time; once",
+        "traditional": ""
+    },
+    "已经": {
+        "pinyin": "yǐjing",
+        "english": "already",
+        "traditional": "已經"
+    },
+    "意思": {
+        "pinyin": "yìsi",
+        "english": "meaning; idea; opinion",
+        "traditional": ""
+    },
+    "因为": {
+        "pinyin": "yīnwèi",
+        "english": "because",
+        "traditional": "因為"
+    },
+    "所以": {
+        "pinyin": "suǒyǐ",
+        "english": "so; therefore; as a result",
+        "traditional": ""
+    },
+    "阴": {
+        "pinyin": "yīn",
+        "english": "cloudy (weather); yin (the negative principle of Yin and Yang); secret; the moon; negative; shade",
+        "traditional": "陰"
+    },
+    "游泳": {
+        "pinyin": "yóuyǒng",
+        "english": "to swim",
+        "traditional": ""
+    },
+    "右边": {
+        "pinyin": "yòubian",
+        "english": "the right (as opposed to left) side",
+        "traditional": "右邊"
+    },
+    "鱼": {
+        "pinyin": "yú",
+        "english": "fish (Kangxi radical 195)",
+        "traditional": "魚"
+    },
+    "远": {
+        "pinyin": "yuǎn",
+        "english": "far; distant; remote",
+        "traditional": "遠"
+    },
+    "运动": {
+        "pinyin": "yùndòng",
+        "english": "(physical) exercise; movement; sports; campaign",
+        "traditional": "運動"
+    },
+    "再": {
+        "pinyin": "zài",
+        "english": "again; once more",
+        "traditional": ""
+    },
+    "早上": {
+        "pinyin": "zǎoshang",
+        "english": "(early) morning",
+        "traditional": ""
+    },
+    "丈夫": {
+        "pinyin": "zhàngfu",
+        "english": "husband; man",
+        "traditional": ""
+    },
+    "找": {
+        "pinyin": "zhǎo",
+        "english": "try to find; look for; seek; to give change",
+        "traditional": ""
+    },
+    "着": {
+        "pinyin": "zhe",
+        "english": "-ing (indicating action in progress)",
+        "traditional": "著"
+    },
+    "真": {
+        "pinyin": "zhēn",
+        "english": "real; true; genuine",
+        "traditional": ""
+    },
+    "正在": {
+        "pinyin": "zhèngzài",
+        "english": "in the process of (doing something); currently",
+        "traditional": ""
+    },
+    "知道": {
+        "pinyin": "zhīdao",
+        "english": "know; be aware of",
+        "traditional": ""
+    },
+    "准备": {
+        "pinyin": "zhǔnbèi",
+        "english": "prepare; get ready",
+        "traditional": "准備"
+    },
+    "走": {
+        "pinyin": "zǒu",
+        "english": "to walk; to go; to move (Kangxi radical 156)",
+        "traditional": ""
+    },
+    "最": {
+        "pinyin": "zuì",
+        "english": "the most; -est; (indicator for superlative)",
+        "traditional": ""
+    },
+    "左边": {
+        "pinyin": "zuǒbian",
+        "english": "the left side; the left",
+        "traditional": "左邊"
+    }
+}

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+
+    <title>{{ subcategory }} - {{ category|capitalize }}</title>
+    <style>
+        html {
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        html::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+        body {
+            font-family: "Crimson Pro", serif;
+            font-family: "Noto Sans Mono", monospace;
+            line-height: 1.4;
+            font-weight: 400;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            background-color: white;
+        }
+        .container {
+            width: 70%;
+            max-width: 600px;
+            border: 2px dashed black;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        ul {
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            margin-bottom: 5px;
+            cursor: pointer;
+            list-style-type: square;
+        }
+        li:hover {
+            background-color: #000000;
+            color: #f2f2f2;
+        }
+        #flashcard-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box; /* Add this line */
+            padding: 20px; /* Add this line */
+        }
+
+        #flashcard-content {
+            background-color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            border: 2px dashed #000000;
+            margin: 20px; /* Add this line */
+            max-width: 80%; /* Add this line */
+            max-height: 80%; /* Add this line */
+            overflow-y: auto; /* Add this line */
+        }
+
+        @media screen and (max-width: 768px) {
+            #flashcard-content {
+                width: 90%;
+                height: auto;
+                max-height: 90%;
+            }
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+
+        .highlighted {
+            background-color: #000000;
+            color: #f2f2f2;
+        }
+
+        .character {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .pinyin {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .translation {
+            text-align: center;
+            font-size: 16px;
+        }
+        #characters-link {
+            position: fixed;
+            text-decoration: underline;
+            top: 15px;
+            left: 15px;
+            font-size: 16px;
+            color: #000;
+        }
+        #characters-link:hover {
+            background-color: #000;
+            color: #fff;
+        }
+        #exam-link {
+            position: fixed;
+            text-decoration: underline;
+            top: 15px;
+            right: 15px;
+            font-size: 16px;
+            color: #000;
+        }
+        #exam-link:hover {
+            background-color: #000;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <a id="characters-link" href="{{ url_for('home') }}">home</a>
+    <a id="exam-link" href="{{ url_for('translations') }}">translations</a>
+    <div class="container">
+        <h1>{{ subcategory }} ({{ category|capitalize }})</h1>
+        <ul>
+            {% for translation in translations %}
+            <li onclick="showFlashcard('{{ category }}', '{{ subcategory }}', '{{ translation.chinese }}', {{ loop.index0 }})" data-index="{{ loop.index0 }}">{{ translation.translation }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="flashcard-overlay">
+        <div id="flashcard-content">
+            <div class="character"></div>
+            <div class="pinyin"></div>
+            <div class="translation"></div>
+        </div>
+    </div>
+    <script>
+        const overlay = document.getElementById('flashcard-overlay');
+        const flashcardContent = document.getElementById('flashcard-content');
+        const translations = {{ translations|tojson|safe }};
+        let currentIndex = 0;
+
+        function showFlashcard(category, subcategory, chinese, index) {
+            currentIndex = index;
+            loadFlashcard(category, subcategory, chinese);
+            highlightListItem(index);
+        }
+
+        function loadFlashcard(category, subcategory, chinese) {
+            const encodedCategory = encodeURIComponent(category);
+            const encodedSubcategory = encodeURIComponent(subcategory);
+            const encodedChinese = encodeURIComponent(chinese);
+            fetch(`/get_translation_data/${encodedCategory}/${encodedSubcategory}/${encodedChinese}`)
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('.character').textContent = data.chinese;
+                document.querySelector('.pinyin').textContent = data.pinyin;
+                document.querySelector('.translation').textContent = data.translation;
+                overlay.style.display = 'flex';
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function loadNextCard() {
+            currentIndex = (currentIndex + 1) % translations.length;
+            const nextTranslation = translations[currentIndex];
+            loadFlashcard('{{ category }}', '{{ subcategory }}', nextTranslation.chinese);
+            highlightListItem(currentIndex);
+        }
+
+        function highlightListItem(index) {
+            // Remove highlight from all items
+            document.querySelectorAll('li').forEach(item => {
+                item.classList.remove('highlighted');
+            });
+
+            // Add highlight to the selected item
+            const selectedItem = document.querySelector(`li[data-index="${index}"]`);
+            if (selectedItem) {
+                selectedItem.classList.add('highlighted');
+                
+                // Scroll the item into view if it's not visible
+                selectedItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.display = 'none';
+                document.querySelectorAll('li').forEach(item => {
+                    item.classList.remove('highlighted');
+                });
+            } else {
+                loadNextCard();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (overlay.style.display === 'flex') {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    loadNextCard();
+                } else if (e.key === 'Escape') {
+                    overlay.style.display = 'none';
+                }
+            }
+        });
+
+        // Highlight the first item by default
+        // highlightListItem(0);
+    </script>
+
+    
+</body>
+</html>

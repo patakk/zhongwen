@@ -1,0 +1,635 @@
+{
+    "海": {
+        "pinyin": "hǎi",
+        "english": "sea"
+    },
+    "洋": {
+        "pinyin": "yáng",
+        "english": "ocean"
+    },
+    "羊": {
+        "pinyin": "yáng",
+        "english": "sheep"
+    },
+    "老师": {
+        "pinyin": "lǎo shī",
+        "english": "teacher"
+    },
+    "可乐": {
+        "pinyin": "kě lè",
+        "english": "cola"
+    },
+    "也": {
+        "pinyin": "yě",
+        "english": "also"
+    },
+    "这": {
+        "pinyin": "zhè",
+        "english": "this"
+    },
+    "那": {
+        "pinyin": "nà",
+        "english": "that"
+    },
+    "哪": {
+        "pinyin": "nǎ",
+        "english": "which"
+    },
+    "上课": {
+        "pinyin": "shàng kè",
+        "english": "start lesson"
+    },
+    "学习": {
+        "pinyin": "xué xí",
+        "english": "study"
+    },
+    "复习": {
+        "pinyin": "fù xí",
+        "english": "review"
+    },
+    "吃": {
+        "pinyin": "chī",
+        "english": "eat"
+    },
+    "机器": {
+        "pinyin": "jī qì",
+        "english": "machine"
+    },
+    "鸡": {
+        "pinyin": "jī",
+        "english": "chicken"
+    },
+    "急": {
+        "pinyin": "jí",
+        "english": "hurry"
+    },
+    "挤": {
+        "pinyin": "jǐ",
+        "english": "crowded"
+    },
+    "寄": {
+        "pinyin": "jì",
+        "english": "mail/post"
+    },
+    "沙": {
+        "pinyin": "shā",
+        "english": "sand"
+    },
+    "杀": {
+        "pinyin": "shā",
+        "english": "kill"
+    },
+    "啥": {
+        "pinyin": "shá",
+        "english": "what (colloquial form of 什么)"
+    },
+    "傻": {
+        "pinyin": "shǎ",
+        "english": "silly"
+    },
+    "傻瓜": {
+        "pinyin": "shǎ guā",
+        "english": "fool"
+    },
+    "煞": {
+        "pinyin": "shà",
+        "english": "extremely"
+    },
+    "奶": {
+        "pinyin": "nǎi",
+        "english": "milk"
+    },
+    "奶奶": {
+        "pinyin": "nǎinai",
+        "english": "grandmother"
+    },
+    "牛奶": {
+        "pinyin": "niúnǎi",
+        "english": "cow's milk"
+    },
+    "开": {
+        "pinyin": "kāi",
+        "english": "open"
+    },
+    "门": {
+        "pinyin": "mén",
+        "english": "door"
+    },
+    "高": {
+        "pinyin": "gāo",
+        "english": "tall"
+    },
+    "百": {
+        "pinyin": "bǎi",
+        "english": "hundred"
+    },
+    "春": {
+        "pinyin": "chūn",
+        "english": "spring"
+    },
+    "香水": {
+        "pinyin": "xiāng shuǐ",
+        "english": "perfume"
+    },
+    "谢谢": {
+        "pinyin": "xiè xie",
+        "english": "thank you"
+    },
+    "早上": {
+        "pinyin": "zǎo shang",
+        "english": "morning"
+    },
+    "下午": {
+        "pinyin": "xià wǔ",
+        "english": "afternoon"
+    },
+    "晚上": {
+        "pinyin": "wǎn shang",
+        "english": "evening"
+    },
+    "晚安": {
+        "pinyin": "wǎn'ān",
+        "english": "good night"
+    },
+    "上": {
+        "pinyin": "shàng",
+        "english": "up, early"
+    },
+    "早": {
+        "pinyin": "zǎo",
+        "english": "early"
+    },
+    "下": {
+        "pinyin": "xià",
+        "english": "down, late"
+    },
+    "晚": {
+        "pinyin": "wǎn",
+        "english": "late"
+    },
+    "好": {
+        "pinyin": "hǎo",
+        "english": "good",
+        "traditional": ""
+    },
+    "哈利波特": {
+        "pinyin": "Hālìbōtè",
+        "english": "Harry Potter",
+        "traditional": ""
+    },
+    "书": {
+        "pinyin": "shū",
+        "english": "book",
+        "traditional": "書"
+    },
+    "去": {
+        "pinyin": "qù",
+        "english": "go",
+        "traditional": ""
+    },
+    "笨蛋": {
+        "pinyin": "bèndàn",
+        "english": "fool",
+        "traditional": ""
+    },
+    "茶": {
+        "pinyin": "chá",
+        "english": "tea",
+        "traditional": ""
+    },
+    "擦": {
+        "pinyin": "cā",
+        "english": "wipe",
+        "traditional": ""
+    },
+    "绿": {
+        "pinyin": "lǜ",
+        "english": "green",
+        "traditional": "綠"
+    },
+    "欧": {
+        "pinyin": "ōu",
+        "english": "Europe",
+        "traditional": "歐"
+    },
+    "白": {
+        "pinyin": "bái",
+        "english": "white",
+        "traditional": ""
+    },
+    "北": {
+        "pinyin": "běi",
+        "english": "north",
+        "traditional": ""
+    },
+    "被": {
+        "pinyin": "bèi",
+        "english": "by",
+        "traditional": ""
+    },
+    "包": {
+        "pinyin": "bāo",
+        "english": "bag",
+        "traditional": ""
+    },
+    "宝": {
+        "pinyin": "bǎo",
+        "english": "treasure",
+        "traditional": "寶"
+    },
+    "饱": {
+        "pinyin": "bǎo",
+        "english": "full (after eating)",
+        "traditional": "飽"
+    },
+    "拍": {
+        "pinyin": "pāi",
+        "english": "pat",
+        "traditional": ""
+    },
+    "排": {
+        "pinyin": "pái",
+        "english": "arrange",
+        "traditional": ""
+    },
+    "新": {
+        "pinyin": "xīn",
+        "english": "new",
+        "traditional": ""
+    },
+    "您": {
+        "pinyin": "nín",
+        "english": "you (polite)",
+        "traditional": ""
+    },
+    "买": {
+        "pinyin": "mǎi",
+        "english": "buy",
+        "traditional": "買"
+    },
+    "秋": {
+        "pinyin": "qiū",
+        "english": "autumn",
+        "traditional": ""
+    },
+    "差": {
+        "pinyin": "chà",
+        "english": "differ",
+        "traditional": ""
+    },
+    "肉": {
+        "pinyin": "ròu",
+        "english": "meat",
+        "traditional": ""
+    },
+    "大": {
+        "pinyin": "dà",
+        "english": "big",
+        "traditional": ""
+    },
+    "太": {
+        "pinyin": "tài",
+        "english": "too",
+        "traditional": ""
+    },
+    "但": {
+        "pinyin": "dàn",
+        "english": "but",
+        "traditional": ""
+    },
+    "难": {
+        "pinyin": "nán",
+        "english": "difficult",
+        "traditional": "難"
+    },
+    "滚": {
+        "pinyin": "gǔn",
+        "english": "roll",
+        "traditional": "滾"
+    },
+    "饿": {
+        "pinyin": "è",
+        "english": "hungry",
+        "traditional": "餓"
+    },
+    "黑": {
+        "pinyin": "hēi",
+        "english": "black",
+        "traditional": ""
+    },
+    "臭": {
+        "pinyin": "chòu",
+        "english": "smelly",
+        "traditional": ""
+    },
+    "香": {
+        "pinyin": "xiāng",
+        "english": "fragrant",
+        "traditional": ""
+    },
+    "听": {
+        "pinyin": "tīng",
+        "english": "listen",
+        "traditional": "聽"
+    },
+    "厅": {
+        "pinyin": "tīng",
+        "english": "hall, room, lobby, parlor",
+        "traditional": "廳"
+    },
+    "早上好": {
+        "pinyin": "zǎoshang hǎo",
+        "english": "good morning",
+        "traditional": ""
+    },
+    "下午好": {
+        "pinyin": "xiàwǔ hǎo",
+        "english": "good afternoon",
+        "traditional": ""
+    },
+    "晚上好": {
+        "pinyin": "wǎnshang hǎo",
+        "english": "good evening",
+        "traditional": ""
+    },
+    "中文": {
+        "pinyin": "Zhōngwén",
+        "english": "Chinese language",
+        "traditional": ""
+    },
+    "汉语": {
+        "pinyin": "Hànyǔ",
+        "english": "Chinese language",
+        "traditional": "漢語"
+    },
+    "慢": {
+        "pinyin": "màn",
+        "english": "slow",
+        "traditional": ""
+    },
+    "快": {
+        "pinyin": "kuài",
+        "english": "fast",
+        "traditional": ""
+    },
+    "熊": {
+        "pinyin": "xióng",
+        "english": "bear",
+        "traditional": ""
+    },
+    "看": {
+        "pinyin": "kàn",
+        "english": "look",
+        "traditional": ""
+    },
+    "蹲": {
+        "pinyin": "dūn",
+        "english": "squat",
+        "traditional": ""
+    },
+    "唱": {
+        "pinyin": "chàng",
+        "english": "sing",
+        "traditional": ""
+    },
+    "冲": {
+        "pinyin": "chōng",
+        "english": "rush",
+        "traditional": "衝"
+    },
+    "唱歌": {
+        "pinyin": "chàng gē",
+        "english": "sing a song",
+        "traditional": ""
+    },
+    "对话": {
+        "pinyin": "duìhuà",
+        "english": "dialogue",
+        "traditional": "對話"
+    },
+    "名字": {
+        "pinyin": "míngzi",
+        "english": "name",
+        "traditional": ""
+    },
+    "你叫": {
+        "pinyin": "nǐ jiào",
+        "english": "you are called",
+        "traditional": ""
+    },
+    "我是": {
+        "pinyin": "wǒ shì",
+        "english": "I am",
+        "traditional": ""
+    },
+    "我叫": {
+        "pinyin": "wǒ jiào",
+        "english": "I am called",
+        "traditional": ""
+    },
+    "高兴": {
+        "pinyin": "gāoxìng",
+        "english": "happy",
+        "traditional": "高興"
+    },
+    "认识": {
+        "pinyin": "rènshi",
+        "english": "know, recognize",
+        "traditional": "認識"
+    },
+    "很高兴认识你": {
+        "pinyin": "hěn gāoxìng rènshi nǐ",
+        "english": "Nice to meet you",
+        "traditional": "很高興認識你"
+    },
+    "月": {
+        "pinyin": "yuè",
+        "english": "moon, month",
+        "traditional": ""
+    },
+    "日": {
+        "pinyin": "rì",
+        "english": "sun, day",
+        "traditional": ""
+    },
+    "请问": {
+        "pinyin": "qǐngwèn",
+        "english": "may I ask",
+        "traditional": "請問"
+    },
+    "青蚊": {
+        "pinyin": "qīng wén",
+        "english": "green mosquito",
+        "traditional": ""
+    },
+    "开门": {
+        "pinyin": "kāi mén",
+        "english": "open the door",
+        "traditional": "開門"
+    },
+    "生日": {
+        "pinyin": "shēngrì",
+        "english": "birthday",
+        "traditional": ""
+    },
+    "快乐": {
+        "pinyin": "kuàilè",
+        "english": "happy",
+        "traditional": ""
+    },
+    "出故": {
+        "pinyin": "chū gù",
+        "english": "leave, go out",
+        "traditional": ""
+    },
+    "美女": {
+        "pinyin": "měinǚ",
+        "english": "beautiful woman",
+        "traditional": ""
+    },
+    "帅哥": {
+        "pinyin": "shuàigē",
+        "english": "handsome man",
+        "traditional": "帥哥"
+    },
+    "米饭": {
+        "pinyin": "mǐfàn",
+        "english": "cooked rice",
+        "traditional": ""
+    },
+    "轮子": {
+        "pinyin": "lúnzi",
+        "english": "wheel",
+        "traditional": "輪子"
+    },
+    "坏": {
+        "pinyin": "huài",
+        "english": "bad",
+        "traditional": ""
+    },
+    "多": {
+        "pinyin": "duō",
+        "english": "many",
+        "traditional": ""
+    },
+    "少": {
+        "pinyin": "shǎo",
+        "english": "few",
+        "traditional": ""
+    },
+    "多少": {
+        "pinyin": "duōshao",
+        "english": "how many",
+        "traditional": ""
+    },
+    "小": {
+        "pinyin": "xiǎo",
+        "english": "small",
+        "traditional": ""
+    },
+    "说": {
+        "pinyin": "shuō",
+        "english": "speak",
+        "traditional": "說"
+    },
+    "鱼": {
+        "pinyin": "yú",
+        "english": "fish",
+        "traditional": "魚"
+    },
+    "爷爷": {
+        "pinyin": "yéye",
+        "english": "grandfather",
+        "traditional": ""
+    },
+    "娃": {
+        "pinyin": "wá",
+        "english": "baby",
+        "traditional": ""
+    },
+    "家": {
+        "pinyin": "jiā",
+        "english": "home",
+        "traditional": ""
+    },
+    "鸟": {
+        "pinyin": "niǎo",
+        "english": "bird",
+        "traditional": "鳥"
+    },
+    "南瓜": {
+        "pinyin": "nánguā",
+        "english": "pumpkin",
+        "traditional": ""
+    },
+    "男": {
+        "pinyin": "nán",
+        "english": "male",
+        "traditional": ""
+    },
+    "一": {
+        "pinyin": "yī",
+        "english": "one",
+        "traditional": ""
+    },
+    "二": {
+        "pinyin": "èr",
+        "english": "two",
+        "traditional": ""
+    },
+    "三": {
+        "pinyin": "sān",
+        "english": "three",
+        "traditional": ""
+    },
+    "四": {
+        "pinyin": "sì",
+        "english": "four",
+        "traditional": ""
+    },
+    "五": {
+        "pinyin": "wǔ",
+        "english": "five",
+        "traditional": ""
+    },
+    "六": {
+        "pinyin": "liù",
+        "english": "six",
+        "traditional": ""
+    },
+    "七": {
+        "pinyin": "qī",
+        "english": "seven",
+        "traditional": ""
+    },
+    "八": {
+        "pinyin": "bā",
+        "english": "eight",
+        "traditional": ""
+    },
+    "九": {
+        "pinyin": "jiǔ",
+        "english": "nine",
+        "traditional": ""
+    },
+    "十": {
+        "pinyin": "shí",
+        "english": "ten",
+        "traditional": ""
+    },
+    "百": {
+        "pinyin": "bǎi",
+        "english": "hundred",
+        "traditional": ""
+    },
+    "千": {
+        "pinyin": "qiān",
+        "english": "thousand",
+        "traditional": ""
+    },
+    "万": {
+        "pinyin": "wàn",
+        "english": "ten thousand",
+        "traditional": ""
+    }
+}
