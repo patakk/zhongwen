@@ -73,17 +73,18 @@
         }
         
         .flashcard {
+            width: 100%;
             font-size: 16px;
-            margin: 30px;
-            max-height: calc(100% - 200px);
-            overflow-y: auto;
-            scrollbar-width: none;
-            user-select: text; /* Ensures text can be selected */
+            margin-top: 30px;
+            overflow-y: visible;
+            user-select: text;
         }
 
-        .flashcard::-webkit-scrollbar {
-            width: 0;
-            height: 0;
+        /* Remove the max-height and overflow-y from .flashcard */
+        .flashcard {
+            font-size: 16px;
+            margin: 30px;
+            user-select: text;
         }
 
         .character::selection, .pinyin::selection, .english::selection, h1::selection, h2::selection, b::selection, i::selection, li::selection, p::selection {
@@ -97,11 +98,13 @@
             border: 2px dashed #000000;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
             align-items: center;
             overflow-y: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
+            padding: 20px;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
         }
 
         #flashcard_container::-webkit-scrollbar {
@@ -109,18 +112,15 @@
             height: 0;
         }
 
-
         @media screen and (max-width: 1024px) {
             body {
                 font-size: 14px; /* Slightly smaller base font size for mobile */
             }
 
             #flashcard_container {
-                padding: 6px;
                 width: 90%;
-                max-width: 90%;
                 height: 80%;
-                max-height: 80%;
+                padding: 10px;
             }
 
             .character {
@@ -161,7 +161,7 @@
         /* Additional adjustments for very small screens (e.g., phones in portrait mode) */
         @media screen and (max-width: 768px) {
             #flashcard_container {
-                height: 60%;
+                height: 70%;
                 transform: translateY(-5%);
             }
 
@@ -274,6 +274,7 @@
         <div class="english"></div>
         <div class="flashcard"></div>
     </div>
+    
     <p id="message"></p>
     <script>
         let currentCard = null;
@@ -283,120 +284,124 @@
         let pinyinRevealed = false;
 
         function displayCard(showAnswer, showPinyin = false) {
-            const flashcardElement = document.querySelector('.flashcard');
-            const englishElement = document.querySelector('.english');
-            const pinyinElement = document.querySelector('.pinyin');
+    const flashcardElement = document.querySelector('.flashcard');
+    const englishElement = document.querySelector('.english');
+    const pinyinElement = document.querySelector('.pinyin');
 
-            pinyinElement.classList.toggle('visible', showPinyin || showAnswer);
-            pinyinRevealed = showPinyin || showAnswer;
+    pinyinElement.classList.toggle('visible', showPinyin || showAnswer);
+    pinyinRevealed = showPinyin || showAnswer;
 
-            flashcardElement.style.visibility = showAnswer ? 'visible' : 'hidden';
-            englishElement.style.visibility = showAnswer ? 'visible' : 'hidden';
+    flashcardElement.style.visibility = showAnswer ? 'visible' : 'hidden';
+    englishElement.style.visibility = showAnswer ? 'visible' : 'hidden';
+}
+
+function displayCardData(data) {
+    const container = document.getElementById('flashcard_container');
+    container.querySelector('.character').textContent = data.character;
+    container.querySelector('.pinyin').textContent = data.pinyin;
+    container.querySelector('.english').textContent = data.english;
+    container.querySelector('.flashcard').innerHTML = data.html;
+
+    let chars = data.character.split('');
+    if (chars.length < 4) {
+        const strokesContainer = document.createElement('div');
+        strokesContainer.className = 'strokes-container';
+        container.querySelector('.flashcard').appendChild(strokesContainer);
+
+        chars.forEach((char, i) => {
+            const strokediv = document.createElement('div');
+            strokediv.id = `strokes-${i}`;
+            strokesContainer.appendChild(strokediv);
+
+            const writerSize = chars.length === 1 ? 150 : 100;
+            const writer = HanziWriter.create(`strokes-${i}`, char, {
+                width: writerSize,
+                height: writerSize,
+                padding: 5,
+                strokeColor: '#000000',
+                strokeAnimationSpeed: 1,
+                delayBetweenStrokes: 220,
+                radicalColor: '#99003b'
+            });
+
+            strokediv.addEventListener('click', function() {
+                writer.animateCharacter();
+            });
+        });
+    }
+
+    currentCard = data.character;
+    showingAnswer = false;
+    displayCard(false);
+
+    container.scrollTop = 0;
+}
+
+function change(event) {
+    const target = event.target;
+
+    if (target.classList.contains('pinyin')) {
+        if (!showingAnswer) {
+            pinyinRevealed = !pinyinRevealed;
+            displayCard(false, pinyinRevealed);
         }
+        return;
+    }
 
-        function change(event) {
-            const target = event.target;
+    if (target.closest('.strokes-container')) {
+        // Do nothing, let the click event propagate to animate strokes
+        return;
+    }
 
-            if (target.classList.contains('pinyin')) {
-                if (!showingAnswer) {
-                    pinyinRevealed = !pinyinRevealed;
-                    displayCard(false, pinyinRevealed);
-                }
-                return;
+    if (!currentCard || showingAnswer) {
+        getNextCard();
+    } else {
+        displayCard(true);
+        showingAnswer = true;
+        recordView(currentCard);
+    }
+
+    // Scroll to the top of the container
+    document.getElementById('flashcard_container').scrollTop = 0;
+}
+
+function fetchCard() {
+    return fetch(`./get_card_data`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
+            return response.json();
+        });
+}
 
-            if (target.closest('.strokes-container')) {
-                // Do nothing, let the click event propagate to animate strokes
-                return;
-            }
-
-            if (!currentCard || showingAnswer) {
-                getNextCard();
-            } else {
-                displayCard(true);
-                showingAnswer = true;
-                recordView(currentCard);
-            }
-        }
-        function fetchCard() {
-            return fetch(`./get_card_data`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                });
-        }
-
-
-        function getNextCard() {
-            if (prefetchedCard) {
-                displayCardData(prefetchedCard);
-                prefetchedCard = null;
+function getNextCard() {
+    if (prefetchedCard) {
+        displayCardData(prefetchedCard);
+        prefetchedCard = null;
+        prefetchNextCard();
+    } else {
+        fetchCard()
+            .then(data => {
+                displayCardData(data);
                 prefetchNextCard();
-            } else {
-                fetchCard()
-                    .then(data => {
-                        displayCardData(data);
-                        prefetchNextCard();
-                    })
-                    .catch(error => {
-                        console.error('There was a problem with the fetch operation:', error);
-                        document.querySelector('.character').textContent = 'Error loading card';
-                    });
-            }
-        }
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                document.querySelector('.character').textContent = 'Error loading card';
+            });
+    }
+}
 
-        function displayCardData(data) {
-            document.querySelector('.character').textContent = data.character;
-            document.querySelector('.pinyin').textContent = data.pinyin;
-            document.querySelector('.english').textContent = data.english;
-            document.querySelector('.flashcard').innerHTML = data.html;
-
-                
-            let chars = data.character.split('');
-            if (chars.length < 4) {
-                const strokesContainer = document.createElement('div');
-                strokesContainer.className = 'strokes-container';
-                document.querySelector('.flashcard').appendChild(strokesContainer);
-
-                chars.forEach((char, i) => {
-                    const strokediv = document.createElement('div');
-                    strokediv.id = `strokes-${i}`;
-                    strokesContainer.appendChild(strokediv);
-
-                    const writerSize = chars.length === 1 ? 150 : 100;
-                    const writer = HanziWriter.create(`strokes-${i}`, char, {
-                        width: writerSize,
-                        height: writerSize,
-                        padding: 5,
-                        strokeColor: '#000000',
-                        strokeAnimationSpeed: 1,
-                        delayBetweenStrokes: 220,
-                        radicalColor: '#99003b'
-                    });
-
-                    strokediv.addEventListener('click', function() {
-                        writer.animateCharacter();
-                    });
-                });
-            }
-
-
-            currentCard = data.character;
-            showingAnswer = false;
-            displayCard(false);
-        }
-
-        function prefetchNextCard() {
-            fetchCard()
-                .then(data => {
-                    prefetchedCard = data;
-                })
-                .catch(error => {
-                    console.error('Error prefetching next card:', error);
-                });
-        }
+function prefetchNextCard() {
+    fetchCard()
+        .then(data => {
+            prefetchedCard = data;
+        })
+        .catch(error => {
+            console.error('Error prefetching next card:', error);
+        });
+}
 
 
         function changeDeck(deck) {
@@ -477,10 +482,12 @@
         }
 
         document.addEventListener('keydown', function(event) {
-            if (event.key === ' ') {
+            if (event.key === ' ' || event.key === 'Spacebar') {
+                event.preventDefault(); // Prevent default scrolling behavior
                 change(event);
             }
         });
+
 
         document.getElementById('deck-select').addEventListener('change', function(event) {
             currentDeck = event.target.value;
