@@ -78,12 +78,15 @@ def session_required(func):
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        session['username'] = username
-        session['deck'] = 'shas'
-        return redirect(url_for('home'))
-    return render_template('login.html')
+    session['username'] = 'tempuser'
+    session['deck'] = 'shas'
+    return redirect(url_for('home'))
+    #if request.method == 'POST':
+    #    username = request.form['username']
+    #    session['username'] = username
+    #    session['deck'] = 'shas'
+    #    return redirect(url_for('home'))
+    #return render_template('login.html')
 
 @app.route('/home')
 @session_required
@@ -146,10 +149,10 @@ def record_view():
     flashcard_app.record_view(username, character)
     return jsonify({"message": "View recorded successfully"})
 
-@app.route('/logout')
-def logout():
-    session.pop('username', None)
-    return redirect(url_for('login'))
+#@app.route('/logout')
+#def logout():
+#    session.pop('username', None)
+#    return redirect(url_for('login'))
 
 with open('examples.json', 'r', encoding='utf-8') as f:
     parsed_data = json.load(f)
