@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
     <title>中文</title>
     <style>
         
@@ -22,7 +23,7 @@
             width: 0;
             height: 0;
         }
-        
+
         body {
             font-family: "Crimson Pro", serif;
             font-family: "Noto Sans Mono", monospace;
@@ -35,7 +36,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden; /* Prevent scrolling on all devices */
         }
+
         .character {
             font-size: 72px;
             margin-top: 30px;
@@ -96,27 +99,76 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
 
-        @media screen and (max-width: 768px) {
+        #flashcard_container::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+
+        @media screen and (max-width: 1024px) {
             body {
-                overflow: hidden; /* Prevent scrolling on mobile */
+                font-size: 14px; /* Slightly smaller base font size for mobile */
             }
+
             #flashcard_container {
-                padding: 6px;
                 width: 90%;
-                height: 60%;
-                margin-top: 6px;
-                transform: translateY(-10%); /* Shift 10% upwards from the current centered position */
+                height: 80%;
+                padding: 10px;
+                margin-top: 60px; /* Add space for the top elements */
             }
+
+            .character {
+                font-size: 60px;
+                margin-top: 10px;
+            }
+
+            .english, .pinyin {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+
             .flashcard {
-                margin-left: 6px;
-                margin-right: 6px;
-                margin-top: 6px;
-                margin-bottom: 6px;
+                font-size: 14px;
+                margin: 15px;
             }
-            .english, .pinyin, .character {
-                margin-bottom: 5px;
+
+            #deck-select {
+                top: 10px;
+                right: 10px;
+                font-size: 14px;
+                width: 120px;
+            }
+
+            #characters-link {
+                top: 10px;
+                left: 10px;
+                font-size: 14px;
+            }
+
+            #message {
+                bottom: 10px;
+                left: 10px;
+                font-size: 14px;
+            }
+        }
+
+        /* Additional adjustments for very small screens (e.g., phones in portrait mode) */
+        @media screen and (max-width: 480px) {
+            #flashcard_container {
+                height: 70%;
+            }
+
+            .character {
+                font-size: 48px;
+            }
+
+            .english, .pinyin {
+                font-size: 18px;
             }
         }
 
@@ -188,6 +240,19 @@
             background-color: black;
             color: white;
         }
+        
+        .strokes-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .strokes-container > div {
+            margin: 0 0px;
+        }
     </style>
 </head>
 <body>
@@ -213,27 +278,44 @@
         let showingAnswer = false;
         let currentDeck = 'shas';
         let prefetchedCard = null;
+        let pinyinRevealed = false;
 
-        function displayCard(showAnswer, elementClass = null) {
+        function displayCard(showAnswer, showPinyin = false) {
             const flashcardElement = document.querySelector('.flashcard');
             const englishElement = document.querySelector('.english');
             const pinyinElement = document.querySelector('.pinyin');
 
-            if (elementClass === 'pinyin' || showAnswer) {
-                pinyinElement.classList.add('visible');
-            } else {
-                pinyinElement.classList.remove('visible');
-            }
+            pinyinElement.classList.toggle('visible', showPinyin || showAnswer);
+            pinyinRevealed = showPinyin || showAnswer;
 
-            if (showAnswer) {
-                flashcardElement.style.visibility = 'visible';
-                englishElement.style.visibility = 'visible';
-            } else {
-                flashcardElement.style.visibility = 'hidden';
-                englishElement.style.visibility = 'hidden';
-            }
+            flashcardElement.style.visibility = showAnswer ? 'visible' : 'hidden';
+            englishElement.style.visibility = showAnswer ? 'visible' : 'hidden';
         }
 
+        function change(event) {
+            const target = event.target;
+
+            if (target.classList.contains('pinyin')) {
+                if (!showingAnswer) {
+                    pinyinRevealed = !pinyinRevealed;
+                    displayCard(false, pinyinRevealed);
+                }
+                return;
+            }
+
+            if (target.closest('.strokes-container')) {
+                // Do nothing, let the click event propagate to animate strokes
+                return;
+            }
+
+            if (!currentCard || showingAnswer) {
+                getNextCard();
+            } else {
+                displayCard(true);
+                showingAnswer = true;
+                recordView(currentCard);
+            }
+        }
         function fetchCard() {
             return fetch(`./get_card_data`)
                 .then(response => {
@@ -268,6 +350,37 @@
             document.querySelector('.pinyin').textContent = data.pinyin;
             document.querySelector('.english').textContent = data.english;
             document.querySelector('.flashcard').innerHTML = data.html;
+
+                
+            let chars = data.character.split('');
+            if (chars.length < 4) {
+                const strokesContainer = document.createElement('div');
+                strokesContainer.className = 'strokes-container';
+                document.querySelector('.flashcard').appendChild(strokesContainer);
+
+                chars.forEach((char, i) => {
+                    const strokediv = document.createElement('div');
+                    strokediv.id = `strokes-${i}`;
+                    strokesContainer.appendChild(strokediv);
+
+                    const writerSize = chars.length === 1 ? 150 : 100;
+                    const writer = HanziWriter.create(`strokes-${i}`, char, {
+                        width: writerSize,
+                        height: writerSize,
+                        padding: 5,
+                        strokeColor: '#000000',
+                        strokeAnimationSpeed: 1,
+                        delayBetweenStrokes: 220,
+                        radicalColor: '#99003b'
+                    });
+
+                    strokediv.addEventListener('click', function() {
+                        writer.animateCharacter();
+                    });
+                });
+            }
+
+
             currentCard = data.character;
             showingAnswer = false;
             displayCard(false);
@@ -346,23 +459,27 @@
             });
         }
 
-        function change(event) {
-            if (event.target.classList.contains('pinyin')) {
-                displayCard(false, 'pinyin');
-            } else if (!currentCard || showingAnswer) {
-                getNextCard();
-            } else {
-                displayCard(true);
-                showingAnswer = true;
-                recordView(currentCard);
-            }
-        }
 
         function isMobileDevice() {
             return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
         }
 
+        // if (isMobileDevice()) {
+        //     document.addEventListener('click', function(event) {
+        //         change(event);
+        //     });
+        // }
+
+        
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
         if (isMobileDevice()) {
+            document.addEventListener(' start', function(event) {
+                change(event);
+            });
+        } else {
             document.addEventListener('click', function(event) {
                 change(event);
             });
