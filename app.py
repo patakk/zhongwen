@@ -25,7 +25,7 @@ class FlashcardApp:
         self.cards = {}
         for deck in self.decks:
             self.cards[deck] = self.load_cards(deck)
-        with open("/mnt/d/all/python/chinese/anki/llm_examples/anthropic.json", 'r', encoding='utf-8') as f:
+        with open("anthropic.json", 'r', encoding='utf-8') as f:
             self.anthropic_cards = json.load(f)
         
         if not os.path.exists(self.user_progress_dir):
