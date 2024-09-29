@@ -37,9 +37,11 @@
             align-items: center;
             max-height: 90vh;
             overflow-y: auto;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            box-sizing: border-box; /* Add this line */
         }
+
         .search-container.has-results {
         }
         .search-container::-webkit-scrollbar { /* WebKit */
@@ -85,15 +87,21 @@
             background-color: black;
             color: white;
         }
+        
         .results {
             margin-top: 20px;
             width: 100%;
+            padding: 0 10px; /* Add some padding */
+            box-sizing: border-box; /* Ensure padding is included in width */
         }
+
         .result-item {
             border: 2px solid black;
             padding: 10px;
             margin-bottom: 10px;
             cursor: pointer;
+            width: 100%; /* Ensure full width */
+            box-sizing: border-box; /* Ensure border and padding are included in width */
         }
         .result-item:hover {
             background-color: #f0f0f0;
@@ -190,11 +198,9 @@
             margin: 0 5px;
         }
         @media (max-width: 768px) {
-            .search-container {
-                width: 80%;
-            }
             .search-container.has-results {
                 width: 80%;
+                padding: 15px; /* Reduce padding */
             }
             #flashcard_container {
                 width: 95%; /* Increased width */
@@ -218,6 +224,19 @@
             .character {
                 font-size: 60px;
                 margin-top: 10px;
+            }
+
+            .search-container {
+                width: 80%;
+                padding: 15px; /* Reduce padding */
+            }
+
+            .results {
+                padding: 0 5px; /* Reduce padding */
+            }
+
+            .result-item {
+                padding: 8px; /* Reduce padding */
             }
         }
         
