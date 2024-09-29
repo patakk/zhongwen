@@ -176,7 +176,21 @@
             const encodedCategory = encodeURIComponent(category);
             const encodedSubcategory = encodeURIComponent(subcategory);
             const encodedChinese = encodeURIComponent(chinese);
-            fetch(`./get_translation_data/${encodedCategory}/${encodedSubcategory}/${encodedChinese}`)
+            
+            // Get the current origin and pathname
+            const origin = window.location.origin;
+            const pathParts = window.location.pathname.split('/');
+            
+            // Construct the base path
+            let basePath = '';
+            if (pathParts.includes('zhongwen')) {
+                basePath = '/zhongwen';
+            }
+            
+            // Construct the full URL
+            const url = `${origin}${basePath}/get_translation_data/${encodedCategory}/${encodedSubcategory}/${encodedChinese}`;
+            
+            fetch(url)
             .then(response => response.json())
             .then(data => {
                 document.querySelector('.character').textContent = data.chinese;
@@ -186,6 +200,7 @@
             })
             .catch(error => console.error('Error:', error));
         }
+
 
         function loadNextCard() {
             currentIndex = (currentIndex + 1) % translations.length;

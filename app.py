@@ -172,14 +172,22 @@ def translation_category(category, subcategory):
     translations = parsed_data[category][subcategory]
     return render_template('translation_category.html', category=category, subcategory=subcategory, translations=translations)
 
+from urllib.parse import unquote
+
 @app.route('/get_translation_data/<category>/<subcategory>/<chinese>')
 @session_required
 def get_translation_data(category, subcategory, chinese):
+    category = unquote(category)
+    subcategory = unquote(subcategory)
+    chinese = unquote(chinese)
+    
+    app.logger.info(f"Category: {category}, Subcategory: {subcategory}, Chinese: {chinese}")
     if category in parsed_data and subcategory in parsed_data[category]:
         for item in parsed_data[category][subcategory]:
             if item['chinese'] == chinese:
                 return jsonify(item)
     return jsonify({"error": "Translation not found"}), 404
+
 
 
 
