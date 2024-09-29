@@ -52,8 +52,14 @@ class FlashcardApp:
 
     def get_card_examples(self, deck, character):
         base_data = self.cards[deck].get(character, {})
+        if not base_data:
+            for deck_name in self.cards:
+                if deck_name != deck and character in self.cards[deck_name]:
+                    base_data = self.cards[deck_name][character]
+                    break
         anthropic_data = self.anthropic_cards.get(character, {})
         return {**base_data, **anthropic_data}
+
 
     def select_random_card(self, deck):
         return random.choice(list(self.cards[deck].keys()))
