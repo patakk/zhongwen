@@ -42,6 +42,9 @@
             width: 0;
             height: 0;
         }
+        .search-container.has-results {
+            width: 40%;
+        }
         h1 {
             font-size: 36px;
             margin-bottom: 20px;
@@ -95,12 +98,15 @@
             .search-container {
                 width: 80%;
             }
+            .search-container.has-results {
+                width: 80%;
+            }
         }
     </style>
     
 </head>
 <body>
-    <div class="search-container">
+    <div class="search-container{% if results %} has-results{% endif %}">
         <h1>Search</h1>
         <form method="POST">
             <input type="text" name="query" placeholder="Enter hanzi or pinyin" required>
