@@ -1,0 +1,752 @@
+{
+    "爱": {
+        "pinyin": "ài",
+        "english": "love",
+        "traditional": "愛"
+    },
+    "八": {
+        "pinyin": "bā",
+        "english": "eight",
+        "traditional": ""
+    },
+    "爸爸": {
+        "pinyin": "bàba",
+        "english": "Dad",
+        "traditional": ""
+    },
+    "杯子": {
+        "pinyin": "bēizi",
+        "english": "cup; glass",
+        "traditional": ""
+    },
+    "北京": {
+        "pinyin": "Běijīng",
+        "english": "Beijing",
+        "traditional": ""
+    },
+    "本": {
+        "pinyin": "běn",
+        "english": "measure word for books",
+        "traditional": ""
+    },
+    "不客气": {
+        "pinyin": "bú kèqi",
+        "english": "you're welcome; don't be polite",
+        "traditional": "不客氣"
+    },
+    "不": {
+        "pinyin": "bù",
+        "english": "no; not",
+        "traditional": ""
+    },
+    "菜": {
+        "pinyin": "cài",
+        "english": "dish (type of food); vegetables",
+        "traditional": ""
+    },
+    "茶": {
+        "pinyin": "chá",
+        "english": "tea",
+        "traditional": ""
+    },
+    "吃": {
+        "pinyin": "chī",
+        "english": "eat",
+        "traditional": ""
+    },
+    "出租车": {
+        "pinyin": "chūzūchē",
+        "english": "taxi; cab",
+        "traditional": "出租車"
+    },
+    "打电话": {
+        "pinyin": "dǎ diànhuà",
+        "english": "make a phone call",
+        "traditional": "打電話"
+    },
+    "大": {
+        "pinyin": "dà",
+        "english": "big; large",
+        "traditional": ""
+    },
+    "的": {
+        "pinyin": "de",
+        "english": "indicates possession, like adding 's to a noun",
+        "traditional": ""
+    },
+    "点": {
+        "pinyin": "diǎn",
+        "english": "a dot; a little; o'clock",
+        "traditional": "點"
+    },
+    "电脑": {
+        "pinyin": "diànnǎo",
+        "english": "computer",
+        "traditional": "電腦"
+    },
+    "电视": {
+        "pinyin": "diànshì",
+        "english": "television; TV",
+        "traditional": "電視"
+    },
+    "电影": {
+        "pinyin": "diànyǐng",
+        "english": "movie; film",
+        "traditional": "電影"
+    },
+    "东西": {
+        "pinyin": "dōngxi",
+        "english": "things; stuff",
+        "traditional": "東西"
+    },
+    "都": {
+        "pinyin": "dōu",
+        "english": "all; both",
+        "traditional": ""
+    },
+    "读": {
+        "pinyin": "dú",
+        "english": "to read; to study",
+        "traditional": "讀"
+    },
+    "对不起": {
+        "pinyin": "duìbuqǐ",
+        "english": "sorry",
+        "traditional": "對不起"
+    },
+    "多": {
+        "pinyin": "duō",
+        "english": "many",
+        "traditional": ""
+    },
+    "多少": {
+        "pinyin": "duōshao",
+        "english": "how much?; how many?",
+        "traditional": ""
+    },
+    "儿子": {
+        "pinyin": "érzi",
+        "english": "son",
+        "traditional": "兒子"
+    },
+    "二": {
+        "pinyin": "èr",
+        "english": "two",
+        "traditional": ""
+    },
+    "饭店": {
+        "pinyin": "fàndiàn",
+        "english": "restaurant; hotel",
+        "traditional": "飯店"
+    },
+    "飞机": {
+        "pinyin": "fēijī",
+        "english": "airplane",
+        "traditional": "飛機"
+    },
+    "分钟": {
+        "pinyin": "fēnzhōng",
+        "english": "minute; (measure word for time)",
+        "traditional": "分鐘"
+    },
+    "高兴": {
+        "pinyin": "gāoxìng",
+        "english": "happy; glad",
+        "traditional": "高興"
+    },
+    "个": {
+        "pinyin": "ge",
+        "english": "general measure word",
+        "traditional": "個"
+    },
+    "工作": {
+        "pinyin": "gōngzuò",
+        "english": "work; a job",
+        "traditional": ""
+    },
+    "狗": {
+        "pinyin": "gǒu",
+        "english": "dog",
+        "traditional": ""
+    },
+    "汉语": {
+        "pinyin": "Hànyǔ",
+        "english": "Chinese language",
+        "traditional": "漢語"
+    },
+    "好": {
+        "pinyin": "hǎo",
+        "english": "good",
+        "traditional": ""
+    },
+    "号": {
+        "pinyin": "hào",
+        "english": "number; day of a month",
+        "traditional": "號"
+    },
+    "喝": {
+        "pinyin": "hē",
+        "english": "to drink",
+        "traditional": ""
+    },
+    "和": {
+        "pinyin": "hé",
+        "english": "and; with",
+        "traditional": ""
+    },
+    "很": {
+        "pinyin": "hěn",
+        "english": "very; quite",
+        "traditional": ""
+    },
+    "后面": {
+        "pinyin": "hòumian",
+        "english": "back; behind",
+        "traditional": ""
+    },
+    "回": {
+        "pinyin": "huí",
+        "english": "to return; to reply; to go back",
+        "traditional": ""
+    },
+    "会": {
+        "pinyin": "huì",
+        "english": "know how to",
+        "traditional": "會"
+    },
+    "几": {
+        "pinyin": "jǐ",
+        "english": "how many; several; a few",
+        "traditional": "幾"
+    },
+    "家": {
+        "pinyin": "jiā",
+        "english": "family; home",
+        "traditional": ""
+    },
+    "叫": {
+        "pinyin": "jiào",
+        "english": "to be called",
+        "traditional": ""
+    },
+    "今天": {
+        "pinyin": "jīntiān",
+        "english": "today",
+        "traditional": ""
+    },
+    "九": {
+        "pinyin": "jiǔ",
+        "english": "nine",
+        "traditional": ""
+    },
+    "开": {
+        "pinyin": "kāi",
+        "english": "to open; to start; to operate (a vehicle)",
+        "traditional": "開"
+    },
+    "看": {
+        "pinyin": "kàn",
+        "english": "see; look at; to watch",
+        "traditional": ""
+    },
+    "看见": {
+        "pinyin": "kànjiàn",
+        "english": "see; catch sight of",
+        "traditional": "看見"
+    },
+    "块": {
+        "pinyin": "kuài",
+        "english": "lump; piece; sum of money",
+        "traditional": "塊"
+    },
+    "来": {
+        "pinyin": "lái",
+        "english": "come; arrive; ever since; next",
+        "traditional": "來"
+    },
+    "老师": {
+        "pinyin": "lǎoshī",
+        "english": "teacher",
+        "traditional": "老師"
+    },
+    "了": {
+        "pinyin": "le",
+        "english": "indicates a completed or finished action",
+        "traditional": ""
+    },
+    "冷": {
+        "pinyin": "lěng",
+        "english": "cold",
+        "traditional": ""
+    },
+    "里": {
+        "pinyin": "lǐ",
+        "english": "inside; Chinese mile (~.5 km)",
+        "traditional": "裡"
+    },
+    "六": {
+        "pinyin": "liù",
+        "english": "six",
+        "traditional": ""
+    },
+    "妈妈": {
+        "pinyin": "māma",
+        "english": "mom; mum",
+        "traditional": "媽媽"
+    },
+    "吗": {
+        "pinyin": "ma",
+        "english": "indicates a yes/no question (added to a statement)",
+        "traditional": "嗎"
+    },
+    "买": {
+        "pinyin": "mǎi",
+        "english": "to buy",
+        "traditional": "買"
+    },
+    "猫": {
+        "pinyin": "māo",
+        "english": "cat",
+        "traditional": "貓"
+    },
+    "没关系": {
+        "pinyin": "méi guānxi",
+        "english": "it doesn't matter; never mind",
+        "traditional": "沒關系"
+    },
+    "没有": {
+        "pinyin": "méiyǒu",
+        "english": "not have; there is not",
+        "traditional": "沒有"
+    },
+    "米饭": {
+        "pinyin": "mǐfàn",
+        "english": "(cooked) rice",
+        "traditional": "米飯"
+    },
+    "明天": {
+        "pinyin": "míngtiān",
+        "english": "tomorrow",
+        "traditional": ""
+    },
+    "名字": {
+        "pinyin": "míngzi",
+        "english": "name",
+        "traditional": ""
+    },
+    "哪": {
+        "pinyin": "nǎa",
+        "english": "which; how",
+        "traditional": ""
+    },
+    "哪儿": {
+        "pinyin": "nǎr",
+        "english": "where? (Beijing accent)",
+        "traditional": "哪兒"
+    },
+    "那": {
+        "pinyin": "nà",
+        "english": "that; then",
+        "traditional": ""
+    },
+    "呢": {
+        "pinyin": "ne",
+        "english": "indicates a question; how about...?;",
+        "traditional": ""
+    },
+    "能": {
+        "pinyin": "néng",
+        "english": "can; be able",
+        "traditional": ""
+    },
+    "你": {
+        "pinyin": "nǐ",
+        "english": "you (singular)",
+        "traditional": ""
+    },
+    "年": {
+        "pinyin": "nián",
+        "english": "year",
+        "traditional": ""
+    },
+    "女儿": {
+        "pinyin": "nǚ'ér",
+        "english": "daughter",
+        "traditional": "女兒"
+    },
+    "朋友": {
+        "pinyin": "péngyou",
+        "english": "friend",
+        "traditional": ""
+    },
+    "漂亮": {
+        "pinyin": "piàoliang",
+        "english": "pretty; beautiful",
+        "traditional": ""
+    },
+    "苹果": {
+        "pinyin": "píngguǒ",
+        "english": "apple",
+        "traditional": "蘋果"
+    },
+    "七": {
+        "pinyin": "qī",
+        "english": "seven",
+        "traditional": ""
+    },
+    "钱": {
+        "pinyin": "qián",
+        "english": "money; coin",
+        "traditional": "錢"
+    },
+    "前面": {
+        "pinyin": "qiánmiàn",
+        "english": "in front",
+        "traditional": ""
+    },
+    "请": {
+        "pinyin": "qǐng",
+        "english": "please; invite; to treat someone to something",
+        "traditional": "請"
+    },
+    "去": {
+        "pinyin": "qù",
+        "english": "go; to leave",
+        "traditional": ""
+    },
+    "热": {
+        "pinyin": "rè",
+        "english": "heat; hot",
+        "traditional": "熱"
+    },
+    "人": {
+        "pinyin": "rén",
+        "english": "person; man; people",
+        "traditional": ""
+    },
+    "认识": {
+        "pinyin": "rènshi",
+        "english": "recognize; know (a person)",
+        "traditional": "認識"
+    },
+    "三": {
+        "pinyin": "sān",
+        "english": "three",
+        "traditional": ""
+    },
+    "商店": {
+        "pinyin": "shāngdiàn",
+        "english": "shop; store",
+        "traditional": ""
+    },
+    "上": {
+        "pinyin": "shàng",
+        "english": "above; up",
+        "traditional": ""
+    },
+    "上午": {
+        "pinyin": "shàngwǔ",
+        "english": "late morning (before noon)",
+        "traditional": ""
+    },
+    "少": {
+        "pinyin": "shǎo",
+        "english": "few; little",
+        "traditional": ""
+    },
+    "谁": {
+        "pinyin": "shéi",
+        "english": "who",
+        "traditional": "誰"
+    },
+    "什么": {
+        "pinyin": "shénme",
+        "english": "what? (replaces the noun to turn a statement into a question)",
+        "traditional": "什麼"
+    },
+    "十": {
+        "pinyin": "shí",
+        "english": "ten",
+        "traditional": ""
+    },
+    "时候": {
+        "pinyin": "shíhou",
+        "english": "time",
+        "traditional": "時候"
+    },
+    "是": {
+        "pinyin": "shì",
+        "english": "be; is; are; am",
+        "traditional": ""
+    },
+    "书": {
+        "pinyin": "shū",
+        "english": "book; letter",
+        "traditional": "書"
+    },
+    "水": {
+        "pinyin": "shuǐ",
+        "english": "water",
+        "traditional": ""
+    },
+    "水果": {
+        "pinyin": "shuǐguǒ",
+        "english": "fruit",
+        "traditional": ""
+    },
+    "睡觉": {
+        "pinyin": "shuì jiào",
+        "english": "to sleep; go to bed",
+        "traditional": "睡覺"
+    },
+    "说": {
+        "pinyin": "shuō",
+        "english": "speak",
+        "traditional": "說"
+    },
+    "四": {
+        "pinyin": "sì",
+        "english": "four",
+        "traditional": ""
+    },
+    "岁": {
+        "pinyin": "suì",
+        "english": "years old; age",
+        "traditional": "歲"
+    },
+    "他": {
+        "pinyin": "tā",
+        "english": "he; him",
+        "traditional": ""
+    },
+    "她": {
+        "pinyin": "tā",
+        "english": "she",
+        "traditional": ""
+    },
+    "太": {
+        "pinyin": "tài",
+        "english": "too (much)",
+        "traditional": ""
+    },
+    "天气": {
+        "pinyin": "tiānqì",
+        "english": "weather",
+        "traditional": "天氣"
+    },
+    "听": {
+        "pinyin": "tīng",
+        "english": "listen; hear",
+        "traditional": "聽"
+    },
+    "同学": {
+        "pinyin": "tóngxué",
+        "english": "fellow student; schoolmate",
+        "traditional": "同學"
+    },
+    "喂": {
+        "pinyin": "wèi",
+        "english": "hello (on the phone)",
+        "traditional": ""
+    },
+    "我": {
+        "pinyin": "wǒ",
+        "english": "I; me",
+        "traditional": ""
+    },
+    "我们": {
+        "pinyin": "wǒmen",
+        "english": "we; us",
+        "traditional": "我們"
+    },
+    "五": {
+        "pinyin": "wǔ",
+        "english": "five",
+        "traditional": ""
+    },
+    "喜欢": {
+        "pinyin": "xǐhuan",
+        "english": "to like",
+        "traditional": "喜歡"
+    },
+    "下": {
+        "pinyin": "xià",
+        "english": "fall; below",
+        "traditional": ""
+    },
+    "下午": {
+        "pinyin": "xiàwǔ",
+        "english": "afternoon",
+        "traditional": ""
+    },
+    "下雨": {
+        "pinyin": "xiàyǔ",
+        "english": "to rain",
+        "traditional": ""
+    },
+    "先生": {
+        "pinyin": "xiānsheng",
+        "english": "Mr.; Sir",
+        "traditional": ""
+    },
+    "现在": {
+        "pinyin": "xiànzài",
+        "english": "now",
+        "traditional": "現在"
+    },
+    "想": {
+        "pinyin": "xiǎng",
+        "english": "think; believe; suppose; would like to",
+        "traditional": ""
+    },
+    "小": {
+        "pinyin": "xiǎo",
+        "english": "small; young",
+        "traditional": ""
+    },
+    "小姐": {
+        "pinyin": "xiǎojie",
+        "english": "young lady; miss; Ms.",
+        "traditional": ""
+    },
+    "些": {
+        "pinyin": "xiē",
+        "english": "some; few; several",
+        "traditional": ""
+    },
+    "写": {
+        "pinyin": "xiě",
+        "english": "to write; to compose",
+        "traditional": "寫"
+    },
+    "谢谢": {
+        "pinyin": "xièxie",
+        "english": "thank you",
+        "traditional": "謝謝"
+    },
+    "星期": {
+        "pinyin": "xīngqī",
+        "english": "week",
+        "traditional": ""
+    },
+    "学生": {
+        "pinyin": "xuésheng",
+        "english": "student",
+        "traditional": "學生"
+    },
+    "学习": {
+        "pinyin": "xuéxí",
+        "english": "learn; to study",
+        "traditional": "學習"
+    },
+    "学校": {
+        "pinyin": "xuéxiào",
+        "english": "school",
+        "traditional": "學校"
+    },
+    "一": {
+        "pinyin": "yī",
+        "english": "one; once; a",
+        "traditional": ""
+    },
+    "衣服": {
+        "pinyin": "yīfu",
+        "english": "clothes",
+        "traditional": ""
+    },
+    "医生": {
+        "pinyin": "yīshēng",
+        "english": "doctor",
+        "traditional": "醫生"
+    },
+    "医院": {
+        "pinyin": "yīyuàn",
+        "english": "hospital",
+        "traditional": "醫院"
+    },
+    "椅子": {
+        "pinyin": "yǐzi",
+        "english": "chair",
+        "traditional": ""
+    },
+    "一点儿": {
+        "pinyin": "yìdiǎnr",
+        "english": "a bit; a few",
+        "traditional": "一點兒"
+    },
+    "有": {
+        "pinyin": "yǒu",
+        "english": "have",
+        "traditional": ""
+    },
+    "月": {
+        "pinyin": "yuè",
+        "english": "moon; month",
+        "traditional": ""
+    },
+    "在": {
+        "pinyin": "zài",
+        "english": "at; on; in; indicates an action in progress",
+        "traditional": ""
+    },
+    "再见": {
+        "pinyin": "zàijiàn",
+        "english": "goodbye; see you later",
+        "traditional": "再見"
+    },
+    "怎么": {
+        "pinyin": "zěnme",
+        "english": "how?",
+        "traditional": "怎麼"
+    },
+    "怎么样": {
+        "pinyin": "zěnmeyàng",
+        "english": "how about?; how is/was it?",
+        "traditional": "怎麼樣"
+    },
+    "这": {
+        "pinyin": "zhè",
+        "english": "this",
+        "traditional": "這"
+    },
+    "中国": {
+        "pinyin": "Zhōngguó",
+        "english": "China",
+        "traditional": "中國"
+    },
+    "中午": {
+        "pinyin": "zhōngwǔ",
+        "english": "noon; midday",
+        "traditional": ""
+    },
+    "住": {
+        "pinyin": "zhù",
+        "english": "to live; reside; to stop",
+        "traditional": ""
+    },
+    "桌子": {
+        "pinyin": "zhuōzi",
+        "english": "table; desk",
+        "traditional": ""
+    },
+    "字": {
+        "pinyin": "zì",
+        "english": "letter; character",
+        "traditional": ""
+    },
+    "昨天": {
+        "pinyin": "zuótiān",
+        "english": "yesterday",
+        "traditional": ""
+    },
+    "做": {
+        "pinyin": "zuò",
+        "english": "do; make",
+        "traditional": ""
+    },
+    "坐": {
+        "pinyin": "zuò",
+        "english": "sit",
+        "traditional": ""
+    }
+}
