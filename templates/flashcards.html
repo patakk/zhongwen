@@ -17,6 +17,7 @@
             overflow-y: scroll;
             scrollbar-width: none;
             -ms-overflow-style: none;
+            overflow: hidden; 
         }
 
         html::-webkit-scrollbar {
@@ -36,7 +37,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden; /* Prevent scrolling on all devices */
         }
 
         .character {
@@ -116,10 +116,11 @@
             }
 
             #flashcard_container {
+                padding: 6px;
                 width: 90%;
+                max-width: 90%;
                 height: 80%;
-                padding: 10px;
-                margin-top: 60px; /* Add space for the top elements */
+                max-height: 80%;
             }
 
             .character {
@@ -158,9 +159,10 @@
         }
 
         /* Additional adjustments for very small screens (e.g., phones in portrait mode) */
-        @media screen and (max-width: 480px) {
+        @media screen and (max-width: 768px) {
             #flashcard_container {
-                height: 70%;
+                height: 60%;
+                transform: translateY(-5%);
             }
 
             .character {
