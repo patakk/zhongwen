@@ -376,7 +376,7 @@
         }
 
         function loadCharacters() {
-            fetch('/get_characters')
+            fetch('./get_characters')
                 .then(response => response.json())
                 .then(data => {
                     const grid = document.getElementById('character-grid');
@@ -466,7 +466,7 @@
         }
 
         function getDeck() {
-            fetch('/get_deck')
+            fetch('./get_deck')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');

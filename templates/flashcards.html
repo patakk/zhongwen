@@ -265,7 +265,7 @@
         }
 
         function getDeck() {
-            fetch('/get_deck')
+            fetch('./get_deck')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -283,7 +283,7 @@
         }
 
         function recordView(character) {
-            fetch('/record_view', {
+            fetch('./record_view', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
