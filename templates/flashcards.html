@@ -200,6 +200,7 @@
         let currentCard = null;
         let showingAnswer = false;
         let currentDeck = 'shas';
+        let prefetchedCard = null;
 
         function displayCard(showAnswer, elementClass = null) {
             const flashcardElement = document.querySelector('.flashcard');
@@ -221,28 +222,55 @@
             }
         }
 
-        function getNextCard() {
-            fetch(`./get_card_data`)
+        function fetchCard() {
+            return fetch(`./get_card_data`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
-                })
-                .then(data => {
-                    document.querySelector('.character').textContent = data.character;
-                    document.querySelector('.pinyin').textContent = data.pinyin;
-                    document.querySelector('.english').textContent = data.english;
-                    document.querySelector('.flashcard').innerHTML = data.html;
-                    currentCard = data.character;
-                    showingAnswer = false;
-                    displayCard(false);
-                })
-                .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
-                    document.querySelector('.character').textContent = 'Error loading card';
                 });
         }
+
+
+        function getNextCard() {
+            if (prefetchedCard) {
+                displayCardData(prefetchedCard);
+                prefetchedCard = null;
+                prefetchNextCard();
+            } else {
+                fetchCard()
+                    .then(data => {
+                        displayCardData(data);
+                        prefetchNextCard();
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                        document.querySelector('.character').textContent = 'Error loading card';
+                    });
+            }
+        }
+
+        function displayCardData(data) {
+            document.querySelector('.character').textContent = data.character;
+            document.querySelector('.pinyin').textContent = data.pinyin;
+            document.querySelector('.english').textContent = data.english;
+            document.querySelector('.flashcard').innerHTML = data.html;
+            currentCard = data.character;
+            showingAnswer = false;
+            displayCard(false);
+        }
+
+        function prefetchNextCard() {
+            fetchCard()
+                .then(data => {
+                    prefetchedCard = data;
+                })
+                .catch(error => {
+                    console.error('Error prefetching next card:', error);
+                });
+        }
+
 
         function changeDeck(deck) {
             fetch(`./change_deck?deck=${deck}`, {
@@ -256,13 +284,14 @@
                     throw new Error('Network response was not ok');
                 }
                 console.log('Deck changed successfully');
-                // Optionally, you can call a function here to load the first card of the new deck
+                prefetchedCard = null;
                 getNextCard();
             })
             .catch(error => {
                 console.error('There was a problem changing the deck:', error);
             });
         }
+
 
         function getDeck() {
             fetch('./get_deck')
@@ -281,6 +310,7 @@
                     console.error('There was a problem with the fetch operation:', error);
                 });
         }
+
 
         function recordView(character) {
             fetch('./record_view', {
