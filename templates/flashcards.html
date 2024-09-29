@@ -477,9 +477,9 @@ function prefetchNextCard() {
         }
 
         if(isMobileDevice()){
-            document.addEventListener('click', function(event) {
-                change(event);
-            });
+            // document.addEventListener('click', function(event) {
+            //     change(event);
+            // });
         }
 
         document.addEventListener('keydown', function(event) {
@@ -499,6 +499,38 @@ function prefetchNextCard() {
         document.addEventListener('DOMContentLoaded', function() {
             getDeck();
         });
+
+        function handleInteraction(event) {
+            if (event.type.startsWith('touch')) {
+                event.preventDefault();
+            }
+            change(event);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            getDeck();
+            attachEventListeners();
+        });
+
+        function attachEventListeners() {
+            const flashcardContainer = document.getElementById('flashcard_container');
+
+            // Mouse events
+            flashcardContainer.addEventListener('click', handleInteraction);
+
+            // Touch events
+            flashcardContainer.addEventListener('touchstart', handleInteraction, { passive: false });
+            flashcardContainer.addEventListener('touchend', handleInteraction, { passive: false });
+
+            // Keyboard event (for spacebar)
+            document.addEventListener('keydown', function(event) {
+                if (event.key === ' ' || event.key === 'Spacebar') {
+                    event.preventDefault(); // Prevent default scrolling behavior
+                    handleInteraction(event);
+                }
+            });
+        }
+
     </script>
 </body>
 </html>
