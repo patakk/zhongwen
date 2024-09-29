@@ -222,7 +222,7 @@
         }
 
         function getNextCard() {
-            fetch(`/get_card_data`)
+            fetch(`./get_card_data`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -245,7 +245,7 @@
         }
 
         function changeDeck(deck) {
-            fetch(`/change_deck?deck=${deck}`, {
+            fetch(`./change_deck?deck=${deck}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

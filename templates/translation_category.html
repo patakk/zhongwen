@@ -176,7 +176,7 @@
             const encodedCategory = encodeURIComponent(category);
             const encodedSubcategory = encodeURIComponent(subcategory);
             const encodedChinese = encodeURIComponent(chinese);
-            fetch(`/get_translation_data/${encodedCategory}/${encodedSubcategory}/${encodedChinese}`)
+            fetch(`./get_translation_data/${encodedCategory}/${encodedSubcategory}/${encodedChinese}`)
             .then(response => response.json())
             .then(data => {
                 document.querySelector('.character').textContent = data.chinese;

@@ -322,7 +322,7 @@
 
         function showFlashcard(character) {
             messageElement.textContent = 'Loading...';
-            fetch(`/get_card_data?character=${encodeURIComponent(character)}`)
+            fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -442,7 +442,7 @@
         
         function changeDeck(deck) {
             currentDeck = deck;
-            fetch(`/change_deck?deck=${deck}`, {
+            fetch(`./change_deck?deck=${deck}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
