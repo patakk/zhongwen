@@ -67,8 +67,8 @@
             background-color: rgba(0,0,0,0.7);
             justify-content: center;
             align-items: center;
-            box-sizing: border-box; /* Add this line */
-            padding: 20px; /* Add this line */
+            box-sizing: border-box;
+            padding: 20px;
         }
 
         #flashcard-content {
@@ -79,12 +79,13 @@
             justify-content: flex-start;
             align-items: center;
             border: 2px dashed #000000;
-            margin: 20px; /* Add this line */
+            margin: 0; /* Changed from 20px to 0 */
             min-width: 300px;
             min-height: 200px;
-            max-width: 80%; /* Add this line */
-            max-height: 80%; /* Add this line */
-            overflow-y: auto; /* Add this line */
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+            box-sizing: border-box; /* Add this line */
         }
 
         @media screen and (max-width: 768px) {
@@ -92,6 +93,7 @@
                 width: 90%;
                 height: auto;
                 max-height: 90%;
+                margin: 0; /* Ensure no margin on mobile */
             }
             .container {
                 width: 90%;
