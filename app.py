@@ -151,7 +151,7 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
-with open('parsed_data.json', 'r', encoding='utf-8') as f:
+with open('examples.json', 'r', encoding='utf-8') as f:
     parsed_data = json.load(f)
 
 @app.route('/translations')
