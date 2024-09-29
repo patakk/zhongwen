@@ -194,6 +194,47 @@ def get_translation_data(category, subcategory, chinese):
                 return jsonify(item)
     return jsonify({"error": "Translation not found"}), 404
 
+import re
+def remove_tones(pinyin):
+    return re.sub(r'[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]', lambda m: 'aeiouü'['āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'.index(m.group()) // 4], pinyin)
+
+def convert_numerical_tones(pinyin):
+    tone_marks = {
+        'a': ['ā', 'á', 'ǎ', 'à'],
+        'e': ['ē', 'é', 'ě', 'è'],
+        'i': ['ī', 'í', 'ǐ', 'ì'],
+        'o': ['ō', 'ó', 'ǒ', 'ò'],
+        'u': ['ū', 'ú', 'ǔ', 'ù'],
+        'ü': ['ǖ', 'ǘ', 'ǚ', 'ǜ']
+    }
+    
+    def replace_tone(match):
+        vowel, tone = match.groups()
+        if vowel.lower() in tone_marks:
+            return tone_marks[vowel.lower()][int(tone) - 1]
+        return vowel
+    
+    return re.sub(r'([aeiouü])([\d])', replace_tone, pinyin)
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        query = request.form['query']
+        results = []
+        
+        for deck in flashcard_app.decks:
+            for hanzi, card in flashcard_app.cards[deck].items():
+                if query in hanzi:
+                    results.append({'hanzi': hanzi, **card})
+                elif query.isalpha():
+                    pinyin_query = remove_tones(convert_numerical_tones(query.lower()))
+                    card_pinyin = remove_tones(card['pinyin'].lower())
+                    if pinyin_query in card_pinyin:
+                        results.append({'hanzi': hanzi, **card})
+        
+        return render_template('search.html', results=results, query=query)
+    
+    return render_template('search.html')
 
 
 

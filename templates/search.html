@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
-    <title>Home - 中文</title>
+    <title>Search - 中文</title>
     <style>
         html, body {
             height: 100%;
@@ -26,15 +26,21 @@
             align-items: center;
             background-color: white;
         }
-        .home-container {
+        .search-container {
             border: 2px dashed black;
             padding: 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 90%;
-            max-height: 90%;
+            width: 40%;
+            max-height: 90vh;
             overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        }
+        .search-container::-webkit-scrollbar { /* WebKit */
+            width: 0;
+            height: 0;
         }
         h1 {
             font-size: 36px;
@@ -42,24 +48,32 @@
             color: black;
             text-align: center;
         }
-        .link-container {
+        form {
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
         }
-        a {
-            width: 200px;
+        input[type="text"] {
+            width: 100%;
+            max-width: 250px;
             padding: 10px;
-            margin: 10px 0;
-            background-color: white;
-            color: black;
+            margin-bottom: 20px;
             border: 2px solid black;
-            text-decoration: none;
-            text-align: center;
             font-size: 16px;
             font-family: inherit;
         }
-        a:hover {
+        input[type="submit"] {
+            width: 100px;
+            padding: 10px;
+            background-color: white;
+            color: black;
+            border: 2px solid black;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        input[type="submit"]:hover {
             background-color: black;
             color: white;
         }
@@ -67,16 +81,46 @@
             background-color: black;
             color: white;
         }
+        .results {
+            margin-top: 20px;
+            width: 100%;
+        }
+        .result-item {
+            border: 1px solid black;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .search-container {
+                width: 80%;
+            }
+        }
     </style>
+    
 </head>
 <body>
-    <div class="home-container">
-        <h1>中文</h1>
-        <div class="link-container">
-            <a href="{{ url_for('search') }}">search</a>
-            <a href="{{ url_for('characters') }}">characters</a>
-            <a href="{{ url_for('flashcards') }}">flashcards</a>
-            <a href="{{ url_for('translations') }}">translations</a>
+    <div class="search-container">
+        <h1>Search</h1>
+        <form method="POST">
+            <input type="text" name="query" placeholder="Enter hanzi or pinyin" required>
+            <input type="submit" value="Search">
+        </form>
+        <div class="results">
+            {% if results %}
+                {% for result in results %}
+                    <div class="result-item">
+                        <p><strong>Hanzi:</strong> {{ result.hanzi }}</p>
+                        <p><strong>Pinyin:</strong> {{ result.pinyin }}</p>
+                        <p><strong>English:</strong> {{ result.english }}</p>
+                        {% if result.traditional %}
+                            <p><strong>Traditional:</strong> {{ result.traditional }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% elif query %}
+                <p>No results found for "{{ query }}"</p>
+            {% endif %}
         </div>
     </div>
 

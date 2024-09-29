@@ -11,6 +11,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <title>中文</title>
     <style>
+        
+        html {
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        html::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+        
         body {
             font-family: "Crimson Pro", serif;
             font-family: "Noto Sans Mono", monospace;
@@ -313,7 +325,7 @@
 
 
         function recordView(character) {
-            fetch('./record_view', {
+            fetch('./ ', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
