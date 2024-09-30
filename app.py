@@ -224,7 +224,7 @@ def convert_numerical_tones(pinyin):
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    if request.method == 'POST':
+    if request.method == 'POST' or request.args.get('query'):
         query = request.args.get('query') or request.form.get('query') or ''
         results = []
         
