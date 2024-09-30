@@ -288,6 +288,15 @@
             margin: 0 0px;
         }
 
+        
+        .clickable-char {
+            display: inline-block;
+            margin: 0 2px;
+        }
+
+        .clickable-char:hover {
+            color: rgb(255, 217, 28);
+        }
     </style>
 </head>
 <body>
@@ -344,13 +353,30 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log(data)
-                    document.querySelector('.character').textContent = data.character;
-                    document.querySelector('.pinyin').textContent = data.pinyin;
-                    document.querySelector('.english').textContent = data.english;
-                    document.querySelector('.flashcard').innerHTML = data.html;
+                    const container = document.getElementById('flashcard_container');
+                    const characterElement = container.querySelector('.character');
+                    characterElement.innerHTML = ''; // Clear existing content
 
-                    let chars = data.character.split('');
+                    // Split the character string into individual characters
+                    const chars = data.character.split('');
+                    
+                    // Create clickable spans for each character
+                    chars.forEach(char => {
+                        const span = document.createElement('span');
+                        span.textContent = char;
+                        span.className = 'clickable-char';
+                        span.style.cursor = 'pointer';
+                        span.addEventListener('click', function(e) {
+                            e.stopPropagation(); // Prevent triggering the change event
+                            window.location.href = `/search?query=${encodeURIComponent(char)}`;
+                        });
+                        characterElement.appendChild(span);
+                        console.log(span);
+                    });
+
+                    container.querySelector('.pinyin').textContent = data.pinyin;
+                    container.querySelector('.english').textContent = data.english;
+                    container.querySelector('.flashcard').innerHTML = data.html;
                     if (chars.length < 4) {
                         const strokesContainer = document.createElement('div');
                         strokesContainer.className = 'strokes-container';
@@ -467,6 +493,9 @@
             }
         });
 
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
         
         function changeDeck(deck) {
             currentDeck = deck;
@@ -490,6 +519,15 @@
             })
             .catch(error => {
                 console.error('There was a problem changing the deck:', error);
+            });
+        }
+
+        
+        if(isMobileDevice()){
+            document.addEventListener('click', function(event) {
+                if (!event.target.classList.contains('clickable-char')) {
+                    change(event);
+                }
             });
         }
 
