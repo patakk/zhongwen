@@ -225,7 +225,7 @@ def convert_numerical_tones(pinyin):
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
-        query = request.form['query'].strip().lower()
+        query = request.args.get('query') or request.form.get('query') or ''
         results = []
         
         for deck in flashcard_app.decks:
