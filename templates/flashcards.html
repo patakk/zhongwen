@@ -552,10 +552,6 @@
             this.blur();
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            getDeck();
-        });
-
         function handleOrientationChange() {
             const container = document.getElementById('flashcard_container');
             if (window.matchMedia("(min-device-width: 768px) and (max-device-width: 1024px)").matches) {
