@@ -226,7 +226,7 @@
                     span.style.cursor = 'pointer';
                     span.addEventListener('click', function(e) {
                         e.stopPropagation(); // Prevent triggering the change event
-                        window.location.href = `/search?query=${encodeURIComponent(char)}`;
+                        window.location.href = `./search?query=${encodeURIComponent(char)}`;
                     });
                     characterElement.appendChild(span);
                 });
