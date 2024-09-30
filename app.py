@@ -123,6 +123,20 @@ def get_characters():
     characters = list(flashcard_app.load_cards(session['deck']).keys())
     return jsonify({"characters": characters})
 
+
+@app.route('/get_characters_pinyinenglish')
+@session_required
+def get_characters_pinyinenglish():
+    all_data = []
+    for character in flashcard_app.cards[session['deck']]:
+        data = flashcard_app.get_card_examples(session['deck'], character)
+        all_data.append({
+            "character": character,
+            "pinyin": data.get('pinyin', ''),
+            "english": data.get('english', '')
+        })
+    return jsonify({"characters": all_data})
+
 @app.route('/get_card_data')
 @session_required
 def get_card_data():
