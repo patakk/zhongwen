@@ -126,26 +126,6 @@
             background-color: #000;
             color: #fff;
         }
-        @media screen and (max-width: 768px) {
-            .list-container {
-                width: 95%;
-                padding: 10px;
-            }
-            h1 {
-                font-size: 28px;
-            }
-            #deck-select {
-                top: 10px;
-                right: 10px;
-                font-size: 14px;
-                width: 120px;
-            }
-            #home-link {
-                top: 10px;
-                left: 10px;
-                font-size: 14px;
-            }
-        }
         
         #flashcard-overlay {
             display: none;
@@ -199,6 +179,30 @@
             overflow-y: visible;
             user-select: text;
         }
+        
+        @media screen and (max-width: 768px) {
+            .list-container {
+                width: 95%;
+                padding: 10px;
+            }
+             #flashcard_container {
+                width: 90%;
+                height: 80%;
+                padding: 10px;
+            }
+            .flashcard {
+                margin-left: 6px;
+                margin-right: 6px;
+                margin-top: 6px;
+                margin-bottom: 6px;
+                font-size: 14px;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+
         .strokes-container {
             display: flex;
             flex-direction: row;
