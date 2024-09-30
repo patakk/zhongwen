@@ -180,17 +180,37 @@
             user-select: text;
         }
         
-        @media screen and (max-width: 768px) {
+        @media screen and (max-width: 768px)
+        and (max-device-width: 1024px)  {
             .list-container {
                 width: 95%;
                 padding: 10px;
             }
-             #flashcard_container {
+            body {
+                font-size: 14px; /* Slightly smaller base font size for mobile */
+            }
+
+            #flashcard_container {
                 width: 90%;
                 height: 80%;
                 padding: 10px;
             }
-            .flashcard {
+
+            .flashcard-character {
+                font-size: 60px;
+                margin-top: 10px;
+            }
+
+            .flashcard-english, .flashcard-pinyin {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+
+            .flashcard-content {
+                font-size: 14px;
+                margin: 15px;
+            }
+            .flashcard-content {
                 margin-left: 6px;
                 margin-right: 6px;
                 margin-top: 6px;
@@ -200,6 +220,18 @@
             
             body {
                 padding: 10px;
+            }
+        }
+
+        @media only screen 
+        and (min-device-width: 768px) 
+        and (max-device-width: 1024px) 
+        and (orientation: landscape) {
+            #flashcard_container {
+                width: 90%;
+                height: 80vh;
+                max-height: 80vh;
+                margin-bottom: 20px;
             }
         }
 
