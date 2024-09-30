@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Search - 中文</title>
     <style>
         html, body {
@@ -238,6 +239,12 @@
                 padding: 8px; /* Reduce padding */
             }
         }
+
+        @media (max-width: 1024px) {
+            #flashcard_container {
+                max-width: 95%; /* Add a max-width */
+            }
+        }
         
         #flashcard-link {
             position: fixed;
@@ -362,6 +369,25 @@
                 }
             }
         });
+
+        function handleOrientationChange() {
+            const container = document.getElementById('flashcard_container');
+            if (window.matchMedia("(min-device-width: 768px) and (max-device-width: 1024px)").matches) {
+                if (window.orientation === 90 || window.orientation === -90) {
+                    // Landscape
+                    container.style.width = '90%';
+                    container.style.height = '80vh';
+                    container.style.maxHeight = '80vh';
+                    container.style.marginBottom = '20px';
+                } else {
+                    // Portrait
+                    container.style.width = '90%';
+                    container.style.height = '80%';
+                    container.style.maxHeight = '';
+                    container.style.marginBottom = '';
+                }
+            }
+        }
 
         window.addEventListener('resize', adjustHeight);
         window.addEventListener('orientationchange', adjustHeight);
