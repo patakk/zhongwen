@@ -245,6 +245,7 @@ def convert_numerical_tones(pinyin):
 def search():
     if request.method == 'POST' or request.args.get('query'):
         query = request.args.get('query') or request.form.get('query') or ''
+        query = query.strip().lower()
         results = []
         
         for deck in flashcard_app.decks:
@@ -253,7 +254,7 @@ def search():
                     results.append({'hanzi': hanzi, **card})
                 elif query.isalpha():
                     pinyin_query = remove_tones(convert_numerical_tones(query))
-                    card_pinyin = remove_tones(card['pinyin'].lower())
+                    card_pinyin = remove_tones(card['pinyin'].lower()).lower()
                     if pinyin_query in card_pinyin:
                         results.append({'hanzi': hanzi, **card})
                     elif query in card['english'].lower():
