@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Translations</title>
+    <title>Examples</title>
     <style>
         
         html, body {
@@ -91,19 +91,19 @@
 <body>
     <a id="characters-link" href="{{ url_for('home') }}">home</a>
     <div class="container">
-        <h1>Translation Categories</h1>
+        <h1>Examples Categories</h1>
         
         <h2>Vocabulary</h2>
         <ul>
             {% for category in categories.vocabulary %}
-            <li><a href="{{ url_for('translation_category', category='vocabulary', subcategory=category) }}">{{ category }}</a></li>
+            <li><a href="{{ url_for('examples_category', category='vocabulary', subcategory=category) }}">{{ category }}</a></li>
             {% endfor %}
         </ul>
         
         <h2>Examples</h2>
         <ul>
             {% for category in categories.examples %}
-            <li><a href="{{ url_for('translation_category', category='examples', subcategory=category) }}">{{ category }}</a></li>
+            <li><a href="{{ url_for('examples_category', category='examples', subcategory=category) }}">{{ category }}</a></li>
             {% endfor %}
         </ul>
     </div>

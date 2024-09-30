@@ -104,6 +104,11 @@ def home():
 def flashcards():
     return render_template('flashcards.html', username=session['username'])
 
+@app.route('/pinyinenglish')
+@session_required
+def pinyinenglish():
+    return render_template('pinyinenglish.html', username=session['username'])
+
 @app.route('/characters')
 @session_required
 def characters():
@@ -163,32 +168,32 @@ def record_view():
 with open('data/examples.json', 'r', encoding='utf-8') as f:
     parsed_data = json.load(f)
 
-@app.route('/translations')
+@app.route('/examples')
 @session_required
-def translations():
+def examples():
     categories = {
         'vocabulary': list(parsed_data['vocabulary'].keys()),
         'examples': list(parsed_data['examples'].keys())
     }
-    return render_template('translations.html', categories=categories)
+    return render_template('examples.html', categories=categories)
 
 from urllib.parse import unquote
 
 
-@app.route('/translations/<category>/<subcategory>')
+@app.route('/examples/<category>/<subcategory>')
 @session_required
-def translation_category(category, subcategory):
+def examples_category(category, subcategory):
     category = unquote(category)
     subcategory = unquote(subcategory)
     if category not in parsed_data or subcategory not in parsed_data[category]:
         return "Category not found", 404
     translations = parsed_data[category][subcategory]
-    return render_template('translation_category.html', category=category, subcategory=subcategory, translations=translations)
+    return render_template('examples_category.html', category=category, subcategory=subcategory, translations=translations)
 
 
-@app.route('/get_translation_data/<category>/<subcategory>/<chinese>')
+@app.route('/get_examples_data/<category>/<subcategory>/<chinese>')
 @session_required
-def get_translation_data(category, subcategory, chinese):
+def get_examples_data(category, subcategory, chinese):
     category = unquote(category)
     subcategory = unquote(subcategory)
     chinese = unquote(chinese)

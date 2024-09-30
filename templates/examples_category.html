@@ -160,7 +160,7 @@
 </head>
 <body>
     <a id="characters-link" href="{{ url_for('home') }}">home</a>
-    <a id="exam-link" href="{{ url_for('translations') }}">translations</a>
+    <a id="exam-link" href="{{ url_for('examples') }}">examples</a>
     <div class="container">
         <h1>{{ subcategory }} ({{ category|capitalize }})</h1>
         <ul>
@@ -208,7 +208,7 @@
             }
             
             // Construct the full URL
-            const url = `${origin}${basePath}/get_translation_data/${encodedCategory}/${encodedSubcategory}/${encodedChinese}`;
+            const url = `${origin}${basePath}/get_examples_data/${encodedCategory}/${encodedSubcategory}/${encodedChinese}`;
             
             fetch(url)
             .then(response => response.json())
@@ -226,7 +226,7 @@
                     span.style.cursor = 'pointer';
                     span.addEventListener('click', function(e) {
                         e.stopPropagation(); // Prevent triggering the change event
-                        window.location.href = `./search?query=${encodeURIComponent(char)}`;
+                        window.location.href = `../../search?query=${encodeURIComponent(char)}`;
                     });
                     characterElement.appendChild(span);
                 });

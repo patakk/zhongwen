@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <title>Pinyin English List - 中文</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            font-family: "Nunito Sans", sans-serif;
+            font-family: "Crimson Pro", serif;
+            font-family: "Noto Sans Mono", monospace;
+            font-weight: 400;
+            margin: 0;
+            font-style: normal;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+        }
+        .list-container {
+            width: 90%;
+            max-width: 600px;
+            border: 2px dashed black;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-height: 90vh;
+            height: 90%;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            box-sizing: border-box;
+        }
+        .list-container::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: black;
+            text-align: center;
+        }
+        .pinyin-english-list {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+        }
+        .pinyin-english-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .pinyin {
+            font-weight: bold;
+        }
+        #deck-select {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            font-size: 16px;
+            font-family: 'Noto Sans Mono', monospace;
+            font-weight: 400;
+            width: 150px;
+            background-color: white;
+            border: 3px solid black;
+            border-radius: 0;
+            padding: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+            background-repeat: no-repeat;
+            background-position: right 5px top 50%;
+            background-size: 16px;
+            cursor: pointer;
+        }
+        #deck-select::-ms-expand {
+            display: none;
+        }
+        #deck-select option:checked,
+        #deck-select option:hover {
+            background-color: black;
+            color: white;
+        }
+        #home-link {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-size: 16px;
+            color: #000;
+        }
+        #home-link:hover {
+            background-color: #000;
+            color: #fff;
+        }
+        @media screen and (max-width: 768px) {
+            .list-container {
+                width: 95%;
+                padding: 10px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            #deck-select {
+                top: 10px;
+                right: 10px;
+                font-size: 14px;
+                width: 120px;
+            }
+            #home-link {
+                top: 10px;
+                left: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a id="home-link" href="{{ url_for('home') }}">home</a>
+    <select id="deck-select">
+        <option value="shas">Sha's Class</option>
+        <option value="hsk1">HSK 1</option>
+        <option value="hsk2">HSK 2</option>
+        <option value="hsk3">HSK 3</option>
+        <option value="hsk4">HSK 4</option>
+        <option value="hsk5">HSK 5</option>
+        <option value="hsk6">HSK 6</option>
+    </select>
+    <div class="list-container">
+        <h1>Pinyin English List</h1>
+        <ul class="pinyin-english-list" id="pinyin-english-list">
+            <!-- List items will be dynamically added here -->
+        </ul>
+    </div>
+
+    <script>
+        let currentDeck = 'shas';
+
+        function loadPinyinEnglishList() {
+            fetch('./get_characters')
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById('pinyin-english-list');
+                    list.innerHTML = ''; // Clear existing items
+
+                    data.characters.forEach(char => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'pinyin-english-item';
+                        listItem.innerHTML = `
+                            <span class="pinyin">${char.pinyin}</span>
+                            <span class="english">${char.english}</span>
+                        `;
+                        list.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function changeDeck(deck) {
+            currentDeck = deck;
+            fetch(`./change_deck?deck=${deck}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('Deck changed successfully');
+                loadPinyinEnglishList();
+            })
+            .catch(error => {
+                console.error('There was a problem changing the deck:', error);
+            });
+        }
+
+        document.getElementById('deck-select').addEventListener('change', function(event) {
+            changeDeck(event.target.value);
+            this.blur(); // Remove focus from the dropdown after selection
+        });
+
+        function getDeck() {
+            fetch('./get_deck')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    currentDeck = data.deck;
+                    document.getElementById('deck-select').value = currentDeck;
+                    loadPinyinEnglishList();
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            getDeck();
+        });
+    </script>
+</body>
+</html>
