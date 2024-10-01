@@ -790,5 +790,41 @@
     "再见": {
         "pinyin": "zàijiàn",
         "english": "goodbye"
+    },
+    "理想": {
+        "pinyin": "lǐxiǎng",
+        "english": "ideal; dream"
+    },
+    "老虎": {
+        "pinyin": "lǎohǔ",
+        "english": "tiger"
+    },
+    "打扫": {
+        "pinyin": "dǎsǎo",
+        "english": "to clean; to sweep"
+    },
+    "喜欢": {
+        "pinyin": "xǐhuan",
+        "english": "to like"
+    },
+    "讨厌": {
+        "pinyin": "tǎoyàn",
+        "english": "to dislike; to loathe"
+    },
+    "房子": {
+        "pinyin": "fángzi",
+        "english": "house; building"
+    },
+    "姓": {
+        "pinyin": "xìng",
+        "english": "surname; family name"
+    },      
+    "您贵姓": {
+        "pinyin": "nín guìxìng",
+        "english": "What is your (polite) surname?"
+    },
+    "你姓什么": {
+        "pinyin": "nǐ xìng shénme",
+        "english": "What is your surname?"
     }
 }
