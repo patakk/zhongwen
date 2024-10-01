@@ -139,9 +139,18 @@
             min-width: 300px;
             min-height: 200px;
             max-width: 60%;
-            max-height: 80%;
+            max-height: 40%;
             overflow-y: auto;
             box-sizing: border-box; /* Add this line */
+            scrollbar-width: none; /* For Firefox */
+            -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+            overflow-y: scroll; /* Enable vertical scrolling */
+            -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS devices */
+
+        }
+
+        #flashcard_container::-webkit-scrollbar {
+            display: none;
         }
 
         .title {
