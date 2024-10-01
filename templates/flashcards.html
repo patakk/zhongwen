@@ -25,6 +25,11 @@
             font-family: 'Noto Sans S Chinese Black';
             src: url('/zhongwen/static/fonts/Noto_Sans_S_Chinese_Black.otf') format('opentype');
         }
+
+        @font-face {
+            font-family: 'Kaiti';
+            src: url('/zhongwen/static/fonts/Kaiti.ttf') format('truetype');
+        }
         
         #font-select {
             position: fixed;
@@ -86,7 +91,7 @@
         }
 
         .character {
-            font-size: 72px;
+            font-size: 122px;
             margin-top: 30px;
             font-weight: 500;
             font-family: "Noto Serif SC", serif;
@@ -140,7 +145,7 @@
         }
         
         #flashcard_container {
-            width: 50%;
+            width: 34%;
             height: 90%;
             border: 2px dashed #000000;
             display: flex;
@@ -354,6 +359,7 @@
         <option value="Noto Sans Mono">Noto Sans Mono</option>
         <option value="Noto Serif SC">Noto Serif SC</option>
         <option value="Noto Sans S Chinese Black">Noto Sans S Chinese Black</option>
+        <option value="Kaiti">Kaiti</option>
         <option value="ZCOOL QingKe HuangYou">ZCOOL QingKe HuangYou</option>
         <option value="Ma Shan Zheng">Ma Shan Zheng</option>
         <option value="Zhi Mang Xing">Zhi Mang Xing</option>
@@ -420,15 +426,29 @@
 
                 chars.forEach((char, i) => {
                     const strokeWrapper = document.createElement('div');
-                    strokeWrapper.className = 'stroke-wrapper';
-                    
-                    const strokediv = document.createElement('div');
-                    strokediv.id = `strokes-${i}`;
-                    strokeWrapper.appendChild(strokediv);
+                    strokeWrapper.style.position = 'relative';
                     strokesContainer.appendChild(strokeWrapper);
 
                     const writerSize = chars.length === 1 ? 150 : 100;
-                    const writer = HanziWriter.create(`strokes-${i}`, char, {
+
+                    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    svg.setAttribute("width", writerSize);
+                    svg.setAttribute("height", writerSize);
+                    svg.setAttribute("id", `grid-background-${i}`);
+                    const dashSize = Math.max(2, Math.floor(writerSize / 25)); // Adjust the divisor as needed
+                    const dashPattern = `${dashSize},${dashSize}`;
+
+                    svg.innerHTML = `
+                        <rect x="0" y="0" width="${writerSize}" height="${writerSize}" fill="none" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                        <line x1="0" y1="0" x2="${writerSize}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                        <line x1="${writerSize}" y1="0" x2="0" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                        <line x1="${writerSize/2}" y1="0" x2="${writerSize/2}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                        <line x1="0" y1="${writerSize/2}" x2="${writerSize}" y2="${writerSize/2}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                    `;
+
+                    strokeWrapper.appendChild(svg);
+
+                    const writer = HanziWriter.create(`grid-background-${i}`, char, {
                         width: writerSize,
                         height: writerSize,
                         padding: 5,
@@ -438,8 +458,7 @@
                         radicalColor: '#ff0000'
                     });
 
-                    strokeWrapper.addEventListener('click', function(e) {
-                        e.stopPropagation();
+                    strokeWrapper.addEventListener('click', function() {
                         writer.animateCharacter();
                     });
                 });
