@@ -466,11 +466,6 @@
                     });
                     writers.push(writer);
                 });
-                strokesContainer.addEventListener('click', function() {
-                    writers.forEach(writer => {
-                        writer.animateCharacter();
-                    });
-                });
             }
 
             currentCard = data.character;
@@ -654,17 +649,18 @@
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
 
-        if(isMobileDevice()){
+        if(isMobileDevice() || true){
             document.getElementById('flashcard_container').addEventListener('click', function(event) {
-                // Check if the clicked element or any of its parents have the class 'character'
                 if (event.target.closest('.character')) {
-                    // If it's the character or within it, don't trigger the change
+                    return;
+                }
+                if (event.target.closest('.character')) {
                     return;
                 }
 
                 if (!event.target.classList.contains('clickable-char') && 
                     !event.target.closest('#font-select') && 
-                    !event.target.closest('#stroke-wrapper') && 
+                    !event.target.closest('.stroke-wrapper') && 
                     !event.target.closest('#deck-select')) {
                     change(event);
                 }
