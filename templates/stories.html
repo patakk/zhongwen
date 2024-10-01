@@ -452,7 +452,7 @@
             const flashcardContainer = document.getElementById('flashcard_container');
             const hanziRows = document.querySelectorAll('.hanzi-row-container');
 
-            function showHoverBox(index, event) {
+            function showHoverBox(index) {
                 hoverBox.querySelector('.pinyin').textContent = currentPinyin[index];
                 hoverBox.querySelector('.english').textContent = currentEnglish[index];
                 
@@ -462,39 +462,50 @@
                 hoverBox.style.top = `${rect.bottom + window.scrollY}px`;
                 hoverBox.style.display = 'block';
 
-                // Highlight the current Hanzi row
                 hanziRows[index].classList.add('highlighted');
-
-                if (event) {
-                    event.preventDefault(); // Prevent default touch behavior
-                }
             }
 
             function hideHoverBox() {
                 hoverBox.style.display = 'none';
-                // Remove highlight from all Hanzi rows
                 hanziRows.forEach(row => row.classList.remove('highlighted'));
             }
 
             if (isMobileOrTablet()) {
-                hanziRows.forEach((row) => {
+                let longPressTimer;
+                const longPressDuration = 500; // milliseconds
+
+                hanziRows.forEach((row, index) => {
                     row.addEventListener('touchstart', function(e) {
-                        showHoverBox(this.dataset.index, e);
+                        longPressTimer = setTimeout(() => {
+                            showHoverBox(index);
+                        }, longPressDuration);
                     });
 
-                    row.addEventListener('touchend', hideHoverBox);
-                    row.addEventListener('touchcancel', hideHoverBox);
+                    row.addEventListener('touchend', function() {
+                        clearTimeout(longPressTimer);
+                        hideHoverBox();
+                    });
+
+                    row.addEventListener('touchmove', function() {
+                        clearTimeout(longPressTimer);
+                        hideHoverBox();
+                    });
+                });
+
+                // Hide hover box when touching outside
+                document.addEventListener('touchstart', function(e) {
+                    if (!flashcardContainer.contains(e.target)) {
+                        hideHoverBox();
+                    }
                 });
             } else {
-                hanziRows.forEach((row) => {
-                    row.addEventListener('mouseover', function() {
-                        showHoverBox(this.dataset.index);
-                    });
-
+                hanziRows.forEach((row, index) => {
+                    row.addEventListener('mouseover', () => showHoverBox(index));
                     row.addEventListener('mouseout', hideHoverBox);
                 });
             }
         }
+
 
 
 
