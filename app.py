@@ -86,7 +86,7 @@ def session_required(func):
 def login():
     session['username'] = 'tempuser'
     session['deck'] = 'shas'
-    session['font'] = 'Noto Serif SC'
+    session['font'] = 'Noto Sans Mono'
     return redirect(url_for('home'))
     #if request.method == 'POST':
     #    username = request.form['username']
