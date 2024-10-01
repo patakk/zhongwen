@@ -251,7 +251,14 @@ def get_examples_data(category, subcategory, chinese):
 @app.route('/stories')
 @session_required
 def stories():
-    return render_template('stories.html', stories=stories_data)
+    return render_template('stories.html', stories=[{'title': stories_data[uri]['title'], 'uri': uri} for uri in stories_data])
+
+@app.route('/get_stories_data/<uri>')
+@session_required
+def get_stories_data(uri):
+    if uri in stories_data:
+        return jsonify(stories_data[uri])
+    return jsonify({"error": "Story not found"}), 404
 
 import re
 def remove_tones(pinyin):
