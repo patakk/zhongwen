@@ -159,6 +159,36 @@
             height: 0;
         }
 
+        #deck-select {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            font-size: 16px;
+            font-family: 'Noto Sans Mono', monospace;
+            font-weight: 400;
+            width: 150px;
+            background-color: white;
+            border: 3px solid black;
+            border-radius: 0;
+            padding: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+            background-repeat: no-repeat;
+            background-position: right 5px top 50%;
+            background-size: 16px;
+            cursor: pointer;
+        }
+        #deck-select::-ms-expand {
+            display: none;
+        }
+        #deck-select option:checked,
+        #deck-select option:hover {
+            background-color: black;
+            color: white;
+        }
 
 
         @media screen and (max-width: 1024px) {
@@ -211,6 +241,7 @@
                 right: 10px;
                 font-size: 14px;
                 width: 120px;
+                margin-top: 8px;
             }
         }
 
@@ -279,36 +310,6 @@
         #characters-link:hover {
             background-color: #000;
             color: #fff;
-        }
-        #deck-select {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            font-size: 16px;
-            font-family: 'Noto Sans Mono', monospace;
-            font-weight: 400;
-            width: 150px;
-            background-color: white;
-            border: 3px solid black;
-            border-radius: 0;
-            padding: 5px;
-            outline: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
-            background-repeat: no-repeat;
-            background-position: right 5px top 50%;
-            background-size: 16px;
-            cursor: pointer;
-        }
-        #deck-select::-ms-expand {
-            display: none;
-        }
-        #deck-select option:checked,
-        #deck-select option:hover {
-            background-color: black;
-            color: white;
         }
         
         .strokes-container {
