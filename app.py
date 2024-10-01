@@ -86,6 +86,7 @@ def session_required(func):
 def login():
     session['username'] = 'tempuser'
     session['deck'] = 'shas'
+    session['font'] = 'Noto Serif SC'
     return redirect(url_for('home'))
     #if request.method == 'POST':
     #    username = request.form['username']
@@ -152,6 +153,17 @@ def get_card_data():
         "html": data.get('examples', '')
     })
 
+
+@app.route('/change_font', methods=['POST'])
+def change_font():
+    session['font'] = request.args.get('font')
+    return jsonify({"message": "font changed successfully"})
+
+
+@app.route('/get_font')
+@session_required
+def get_font():
+    return jsonify({"font": session['font']})
 
 @app.route('/change_deck', methods=['POST'])
 def change_deck():
