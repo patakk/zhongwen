@@ -672,7 +672,7 @@
                 .then(data => {
                     currentFont = data.font;
                     document.getElementById('font-select').value = currentFont;
-                    // document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
+                    document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
                     document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;
                 })
                 .catch(error => {
@@ -704,7 +704,7 @@
 
         document.getElementById('font-select').addEventListener('change', function(event) {
             const selectedFont = event.target.value;
-            // document.querySelector('.character').style.fontFamily = `"${selectedFont}", sans-serif`;
+            document.querySelector('.character').style.fontFamily = `"${selectedFont}", sans-serif`;
             document.querySelector('.grid').style.fontFamily = `"${selectedFont}", sans-serif`;
             currentFont = event.target.value;
             changeFont(currentFont);

@@ -8,9 +8,53 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Search - 中文</title>
     <style>
+         @font-face {
+            font-family: 'Noto Sans S Chinese Black';
+            src: url('../static/fonts/Noto_Sans_S_Chinese_Black.otf') format('opentype');
+        }
+        
+        #font-select {
+            position: fixed;
+            top: 45px;
+            right: 15px;
+            font-size: 16px;
+            font-family: 'Noto Sans Mono', monospace;
+            font-weight: 400;
+            width: 150px;
+            background-color: white;
+            border: 3px solid black;
+            border-radius: 0;
+            margin-top: 15px;
+            padding: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+            background-repeat: no-repeat;
+            background-position: right 5px top 50%;
+            background-size: 16px;
+            cursor: pointer;
+            z-index: 1001; /* Add this line to ensure it's above the overlay */
+        }
+
+        #font-select::-ms-expand {
+            display: none;
+        }
+        #font-select option:checked,
+        #font-select option:hover {
+            background-color: black;
+            color: white;
+        }
+
         html, body {
             height: 100%;
             margin: 0;
@@ -239,6 +283,12 @@
             #flashcard_container {
                 max-width: 95%; /* Add a max-width */
             }
+            #font-select {
+                top: 40px;
+                right: 10px;
+                font-size: 14px;
+                width: 120px;
+            }
         }
         
         #flashcard-link {
@@ -265,6 +315,15 @@
 </head>
 <body>
     <a id="flashcard-link" href="{{ url_for('home') }}">home</a>
+    <select id="font-select">
+        <option value="Noto Sans Mono">Noto Sans Mono</option>
+        <option value="Noto Serif SC">Noto Serif SC</option>
+        <option value="Noto Sans S Chinese Black">Noto Sans S Chinese Black</option>
+        <option value="ZCOOL QingKe HuangYou">ZCOOL QingKe HuangYou</option>
+        <option value="Ma Shan Zheng">Ma Shan Zheng</option>
+        <option value="Zhi Mang Xing">Zhi Mang Xing</option>
+        <option value="Long Cang">Long Cang</option>
+    </select>
     <div class="search-container{% if results %} has-results{% endif %}">
         <h1>Search</h1>
         <form action="{{ url_for('search') }}" method="get">
@@ -304,6 +363,8 @@
         const overlay = document.getElementById('flashcard-overlay');
         const flashcardContent = document.getElementById('flashcard_container');
 
+        let currentFont = 'Noto Serif SC';
+        
         function showFlashcard(character) {
             fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
                 .then(response => {
@@ -407,6 +468,43 @@
             }
         });
 
+        
+        function changeFont(font) {
+            fetch(`./change_font?font=${font}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('Font changed successfully');
+            })
+            .catch(error => {
+                console.error('There was a problem changing the font:', error);
+            });
+        }
+        
+        function getFont() {
+            fetch('./get_font')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    currentFont = data.font;
+                    document.getElementById('font-select').value = currentFont;
+                    document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
         function handleOrientationChange() {
             const container = document.getElementById('flashcard_container');
             if (window.matchMedia("(min-device-width: 768px) and (max-device-width: 1024px)").matches) {
@@ -425,6 +523,24 @@
                 }
             }
         }
+        document.getElementById('font-select').addEventListener('change', function(event) {
+            currentFont = event.target.value;
+            document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
+            changeFont(currentFont);
+            this.blur();
+            event.stopPropagation(); // Add this line to prevent the event from bubbling up
+        });
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay && !e.target.closest('#font-select')) {
+                overlay.style.display = 'none';
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            getFont();
+        });
+
 
         window.addEventListener('resize', adjustHeight);
         window.addEventListener('orientationchange', adjustHeight);
