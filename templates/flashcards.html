@@ -658,7 +658,7 @@
             document.getElementById('flashcard_container').addEventListener('click', function(event) {
                 if (!event.target.classList.contains('clickable-char') && 
                     !event.target.closest('#font-select') && 
-                    !event.target.classList.contains('stroke-wrapper') && 
+                    !event.target.closest('#stroke-wrapper') && 
                     !event.target.closest('#deck-select')) {
                     change(event);
                 }
