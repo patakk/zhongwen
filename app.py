@@ -124,6 +124,19 @@ def get_characters():
     characters = list(flashcard_app.load_cards(session['deck']).keys())
     return jsonify({"characters": characters})
 
+@app.route('/get_characters_with_pinyin')
+@session_required
+def get_characters_with_pinyin():
+    deck = session['deck']
+    characters_data = []
+    for char, data in flashcard_app.cards[deck].items():
+        characters_data.append({
+            "character": char,
+            "pinyin": data['pinyin']
+        })
+    return jsonify({"characters": characters_data})
+
+
 
 @app.route('/get_characters_pinyinenglish')
 @session_required
@@ -194,6 +207,9 @@ def record_view():
 with open('data/examples.json', 'r', encoding='utf-8') as f:
     parsed_data = json.load(f)
 
+with open('data/stories.json', 'r', encoding='utf-8') as f:
+    stories_data = json.load(f)
+
 @app.route('/examples')
 @session_required
 def examples():
@@ -230,6 +246,12 @@ def get_examples_data(category, subcategory, chinese):
             if item['chinese'] == chinese:
                 return jsonify(item)
     return jsonify({"error": "Translation not found"}), 404
+
+
+@app.route('/stories')
+@session_required
+def stories():
+    return render_template('stories.html', stories=stories_data)
 
 import re
 def remove_tones(pinyin):

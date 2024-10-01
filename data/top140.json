@@ -1,0 +1,562 @@
+{
+    "的": {
+        "pinyin": "de",
+        "english": "particle showing possessive or descriptive relationship"
+    },
+    "一": {
+        "pinyin": "yī",
+        "english": "one"
+    },
+    "是": {
+        "pinyin": "shì",
+        "english": "to be"
+    },
+    "了": {
+        "pinyin": "le",
+        "english": "particle indicating completion"
+    },
+    "我": {
+        "pinyin": "wǒ",
+        "english": "I"
+    },
+    "不": {
+        "pinyin": "bù",
+        "english": "no, don't"
+    },
+    "人": {
+        "pinyin": "rén",
+        "english": "person, people"
+    },
+    "在": {
+        "pinyin": "zài",
+        "english": "be in, be at; be doing sth."
+    },
+    "他": {
+        "pinyin": "tā",
+        "english": "he"
+    },
+    "有": {
+        "pinyin": "yǒu",
+        "english": "have"
+    },
+    "这": {
+        "pinyin": "zhè",
+        "english": "this"
+    },
+    "个": {
+        "pinyin": "gè",
+        "english": "common measure word"
+    },
+    "上": {
+        "pinyin": "shàng",
+        "english": "go up, above"
+    },
+    "们": {
+        "pinyin": "men",
+        "english": "plural marker for pronouns"
+    },
+    "来": {
+        "pinyin": "lái",
+        "english": "come"
+    },
+    "到": {
+        "pinyin": "dào",
+        "english": "arrive"
+    },
+    "时": {
+        "pinyin": "shí",
+        "english": "time"
+    },
+    "大": {
+        "pinyin": "dà",
+        "english": "big"
+    },
+    "地": {
+        "pinyin": "dì, de",
+        "english": "land, ground; structural particle"
+    },
+    "为": {
+        "pinyin": "wèi",
+        "english": "for"
+    },
+    "子": {
+        "pinyin": "zi",
+        "english": "son, noun suffix"
+    },
+    "中": {
+        "pinyin": "zhōng",
+        "english": "middle"
+    },
+    "你": {
+        "pinyin": "nǐ",
+        "english": "you"
+    },
+    "说": {
+        "pinyin": "shuō",
+        "english": "say, speak"
+    },
+    "生": {
+        "pinyin": "shēng",
+        "english": "give birth to, life"
+    },
+    "国": {
+        "pinyin": "guó",
+        "english": "country"
+    },
+    "年": {
+        "pinyin": "nián",
+        "english": "year"
+    },
+    "着": {
+        "pinyin": "zhe",
+        "english": "particle indicating action in progress"
+    },
+    "就": {
+        "pinyin": "jiù",
+        "english": "effect word indicating something happens early or quickly"
+    },
+    "那": {
+        "pinyin": "nà",
+        "english": "that, then"
+    },
+    "和": {
+        "pinyin": "hé",
+        "english": "and, with"
+    },
+    "要": {
+        "pinyin": "yào",
+        "english": "have to, be going to"
+    },
+    "她": {
+        "pinyin": "tā",
+        "english": "she"
+    },
+    "出": {
+        "pinyin": "chū",
+        "english": "out"
+    },
+    "也": {
+        "pinyin": "yě",
+        "english": "also"
+    },
+    "得": {
+        "pinyin": "de",
+        "english": "structural particle for evaluating an action"
+    },
+    "里": {
+        "pinyin": "lǐ",
+        "english": "inside"
+    },
+    "后": {
+        "pinyin": "hòu",
+        "english": "after"
+    },
+    "自": {
+        "pinyin": "zì",
+        "english": "self"
+    },
+    "以": {
+        "pinyin": "yǐ",
+        "english": "of, can"
+    },
+    "会": {
+        "pinyin": "huì",
+        "english": "be able to, will, meeting"
+    },
+    "家": {
+        "pinyin": "jiā",
+        "english": "home"
+    },
+    "可": {
+        "pinyin": "kě",
+        "english": "can"
+    },
+    "下": {
+        "pinyin": "xià",
+        "english": "below, go down"
+    },
+    "而": {
+        "pinyin": "ér",
+        "english": "and, but"
+    },
+    "过": {
+        "pinyin": "guò",
+        "english": "pass, particle indicating past action"
+    },
+    "天": {
+        "pinyin": "tiān",
+        "english": "day, sky"
+    },
+    "去": {
+        "pinyin": "qù",
+        "english": "go"
+    },
+    "能": {
+        "pinyin": "néng",
+        "english": "can, be able to"
+    },
+    "对": {
+        "pinyin": "duì",
+        "english": "correct"
+    },
+    "小": {
+        "pinyin": "xiǎo",
+        "english": "small"
+    },
+    "多": {
+        "pinyin": "duō",
+        "english": "many"
+    },
+    "然": {
+        "pinyin": "rán",
+        "english": "suffix used in 'like that'"
+    },
+    "于": {
+        "pinyin": "yú",
+        "english": "at"
+    },
+    "心": {
+        "pinyin": "xīn",
+        "english": "heart"
+    },
+    "学": {
+        "pinyin": "xué",
+        "english": "study, learn"
+    },
+    "么": {
+        "pinyin": "me",
+        "english": "suffix"
+    },
+    "之": {
+        "pinyin": "zhī",
+        "english": "of"
+    },
+    "都": {
+        "pinyin": "dōu",
+        "english": "both, all"
+    },
+    "好": {
+        "pinyin": "hǎo",
+        "english": "good"
+    },
+    "看": {
+        "pinyin": "kàn",
+        "english": "look"
+    },
+    "起": {
+        "pinyin": "qǐ",
+        "english": "up"
+    },
+    "发": {
+        "pinyin": "fā",
+        "english": "send out, spread out"
+    },
+    "当": {
+        "pinyin": "dāng",
+        "english": "become"
+    },
+    "没": {
+        "pinyin": "méi",
+        "english": "don't have, haven't, didn't"
+    },
+    "成": {
+        "pinyin": "chéng",
+        "english": "become, success"
+    },
+    "只": {
+        "pinyin": "zhī, zhǐ",
+        "english": "a measure word for animals, only"
+    },
+    "如": {
+        "pinyin": "rú",
+        "english": "like, as"
+    },
+    "事": {
+        "pinyin": "shì",
+        "english": "thing"
+    },
+    "把": {
+        "pinyin": "bǎ",
+        "english": "used to indicate handling or disposal"
+    },
+    "还": {
+        "pinyin": "hái, huán",
+        "english": "still, return"
+    },
+    "用": {
+        "pinyin": "yòng",
+        "english": "use"
+    },
+    "第": {
+        "pinyin": "dì",
+        "english": "auxiliary word for ordinal numbers"
+    },
+    "样": {
+        "pinyin": "yàng",
+        "english": "appearance, type"
+    },
+    "道": {
+        "pinyin": "dào",
+        "english": "path, way"
+    },
+    "想": {
+        "pinyin": "xiǎng",
+        "english": "think, want"
+    },
+    "作": {
+        "pinyin": "zuò",
+        "english": "make, do"
+    },
+    "种": {
+        "pinyin": "zhǒng, zhòng",
+        "english": "type, plant"
+    },
+    "开": {
+        "pinyin": "kāi",
+        "english": "open"
+    },
+    "美": {
+        "pinyin": "měi",
+        "english": "beauty"
+    },
+    "总": {
+        "pinyin": "zǒng",
+        "english": "always, overall"
+    },
+    "从": {
+        "pinyin": "cóng",
+        "english": "from"
+    },
+    "无": {
+        "pinyin": "wú",
+        "english": "don't have"
+    },
+    "情": {
+        "pinyin": "qíng",
+        "english": "affection"
+    },
+    "己": {
+        "pinyin": "jǐ",
+        "english": "self"
+    },
+    "面": {
+        "pinyin": "miàn",
+        "english": "face, noodle"
+    },
+    "最": {
+        "pinyin": "zuì",
+        "english": "the most"
+    },
+    "女": {
+        "pinyin": "nǚ",
+        "english": "female"
+    },
+    "但": {
+        "pinyin": "dàn",
+        "english": "but"
+    },
+    "现": {
+        "pinyin": "xiàn",
+        "english": "now"
+    },
+    "前": {
+        "pinyin": "qián",
+        "english": "front, before"
+    },
+    "些": {
+        "pinyin": "xiē",
+        "english": "some"
+    },
+    "所": {
+        "pinyin": "suǒ",
+        "english": "so, place"
+    },
+    "同": {
+        "pinyin": "tóng",
+        "english": "same"
+    },
+    "日": {
+        "pinyin": "rì",
+        "english": "day, sun"
+    },
+    "手": {
+        "pinyin": "shǒu",
+        "english": "hand"
+    },
+    "又": {
+        "pinyin": "yòu",
+        "english": "again"
+    },
+    "行": {
+        "pinyin": "xíng",
+        "english": "walk, OK"
+    },
+    "意": {
+        "pinyin": "yì",
+        "english": "mind"
+    },
+    "动": {
+        "pinyin": "dòng",
+        "english": "move"
+    },
+    "方": {
+        "pinyin": "fāng",
+        "english": "side"
+    },
+    "期": {
+        "pinyin": "qī",
+        "english": "a period of time"
+    },
+    "它": {
+        "pinyin": "tā",
+        "english": "it"
+    },
+    "头": {
+        "pinyin": "tóu",
+        "english": "head"
+    },
+    "经": {
+        "pinyin": "jīng",
+        "english": "pass through"
+    },
+    "长": {
+        "pinyin": "cháng, zhǎng",
+        "english": "long, grow"
+    },
+    "儿": {
+        "pinyin": "ér, r",
+        "english": "son, a suffix"
+    },
+    "回": {
+        "pinyin": "huí",
+        "english": "go back"
+    },
+    "位": {
+        "pinyin": "wèi",
+        "english": "position, a measure word for people"
+    },
+    "分": {
+        "pinyin": "fēn",
+        "english": "minute, separate"
+    },
+    "爱": {
+        "pinyin": "ài",
+        "english": "love"
+    },
+    "老": {
+        "pinyin": "lǎo",
+        "english": "old"
+    },
+    "因": {
+        "pinyin": "yīn",
+        "english": "reason"
+    },
+    "很": {
+        "pinyin": "hěn",
+        "english": "very"
+    },
+    "给": {
+        "pinyin": "gěi",
+        "english": "give"
+    },
+    "名": {
+        "pinyin": "míng",
+        "english": "name"
+    },
+    "法": {
+        "pinyin": "fǎ",
+        "english": "law, French"
+    },
+    "间": {
+        "pinyin": "jiān",
+        "english": "space"
+    },
+    "见": {
+        "pinyin": "jiàn",
+        "english": "see"
+    },
+    "知": {
+        "pinyin": "zhī",
+        "english": "know"
+    },
+    "世": {
+        "pinyin": "shì",
+        "english": "world"
+    },
+    "什": {
+        "pinyin": "shén",
+        "english": "what"
+    },
+    "两": {
+        "pinyin": "liǎng",
+        "english": "two"
+    },
+    "次": {
+        "pinyin": "cì",
+        "english": "times"
+    },
+    "明": {
+        "pinyin": "míng",
+        "english": "bright, tomorrow"
+    },
+    "身": {
+        "pinyin": "shēn",
+        "english": "body"
+    },
+    "者": {
+        "pinyin": "zhě",
+        "english": "people"
+    },
+    "被": {
+        "pinyin": "bèi",
+        "english": "by"
+    },
+    "高": {
+        "pinyin": "gāo",
+        "english": "tall"
+    },
+    "已": {
+        "pinyin": "yǐ",
+        "english": "already"
+    },
+    "问": {
+        "pinyin": "wèn",
+        "english": "ask"
+    },
+    "其": {
+        "pinyin": "qí",
+        "english": "it"
+    },
+    "进": {
+        "pinyin": "jìn",
+        "english": "enter"
+    },
+    "此": {
+        "pinyin": "cǐ",
+        "english": "this"
+    },
+    "话": {
+        "pinyin": "huà",
+        "english": "words, speech"
+    },
+    "常": {
+        "pinyin": "cháng",
+        "english": "often"
+    },
+    "与": {
+        "pinyin": "yǔ",
+        "english": "and (formal)"
+    },
+    "活": {
+        "pinyin": "huó",
+        "english": "live"
+    },
+    "正": {
+        "pinyin": "zhèng",
+        "english": "just"
+    },
+    "感": {
+        "pinyin": "gǎn",
+        "english": "feeling"
+    }
+}

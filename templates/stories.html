@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
+    <title>{{ category|capitalize }}</title>
+    <style>
+
+        @font-face {
+            font-family: 'Noto Sans S Chinese Black';
+            src: url('/zhongwen/static/fonts/Noto_Sans_S_Chinese_Black.otf') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'Kaiti';
+            src: url('/zhongwen/static/fonts/Kaiti.ttf') format('truetype');
+        }
+        
+        #font-select {
+            position: fixed;
+            top: 45px;
+            right: 15px;
+            font-size: 16px;
+            font-family: 'Noto Sans Mono', monospace;
+            font-weight: 400;
+            width: 150px;
+            background-color: white;
+            border: 3px solid black;
+            border-radius: 0;
+            margin-top: 15px;
+            padding: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+            background-repeat: no-repeat;
+            background-position: right 5px top 50%;
+            background-size: 16px;
+            cursor: pointer;
+            z-index: 1001; /* Add this line to ensure it's above the overlay */
+        }
+
+        #font-select::-ms-expand {
+            display: none;
+        }
+        #font-select option:checked,
+        #font-select option:hover {
+            background-color: black;
+            color: white;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            font-family: "Nunito Sans", sans-serif;
+            font-family: "Crimson Pro", serif;
+            font-family: "Noto Sans Mono", monospace;
+            font-weight: 400;
+            margin: 0;
+            font-style: normal;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+           
+        .container {
+            width: 90%;
+            max-width: 600px;
+            border: 2px dashed black;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: left;
+            max-height: 90vh;
+            height: 90%;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        ul {
+            padding-left: 10px;
+            margin: 0;
+        }
+        li {
+            margin-bottom: 5px;
+            cursor: pointer;
+            list-style-type: square;
+        }
+        li:hover {
+            background-color: #000000;
+            color: #f2f2f2;
+        }
+        #flashcard-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        #flashcard_content {
+            background-color: white;
+            padding: 20px;
+            max-width: 60%;
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            border: 2px dashed #000000;
+            margin: 0; /* Changed from 20px to 0 */
+            min-width: 300px;
+            min-height: 200px;
+            max-width: 60%;
+            max-height: 80%;
+            overflow-y: auto;
+            box-sizing: border-box; /* Add this line */
+        }
+
+        .title {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .character {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .pinyin {
+            font-size: 21px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .english {
+            text-align: center;
+            font-size: 21px;
+        }
+        @media screen and (max-width: 768px) {
+            #flashcard_content {
+                width: 90%;
+                height: auto;
+                max-height: 90%;
+                margin: 0; /* Ensure no margin on mobile */
+            }
+            
+            .container {
+                width: 90%;
+                height: 85%;
+                padding: 20px;
+            }
+            .title {
+                font-size: 24px;
+            }
+            .character {
+                font-size: 21px;
+            }
+            .pinyin {
+                font-size: 17px;
+            }
+            .english {
+                font-size: 17px;
+            }
+            
+            #font-select {
+                top: 40px;
+                right: 10px;
+                font-size: 14px;
+                width: 120px;
+            }
+        }
+
+        .highlighted {
+            background-color: #000000;
+            color: #f2f2f2;
+        }
+        #characters-link {
+            position: fixed;
+            text-decoration: underline;
+            top: 15px;
+            left: 15px;
+            font-size: 16px;
+            color: #000;
+        }
+        #characters-link:hover {
+            background-color: #000;
+            color: #fff;
+        }
+        #exam-link {
+            position: fixed;
+            text-decoration: underline;
+            top: 15px;
+            right: 15px;
+            font-size: 16px;
+            color: #000;
+        }
+        #exam-link:hover {
+            background-color: #000;
+            color: #fff;
+        }
+        .clickable-char {
+            display: inline-block;
+            margin: 0 2px;
+        }
+
+        .clickable-char:hover {
+            color: rgb(255, 217, 28);
+        }
+    </style>
+</head>
+<body>
+    <a id="characters-link" href="{{ url_for('home') }}">home</a>
+    <a id="exam-link" href="{{ url_for('examples') }}">examples</a>
+    <select id="font-select">
+        <option value="Noto Sans Mono">Noto Sans Mono</option>
+        <option value="Noto Serif SC">Noto Serif SC</option>
+        <option value="Noto Sans S Chinese Black">Noto Sans S Chinese Black</option>
+        <option value="Kaiti">Kaiti</option>
+        <option value="ZCOOL QingKe HuangYou">ZCOOL QingKe HuangYou</option>
+        <option value="Ma Shan Zheng">Ma Shan Zheng</option>
+        <option value="Zhi Mang Xing">Zhi Mang Xing</option>
+        <option value="Long Cang">Long Cang</option>
+    </select>
+    <div class="container">
+        <h1>Stories</h1>
+        <ul>
+            {% for title, story in stories.items() %}
+            <li onclick="showFlashcard('{{ title }}', '{{ story.hanzi }}', '{{ story.pinyin }}', '{{ story.english }}')">{{ title }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="flashcard-overlay">
+        <div id="flashcard_content">
+            <div class="title"></div>
+            <div class="character"></div>
+        </div>
+    </div>
+    <script>
+        const overlay = document.getElementById('flashcard-overlay');
+        const flashcardContent = document.getElementById('flashcard_content');
+        let currentFont = 'Noto Sans Mono';
+        let currentIndex = 0;
+        let currentState = 'hanzi';
+        let currentHanzi, currentPinyin, currentEnglish, currentTitle;
+
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        function showFlashcard(title, hanzi, pinyin, english) {
+            currentHanzi = hanzi;
+            currentPinyin = pinyin;
+            currentEnglish = english;
+            currentTitle = title;
+            currentState = 'hanzi';
+
+            overlay.style.display = 'flex';
+            updateFlashcardContent();
+
+            if (isMobileDevice()) {
+                flashcardContent.addEventListener('click', cycleContent);
+            } else {
+                flashcardContent.addEventListener('mousedown', handleMouseDown);
+                flashcardContent.addEventListener('mouseup', handleMouseUp);
+                flashcardContent.addEventListener('contextmenu', (e) => e.preventDefault());
+            }
+        }
+
+        function updateFlashcardContent() {
+            document.querySelector('.title').textContent = currentTitle;
+            document.querySelector('.character').textContent = currentState === 'hanzi' ? currentHanzi : 
+                                                            currentState === 'pinyin' ? currentPinyin : 
+                                                            currentEnglish;
+            if(isMobileDevice()){
+                document.querySelector('.character').style.fontSize = currentState === 'hanzi' ? '21px' : 
+                                                            currentState === 'pinyin' ? '17px' : 
+                                                            '17px';
+            }
+            else{
+                document.querySelector('.character').style.fontSize = currentState === 'hanzi' ? '28px' : 
+                                                            currentState === 'pinyin' ? '21px' : 
+                                                            '21px';
+            }
+            if(currentState === 'english' || currentState === 'pinyin'){
+                document.querySelector('.character').style.fontFamily = 'Noto Sans Mono';
+            }
+        }
+
+        function cycleContent() {
+            if (currentState === 'hanzi') {
+                currentState = 'pinyin';
+            } else if (currentState === 'pinyin') {
+                currentState = 'english';
+            } else {
+                currentState = 'hanzi';
+            }
+            updateFlashcardContent();
+        }
+
+        function handleMouseDown(e) {
+            e.preventDefault();
+            if (e.button === 0) { // Left click
+                currentState = 'pinyin';
+            } else if (e.button === 2) { // Right click
+                currentState = 'english';
+            }
+            updateFlashcardContent();
+        }
+
+        function handleMouseUp() {
+            currentState = 'hanzi';
+            updateFlashcardContent();
+        }
+
+
+        function changeFont(font) {
+            fetch(`../change_font?font=${font}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('Font changed successfully');
+            })
+            .catch(error => {
+                console.error('There was a problem changing the font:', error);
+            });
+        }
+        
+        function getFont() {
+            fetch('../get_font')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    currentFont = data.font;
+                    document.getElementById('font-select').value = currentFont;
+                    document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
+                    document.querySelector('.title').style.fontFamily = `"${currentFont}", sans-serif`;
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+        document.getElementById('font-select').addEventListener('change', function(event) {
+            const selectedFont = event.target.value;
+            document.querySelector('.character').style.fontFamily = `"${selectedFont}", sans-serif`;
+            document.querySelector('.title').style.fontFamily = `"${selectedFont}", sans-serif`;
+            currentFont = event.target.value;
+            changeFont(currentFont);
+            this.blur();
+            event.stopPropagation(); // Add this line to prevent the event from bubbling up
+        });
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay && !e.target.closest('#font-select')) {
+                overlay.style.display = 'none';
+                if (isMobileDevice()) {
+                    flashcardContent.removeEventListener('click', cycleContent);
+                } else {
+                    flashcardContent.removeEventListener('mousedown', handleMouseDown);
+                    flashcardContent.removeEventListener('mouseup', handleMouseUp);
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            getFont();
+        });
+        // Highlight the first item by default
+        // highlightListItem(0);
+    </script>
+
+    
+</body>
+</html>
