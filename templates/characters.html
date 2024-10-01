@@ -434,6 +434,18 @@
         .clickable-char:hover {
             color: rgb(255, 217, 28);
         }
+
+        .grid-container {
+            z-index: 1;
+        }
+
+        #deck-select {
+            z-index: 1000; /* Higher than grid-container, lower than overlay */
+        }
+
+        #flashcard-overlay {
+            z-index: 1001;
+        }
     </style>
 </head>
 <body>
