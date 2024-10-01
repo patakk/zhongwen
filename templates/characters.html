@@ -841,14 +841,14 @@
         window.addEventListener('resize', handleOrientationChange);
 
         const fontMap = {
-            "Noto Sans Mono": { sizeAdjust: 0 },
-            "Noto Serif SC": { sizeAdjust: 0 },
-            "Noto Sans S Chinese Black": { sizeAdjust: 0 },
-            "Kaiti": { sizeAdjust: 4 },
-            "ZCOOL QingKe HuangYou": {sizeAdjust: 4 },
-            "Ma Shan Zheng": {  sizeAdjust: 4 },
-            "Zhi Mang Xing": { sizeAdjust: 4 },
-            "Long Cang": { sizeAdjust: 4 }
+            "Noto Sans Mono": { family: "Noto Sans Mono", size: 22 },
+            "Noto Serif SC": { family: "Noto Serif SC", size: 26 },
+            "Noto Sans S Chinese Black": { family: "Noto Sans S Chinese Black", size: 22 },
+            "Kaiti": { family: "Kaiti", size: 26 },
+            "ZCOOL QingKe HuangYou": { family: "ZCOOL QingKe HuangYou", size: 26 },
+            "Ma Shan Zheng": { family: "Ma Shan Zheng", size: 26 },
+            "Zhi Mang Xing": { family: "Zhi Mang Xing", size: 26 },
+            "Long Cang": { family: "Long Cang", size: 26 }
         };
 
         document.getElementById('font-select').addEventListener('change', function(event) {
@@ -857,20 +857,18 @@
             
             if (fontInfo) {
                 const grid = document.querySelector('.grid');
-                grid.style.fontFamily = `"${selectedFont}", sans-serif`;
+                grid.style.fontFamily = `"${fontInfo.family}", sans-serif`;
                 
-                // Adjust font size for grid items
+                // Set font size for grid items
                 const gridItems = grid.querySelectorAll('.grid-item');
                 gridItems.forEach(item => {
-                    const currentSize = parseInt(window.getComputedStyle(item).fontSize);
-                    item.style.fontSize = `${currentSize + fontInfo.sizeAdjust}px`;
+                    item.style.fontSize = `${fontInfo.size}px`;
                 });
                 
-                // Also adjust font size for the character in the flashcard overlay
+                // Also set font size for the character in the flashcard overlay
                 const flashcardCharacter = document.querySelector('.character');
                 if (flashcardCharacter) {
-                    const currentSize = parseInt(window.getComputedStyle(flashcardCharacter).fontSize);
-                    flashcardCharacter.style.fontSize = `${currentSize + fontInfo.sizeAdjust}px`;
+                    flashcardCharacter.style.fontSize = `${fontInfo.size * 2}px`; // Larger size for the flashcard
                 }
                 
                 currentFont = selectedFont;
@@ -880,6 +878,7 @@
             this.blur();
             event.stopPropagation();
         });
+
 
 
         overlay.addEventListener('click', (e) => {
