@@ -840,15 +840,47 @@
         window.addEventListener('orientationchange', handleOrientationChange);
         window.addEventListener('resize', handleOrientationChange);
 
+        const fontMap = {
+            "Noto Sans Mono": { sizeAdjust: 0 },
+            "Noto Serif SC": { sizeAdjust: 0 },
+            "Noto Sans S Chinese Black": { sizeAdjust: 0 },
+            "Kaiti": { sizeAdjust: 4 },
+            "ZCOOL QingKe HuangYou": {sizeAdjust: 4 },
+            "Ma Shan Zheng": {  sizeAdjust: 4 },
+            "Zhi Mang Xing": { sizeAdjust: 4 },
+            "Long Cang": { sizeAdjust: 4 }
+        };
+
         document.getElementById('font-select').addEventListener('change', function(event) {
             const selectedFont = event.target.value;
-            document.querySelector('.character').style.fontFamily = `"${selectedFont}", sans-serif`;
-            document.querySelector('.grid').style.fontFamily = `"${selectedFont}", sans-serif`;
-            currentFont = event.target.value;
-            changeFont(currentFont);
+            const fontInfo = fontMap[selectedFont];
+            
+            if (fontInfo) {
+                const grid = document.querySelector('.grid');
+                grid.style.fontFamily = `"${selectedFont}", sans-serif`;
+                
+                // Adjust font size for grid items
+                const gridItems = grid.querySelectorAll('.grid-item');
+                gridItems.forEach(item => {
+                    const currentSize = parseInt(window.getComputedStyle(item).fontSize);
+                    item.style.fontSize = `${currentSize + fontInfo.sizeAdjust}px`;
+                });
+                
+                // Also adjust font size for the character in the flashcard overlay
+                const flashcardCharacter = document.querySelector('.character');
+                if (flashcardCharacter) {
+                    const currentSize = parseInt(window.getComputedStyle(flashcardCharacter).fontSize);
+                    flashcardCharacter.style.fontSize = `${currentSize + fontInfo.sizeAdjust}px`;
+                }
+                
+                currentFont = selectedFont;
+                changeFont(currentFont);
+            }
+            
             this.blur();
-            event.stopPropagation(); // Add this line to prevent the event from bubbling up
+            event.stopPropagation();
         });
+
 
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay && !e.target.closest('#font-select')) {
