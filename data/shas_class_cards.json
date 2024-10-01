@@ -826,5 +826,13 @@
     "你姓什么": {
         "pinyin": "nǐ xìng shénme",
         "english": "What is your surname?"
+    },
+    "友好": {
+        "pinyin": "yǒuhǎo",
+        "english": "friendly; amicable"
+    },
+    "谁": {
+        "pinyin": "shéi",
+        "english": "who"
     }
 }
