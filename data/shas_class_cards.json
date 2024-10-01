@@ -295,10 +295,6 @@
         "pinyin": "rènshi",
         "english": "to know, to recognize"
     },
-    "很高兴认识你": {
-        "pinyin": "hěn gāoxìng rènshi nǐ",
-        "english": "nice to meet you"
-    },
     "家": {
         "pinyin": "jiā",
         "english": "home, family"
@@ -374,10 +370,6 @@
     "快乐": {
         "pinyin": "kuàilè",
         "english": "happy, joyful"
-    },
-    "生日快乐": {
-        "pinyin": "shēngrì kuàilè",
-        "english": "happy birthday"
     },
     "中文": {
         "pinyin": "Zhōngwén",
