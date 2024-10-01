@@ -139,7 +139,7 @@
             min-width: 300px;
             min-height: 200px;
             max-width: 60%;
-            max-height: 40%;
+            max-height: 60%;
             overflow-y: auto;
             box-sizing: border-box; /* Add this line */
             scrollbar-width: none; /* For Firefox */
@@ -287,25 +287,43 @@
         #hover-box .pinyin {
             font-size: 16px;
             margin-bottom: 5px;
+            font-style: italic;
         }
 
         #hover-box .english {
-            font-size: 14px;
+            font-size: 16px;
         }
 
 
         @media screen and (max-width: 768px) {
             #hover-box .pinyin {
-                font-size: 14px;
+                font-size: 13px;
             }
             #hover-box .english {
-                font-size: 12px;
+                font-size: 13px;
             }
         }
         .hanzi-row.highlighted {
             background-color: #000000; /* Light yellow background */
             color: #f2f2f2;
         }
+
+        .hanzi-row-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0px;
+        }
+
+        .row-number {
+            flex-shrink: 0;
+            width: 25px;  /* Adjust this width as needed */
+            text-align: right;
+        }
+
+        .hanzi-row {
+            flex-grow: 1;
+        }
+
 
     </style>
 </head>
@@ -372,9 +390,28 @@
 
         function showFlashcard(title, hanzi, pinyin, english) {
             console.log("showFlashcard called with:", {title, hanzi, pinyin, english});
-            currentHanzi = splitText(hanzi, '。');
-            currentPinyin = splitText(pinyin, '.');
-            currentEnglish = splitText(english, '.');
+            
+            // Function to split text by multiple delimiters, including Chinese punctuation
+            function splitTextByMultipleDelimiters(text, delimiters) {
+                let pattern = `(${delimiters.map(d => d.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|')})`;
+                let regex = new RegExp(pattern, 'g');
+                return text.split('\n').map(line => {
+                    let parts = line.split(regex);
+                    let result = [];
+                    for (let i = 0; i < parts.length; i += 2) {
+                        result.push(parts[i] + (parts[i+1] || ''));
+                    }
+                    return result.filter(Boolean).map(part => part.trim());
+                }).flat();
+            }
+
+            // Split hanzi by Chinese punctuation
+            currentHanzi = splitTextByMultipleDelimiters(hanzi, ['。', '？', '！']);
+
+            // Split pinyin and english to match hanzi segments
+            currentPinyin = splitTextByMultipleDelimiters(pinyin, ['.', '?', '!']);
+            currentEnglish = splitTextByMultipleDelimiters(english, ['.', '?', '!']);
+
             currentTitle = title;
             currentState = 'hanzi';
 
@@ -383,19 +420,21 @@
             setupHoverEffects();
         }
 
-
-
         function updateFlashcardContent() {
             document.querySelector('.title').textContent = currentTitle;
             
             let content = currentHanzi.map((sentence, index) => 
-                `<span class="hanzi-row" data-index="${index}">${sentence}。</span>`
+                // `<span class="row-number" style="font-family: 'Noto Sans', sans-serif; margin-right: 10px; color: #111; font-size: 12px;">${index + 1}.</span><span class="hanzi-row" data-index="${index}">${sentence}</span>`
+                `<span class="row-number" style="font-family: 'Noto Sans', sans-serif; margin-right: 10px; color: #111; font-size: 12px;">.</span><span class="hanzi-row" data-index="${index}">${sentence}</span>`
             ).join('<br>');
             
             document.querySelector('.character').innerHTML = content;
 
             setupHoverEffects();
         }
+
+
+
 
 
         function setupHoverEffects() {
