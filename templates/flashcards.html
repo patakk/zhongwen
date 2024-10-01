@@ -656,6 +656,12 @@
 
         if(isMobileDevice()){
             document.getElementById('flashcard_container').addEventListener('click', function(event) {
+                // Check if the clicked element or any of its parents have the class 'character'
+                if (event.target.closest('.character')) {
+                    // If it's the character or within it, don't trigger the change
+                    return;
+                }
+
                 if (!event.target.classList.contains('clickable-char') && 
                     !event.target.closest('#font-select') && 
                     !event.target.closest('#stroke-wrapper') && 
@@ -663,7 +669,13 @@
                     change(event);
                 }
             });
+
+            // Add this event listener to prevent clicks on characters from propagating
+            document.querySelector('.character').addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
         }
+
 
 
         document.addEventListener('keydown', function(event) {
