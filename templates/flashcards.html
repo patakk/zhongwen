@@ -425,6 +425,7 @@
                 strokesContainer.className = 'strokes-container';
                 container.querySelector('.flashcard').appendChild(strokesContainer);
 
+                let writers = [];
                 chars.forEach((char, i) => {
                     const strokeWrapper = document.createElement('div');
                     strokeWrapper.style.position = 'relative';
@@ -460,6 +461,12 @@
                     });
 
                     strokeWrapper.addEventListener('click', function() {
+                        writer.animateCharacter();
+                    });
+                    writers.push(writer);
+                });
+                strokesContainer.addEventListener('click', function() {
+                    writers.forEach(writer => {
                         writer.animateCharacter();
                     });
                 });
@@ -650,6 +657,7 @@
             document.getElementById('flashcard_container').addEventListener('click', function(event) {
                 if (!event.target.classList.contains('clickable-char') && 
                     !event.target.closest('#font-select') && 
+                    !event.target.classList.contains('strokes-container') && 
                     !event.target.closest('#deck-select')) {
                     change(event);
                 }
