@@ -429,6 +429,7 @@
                 chars.forEach((char, i) => {
                     const strokeWrapper = document.createElement('div');
                     strokeWrapper.style.position = 'relative';
+                    strokeWrapper.className = 'stroke-wrapper';
                     strokesContainer.appendChild(strokeWrapper);
 
                     const writerSize = chars.length === 1 ? 150 : 150;
@@ -657,7 +658,7 @@
             document.getElementById('flashcard_container').addEventListener('click', function(event) {
                 if (!event.target.classList.contains('clickable-char') && 
                     !event.target.closest('#font-select') && 
-                    !event.target.classList.contains('strokes-container') && 
+                    !event.target.classList.contains('stroke-wrapper') && 
                     !event.target.closest('#deck-select')) {
                     change(event);
                 }
