@@ -310,19 +310,28 @@
 
         .hanzi-row-container {
             display: flex;
-            align-items: flex-start;
-            margin-bottom: 0px;
+            align-items: center; /* This will vertically center the content */
+            width: 100%;
+            padding: 5px 0;
+            cursor: pointer;
         }
 
         .row-number {
             flex-shrink: 0;
-            width: 25px;  /* Adjust this width as needed */
+            width: 30px; /* Slightly increased width for better spacing */
             text-align: right;
+            margin-right: 10px;
+            font-family: 'Noto Sans', sans-serif;
+            color: #888;
+            font-size: 0.5em; /* Slightly smaller font size */
+            line-height: 1.5; /* Adjust line height to match the main text */
         }
 
         .hanzi-row {
             flex-grow: 1;
         }
+
+
 
 
     </style>
@@ -424,9 +433,11 @@
             document.querySelector('.title').textContent = currentTitle;
             
             let content = currentHanzi.map((sentence, index) => 
-                // `<span class="row-number" style="font-family: 'Noto Sans', sans-serif; margin-right: 10px; color: #111; font-size: 12px;">${index + 1}.</span><span class="hanzi-row" data-index="${index}">${sentence}</span>`
-                `<span class="row-number" style="font-family: 'Noto Sans', sans-serif; margin-right: 10px; color: #111; font-size: 12px;">.</span><span class="hanzi-row" data-index="${index}">${sentence}</span>`
-            ).join('<br>');
+                `<div class="hanzi-row-container" data-index="${index}">
+                    <span class="row-number">${index + 1}.</span>
+                    <span class="hanzi-row">${sentence}</span>
+                </div>`
+            ).join('');
             
             document.querySelector('.character').innerHTML = content;
 
@@ -436,11 +447,10 @@
 
 
 
-
         function setupHoverEffects() {
             const hoverBox = document.getElementById('hover-box');
             const flashcardContainer = document.getElementById('flashcard_container');
-            const hanziRows = document.querySelectorAll('.hanzi-row');
+            const hanziRows = document.querySelectorAll('.hanzi-row-container');
 
             function showHoverBox(index, event) {
                 hoverBox.querySelector('.pinyin').textContent = currentPinyin[index];
@@ -467,24 +477,25 @@
             }
 
             if (isMobileOrTablet()) {
-                hanziRows.forEach((row, index) => {
+                hanziRows.forEach((row) => {
                     row.addEventListener('touchstart', function(e) {
-                        showHoverBox(index, e);
+                        showHoverBox(this.dataset.index, e);
                     });
 
                     row.addEventListener('touchend', hideHoverBox);
                     row.addEventListener('touchcancel', hideHoverBox);
                 });
             } else {
-                hanziRows.forEach((row, index) => {
+                hanziRows.forEach((row) => {
                     row.addEventListener('mouseover', function() {
-                        showHoverBox(index);
+                        showHoverBox(this.dataset.index);
                     });
 
                     row.addEventListener('mouseout', hideHoverBox);
                 });
             }
         }
+
 
 
         function cycleContent() {
