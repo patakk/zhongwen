@@ -554,7 +554,7 @@
 
 
         function changeFont(font) {
-            fetch(`../change_font?font=${font}`, {
+            fetch(`/zhongwen/change_font?font=${font}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -572,7 +572,7 @@
         }
         
         function getFont() {
-            fetch('../get_font')
+            fetch('/zhongwen/get_font')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
