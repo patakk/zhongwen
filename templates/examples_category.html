@@ -137,6 +137,21 @@
             box-sizing: border-box; /* Add this line */
         }
 
+        .character {
+            text-align: center;
+            font-size: 72px;
+            margin-bottom: 10px;
+        }
+
+        .pinyin {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .translation {
+            text-align: center;
+            font-size: 24px;
+        }
         @media screen and (max-width: 768px) {
             #flashcard-content {
                 width: 90%;
@@ -150,6 +165,15 @@
                 height: 85%;
                 padding: 20px;
             }
+            .character {
+                font-size: 33px;
+            }
+            .pinyin {
+                font-size: 17px;
+            }
+            .translation {
+                font-size: 17px;
+            }
             
             #font-select {
                 top: 40px;
@@ -162,21 +186,6 @@
         .highlighted {
             background-color: #000000;
             color: #f2f2f2;
-        }
-
-        .character {
-            text-align: center;
-            font-size: 72px;
-            margin-bottom: 10px;
-        }
-        .pinyin {
-            font-size: 24px;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .translation {
-            text-align: center;
-            font-size: 24px;
         }
         #characters-link {
             position: fixed;
