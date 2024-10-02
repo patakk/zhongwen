@@ -1,82 +1,162 @@
-{
+stories = {
     "story_001": {
-        "hanzi": "小明喜欢吃苹果。他每天都买一个苹果。有一天，他看到一个很大的苹果。他很想买，但是钱不够。他回家问妈妈要钱。妈妈给了他钱。小明很高兴地买了那个大苹果。",
-        "pinyin": "Xiǎo Míng xǐhuān chī píngguǒ. Tā měitiān dōu mǎi yí gè píngguǒ. Yǒu yì tiān, tā kàn dào yí gè hěn dà de píngguǒ. Tā hěn xiǎng mǎi, dànshì qián bú gòu. Tā huí jiā wèn māma yào qián. Māma gěi le tā qián. Xiǎo Míng hěn gāoxìng de mǎi le nà gè dà píngguǒ.",
-        "english": "Xiao Ming likes to eat apples. He buys an apple every day. One day, he saw a very big apple. He wanted to buy it, but didn't have enough money. He went home and asked his mother for money. His mother gave him money. Xiao Ming happily bought that big apple.",
-        "title": "小明的苹果",
-        "title_eng": "Xiao Ming's Apple",
-        "title_pin": "Xiǎo Míng de píngguǒ"
+        "hanzi": "今天我去超市买东西。我买了面包、牛奶和一些水果。超市里的人很多，我等了很久才到我。然后我回家吃了面包和水果，真好吃。",
+        "pinyin": "Jīntiān wǒ qù chāoshì mǎi dōngxī. Wǒ mǎi le miànbāo, niúnǎi hé yīxiē shuǐguǒ. Chāoshì lǐ de rén hěn duō, wǒ děng le hěn jiǔ cái dào wǒ. Ránhòu wǒ huí jiā chī le miànbāo hé shuǐguǒ, zhēn hǎo chī.",
+        "english": "Today I went to the supermarket to buy things. I bought bread, milk, and some fruit. There were many people in the supermarket, and I waited a long time for my turn. Then I went home and ate the bread and fruit. It was delicious.",
+        "title": "去超市",
+        "title_eng": "Going to the Supermarket",
+        "title_pin": "Qù chāoshì"
     },
     "story_002": {
-        "hanzi": "小红有一只猫。这只猫很爱喝水。有一天，小红忘了给猫水喝。猫很渴，到处找水。它看到了鱼缸里的水。它想喝鱼缸里的水。小红回来了，看到了猫。她给猫水喝。猫很高兴。",
-        "pinyin": "Xiǎo Hóng yǒu yì zhī māo. Zhè zhī māo hěn ài hē shuǐ. Yǒu yì tiān, Xiǎo Hóng wàng le gěi māo shuǐ hē. Māo hěn kě, dàochù zhǎo shuǐ. Tā kàn dào le yú gāng lǐ de shuǐ. Tā xiǎng hē yú gāng lǐ de shuǐ. Xiǎo Hóng huí lái le, kàn dào le māo. Tā gěi māo shuǐ hē. Māo hěn gāoxìng.",
-        "english": "Xiao Hong has a cat. This cat loves to drink water. One day, Xiao Hong forgot to give the cat water. The cat was very thirsty and looked for water everywhere. It saw water in the fish tank. It wanted to drink water from the fish tank. Xiao Hong came back and saw the cat. She gave the cat water to drink. The cat was very happy.",
-        "title": "小红的猫",
-        "title_eng": "Xiao Hong's Cat",
-        "title_pin": "Xiǎo Hóng de māo"
+        "hanzi": "我和朋友今天去公园。我们在公园里走了很久，聊天和看花。天很蓝，花很美。然后我们一起吃了午饭，真开心。",
+        "pinyin": "Wǒ hé péngyǒu jīntiān qù gōngyuán. Wǒmen zài gōngyuán lǐ zǒu le hěn jiǔ, liáotiān hé kàn huā. Tiān hěn lán, huā hěn měi. Ránhòu wǒmen yīqǐ chī le wǔfàn, zhēn kāixīn.",
+        "english": "My friend and I went to the park today. We walked in the park for a long time, talking and looking at the flowers. The sky was very blue, and the flowers were beautiful. Then we had lunch together. It was really nice.",
+        "title": "去公园",
+        "title_eng": "Going to the Park",
+        "title_pin": "Qù gōngyuán"
     },
     "story_003": {
-        "hanzi": "小李很喜欢吃面条。他每天都吃面条。有一天，他妈妈做了米饭。小李不想吃米饭。妈妈说：'吃不同的东西对身体好。'小李想了想，决定吃米饭。他发现米饭也很好吃。从那天起，他开始吃不同的食物。",
-        "pinyin": "Xiǎo Lǐ hěn xǐhuān chī miàntiáo. Tā měitiān dōu chī miàntiáo. Yǒu yì tiān, tā māma zuò le mǐfàn. Xiǎo Lǐ bù xiǎng chī mǐfàn. Māma shuō: 'Chī bù tóng de dōngxi duì shēntǐ hǎo.' Xiǎo Lǐ xiǎng le xiǎng, juédìng chī mǐfàn. Tā fāxiàn mǐfàn yě hěn hǎo chī. Cóng nà tiān qǐ, tā kāishǐ chī bù tóng de shíwù.",
-        "english": "Xiao Li really likes to eat noodles. He eats noodles every day. One day, his mother made rice. Xiao Li didn't want to eat rice. Mom said: 'Eating different things is good for your body.' Xiao Li thought about it and decided to eat rice. He found that rice was also delicious. From that day on, he started to eat different foods.",
-        "title": "小李学吃新食物",
-        "title_eng": "Xiao Li Learns to Eat New Food",
-        "title_pin": "Xiǎo Lǐ xué chī xīn shíwù"
+        "hanzi": "昨天晚上我看了一部电影。电影很有意思，我看得很开心。电影结束后，我去睡觉了。",
+        "pinyin": "Zuótiān wǎnshàng wǒ kàn le yī bù diànyǐng. Diànyǐng hěn yǒuyìsi, wǒ kàn de hěn kāixīn. Diànyǐng jiéshù hòu, wǒ qù shuìjiào le.",
+        "english": "Last night I watched a movie. The movie was very interesting, and I enjoyed watching it. After the movie ended, I went to bed.",
+        "title": "看电影",
+        "title_eng": "Watching a Movie",
+        "title_pin": "Kàn diànyǐng"
     },
     "story_004": {
-        "hanzi": "小王有一个红色的书包。他每天带着书包去学校。有一天，他的书包不见了。他很伤心。他到处找。后来，他在教室里找到了。原来他忘记带回家了。小王很高兴，他决定以后要记得带书包。",
-        "pinyin": "Xiǎo Wáng yǒu yí gè hóngsè de shūbāo. Tā měitiān dài zhe shūbāo qù xuéxiào. Yǒu yì tiān, tā de shūbāo bú jiàn le. Tā hěn shāngxīn. Tā dàochù zhǎo. Hòulái, tā zài jiàoshì lǐ zhǎo dào le. Yuánlái tā wàngjì dài huí jiā le. Xiǎo Wáng hěn gāoxìng, tā juédìng yǐhòu yào jìde dài shūbāo.",
-        "english": "Xiao Wang has a red schoolbag. He takes the schoolbag to school every day. One day, his schoolbag disappeared. He was very sad. He looked everywhere. Later, he found it in the classroom. It turned out he had forgotten to bring it home. Xiao Wang was very happy, and he decided to remember to bring his schoolbag in the future.",
-        "title": "小王的书包",
-        "title_eng": "Xiao Wang's Schoolbag",
-        "title_pin": "Xiǎo Wáng de shūbāo"
+        "hanzi": "我有一个好朋友，她叫小丽。我们每天一起上学，一起做作业。她很聪明，我很喜欢和她一起玩。",
+        "pinyin": "Wǒ yǒu yī gè hǎo péngyǒu, tā jiào Xiǎo Lì. Wǒmen měitiān yīqǐ shàngxué, yīqǐ zuò zuo yè. Tā hěn cōngmíng, wǒ hěn xǐhuān hé tā yīqǐ wán.",
+        "english": "I have a good friend named Xiaoli. We go to school together every day and do homework together. She is very smart, and I like playing with her.",
+        "title": "好朋友",
+        "title_eng": "Good Friend",
+        "title_pin": "Hǎo péngyǒu"
     },
     "story_005": {
-        "hanzi": "小张喜欢唱歌。她每天都唱歌。有一天，学校要举行歌唱比赛。小张想参加。她每天都练习。比赛那天，小张唱得很好。她得了第一名。她很高兴。从那以后，她更喜欢唱歌了。",
-        "pinyin": "Xiǎo Zhāng xǐhuān chàng gē. Tā měitiān dōu chàng gē. Yǒu yì tiān, xuéxiào yào jǔxíng gēchàng bǐsài. Xiǎo Zhāng xiǎng cānjiā. Tā měitiān dōu liànxí. Bǐsài nà tiān, Xiǎo Zhāng chàng de hěn hǎo. Tā dé le dì yī míng. Tā hěn gāoxìng. Cóng nà yǐhòu, tā gèng xǐhuān chàng gē le.",
-        "english": "Xiao Zhang likes to sing. She sings every day. One day, the school was going to hold a singing competition. Xiao Zhang wanted to participate. She practiced every day. On the day of the competition, Xiao Zhang sang very well. She won first place. She was very happy. Since then, she has liked singing even more.",
-        "title": "小张爱唱歌",
-        "title_eng": "Xiao Zhang Loves to Sing",
-        "title_pin": "Xiǎo Zhāng ài chàng gē"
+        "hanzi": "我的家不大，有三间房间和一个小客厅。家里有很多书，我喜欢看书。晚上我会在客厅里看电视。",
+        "pinyin": "Wǒ de jiā bù dà, yǒu sān jiān fángjiān hé yī gè xiǎo kètīng. Jiā lǐ yǒu hěn duō shū, wǒ xǐhuān kàn shū. Wǎnshàng wǒ huì zài kètīng lǐ kàn diànshì.",
+        "english": "My house is not big. It has three rooms and a small living room. There are many books at home, and I like to read. In the evening, I watch TV in the living room.",
+        "title": "我的家",
+        "title_eng": "My Home",
+        "title_pin": "Wǒ de jiā"
     },
     "story_006": {
-        "hanzi": "小刘有一只小狗。这只小狗很爱玩。有一天，小刘带小狗去公园。小狗看到一只兔子。它想追兔子。小刘说：'不要追。'小狗听话了。小刘很高兴。他给小狗一个玩具。小狗很开心。",
-        "pinyin": "Xiǎo Liú yǒu yì zhī xiǎo gǒu. Zhè zhī xiǎo gǒu hěn ài wán. Yǒu yì tiān, Xiǎo Liú dài xiǎo gǒu qù gōngyuán. Xiǎo gǒu kàn dào yì zhī tùzi. Tā xiǎng zhuī tùzi. Xiǎo Liú shuō: 'Bú yào zhuī.' Xiǎo gǒu tīnghuà le. Xiǎo Liú hěn gāoxìng. Tā gěi xiǎo gǒu yí gè wánjù. Xiǎo gǒu hěn kāixīn.",
-        "english": "Xiao Liu has a puppy. This puppy loves to play. One day, Xiao Liu took the puppy to the park. The puppy saw a rabbit. It wanted to chase the rabbit. Xiao Liu said: 'Don't chase.' The puppy listened. Xiao Liu was very happy. He gave the puppy a toy. The puppy was very happy.",
-        "title": "小刘的小狗",
-        "title_eng": "Xiao Liu's Puppy",
-        "title_pin": "Xiǎo Liú de xiǎo gǒu"
+        "hanzi": "今天是我的生日，妈妈做了蛋糕给我吃。朋友们来家里玩，我们一起唱歌、吃蛋糕，真快乐。",
+        "pinyin": "Jīntiān shì wǒ de shēngrì, māma zuò le dàngāo gěi wǒ chī. Péngyǒumen lái jiā lǐ wán, wǒmen yīqǐ chànggē, chī dàngāo, zhēn kuàilè.",
+        "english": "Today is my birthday, and my mom made a cake for me. My friends came over to play, and we sang and ate cake together. It was really fun.",
+        "title": "我的生日",
+        "title_eng": "My Birthday",
+        "title_pin": "Wǒ de shēngrì"
     },
     "story_007": {
-        "hanzi": "小天很喜欢画画。他每天都画画。有一天，他画了一幅很漂亮的画。他想给妈妈看。但是他找不到妈妈。他到处找。后来，他在厨房找到了妈妈。妈妈正在做饭。妈妈看了画，很喜欢。小天很高兴。",
-        "pinyin": "Xiǎo Tiān hěn xǐhuān huà huà. Tā měitiān dōu huà huà. Yǒu yì tiān, tā huà le yì fú hěn piàoliang de huà. Tā xiǎng gěi māma kàn. Dànshì tā zhǎo bú dào māma. Tā dàochù zhǎo. Hòulái, tā zài chúfáng zhǎo dào le māma. Māma zhèng zài zuò fàn. Māma kàn le huà, hěn xǐhuān. Xiǎo Tiān hěn gāoxìng.",
-        "english": "Xiao Tian really likes to draw. He draws every day. One day, he drew a very beautiful picture. He wanted to show it to his mother. But he couldn't find his mother. He looked everywhere. Later, he found his mother in the kitchen. Mom was cooking. Mom looked at the drawing and liked it very much. Xiao Tian was very happy.",
-        "title": "小天的画",
-        "title_eng": "Xiao Tian's Drawing",
-        "title_pin": "Xiǎo Tiān de huà"
+        "hanzi": "每天下午，我会去图书馆看书。图书馆里很安静，我可以认真学习。",
+        "pinyin": "Měitiān xiàwǔ, wǒ huì qù túshūguǎn kàn shū. Túshūguǎn lǐ hěn ānjìng, wǒ kěyǐ rènzhēn xuéxí.",
+        "english": "Every afternoon, I go to the library to read. The library is very quiet, and I can study carefully.",
+        "title": "去图书馆",
+        "title_eng": "Going to the Library",
+        "title_pin": "Qù túshūguǎn"
     },
     "story_008": {
-        "hanzi": "小美喜欢吃冰淇淋。有一天，她买了一个冰淇淋。她想回家吃。但是天很热，冰淇淋开始化了。小美走得很快。她终于到家了。冰淇淋没有完全化。小美很高兴。她觉得这是最好吃的冰淇淋。",
-        "pinyin": "Xiǎo Měi xǐhuān chī bīngqílín. Yǒu yì tiān, tā mǎi le yí gè bīngqílín. Tā xiǎng huí jiā chī. Dànshì tiān hěn rè, bīngqílín kāishǐ huà le. Xiǎo Měi zǒu de hěn kuài. Tā zhōngyú dào jiā le. Bīngqílín méiyǒu wánquán huà. Xiǎo Měi hěn gāoxìng. Tā juéde zhè shì zuì hào chī de bīngqílín.",
-        "english": "Xiao Mei likes to eat ice cream. One day, she bought an ice cream. She wanted to go home to eat it. But the weather was very hot, and the ice cream started to melt. Xiao Mei walked very fast. She finally got home. The ice cream hadn't completely melted. Xiao Mei was very happy. She thought this was the most delicious ice cream.",
-        "title": "小美的冰淇淋",
-        "title_eng": "Xiao Mei's Ice Cream",
-        "title_pin": "Xiǎo Měi de bīngqílín"
+        "hanzi": "周末我常常去朋友家。我们一起玩游戏，有时候还会一起去外面吃饭。",
+        "pinyin": "Zhōumò wǒ chángcháng qù péngyǒu jiā. Wǒmen yīqǐ wán yóuxì, yǒu shíhòu hái huì yīqǐ qù wàimiàn chīfàn.",
+        "english": "On weekends, I often go to my friend's house. We play games together, and sometimes we go out to eat.",
+        "title": "周末的活动",
+        "title_eng": "Weekend Activities",
+        "title_pin": "Zhōumò de huódòng"
     },
     "story_009": {
-        "hanzi": "小强很喜欢踢足球。他每天都踢球。有一天，他的球不见了。他很难过。他到处找。他问朋友，朋友说没看到。后来，他在家门口找到了。原来是爸爸把球拿进去了。小强很高兴，他继续踢球。",
-        "pinyin": "Xiǎo Qiáng hěn xǐhuān tī zúqiú. Tā měitiān dōu tī qiú. Yǒu yì tiān, tā de qiú bú jiàn le. Tā hěn nánguò. Tā dàochù zhǎo. Tā wèn péngyou, péngyou shuō méi kàn dào. Hòulái, tā zài jiā ménkǒu zhǎo dào le. Yuánlái shì bàba bǎ qiú ná jìn qù le. Xiǎo Qiáng hěn gāoxìng, tā jìxù tī qiú.",
-        "english": "Xiao Qiang really likes to play soccer. He plays soccer every day. One day, his ball disappeared. He was very sad. He looked everywhere. He asked his friends, but they hadn't seen it. Later, he found it at his doorstep. It turned out his father had taken it inside. Xiao Qiang was very happy, and he continued to play soccer.",
-        "title": "小强的足球",
-        "title_eng": "Xiao Qiang's Soccer Ball",
-        "title_pin": "Xiǎo Qiáng de zúqiú"
+        "hanzi": "我有一辆自行车，每天我骑自行车去学校。路上有很多车，所以我要小心。",
+        "pinyin": "Wǒ yǒu yī liàng zìxíngchē, měitiān wǒ qí zìxíngchē qù xuéxiào. Lùshàng yǒu hěn duō chē, suǒyǐ wǒ yào xiǎoxīn.",
+        "english": "I have a bicycle, and I ride it to school every day. There are many cars on the road, so I have to be careful.",
+        "title": "骑自行车",
+        "title_eng": "Riding a Bike",
+        "title_pin": "Qí zìxíngchē"
     },
     "story_010": {
-        "hanzi": "小雨喜欢看书。她每天都看书。有一天，她去图书馆。她找到一本很有趣的书。但是她忘记带图书卡了。她很难过。图书管理员说：'没关系，你明天再来。'第二天，小雨带着图书卡来了。她终于借到了那本书。她很开心。",
-        "pinyin": "Xiǎo Yǔ xǐhuān kàn shū. Tā měitiān dōu kàn shū. Yǒu yì tiān, tā qù túshūguǎn. Tā zhǎo dào yì běn hěn yǒuqù de shū. Dànshì tā wàngjì dài túshū kǎ le. Tā hěn nánguò. Túshū guǎnlǐ yuán shuō: 'Méi guānxi, nǐ míngtiān zài lái.' Dì èr tiān, Xiǎo Yǔ dài zhe túshū kǎ lái le. Tā zhōngyú jiè dào le nà běn shū. Tā hěn kāixīn.",
-        "english": "Xiao Yu likes to read books. She reads books every day. One day, she went to the library. She found a very interesting book. But she forgot to bring her library card. She was very sad. The librarian said: 'It's okay, you can come back tomorrow.' The next day, Xiao Yu came with her library card. She finally borrowed that book. She was very happy.",
-        "title": "小雨借书",
-        "title_eng": "Xiao Yu Borrows a Book",
-        "title_pin": "Xiǎo Yǔ jiè shū"
+        "hanzi": "冬天到了，天气变得很冷。我每天都要穿很多衣服，还要带帽子和手套。",
+        "pinyin": "Dōngtiān dàole, tiānqì biàn de hěn lěng. Wǒ měitiān dōu yào chuān hěn duō yīfu, hái yào dài màozi hé shǒutào.",
+        "english": "Winter is here, and the weather has become very cold. Every day, I have to wear many clothes, and I also wear a hat and gloves.",
+        "title": "冬天来了",
+        "title_eng": "Winter is Here",
+        "title_pin": "Dōngtiān láile"
+    },
+    "story_011": {
+        "hanzi": "今天早上，我和妈妈一起去市场。市场里有很多东西卖，有水果、蔬菜、肉和鱼。我们买了很多新鲜的东西，然后回家做饭。",
+        "pinyin": "Jīntiān zǎoshang, wǒ hé māma yīqǐ qù shìchǎng. Shìchǎng lǐ yǒu hěn duō dōngxī mài, yǒu shuǐguǒ, shūcài, ròu hé yú. Wǒmen mǎi le hěn duō xīnxiān de dōngxī, ránhòu huí jiā zuò fàn.",
+        "english": "This morning, my mom and I went to the market together. There were many things for sale, like fruit, vegetables, meat, and fish. We bought a lot of fresh food and then went home to cook.",
+        "title": "去市场",
+        "title_eng": "Going to the Market",
+        "title_pin": "Qù shìchǎng"
+    },
+    "story_012": {
+        "hanzi": "我家附近有一家很好的咖啡店。每次我去那儿，都会喝一杯热咖啡，有时候还会带一本书，边喝边看。",
+        "pinyin": "Wǒ jiā fùjìn yǒu yī jiā hěn hǎo de kāfēi diàn. Měi cì wǒ qù nà er, dūhuì hē yī bēi rè kāfēi, yǒu shíhòu hái huì dài yī běn shū, biān hē biān kàn.",
+        "english": "There is a very nice coffee shop near my house. Every time I go there, I drink a cup of hot coffee, and sometimes I bring a book to read while drinking.",
+        "title": "去咖啡店",
+        "title_eng": "Going to the Coffee Shop",
+        "title_pin": "Qù kāfēi diàn"
+    },
+    "story_013": {
+        "hanzi": "小明今天生病了，他不能去上学。他在家里休息，喝了很多水，妈妈也照顾他。",
+        "pinyin": "Xiǎo Míng jīntiān shēngbìng le, tā bù néng qù shàngxué. Tā zài jiā lǐ xiūxí, hē le hěn duō shuǐ, māma yě zhàogù tā.",
+        "english": "Xiao Ming is sick today, so he can't go to school. He is resting at home, drinking a lot of water, and his mom is taking care of him.",
+        "title": "生病了",
+        "title_eng": "Got Sick",
+        "title_pin": "Shēngbìng le"
+    },
+    "story_014": {
+        "hanzi": "小红每天都骑自行车去学校。她有一只黑白色的小狗，叫小黑。每天，小黑都会跟在她的自行车旁边跑。路上的人看到他们，都会笑着说：“你们真可爱！”",
+        "pinyin": "Xiǎo Hóng měitiān dōu qí zìxíngchē qù xuéxiào. Tā yǒu yī zhī hēibái sè de xiǎo gǒu, jiào Xiǎo Hēi. Měitiān, Xiǎo Hēi dūhuì gēn zài tā de zìxíngchē pángbiān pǎo. Lùshàng de rén kàn dào tāmen, dūhuì xiào zhe shuō: “Nǐmen zhēn kě'ài!”",
+        "english": "Xiao Hong rides her bicycle to school every day. She has a black-and-white dog named Xiao Hei. Every day, Xiao Hei runs alongside her bicycle. People on the road smile and say, 'You two are so cute!'",
+        "title": "小红和小黑",
+        "title_eng": "Xiao Hong and Xiao Hei",
+        "title_pin": "Xiǎo Hóng hé Xiǎo Hēi"
+    },
+    "story_015": {
+        "hanzi": "晚上我喜欢听音乐。我的房间很安静，我会坐在床上，打开手机，听我最喜欢的歌。听音乐让我觉得很放松。",
+        "pinyin": "Wǎnshàng wǒ xǐhuān tīng yīnyuè. Wǒ de fángjiān hěn ānjìng, wǒ huì zuò zài chuáng shàng, dǎkāi shǒujī, tīng wǒ zuì xǐhuān de gē. Tīng yīnyuè ràng wǒ juédé hěn fàngsōng.",
+        "english": "In the evening, I like to listen to music. My room is very quiet, and I sit on my bed, turn on my phone, and listen to my favorite songs. Listening to music makes me feel very relaxed.",
+        "title": "听音乐",
+        "title_eng": "Listening to Music",
+        "title_pin": "Tīng yīnyuè"
+    },
+    "story_016": {
+        "hanzi": "周末的时候，我和爸爸一起去爬山。山上有很多树和花，空气很新鲜。我们爬了很久，虽然有点累，但很开心。",
+        "pinyin": "Zhōumò de shíhòu, wǒ hé bàba yīqǐ qù páshān. Shān shàng yǒu hěn duō shù hé huā, kōngqì hěn xīnxiān. Wǒmen pá le hěn jiǔ, suīrán yǒu diǎn lèi, dàn hěn kāixīn.",
+        "english": "On weekends, my dad and I go hiking together. There are many trees and flowers on the mountain, and the air is very fresh. We hiked for a long time. Although it was a little tiring, we were very happy.",
+        "title": "爬山",
+        "title_eng": "Hiking",
+        "title_pin": "Páshān"
+    },
+    "story_017": {
+        "hanzi": "昨天晚上下了很多雨。我在家里看着窗外，雨打在地上，发出很大的声音。到了早上，雨停了，太阳出来了。",
+        "pinyin": "Zuótiān wǎnshàng xià le hěn duō yǔ. Wǒ zài jiā lǐ kàn zhe chuāng wài, yǔ dǎ zài dì shàng, fāchū hěn dà de shēngyīn. Dào le zǎoshang, yǔ tíng le, tàiyáng chū lái le.",
+        "english": "It rained a lot last night. I watched from inside the house as the rain hit the ground, making a loud sound. By the morning, the rain stopped, and the sun came out.",
+        "title": "下雨的夜晚",
+        "title_eng": "Rainy Night",
+        "title_pin": "Xiàyǔ de yèwǎn"
+    },
+    "story_018": {
+        "hanzi": "我有一个小弟弟，他今年五岁了。小弟弟很喜欢玩玩具车，每天他都会在家里跑来跑去，假装开车。",
+        "pinyin": "Wǒ yǒu yī gè xiǎo dìdi, tā jīnnián wǔ suì le. Xiǎo dìdi hěn xǐhuān wán wánjù chē, měitiān tā dūhuì zài jiā lǐ pǎo lái pǎo qù, jiǎzhuāng kāichē.",
+        "english": "I have a little brother who is five years old this year. He loves playing with toy cars and runs around the house every day pretending to drive.",
+        "title": "小弟弟的玩具车",
+        "title_eng": "Little Brother's Toy Car",
+        "title_pin": "Xiǎo dìdi de wánjù chē"
+    },
+    "story_019": {
+        "hanzi": "我的学校很大，有很多学生。我们每天上五节课，下午三点放学。我最喜欢的课是中文课，因为中文很有意思。",
+        "pinyin": "Wǒ de xuéxiào hěn dà, yǒu hěn duō xuéshēng. Wǒmen měitiān shàng wǔ jié kè, xiàwǔ sān diǎn fàngxué. Wǒ zuì xǐhuān de kè shì Zhōngwén kè, yīnwèi Zhōngwén hěn yǒuyìsi.",
+        "english": "My school is very big, with many students. We have five classes every day, and school ends at 3 p.m. My favorite class is Chinese because it's very interesting.",
+        "title": "我的学校",
+        "title_eng": "My School",
+        "title_pin": "Wǒ de xuéxiào"
+    },
+    "story_020": {
+        "hanzi": "晚上我喜欢和朋友一起去吃饭。我们会去一家小餐馆，点很多好吃的菜，比如炒饭、面条和饺子。吃完饭，我们会聊天，聊很多有趣的事情。",
+        "pinyin": "Wǎnshàng wǒ xǐhuān hé péngyǒu yīqǐ qù chīfàn. Wǒmen huì qù yī jiā xiǎo cānguǎn, diǎn hěn duō hǎo chī de cài, bǐrú chǎofàn, miàntiáo hé jiǎozi. Chī wán fàn, wǒmen huì liáotiān, liáo hěn duō yǒuqù de shìqíng.",
+        "english": "In the evening, I like to go eat with friends. We go to a small restaurant and order a lot of delicious dishes, like fried rice, noodles, and dumplings. After eating, we chat and talk about many interesting things.",
+        "title": "和朋友吃饭",
+        "title_eng": "Eating with Friends",
+        "title_pin": "Hé péngyǒu chīfàn"
     }
 }
