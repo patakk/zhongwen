@@ -272,7 +272,8 @@
             padding: 15px;
             text-align: center;
             cursor: pointer;
-            font-size: 24px;
+            border: 2px solid black;
+            font-size: 20px;
         }
 
         .story-item:hover {
@@ -282,7 +283,7 @@
 
         @media screen and (max-width: 768px) {
             .story-item {
-                font-size: 18px;
+                font-size: 16px;
                 padding: 10px;
             }
         }
@@ -482,6 +483,7 @@
             setupHoverEffects();
         }
 
+
         function setupHoverEffects() {
             const hoverBox = document.getElementById('hover-box');
             const flashcardContainer = document.getElementById('flashcard_container');
@@ -497,7 +499,8 @@
                     pinyin = currentStory.title_pin;
                     english = currentStory.title_eng;
                 } else {
-                    const index = Array.from(allRows).indexOf(element) - 1; // Subtract 1 to account for title
+                    // Use the data-index attribute to get the correct index
+                    const index = parseInt(element.dataset.index);
                     pinyin = currentPinyin[index];
                     english = currentEnglish[index];
                 }
