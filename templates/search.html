@@ -429,7 +429,10 @@
                             strokeWrapper.style.position = 'relative';
                             strokesContainer.appendChild(strokeWrapper);
  
-                            const writerSize = chars.length === 1 ? 150 : 150;
+                            let writerSize = chars.length === 1 ? 150 : 150;
+                            if(screen.width < 768 && chars.length === 3){
+                                writerSize = 90;
+                            }
 
                             const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                             svg.setAttribute("width", writerSize);
@@ -494,13 +497,13 @@
             return check || /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         }
 
-        if(isMobileOrTablet()){
-            document.addEventListener('click', function(event) {
-                if (!event.target.classList.contains('clickable-char')) {
-                    change(event);
-                }
-            });
-        }
+        // if(isMobileOrTablet()){
+        //     document.addEventListener('click', function(event) {
+        //         if (!event.target.classList.contains('clickable-char')) {
+        //             change(event);
+        //         }
+        //     });
+        // }
 
         function adjustHeight() {
             var vh = window.innerHeight * 0.01;

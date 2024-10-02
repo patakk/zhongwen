@@ -458,7 +458,10 @@
                             strokediv.id = `strokes-${i}`;
                             strokesContainer.appendChild(strokediv);
 
-                            const writerSize = chars.length === 1 ? 150 : 150;
+                            let writerSize = chars.length === 1 ? 150 : 150;
+                            if(screen.width < 768 && chars.length === 3){
+                                writerSize = 90;
+                            }
                             const writer = HanziWriter.create(`strokes-${i}`, char, {
                                 width: writerSize,
                                 height: writerSize,

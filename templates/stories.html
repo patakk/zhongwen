@@ -129,7 +129,6 @@
         #flashcard_container {
             background-color: white;
             padding: 20px;
-            max-width: 40%;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -168,6 +167,7 @@
             white-space: pre-wrap;
             word-wrap: break-word;
             font-size: 21px;
+            width: 100%;
         }
 
         .pinyin {
@@ -187,43 +187,6 @@
             -ms-user-select: none;      /* IE 10 and IE 11 */
             user-select: none;  
         }
-        @media screen and (max-width: 768px) {
-            #flashcard_container {
-                max-width: 100%;
-                width: 100%;
-                padding: 20px;
-                height: auto;
-                max-height: 60%;
-                margin: 0; /* Ensure no margin on mobile */
-                transform: translateY(-5%);
-            }
-            
-            .container {
-                width: 90%;
-                height: 85%;
-                padding: 20px;
-            }
-            .title {
-                font-size: 24px;
-            }
-            .character {
-                font-size: 21px;
-            }
-            .pinyin {
-                font-size: 14px;
-            }
-            .english {
-                font-size: 14px;
-            }
-            
-            #font-select {
-                top: 15px;
-                right: 10px;
-                font-size: 14px;
-                width: 120px;
-            }
-        }
-
         .highlighted {
             background-color: #000000;
             color: #f2f2f2;
@@ -274,20 +237,82 @@
             text-align: center;
             cursor: pointer;
             border: 2px solid black;
-            font-size: 20px;
+            font-size: 16px;
         }
 
         .story-item:hover {
             background-color: #000000;
             color: #f2f2f2;
         }
-
+        
         @media screen and (max-width: 768px) {
-            .story-item {
-                font-size: 16px;
+            .container {
+                width: 90%;
+                height: 85%;
+                padding: 20px;
+            }
+            #hover-box .pinyin {
+                font-size: 13px;
+            }
+            #hover-box .english {
+                font-size: 13px;
+            }
+            
+            #flashcard_container {
+                max-width: 100%;
+                width: 100%;
+                padding: 20px;
+                height: auto;
+                max-height: 70%;
+                margin: 0; /* Ensure no margin on mobile */
+                transform: translateY(-7%);
+            }
+            #flashcard-overlay {
                 padding: 10px;
             }
+            .title {
+                font-size: 24px;
+            }
+            .character {
+                font-size: 21px;
+            }
+            .pinyin {
+                font-size: 14px;
+            }
+            .english {
+                font-size: 14px;
+            }
+            
+            #font-select {
+                top: 15px;
+                right: 10px;
+                font-size: 14px;
+                width: 120px;
+            }
         }
+
+        @media only screen 
+        and (min-device-width : 768px) 
+        and (max-device-width : 1024px) {
+            #flashcard_container {
+                max-width: 80%;
+                width: 80%;
+                transform: none;
+            }
+
+            .title {
+                font-size: 28px;
+            }
+
+            .character {
+                font-size: 24px;
+            }
+
+            .pinyin, .english {
+                font-size: 18px;
+            }
+        }
+
 
         #hover-box {
             display: none;
@@ -310,15 +335,6 @@
             font-size: 16px;
         }
 
-
-        @media screen and (max-width: 768px) {
-            #hover-box .pinyin {
-                font-size: 13px;
-            }
-            #hover-box .english {
-                font-size: 13px;
-            }
-        }
         .hanzi-row.highlighted {
             background-color: #000000; /* Light yellow background */
             color: #f2f2f2;
@@ -428,10 +444,15 @@
         }
 
         function showFlashcard(hanzi, pinyin, english) {
+            // Clear the hover box
             const hoverBox = document.getElementById('hover-box');
             hoverBox.style.display = 'none';
             hoverBox.querySelector('.pinyin').textContent = '';
             hoverBox.querySelector('.english').textContent = '';
+
+            // Reset scroll position
+            const flashcardContainer = document.getElementById('flashcard_container');
+            flashcardContainer.scrollTop = 0;
 
             document.getElementById('font-select').style.display = 'block';
 
@@ -455,7 +476,6 @@
             updateFlashcardContent();
             setupHoverEffects();
         }
-
 
         function updateFlashcardContent() {
             document.querySelector('.title').textContent = currentTitle;
@@ -677,11 +697,16 @@
             hoverBox.querySelector('.pinyin').textContent = '';
             hoverBox.querySelector('.english').textContent = '';
             
+            // Reset scroll position
+            const flashcardContainer = document.getElementById('flashcard_container');
+            flashcardContainer.scrollTop = 0;
+            
             // Update the URL to remove the story URI
             const newUrl = window.location.pathname.split('/stories')[0] + '/stories';
             history.pushState(null, '', newUrl);
             console.log(newUrl);
         }
+
 
 
         if(isMobileOrTablet()){

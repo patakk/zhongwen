@@ -265,7 +265,7 @@
             }
 
             .character {
-                font-size: 48px;
+                font-size: 60px;
             }
 
             .english, .pinyin {
@@ -440,7 +440,10 @@
                     strokeWrapper.className = 'stroke-wrapper';
                     strokesContainer.appendChild(strokeWrapper);
 
-                    const writerSize = chars.length === 1 ? 150 : 150;
+                    let writerSize = chars.length === 1 ? 150 : 150;
+                    if(screen.width < 768 && chars.length === 3){
+                        writerSize = 90;
+                    }
 
                     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                     svg.setAttribute("width", writerSize);
