@@ -2,11 +2,26 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 import os
 import json
 from datetime import datetime
+from datetime import timedelta
 import random
 from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+app.secret_key = os.urandom(24)
+app.permanent_session_lifetime = timedelta(days=3650)
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    if 'username' not in session:
+        session['username'] = 'tempuser'
+    if 'deck' not in session:
+        session['deck'] = 'shas'
+    if 'font' not in session:
+        session['font'] = 'Noto Sans Mono'
+
 application = app
 
 class FlashcardApp:
@@ -85,9 +100,6 @@ def session_required(func):
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
-    session['username'] = 'tempuser'
-    session['deck'] = 'shas'
-    session['font'] = 'Noto Sans Mono'
     return redirect(url_for('home'))
     #if request.method == 'POST':
     #    username = request.form['username']
