@@ -191,9 +191,9 @@ def change_font():
 @session_required
 def get_font():
     response = jsonify({"font": session['font']})
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
+    # response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    # response.headers['Pragma'] = 'no-cache'
+    # response.headers['Expires'] = '0'
     return response
 
 @app.route('/change_deck', methods=['POST'])
