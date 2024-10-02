@@ -201,7 +201,6 @@ def change_deck():
     session['deck'] = request.args.get('deck')
     return jsonify({"message": "Deck changed successfully"})
 
-
 @app.route('/get_deck')
 @session_required
 def get_deck():
