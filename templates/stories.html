@@ -746,7 +746,7 @@
         // Highlight the first item by default
         // highlightListItem(0);
         const initialUri = '{{ initial_uri }}';
-        if (initialUri && initialUri.trim() !== '' && initialUri.includes('story_')) {
+        if (initialUri && initialUri.trim() !== '' && (initialUri.includes('story_') || initialUri.includes('grammar_'))) {
             loadStory(initialUri);
         }
 
