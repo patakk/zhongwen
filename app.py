@@ -269,7 +269,7 @@ def get_examples_data(category, subcategory, chinese):
 @app.route('/stories/<uri>')
 @session_required
 def stories(uri=None):
-    stories_list = [{'title': stories_data[u]['title'], 'title_eng': stories_data[u]['title_eng'], 'title_pin': stories_data[u]['title_pin'], 'uri': u} for u in stories_data]
+    stories_list = [{'title': stories_data[u]['english'][0], 'uri': u} for u in stories_data]
     return render_template('stories.html', stories=stories_list, initial_uri=uri)
 
 @app.route('/get_stories_data/<uri>')
@@ -278,6 +278,12 @@ def get_stories_data(uri):
     if uri in stories_data:
         return jsonify(stories_data[uri])
     return jsonify({"error": "Story not found"}), 404
+
+
+@app.route('/log_mobile_access', methods=['POST'])
+def log_mobile_access():
+    print("Mobile or tablet device accessed the flashcard")
+    return '', 204
 
 import re
 def remove_tones(pinyin):

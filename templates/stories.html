@@ -384,7 +384,7 @@
         <div class="stories-list">
             {% for story in stories %}
             <div class="story-item" onclick="loadStory('{{ story.uri }}')">
-                {{ story.title_eng }}
+                {{ story.title }}
             </div>
             {% endfor %}
         </div>
@@ -427,41 +427,23 @@
             return text.split(separator).map(sentence => sentence.trim()).filter(Boolean);
         }
 
-        function showFlashcard(title, title_eng, title_pin, hanzi, pinyin, english) {
-            
+        function showFlashcard(hanzi, pinyin, english) {
             document.getElementById('font-select').style.display = 'block';
-            // Function to split text by multiple delimiters, including Chinese punctuation
-            function splitTextByMultipleDelimiters(text, delimiters) {
-                let pattern = `(${delimiters.map(d => d.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|')})`;
-                let regex = new RegExp(pattern, 'g');
-                return text.split('\n').map(line => {
-                    let parts = line.split(regex);
-                    let result = [];
-                    for (let i = 0; i < parts.length; i += 2) {
-                        result.push(parts[i] + (parts[i+1] || ''));
-                    }
-                    return result.filter(Boolean).map(part => part.trim());
-                }).flat();
-            }
 
             let titleHtml = `
                 <div class="title-container hanzi-row-container" data-index="title">
                     <div class="title-wrapper">
-                        <h2 class="title">${title}</h2>
+                        <h2 class="title">${hanzi[0]}</h2>
                     </div>
                 </div>
             `;
             document.querySelector('.title').outerHTML = titleHtml;
             document.querySelector('.title').style.fontFamily = `"${currentFont}", sans-serif`;
 
-            // Split hanzi by Chinese punctuation
-            currentHanzi = splitTextByMultipleDelimiters(hanzi, ['。', '？', '！']);
-
-            // Split pinyin and english to match hanzi segments
-            currentPinyin = splitTextByMultipleDelimiters(pinyin, ['.', '?', '!']);
-            currentEnglish = splitTextByMultipleDelimiters(english, ['.', '?', '!']);
-
-            currentTitle = title;
+            currentHanzi = hanzi;
+            currentPinyin = pinyin;
+            currentEnglish = english;
+            currentTitle = hanzi[0];
             currentState = 'hanzi';
 
             overlay.style.display = 'flex';
@@ -472,8 +454,8 @@
         function updateFlashcardContent() {
             document.querySelector('.title').textContent = currentTitle;
             
-            let content = currentHanzi.map((sentence, index) => 
-                `<div class="hanzi-row-container" data-index="${index}">
+            let content = currentHanzi.slice(1).map((sentence, index) => 
+                `<div class="hanzi-row-container" data-index="${index + 1}">
                     <span class="row-number">${index + 1}.</span>
                     <span class="hanzi-row">${sentence}</span>
                 </div>`
@@ -497,10 +479,9 @@
             function showHoverBox(element) {
                 let pinyin, english;
                 if (element.classList.contains('title-container')) {
-                    pinyin = currentStory.title_pin;
-                    english = currentStory.title_eng;
+                    pinyin = currentPinyin[0];
+                    english = currentEnglish[0];
                 } else {
-                    // Use the data-index attribute to get the correct index
                     const index = parseInt(element.dataset.index);
                     pinyin = currentPinyin[index];
                     english = currentEnglish[index];
@@ -524,25 +505,47 @@
             }
 
             if (isMobileOrTablet()) {
+                fetch('/log_mobile_access', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Failed to log mobile access');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
+                let touchStartY, isTouchMove = false;
+
                 flashcardContainer.addEventListener('touchstart', function(e) {
                     touchStartY = e.touches[0].clientY;
-                    touchStartTime = Date.now();
-                    isScrolling = false;
-                    
-                    const row = e.target.closest('.hanzi-row-container');
-                    if (row) {
-                        activeRow = row;
-                        showHoverBox(row);
-                    }
-                }, {passive: false});
+                    isTouchMove = false;
+                }, {passive: true});
 
                 flashcardContainer.addEventListener('touchmove', function(e) {
-                    if (!isScrolling) {
-                        const touchMoveY = e.touches[0].clientY;
-                        const timeDiff = Date.now() - touchStartTime;
-                        
-                        if (Math.abs(touchMoveY - touchStartY) > 10 || timeDiff > 200) {
-                            isScrolling = true;
+                    const touchMoveY = e.touches[0].clientY;
+                    if (Math.abs(touchMoveY - touchStartY) > 10) {
+                        isTouchMove = true;
+                        hideHoverBox();
+                    }
+                }, {passive: true});
+
+                flashcardContainer.addEventListener('touchend', function(e) {
+                    if (!isTouchMove) {
+                        const row = e.target.closest('.hanzi-row-container');
+                        if (row) {
+                            if (activeRow) {
+                                activeRow.classList.remove('highlighted');
+                            }
+                            activeRow = row;
+                            activeRow.classList.add('highlighted');
+                            showHoverBox(row);
+                        } else {
                             if (activeRow) {
                                 activeRow.classList.remove('highlighted');
                                 activeRow = null;
@@ -550,16 +553,10 @@
                             hideHoverBox();
                         }
                     }
-                }, {passive: true});
-
-                flashcardContainer.addEventListener('touchend', function() {
-                    if (activeRow) {
-                        activeRow.classList.remove('highlighted');
-                        activeRow = null;
-                    }
-                    hideHoverBox();
+                    isTouchMove = false;
                 });
-            } else {
+            }
+            else {
                 allRows.forEach((row) => {
                     row.addEventListener('mouseover', function() {
                         showHoverBox(this);
@@ -731,7 +728,7 @@
                 .then(data => {
                     console.log("Story data received:", data);
                     currentStory = data;  // Store the story data
-                    showFlashcard(data.title, data.title_eng, data.title_pin, data.hanzi, data.pinyin, data.english);
+                    showFlashcard(data.hanzi, data.pinyin, data.english);
                     
                     // Update the URL without reloading the page
                     const newUrl = `${window.location.pathname.split('/stories')[0]}/stories/${title}`;
