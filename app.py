@@ -295,11 +295,12 @@ def search():
                 if query in hanzi.lower():
                     results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
                 elif query.isalpha():
-                    pinyin_query = remove_tones(convert_numerical_tones(query))
-                    card_pinyin = remove_tones(card.get('pinyin', '').lower()).lower()
-                    if pinyin_query in card_pinyin:
-                        results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
-                    elif query in card.get('english', '').lower():
+                    if 'pinyin' in card:
+                        pinyin_query = remove_tones(convert_numerical_tones(query))
+                        card_pinyin = remove_tones(card['pinyin'].lower()).lower()
+                        if pinyin_query in card_pinyin:
+                            results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
+                    if 'english' in card and query in card['english'].lower():
                         results.append({'hanzi': hanzi, **card, 'match_type': 'english'})
         
         # Remove duplicates
@@ -312,23 +313,23 @@ def search():
         
         # Sort the results
         def sort_key(result):
-            if result['match_type'] == 'hanzi':
-                return (0, result['hanzi'])
+            hanzi = result['hanzi']
+            if hanzi == query:
+                return (0, hanzi)
+            elif query in hanzi:
+                return (1, len(hanzi), hanzi)
             elif result['match_type'] == 'pinyin':
-                pinyin = remove_tones(result.get('pinyin', '').lower())
-                return (1, not pinyin.startswith(remove_tones(convert_numerical_tones(query))), pinyin)
+                pinyin = remove_tones(result['pinyin'].lower())
+                return (2, not pinyin.startswith(remove_tones(convert_numerical_tones(query))), pinyin)
             else:  # english
-                english = result.get('english', '').lower()
-                return (2, not english.startswith(query), english)
+                english = result['english'].lower()
+                return (3, not english.startswith(query), english)
 
         sorted_results = sorted(unique_results, key=sort_key)
         
         return render_template('search.html', results=sorted_results, query=query)
     
     return render_template('search.html')
-
-
-
 
 
 if __name__ == '__main__':
