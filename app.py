@@ -293,15 +293,16 @@ def search():
         for deck in flashcard_app.decks:
             for hanzi, card in flashcard_app.cards[deck].items():
                 if query in hanzi.lower():
-                    results.append({'hanzi': hanzi, **card})
+                    results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
                 elif query.isalpha():
                     pinyin_query = remove_tones(convert_numerical_tones(query))
-                    card_pinyin = remove_tones(card['pinyin'].lower()).lower()
+                    card_pinyin = remove_tones(card.get('pinyin', '').lower()).lower()
                     if pinyin_query in card_pinyin:
-                        results.append({'hanzi': hanzi, **card})
-                    elif query in card['english'].lower():
-                        results.append({'hanzi': hanzi, **card})
+                        results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
+                    elif query in card.get('english', '').lower():
+                        results.append({'hanzi': hanzi, **card, 'match_type': 'english'})
         
+        # Remove duplicates
         unique_results = []
         seen_hanzi = set()
         for result in results:
@@ -309,9 +310,23 @@ def search():
                 unique_results.append(result)
                 seen_hanzi.add(result['hanzi'])
         
-        return render_template('search.html', results=unique_results, query=query)
+        # Sort the results
+        def sort_key(result):
+            if result['match_type'] == 'hanzi':
+                return (0, result['hanzi'])
+            elif result['match_type'] == 'pinyin':
+                pinyin = remove_tones(result.get('pinyin', '').lower())
+                return (1, not pinyin.startswith(remove_tones(convert_numerical_tones(query))), pinyin)
+            else:  # english
+                english = result.get('english', '').lower()
+                return (2, not english.startswith(query), english)
+
+        sorted_results = sorted(unique_results, key=sort_key)
+        
+        return render_template('search.html', results=sorted_results, query=query)
     
     return render_template('search.html')
+
 
 
 
