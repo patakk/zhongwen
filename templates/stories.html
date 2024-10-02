@@ -663,16 +663,25 @@
 
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay && !e.target.closest('#font-select')) {
-                overlay.style.display = 'none';
-                document.getElementById('font-select').style.display = 'none';
-                if (isMobileDevice()) {
-                    flashcardContent.removeEventListener('click', cycleContent);
-                } else {
-                    flashcardContent.removeEventListener('mousedown', handleMouseDown);
-                    flashcardContent.removeEventListener('mouseup', handleMouseUp);
-                }
+                closeStory();
             }
         });
+
+        function closeStory() {
+            overlay.style.display = 'none';
+            document.getElementById('font-select').style.display = 'none';
+            if (isMobileOrTablet()) {
+                flashcardContent.removeEventListener('click', cycleContent);
+            } else {
+                flashcardContent.removeEventListener('mousedown', handleMouseDown);
+                flashcardContent.removeEventListener('mouseup', handleMouseUp);
+            }
+            
+            // Update the URL to remove the story URI
+            const newUrl = window.location.pathname.split('/stories')[0] + '/stories';
+            history.pushState(null, '', newUrl);
+            console.log(newUrl)
+        }
 
         if(isMobileOrTablet()){
             document.getElementById('flashcard_container').addEventListener('click', function(event) {
@@ -704,13 +713,26 @@
             const url = `${origin}${basePath}/get_stories_data/${title}`;
 
             fetch(url)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Story not found');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log("Story data received:", data);
                     currentStory = data;  // Store the story data
                     showFlashcard(data.title, data.title_eng, data.title_pin, data.hanzi, data.pinyin, data.english);
+                    
+                    // Update the URL without reloading the page
+                    const newUrl = `${window.location.pathname.split('/stories')[0]}/stories/${title}`;
+                    history.pushState(null, '', newUrl);
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    // If the story doesn't exist, close the current story and update URL
+                    closeStory();
+                });
         }
 
 
@@ -722,6 +744,22 @@
         window.addEventListener('resize', setupHoverEffects);
         // Highlight the first item by default
         // highlightListItem(0);
+        const initialUri = '{{ initial_uri }}';
+        if (initialUri) {
+            loadStory(initialUri);
+        }
+
+        window.onpopstate = function(event) {
+            const pathParts = window.location.pathname.split('/');
+            const storyUri = pathParts[pathParts.length - 1];
+            if (storyUri && storyUri !== 'stories') {
+                loadStory(storyUri);
+            } else {
+                // Close the story if we're back at the main stories page
+                closeStory();
+            }
+        };
+
     </script>
 
     
