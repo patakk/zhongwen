@@ -634,7 +634,14 @@
             }
             const url = `${origin}${basePath}/get_font`;
 
-            fetch(url)
+            fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    },
+                    cache: 'no-store'
+                })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');

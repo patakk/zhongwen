@@ -15,12 +15,6 @@ app.permanent_session_lifetime = timedelta(days=3650)
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    if 'username' not in session:
-        session['username'] = 'tempuser'
-    if 'deck' not in session:
-        session['deck'] = 'shas'
-    if 'font' not in session:
-        session['font'] = 'Noto Sans Mono'
 
 application = app
 
@@ -100,6 +94,12 @@ def session_required(func):
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    if 'username' not in session:
+        session['username'] = 'tempuser'
+    if 'deck' not in session:
+        session['deck'] = 'shas'
+    if 'font' not in session:
+        session['font'] = 'Noto Sans Mono'
     return redirect(url_for('home'))
     #if request.method == 'POST':
     #    username = request.form['username']
@@ -183,13 +183,18 @@ def get_card_data():
 @app.route('/change_font', methods=['POST'])
 def change_font():
     session['font'] = request.args.get('font')
+    print('set', session['font'])
     return jsonify({"message": "font changed successfully to " + session['font']})
 
 
 @app.route('/get_font')
 @session_required
 def get_font():
-    return jsonify({"font": session['font']})
+    response = jsonify({"font": session['font']})
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route('/change_deck', methods=['POST'])
 def change_deck():
