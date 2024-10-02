@@ -385,6 +385,7 @@
                         listItem.addEventListener('click', () => showFlashcard(char.character));
                         list.appendChild(listItem);
                     });
+                    getFont();
                 })
                 .catch(error => console.error('Error:', error));
         }
@@ -571,7 +572,6 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            getFont();
             getDeck();
         });
     </script>
