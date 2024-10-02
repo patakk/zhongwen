@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
@@ -465,16 +465,15 @@
 
             setupHoverEffects();
         }
-
-
+       
         function setupHoverEffects() {
             const hoverBox = document.getElementById('hover-box');
             const flashcardContainer = document.getElementById('flashcard_container');
             const allRows = document.querySelectorAll('.hanzi-row-container, .title-container');
 
-            let touchStartY, touchStartTime;
-            let isScrolling = false;
             let activeRow = null;
+            let touchStartY;
+            let isTouchMove = false;
 
             function showHoverBox(element) {
                 let pinyin, english;
@@ -496,67 +495,50 @@
                 hoverBox.style.top = `${rect.bottom + window.scrollY}px`;
                 hoverBox.style.display = 'block';
 
+                if (activeRow) {
+                    activeRow.classList.remove('highlighted');
+                }
                 element.classList.add('highlighted');
+                activeRow = element;
             }
 
             function hideHoverBox() {
                 hoverBox.style.display = 'none';
-                allRows.forEach(row => row.classList.remove('highlighted'));
+                if (activeRow) {
+                    activeRow.classList.remove('highlighted');
+                    activeRow = null;
+                }
             }
 
             if (isMobileOrTablet()) {
-                fetch('/log_mobile_access', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        console.error('Failed to log mobile access');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-
-                let touchStartY, isTouchMove = false;
-
                 flashcardContainer.addEventListener('touchstart', function(e) {
                     touchStartY = e.touches[0].clientY;
                     isTouchMove = false;
-                }, {passive: true});
+                }, { passive: true });
 
                 flashcardContainer.addEventListener('touchmove', function(e) {
-                    const touchMoveY = e.touches[0].clientY;
-                    if (Math.abs(touchMoveY - touchStartY) > 10) {
+                    if (Math.abs(e.touches[0].clientY - touchStartY) > 10) {
                         isTouchMove = true;
                         hideHoverBox();
                     }
-                }, {passive: true});
+                }, { passive: true });
 
                 flashcardContainer.addEventListener('touchend', function(e) {
                     if (!isTouchMove) {
-                        const row = e.target.closest('.hanzi-row-container');
+                        const row = e.target.closest('.hanzi-row-container, .title-container');
                         if (row) {
-                            if (activeRow) {
-                                activeRow.classList.remove('highlighted');
+                            if (activeRow === row) {
+                                hideHoverBox();
+                            } else {
+                                showHoverBox(row);
                             }
-                            activeRow = row;
-                            activeRow.classList.add('highlighted');
-                            showHoverBox(row);
                         } else {
-                            if (activeRow) {
-                                activeRow.classList.remove('highlighted');
-                                activeRow = null;
-                            }
                             hideHoverBox();
                         }
                     }
                     isTouchMove = false;
-                });
-            }
-            else {
+                }, { passive: true });
+            } else {
                 allRows.forEach((row) => {
                     row.addEventListener('mouseover', function() {
                         showHoverBox(this);
