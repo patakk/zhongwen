@@ -524,7 +524,7 @@
                     document.querySelector('.flashcard-character').style.fontFamily = `"${currentFont}", sans-serif`;
                     const fontInfo = fontMap[currentFont];
                     document.querySelectorAll('.character').forEach(character => {
-                        character.style.fontFamily = `"${selectedFont}", sans-serif`;
+                        character.style.fontFamily = `"${currentFont}", sans-serif`;
                         character.style.fontSize = `${fontInfo.size}px`;
                     });
                 })
