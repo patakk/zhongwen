@@ -601,7 +601,8 @@
                         'hsk5': 'HSK 5',
                         'hsk6': 'HSK 6',
                     };
-                    document.getElementById('title').textContent = namesmap[currentDeck];  
+                    const deckLength = data.characters.length;
+                    document.getElementById('title').textContent = `${namesmap[currentDeck]} (${deckLength} characters)`;  
             
                     data.characters.forEach(charData => {
                         const gridItem = document.createElement('div');
