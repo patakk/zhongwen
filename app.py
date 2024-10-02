@@ -14,6 +14,7 @@ class FlashcardApp:
         self.user_progress_dir = "user_progress"
         self.decks = {
             "shas": "data/shas_class_cards.json",
+            "hsk1": "data/top140_cards.json",
             "hsk1": "data/hsk1_cards.json",
             "hsk2": "data/hsk2_cards.json",
             "hsk3": "data/hsk3_cards.json",
