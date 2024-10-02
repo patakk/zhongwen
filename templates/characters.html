@@ -806,6 +806,7 @@
                 })
                 .then(data => {
                     currentFont = data.font;
+                    console.log('received font', currentFont);
                     document.getElementById('font-select').value = currentFont;
                     document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
                     document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;

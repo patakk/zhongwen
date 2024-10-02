@@ -642,6 +642,7 @@
                 })
                 .then(data => {
                     currentFont = data.font;
+                    console.log('received font', currentFont);
                     document.getElementById('font-select').value = currentFont;
                     document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
                     document.querySelector('.title').style.fontFamily = `"${currentFont}", sans-serif`;
@@ -745,7 +746,7 @@
         // Highlight the first item by default
         // highlightListItem(0);
         const initialUri = '{{ initial_uri }}';
-        if (initialUri) {
+        if (initialUri && initialUri.trim() !== '' && initialUri.includes('story_')) {
             loadStory(initialUri);
         }
 
