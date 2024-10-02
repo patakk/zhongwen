@@ -183,7 +183,7 @@ def get_card_data():
 @app.route('/change_font', methods=['POST'])
 def change_font():
     session['font'] = request.args.get('font')
-    return jsonify({"message": "font changed successfully"})
+    return jsonify({"message": "font changed successfully to " + session['font']})
 
 
 @app.route('/get_font')

@@ -23,12 +23,12 @@
       
         @font-face {
             font-family: 'Noto Sans S Chinese Black';
-            src: url('/zhongwen/static/fonts/Noto_Sans_S_Chinese_Black.otf') format('opentype');
+            src: url("{{ url_for('static', filename='fonts/Noto_Sans_S_Chinese_Black.ttf') }}") format('opentype');
         }
 
         @font-face {
             font-family: 'Kaiti';
-            src: url('/zhongwen/static/fonts/Kaiti.ttf') format('truetype');
+            src: url("{{ url_for('static', filename='fonts/Kaiti.ttf') }}") format('truetype');
         }
         
         #font-select {
