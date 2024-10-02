@@ -427,6 +427,7 @@
 
         function showFlashcard(title, title_eng, title_eng, hanzi, pinyin, english) {
             
+            document.getElementById('font-select').style.display = 'block';
             // Function to split text by multiple delimiters, including Chinese punctuation
             function splitTextByMultipleDelimiters(text, delimiters) {
                 let pattern = `(${delimiters.map(d => d.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|')})`;
@@ -660,6 +661,7 @@
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay && !e.target.closest('#font-select')) {
                 overlay.style.display = 'none';
+                document.getElementById('font-select').style.display = 'none';
                 if (isMobileDevice()) {
                     flashcardContent.removeEventListener('click', cycleContent);
                 } else {
