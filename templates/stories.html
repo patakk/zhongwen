@@ -594,7 +594,16 @@
 
 
         function changeFont(font) {
-            fetch(`/change_font?font=${font}`, {
+            
+            const origin = window.location.origin;
+            const pathParts = window.location.pathname.split('/');
+            let basePath = '';
+            if (pathParts.includes('zhongwen')) {
+                basePath = '/zhongwen';
+            }
+            const url = `${origin}${basePath}/change_font?font=${font}`;
+
+            fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -612,7 +621,15 @@
         }
         
         function getFont() {
-            fetch('/get_font')
+            const origin = window.location.origin;
+            const pathParts = window.location.pathname.split('/');
+            let basePath = '';
+            if (pathParts.includes('zhongwen')) {
+                basePath = '/zhongwen';
+            }
+            const url = `${origin}${basePath}/get_font`;
+
+            fetch(url)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
