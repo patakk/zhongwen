@@ -429,7 +429,7 @@
         }
 
         #deck-select {
-            z-index: 1001;
+            z-index: 999;
         }
     </style>
 </head>
@@ -866,9 +866,9 @@
                 const flashcardCharacter = document.querySelector('.character');
                 flashcardCharacter.style.fontFamily = `"${fontInfo.family}", sans-serif`;
                 // Also set font size for the character in the flashcard overlay
-                if (flashcardCharacter) {
-                    flashcardCharacter.style.fontSize = `${fontInfo.size * 2}px`; // Larger size for the flashcard
-                }
+                // if (flashcardCharacter) {
+                //     flashcardCharacter.style.fontSize = `${fontInfo.size * 2}px`; // Larger size for the flashcard
+                // }
                 
                 currentFont = selectedFont;
                 changeFont(currentFont);
