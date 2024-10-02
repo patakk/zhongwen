@@ -509,6 +509,7 @@
                     currentFont = data.font;
                     document.getElementById('font-select').value = currentFont;
                     document.querySelector('.flashcard-character').style.fontFamily = `"${currentFont}", sans-serif`;
+                    document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
                 })
                 .catch(error => {
                     console.error('There was a problem with the fetch operation:', error);
@@ -540,6 +541,7 @@
         document.getElementById('font-select').addEventListener('change', function(event) {
             const selectedFont = event.target.value;
             document.querySelector('.flashcard-character').style.fontFamily = `"${selectedFont}", sans-serif`;
+            document.querySelector('.character').style.fontFamily = `"${selectedFont}", sans-serif`;
             currentFont = event.target.value;
             changeFont(currentFont);
             this.blur();
