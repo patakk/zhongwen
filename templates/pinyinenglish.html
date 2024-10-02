@@ -123,6 +123,12 @@
         .char-pinyin-group {
             display: flex;
             align-items: center;
+            width: 100%; /* Add this */
+        }
+        .char-pinyin-wrapper {
+            display: flex;
+            align-items: center;
+            flex-grow: 1; /* Add this */
         }
         .character {
             font-size: 24px;
@@ -300,6 +306,17 @@
             }
         }
 
+        .list-index {
+            font-size: 11px;
+            color: #888;
+            width: 30px; /* Increase width to accommodate larger numbers */
+            text-align: right;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+
+
         .strokes-container {
             display: flex;
             flex-direction: row;
@@ -319,6 +336,13 @@
         .clickable-char:hover {
             color: rgb(255, 217, 28);
         }
+
+        .index-container {
+            width: 40px; /* Adjust as needed */
+            display: inline-block;
+            text-align: right;
+        }
+
     </style>
 </head>
 <body>
@@ -373,16 +397,20 @@
                     const list = document.getElementById('pinyin-english-list');
                     list.innerHTML = ''; // Clear existing items
 
-                    data.characters.forEach(char => {
+                    data.characters.forEach((char, idx) => {
                         const listItem = document.createElement('li');
                         listItem.className = 'pinyin-english-item';
                         listItem.innerHTML = `
                             <div class="char-pinyin-group">
+                                <div class="index-container">
+                                    <span class="list-index">${idx + 1}.</span>
+                                </div>
                                 <span class="character">${char.character}</span>
                                 <span class="pinyin">${char.pinyin}</span>
                             </div>
                             <span class="english">${char.english}</span>
                         `;
+
                         listItem.addEventListener('click', () => showFlashcard(char.character));
                         list.appendChild(listItem);
                     });

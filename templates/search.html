@@ -155,6 +155,19 @@
             width: 100%; /* Ensure full width */
             box-sizing: border-box; /* Ensure border and padding are included in width */
         }
+
+        .result-item {
+            position: relative;
+        }
+
+        .result-index {
+            position: absolute;
+            top: 5px;
+            right: 7px;
+            font-size: 14px;
+            color: #888;
+        }
+
         .result-item:hover {
             background-color: #f0f0f0;
         }
@@ -341,6 +354,7 @@
             {% if results %}
                 {% for result in results %}
                     <div class="result-item" onclick="showFlashcard('{{ result.hanzi }}')">
+                        <span class="result-index">{{ loop.index }}</span>
                         <p><strong>Hanzi:</strong> {{ result.hanzi }}</p>
                         <p><strong>Pinyin:</strong> {{ result.pinyin }}</p>
                         <p><strong>English:</strong> {{ result.english }}</p>
@@ -386,7 +400,7 @@
 
                     // Split the character string into individual characters
                     const chars = data.character.split('');
-                    
+                    document.getElementById('font-select').style.display = 'block';
                     // Create clickable spans for each character
                     chars.forEach(char => {
                         const span = document.createElement('span');
@@ -571,6 +585,7 @@
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay && !e.target.closest('#font-select')) {
                 overlay.style.display = 'none';
+                document.getElementById('font-select').style.display = 'none';
             }
         });
         
