@@ -449,6 +449,7 @@
                 </div>
             `;
             document.querySelector('.title').outerHTML = titleHtml;
+            document.querySelector('.title').style.fontFamily = `"${currentFont}", sans-serif`;
 
             // Split hanzi by Chinese punctuation
             currentHanzi = splitTextByMultipleDelimiters(hanzi, ['。', '？', '！']);
