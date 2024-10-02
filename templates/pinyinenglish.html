@@ -497,6 +497,18 @@
             });
         }
         
+        
+        const fontMap = {
+            "Noto Sans Mono": { family: "Noto Sans Mono", size: 22 },
+            "Noto Serif SC": { family: "Noto Serif SC", size: 22 },
+            "Noto Sans S Chinese Black": { family: "Noto Sans S Chinese Black", size: 22 },
+            "Kaiti": { family: "Kaiti", size: 26 },
+            "ZCOOL QingKe HuangYou": { family: "ZCOOL QingKe HuangYou", size: 26 },
+            "Ma Shan Zheng": { family: "Ma Shan Zheng", size: 26 },
+            "Zhi Mang Xing": { family: "Zhi Mang Xing", size: 26 },
+            "Long Cang": { family: "Long Cang", size: 26 }
+        };
+
         function getFont() {
             fetch('./get_font')
                 .then(response => {
@@ -508,8 +520,13 @@
                 .then(data => {
                     currentFont = data.font;
                     document.getElementById('font-select').value = currentFont;
+
                     document.querySelector('.flashcard-character').style.fontFamily = `"${currentFont}", sans-serif`;
-                    document.querySelector('.pinyin-english-item').style.fontFamily = `"${currentFont}", sans-serif`;
+                    const fontInfo = fontMap[currentFont];
+                    document.querySelectorAll('.character').forEach(character => {
+                        character.style.fontFamily = `"${selectedFont}", sans-serif`;
+                        character.style.fontSize = `${fontInfo.size}px`;
+                    });
                 })
                 .catch(error => {
                     console.error('There was a problem with the fetch operation:', error);
@@ -540,14 +557,19 @@
 
         document.getElementById('font-select').addEventListener('change', function(event) {
             const selectedFont = event.target.value;
-            document.querySelector('.flashcard-character').style.fontFamily = `"${selectedFont}", sans-serif`;
-            document.querySelector('.pinyin-english-item').style.fontFamily = `"${selectedFont}", sans-serif`;
             currentFont = event.target.value;
+            document.querySelector('.flashcard-character').style.fontFamily = `"${selectedFont}", sans-serif`;
+            
+            const fontInfo = fontMap[currentFont];
+                    document.querySelectorAll('.character').forEach(character => {
+                        character.style.fontFamily = `"${selectedFont}", sans-serif`;
+                        character.style.fontSize = `${fontInfo.size}px`;
+                    });
             changeFont(currentFont);
             this.blur();
             event.stopPropagation(); // Add this line to prevent the event from bubbling up
         });
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             getFont();
             getDeck();
