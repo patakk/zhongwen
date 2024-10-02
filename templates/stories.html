@@ -344,7 +344,23 @@
             flex-grow: 1;
         }
 
+        .title-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 5px 0;
+            cursor: pointer;
+        }
 
+        .title-wrapper {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .title-container.highlighted {
+            background-color: #000000;
+            color: #f2f2f2;
+        }
 
 
     </style>
@@ -409,8 +425,7 @@
             return text.split(separator).map(sentence => sentence.trim()).filter(Boolean);
         }
 
-        function showFlashcard(title, hanzi, pinyin, english) {
-            console.log("showFlashcard called with:", {title, hanzi, pinyin, english});
+        function showFlashcard(title, title_eng, title_eng, hanzi, pinyin, english) {
             
             // Function to split text by multiple delimiters, including Chinese punctuation
             function splitTextByMultipleDelimiters(text, delimiters) {
@@ -425,6 +440,15 @@
                     return result.filter(Boolean).map(part => part.trim());
                 }).flat();
             }
+
+            let titleHtml = `
+                <div class="title-container hanzi-row-container" data-index="title">
+                    <div class="title-wrapper">
+                        <h2 class="title">${title}</h2>
+                    </div>
+                </div>
+            `;
+            document.querySelector('.title').outerHTML = titleHtml;
 
             // Split hanzi by Chinese punctuation
             currentHanzi = splitTextByMultipleDelimiters(hanzi, ['。', '？', '！']);
@@ -459,15 +483,25 @@
         function setupHoverEffects() {
             const hoverBox = document.getElementById('hover-box');
             const flashcardContainer = document.getElementById('flashcard_container');
-            const hanziRows = document.querySelectorAll('.hanzi-row-container');
+            const allRows = document.querySelectorAll('.hanzi-row-container, .title-container');
 
             let touchStartY, touchStartTime;
             let isScrolling = false;
             let activeRow = null;
 
-            function showHoverBox(index) {
-                hoverBox.querySelector('.pinyin').textContent = currentPinyin[index];
-                hoverBox.querySelector('.english').textContent = currentEnglish[index];
+            function showHoverBox(element) {
+                let pinyin, english;
+                if (element.classList.contains('title-container')) {
+                    pinyin = currentStory.title_pin;
+                    english = currentStory.title_eng;
+                } else {
+                    const index = Array.from(allRows).indexOf(element) - 1; // Subtract 1 to account for title
+                    pinyin = currentPinyin[index];
+                    english = currentEnglish[index];
+                }
+
+                hoverBox.querySelector('.pinyin').textContent = pinyin;
+                hoverBox.querySelector('.english').textContent = english;
                 
                 const rect = flashcardContainer.getBoundingClientRect();
                 hoverBox.style.width = `${rect.width}px`;
@@ -475,12 +509,12 @@
                 hoverBox.style.top = `${rect.bottom + window.scrollY}px`;
                 hoverBox.style.display = 'block';
 
-                hanziRows[index].classList.add('highlighted');
+                element.classList.add('highlighted');
             }
 
             function hideHoverBox() {
                 hoverBox.style.display = 'none';
-                hanziRows.forEach(row => row.classList.remove('highlighted'));
+                allRows.forEach(row => row.classList.remove('highlighted'));
             }
 
             if (isMobileOrTablet()) {
@@ -492,7 +526,7 @@
                     const row = e.target.closest('.hanzi-row-container');
                     if (row) {
                         activeRow = row;
-                        showHoverBox(row.dataset.index);
+                        showHoverBox(row);
                     }
                 }, {passive: false});
 
@@ -520,16 +554,15 @@
                     hideHoverBox();
                 });
             } else {
-                hanziRows.forEach((row) => {
+                allRows.forEach((row) => {
                     row.addEventListener('mouseover', function() {
-                        showHoverBox(this.dataset.index);
+                        showHoverBox(this);
                     });
 
                     row.addEventListener('mouseout', hideHoverBox);
                 });
             }
         }
-
 
 
         function cycleContent() {
@@ -636,6 +669,8 @@
             });
         }
 
+        let currentStory;
+
         function loadStory(title) {
             const origin = window.location.origin;
             const pathParts = window.location.pathname.split('/');
@@ -649,10 +684,12 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log("Story data received:", data);
-                    showFlashcard(data.title, data.hanzi, data.pinyin, data.english);
+                    currentStory = data;  // Store the story data
+                    showFlashcard(data.title, data.title_eng, data.title_pin, data.hanzi, data.pinyin, data.english);
                 })
                 .catch(error => console.error('Error:', error));
         }
+
 
         document.addEventListener('DOMContentLoaded', function() {
             getFont();

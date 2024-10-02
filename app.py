@@ -251,7 +251,7 @@ def get_examples_data(category, subcategory, chinese):
 @app.route('/stories')
 @session_required
 def stories():
-    return render_template('stories.html', stories=[{'title': stories_data[uri]['title'], 'uri': uri} for uri in stories_data])
+    return render_template('stories.html', stories=[{'title': stories_data[uri]['title'], 'title_eng': stories_data[uri]['title_eng'], 'title_eng': stories_data[uri]['title_pin'], 'uri': uri} for uri in stories_data])
 
 @app.route('/get_stories_data/<uri>')
 @session_required
