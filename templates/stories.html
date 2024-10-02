@@ -428,6 +428,11 @@
         }
 
         function showFlashcard(hanzi, pinyin, english) {
+            const hoverBox = document.getElementById('hover-box');
+            hoverBox.style.display = 'none';
+            hoverBox.querySelector('.pinyin').textContent = '';
+            hoverBox.querySelector('.english').textContent = '';
+
             document.getElementById('font-select').style.display = 'block';
 
             let titleHtml = `
@@ -450,6 +455,7 @@
             updateFlashcardContent();
             setupHoverEffects();
         }
+
 
         function updateFlashcardContent() {
             document.querySelector('.title').textContent = currentTitle;
@@ -665,11 +671,18 @@
                 flashcardContent.removeEventListener('mouseup', handleMouseUp);
             }
             
+            // Clear the hover box
+            const hoverBox = document.getElementById('hover-box');
+            hoverBox.style.display = 'none';
+            hoverBox.querySelector('.pinyin').textContent = '';
+            hoverBox.querySelector('.english').textContent = '';
+            
             // Update the URL to remove the story URI
             const newUrl = window.location.pathname.split('/stories')[0] + '/stories';
             history.pushState(null, '', newUrl);
-            console.log(newUrl)
+            console.log(newUrl);
         }
+
 
         if(isMobileOrTablet()){
             document.getElementById('flashcard_container').addEventListener('click', function(event) {
