@@ -453,12 +453,6 @@
             });
             //element.style.color = randomColor;
             // craze css shadows
-            console.log(randomNumbers);
-            console.log(colors[randomNumbers[0]])
-            console.log(colors[randomNumbers[1]])
-            console.log(colors[randomNumbers[2]])
-            console.log(colors[randomNumbers[3]])
-            console.log(colors[randomNumbers[4]])
             element.style.textShadow = `0 0 20px ${colors[randomNumbers[1]]}, 0 0 30px ${colors[randomNumbers[1]]}, 0 0 40px ${colors[randomNumbers[2]]}, 0 0 80px ${colors[randomNumbers[1]]}, 0 0 120px ${colors[randomNumbers[2]]}`;
             // element.style.textShadow = `0 0 20px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 30px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 40px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 80px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 120px ${colors[Math.floor(Math.random() * colors.length)]}`;
             console.log(element.style.textShadow);
@@ -491,7 +485,8 @@
                 characterElement.appendChild(span);
                 console.log(span);
 
-                randomizeTextColor(span)
+                //randomizeTextColor(span)
+                span.style.textShadow = 'none'; 
                 //initializeColorTime(span, 44);
             });
 
@@ -581,6 +576,10 @@
             } else {
                 displayCard(true);
                 showingAnswer = true;
+                
+                document.querySelectorAll('.clickable-char').forEach((char) => {
+                    randomizeTextColor(char);
+                });
                 // recordView(currentCard);
             }
 
