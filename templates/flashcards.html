@@ -453,6 +453,7 @@
             });
             //element.style.color = randomColor;
             // craze css shadows
+            element.style.transition = 'text-shadow 0.125s';
             element.style.textShadow = `0 0 20px ${colors[randomNumbers[1]]}, 0 0 30px ${colors[randomNumbers[1]]}, 0 0 40px ${colors[randomNumbers[2]]}, 0 0 80px ${colors[randomNumbers[1]]}, 0 0 120px ${colors[randomNumbers[2]]}`;
             // element.style.textShadow = `0 0 20px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 30px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 40px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 80px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 120px ${colors[Math.floor(Math.random() * colors.length)]}`;
             console.log(element.style.textShadow);
@@ -486,6 +487,7 @@
                 console.log(span);
 
                 //randomizeTextColor(span)
+                span.style.transition = 'text-shadow 0.05s';
                 span.style.textShadow = 'none'; 
                 //initializeColorTime(span, 44);
             });
