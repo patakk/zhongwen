@@ -17,11 +17,6 @@
     <style>
         
         @font-face {
-            font-family: 'Noto Sans S Chinese Black';
-            src: url("{{ url_for('static', filename='fonts/Noto_Sans_S_Chinese_Black.ttf') }}") format('opentype');
-        }
-
-        @font-face {
             font-family: 'Kaiti';
             src: url("{{ url_for('static', filename='fonts/Kaiti.ttf') }}") format('truetype');
         }
@@ -232,12 +227,7 @@
     <select id="font-select">
         <option value="Noto Sans Mono">Noto Sans Mono</option>
         <option value="Noto Serif SC">Noto Serif SC</option>
-        <option value="Noto Sans S Chinese Black">Noto Sans S Chinese Black</option>
         <option value="Kaiti">Kaiti</option>
-        <option value="ZCOOL QingKe HuangYou">ZCOOL QingKe HuangYou</option>
-        <option value="Ma Shan Zheng">Ma Shan Zheng</option>
-        <option value="Zhi Mang Xing">Zhi Mang Xing</option>
-        <option value="Long Cang">Long Cang</option>
     </select>
     <div class="container">
         <h1>{{ subcategory }} ({{ category|capitalize }})</h1>

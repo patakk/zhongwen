@@ -19,11 +19,6 @@
     <title>Character Grid</title>
     <style>
         @font-face {
-            font-family: 'Noto Sans S Chinese Black';
-            src: url("{{ url_for('static', filename='fonts/Noto_Sans_S_Chinese_Black.ttf') }}") format('opentype');
-        }
-
-        @font-face {
             font-family: 'Kaiti';
             src: url("{{ url_for('static', filename='fonts/Kaiti.ttf') }}") format('truetype');
         }
@@ -449,12 +444,7 @@
     <select id="font-select">
         <option value="Noto Sans Mono">Noto Sans Mono</option>
         <option value="Noto Serif SC">Noto Serif SC</option>
-        <option value="Noto Sans S Chinese Black">Noto Sans S Chinese Black</option>
         <option value="Kaiti">Kaiti</option>
-        <option value="ZCOOL QingKe HuangYou">ZCOOL QingKe HuangYou</option>
-        <option value="Ma Shan Zheng">Ma Shan Zheng</option>
-        <option value="Zhi Mang Xing">Zhi Mang Xing</option>
-        <option value="Long Cang">Long Cang</option>
     </select>
     <div class="grid-container">
         <div class="grid" id="character-grid"></div>
@@ -853,12 +843,7 @@
         const fontMap = {
             "Noto Sans Mono": { family: "Noto Sans Mono", size: 22 },
             "Noto Serif SC": { family: "Noto Serif SC", size: 22 },
-            "Noto Sans S Chinese Black": { family: "Noto Sans S Chinese Black", size: 22 },
-            "Kaiti": { family: "Kaiti", size: 26 },
-            "ZCOOL QingKe HuangYou": { family: "ZCOOL QingKe HuangYou", size: 26 },
-            "Ma Shan Zheng": { family: "Ma Shan Zheng", size: 26 },
-            "Zhi Mang Xing": { family: "Zhi Mang Xing", size: 26 },
-            "Long Cang": { family: "Long Cang", size: 26 }
+            "Kaiti": { family: "Kaiti", size: 26 }
         };
 
         document.getElementById('font-select').addEventListener('change', function(event) {

@@ -20,12 +20,6 @@
     <title>中文</title>
     <style>
 
-      
-        @font-face {
-            font-family: 'Noto Sans S Chinese Black';
-            src: url("{{ url_for('static', filename='fonts/Noto_Sans_S_Chinese_Black.ttf') }}") format('opentype');
-        }
-
         @font-face {
             font-family: 'Kaiti';
             src: url("{{ url_for('static', filename='fonts/Kaiti.ttf') }}") format('truetype');
@@ -364,7 +358,6 @@
             padding: 0;
             line-height: 1;
             opacity: 1;
-            transition: opacity 4s ease-in-out;
         }
     </style>
 </head>
@@ -383,12 +376,7 @@
     <select id="font-select">
         <option value="Noto Sans Mono">Noto Sans Mono</option>
         <option value="Noto Serif SC">Noto Serif SC</option>
-        <option value="Noto Sans S Chinese Black">Noto Sans S Chinese Black</option>
         <option value="Kaiti">Kaiti</option>
-        <option value="ZCOOL QingKe HuangYou">ZCOOL QingKe HuangYou</option>
-        <option value="Ma Shan Zheng">Ma Shan Zheng</option>
-        <option value="Zhi Mang Xing">Zhi Mang Xing</option>
-        <option value="Long Cang">Long Cang</option>
     </select>
     <div id="flashcard_container">
         <div class="character"></div>
@@ -763,10 +751,14 @@
             getFont();
             handleOrientationChange(); // Call this on initial load
             
-            // after 10 seconds, fade out the space instruction
-            messageTimeout = setTimeout(() => {
-                document.getElementById('space-instruction').style.opacity = 0;
-            }, 2000);
+            if(!isMobileOrTablet()){
+                document.getElementById('space-instruction').style.opacity = 1;
+                document.getElementById('space-instruction').style.transition = 'opacity 4s ease-in-out';
+                
+                messageTimeout = setTimeout(() => {
+                    document.getElementById('space-instruction').style.opacity = 0;
+                }, 2000);
+            }
         });
 
         document.getElementById('font-select').addEventListener('change', function(event) {
