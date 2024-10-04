@@ -358,6 +358,12 @@
             padding: 0;
             line-height: 1;
             opacity: 0;
+            
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
     </style>
 </head>
@@ -768,6 +774,14 @@
             changeFont(currentFont);
             this.blur();
         });
+
+        // document.getElementById('space-instruction').addEventListener('click', function(e) {
+        //     e.stopPropagation();
+        //     var elementBelow = document.elementFromPoint(e.clientX, e.clientY);
+        //     if (elementBelow) {
+        //         elementBelow.click();
+        //     }
+        // }, true);
     </script>
 </body>
 </html>
