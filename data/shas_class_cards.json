@@ -818,15 +818,7 @@
     "姓": {
         "pinyin": "xìng",
         "english": "surname; family name"
-    },      
-    "您贵姓": {
-        "pinyin": "nín guìxìng",
-        "english": "What is your (polite) surname?"
-    },
-    "你姓什么": {
-        "pinyin": "nǐ xìng shénme",
-        "english": "What is your surname?"
-    },
+    },   
     "友好": {
         "pinyin": "yǒuhǎo",
         "english": "friendly; amicable"
@@ -834,5 +826,69 @@
     "谁": {
         "pinyin": "shéi",
         "english": "who"
+    },
+    "您贵姓": {
+        "pinyin": "nín guì xìng",
+        "english": "What is your (honorific) surname?"
+    },
+    "你姓什么": {
+        "pinyin": "nǐ xìng shénme",
+        "english": "What is your surname?"
+    },
+    "星期日/天": {
+        "pinyin": "xīngqī rì/tiān",
+        "english": "Sunday"
+    },
+    "周": {
+        "pinyin": "zhōu",
+        "english": "week"
+    },
+    "周末": {
+        "pinyin": "zhōumò",
+        "english": "weekend"
+    },
+    "上周": {
+        "pinyin": "shàng zhōu",
+        "english": "last week"
+    },
+    "下周": {
+        "pinyin": "xià zhōu",
+        "english": "next week"
+    },
+    "想": {
+        "pinyin": "xiǎng",
+        "english": "to think; to want; to miss"
+    },
+    "都": {
+        "pinyin": "dōu",
+        "english": "all; both; entirely"
+    },
+    "寒语": {
+        "pinyin": "hányǔ",
+        "english": "cold words; harsh speech"
+    },
+    "欧洲": {
+        "pinyin": "Ōuzhōu",
+        "english": "Europe"
+    },
+    "亚洲": {
+        "pinyin": "Yàzhōu",
+        "english": "Asia"
+    },
+    "北": {
+        "pinyin": "běi",
+        "english": "north"
+    },
+    "南": {
+        "pinyin": "nán",
+        "english": "south"
+    },
+    "大洋洲": {
+        "pinyin": "Dàyángzhōu",
+        "english": "Oceania"
+    },
+    "非洲": {
+        "pinyin": "Fēizhōu",
+        "english": "Africa"
     }
 }
