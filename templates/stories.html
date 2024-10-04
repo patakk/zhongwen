@@ -19,8 +19,11 @@
             font-family: 'Kaiti';
             src: url("{{ url_for('static', filename='fonts/Kaiti.ttf') }}") format('truetype');
         }
-
         
+        ::selection {
+            background-color: rgb(255, 66, 28);
+        }
+
         #font-select {
             position: fixed;
             top: 15px;

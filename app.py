@@ -123,12 +123,47 @@ def flashcards():
 def pinyinenglish():
     return render_template('pinyinenglish.html', username=session['username'])
 
+
+def packed_data(character):
+    foundDeck = session['deck']
+    if character in flashcard_app.cards[session['deck']]:
+        data = flashcard_app.get_card_examples(session['deck'], character)
+    else: # look into all decks
+        for deck_name in flashcard_app.cards:
+            if character in flashcard_app.cards[deck_name]:
+                data = flashcard_app.get_card_examples(deck_name, character)
+                foundDeck = deck_name
+                break
+        else:
+            return {
+                "character": character,
+                "pinyin": '',
+                "english": '',
+                "html": '',
+                "deck": session['deck']
+            }
+    session['deck'] = foundDeck
+    return {
+        "character": character,
+        "deck": foundDeck,
+        "pinyin": data.get('pinyin', ''),
+        "english": data.get('english', ''),
+        "html": data.get('examples', '')
+    }
+
 @app.route('/characters')
 @session_required
 def characters():
-    characters = list(flashcard_app.cards[session['deck']].keys())
-    print(f"Initial characters: {len(characters)}")  # Debug print
-    return render_template('characters.html', username=session['username'], characters=characters)
+    character = request.args.get('character')
+    if not character:
+        characters = list(flashcard_app.cards[session['deck']].keys())
+        print(f"Initial characters: {len(characters)}")  # Debug print
+        return render_template('characters.html', username=session['username'], characters=characters, character=None)
+    
+    pc = packed_data(character)
+    characters = list(flashcard_app.cards[pc['deck']].keys())
+    print(len(characters))
+    return render_template('characters.html', username=session['username'], characters=characters, character=pc)
 
 
 @app.route('/get_characters')
@@ -164,6 +199,7 @@ def get_characters_pinyinenglish():
         })
     return jsonify({"characters": all_data})
 
+
 @app.route('/get_card_data')
 @session_required
 def get_card_data():
@@ -171,13 +207,7 @@ def get_card_data():
     character = request.args.get('character')
     if not character:
         character = flashcard_app.select_random_card(session['deck'])
-    data = flashcard_app.get_card_examples(session['deck'], character)
-    return jsonify({
-        "character": character,
-        "pinyin": data.get('pinyin', ''),
-        "english": data.get('english', ''),
-        "html": data.get('examples', '')
-    })
+    return  jsonify(packed_data(character))
 
 
 @app.route('/change_font', methods=['POST'])

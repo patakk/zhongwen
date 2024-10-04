@@ -23,6 +23,11 @@
             src: url("{{ url_for('static', filename='fonts/Kaiti.ttf') }}") format('truetype');
         }
         
+
+        ::selection {
+            background-color: rgb(255, 66, 28);
+        }
+
         #font-select {
             position: fixed;
             top: 45px;
@@ -159,7 +164,6 @@
         }
 
 
-
         #flashcard-overlay {
             display: none;
             position: fixed;
@@ -168,6 +172,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.27);
+            background-color: rgba(255, 255, 255, 0.73);
             justify-content: center;
             align-items: center;
         }
@@ -462,6 +467,7 @@
 
     <script>
         const characters = {{ characters | tojson | safe }};
+        const characterdata = {{ character | tojson | safe }};
         const grid = document.getElementById('character-grid');
         const overlay = document.getElementById('flashcard-overlay');
         const flashcardContent = document.getElementById('flashcard_container');
@@ -489,92 +495,106 @@
                     return response.json();
                 })
                 .then(data => {
-                    const container = document.getElementById('flashcard_container');
-                    const characterElement = container.querySelector('.character');
-                    characterElement.innerHTML = ''; // Clear existing content
-
-                    // Split the character string into individual characters
-                    const chars = data.character.split('');
-                    
-                    // Create clickable spans for each character
-                    chars.forEach(char => {
-                        const span = document.createElement('span');
-                        span.textContent = char;
-                        span.className = 'clickable-char';
-                        span.style.cursor = 'pointer';
-                        span.addEventListener('click', function(e) {
-                            e.stopPropagation(); // Prevent triggering the change event
-                            window.location.href = `./search?query=${encodeURIComponent(char)}`;
-                        });
-                        characterElement.appendChild(span);
-                        console.log(span);
-                    });
-
-                    container.querySelector('.pinyin').textContent = data.pinyin;
-                    container.querySelector('.english').textContent = data.english;
-                    container.querySelector('.flashcard').innerHTML = data.html;
-                    if (chars.length < 4) {
-                        const strokesContainer = document.createElement('div');
-                        strokesContainer.className = 'strokes-container';
-                        document.querySelector('.flashcard').appendChild(strokesContainer);
-
-                        chars.forEach((char, i) => {
-                            const strokeWrapper = document.createElement('div');
-                            strokeWrapper.style.position = 'relative';
-                            strokesContainer.appendChild(strokeWrapper);
-
-                            let writerSize = chars.length === 1 ? 150 : 150;
-                            
-                            if(screen.width < 768 && chars.length === 3){
-                                writerSize = 90;
-                            }
-
-                            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                            svg.setAttribute("width", writerSize);
-                            svg.setAttribute("height", writerSize);
-                            svg.setAttribute("id", `grid-background-${i}`);
-                            const dashSize = Math.max(2, Math.floor(writerSize / 25)); // Adjust the divisor as needed
-                            const dashPattern = `${dashSize},${dashSize}`;
-
-                            svg.innerHTML = `
-                                <rect x="0" y="0" width="${writerSize}" height="${writerSize}" fill="none" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                                <line x1="0" y1="0" x2="${writerSize}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                                <line x1="${writerSize}" y1="0" x2="0" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                                <line x1="${writerSize/2}" y1="0" x2="${writerSize/2}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                                <line x1="0" y1="${writerSize/2}" x2="${writerSize}" y2="${writerSize/2}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                            `;
-
-                            strokeWrapper.appendChild(svg);
-
-                            const writer = HanziWriter.create(`grid-background-${i}`, char, {
-                                width: writerSize,
-                                height: writerSize,
-                                padding: 5,
-                                strokeColor: '#000000',
-                                strokeAnimationSpeed: 1,
-                                delayBetweenStrokes: 220,
-                                radicalColor: '#ff0000'
-                            });
-
-                            strokeWrapper.addEventListener('click', function() {
-                                writer.animateCharacter();
-                            });
-                        });
-                    }
-
-
-                    overlay.style.display = 'flex';
-                    messageElement.textContent = '';
-                    isAnswerVisible = true;
-                    updateVisibility();
-                    
-                    // Scroll to the top of the flashcard content
-                    flashcardContent.scrollTop = 0;
+                    showAfterLoad(data);
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     messageElement.textContent = `Error: ${error.message}`;
                 });
+        }
+
+        function showAfterLoad(data){
+            const container = document.getElementById('flashcard_container');
+            const characterElement = container.querySelector('.character');
+            characterElement.innerHTML = ''; // Clear existing content
+
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('character', data.character);
+            history.pushState({}, '', newUrl);
+
+            
+            document.getElementById('font-select').style.top = '15px';
+            document.getElementById('font-select').style.marginTop = '0px';
+            document.getElementById('deck-select').style.display = 'none';
+            document.getElementById('deck-select').value = data.deck;
+
+            // Split the character string into individual characters
+            const chars = data.character.split('');
+            
+            // Create clickable spans for each character
+            chars.forEach(char => {
+                const span = document.createElement('span');
+                span.textContent = char;
+                span.className = 'clickable-char';
+                span.style.cursor = 'pointer';
+                span.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent triggering the change event
+                    window.location.href = `./search?query=${encodeURIComponent(char)}`;
+                });
+                characterElement.appendChild(span);
+                console.log(span);
+            });
+
+            container.querySelector('.pinyin').textContent = data.pinyin;
+            container.querySelector('.english').textContent = data.english;
+            container.querySelector('.flashcard').innerHTML = data.html;
+            if (chars.length < 4) {
+                const strokesContainer = document.createElement('div');
+                strokesContainer.className = 'strokes-container';
+                document.querySelector('.flashcard').appendChild(strokesContainer);
+
+                chars.forEach((char, i) => {
+                    const strokeWrapper = document.createElement('div');
+                    strokeWrapper.style.position = 'relative';
+                    strokesContainer.appendChild(strokeWrapper);
+
+                    let writerSize = chars.length === 1 ? 150 : 150;
+                    
+                    if(screen.width < 768 && chars.length === 3){
+                        writerSize = 90;
+                    }
+
+                    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    svg.setAttribute("width", writerSize);
+                    svg.setAttribute("height", writerSize);
+                    svg.setAttribute("id", `grid-background-${i}`);
+                    const dashSize = Math.max(2, Math.floor(writerSize / 25)); // Adjust the divisor as needed
+                    const dashPattern = `${dashSize},${dashSize}`;
+
+                    svg.innerHTML = `
+                        <rect x="0" y="0" width="${writerSize}" height="${writerSize}" fill="none" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                        <line x1="0" y1="0" x2="${writerSize}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                        <line x1="${writerSize}" y1="0" x2="0" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                        <line x1="${writerSize/2}" y1="0" x2="${writerSize/2}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                        <line x1="0" y1="${writerSize/2}" x2="${writerSize}" y2="${writerSize/2}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                    `;
+
+                    strokeWrapper.appendChild(svg);
+
+                    const writer = HanziWriter.create(`grid-background-${i}`, char, {
+                        width: writerSize,
+                        height: writerSize,
+                        padding: 5,
+                        strokeColor: '#000000',
+                        strokeAnimationSpeed: 1,
+                        delayBetweenStrokes: 220,
+                        radicalColor: '#ff0000'
+                    });
+
+                    strokeWrapper.addEventListener('click', function() {
+                        writer.animateCharacter();
+                    });
+                });
+            }
+
+
+            overlay.style.display = 'flex';
+            messageElement.textContent = '';
+            isAnswerVisible = true;
+            updateVisibility();
+            
+            // Scroll to the top of the flashcard content
+            flashcardContent.scrollTop = 0;
         }
 
 
@@ -762,6 +782,14 @@
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) {
                 overlay.style.display = 'none';
+                document.getElementById('font-select').style.top = '45px';
+                document.getElementById('font-select').style.marginTop = '15px';
+                document.getElementById('deck-select').style.display = 'block';
+                
+                // Remove the character parameter from the URL
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.delete('character');
+                history.pushState({}, '', newUrl);
             }
         });
 
@@ -770,6 +798,10 @@
             getDeck();
             getFont();
             handleOrientationChange();
+
+            if(characterdata){
+                showAfterLoad(characterdata);
+            }
         });
 
         

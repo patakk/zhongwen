@@ -24,6 +24,11 @@
             font-family: 'Kaiti';
             src: url("{{ url_for('static', filename='fonts/Kaiti.ttf') }}") format('truetype');
         }
+
+        ::selection {
+            background-color: rgb(255, 66, 28);
+        }
+
         
         #font-select {
             position: fixed;
@@ -97,6 +102,7 @@
             font-weight: 500;
             font-family: "Noto Serif SC", serif;
         }
+
         .english {
             font-size: 24px;
             font-weight: 500;
@@ -344,7 +350,6 @@
         .clickable-char:hover {
             color: rgb(255, 217, 28);
         }
-        
         #space-instruction {
             position: fixed;
             bottom: 25px;
@@ -759,8 +764,7 @@
             
             if(!isMobileOrTablet()){
                 document.getElementById('space-instruction').style.opacity = 1;
-                document.getElementById('space-instruction').style.transition = 'opacity 4s ease-in-out';
-                
+                document.getElementById('space-instruction').style.transition = 'opacity 4s ease-out';
                 messageTimeout = setTimeout(() => {
                     document.getElementById('space-instruction').style.opacity = 0;
                 }, 2000);
