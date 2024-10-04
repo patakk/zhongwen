@@ -5,6 +5,7 @@ from datetime import datetime
 from datetime import timedelta
 import random
 from functools import wraps
+from urllib.parse import unquote
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -254,6 +255,15 @@ def record_view():
 with open('data/examples.json', 'r', encoding='utf-8') as f:
     parsed_data = json.load(f)
 
+with open('data/example_lists.json', 'r', encoding='utf-8') as f:
+    example_lists_j = json.load(f)
+example_lists = {}
+for puri in example_lists_j:
+    cat = puri.split('_')[0]
+    if cat not in example_lists:
+        example_lists[cat] = []
+    example_lists[cat].append({'title': example_lists_j[puri]['english'][0], 'uri': puri})
+
 with open('data/stories.json', 'r', encoding='utf-8') as f:
     stories_data = json.load(f)
 
@@ -266,8 +276,19 @@ def examples():
     }
     return render_template('examples.html', categories=categories)
 
-from urllib.parse import unquote
+@app.route('/lists')
+@app.route('/lists/<uri>')
+@session_required
+def lists(uri=None):
+    return render_template('lists.html', categories=example_lists, initial_uri=uri)
 
+
+@app.route('/get_lists_data/<uri>')
+@session_required
+def get_lists_data(uri):
+    if uri in example_lists_j:
+        return jsonify(example_lists_j[uri])
+    return jsonify({"error": "Story not found"}), 404
 
 @app.route('/examples/<category>/<subcategory>')
 @session_required
@@ -301,6 +322,7 @@ def get_examples_data(category, subcategory, chinese):
 def stories(uri=None):
     stories_list = [{'title': stories_data[u]['english'][0], 'uri': u} for u in stories_data]
     return render_template('stories.html', stories=stories_list, initial_uri=uri)
+
 
 @app.route('/get_stories_data/<uri>')
 @session_required
@@ -387,4 +409,4 @@ def search():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5003, debug=True)

@@ -26,7 +26,7 @@
         }
 
         ::selection {
-            background-color: rgb(255, 66, 28);
+            background-color: #ff421c;
         }
 
         
@@ -345,10 +345,12 @@
         .clickable-char {
             display: inline-block;
             margin: 0 2px;
+            color: #fff;
+            color: #000000;
         }
 
         .clickable-char:hover {
-            color: rgb(255, 217, 28);
+            color: #ffd91c;
         }
         #space-instruction {
             position: fixed;
@@ -419,6 +421,55 @@
             englishElement.style.visibility = showAnswer ? 'visible' : 'hidden';
         }
 
+        function generatePseudoRandomNumbers(hanziChar) {
+            const charCode = hanziChar.charCodeAt(0);
+
+            let seed = 0;
+            for (let i = 0; i < hanziChar.length; i++) {
+                seed = ((seed << 5) - seed) + hanziChar.charCodeAt(i);
+                seed = seed & seed; // Convert to 32-bit integer
+            }
+
+            function customRandom() {
+                seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+                return (seed / 0x7fffffff);
+            }
+
+            const numbers = [];
+            for (let i = 0; i < 5; i++) {
+                numbers.push(customRandom());
+            }
+
+            return numbers;
+        }
+
+        function randomizeTextColor(element){
+            console.log(element.textContent);
+            let colors = ['#ff421c', '#ffd91c', '#444444', '#0044FF', '#EE82EE'];
+            //const colors = ['#ff421c', '#ffd91c', '#000000'];
+            const randomNumbers = generatePseudoRandomNumbers(element.textContent);
+            randomNumbers.forEach((number, i) => {
+                randomNumbers[i] = Math.floor(number * colors.length);
+            });
+            //element.style.color = randomColor;
+            // craze css shadows
+            console.log(randomNumbers);
+            console.log(colors[randomNumbers[0]])
+            console.log(colors[randomNumbers[1]])
+            console.log(colors[randomNumbers[2]])
+            console.log(colors[randomNumbers[3]])
+            console.log(colors[randomNumbers[4]])
+            element.style.textShadow = `0 0 20px ${colors[randomNumbers[1]]}, 0 0 30px ${colors[randomNumbers[1]]}, 0 0 40px ${colors[randomNumbers[2]]}, 0 0 80px ${colors[randomNumbers[1]]}, 0 0 120px ${colors[randomNumbers[2]]}`;
+            // element.style.textShadow = `0 0 20px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 30px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 40px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 80px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 120px ${colors[Math.floor(Math.random() * colors.length)]}`;
+            console.log(element.style.textShadow);
+        }
+
+        function initializeColorTime(element, timeout){
+            setInterval(() => {
+                randomizeTextColor(element);
+            }, timeout);
+        }
+
         function displayCardData(data) {
             const container = document.getElementById('flashcard_container');
             const characterElement = container.querySelector('.character');
@@ -439,6 +490,9 @@
                 });
                 characterElement.appendChild(span);
                 console.log(span);
+
+                randomizeTextColor(span)
+                //initializeColorTime(span, 44);
             });
 
             container.querySelector('.pinyin').textContent = data.pinyin;
@@ -727,7 +781,6 @@
                 }
             }
         });
-
 
         document.getElementById('deck-select').addEventListener('change', function(event) {
             currentDeck = event.target.value;
