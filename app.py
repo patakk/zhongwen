@@ -1,28 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-import os
-import json
-from datetime import datetime
 from datetime import timedelta
-import random
 from functools import wraps
 from urllib.parse import unquote
+import os
+import json
+import random
 import time
-from functools import wraps
-
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-
-app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(days=3650)
+
+ENABLE_TIMING = False
 
 @app.before_request
 def make_session_permanent():
     session.permanent = True
 
-application = app
-
-ENABLE_TIMING = False
 def timing_decorator(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -31,8 +25,7 @@ def timing_decorator(f):
         
         start_time = time.time()
         result = f(*args, **kwargs)
-        end_time = time.time()
-        processing_time = end_time - start_time
+        processing_time = time.time() - start_time
         
         username = session.get('username', 'unknown')
         with open(f"{username}_timing.txt", "a") as file:
@@ -40,6 +33,9 @@ def timing_decorator(f):
         
         return result
     return wrap
+
+application = app
+
 
 class FlashcardApp:
     def __init__(self):
@@ -446,5 +442,4 @@ def debug():
     return jsonify({"debug": app.debug})
 
 if __name__ == '__main__':
-    #debug = os.environ.get('DEBUG', 'False').lower() == 'true'
     app.run(host='0.0.0.0', port=5003, debug=False)
