@@ -799,6 +799,18 @@
             }
         });
 
+
+        function displayStoryData(data, title) {
+            console.log("Story data received:", data);
+            currentStory = data;  // Store the story data
+            showFlashcard(data.hanzi, data.pinyin, data.english);
+            
+            // Update the URL without reloading the page
+            const newUrl = `${window.location.pathname}?uri=${encodeURIComponent(title)}`;
+            history.pushState(null, '', newUrl);
+        }
+
+
         function closeStory() {
             overlay.style.display = 'none';
             document.getElementById('font-select').style.display = 'none';
@@ -820,9 +832,10 @@
             flashcardContainer.scrollTop = 0;
             
             // Update the URL to remove the story URI
-            const newUrl = window.location.pathname.split('/lists')[0] + '/lists';
+            const newUrl = window.location.pathname;
             history.pushState(null, '', newUrl);
         }
+
 
 
 
@@ -863,16 +876,6 @@
             }
         }
 
-        function displayStoryData(data, title) {
-            console.log("Story data received:", data);
-            currentStory = data;  // Store the story data
-            showFlashcard(data.hanzi, data.pinyin, data.english);
-            
-            // Update the URL without reloading the page
-            const newUrl = `${window.location.pathname.split('/lists')[0]}/lists/${title}`;
-            history.pushState(null, '', newUrl);
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.listlist').forEach(item => {
                 const title = item.getAttribute('uri-index');
@@ -901,11 +904,14 @@
         window.addEventListener('resize', setupHoverEffects);
         // Highlight the first item by default
         // highlightListItem(0);
-        const initialUri = '{{ initial_uri }}';
-        // if (initialUri && initialUri.trim() !== '' && (initialUri.includes('story_') || initialUri.includes('grammar_'))) {
-        if (initialUri && initialUri !== 'None' && initialUri.trim() !== '') {
-            loadStory(initialUri);
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialUri = urlParams.get('uri') || '{{ initial_uri }}';
+            if (initialUri && initialUri !== 'None' && initialUri.trim() !== '') {
+                loadStory(initialUri);
+            }
+        });
+
 
         window.onpopstate = function(event) {
             const pathParts = window.location.pathname.split('/');

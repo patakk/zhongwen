@@ -304,10 +304,10 @@ def examples():
     return render_template('examples.html', categories=categories)
 
 @app.route('/lists')
-@app.route('/lists/<uri>')
 @session_required
 @timing_decorator
-def lists(uri=None):
+def lists():
+    uri = request.args.get('uri')
     return render_template('lists.html', categories=example_lists, initial_uri=uri)
 
 

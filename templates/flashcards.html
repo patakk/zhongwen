@@ -473,24 +473,57 @@
         }
 
         function randomizeTextColor(element){
-            console.log(element.textContent);
             let colors = ['#ff421c', '#ffd91c', '#444444', '#0044FF', '#EE82EE'];
-            //const colors = ['#ff421c', '#ffd91c', '#000000'];
             const randomNumbers = generatePseudoRandomNumbers(element.textContent);
             randomNumbers.forEach((number, i) => {
                 randomNumbers[i] = Math.floor(number * colors.length);
             });
-            //element.style.color = randomColor;
-            // craze css shadows
             element.style.transition = 'text-shadow 0.125s';
             element.style.textShadow = `0 0 20px ${colors[randomNumbers[1]]}, 0 0 30px ${colors[randomNumbers[1]]}, 0 0 40px ${colors[randomNumbers[2]]}, 0 0 80px ${colors[randomNumbers[1]]}, 0 0 120px ${colors[randomNumbers[2]]}`;
-            // element.style.textShadow = `0 0 20px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 30px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 40px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 80px ${colors[Math.floor(Math.random() * colors.length)]}, 0 0 120px ${colors[Math.floor(Math.random() * colors.length)]}`;
-            console.log(element.style.textShadow);
+        }
+
+        function toneTextColor(element) {
+            let colors = ['#58d38f', '#ffd91c', '#9f5dc1', '#ff421c', '#b1cbff']; // Corresponds to tones 1, 2, 3, 4, and neutral
+
+            console.log("pinnn", element.dataset.pinyin);
+            // Function to determine tone from pinyin
+            function getToneFromPinyin(pinyin) {
+                if (!pinyin) return 4; // Default to neutral tone if no pinyin
+                
+                // Tone mark to number mapping
+                const toneMarks = {
+                    'ā': 0, 'ē': 0, 'ī': 0, 'ō': 0, 'ū': 0, 'ǖ': 0,
+                    'á': 1, 'é': 1, 'í': 1, 'ó': 1, 'ú': 1, 'ǘ': 1,
+                    'ǎ': 2, 'ě': 2, 'ǐ': 2, 'ǒ': 2, 'ǔ': 2, 'ǚ': 2,
+                    'à': 3, 'è': 3, 'ì': 3, 'ò': 3, 'ù': 3, 'ǜ': 3
+                };
+
+                for (let char of pinyin) {
+                    if (char in toneMarks) {
+                        return toneMarks[char];
+                    }
+                }
+
+                return 4; // Neutral tone if no tone mark found
+            }
+
+
+            const tone = getToneFromPinyin(element.dataset.pinyin);
+            const color = colors[tone];
+
+            // Commented out random color selection
+            // const randomNumbers = generatePseudoRandomNumbers(element.dataset.char);
+            // randomNumbers.forEach((number, i) => {
+            //     randomNumbers[i] = Math.floor(number * colors.length);
+            // });
+
+            element.style.transition = 'text-shadow 0.125s';
+            element.style.textShadow = `0 0 20px ${color}, 0 0 30px ${color}, 0 0 40px ${color}, 0 0 80px ${color}, 0 0 120px ${color}`;
         }
 
         function initializeColorTime(element, timeout){
             setInterval(() => {
-                randomizeTextColor(element);
+                toneTextColor(element);
             }, timeout);
         }
 
@@ -501,21 +534,51 @@
 
             // Split the character string into individual characters
             const chars = data.character.split('');
+            const pinyin = data.pinyin;
+
+            let pinyin_split = "";
             
+            const toneMarks = ['ā', 'ē', 'ī', 'ō', 'ū', 'ǖ', 'á', 'é', 'í', 'ó', 'ú', 'ǘ', 'ǎ', 'ě', 'ǐ', 'ǒ', 'ǔ', 'ǚ', 'à', 'è', 'ì', 'ò', 'ù', 'ǜ'];
+
+            for (let i = 0; i < pinyin.length; i++) {
+                let flag = false;
+                for (let j = 0; j < toneMarks.length; j++) {
+                    if (pinyin[i] === toneMarks[j]) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    pinyin_split += pinyin[i];
+                }
+                else {
+                    pinyin_split += pinyin[i] + "_";
+                }
+            }
+            let pinyin_split_list = pinyin_split.split("_");
+            console.log("pinyin_split", pinyin_split);
+            console.log("pinyin_split_list", pinyin_split_list);
             // Create clickable spans for each character
-            chars.forEach(char => {
+            chars.forEach((char, index) => {
                 const span = document.createElement('span');
                 span.textContent = char;
+                span.dataset.char = char;
                 span.className = 'clickable-char';
+
+                let pinyin_part = pinyin_split_list[index];
+                console.log("pinyin_part", pinyin_part);
+
+
+                span.dataset.pinyin = pinyin_part;
                 span.style.cursor = 'pointer';
                 span.addEventListener('click', function(e) {
                     e.stopPropagation(); // Prevent triggering the change event
                     window.location.href = `./search?query=${encodeURIComponent(char)}`;
                 });
                 characterElement.appendChild(span);
-                console.log(span);
+                console.log("span", span);
 
-                //randomizeTextColor(span)
+                //toneTextColor(span)
                 span.style.transition = 'text-shadow 0.05s';
                 span.style.textShadow = 'none'; 
                 //initializeColorTime(span, 44);
@@ -609,7 +672,7 @@
                 showingAnswer = true;
                 
                 document.querySelectorAll('.clickable-char').forEach((char) => {
-                    randomizeTextColor(char);
+                    toneTextColor(char);
                 });
                 // recordView(currentCard);
             }
