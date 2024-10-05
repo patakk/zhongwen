@@ -441,7 +441,10 @@ def search():
     return render_template('search.html')
 
 
+@app.route('/debug')
+def debug():
+    return jsonify({"debug": app.debug})
+
 if __name__ == '__main__':
-    debug = os.environ.get('DEBUG', 'False').lower() == 'true'
-    print(f"Debug mode: {debug}")
-    app.run(host='0.0.0.0', port=5003, debug=debug)
+    #debug = os.environ.get('DEBUG', 'False').lower() == 'true'
+    app.run(host='0.0.0.0', port=5003, debug=False)
