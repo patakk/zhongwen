@@ -6,6 +6,9 @@ from datetime import timedelta
 import random
 from functools import wraps
 from urllib.parse import unquote
+import time
+from functools import wraps
+
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -18,6 +21,25 @@ def make_session_permanent():
     session.permanent = True
 
 application = app
+
+ENABLE_TIMING = False
+def timing_decorator(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if not ENABLE_TIMING:
+            return f(*args, **kwargs)
+        
+        start_time = time.time()
+        result = f(*args, **kwargs)
+        end_time = time.time()
+        processing_time = end_time - start_time
+        
+        username = session.get('username', 'unknown')
+        with open(f"{username}_timing.txt", "a") as file:
+            file.write(f"{f.__name__}: {processing_time:.4f} seconds\n")
+        
+        return result
+    return wrap
 
 class FlashcardApp:
     def __init__(self):
@@ -94,6 +116,7 @@ def session_required(func):
     return wrapper
 
 @app.route('/', methods=['GET', 'POST'])
+@timing_decorator
 def login():
     if 'username' not in session:
         session['username'] = 'tempuser'
@@ -111,16 +134,19 @@ def login():
 
 @app.route('/home')
 @session_required
+@timing_decorator
 def home():
     return render_template('home.html', username=session['username'])
 
 @app.route('/flashcards')
 @session_required
+@timing_decorator
 def flashcards():
     return render_template('flashcards.html', username=session['username'])
 
 @app.route('/pinyinenglish')
 @session_required
+@timing_decorator
 def pinyinenglish():
     return render_template('pinyinenglish.html', username=session['username'])
 
@@ -154,6 +180,7 @@ def packed_data(character):
 
 @app.route('/characters')
 @session_required
+@timing_decorator
 def characters():
     character = request.args.get('character')
     if not character:
@@ -220,6 +247,7 @@ def change_font():
 
 @app.route('/get_font')
 @session_required
+@timing_decorator
 def get_font():
     response = jsonify({"font": session['font']})
     # response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
@@ -228,12 +256,14 @@ def get_font():
     return response
 
 @app.route('/change_deck', methods=['POST'])
+@timing_decorator
 def change_deck():
     session['deck'] = request.args.get('deck')
     return jsonify({"message": "Deck changed successfully"})
 
 @app.route('/get_deck')
 @session_required
+@timing_decorator
 def get_deck():
     return jsonify({"deck": session['deck']})
     
@@ -269,6 +299,7 @@ with open('data/stories.json', 'r', encoding='utf-8') as f:
 
 @app.route('/examples')
 @session_required
+@timing_decorator
 def examples():
     categories = {
         'vocabulary': list(parsed_data['vocabulary'].keys()),
@@ -279,6 +310,7 @@ def examples():
 @app.route('/lists')
 @app.route('/lists/<uri>')
 @session_required
+@timing_decorator
 def lists(uri=None):
     return render_template('lists.html', categories=example_lists, initial_uri=uri)
 
@@ -319,6 +351,7 @@ def get_examples_data(category, subcategory, chinese):
 @app.route('/stories')
 @app.route('/stories/<uri>')
 @session_required
+@timing_decorator
 def stories(uri=None):
     stories_list = [{'title': stories_data[u]['english'][0], 'uri': u} for u in stories_data]
     return render_template('stories.html', stories=stories_list, initial_uri=uri)
