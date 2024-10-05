@@ -8,6 +8,8 @@ parser.py
 
 user_progress/
 
+*.txt
+
 __pycache__/
 *.py[cod]
 
