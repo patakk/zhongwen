@@ -295,9 +295,27 @@
             }
         }
 
-        @media (max-width: 1024px) {
+        
+        @media only screen 
+        and (min-device-width: 768px) 
+        and (max-device-width: 1024px)  {
             #flashcard_container {
-                max-width: 95%; /* Add a max-width */
+                max-width: 90%; /* Add a max-width */
+                width: 90%;
+            }
+            #font-select {
+                top: 15px;
+                right: 10px;
+                font-size: 14px;
+                width: 120px;
+            }
+        }
+        
+        @media only screen 
+        and (orientation: landscape) {
+            #flashcard_container {
+                max-width: 60%; /* Add a max-width */
+                width: 60%;
             }
             #font-select {
                 top: 15px;

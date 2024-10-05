@@ -275,13 +275,21 @@
 
         @media only screen 
         and (min-device-width: 768px) 
-        and (max-device-width: 1024px) 
-        and (orientation: landscape) {
+        and (max-device-width: 1024px) {
             #flashcard_container {
                 width: 90%;
                 height: 80vh;
                 max-height: 80vh;
                 margin-bottom: 20px;
+            }
+        }
+
+        
+        @media only screen 
+        and (orientation: landscape) {
+            #flashcard_container {
+                max-width: 60%; /* Add a max-width */
+                width: 60%;
             }
         }
 
