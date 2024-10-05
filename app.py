@@ -178,7 +178,7 @@ def packed_data(character):
 @session_required
 @timing_decorator
 def characters():
-    character = request.args.get('character')
+    character = request.args.get('query')
     if not character:
         characters = list(flashcard_app.cards[session['deck']].keys())
         print(f"Initial characters: {len(characters)}")  # Debug print
@@ -388,6 +388,19 @@ def convert_numerical_tones(pinyin):
     
     return re.sub(r'([aeiouü])([\d])', replace_tone, pinyin)
 
+from collections import Counter
+
+def fuzzy_match(query, text):
+    query_chars = Counter(query.lower())
+    text_chars = Counter(text.lower())
+    return all(query_chars[char] <= text_chars[char] for char in query_chars)
+
+def fuzzy_sort_key(query, text):
+    query = query.lower()
+    text = text.lower()
+    order_score = sum(text.index(char) for char in query if char in text)
+    return order_score
+
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST' or request.args.get('query'):
@@ -432,6 +445,28 @@ def search():
 
         sorted_results = sorted(unique_results, key=sort_key)
         
+        if not sorted_results:  # If no results found, perform fuzzy search
+            fuzzy_results = []
+            for deck in flashcard_app.decks:
+                for hanzi, card in flashcard_app.cards[deck].items():
+                    if 'pinyin' in card and fuzzy_match(query, card['pinyin']):
+                        fuzzy_results.append({'hanzi': hanzi, **card, 'match_type': 'fuzzy_pinyin'})
+                    elif 'english' in card and fuzzy_match(query, card['english']):
+                        fuzzy_results.append({'hanzi': hanzi, **card, 'match_type': 'fuzzy_english'})
+
+            # Remove duplicates
+            unique_fuzzy_results = []
+            seen_hanzi = set()
+            for result in fuzzy_results:
+                if result['hanzi'] not in seen_hanzi:
+                    unique_fuzzy_results.append(result)
+                    seen_hanzi.add(result['hanzi'])
+
+            # Sort fuzzy results
+            sorted_results = sorted(unique_fuzzy_results, key=lambda result: 
+                fuzzy_sort_key(query, result['pinyin'] if result['match_type'] == 'fuzzy_pinyin' else result['english'])
+            )
+
         return render_template('search.html', results=sorted_results, query=query)
     
     return render_template('search.html')
