@@ -1,28 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-import os
-import json
-from datetime import datetime
 from datetime import timedelta
-import random
 from functools import wraps
 from urllib.parse import unquote
+import os
+import json
+import random
 import time
-from functools import wraps
-
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-
-app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(days=3650)
+
+ENABLE_TIMING = False
 
 @app.before_request
 def make_session_permanent():
     session.permanent = True
 
-application = app
-
-ENABLE_TIMING = False
 def timing_decorator(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -31,8 +25,7 @@ def timing_decorator(f):
         
         start_time = time.time()
         result = f(*args, **kwargs)
-        end_time = time.time()
-        processing_time = end_time - start_time
+        processing_time = time.time() - start_time
         
         username = session.get('username', 'unknown')
         with open(f"{username}_timing.txt", "a") as file:
@@ -40,6 +33,9 @@ def timing_decorator(f):
         
         return result
     return wrap
+
+application = app
+
 
 class FlashcardApp:
     def __init__(self):
@@ -392,6 +388,19 @@ def convert_numerical_tones(pinyin):
     
     return re.sub(r'([aeiouü])([\d])', replace_tone, pinyin)
 
+from collections import Counter
+
+def fuzzy_match(query, text):
+    query_chars = Counter(query.lower())
+    text_chars = Counter(text.lower())
+    return all(query_chars[char] <= text_chars[char] for char in query_chars)
+
+def fuzzy_sort_key(query, text):
+    query = query.lower()
+    text = text.lower()
+    order_score = sum(text.index(char) for char in query if char in text)
+    return order_score
+
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST' or request.args.get('query'):
@@ -436,10 +445,40 @@ def search():
 
         sorted_results = sorted(unique_results, key=sort_key)
         
+        if not sorted_results:  # If no results found, perform fuzzy search
+            fuzzy_results = []
+            for deck in flashcard_app.decks:
+                for hanzi, card in flashcard_app.cards[deck].items():
+                    if 'pinyin' in card and fuzzy_match(query, card['pinyin']):
+                        fuzzy_results.append({'hanzi': hanzi, **card, 'match_type': 'fuzzy_pinyin'})
+                    elif 'english' in card and fuzzy_match(query, card['english']):
+                        fuzzy_results.append({'hanzi': hanzi, **card, 'match_type': 'fuzzy_english'})
+
+            # Remove duplicates
+            unique_fuzzy_results = []
+            seen_hanzi = set()
+            for result in fuzzy_results:
+                if result['hanzi'] not in seen_hanzi:
+                    unique_fuzzy_results.append(result)
+                    seen_hanzi.add(result['hanzi'])
+
+            # Sort fuzzy results
+            def fuzzy_sort_key(result):
+                if result['match_type'] == 'fuzzy_pinyin':
+                    return fuzzy_sort_key(query, result['pinyin'])
+                else:  # fuzzy_english
+                    return fuzzy_sort_key(query, result['english'])
+
+            sorted_results = sorted(unique_fuzzy_results, key=fuzzy_sort_key)
+
         return render_template('search.html', results=sorted_results, query=query)
     
     return render_template('search.html')
 
 
+@app.route('/debug')
+def debug():
+    return jsonify({"debug": app.debug})
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5003, debug=True)
+    app.run(host='0.0.0.0', port=5003, debug=False)
