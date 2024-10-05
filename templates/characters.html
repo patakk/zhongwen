@@ -509,7 +509,7 @@
             characterElement.innerHTML = ''; // Clear existing content
 
             const newUrl = new URL(window.location);
-            newUrl.searchParams.set('character', data.character);
+            newUrl.searchParams.set('query', data.character);
             history.pushState({}, '', newUrl);
 
             
@@ -788,7 +788,7 @@
                 
                 // Remove the character parameter from the URL
                 const newUrl = new URL(window.location);
-                newUrl.searchParams.delete('character');
+                newUrl.searchParams.delete('query');
                 history.pushState({}, '', newUrl);
             }
         });

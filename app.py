@@ -178,7 +178,7 @@ def packed_data(character):
 @session_required
 @timing_decorator
 def characters():
-    character = request.args.get('character')
+    character = request.args.get('query')
     if not character:
         characters = list(flashcard_app.cards[session['deck']].keys())
         print(f"Initial characters: {len(characters)}")  # Debug print
@@ -463,13 +463,9 @@ def search():
                     seen_hanzi.add(result['hanzi'])
 
             # Sort fuzzy results
-            def fuzzy_sort_key(result):
-                if result['match_type'] == 'fuzzy_pinyin':
-                    return fuzzy_sort_key(query, result['pinyin'])
-                else:  # fuzzy_english
-                    return fuzzy_sort_key(query, result['english'])
-
-            sorted_results = sorted(unique_fuzzy_results, key=fuzzy_sort_key)
+            sorted_results = sorted(unique_fuzzy_results, key=lambda result: 
+                fuzzy_sort_key(query, result['pinyin'] if result['match_type'] == 'fuzzy_pinyin' else result['english'])
+            )
 
         return render_template('search.html', results=sorted_results, query=query)
     
