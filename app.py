@@ -1,11 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import send_file
+from pydub import AudioSegment
 from datetime import timedelta
 from functools import wraps
 from urllib.parse import unquote
-import os
-import json
 import random
+import json
 import time
+import os
+import io
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -235,6 +238,7 @@ def get_card_data():
 
 
 @app.route('/change_font', methods=['POST'])
+@timing_decorator
 def change_font():
     session['font'] = request.args.get('font')
     print('set', session['font'])
@@ -265,6 +269,7 @@ def get_deck():
     
 @app.route('/record_view', methods=['POST'])
 @session_required
+@timing_decorator
 def record_view():
     data = request.json
     username = session['username']
@@ -292,6 +297,9 @@ for puri in example_lists_j:
 
 with open('data/stories.json', 'r', encoding='utf-8') as f:
     stories_data = json.load(f)
+    
+with open('data/audio_mappings.json', 'r', encoding='utf-8') as f:
+    audio_mappings = json.load(f)
 
 @app.route('/examples')
 @session_required
@@ -313,6 +321,7 @@ def lists():
 
 @app.route('/get_lists_data/<uri>')
 @session_required
+@timing_decorator
 def get_lists_data(uri):
     if uri in example_lists_j:
         return jsonify(example_lists_j[uri])
@@ -320,6 +329,7 @@ def get_lists_data(uri):
 
 @app.route('/examples/<category>/<subcategory>')
 @session_required
+@timing_decorator
 def examples_category(category, subcategory):
     category = unquote(category)
     subcategory = unquote(subcategory)
@@ -331,6 +341,7 @@ def examples_category(category, subcategory):
 
 @app.route('/get_examples_data/<category>/<subcategory>/<chinese>')
 @session_required
+@timing_decorator
 def get_examples_data(category, subcategory, chinese):
     category = unquote(category)
     subcategory = unquote(subcategory)
@@ -355,6 +366,7 @@ def stories(uri=None):
 
 @app.route('/get_stories_data/<uri>')
 @session_required
+@timing_decorator
 def get_stories_data(uri):
     if uri in stories_data:
         return jsonify(stories_data[uri])
@@ -402,6 +414,7 @@ def fuzzy_sort_key(query, text):
     return order_score
 
 @app.route('/search', methods=['GET', 'POST'])
+@timing_decorator
 def search():
     if request.method == 'POST' or request.args.get('query'):
         query = request.args.get('query') or request.form.get('query') or ''
@@ -471,6 +484,34 @@ def search():
     
     return render_template('search.html')
 
+@app.route('/get_audio', methods=['GET'])
+@timing_decorator
+def get_audio():
+    characters = request.args.get('chars', '')
+    if not characters:
+        return "No characters provided", 400
+
+    combined = AudioSegment.empty()
+    for char in characters:
+        if char in audio_mappings and 'audio' in audio_mappings[char]:
+            file_name = audio_mappings[char]['audio']
+            file_path = os.path.join('..', 'chinese_audio_clips', file_name)
+            if os.path.exists(file_path):
+                audio = AudioSegment.from_mp3(file_path)
+                combined += audio
+            else:
+                print(f"Audio file not found for character: {char}")
+        else:
+            print(f"No audio mapping found for character: {char}")
+
+    if len(combined) == 0:
+        return "No audio found for the provided characters", 404
+
+    buffer = io.BytesIO()
+    combined.export(buffer, format="mp3")
+    buffer.seek(0)
+
+    return send_file(buffer, mimetype="audio/mpeg")
 
 @app.route('/debug')
 def debug():

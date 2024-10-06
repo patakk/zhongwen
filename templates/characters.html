@@ -549,6 +549,7 @@
             document.getElementById('deck-select').style.display = 'none';
             document.getElementById('deck-select').value = data.deck;
 
+
             // Split the character string into individual characters
             const chars = data.character.split('');
             
@@ -618,6 +619,7 @@
                 });
             }
 
+            playHanziAudio(data.character);
 
             overlay.style.display = 'flex';
             messageElement.textContent = '';
@@ -740,6 +742,13 @@
             }
         });
 
+        function playHanziAudio(hanziString) {
+            const encodedHanzi = encodeURIComponent(hanziString);
+            const audio = new Audio(`/get_audio?chars=${encodedHanzi}`);
+            audio.play().catch(error => {
+                console.error('Error playing audio:', error);
+            });
+        }
         
         function isTouchDevice() {
             return (('ontouchstart' in window) ||
