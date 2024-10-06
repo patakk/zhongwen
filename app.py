@@ -485,6 +485,7 @@ def search():
 
 @app.route('/get_audio', methods=['GET'])
 def get_audio():
+    print("getting audio")
     characters = request.args.get('chars', '')
     if not characters:
         return "No characters provided", 400
