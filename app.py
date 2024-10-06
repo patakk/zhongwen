@@ -485,8 +485,7 @@ def search():
 
 @app.route('/get_audio', methods=['GET'])
 def get_audio():
-    print("getting audio")
-    characters = request.args.get('chars', '')
+    characters = request.args.get('chars', '我')
     if not characters:
         return "No characters provided", 400
 
@@ -497,11 +496,9 @@ def get_audio():
             file_path = os.path.join('..', 'chinese_audio_clips', file_name)
             file_path2 = os.path.join('chinese_audio_clips', file_name)
             if os.path.exists(file_path):
-                print(file_path)
                 with open(file_path, 'rb') as f:
                     audio_chunks.append(f.read())
             elif os.path.exists(file_path):
-                print(file_path2)
                 with open(file_path, 'rb') as f:
                     audio_chunks.append(f.read())
             else:
@@ -515,12 +512,8 @@ def get_audio():
     # Concatenate MP3 files
     combined_audio = b''.join(audio_chunks)
 
-    with open('audio.mp3', 'wb') as f:
-        f.write(combined_audio)
-
     buffer = io.BytesIO(combined_audio)
     buffer.seek(0)
-    print(f"Returning audio for {len(characters)} characters")
 
     return send_file(buffer, mimetype="audio/mpeg")
 
@@ -528,5 +521,9 @@ def get_audio():
 def debug():
     return jsonify({"debug": app.debug})
 
+@app.route('/test_audio')
+def test_audio():
+    return send_file('path/to/test.mp3', mimetype="audio/mpeg")
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5003, debug=True)
+    app.run(host='0.0.0.0', port=5003, debug=False)

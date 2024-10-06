@@ -647,14 +647,6 @@
             container.scrollTop = 0;
         }
 
-        function playHanziAudio(hanziString) {
-            const encodedHanzi = encodeURIComponent(hanziString);
-            const audio = new Audio(`/get_audio?chars=${encodedHanzi}`);
-            audio.play().catch(error => {
-                console.error('Error playing audio:', error);
-            });
-        }
-
         function change(event) {
             const target = event.target;
 
@@ -917,13 +909,13 @@
             const pinyinElement = document.getElementById('flashcard_pinyin');
             console.log(pinyinElement);
             const encodedHanzi = encodeURIComponent(pinyinElement.dataset.characters);
-            const audio = new Audio(`/get_audio?chars=${encodedHanzi}`);
+            const audio = new Audio(`./get_audio?chars=${encodedHanzi}`);
             
             audio.play().catch(error => {
                 console.error('Error playing audio:', error);
             });
         }
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             getDeck();
             getFont();
