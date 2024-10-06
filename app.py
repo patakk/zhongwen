@@ -498,7 +498,7 @@ def get_audio():
             if os.path.exists(file_path):
                 with open(file_path, 'rb') as f:
                     audio_chunks.append(f.read())
-            elif os.path.exists(file_path):
+            elif os.path.exists(file_path2):
                 with open(file_path, 'rb') as f:
                     audio_chunks.append(f.read())
             else:
