@@ -569,6 +569,9 @@
 
             container.querySelector('.pinyin').textContent = data.pinyin;
             container.querySelector('.english').textContent = data.english;
+            container.querySelector('.pinyin').addEventListener('click', function() {
+                playHanziAudio(data.character);
+            });
             container.querySelector('.flashcard').innerHTML = data.html;
             if (chars.length < 4) {
                 const strokesContainer = document.createElement('div');
@@ -618,8 +621,6 @@
                     });
                 });
             }
-
-            playHanziAudio(data.character);
 
             overlay.style.display = 'flex';
             messageElement.textContent = '';

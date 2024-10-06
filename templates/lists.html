@@ -540,7 +540,8 @@
                     console.error('Error:', error);
                 })
                 .finally(() => {
-                    currentFetch = null;
+                    console.log('Fetch complete');
+                    // currentFetch = null;
                 });
 
             return currentFetch;
@@ -813,6 +814,7 @@
 
         function closeStory() {
             overlay.style.display = 'none';
+            currentFetch = null;
             document.getElementById('font-select').style.display = 'none';
             if (isMobileOrTablet()) {
                 flashcardContent.removeEventListener('click', cycleContent);
@@ -868,6 +870,7 @@
                     }
                 });
             } else {
+                console.log('????')
                 prefetchStoryData(title).then(data => {
                     if (data) {
                         displayStoryData(data, title);
@@ -883,10 +886,11 @@
                 item.addEventListener('mouseenter', function() {
                     prefetchTimer = setTimeout(() => {
                         prefetchStoryData(title);
-                    }, 1000);
+                    }, 333);
                 });
 
                 item.addEventListener('mouseleave', function() {
+                    currentFetch = null;
                     if (prefetchTimer) {
                         clearTimeout(prefetchTimer);
                     }

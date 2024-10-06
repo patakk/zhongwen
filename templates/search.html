@@ -422,6 +422,9 @@
                     });
 
                     container.querySelector('.pinyin').textContent = data.pinyin;
+                    container.querySelector('.pinyin').addEventListener('click', function() {
+                        playHanziAudio(data.character);
+                    });
                     container.querySelector('.english').textContent = data.english;
                     container.querySelector('.flashcard').innerHTML = data.html;
 
@@ -495,6 +498,14 @@
 
         function isiPad() {
             return /Macintosh/i.test(navigator.userAgent) && isTouchDevice();
+        }
+
+        function playHanziAudio(hanziString) {
+            const encodedHanzi = encodeURIComponent(hanziString);
+            const audio = new Audio(`/get_audio?chars=${encodedHanzi}`);
+            audio.play().catch(error => {
+                console.error('Error playing audio:', error);
+            });
         }
 
         function isMobileOrTablet() {
