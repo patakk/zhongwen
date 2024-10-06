@@ -508,6 +508,9 @@ def get_audio():
     # Concatenate MP3 files
     combined_audio = b''.join(audio_chunks)
 
+    with open('audio.mp3', 'wb') as f:
+        f.write(combined_audio)
+
     buffer = io.BytesIO(combined_audio)
     buffer.seek(0)
 
