@@ -483,9 +483,9 @@ def search():
     
     return render_template('search.html')
 
-@app.route('/get_audio', methods=['GET'])
+@app.route('/get_audio', methods=['POST', 'GET'])
 def get_audio():
-    characters = request.args.get('chars', '我')
+    characters = request.args.get('chars', '')
     if not characters:
         return "No characters provided", 400
 
