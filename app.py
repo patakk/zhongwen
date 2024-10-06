@@ -485,31 +485,33 @@ def search():
     return render_template('search.html')
 
 @app.route('/get_audio', methods=['GET'])
-@timing_decorator
 def get_audio():
     characters = request.args.get('chars', '')
     if not characters:
         return "No characters provided", 400
 
-    combined = AudioSegment.empty()
+    audio_chunks = []
     for char in characters:
         if char in audio_mappings and 'audio' in audio_mappings[char]:
             file_name = audio_mappings[char]['audio']
             file_path = os.path.join('..', 'chinese_audio_clips', file_name)
             if os.path.exists(file_path):
-                audio = AudioSegment.from_mp3(file_path)
-                combined += audio
+                with open(file_path, 'rb') as f:
+                    audio_chunks.append(f.read())
             else:
                 print(f"Audio file not found for character: {char}")
         else:
             print(f"No audio mapping found for character: {char}")
 
-    if len(combined) == 0:
+    if not audio_chunks:
         return "No audio found for the provided characters", 404
 
-    buffer = io.BytesIO()
-    combined.export(buffer, format="mp3")
+    # Concatenate MP3 files
+    combined_audio = b''.join(audio_chunks)
+
+    buffer = io.BytesIO(combined_audio)
     buffer.seek(0)
+
     return send_file(buffer, mimetype="audio/mpeg")
 
 @app.route('/debug')
