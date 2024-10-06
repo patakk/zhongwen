@@ -828,8 +828,8 @@
 
         function playHanziAudio() {
             const pinyinElement = document.getElementById('flashcard_pinyin');
-            console.log(`/get_audio?chars=${encodedHanzi}`);
             const encodedHanzi = encodeURIComponent(pinyinElement.dataset.characters);
+            console.log(`/get_audio?chars=${encodedHanzi}`);
             const audio = new Audio(`/get_audio?chars=${encodedHanzi}`);
             
             audio.play().catch(error => {
