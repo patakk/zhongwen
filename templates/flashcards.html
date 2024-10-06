@@ -422,7 +422,7 @@
     </select>
     <div id="flashcard_container">
         <div class="character"></div>
-        <div class="pinyin"></div>
+        <div id="flashcard_pinyin" class="pinyin"></div>
         <div class="english"></div>
         <div class="flashcard"></div>
     </div>
@@ -585,9 +585,7 @@
             });
 
             container.querySelector('.pinyin').textContent = data.pinyin;
-            container.querySelector('.pinyin').addEventListener('click', function() {
-                playHanziAudio(data.character);
-            });
+            container.querySelector('.pinyin').dataset.characters = data.character;
             container.querySelector('.english').textContent = data.english;
             container.querySelector('.flashcard').innerHTML = data.html;
 
@@ -914,11 +912,28 @@
         window.addEventListener('orientationchange', handleOrientationChange);
         window.addEventListener('resize', handleOrientationChange);
 
+
+        function playHanziAudio() {
+            const pinyinElement = document.getElementById('flashcard_pinyin');
+            console.log(pinyinElement);
+            const encodedHanzi = encodeURIComponent(pinyinElement.dataset.characters);
+            const audio = new Audio(`/get_audio?chars=${encodedHanzi}`);
+            
+            audio.play().catch(error => {
+                console.error('Error playing audio:', error);
+            });
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             getDeck();
             getFont();
             handleOrientationChange(); // Call this on initial load
             
+            const pinyinElement = document.getElementById('flashcard_pinyin');
+            pinyinElement.addEventListener('click', function() {
+                playHanziAudio();
+            });
+
             if(!isMobileOrTablet()){
                 document.getElementById('space-instruction').style.opacity = 1;
                 document.getElementById('space-instruction').style.transition = 'opacity 4s ease-out';

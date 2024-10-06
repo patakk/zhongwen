@@ -510,7 +510,6 @@ def get_audio():
     buffer = io.BytesIO()
     combined.export(buffer, format="mp3")
     buffer.seek(0)
-
     return send_file(buffer, mimetype="audio/mpeg")
 
 @app.route('/debug')
@@ -518,4 +517,4 @@ def debug():
     return jsonify({"debug": app.debug})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5003, debug=False)
+    app.run(host='0.0.0.0', port=5003, debug=True)

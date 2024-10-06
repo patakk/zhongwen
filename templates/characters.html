@@ -459,7 +459,7 @@
     <div id="flashcard-overlay">
         <div id="flashcard_container">
             <div class="character"></div>
-            <div class="pinyin"></div>
+            <div id="flashcard_pinyin" class="pinyin"></div>
             <div class="english"></div>
             <div class="flashcard"></div>
             <div class="strokes"></div>
@@ -538,6 +538,7 @@
             const container = document.getElementById('flashcard_container');
             const characterElement = container.querySelector('.character');
             characterElement.innerHTML = ''; // Clear existing content
+            characterElement.dataset.characters = data.character; // Clear existing content
 
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('query', data.character);
@@ -566,12 +567,10 @@
                 characterElement.appendChild(span);
                 console.log(span);
             });
-
+            const pinyinElement = document.getElementById('flashcard_pinyin');
+            pinyinElement.dataset.characters = data.character;
             container.querySelector('.pinyin').textContent = data.pinyin;
             container.querySelector('.english').textContent = data.english;
-            container.querySelector('.pinyin').addEventListener('click', function() {
-                playHanziAudio(data.character);
-            });
             container.querySelector('.flashcard').innerHTML = data.html;
             if (chars.length < 4) {
                 const strokesContainer = document.createElement('div');
@@ -742,14 +741,6 @@
                 }
             }
         });
-
-        function playHanziAudio(hanziString) {
-            const encodedHanzi = encodeURIComponent(hanziString);
-            const audio = new Audio(`/get_audio?chars=${encodedHanzi}`);
-            audio.play().catch(error => {
-                console.error('Error playing audio:', error);
-            });
-        }
         
         function isTouchDevice() {
             return (('ontouchstart' in window) ||
@@ -834,12 +825,28 @@
             }
         });
 
+
+        function playHanziAudio() {
+            const pinyinElement = document.getElementById('flashcard_pinyin');
+            console.log(pinyinElement);
+            const encodedHanzi = encodeURIComponent(pinyinElement.dataset.characters);
+            const audio = new Audio(`/get_audio?chars=${encodedHanzi}`);
+            
+            audio.play().catch(error => {
+                console.error('Error playing audio:', error);
+            });
+        }
         
         document.addEventListener('DOMContentLoaded', function() {
             getDeck();
             getFont();
             handleOrientationChange();
 
+            const pinyinElement = document.getElementById('flashcard_pinyin');
+            pinyinElement.addEventListener('click', function() {
+                playHanziAudio();
+            });
+            
             if(characterdata){
                 showAfterLoad(characterdata);
             }

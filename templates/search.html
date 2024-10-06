@@ -378,7 +378,7 @@
     <div id="flashcard-overlay">
         <div id="flashcard_container">
             <div class="character"></div>
-            <div class="pinyin"></div>
+            <div id="flashcard_pinyin" class="pinyin"></div>
             <div class="english"></div>
             <div class="flashcard"></div>
             <div class="strokes"></div>
@@ -422,9 +422,7 @@
                     });
 
                     container.querySelector('.pinyin').textContent = data.pinyin;
-                    container.querySelector('.pinyin').addEventListener('click', function() {
-                        playHanziAudio(data.character);
-                    });
+                    container.querySelector('.pinyin').dataset.characters = data.character;
                     container.querySelector('.english').textContent = data.english;
                     container.querySelector('.flashcard').innerHTML = data.html;
 
@@ -500,13 +498,17 @@
             return /Macintosh/i.test(navigator.userAgent) && isTouchDevice();
         }
 
-        function playHanziAudio(hanziString) {
-            const encodedHanzi = encodeURIComponent(hanziString);
+        function playHanziAudio() {
+            const pinyinElement = document.getElementById('flashcard_pinyin');
+            console.log(pinyinElement);
+            const encodedHanzi = encodeURIComponent(pinyinElement.dataset.characters);
             const audio = new Audio(`/get_audio?chars=${encodedHanzi}`);
+            
             audio.play().catch(error => {
                 console.error('Error playing audio:', error);
             });
         }
+        
 
         function isMobileOrTablet() {
             let check = false;
@@ -612,6 +614,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('font-select').style.display = 'none';
             getFont();
+
+            
+            const pinyinElement = document.getElementById('flashcard_pinyin');
+            pinyinElement.addEventListener('click', function() {
+                playHanziAudio();
+            });
         });
 
 
