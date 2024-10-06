@@ -521,9 +521,5 @@ def get_audio():
 def debug():
     return jsonify({"debug": app.debug})
 
-@app.route('/test_audio')
-def test_audio():
-    return send_file('path/to/test.mp3', mimetype="audio/mpeg")
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003, debug=False)
