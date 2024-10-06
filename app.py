@@ -494,7 +494,13 @@ def get_audio():
         if char in audio_mappings and 'audio' in audio_mappings[char]:
             file_name = audio_mappings[char]['audio']
             file_path = os.path.join('..', 'chinese_audio_clips', file_name)
+            file_path2 = os.path.join('chinese_audio_clips', file_name)
             if os.path.exists(file_path):
+                print(file_path)
+                with open(file_path, 'rb') as f:
+                    audio_chunks.append(f.read())
+            elif os.path.exists(file_path):
+                print(file_path2)
                 with open(file_path, 'rb') as f:
                     audio_chunks.append(f.read())
             else:
@@ -513,6 +519,7 @@ def get_audio():
 
     buffer = io.BytesIO(combined_audio)
     buffer.seek(0)
+    print(f"Returning audio for {len(characters)} characters")
 
     return send_file(buffer, mimetype="audio/mpeg")
 
