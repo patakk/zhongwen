@@ -499,7 +499,7 @@ def get_audio():
                 with open(file_path, 'rb') as f:
                     audio_chunks.append(f.read())
             elif os.path.exists(file_path2):
-                with open(file_path, 'rb') as f:
+                with open(file_path2, 'rb') as f:
                     audio_chunks.append(f.read())
             else:
                 print(f"Audio file not found for character: {char}")
