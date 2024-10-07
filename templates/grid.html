@@ -694,6 +694,25 @@
                 padding: 10px;
             }
         }
+
+        #typedDisplay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 182px;
+            font-weight: bold;
+            color: rgb(0, 0, 0);
+            background-color: rgba(255, 255, 255, 0.999);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            pointer-events: none;
+            font-family: Noto Sans Mono, monospace;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+        }
+
     </style>
     <style id="dynamic-styles">
         
@@ -732,6 +751,8 @@
         </div>
     </div>
     <p id="message"></p>
+    <div id="typedDisplay" style="display: none;"></div>
+
 
     <script>
         (function() {
@@ -784,12 +805,90 @@
 
         let showList = false;
 
+        let typingTimer = null;
+        let inputString = '';
+
+        function cleanString(str) {
+            return str.toLowerCase()
+                    .replace(/[.,;?!'"()\s]/g, '') // Remove punctuation and spaces
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, ""); // Remove diacritics
+        }
+
+        function removeTones(pinyin) {
+            const toneMap = {
+                'ā': 'a', 'á': 'a', 'ǎ': 'a', 'à': 'a',
+                'ē': 'e', 'é': 'e', 'ě': 'e', 'è': 'e',
+                'ī': 'i', 'í': 'i', 'ǐ': 'i', 'ì': 'i',
+                'ō': 'o', 'ó': 'o', 'ǒ': 'o', 'ò': 'o',
+                'ū': 'u', 'ú': 'u', 'ǔ': 'u', 'ù': 'u',
+                'ǖ': 'ü', 'ǘ': 'ü', 'ǚ': 'ü', 'ǜ': 'ü'
+            };
+
+            return pinyin.replace(/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/g, match => toneMap[match] || match);
+        }
+
+
+        let typedDisplay = document.getElementById('typedDisplay');
+
         document.addEventListener('keydown', function(event) {
-            // check if 'q' is pressed
-            if (event.key === 'q') {
-                toggleGridList();
+
+            if(event.key === 'Escape') {
+                drawBothLayouts(currentData);
+                typedDisplay.style.display = 'none';
+                return;
+            }
+
+            if (event.key.length === 1) {
+                inputString += event.key;
+                
+                // Update and show the typed display
+                typedDisplay.textContent = inputString;
+                typedDisplay.style.display = 'block';
+
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(() => {
+                    if (inputString === '') {
+                        typedDisplay.style.display = 'none';
+                        return;
+                    }
+                    else if (inputString === ' ') {
+                        drawBothLayouts(currentData);
+                        typedDisplay.style.display = 'none';
+                        return
+                    }
+                    else{
+                        let filteredData = {};
+                        filteredData.characters = currentData.characters.filter(char => {
+                            const cleanedInput = cleanString(inputString);
+                            const cleanedPinyin = cleanString(removeTones(char.pinyin));
+                            const cleanedEnglish = cleanString(char.english);
+
+                            return cleanedPinyin.includes(cleanedInput) || cleanedEnglish.includes(cleanedInput);
+                        });
+                        drawBothLayouts(filteredData);
+                        
+                        console.log(inputString);
+                        inputString = '';
+                        
+                        // Hide the typed display
+                        typedDisplay.style.display = 'none';
+                    }
+                }, 455);
             }
         });
+
+        // Add this to handle backspace
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Backspace') {
+                inputString = inputString.slice(0, -1);
+                typedDisplay.textContent = inputString;
+                if (inputString === '') {
+                    typedDisplay.style.display = 'none';
+                }
+            }
+        });
+
 
         function toggleGridList(){
             if(showList){
@@ -1026,40 +1125,47 @@
             flashcardContent.scrollTop = 0;
         }
 
+        function drawBothLayouts(data){
+            const grid = document.getElementById('character-grid');
+            grid.innerHTML = '';
+
+            const namesmap = {
+                'shas': 'ShaSha\'s Class',
+                'top140': 'Top 140',
+                'hsk1': 'HSK 1',
+                'hsk2': 'HSK 2',
+                'hsk3': 'HSK 3',
+                'hsk4': 'HSK 4',
+                'hsk5': 'HSK 5',
+                'hsk6': 'HSK 6',
+            };
+            const deckLength = data.characters.length;
+            document.getElementById('title').textContent = `${namesmap[currentDeck]} (${deckLength} words)`;  
+            document.getElementById('title').textContent = `${deckLength} words`;  
+    
+            data.characters.forEach(charData => {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                gridItem.innerHTML = `
+                    <span class="char">${charData.character}</span>
+                    <span class="grid-pinyin">${charData.pinyin}</span>
+                `;
+                gridItem.setAttribute('data-length', charData.character.length);
+                gridItem.addEventListener('click', () => showFlashcard(charData.character));
+                grid.appendChild(gridItem);
+            });
+            loadPinyinEnglishList(data);
+        }
+
+        let currentData = null;
+        let filteredData = null;
 
         function loadCharacters() {
             fetch('./get_characters_pinyinenglish')
                 .then(response => response.json())
                 .then(data => {
-                    const grid = document.getElementById('character-grid');
-                    grid.innerHTML = '';
-
-                    const namesmap = {
-                        'shas': 'ShaSha\'s Class',
-                        'top140': 'Top 140',
-                        'hsk1': 'HSK 1',
-                        'hsk2': 'HSK 2',
-                        'hsk3': 'HSK 3',
-                        'hsk4': 'HSK 4',
-                        'hsk5': 'HSK 5',
-                        'hsk6': 'HSK 6',
-                    };
-                    const deckLength = data.characters.length;
-                    document.getElementById('title').textContent = `${namesmap[currentDeck]} (${deckLength} words)`;  
-                    document.getElementById('title').textContent = `${deckLength} words`;  
-            
-                    data.characters.forEach(charData => {
-                        const gridItem = document.createElement('div');
-                        gridItem.className = 'grid-item';
-                        gridItem.innerHTML = `
-                            <span class="char">${charData.character}</span>
-                            <span class="grid-pinyin">${charData.pinyin}</span>
-                        `;
-                        gridItem.setAttribute('data-length', charData.character.length);
-                        gridItem.addEventListener('click', () => showFlashcard(charData.character));
-                        grid.appendChild(gridItem);
-                    });
-                    loadPinyinEnglishList(data);
+                    currentData = data;
+                    drawBothLayouts(data);
                 })
                 .catch(error => console.error('Error:', error))
                 .finally(() => {
@@ -1134,10 +1240,10 @@
         document.addEventListener('keydown', function(event) {
             if (event.key === ' ' || event.key === 'Spacebar') {
                 event.preventDefault(); // Prevent default scrolling behavior
-                if (overlay.style.display === 'flex') {
-                    isAnswerVisible = !isAnswerVisible;
-                    updateVisibility();
-                }
+                // if (overlay.style.display === 'flex') {
+                //     isAnswerVisible = !isAnswerVisible;
+                //     updateVisibility();
+                // }
             }
         });
         
