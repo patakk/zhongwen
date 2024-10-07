@@ -514,7 +514,6 @@
         }
         .pinyin-english-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             padding: 10px 10px;
             border-bottom: 1px solid #eee;
@@ -583,7 +582,8 @@
             
             .list-english {
                 text-align: right;
-                max-width: 40%;
+                flex-wrap: wrap;
+                max-width: 30%;
             }
             #lcontainer {
                 display: none;
