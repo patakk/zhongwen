@@ -538,8 +538,10 @@
         }
         .list-english {
             text-align: right;
-            max-width: 50%;
             width: 100%;
+            flex-grow: 1; /* Allow it to grow and take available space */
+            text-align: right; /* Align text to the right */
+            overflow: hidden; /* Hide overflow */
         }
 
         .lgrid-wrapper {
