@@ -930,7 +930,10 @@
                         grid.appendChild(gridItem);
                     });
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => console.error('Error:', error))
+                .finally(() => {
+                    loadPinyinEnglishList();
+                });
         }
 
 
@@ -1043,7 +1046,6 @@
                 grid.innerHTML = ''; // Clear existing characters
 
                 loadCharacters();
-                loadPinyinEnglishList();
             // Optionally, you can call a function here to load the first card of the new deck
             })
             .catch(error => {
@@ -1072,7 +1074,6 @@
                     currentDeck = data.deck;
                     document.getElementById('deck-select').value = currentDeck;
                     loadCharacters();
-                    loadPinyinEnglishList();
                 })
                 .catch(error => {
                     console.error('There was a problem with the fetch operation:', error);
@@ -1164,7 +1165,6 @@
 
                     updateFontFamily(currentFont);
                     loadCharacters();
-                    loadPinyinEnglishList();
 
                     document.getElementById('font-select').value = currentFont;
                     document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
