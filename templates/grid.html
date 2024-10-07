@@ -517,7 +517,7 @@
             display: flex;
             align-items: center;
             padding: 10px 10px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 2px dashed #eee;
             cursor: pointer;
         }
         .pinyin-english-item:hover {
@@ -547,8 +547,8 @@
         .lgrid-wrapper {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding: 10px;
+            gap: 5px;
+            padding: 2px;
         }
 
         .lgrid-item {
@@ -556,7 +556,7 @@
             border-left: 0;
             border-right: 0;
             border-top: 0;
-            padding: 10px;
+            padding: 2px;
             display: flex;
         }
         
@@ -592,6 +592,24 @@
                 padding: 10px;
             }
         }
+
+        @media screen and (min-width: 768px) and (max-aspect-ratio: 1) {
+            #lcontainer {
+                display: none;
+                max-width: 70%;
+                width: 100%;
+            }
+            
+            .lgrid-wrapper {
+                display: grid;
+                grid-template-columns: repeat(1, 1fr);
+                gap: 3px;
+                padding: 3px;
+            }
+            .lgrid-item {
+                padding: 4px;
+            }
+        }
         
 
         @media screen and (min-width: 1600px) and (min-aspect-ratio: 1) {
@@ -601,11 +619,20 @@
                 width: 100%;
             }
             
+            .lgrid-item {
+                padding: 10px;
+            }
+            
+            .lgrid-item:hover {
+                background-color: #000000; /* Light gray background on hover */
+                color: white;
+            }
+            
             .lgrid-wrapper {
                 display: grid;
                 grid-template-columns: repeat(1, 1fr);
-                gap: 10px;
-                padding: 10px;
+                gap: 0px;
+                padding: 0px;
             }
         }
 
@@ -614,6 +641,16 @@
         }
 
         @media (max-width: 768px) {
+            .lgrid-wrapper {
+                display: grid;
+                grid-template-columns: repeat(1, 1fr);
+                gap: 4px;
+                padding: 4px;
+            }
+            .lgrid-item {
+                padding: 4px;
+            }
+
             .pinyin-english-item {
                 padding: 10px 0px;
             }
@@ -774,49 +811,67 @@
             const container = document.getElementById('lcontainer'); // Assume there's a container div in your HTML
             container.innerHTML = ''; // Clear existing content
 
-            if (window.innerWidth / window.innerHeight < 1 || false) {
-                // Vertical screen: Create single list
-                const listWrapper = document.createElement('div');
-                listWrapper.id = 'list-wrapper';
-                listWrapper.className = 'list-wrapper';
+            
+            const gridWrapper = document.createElement('div');
+            gridWrapper.id = 'lgrid-wrapper';
+            gridWrapper.className = 'lgrid-wrapper';
+            container.appendChild(gridWrapper);
 
-                const listCont = document.createElement('div');
-                listCont.id = 'list-cont-1';
-                listCont.className = 'list-container';
+            // if (window.innerWidth / window.innerHeight < 1 && false) {
+            //     // Vertical screen: Create single list
+            //     const listWrapper = document.createElement('div');
+            //     listWrapper.id = 'list-wrapper';
+            //     listWrapper.className = 'list-wrapper';
 
-                const ul = document.createElement('ul');
-                ul.id = 'pinyin-english-list-1';
-                ul.className = 'pinyin-english-list';
+            //     const listCont = document.createElement('div');
+            //     listCont.id = 'list-cont-1';
+            //     listCont.className = 'list-container';
 
-                listCont.appendChild(ul);
-                listWrapper.appendChild(listCont);
-                container.appendChild(listWrapper);
-            } else {
-                // Horizontal screen: Create grid layout
-                const gridWrapper = document.createElement('div');
-                gridWrapper.id = 'lgrid-wrapper';
-                gridWrapper.className = 'lgrid-wrapper';
-                container.appendChild(gridWrapper);
-            }
+            //     const ul = document.createElement('ul');
+            //     ul.id = 'pinyin-english-list-1';
+            //     ul.className = 'pinyin-english-list';
+
+            //     listCont.appendChild(ul);
+            //     listWrapper.appendChild(listCont);
+            //     container.appendChild(listWrapper);
+            // } else {
+            //     // Horizontal screen: Create grid layout
+            //     const gridWrapper = document.createElement('div');
+            //     gridWrapper.id = 'lgrid-wrapper';
+            //     gridWrapper.className = 'lgrid-wrapper';
+            //     container.appendChild(gridWrapper);
+            // }
         }
 
-        function loadPinyinEnglishList() {
+        function loadPinyinEnglishList(data) {
             createListStructure(); // Create the appropriate structure first
 
-            fetch('./get_characters_pinyinenglish')
-                .then(response => response.json())
-                .then(data => {
-                    if (window.innerWidth / window.innerHeight < 1) {
-                        // Vertical screen: Populate single list
-                        const list = document.getElementById('pinyin-english-list-1');
-                        populateList(list, data.characters);
-                    } else {
-                        // Horizontal screen: Create grid layout
-                        let gridWrapper = document.getElementById('lgrid-wrapper');
-                        createGrid(gridWrapper, data.characters);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+            // if (window.innerWidth / window.innerHeight < 1 && false) {
+            //     const list = document.getElementById('pinyin-english-list-1');
+            //     populateList(list, data.characters);
+            // } else {
+            //     // Horizontal screen: Create grid layout
+            //     let gridWrapper = document.getElementById('lgrid-wrapper');
+            //     createGrid(gridWrapper, data.characters);
+            // }
+            
+            let gridWrapper = document.getElementById('lgrid-wrapper');
+                createGrid(gridWrapper, data.characters);
+
+            // fetch('./get_characters_pinyinenglish')
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         if (window.innerWidth / window.innerHeight < 1) {
+            //             // Vertical screen: Populate single list
+            //             const list = document.getElementById('pinyin-english-list-1');
+            //             populateList(list, data.characters);
+            //         } else {
+            //             // Horizontal screen: Create grid layout
+            //             let gridWrapper = document.getElementById('lgrid-wrapper');
+            //             createGrid(gridWrapper, data.characters);
+            //         }
+            //     })
+            //     .catch(error => console.error('Error:', error));
         }
 
         function populateList(list, characters) {
@@ -1004,10 +1059,10 @@
                         gridItem.addEventListener('click', () => showFlashcard(charData.character));
                         grid.appendChild(gridItem);
                     });
+                    loadPinyinEnglishList(data);
                 })
                 .catch(error => console.error('Error:', error))
                 .finally(() => {
-                    loadPinyinEnglishList();
                 });
         }
 
@@ -1239,7 +1294,6 @@
                     console.log('received font', currentFont);
 
                     updateFontFamily(currentFont);
-                    loadCharacters();
 
                     document.getElementById('font-select').value = currentFont;
                     document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
