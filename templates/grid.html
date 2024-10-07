@@ -341,7 +341,7 @@
             }
 
             .grid-item {
-                border: 2px dashed #d0d0d0; */
+                border: 2px dashed #d0d0d0;
                 background-color: #f6f6f6;
                 background-color: rgb(255, 255, 255);
                 height: 50px;
@@ -500,6 +500,7 @@
         }
 
         #list-cont-1 {
+            border: none;
         }
         #list-cont-2 {
         }
@@ -574,7 +575,26 @@
             max-width: 80%;
             width: 100%;
         }
+
+        @media screen and (min-width: 768px) and (min-aspect-ratio: 1) {
+            #lcontainer {
+                display: none;
+                max-width: 50%;
+                width: 100%;
+            }
+            
+            .lgrid-wrapper {
+                display: grid;
+                grid-template-columns: repeat(1, 1fr);
+                gap: 10px;
+                padding: 10px;
+            }
+        }
         
+        .list-character-size {
+            font-size: 25px;
+        }
+
         @media (max-width: 768px) {
             .pinyin-english-item {
                 padding: 10px 0px;
@@ -587,11 +607,38 @@
             }
             #lcontainer {
                 display: none;
-                max-width: 94%;
+                max-width: 100%;
                 width: 100%;
+            }
+
+            .list-character-size {
+                font-size: 20px;
+            }
+
+            .list-pinyin {
+                font-size: 13px;
+            }
+
+            .list-english {
+                font-size: 13px;
             }
         }
 
+
+        @media screen and (max-width: 768px) and (min-aspect-ratio: 1) {
+            #lcontainer {
+                display: none;
+                max-width: 65%;
+                width: 100%;
+            }
+            
+            .lgrid-wrapper {
+                display: grid;
+                grid-template-columns: repeat(1, 1fr);
+                gap: 10px;
+                padding: 10px;
+            }
+        }
     </style>
     <style id="dynamic-styles">
         
@@ -696,7 +743,7 @@
                 document.getElementById('lcontainer').style.display = 'none';
             } else {
                 document.getElementById('grid-cont').style.display = 'none';
-                document.getElementById('lcontainer').style.display = 'flex';
+                document.getElementById('lcontainer').style.display = 'block';
                 // if aspect ratio is > 16/9, show all lists
                 if(window.innerWidth / window.innerHeight > 16/9){
                 }
@@ -709,7 +756,7 @@
             const container = document.getElementById('lcontainer'); // Assume there's a container div in your HTML
             container.innerHTML = ''; // Clear existing content
 
-            if (window.innerWidth / window.innerHeight < 1) {
+            if (window.innerWidth / window.innerHeight < 1 || false) {
                 // Vertical screen: Create single list
                 const listWrapper = document.createElement('div');
                 listWrapper.id = 'list-wrapper';
@@ -747,7 +794,7 @@
                         populateList(list, data.characters);
                     } else {
                         // Horizontal screen: Create grid layout
-                        const gridWrapper = document.getElementById('lgrid-wrapper');
+                        let gridWrapper = document.getElementById('lgrid-wrapper');
                         createGrid(gridWrapper, data.characters);
                     }
                 })
@@ -779,7 +826,7 @@
                     <div class="index-container">
                         <span class="list-index">${idx + 1}.</span>
                     </div>
-                    <span class="list-character">${char.character}</span>
+                    <span class=" list-character list-character-size">${char.character}</span>
                     <span class="list-pinyin">${char.pinyin}</span>
                 </div>
                 <span class="list-english">${char.english}</span>
@@ -1224,7 +1271,6 @@
             styleElement.textContent = `
                 .list-character {
                     font-family: "${fontFamily}", sans-serif;
-                    font-size: 24px;
                     padding-right: 15px;
                 }
             `;
@@ -1265,13 +1311,11 @@
         });
 
 
-
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay && !e.target.closest('#font-select')) {
                 overlay.style.display = 'none';
             }
         });
-
 
     </script>
 </body>
