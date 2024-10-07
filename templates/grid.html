@@ -557,8 +557,11 @@
             border-right: 0;
             border-top: 0;
             padding: 10px;
-            
             display: flex;
+        }
+        
+        .lgrid-item:hover {
+            background-color: #f6f6f6;
         }
 
         .list-index {
@@ -575,7 +578,6 @@
             max-width: 80%;
             width: 100%;
         }
-
         @media screen and (min-width: 768px) and (min-aspect-ratio: 1) {
             #lcontainer {
                 display: none;
@@ -591,6 +593,22 @@
             }
         }
         
+
+        @media screen and (min-width: 1600px) and (min-aspect-ratio: 1) {
+            #lcontainer {
+                display: none;
+                max-width: 40%;
+                width: 100%;
+            }
+            
+            .lgrid-wrapper {
+                display: grid;
+                grid-template-columns: repeat(1, 1fr);
+                gap: 10px;
+                padding: 10px;
+            }
+        }
+
         .list-character-size {
             font-size: 25px;
         }
