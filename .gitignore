@@ -7,6 +7,8 @@ cliapp.py
 parser.py
 
 user_progress/
+audio_files/
+audio_files2/
 
 *.txt
 

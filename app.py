@@ -191,6 +191,21 @@ def characters():
     print(len(characters))
     return render_template('characters.html', username=session['username'], characters=characters, character=pc)
 
+@app.route('/grid')
+@session_required
+@timing_decorator
+def grid():
+    character = request.args.get('query')
+    if not character:
+        characters = list(flashcard_app.cards[session['deck']].keys())
+        print(f"Initial characters: {len(characters)}")  # Debug print
+        return render_template('grid.html', username=session['username'], characters=characters, character=None)
+    
+    pc = packed_data(character)
+    characters = list(flashcard_app.cards[pc['deck']].keys())
+    print(len(characters))
+    return render_template('grid.html', username=session['username'], characters=characters, character=pc)
+
 
 @app.route('/get_characters')
 @session_required
@@ -523,4 +538,4 @@ def debug():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5003, debug=False)
+    app.run(host='0.0.0.0', port=5003, debug=True)
