@@ -112,6 +112,10 @@ def session_required(func):
         #     return redirect(url_for('login'))
         if 'username' not in session:
             session['username'] = 'tempuser'
+        if 'deck' not in session:
+            session['deck'] = 'shas'
+        if 'font' not in session:
+            session['font'] = 'Noto Sans Mono'
         return func(*args, **kwargs)
     return wrapper
 
