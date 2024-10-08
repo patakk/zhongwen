@@ -91,6 +91,14 @@ class FlashcardApp:
         anthropic_data = self.anthropic_cards.get(character, {})
         return {**base_data, **anthropic_data}
 
+    def get_char_from_deck(self, deck, character):
+        base_data = self.cards[deck].get(character, {})
+        if not base_data:
+            for deck_name in self.cards:
+                if deck_name != deck and character in self.cards[deck_name]:
+                    base_data = self.cards[deck_name][character]
+                    break
+        return base_data
 
     def select_random_card(self, deck):
         return random.choice(list(self.cards[deck].keys()))
@@ -237,13 +245,17 @@ def get_characters_with_pinyin():
 @session_required
 def get_characters_pinyinenglish():
     all_data = []
-    for character in flashcard_app.cards[session['deck']]:
-        data = flashcard_app.get_card_examples(session['deck'], character)
-        all_data.append({
-            "character": character,
-            "pinyin": data.get('pinyin', ''),
-            "english": data.get('english', '')
-        })
+    for deck in flashcard_app.cards:
+        #for character in flashcard_app.cards[session['deck']]:
+        for character in flashcard_app.cards[deck]:
+            #data = flashcard_app.get_card_examples(deck, character)
+            data = flashcard_app.get_char_from_deck(deck, character)
+            all_data.append({
+                "character": character,
+                "pinyin": data.get('pinyin', ''),
+                "english": data.get('english', ''),
+                "deck": deck
+            })
     return jsonify({"characters": all_data})
 
 

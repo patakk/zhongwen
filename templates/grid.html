@@ -700,15 +700,14 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 182px;
+            font-size: 282px;
             font-weight: bold;
+            background-color: rgb(255, 255, 255, 0.6);
             color: rgb(0, 0, 0);
-            background-color: rgba(255, 255, 255, 0.999);
-            padding: 20px;
-            border-radius: 10px;
+            padding: 20px 80px;
             z-index: 1000;
             pointer-events: none;
-            font-family: Noto Sans Mono, monospace;
+            font-family: 'Noto Sans Mono', monospace;
             font-family: Arial, Helvetica, sans-serif;
             font-weight: 700;
         }
@@ -866,10 +865,11 @@
 
                             return cleanedPinyin.includes(cleanedInput) || cleanedEnglish.includes(cleanedInput);
                         });
-                        drawBothLayouts(filteredData);
+                        drawBothLayouts(filteredData, true);
                         
                         console.log(inputString);
                         inputString = '';
+                        document.getElementById('deck-select').value = null;
                         
                         // Hide the typed display
                         typedDisplay.style.display = 'none';
@@ -896,81 +896,78 @@
                 document.getElementById('grid-cont').style.display = 'block';
                 document.getElementById('lcontainer').style.display = 'none';
             } else {
-                document.getElementById('grid-cont').style.display = 'none';
                 document.getElementById('lcontainer').style.display = 'block';
-                // if aspect ratio is > 16/9, show all lists
+                document.getElementById('grid-cont').style.display = 'none';
                 if(window.innerWidth / window.innerHeight > 16/9){
                 }
                 showList = true;
             }
         }
-        
 
-        function createListStructure() {
+        let charCounter = 0;
+        function createGrid(characters, useAllDecks){
+            const grid = document.getElementById('character-grid');
+            grid.innerHTML = '';
+            charCounter = 0;
+            characters.forEach(charData => {
+                if (charData.deck !== currentDeck && !useAllDecks) {
+                    return;
+                }
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                gridItem.innerHTML = `
+                    <span class="char">${charData.character}</span>
+                    <span class="grid-pinyin">${charData.pinyin}</span>
+                `;
+                gridItem.setAttribute('data-length', charData.character.length);
+                gridItem.addEventListener('click', () => showFlashcard(charData.character));
+                grid.appendChild(gridItem);
+                charCounter++;
+            });
+
+            updateCounterTitle();
+        }
+        
+        function updateCounterTitle(){
+            document.getElementById('title').textContent = `grid (${charCounter})`;
+            
+            // const namesmap = {
+            //     'shas': 'ShaSha\'s Class',
+            //     'top140': 'Top 140',
+            //     'hsk1': 'HSK 1',
+            //     'hsk2': 'HSK 2',
+            //     'hsk3': 'HSK 3',
+            //     'hsk4': 'HSK 4',
+            //     'hsk5': 'HSK 5',
+            //     'hsk6': 'HSK 6',
+            // };
+            // const deckLength = charCounter;
+            // document.getElementById('title').textContent = `${namesmap[currentDeck]} (${deckLength} words)`;  
+            // if(useAllDecks){
+            //     document.getElementById('title').textContent = `${deckLength} words`;  
+            // }
+            // else{
+            //     document.getElementById('title').textContent = `${namesmap[currentDeck]} (${deckLength} words)`;
+            // }
+        }
+
+        function createLists(characters, useAllDecks) {
             const container = document.getElementById('lcontainer'); // Assume there's a container div in your HTML
             container.innerHTML = ''; // Clear existing content
-
-            
             const gridWrapper = document.createElement('div');
             gridWrapper.id = 'lgrid-wrapper';
             gridWrapper.className = 'lgrid-wrapper';
             container.appendChild(gridWrapper);
 
-            // if (window.innerWidth / window.innerHeight < 1 && false) {
-            //     // Vertical screen: Create single list
-            //     const listWrapper = document.createElement('div');
-            //     listWrapper.id = 'list-wrapper';
-            //     listWrapper.className = 'list-wrapper';
-
-            //     const listCont = document.createElement('div');
-            //     listCont.id = 'list-cont-1';
-            //     listCont.className = 'list-container';
-
-            //     const ul = document.createElement('ul');
-            //     ul.id = 'pinyin-english-list-1';
-            //     ul.className = 'pinyin-english-list';
-
-            //     listCont.appendChild(ul);
-            //     listWrapper.appendChild(listCont);
-            //     container.appendChild(listWrapper);
-            // } else {
-            //     // Horizontal screen: Create grid layout
-            //     const gridWrapper = document.createElement('div');
-            //     gridWrapper.id = 'lgrid-wrapper';
-            //     gridWrapper.className = 'lgrid-wrapper';
-            //     container.appendChild(gridWrapper);
-            // }
-        }
-
-        function loadPinyinEnglishList(data) {
-            createListStructure(); // Create the appropriate structure first
-
-            // if (window.innerWidth / window.innerHeight < 1 && false) {
-            //     const list = document.getElementById('pinyin-english-list-1');
-            //     populateList(list, data.characters);
-            // } else {
-            //     // Horizontal screen: Create grid layout
-            //     let gridWrapper = document.getElementById('lgrid-wrapper');
-            //     createGrid(gridWrapper, data.characters);
-            // }
-            
-            let gridWrapper = document.getElementById('lgrid-wrapper');
-                createGrid(gridWrapper, data.characters);
-
-            // fetch('./get_characters_pinyinenglish')
-            //     .then(response => response.json())
-            //     .then(data => {
-            //         if (window.innerWidth / window.innerHeight < 1) {
-            //             // Vertical screen: Populate single list
-            //             const list = document.getElementById('pinyin-english-list-1');
-            //             populateList(list, data.characters);
-            //         } else {
-            //             // Horizontal screen: Create grid layout
-            //             let gridWrapper = document.getElementById('lgrid-wrapper');
-            //             createGrid(gridWrapper, data.characters);
-            //         }
-            //     })
-            //     .catch(error => console.error('Error:', error));
+            gridWrapper.innerHTML = ''; // Clear existing items
+            characters.forEach((charData, idx) => {
+                if (charData.deck !== currentDeck && !useAllDecks) {
+                    return;
+                }
+                const gridItem = createListItem(charData, idx);
+                gridItem.className = 'lgrid-item';
+                gridWrapper.appendChild(gridItem);
+            });
         }
 
         function populateList(list, characters) {
@@ -978,15 +975,6 @@
             characters.forEach((char, idx) => {
                 const listItem = createListItem(char, idx);
                 list.appendChild(listItem);
-            });
-        }
-
-        function createGrid(gridWrapper, characters) {
-            gridWrapper.innerHTML = ''; // Clear existing items
-            characters.forEach((char, idx) => {
-                const gridItem = createListItem(char, idx);
-                gridItem.className = 'lgrid-item';
-                gridWrapper.appendChild(gridItem);
             });
         }
 
@@ -1125,51 +1113,25 @@
             flashcardContent.scrollTop = 0;
         }
 
-        function drawBothLayouts(data){
-            const grid = document.getElementById('character-grid');
-            grid.innerHTML = '';
-
-            const namesmap = {
-                'shas': 'ShaSha\'s Class',
-                'top140': 'Top 140',
-                'hsk1': 'HSK 1',
-                'hsk2': 'HSK 2',
-                'hsk3': 'HSK 3',
-                'hsk4': 'HSK 4',
-                'hsk5': 'HSK 5',
-                'hsk6': 'HSK 6',
-            };
-            const deckLength = data.characters.length;
-            document.getElementById('title').textContent = `${namesmap[currentDeck]} (${deckLength} words)`;  
-            document.getElementById('title').textContent = `${deckLength} words`;  
-    
-            data.characters.forEach(charData => {
-                const gridItem = document.createElement('div');
-                gridItem.className = 'grid-item';
-                gridItem.innerHTML = `
-                    <span class="char">${charData.character}</span>
-                    <span class="grid-pinyin">${charData.pinyin}</span>
-                `;
-                gridItem.setAttribute('data-length', charData.character.length);
-                gridItem.addEventListener('click', () => showFlashcard(charData.character));
-                grid.appendChild(gridItem);
-            });
-            loadPinyinEnglishList(data);
+        function drawBothLayouts(data, useAllDecks=false){    
+            createGrid(data.characters, useAllDecks);
+            createLists(data.characters, useAllDecks);
         }
 
         let currentData = null;
         let filteredData = null;
 
         function loadCharacters() {
-            fetch('./get_characters_pinyinenglish')
-                .then(response => response.json())
-                .then(data => {
-                    currentData = data;
-                    drawBothLayouts(data);
-                })
-                .catch(error => console.error('Error:', error))
-                .finally(() => {
-                });
+            drawBothLayouts(currentData);
+            // fetch('./get_characters_pinyinenglish')
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         currentData = data;
+            //         drawBothLayouts(data);
+            //     })
+            //     .catch(error => console.error('Error:', error))
+            //     .finally(() => {
+            //     });
         }
 
 
@@ -1276,17 +1238,13 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                console.log('Deck changed successfully');
-                
-                const grid = document.getElementById('character-grid');
-                grid.innerHTML = ''; // Clear existing characters
-
-                loadCharacters();
-            // Optionally, you can call a function here to load the first card of the new deck
             })
             .catch(error => {
                 console.error('There was a problem changing the deck:', error);
             });
+            const grid = document.getElementById('character-grid');
+            grid.innerHTML = '';
+            drawBothLayouts(currentData);
         }
 
         
@@ -1309,7 +1267,7 @@
                 .then(data => {
                     currentDeck = data.deck;
                     document.getElementById('deck-select').value = currentDeck;
-                    loadCharacters();
+                    drawBothLayouts(currentData);
                 })
                 .catch(error => {
                     console.error('There was a problem with the fetch operation:', error);
@@ -1341,10 +1299,24 @@
             });
         }
         
+        function loadAllData(){
+            fetch('./get_characters_pinyinenglish')
+            .then(response => response.json())
+            .then(data => {
+                currentData = data;
+                getDeck();
+                getFont();
+                handleOrientationChange();
+            })
+            .catch(error => console.error('Error:', error))
+            .finally(() => {
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            getDeck();
-            getFont();
-            handleOrientationChange();
+            
+            loadAllData();
+
 
             const pinyinElement = document.getElementById('flashcard_pinyin');
             pinyinElement.addEventListener('click', function() {
