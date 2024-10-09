@@ -52,6 +52,10 @@ document.addEventListener('keydown', function(event) {
         return;
     }
 
+    if(ctrlPressed){
+        return;
+    }
+
     if (event.key.length === 1) {
         inputString += event.key;
         
@@ -528,6 +532,20 @@ function loadAllData(){
     .finally(() => {
     });
 }
+
+let ctrlPressed = false;
+
+document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey) {
+        ctrlPressed = true;
+    }
+});
+
+document.addEventListener('keyup', function(event) {
+    if (event.key === 'Control') {
+        ctrlPressed = false;
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     
