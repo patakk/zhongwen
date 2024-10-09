@@ -119,7 +119,7 @@ def session_required(func):
         # if 'username' not in session:
         #     return redirect(url_for('login'))
         if 'username' not in session:
-            session['username'] = 'tempuser'
+            session['username'] = 'tempuser_' + str(random.randint(100000, 999999))
         if 'deck' not in session:
             session['deck'] = 'shas'
         if 'font' not in session:
@@ -128,14 +128,9 @@ def session_required(func):
     return wrapper
 
 @app.route('/', methods=['GET', 'POST'])
+@session_required
 @timing_decorator
 def login():
-    if 'username' not in session:
-        session['username'] = 'tempuser'
-    if 'deck' not in session:
-        session['deck'] = 'shas'
-    if 'font' not in session:
-        session['font'] = 'Noto Sans Mono'
     return redirect(url_for('home'))
     #if request.method == 'POST':
     #    username = request.form['username']
@@ -306,9 +301,21 @@ def record_view():
     data = request.json
     username = session['username']
     character = data['character']
-    
     flashcard_app.record_view(username, character)
     return jsonify({"message": "View recorded successfully"})
+
+from flask import Response
+@app.route('/check_records')
+def check_records():
+    d = {}
+    for username in os.listdir(flashcard_app.user_progress_dir):
+        usrnm = username.split('.')[0]
+        user_progress = flashcard_app.load_user_progress(usrnm)
+        d[usrnm] = user_progress['progress']
+    return Response(
+        json.dumps(d, ensure_ascii=False, indent=4),
+        mimetype='application/json'
+    )
 
 #@app.route('/logout')
 #def logout():

@@ -1,0 +1,360 @@
+
+::selection {
+    background-color: #ff421c;
+}
+
+
+#font-select {
+    position: fixed;
+    top: 45px;
+    right: 15px;
+    font-size: 16px;
+    font-family: 'Noto Sans Mono', monospace;
+    font-weight: 400;
+    width: 150px;
+    background-color: white;
+    border: 3px solid black;
+    border-radius: 0;
+    margin-top: 15px;
+    padding: 5px;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+    background-repeat: no-repeat;
+    background-position: right 5px top 50%;
+    background-size: 16px;
+    cursor: pointer;
+}
+#font-select::-ms-expand {
+    display: none;
+}
+#font-select option:checked,
+#font-select option:hover {
+    background-color: black;
+    color: white;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+body {
+    font-family: "Nunito Sans", sans-serif;
+    font-family: "Crimson Pro", serif;
+    font-family: "Noto Sans Mono", monospace;
+    font-weight: 400;
+    margin: 0;
+    font-style: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+   
+.container {
+    width: 90%;
+    max-width: 600px;
+    border: 2px dashed black;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    max-height: 90vh;
+    height: 90%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    box-sizing: border-box; /* Add this line */
+}
+
+.character {
+    font-size: 122px;
+    margin-top: 30px;
+    font-weight: 500;
+    font-family: "Noto Serif SC", serif;
+}
+
+.english {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    color: #000;
+    padding: 5px 10px;
+    min-width: 100px;
+    display: inline-block;
+    text-align: center;
+}
+.pinyin {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    background-color: #000;
+    color: #000;
+    padding: 5px 10px;
+    min-width: 100px;
+    display: inline-block;
+    text-align: center;
+}
+.character:hover + .pinyin,
+.pinyin:hover,
+.pinyin.visible {
+    background-color: transparent;
+    color: #000;
+}
+
+.flashcard {
+    width: 100%;
+    font-size: 16px;
+    margin-top: 30px;
+    overflow-y: visible;
+    user-select: text;
+}
+
+/* Remove the max-height and overflow-y from .flashcard */
+.flashcard {
+    font-size: 16px;
+    margin: 30px;
+    user-select: text;
+}
+
+.character::selection, .pinyin::selection, .english::selection, h1::selection, h2::selection, b::selection, i::selection, li::selection, p::selection {
+    background-color: black; /* Applies to modern browsers */
+    color: white; /* Ensures the selected text color is white */
+}
+
+#flashcard_container {
+    width: 34%;
+    height: 90%;
+    border: 2px dashed #000000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+#flashcard_container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+#deck-select {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    font-size: 16px;
+    font-family: 'Noto Sans Mono', monospace;
+    font-weight: 400;
+    width: 150px;
+    background-color: white;
+    border: 3px solid black;
+    border-radius: 0;
+    padding: 5px;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+    background-repeat: no-repeat;
+    background-position: right 5px top 50%;
+    background-size: 16px;
+    cursor: pointer;
+}
+#deck-select::-ms-expand {
+    display: none;
+}
+#deck-select option:checked,
+#deck-select option:hover {
+    background-color: black;
+    color: white;
+}
+
+
+@media screen and (max-width: 1024px) {
+    body {
+        font-size: 14px; /* Slightly smaller base font size for mobile */
+    }
+
+    #flashcard_container {
+        width: 90%;
+        height: 80%;
+        padding: 10px;
+    }
+
+    .character {
+        font-size: 60px;
+        margin-top: 10px;
+    }
+
+    .english, .pinyin {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .flashcard {
+        font-size: 14px;
+        margin: 15px;
+    }
+
+    #deck-select {
+        top: 10px;
+        right: 10px;
+        font-size: 14px;
+        width: 120px;
+    }
+
+    #characters-link {
+        top: 10px;
+        left: 10px;
+        font-size: 14px;
+    }
+
+    #message {
+        bottom: 10px;
+        left: 10px;
+        font-size: 14px;
+    }
+
+    #font-select {
+        top: 40px;
+        right: 10px;
+        font-size: 14px;
+        width: 120px;
+        margin-top: 8px;
+    }
+}
+
+/* Additional adjustments for very small screens (e.g., phones in portrait mode) */
+@media screen and (max-width: 768px) {
+    #flashcard_container {
+        height: 80%;
+        transform: translateY(8%);
+    }
+
+    .character {
+        font-size: 60px;
+    }
+
+    .english, .pinyin {
+        font-size: 18px;
+    }
+}
+
+@media only screen 
+and (min-device-width: 768px) 
+and (max-device-width: 1024px) {
+    #flashcard_container {
+        width: 90%;
+        height: 80vh;
+        max-height: 80vh;
+        margin-bottom: 20px;
+    }
+    
+    .clickable-char {
+        font-size: 130px;
+        margin-top: 10px;
+    }
+}
+
+@media only screen 
+and (orientation: landscape) {
+    #flashcard_container {
+        max-width: 60%; /* Add a max-width */
+        width: 60%;
+    }
+}
+
+#welcome-message {
+    font-size: 16px;
+    color: #666;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+}
+#message {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+#logout {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    font-size: 16px;
+    color: #000;
+}
+#logout:hover {
+    background-color: #000;
+    color: #fff;
+}
+#characters-link {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 16px;
+    color: #000;
+}
+#characters-link:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+.strokes-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.stroke-wrapper {
+    display: inline-block;
+}
+
+.strokes-container > .stroke-wrapper {
+    margin: 0 5px;
+}
+
+.clickable-char {
+    display: inline-block;
+    margin: 0 2px;
+    color: #fff;
+    color: #000000;
+}
+
+.clickable-char:hover {
+    color: #ffd91c;
+}
+#space-instruction {
+    position: fixed;
+    bottom: 25px;
+    bottom: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    opacity: 0;
+    
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
