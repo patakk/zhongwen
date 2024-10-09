@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask import send_file
-import datetime
 from datetime import timedelta
+from datetime import datetime
 from functools import wraps
 from urllib.parse import unquote
 import random
@@ -120,7 +120,7 @@ def session_required(func):
         # if 'username' not in session:
         #     return redirect(url_for('login'))
         if 'username' not in session:
-            current_time = datetime.utcnow()
+            current_time = datetime.now()
             adjusted_time = current_time + timedelta(hours=6)
             current_time_and_date = adjusted_time.strftime("%Y_%m_%d_%H_%M_%S")
             session['username'] = 'tempuser_' + current_time_and_date
