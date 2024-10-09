@@ -584,4 +584,4 @@ def debug():
 
 if __name__ == '__main__':
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
-    app.run(host='0.0.0.0', port=5003, debug=True)
+    app.run(host='0.0.0.0', port=5003, debug=debug)
