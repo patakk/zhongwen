@@ -119,7 +119,7 @@ def session_required(func):
         # if 'username' not in session:
         #     return redirect(url_for('login'))
         if 'username' not in session:
-            current_time_and_date = time.strftime("%Y%m%d%H%M%S")
+            current_time_and_date = time.strftime("%Y_%m_%d_%H_%M_%S")
             session['username'] = 'tempuser_' + current_time_and_date
         if 'deck' not in session:
             session['deck'] = 'shas'
