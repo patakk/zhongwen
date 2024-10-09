@@ -119,7 +119,8 @@ def session_required(func):
         # if 'username' not in session:
         #     return redirect(url_for('login'))
         if 'username' not in session:
-            session['username'] = 'tempuser_' + str(random.randint(100000, 999999))
+            current_time_and_date = time.strftime("%Y%m%d%H%M%S")
+            session['username'] = 'tempuser_' + current_time_and_date
         if 'deck' not in session:
             session['deck'] = 'shas'
         if 'font' not in session:
