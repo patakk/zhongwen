@@ -527,6 +527,7 @@ def search():
 @app.route('/get_api_key', methods=['GET'])
 def get_api_key():
     api_key = os.environ.get('OPENAI_API_KEY_ZHONG_WEN')
+    print(api_key)
     if not api_key:
         file_path = '/home/patakk/scrt'
         try:
