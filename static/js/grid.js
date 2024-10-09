@@ -45,6 +45,11 @@ let typedDisplay = document.getElementById('typedDisplay');
 
 
 document.addEventListener('keydown', function(event) {
+    if(document.getElementById('chatbox')){
+        if(document.getElementById('chatbox').style.display !== 'none'){
+            return;
+        }
+    }
 
     if(event.key === 'Escape') {
         drawBothLayouts(currentData);
@@ -54,6 +59,14 @@ document.addEventListener('keydown', function(event) {
 
     if(ctrlPressed){
         return;
+    }
+
+    if (event.key === ' ' || event.key === 'Spacebar') {
+        event.preventDefault(); // Prevent default scrolling behavior
+        // if (overlay.style.display === 'flex') {
+        //     isAnswerVisible = !isAnswerVisible;
+        //     updateVisibility();
+        // }
     }
 
     if (event.key.length === 1) {
@@ -419,15 +432,6 @@ function updateVisibility() {
     }
 });*/
 
-document.addEventListener('keydown', function(event) {
-    if (event.key === ' ' || event.key === 'Spacebar') {
-        event.preventDefault(); // Prevent default scrolling behavior
-        // if (overlay.style.display === 'flex') {
-        //     isAnswerVisible = !isAnswerVisible;
-        //     updateVisibility();
-        // }
-    }
-});
 
 function isTouchDevice() {
     return (('ontouchstart' in window) ||

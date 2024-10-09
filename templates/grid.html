@@ -18,6 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Character Grid</title>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <style id="dynamic-styles">
         
     </style>
@@ -57,13 +58,13 @@
     <p id="message"></p>
     <div id="typedDisplay" style="display: none;"></div>
 
-
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
     <script>
         const characters = {{ characters | tojson | safe }};
         const characterdata = {{ character | tojson | safe }};
     </script>
     <script src="{{ url_for('static', filename='js/grid.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
        
 </body>
 </html>

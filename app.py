@@ -523,6 +523,16 @@ def search():
     
     return render_template('search.html')
 
+
+@app.route('/get_api_key', methods=['GET'])
+def get_api_key():
+    api_key = os.environ.get('OPENAI_API_KEY')
+    if api_key:
+        return jsonify({'api_key': api_key}), 200
+    else:
+        return jsonify({'error': 'API key not found in environment variables'}), 404
+
+
 @app.route('/get_audio', methods=['POST', 'GET'])
 def get_audio():
     characters = request.args.get('chars', '')
