@@ -1,0 +1,423 @@
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+::selection {
+    background-color: rgb(255, 66, 28);
+}
+
+
+body {
+    font-family: "Nunito Sans", sans-serif;
+    font-family: "Crimson Pro", serif;
+    font-family: "Noto Sans Mono", monospace;
+    font-weight: 400;
+    margin: 0;
+    font-style: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+    
+.container {
+    width: 90%;
+    max-width: 600px;
+    border: 2px dashed black;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    max-height: 90vh;
+    height: 90%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    box-sizing: border-box; /* Add this line */
+    text-transform: lowercase;
+}
+
+
+@media screen and (max-width: 768px) {
+    .container {
+        width: 90%;
+        height: 85%;
+        padding: 20px;
+    }
+}
+
+h1, h2 {
+    text-align: center;
+}
+h1 {
+    margin-bottom: 20px;
+}
+h2 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+ul {
+    padding-left: 10px;
+    margin: 0;
+}
+li {
+    margin-bottom: 2px;
+    list-style-type: square;
+}
+a {
+    text-decoration: none;
+    color: #000000;
+    display: block;
+    padding: 0px 5px 0px 5px;
+}
+a:hover {
+    background-color: #000000;
+    color: #f2f2f2;
+}
+
+#characters-link {
+    position: fixed;
+    text-decoration: underline;
+    top: 15px;
+    left: 15px;
+    font-size: 16px;
+    color: #000;
+}
+#characters-link:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+::selection {
+    background-color: rgb(255, 66, 28);
+}
+
+#font-select {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    font-size: 16px;
+    font-family: 'Noto Sans Mono', monospace;
+    font-weight: 400;
+    width: 150px;
+    background-color: white;
+    border: 3px solid black;
+    border-radius: 0;
+    padding: 5px;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+    background-repeat: no-repeat;
+    background-position: right 5px top 50%;
+    background-size: 16px;
+    cursor: pointer;
+    z-index: 1001; /* Add this line to ensure it's above the overlay */
+}
+
+#font-select::-ms-expand {
+    display: none;
+}
+#font-select option:checked,
+#font-select option:hover {
+    background-color: black;
+    color: white;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+body {
+    font-family: "Nunito Sans", sans-serif;
+    font-family: "Crimson Pro", serif;
+    font-family: "Noto Sans Mono", monospace;
+    font-weight: 400;
+    margin: 0;
+    font-style: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+    
+li:hover {
+    background-color: #000000;
+    color: #f2f2f2;
+}
+#flashcard-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+#flashcard_container {
+    background-color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    border: 2px dashed #000000;
+    margin: 0; /* Changed from 20px to 0 */
+    min-width: 300px;
+    min-height: 200px;
+    max-width: 60%;
+    max-height: 60%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box; /* Add this line */
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+    overflow-y: scroll; /* Enable vertical scrolling */
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS devices */
+    
+    -webkit-user-select: none;  /* Safari */
+    -ms-user-select: none;      /* IE 10 and IE 11 */
+    user-select: none;  
+
+}
+
+#flashcard_container::-webkit-scrollbar {
+    display: none;
+}
+
+
+.character {
+    text-align: left;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 21px;
+    width: 100%;
+}
+
+.pinyin {
+    font-size: 21px;
+    text-align: left;
+    margin-bottom: 10px;
+    
+    -webkit-user-select: none;  /* Safari */
+    -ms-user-select: none;      /* IE 10 and IE 11 */
+    user-select: none;  
+}
+.english {
+    text-align: left;
+    font-size: 21px;
+    
+    -webkit-user-select: none;  /* Safari */
+    -ms-user-select: none;      /* IE 10 and IE 11 */
+    user-select: none;  
+}
+.highlighted {
+    background-color: #000000;
+    color: #f2f2f2;
+}
+#characters-link {
+    position: fixed;
+    text-decoration: underline;
+    top: 15px;
+    left: 15px;
+    font-size: 16px;
+    color: #000;
+}
+#characters-link:hover {
+    background-color: #000;
+    color: #fff;
+}
+#exam-link {
+    position: fixed;
+    text-decoration: underline;
+    top: 15px;
+    right: 15px;
+    font-size: 16px;
+    color: #000;
+}
+#exam-link:hover {
+    background-color: #000;
+    color: #fff;
+}
+.clickable-char {
+    display: inline-block;
+    margin: 0 2px;
+}
+
+.clickable-char:hover {
+    color: rgb(255, 217, 28);
+}
+
+.stories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.story-item {
+    border: 1px solid black;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid black;
+    font-size: 16px;
+}
+
+.story-item:hover {
+    background-color: #000000;
+    color: #f2f2f2;
+}
+
+@media screen and (max-width: 768px) {
+    #hover-box .pinyin {
+        font-size: 13px;
+    }
+    #hover-box .english {
+        font-size: 13px;
+    }
+    
+    #flashcard_container {
+        max-width: 100%;
+        width: 100%;
+        padding: 20px;
+        height: auto;
+        max-height: 70%;
+        margin: 0; /* Ensure no margin on mobile */
+        transform: translateY(-7%);
+    }
+    #flashcard-overlay {
+        padding: 10px;
+    }
+    .title {
+        font-size: 24px;
+    }
+    .character {
+        font-size: 21px;
+    }
+    .pinyin {
+        font-size: 14px;
+    }
+    .english {
+        font-size: 14px;
+    }
+    
+    #font-select {
+        top: 15px;
+        right: 10px;
+        font-size: 14px;
+        width: 120px;
+    }
+}
+
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) {
+    #flashcard_container {
+        max-width: 80%;
+        width: 80%;
+        transform: none;
+    }
+
+    .title {
+        font-size: 28px;
+    }
+
+    .character {
+        font-size: 24px;
+    }
+
+    .pinyin, .english {
+        font-size: 18px;
+    }
+}
+
+
+#hover-box {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 2px dashed #000000;
+    padding: 10px;
+    max-width: 100%;
+    box-sizing: border-box;
+    z-index: 1000; /* Ensure it's above other elements */
+}
+
+#hover-box .pinyin {
+    font-size: 16px;
+    margin-bottom: 5px;
+    font-style: italic;
+}
+
+#hover-box .english {
+    font-size: 16px;
+}
+
+.hanzi-row.highlighted {
+    background-color: #000000; /* Light yellow background */
+    color: #f2f2f2;
+}
+
+.hanzi-row-container {
+    display: flex;
+    align-items: center; /* This will vertically center the content */
+    width: 100%;
+    padding: 5px 0;
+    cursor: pointer;
+}
+
+.row-number {
+    flex-shrink: 0;
+    text-align: right;
+    margin-right: 5px;
+    font-family: 'Noto Sans', sans-serif;
+    color: #888;
+    font-size: 0.5em; /* Slightly smaller font size */
+    line-height: 1.5; /* Adjust line height to match the main text */
+}
+
+.hanzi-row {
+    flex-grow: 1;
+}
+
+.title {
+    text-align: center;
+    font-size: 32px;
+    margin: 10px 0px;
+}
+.title-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 5px 5px;
+    cursor: pointer;
+}
+
+.title-wrapper {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.title-container.highlighted {
+    background-color: #000000;
+    color: #f2f2f2;
+}
+
+.title-container:hover {
+    color: #f2f2f2;
+}
+
+.listlist {
+    cursor: pointer;
+}
