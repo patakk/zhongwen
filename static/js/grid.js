@@ -191,13 +191,15 @@ function createLists(characters, useAllDecks) {
     container.appendChild(gridWrapper);
 
     gridWrapper.innerHTML = ''; // Clear existing items
+    let coco = 0;
     characters.forEach((charData, idx) => {
         if (charData.deck !== currentDeck && !useAllDecks) {
             return;
         }
-        const gridItem = createListItem(charData, idx);
+        const gridItem = createListItem(charData, coco);
         gridItem.className = 'lgrid-item';
         gridWrapper.appendChild(gridItem);
+        coco++;
     });
 }
 
