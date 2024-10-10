@@ -574,7 +574,6 @@ def get_audio():
     if not audio_chunks:
         return "No audio found for the provided characters", 404
 
-    # Concatenate MP3 files
     combined_audio = b''.join(audio_chunks)
 
     buffer = io.BytesIO(combined_audio)
