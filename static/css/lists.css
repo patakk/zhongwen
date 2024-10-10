@@ -254,10 +254,6 @@ li:hover {
     margin: 0 2px;
 }
 
-.clickable-char:hover {
-    color: rgb(255, 217, 28);
-}
-
 .stories-list {
     display: flex;
     flex-direction: column;

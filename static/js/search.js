@@ -26,11 +26,14 @@ function showFlashcard(character) {
                 const span = document.createElement('span');
                 span.textContent = char;
                 span.className = 'clickable-char';
-                span.style.cursor = 'pointer';
-                span.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Prevent triggering the change event
-                    window.location.href = `./search?query=${encodeURIComponent(char)}`;
-                });
+                if(isMobileOrTablet()){
+                    span.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent triggering the change event
+                        window.location.href = `./search?query=${encodeURIComponent(char)}`;
+                    });
+                    span.style.hover = 'color: #ffd91c';
+                    // span.style.cursor = 'pointer';
+                }
                 characterElement.appendChild(span);
                 console.log(span);
             });

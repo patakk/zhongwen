@@ -116,3 +116,10 @@ ul {
     margin-right: auto;
     border: 2px dashed #000;
 }
+
+@media screen and (max-width: 768px) {
+    #chatbox {
+        width: 70%;
+        height: 60%;
+    }
+}

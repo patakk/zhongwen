@@ -335,9 +335,6 @@ and (orientation: landscape) {
     color: #000000;
 }
 
-.clickable-char:hover {
-    color: #ffd91c;
-}
 #space-instruction {
     position: fixed;
     bottom: 25px;
