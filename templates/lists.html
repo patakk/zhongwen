@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lists</title>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/lists.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
 </head>
 <body>
     
@@ -53,8 +54,18 @@
     </div>
     
     <script src="{{ url_for('static', filename='js/lists.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
 
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialUri = urlParams.get('uri') || '{{ initial_uri }}';
+            if (initialUri && initialUri !== 'None' && initialUri.trim() !== '') {
+                console.log('Initial URI:', initialUri);
+                loadStory(initialUri);
+            }
+        });
+    </script>
 
 </body>
 </html>

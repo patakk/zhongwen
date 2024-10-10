@@ -1,16 +1,15 @@
 .context-menu {
     display: none;
     position: absolute;
-    background-color: #f9f9f9;
-    border: 2px solid #ccc;
-    padding: 5px 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    background-color: #f5f5f5;
+    color: #000000;
+    border: 1px solid #d4d4d4;
     z-index: 10001;
     font-family: 'Noto Sans Mono', monospace;
     font-weight: 400;
 }
 
-.context-menu ul {
+.context-menu li {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -19,10 +18,12 @@
 .context-menu li {
     padding: 8px 12px;
     cursor: pointer;
+    list-style-type: none;
 }
 
 .context-menu li:hover {
-    background-color: #f1f1f1;
+    background-color: #000000;
+    color: #ffffff;
 }
 
 .has-submenu {
@@ -44,22 +45,28 @@
 
 
 
-
 #chatbox {
     display: none;
     position: fixed;
-    width: 600px;
-    height: 500px;
+    width: 400px;
+    height: 300px;
     border: 2px solid #000;
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
     z-index: 1000;
     font-family: 'Noto Sans Mono', monospace;
     font-weight: 400;
+    overflow: hidden; /* Ensure no content spills out */
+}
+
+#chat-header {
+    height: 20px;
+    background-color: #f1f1f1;
+    border-bottom: 2px solid #000;
+    cursor: move;
 }
 
 #chat-messages {
-    height: 450px;
+    height: 230px; /* Reduced to accommodate the header */
     overflow-y: scroll;
     padding: 10px;
     scrollbar-width: none;
@@ -68,27 +75,30 @@
     font-weight: 400;
 }
 
-#chat-messages::-webkit-scrollbar {
-    display: none;
-}
-
 #chat-input {
-    width: calc(100% - 20px); /* Adjust for padding */
-    height: 30px; /* Reduced height */
+    width: calc(100% - 20px);
+    height: 30px;
     padding: 5px 10px;
     border: none;
     border-top: 2px solid #000;
-    font-size: 19px; /* Slightly reduced font size */
+    font-size: 19px;
     font-family: 'Noto Sans Mono', monospace;
     position: absolute;
     bottom: 0;
     left: 0;
+    margin-bottom: 0px;
+    max-width: 1000px;
 }
+
 
 #chat-input:focus {
     outline: none; /* Removes the default focus outline */
 }
 
+ul {
+    padding: 0px;
+    margin: 0px;
+}
 
 .message {
     margin-bottom: 10px;
