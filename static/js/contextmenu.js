@@ -90,7 +90,7 @@ function createChatbox() {
         if (e.target === chatHeader) {
             isDragging = true;
             document.body.classList.add('no-select');
-            requestAnimationFrame(animate);
+            // requestAnimationFrame(animate);
         }
     }
 
@@ -120,20 +120,20 @@ function createChatbox() {
         targetShadowY = 4;
     }
 
-    function animate() {
-        if (isDragging) {
-            setTranslate(currentX, currentY, chatbox);
-        }
+    // function animate() {
+    //     if (isDragging) {
+    //         setTranslate(currentX, currentY, chatbox);
+    //     }
 
-        // Always animate shadow
-        currentShadowX += (targetShadowX - currentShadowX) * shadowEasingFactor;
-        currentShadowY += (targetShadowY - currentShadowY) * shadowEasingFactor;
-        chatbox.style.boxShadow = `${currentShadowX}px ${currentShadowY}px 0px rgba(0, 0, 0, 0.815)`;
+    //     // Always animate shadow
+    //     currentShadowX += (targetShadowX - currentShadowX) * shadowEasingFactor;
+    //     currentShadowY += (targetShadowY - currentShadowY) * shadowEasingFactor;
+    //     chatbox.style.boxShadow = `${currentShadowX}px ${currentShadowY}px 0px rgba(0, 0, 0, 0.815)`;
 
-        if (isDragging || Math.abs(currentShadowX - targetShadowX) > 0.1 || Math.abs(currentShadowY - targetShadowY) > 0.1) {
-            requestAnimationFrame(animate);
-        }
-    }
+    //     if (isDragging || Math.abs(currentShadowX - targetShadowX) > 0.1 || Math.abs(currentShadowY - targetShadowY) > 0.1) {
+    //         requestAnimationFrame(animate);
+    //     }
+    // }
 
     function setTranslate(xPos, yPos, el) {
         el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
