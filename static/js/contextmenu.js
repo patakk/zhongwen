@@ -91,7 +91,6 @@ function createChatbox() {
             isDragging = true;
             document.body.classList.add('no-select');
             // requestAnimationFrame(animate);
-            setTranslate(currentX, currentY, chatbox);
         }
     }
 
@@ -109,6 +108,8 @@ function createChatbox() {
             let dy = e.movementY;
             targetShadowX = 6 - dx * shadowBounceStrength;
             targetShadowY = 4 - dy * shadowBounceStrength;
+            
+            setTranslate(currentX, currentY, chatbox);
         }
     }
 
