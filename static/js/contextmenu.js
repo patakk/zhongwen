@@ -91,6 +91,7 @@ function createChatbox() {
             isDragging = true;
             document.body.classList.add('no-select');
             // requestAnimationFrame(animate);
+            setTranslate(currentX, currentY, chatbox);
         }
     }
 
