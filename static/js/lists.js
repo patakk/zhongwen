@@ -402,13 +402,6 @@ document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('resize', setupHoverEffects);
 // Highlight the first item by default
 // highlightListItem(0);
-document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialUri = urlParams.get('uri') || '{{ initial_uri }}';
-    if (initialUri && initialUri !== 'None' && initialUri.trim() !== '') {
-        loadStory(initialUri);
-    }
-});
 
 
 window.onpopstate = function(event) {

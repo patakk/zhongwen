@@ -144,13 +144,7 @@ function adjustHeight() {
 
 
 document.addEventListener('keydown', function(event) {
-    if (event.key === ' ' || event.key === 'Spacebar') {
-        event.preventDefault(); // Prevent default scrolling behavior
-        if (overlay.style.display === 'flex') {
-            isAnswerVisible = !isAnswerVisible;
-            updateVisibility();
-        }
-    }
+    
 });
 
 

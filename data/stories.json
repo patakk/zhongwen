@@ -1441,5 +1441,63 @@
             "As soon as he gets his salary, he goes to buy a new phone.",
             "As soon as you said it, I understood."
         ]
-    }
+    },
+    "grammar_025": {
+    "name": "Describing and emphasizing characteristics",
+    "description": "Different ways to describe and emphasize characteristics of objects in Chinese",
+    "hanzi": [
+        "Describing and emphasizing characteristics",
+        "这本书是漂亮的。",
+        "这本书很漂亮。",
+        "这是漂亮的书。",
+        "这道菜是辣的。",
+        "这道菜很辣。",
+        "这是辣的菜。",
+        "这个房间是安静的。",
+        "这个房间很安静。",
+        "这是安静的房间。",
+        "这个问题是难的。",
+        "这个问题很难。",
+        "这是难的问题。",
+        "这件衣服是便宜的。",
+        "这件衣服很便宜。",
+        "这是便宜的衣服。"
+    ],
+    "pinyin": [
+        "Describing and emphasizing characteristics",
+        "Zhè běn shū shì piàoliang de.",
+        "Zhè běn shū hěn piàoliang.",
+        "Zhè shì piàoliang de shū.",
+        "Zhè dào cài shì là de.",
+        "Zhè dào cài hěn là.",
+        "Zhè shì là de cài.",
+        "Zhège fángjiān shì ānjìng de.",
+        "Zhège fángjiān hěn ānjìng.",
+        "Zhè shì ānjìng de fángjiān.",
+        "Zhège wèntí shì nán de.",
+        "Zhège wèntí hěn nán.",
+        "Zhè shì nán de wèntí.",
+        "Zhè jiàn yīfú shì piányi de.",
+        "Zhè jiàn yīfú hěn piányi.",
+        "Zhè shì piányi de yīfú."
+    ],
+    "english": [
+        "Describing and emphasizing characteristics",
+        "This book is beautiful.",
+        "This book is very beautiful.",
+        "This is a beautiful book.",
+        "This dish is spicy.",
+        "This dish is very spicy.",
+        "This is a spicy dish.",
+        "This room is quiet.",
+        "This room is very quiet.",
+        "This is a quiet room.",
+        "This question is difficult.",
+        "This question is very difficult.",
+        "This is a difficult question.",
+        "This piece of clothing is cheap.",
+        "This piece of clothing is very cheap.",
+        "This is a cheap piece of clothing."
+    ]
+  }
 }

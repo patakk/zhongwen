@@ -527,6 +527,27 @@ def search():
     
     return render_template('search.html')
 
+
+@app.route('/get_api_key', methods=['GET'])
+def get_api_key():
+    api_key = os.environ.get('OPENAI_API_KEY_ZHONG_WEN')
+    print(api_key)
+    if not api_key:
+        file_path = '/home/patakk/scrt'
+        try:
+            with open(file_path, 'r') as file:
+                api_key = file.read().strip()
+        except FileNotFoundError:
+            return jsonify({'error': 'API key not found in environment variables or file'}), 404
+        except IOError:
+            return jsonify({'error': 'Error reading API key file'}), 500
+    
+    if api_key:
+        return jsonify({'api_key': api_key}), 200
+    else:
+        return jsonify({'error': 'API key not found'}), 404
+
+
 @app.route('/get_audio', methods=['POST', 'GET'])
 def get_audio():
     characters = request.args.get('chars', '')

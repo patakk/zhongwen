@@ -6,6 +6,8 @@ get.py
 cliapp.py
 parser.py
 
+fire
+
 user_progress/
 audio_files/
 audio_files2/

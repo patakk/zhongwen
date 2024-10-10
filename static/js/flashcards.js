@@ -432,14 +432,16 @@ if(isMobileOrTablet()){
 
 
 document.addEventListener('keydown', function(event) {
-    if (event.key === ' ' || event.key === 'Spacebar') {
-        event.preventDefault(); // Prevent default scrolling behavior
-        change(event);
-
-        if(messageTimeout){
-            clearTimeout(messageTimeout);
-            document.getElementById('space-instruction').style.opacity = 0;
-            document.getElementById('space-instruction').style.transition = 'none';
+    if(!chatOpened){
+        if (event.key === ' ' || event.key === 'Spacebar') {
+            event.preventDefault();
+            change(event);
+    
+            if(messageTimeout){
+                clearTimeout(messageTimeout);
+                document.getElementById('space-instruction').style.opacity = 0;
+                document.getElementById('space-instruction').style.transition = 'none';
+            }
         }
     }
 });
