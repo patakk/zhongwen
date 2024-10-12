@@ -481,7 +481,7 @@ function addMenuListeners() {
 
     function showContextMenu(clientX, clientY) {
         selectedText = window.getSelection().toString().trim();
-        if (selectedText) {
+        if (selectedText && isMobileOrTablet() || !isMobileOrTablet()) {
             const menu = document.getElementById('custom-context-menu');
             if (menu) {
                 menu.style.display = 'block';
@@ -533,6 +533,7 @@ function addMenuListeners() {
         const menu = document.getElementById('custom-context-menu');
         if (chatbox && !menu.contains(event.target) && !chatbox.contains(event.target)) {
             chatbox.style.display = 'none';
+            chatOpened = false;
         }
 
         if (menu) {

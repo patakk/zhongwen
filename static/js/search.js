@@ -1,9 +1,9 @@
 const overlay = document.getElementById('flashcard-overlay');
 const flashcardContent = document.getElementById('flashcard_container');
-
-let currentFont = 'Noto Sans Mono';
+const messageElement = document.getElementById('message');
 
 function showFlashcard(character) {
+    messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
         .then(response => {
             if (!response.ok) {
@@ -12,89 +12,14 @@ function showFlashcard(character) {
             return response.json();
         })
         .then(data => {
-            const container = document.getElementById('flashcard_container');
-            const characterElement = container.querySelector('.character');
-            characterElement.innerHTML = ''; // Clear existing content
+            renderCardData(data);
+            displayCard(true, true);
 
-
-            // Split the character string into individual characters
-            recordView(data.character);
-            const chars = data.character.split('');
-            document.getElementById('font-select').style.display = 'block';
-            // Create clickable spans for each character
-            chars.forEach(char => {
-                const span = document.createElement('span');
-                span.textContent = char;
-                span.className = 'clickable-char';
-                if(isMobileOrTablet()){
-                    span.addEventListener('click', function(e) {
-                        e.stopPropagation(); // Prevent triggering the change event
-                        window.location.href = `./search?query=${encodeURIComponent(char)}`;
-                    });
-                    span.style.hover = 'color: #ffd91c';
-                    // span.style.cursor = 'pointer';
-                }
-                characterElement.appendChild(span);
-                console.log(span);
-            });
-
-            container.querySelector('.pinyin').textContent = data.pinyin;
-            container.querySelector('.pinyin').dataset.characters = data.character;
-            container.querySelector('.english').textContent = data.english;
-            container.querySelector('.flashcard').innerHTML = data.html;
-
-            if (chars.length < 4) {
-                const strokesContainer = document.createElement('div');
-                strokesContainer.className = 'strokes-container';
-                document.querySelector('.flashcard').appendChild(strokesContainer);
-
-                chars.forEach((char, i) => {
-                    const strokeWrapper = document.createElement('div');
-                    strokeWrapper.style.position = 'relative';
-                    strokesContainer.appendChild(strokeWrapper);
-
-                    let writerSize = chars.length === 1 ? 150 : 150;
-                    if(screen.width < 768 && chars.length === 3){
-                        writerSize = 90;
-                    }
-
-                    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                    svg.setAttribute("width", writerSize);
-                    svg.setAttribute("height", writerSize);
-                    svg.setAttribute("id", `grid-background-${i}`);
-                    const dashSize = Math.max(2, Math.floor(writerSize / 25)); // Adjust the divisor as needed
-                    const dashPattern = `${dashSize},${dashSize}`;
-
-                    svg.innerHTML = `
-                        <rect x="0" y="0" width="${writerSize}" height="${writerSize}" fill="none" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                        <line x1="0" y1="0" x2="${writerSize}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                        <line x1="${writerSize}" y1="0" x2="0" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                        <line x1="${writerSize/2}" y1="0" x2="${writerSize/2}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                        <line x1="0" y1="${writerSize/2}" x2="${writerSize}" y2="${writerSize/2}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                    `;
-
-                    strokeWrapper.appendChild(svg);
-
-                    const writer = HanziWriter.create(`grid-background-${i}`, char, {
-                        width: writerSize,
-                        height: writerSize,
-                        padding: 5,
-                        strokeColor: '#000000',
-                        strokeAnimationSpeed: 1,
-                        delayBetweenStrokes: 220,
-                        radicalColor: '#ff0000'
-                    });
-
-                    strokeWrapper.addEventListener('click', function() {
-                        writer.animateCharacter();
-                    });
-                });
-            }
-
-            overlay.style.display = 'flex';
+            recordView(character);
         })
         .catch(error => {
             console.error('Error:', error);
+            messageElement.textContent = `Error: ${error.message}`;
         });
 }
 
@@ -150,43 +75,6 @@ document.addEventListener('keydown', function(event) {
     
 });
 
-
-function changeFont(font) {
-    fetch(`./change_font?font=${font}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        console.log('Font changed successfully');
-    })
-    .catch(error => {
-        console.error('There was a problem changing the font:', error);
-    });
-}
-
-function getFont() {
-    fetch('./get_font')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            currentFont = data.font;
-            console.log('received font', currentFont);
-            document.getElementById('font-select').value = currentFont;
-            document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-}
 
 function handleOrientationChange() {
     const container = document.getElementById('flashcard_container');

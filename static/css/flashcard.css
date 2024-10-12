@@ -1,0 +1,168 @@
+
+#flashcard_character {
+    font-size: 122px;
+    margin-top: 30px;
+    font-weight: 500;
+    font-family: "Noto Serif SC", serif;
+}
+
+#flashcard_english {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    color: #000;
+    padding: 5px 10px;
+    min-width: 100px;
+    display: inline-block;
+    text-align: center;
+}
+#flashcard_pinyin {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    background-color: #000;
+    color: #000;
+    padding: 5px 10px;
+    min-width: 100px;
+    display: inline-block;
+    text-align: center;
+}
+#flashcard_character:hover + #flashcard_pinyin,
+#flashcard_pinyin:hover,
+#flashcard_pinyin.visible {
+    background-color: transparent;
+    color: #000;
+}
+
+#flashcard_description {
+    width: 100%;
+    font-size: 16px;
+    margin-top: 30px;
+    overflow-y: visible;
+    user-select: text;
+}
+
+/* Remove the max-height and overflow-y from #flashcard_description */
+#flashcard_description {
+    font-size: 16px;
+    margin: 30px;
+    user-select: text;
+}
+
+#flashcard_character::selection, #flashcard_pinyin::selection, #flashcard_english::selection, h1::selection, h2::selection, b::selection, i::selection, li::selection, p::selection {
+    background-color: black; /* Applies to modern browsers */
+    color: white; /* Ensures the selected text color is white */
+}
+
+#flashcard_container {
+    width: 34%;
+    height: 90%;
+    border: 2px dashed #000000;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    overflow-y: hidden ;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    transition: transform 0.2s, background-color 0.7s;
+}
+
+#flashcard_container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+
+#flashcard_strokes_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+#flashcard_strokes_container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+
+#message {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+@media screen and (max-width: 1024px) {
+    #flashcard_container {
+        width: 90%;
+        height: 80%;
+        padding: 10px;
+    }
+
+    #flashcard_character {
+        font-size: 60px;
+        margin-top: 10px;
+    }
+
+    #flashcard_english, #flashcard_pinyin {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    #flashcard_description {
+        font-size: 14px;
+        margin: 15px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #flashcard_container {
+        height: 80%;
+        transform: translateY(8%);
+    }
+
+    #flashcard_character {
+        font-size: 60px;
+    }
+
+    #flashcard_english, #flashcard_pinyin {
+        font-size: 18px;
+    }
+}
+
+@media only screen 
+and (min-device-width: 768px) 
+and (max-device-width: 1024px) {
+    #flashcard_container {
+        width: 90%;
+        height: 80vh;
+        max-height: 80vh;
+        margin-bottom: 20px;
+    }
+    
+    .clickable-char {
+        font-size: 130px;
+        margin-top: 10px;
+    }
+}
+
+@media only screen 
+and (orientation: landscape) {
+    #flashcard_container {
+        max-width: 60%; /* Add a max-width */
+        width: 60%;
+    }
+}

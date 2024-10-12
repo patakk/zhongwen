@@ -1,22 +1,8 @@
-let currentCard = null;
+let currentCharacter = null;
 let showingAnswer = false;
-let currentDeck = 'shas';
-let currentFont = 'Noto Sans Mono';
 let prefetchedCard = null;
 let pinyinRevealed = false;
 let messageTimeout = null;
-
-function displayCard(showAnswer, showPinyin = false) {
-    const flashcardElement = document.querySelector('.flashcard');
-    const englishElement = document.querySelector('.english');
-    const pinyinElement = document.querySelector('.pinyin');
-
-    pinyinElement.classList.toggle('visible', showPinyin || showAnswer);
-    pinyinRevealed = showPinyin || showAnswer;
-
-    flashcardElement.style.visibility = showAnswer ? 'visible' : 'hidden';
-    englishElement.style.visibility = showAnswer ? 'visible' : 'hidden';
-}
 
 function generatePseudoRandomNumbers(hanziChar) {
     const charCode = hanziChar.charCodeAt(0);
@@ -95,162 +81,221 @@ function initializeColorTime(element, timeout){
     }, timeout);
 }
 
-function displayCardData(data) {
-    const container = document.getElementById('flashcard_container');
-    const characterElement = container.querySelector('.character');
-    characterElement.innerHTML = ''; // Clear existing content
 
-    // Split the character string into individual characters
-    const chars = data.character.split('');
-    const pinyin = data.pinyin;
+// handle touch start and end, and measure distance
+let touchStartX = null;
+let touchEndX = null;
+let isDragging = false;
 
-    let pinyin_split = "";
-    
-    const toneMarks = ['ā', 'ē', 'ī', 'ō', 'ū', 'ǖ', 'á', 'é', 'í', 'ó', 'ú', 'ǘ', 'ǎ', 'ě', 'ǐ', 'ǒ', 'ǔ', 'ǚ', 'à', 'è', 'ì', 'ò', 'ù', 'ǜ'];
+let mouseStartX = null;
+let currentMouseX = null;
+let isMouseDragging = false;
 
-    for (let i = 0; i < pinyin.length; i++) {
-        let flag = false;
-        for (let j = 0; j < toneMarks.length; j++) {
-            if (pinyin[i] === toneMarks[j]) {
-                flag = true;
-                break;
-            }
-        }
-        if (!flag) {
-            pinyin_split += pinyin[i];
-        }
-        else {
-            pinyin_split += pinyin[i] + "_";
-        }
-    }
-    let pinyin_split_list = pinyin_split.split("_");
-    console.log("pinyin_split", pinyin_split);
-    console.log("pinyin_split_list", pinyin_split_list);
-    // Create clickable spans for each character
-    chars.forEach((char, index) => {
-        const span = document.createElement('span');
-        span.textContent = char;
-        span.dataset.char = char;
-        span.className = 'clickable-char';
+let holdTimer = null;
+let isHolding = false;
 
-        let pinyin_part = pinyin_split_list[index];
-        console.log("pinyin_part", pinyin_part);
+document.addEventListener('keydown', function(event) {
+    // Check if the pressed key is the space bar
+    if(isHolding)
+        return;
 
-
-        span.dataset.pinyin = pinyin_part;
-        if(isMobileOrTablet()){
-            span.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent triggering the change event
-                window.location.href = `./search?query=${encodeURIComponent(char)}`;
-            });
-            span.style.hover = 'color: #ffd91c';
-            // span.style.cursor = 'pointer';
-        }
-        characterElement.appendChild(span);
-        console.log("span", span);
-
-        //toneTextColor(span)
-        span.style.transition = 'text-shadow 0.05s';
-        span.style.textShadow = 'none'; 
-        //initializeColorTime(span, 44);
-    });
-
-    container.querySelector('.pinyin').textContent = data.pinyin;
-    container.querySelector('.pinyin').dataset.characters = data.character;
-    container.querySelector('.english').textContent = data.english;
-    container.querySelector('.flashcard').innerHTML = data.html;
-
-    if (chars.length < 4) {
-        const strokesContainer = document.createElement('div');
-        strokesContainer.className = 'strokes-container';
-        container.querySelector('.flashcard').appendChild(strokesContainer);
-
-        let writers = [];
-        chars.forEach((char, i) => {
-            const strokeWrapper = document.createElement('div');
-            strokeWrapper.style.position = 'relative';
-            strokeWrapper.className = 'stroke-wrapper';
-            strokesContainer.appendChild(strokeWrapper);
-
-            let writerSize = chars.length === 1 ? 150 : 150;
-            if(screen.width < 768 && chars.length === 3){
-                writerSize = 90;
-            }
-
-            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            svg.setAttribute("width", writerSize);
-            svg.setAttribute("height", writerSize);
-            svg.setAttribute("id", `grid-background-${i}`);
-            const dashSize = Math.max(2, Math.floor(writerSize / 25)); // Adjust the divisor as needed
-            const dashPattern = `${dashSize},${dashSize}`;
-
-            svg.innerHTML = `
-                <rect x="0" y="0" width="${writerSize}" height="${writerSize}" fill="none" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                <line x1="0" y1="0" x2="${writerSize}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                <line x1="${writerSize}" y1="0" x2="0" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                <line x1="${writerSize/2}" y1="0" x2="${writerSize/2}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                <line x1="0" y1="${writerSize/2}" x2="${writerSize}" y2="${writerSize/2}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-            `;
-
-            strokeWrapper.appendChild(svg);
-
-            const writer = HanziWriter.create(`grid-background-${i}`, char, {
-                width: writerSize,
-                height: writerSize,
-                padding: 5,
-                strokeColor: '#000000',
-                strokeAnimationSpeed: 1,
-                delayBetweenStrokes: 220,
-                radicalColor: '#ff0000'
-            });
-
-            strokeWrapper.addEventListener('click', function() {
-                writer.animateCharacter();
-            });
-            writers.push(writer);
+    if(!showingAnswer){
+        showingAnswer = true;
+        displayCard(true, true);
+        let hanzichars = document.getElementById('flashcard_character').querySelectorAll('clickable-char');
+        hanzichars.forEach((element) => {
+            toneTextColor(element);
         });
-    }
-
-    currentCard = data.character;
-    showingAnswer = false;
-    displayCard(false);
-
-    container.scrollTop = 0;
-}
-
-function change(event) {
-    const target = event.target;
-
-    if (target.classList.contains('clickable-char')) {
-        return; // Do nothing for clicks on characters
-    }
-    if (target.classList.contains('pinyin')) {
-        if (!showingAnswer) {
-            pinyinRevealed = !pinyinRevealed;
-            displayCard(false, pinyinRevealed);
-        }
         return;
     }
+    else if ((event.code === 'Space' || event.keyCode === 32 || event.key.toLowerCase() === 'x') && showingAnswer) {
+        event.preventDefault();
+        const flashcard = document.getElementById('flashcard_container');
+        isHolding = true;
+        flashcard.style.backgroundColor = '#49fc70';
+        if(event.key.toLowerCase() === 'x'){
+            flashcard.style.backgroundColor = '#fc5549';
+        }
 
-    // Remove this check, as we're now using stopPropagation on the stroke-wrapper
-    // if (target.closest('.strokes-container')) {
-    //     return;
-    // }
+        holdTimer = setTimeout(() => {
+            if(event.key.toLowerCase() === 'x'){
+                recordAnswer(false);
+            }
+            else{
+                recordAnswer(true);
+            }
+            getNextCard();
+            flashcard.style.backgroundColor = 'white';
+        }, 500);   
+    }
+}, false);
 
-    if (!currentCard || showingAnswer) {
-        getNextCard();
-    } else {
-        displayCard(true);
-        showingAnswer = true;
-        
-        document.querySelectorAll('.clickable-char').forEach((char) => {
-            toneTextColor(char);
+
+// Add a corresponding keyup listener to handle key release
+document.addEventListener('keyup', function(event) {
+    if ((event.code === 'Space' || event.keyCode === 32 || event.key.toLowerCase() === 'x') && isHolding) {
+        isHolding = false;
+        clearTimeout(holdTimer);
+        document.getElementById('flashcard_container').style.backgroundColor = 'white';
+    }
+}, false);
+
+let clickStartTime;
+let tmout = null;
+
+
+function recordAnswer(isCorrect) {
+    fetch(`./record_answer?character=${encodeURIComponent(currentCharacter)}&correct=${isCorrect}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
         });
-        recordView(currentCard);
+}
+
+document.getElementById('flashcard_container').addEventListener('mousedown', function(event) {
+    const flashcard = document.getElementById('flashcard_container');
+    isHolding = true;
+    clickStartTime = new Date().getTime();
+    
+    tmout = setTimeout(() => {
+        flashcard.style.backgroundColor = '#fc5549';
+        if(event.clientX > window.innerWidth/2){
+            flashcard.style.backgroundColor = '#49fc70';
+        }
+        tmout = null;
+    }, 100);
+    
+    holdTimer = setTimeout(() => {
+        if(event.clientX < window.innerWidth/2){
+            recordAnswer(false);
+        }
+        else{
+            recordAnswer(true);
+        }
+        getNextCard();
+        isHolding = false;
+        flashcard.style.backgroundColor = 'white';
+    }, 500);
+}, false);
+
+document.getElementById('flashcard_container').addEventListener('mouseup', function(event) {
+    const flashcard = document.getElementById('flashcard_container');
+    const clickDuration = new Date().getTime() - clickStartTime;
+    
+    if(isHolding){
+        clearTimeout(holdTimer);
     }
 
-    // Scroll to the top of the container
-    document.getElementById('flashcard_container').scrollTop = 0;
+    if(tmout){
+        clearTimeout(tmout);
+    }
+    
+    if(clickDuration < 100) { // Short click (less than 500ms)
+        if(!showingAnswer){
+            showingAnswer = true;
+            displayCard(true, true);
+        }
+    }
+    
+    console.log("mouse up");
+    flashcard.style.backgroundColor = 'white';
+    isHolding = false;
+}, false);
+
+
+document.getElementById('flashcard_container').addEventListener('touchstart', function(event) {
+    touchStartX = event.changedTouches[0].screenX;
+    isDragging = true;
+}, false);
+
+document.getElementById('flashcard_container').addEventListener('touchmove', function(event) {
+    if (!isDragging) return;
+    currentTouchX = event.touches[0].clientX;
+    handleTouchMove(currentTouchX - touchStartX);
+}, false);
+
+document.getElementById('flashcard_container').addEventListener('touchend', function(event) {
+    handleTouchEnd();
+}, false);
+
+
+function handleTouchMove(dragDistance){
+    const screenwidth = window.innerWidth;
+    const percentage = dragDistance/screenwidth;
+    const apercentage = Math.abs(percentage);
+
+    const flashcard = document.getElementById('flashcard_container');
+    if(isIPhone()){
+        flashcard.style.transform = `translateX(${dragDistance}px) translateY(8%) rotate(${dragDistance/10}deg)`;
+    }
+    else{
+        flashcard.style.transform = `translateX(${dragDistance}px) rotate(${dragDistance/10}deg)`;
+    }
+
+    const dim = Math.max(0, 255-apercentage*255);
+    if(percentage > 0){
+        flashcard.style.backgroundColor = `rgb(${dim}, 255, ${dim})`;
+    }
+    else {
+        flashcard.style.backgroundColor = `rgb(255, ${dim}, ${dim})`;
+    }
+
+    let threshold = 0.3;
+    if(isIPhone()){
+        threshold = 0.5;
+    }
+    if(isiPad()){
+        threshold = 0.2;
+    }
+    if(apercentage > threshold){
+        if(dragDistance > 0){
+            recordAnswer(true);
+        }
+        else{
+            recordAnswer(false);
+        }
+        getNextCard();
+        touchStartX = null;
+        currentTouchX = null;
+        isDragging = false;
+        mouseStartX = null;
+        currentMouseX = null;
+        isMouseDragging = false;
+        flashcard.style.transform = isIPhone() ? 'translateY(8%)' : 'translateY(0%)';
+        flashcard.style.backgroundColor = 'white';
+    }
+}
+
+function handleTouchEnd(){
+    touchStartX = null;
+    currentTouchX = null;
+    isDragging = false;
+    mouseStartX = null;
+    currentMouseX = null;
+    isMouseDragging = false;
+    
+    const flashcard = document.getElementById('flashcard_container');
+    flashcard.style.transform = isIPhone() ? 'translateY(8%)' : 'translateY(0%)';
+    flashcard.style.backgroundColor = 'white';
+}
+
+
+function displayChoices() {
+    const container = document.getElementById('choicesContainer');
+    const correctButton = document.getElementById('correctButton');
+    const incorrectButton = document.getElementById('incorrectButton');
+
+    correctButton.onclick = () => console.log('Correct clicked');
+    incorrectButton.onclick = () => console.log('Incorrect clicked');
+
+    container.style.display = 'flex';
+}
+
+function hideChoices() {
+    const container = document.getElementById('choicesContainer');
+    container.style.display = 'none';
 }
 
 function fetchCard() {
@@ -265,20 +310,28 @@ function fetchCard() {
 
 function getNextCard() {
     if (prefetchedCard) {
-        displayCardData(prefetchedCard);
+        renderCardData(prefetchedCard);
+        showingAnswer = false;
+        displayCard(false, false);
+        currentCharacter = prefetchedCard.character;
         prefetchedCard = null;
         prefetchNextCard();
     } else {
-        fetchCard()
-            .then(data => {
-                displayCardData(data);
-                prefetchNextCard();
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-                document.querySelector('.character').textContent = 'Error loading card';
-            });
+    fetchCard()
+        .then(data => {
+            renderCardData(data);
+            showingAnswer = false;
+            currentCharacter = data.character;
+            displayCard(false, false);
+            prefetchNextCard();
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            document.getElementById('flashcard_character').textContent = 'Error loading card';
+        });
     }
+    document.getElementById('flashcard_container').scrollTop = 0;
+    hideChoices();
 }
 
 function prefetchNextCard() {
@@ -292,106 +345,6 @@ function prefetchNextCard() {
 }
 
 
-function changeDeck(deck) {
-    fetch(`./change_deck?deck=${deck}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        console.log('Deck changed successfully');
-        prefetchedCard = null;
-        getNextCard();
-    })
-    .catch(error => {
-        console.error('There was a problem changing the deck:', error);
-    });
-}
-
-
-
-function getDeck() {
-    fetch('./get_deck')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            currentDeck = data.deck;
-            document.getElementById('deck-select').value = currentDeck;
-            getNextCard();
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-}
-
-
-function changeFont(font) {
-    fetch(`./change_font?font=${font}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        console.log('Font changed successfully');
-    })
-    .catch(error => {
-        console.error('There was a problem changing the font:', error);
-    });
-}
-
-function getFont() {
-    fetch('./get_font')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            currentFont = data.font;
-            console.log('received font', currentFont);
-            document.getElementById('font-select').value = currentFont;
-            document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-}
-
-
-// function recordView(character) {
-//     fetch('./ ', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ character: character }),
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         console.log(data.message);
-//     })
-//     .catch(error => {
-//         console.error('There was a problem with the fetch operation:', error);
-//     });
-// }
 
 function isTouchDevice() {
     return (('ontouchstart' in window) ||
@@ -411,47 +364,34 @@ function isMobileOrTablet() {
 
 if(isMobileOrTablet()){
     document.getElementById('flashcard_container').addEventListener('click', function(event) {
-        if (event.target.closest('.character')) {
+        if (event.target.closest('.flashcard_character')) {
             return;
         }
-        if (event.target.closest('.character')) {
+        if (event.target.closest('.flashcard_character')) {
             return;
         }
 
         if (!event.target.classList.contains('clickable-char') && 
             !event.target.closest('#font-select') && 
-            !event.target.closest('.stroke-wrapper') && 
+            !event.target.closest('#flashcard_stroke_wrapper') && 
             !event.target.closest('#deck-select')) {
-            change(event);
+            // advanceCardState(event);
         }
     });
 
     // Add this event listener to prevent clicks on characters from propagating
-    document.querySelector('.character').addEventListener('click', function(event) {
+    document.getElementById('flashcard_character').addEventListener('click', function(event) {
         event.stopPropagation();
     });
 }
 
 
-
-document.addEventListener('keydown', function(event) {
-    if(!chatOpened){
-        if (event.key === ' ' || event.key === 'Spacebar') {
-            event.preventDefault();
-            change(event);
-    
-            if(messageTimeout){
-                clearTimeout(messageTimeout);
-                document.getElementById('space-instruction').style.opacity = 0;
-                document.getElementById('space-instruction').style.transition = 'none';
-            }
-        }
-    }
-});
-
 document.getElementById('deck-select').addEventListener('change', function(event) {
     currentDeck = event.target.value;
-    changeDeck(currentDeck);
+    changeDeck(currentDeck, () => {
+        prefetchedCard = null;
+        getNextCard();    
+    });
     this.blur();
 });
 
@@ -489,17 +429,42 @@ function playHanziAudio() {
     });
 }
 
+function isIPhone(){
+    const ua = navigator.userAgent;
+    if (ua.includes('iPhone')) {
+        return true;
+    }
+    return false;
+}
+
+function isiPad(){
+    const ua = navigator.userAgent;
+    if (ua.includes('iPad')) {
+        return true;
+    }
+    return false;
+}
+
+function isLandscape(){
+    return window.innerHeight > window.innerWidth;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    getDeck();
+    getDeck(getNextCard);
     getFont();
     handleOrientationChange(); // Call this on initial load
     
+    const flashcard_container = document.getElementById('flashcard_container');
+    if(isMobileOrTablet()){
+        flashcard_container.style.transition = 'transform 0.2s, background-color 0.0s';
+    }
+
     const pinyinElement = document.getElementById('flashcard_pinyin');
     pinyinElement.addEventListener('click', function() {
         playHanziAudio();
     });
 
-    if(!isMobileOrTablet()){
+    if(!(isiPad() || isIPhone())){
         document.getElementById('space-instruction').style.opacity = 1;
         document.getElementById('space-instruction').style.transition = 'opacity 4s ease-out';
         messageTimeout = setTimeout(() => {
@@ -510,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.getElementById('font-select').addEventListener('change', function(event) {
     const selectedFont = event.target.value;
-    document.querySelector('.character').style.fontFamily = `"${selectedFont}", sans-serif`;
+    document.getElementById('flashcard_character').style.fontFamily = `"${selectedFont}", sans-serif`;
     currentFont = event.target.value;
     changeFont(currentFont);
     this.blur();

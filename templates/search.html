@@ -16,6 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Search - 中文</title>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
 </head>
 <body>
@@ -49,17 +50,18 @@
             {% endif %}
         </div>
     </div>
-
+    
     <div id="flashcard-overlay">
         <div id="flashcard_container">
-            <div class="character"></div>
-            <div id="flashcard_pinyin" class="pinyin"></div>
-            <div class="english"></div>
-            <div class="flashcard"></div>
-            <div class="strokes"></div>
+            <div id="flashcard_character"></div>
+            <div id="flashcard_pinyin"></div>
+            <div id="flashcard_english"></div>
+            <div id="flashcard_description"></div>
         </div>
     </div>
+    <p id="message"></p>
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
 

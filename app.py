@@ -40,8 +40,31 @@ def timing_decorator(f):
 application = app
 
 
+def session_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # if 'username' not in session:
+        #     return redirect(url_for('login'))
+        if 'username' not in session:
+            current_time = datetime.now()
+            adjusted_time = current_time + timedelta(hours=6)
+            current_time_and_date = adjusted_time.strftime("%Y_%m_%d_%H_%M_%S")
+            session['username'] = 'tempuser'
+        if 'deck' not in session:
+            session['deck'] = 'shas'
+        if 'font' not in session:
+            session['font'] = 'Noto Sans Mono'
+        return func(*args, **kwargs)
+    return wrapper
+
 class FlashcardApp:
     def __init__(self):
+        
+        self.NUM_BOXES = 6
+        self.REVIEW_INTERVALS = [0, 1, 3, 7, 14, 30]  # days for each box
+        self.DIFFICULTY_CAP = 3.0
+        self.STREAK_FACTOR = 20
+
         self.user_progress_dir = "user_progress"
         self.decks = {
             "shas": "data/shas_class_cards.json",
@@ -107,47 +130,192 @@ class FlashcardApp:
     def record_view(self, username, character):
         user_progress = self.load_user_progress(username)
         if character not in user_progress["progress"]:
-            user_progress["progress"][character] = {"views": 1}
+            user_progress["progress"][character] = {
+                "views": 1,
+                "answers": [],
+                "decks": [],
+                "box": 1,
+                "streak": 0,
+                "num_incorrect": 0,
+                "difficulty": 1.0,
+                "next_review": datetime.now().isoformat()
+            }
+            if session['deck'] not in user_progress["progress"][character]["decks"]:
+                user_progress["progress"][character]["decks"].append(session['deck'])
         else:
             user_progress["progress"][character]["views"] += 1
         self.save_user_progress(username, user_progress)
 
+    def record_answer(self, username, character, correct):
+        user_progress = self.load_user_progress(username)
+        if character not in user_progress["progress"]:
+            user_progress["progress"][character] = {
+                "answers": [],
+                "decks": [],
+                "box": 1,
+                "streak": 0,
+                "num_incorrect": 0,
+                "difficulty": 1.0,
+                "next_review": datetime.now().isoformat()
+            }
+        
+        char_progress = user_progress["progress"][character]
+        
+        if correct == 'true':
+            char_progress["answers"].append('correct')
+            char_progress["box"] = min(self.NUM_BOXES, char_progress["box"] + 1)
+            char_progress["streak"] += 1
+        else:
+            char_progress["answers"].append('incorrect')
+            char_progress["box"] = 1
+            char_progress["num_incorrect"] += 1
+            char_progress["streak"] = 0
+        
+        if session['deck'] not in char_progress["decks"]:
+            char_progress["decks"].append(session['deck'])
+        
+        char_progress["difficulty"] = self.calculate_difficulty(char_progress)
+        char_progress["next_review"] = self.calculate_next_review_date(char_progress)
+        
+        self.save_user_progress(username, user_progress)
+
+    def calculate_difficulty(self, char_progress):
+        base_difficulty = 1 + max(0, char_progress["num_incorrect"] - 2) / 10
+        streak_factor = max(0.5, 1 - (char_progress["streak"] / self.STREAK_FACTOR))
+        return min(self.DIFFICULTY_CAP, base_difficulty * streak_factor)
+
+    def calculate_next_review_date(self, char_progress):
+        base_interval = self.REVIEW_INTERVALS[char_progress["box"] - 1]
+        if base_interval == 0:
+            return datetime.now().isoformat()  # Immediate review for box 1
+        difficulty = char_progress["difficulty"]
+        return (datetime.now() + timedelta(days=base_interval / difficulty)).isoformat()
+
+    def get_due_cards(self, username, deck, count=10000):
+        user_progress = self.load_user_progress(username)
+        due_cards = []
+        current_time = datetime.now()
+        
+        for character, progress in user_progress["progress"].items():
+            if deck in progress["decks"]:
+                next_review = datetime.fromisoformat(progress["next_review"])
+                if next_review <= current_time:
+                    due_cards.append(character)
+        random.shuffle(due_cards)
+        return due_cards[:count]
+
+    def get_new_cards(self, username, deck, count):
+        user_progress = self.load_user_progress(username)
+        all_deck_cards = set(self.cards[deck].keys())
+        current_time = datetime.now()
+        
+        new_cards = []
+        for character in all_deck_cards:
+            if character not in user_progress["progress"]:
+                new_cards.append(character)
+            else:
+                progress = user_progress["progress"][character]
+                if deck not in progress["decks"]:
+                    new_cards.append(character)
+                else:
+                    next_review = datetime.fromisoformat(progress["next_review"])
+                    if next_review <= current_time:
+                        new_cards.append(character)
+        
+        random.shuffle(new_cards)
+        return new_cards[:count]
+
+
+    def select_card(self, username, deck):
+        due_cards = self.get_due_cards(username, deck)
+        new_cards = self.get_new_cards(username, deck, 30)
+        
+        new_cards = [card for card in new_cards if card not in due_cards]
+        
+        candidate_pool = due_cards + new_cards
+        if not candidate_pool:
+            return random.choice(list(self.cards[deck].keys()))
+        
+        # print('due_cards:', due_cards)
+        # print('new_cards:', new_cards)
+        return random.choice(candidate_pool)
+
+
 flashcard_app = FlashcardApp()
 
-def session_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        # if 'username' not in session:
-        #     return redirect(url_for('login'))
-        if 'username' not in session:
-            current_time = datetime.now()
-            adjusted_time = current_time + timedelta(hours=6)
-            current_time_and_date = adjusted_time.strftime("%Y_%m_%d_%H_%M_%S")
-            session['username'] = 'tempuser_' + current_time_and_date
-        if 'deck' not in session:
-            session['deck'] = 'shas'
-        if 'font' not in session:
-            session['font'] = 'Noto Sans Mono'
-        return func(*args, **kwargs)
-    return wrapper
+@app.route('/get_card_data')
+@session_required
+def get_card_data():
+    character = request.args.get('character')
+    if not character:
+        character = flashcard_app.select_card(session['username'], session['deck'])
+    return  jsonify(packed_data(character))
 
-@app.route('/', methods=['GET', 'POST'])
+from collections import defaultdict
+
+@app.route('/user_progress')
+def user_progress():
+    username = request.args.get('user', session.get('username'))
+    deck = request.args.get('deck', session.get('deck'))
+
+    if not username or not deck:
+        return "User or deck not specified", 400
+
+    user_progress = flashcard_app.load_user_progress(username)
+    deck_cards = flashcard_app.cards[deck]
+
+    progress_stats = []
+    for character in deck_cards:
+        char_progress = user_progress['progress'].get(character, {})
+        if char_progress and deck in char_progress.get('decks', []):
+            correct_answers = char_progress['answers'].count('correct')
+            total_answers = len(char_progress['answers'])
+            accuracy = (correct_answers / total_answers * 100) if total_answers > 0 else 0
+
+            stats = {
+                'character': character,
+                'meaning': deck_cards[character].get('english', 'N/A'),
+                'pinyin': deck_cards[character].get('pinyin', 'N/A'),
+                'box': char_progress.get('box', 1),
+                'views': char_progress.get('views', 0),
+                'streak': char_progress.get('streak', 0),
+                'difficulty': char_progress.get('difficulty', 1),
+                'accuracy': round(accuracy, 2),
+                'num_incorrect': char_progress.get('num_incorrect', 1),
+                'next_review': char_progress.get('next_review', 'N/A')
+            }
+            progress_stats.append(stats)
+
+    # Sort by box (descending) and then by accuracy (descending)
+    progress_stats.sort(key=lambda x: (-x['box'], -x['accuracy']))
+
+    return render_template('userprogress.html', username=username, deck=deck, progress_stats=progress_stats)
+
+@app.route('/login', methods=['GET', 'POST'])
 @session_required
 @timing_decorator
 def login():
-    return redirect(url_for('home'))
-    #if request.method == 'POST':
-    #    username = request.form['username']
-    #    session['username'] = username
-    #    session['deck'] = 'shas'
-    #    return redirect(url_for('home'))
-    #return render_template('login.html')
+    if request.method == 'POST':
+       username = request.form['username']
+       session['username'] = username
+       return redirect(url_for('home'))
+    return render_template('login.html', username=session['username'])
 
-@app.route('/home')
+@app.route('/')
 @session_required
 @timing_decorator
 def home():
     return render_template('home.html', username=session['username'])
+
+@app.route('/check_session')
+@session_required
+def check_session():
+    sess = dict(session)
+    sess['progress'] = flashcard_app.load_user_progress(session['username'])
+    return Response(
+        json.dumps(sess, ensure_ascii=False, indent=4),
+        mimetype='application/json'
+    )
 
 @app.route('/flashcards')
 @session_required
@@ -258,15 +426,6 @@ def get_characters_pinyinenglish():
     return jsonify({"characters": all_data})
 
 
-@app.route('/get_card_data')
-@session_required
-def get_card_data():
-    print(session['deck'])
-    character = request.args.get('character')
-    if not character:
-        character = flashcard_app.select_random_card(session['deck'])
-    return  jsonify(packed_data(character))
-
 
 @app.route('/change_font', methods=['POST'])
 @timing_decorator
@@ -290,6 +449,14 @@ def get_font():
 @timing_decorator
 def change_deck():
     session['deck'] = request.args.get('deck')
+    # username = session['username']
+    # user_progress = flashcard_app.load_user_progress(username)
+    # for character in flashcard_app.cards[session['deck']]:
+    #     if character not in user_progress['progress']:
+    #         user_progress['progress'][character] = {
+    #             'answers': [],
+    #         }
+    # flashcard_app.save_user_progress(username, user_progress)
     return jsonify({"message": "Deck changed successfully"})
 
 @app.route('/get_deck')
@@ -455,6 +622,22 @@ def fuzzy_sort_key(query, text):
     text = text.lower()
     order_score = sum(text.index(char) for char in query if char in text)
     return order_score
+
+
+@app.route('/deviceinfo')
+def deviceinfo():
+    return render_template('deviceinfo.html')
+
+@app.route('/record_answer')
+@timing_decorator
+@session_required
+def record_answer():
+    character = request.args.get('character')
+    correct = request.args.get('correct')
+    username = session['username']
+    flashcard_app.record_answer(username, character, correct)
+
+    return jsonify({"message": "Answer recorded successfully"})
 
 @app.route('/search', methods=['GET', 'POST'])
 @timing_decorator

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Progress - {{ username }} - {{ deck }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f0f0; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; background-color: white; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tr:hover { background-color: #ddd; }
+        .character { font-size: 24px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Progress for {{ username }} in {{ deck }} deck</h1>
+    <table>
+        <tr>
+            <th>Character</th>
+            <th>Meaning</th>
+            <th>Pinyin</th>
+            <th>Box</th>
+            <th>Difficulty</th>
+            <th>Streak</th>
+            <th>Accuracy</th>
+            <th>Num. Incorrect</th>
+            <th>Next Review</th>
+        </tr>
+        {% for stat in progress_stats %}
+        <tr>
+            <td class="character">{{ stat.character }}</td>
+            <td>{{ stat.meaning }}</td>
+            <td>{{ stat.pinyin }}</td>
+            <td>{{ stat.box }}</td>
+            <td>{{ stat.difficulty }}</td>
+            <td>{{ stat.streak }}</td>
+            <td>{{ stat.accuracy }}%</td>
+            <td>{{ stat.num_incorrect }}</td>
+            <td>{{ stat.next_review }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

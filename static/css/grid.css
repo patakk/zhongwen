@@ -360,15 +360,6 @@ and (orientation: landscape) {
     }
 }
 
-#message {
-    position: fixed;
-    bottom: 15px;
-    left: 15px;
-    font-size: 16px;
-    margin: 0;
-    padding: 0;
-    line-height: 1;
-}
 ::selection {
     background-color: #000;
     color: #fff;
@@ -385,7 +376,7 @@ and (orientation: landscape) {
     background-color: #000;
     color: #fff;
 }
-.strokes-container {
+#flashcard_strokes_container {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -395,7 +386,7 @@ and (orientation: landscape) {
     gap: 10px;
 }
 
-.strokes-container {
+#flashcard_strokes_container {
     display: flex;
     justify-content: center;
     gap: 10px;

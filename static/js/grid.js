@@ -3,9 +3,7 @@ const overlay = document.getElementById('flashcard-overlay');
 const flashcardContent = document.getElementById('flashcard_container');
 const messageElement = document.getElementById('message');
 
-let currentDeck = 'shas';
 let isAnswerVisible = false;
-let currentFont = 'Noto Sans Mono';
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -231,7 +229,6 @@ function createListItem(char, idx) {
 // Call this function when the page loads and on window resize
 
 
-
 function showFlashcard(character) {
     messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
@@ -242,7 +239,8 @@ function showFlashcard(character) {
             return response.json();
         })
         .then(data => {
-            showAfterLoad(data);
+            renderCardData(data);
+            displayCard(true, true);
 
             recordView(character);
         })
@@ -253,8 +251,9 @@ function showFlashcard(character) {
 }
 
 function showAfterLoad(data){
+    return;
     const container = document.getElementById('flashcard_container');
-    const characterElement = container.querySelector('.character');
+    const characterElement = document.getElementById('flashcard_character');
     characterElement.innerHTML = ''; // Clear existing content
     characterElement.dataset.characters = data.character; // Clear existing content
 
@@ -290,13 +289,13 @@ function showAfterLoad(data){
     });
     const pinyinElement = document.getElementById('flashcard_pinyin');
     pinyinElement.dataset.characters = data.character;
-    container.querySelector('.pinyin').textContent = data.pinyin;
-    container.querySelector('.english').textContent = data.english;
-    container.querySelector('.flashcard').innerHTML = data.html;
+    document.getElementById('flashcard_pinyin').textContent = data.pinyin;
+    document.getElementById('flashcard_english').textContent = data.english;
+    document.getElementById('flashcard_description').innerHTML = data.html;
     if (chars.length < 4) {
         const strokesContainer = document.createElement('div');
         strokesContainer.className = 'strokes-container';
-        document.querySelector('.flashcard').appendChild(strokesContainer);
+        document.getElementById('flashcard_description').appendChild(strokesContainer);
 
         chars.forEach((char, i) => {
             const strokeWrapper = document.createElement('div');
@@ -384,27 +383,27 @@ function hideInfo(gridItem) {
 }
 
 
-function showPinyin(gridItem, character) {
-    const pinyinSpan = gridItem.querySelector('.pinyin');
-    if (pinyinSpan.textContent === '') {
-        fetch(`./get_pinyin?character=${encodeURIComponent(character)}`)
-            .then(response => response.json())
-            .then(data => {
-                pinyinSpan.textContent = data.pinyin;
-                gridItem.querySelector('.char').style.display = 'none';
-                pinyinSpan.style.display = 'block';
-            })
-            .catch(error => console.error('Error:', error));
-    } else {
-        gridItem.querySelector('.char').style.display = 'none';
-        pinyinSpan.style.display = 'block';
-    }
-}
+// function showPinyin(gridItem, character) {
+//     const pinyinSpan = gridItem.querySelector('.pinyin');
+//     if (pinyinSpan.textContent === '') {
+//         fetch(`./get_pinyin?character=${encodeURIComponent(character)}`)
+//             .then(response => response.json())
+//             .then(data => {
+//                 pinyinSpan.textContent = data.pinyin;
+//                 gridItem.querySelector('.char').style.display = 'none';
+//                 pinyinSpan.style.display = 'block';
+//             })
+//             .catch(error => console.error('Error:', error));
+//     } else {
+//         gridItem.querySelector('.char').style.display = 'none';
+//         pinyinSpan.style.display = 'block';
+//     }
+// }
 
-function hidePinyin(gridItem) {
-    gridItem.querySelector('.char').style.display = 'block';
-    gridItem.querySelector('.pinyin').style.display = 'none';
-}
+// function hidePinyin(gridItem) {
+//     gridItem.querySelector('.char').style.display = 'block';
+//     gridItem.querySelector('.pinyin').style.display = 'none';
+// }
 
 
 document.getElementById('deck-select').addEventListener('change', function(event) {
@@ -415,9 +414,9 @@ document.getElementById('deck-select').addEventListener('change', function(event
 // Initial load of characters
 
 function updateVisibility() {
-    const pinyin = document.querySelector('.pinyin');
-    const english = document.querySelector('.english');
-    const flashcard = document.querySelector('.flashcard');
+    const pinyin = document.getElementById('pinyin');
+    const english = document.getElementById('english');
+    const flashcard = document.getElementById('flashcard');
 
     if (isAnswerVisible) {
         pinyin.classList.add('visible');
@@ -617,7 +616,7 @@ function getFont() {
             updateFontFamily(currentFont);
 
             document.getElementById('font-select').value = currentFont;
-            document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
+            document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", sans-serif`;
             document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;
         })
         .catch(error => {
@@ -684,7 +683,7 @@ document.getElementById('font-select').addEventListener('change', function(event
             item.style.fontSize = `${fontInfo.size}px`;
         });
         
-        const flashcardCharacter = document.querySelector('.character');
+        const flashcardCharacter = document.querySelector('.flashcard_character');
         flashcardCharacter.style.fontFamily = `"${fontInfo.family}", sans-serif`;
 
         updateFontFamily(fontInfo.family);
