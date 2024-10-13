@@ -41,6 +41,18 @@ def timing_decorator(f):
 application = app
 
 
+def hard_session_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if 'deck' not in session:
+            session['deck'] = 'shas'
+        if 'font' not in session:
+            session['font'] = 'Noto Sans Mono'
+        if session.get('username', 'tempuser') == 'tempuser':
+            return redirect(url_for('login'))
+        return func(*args, **kwargs)
+    return wrapper
+
 def session_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -49,16 +61,7 @@ def session_required(func):
         if 'font' not in session:
             session['font'] = 'Noto Sans Mono'
         if 'username' not in session:
-            return redirect(url_for('login'))
-        # if 'username' not in session:
-        #     current_time = datetime.now()
-        #     adjusted_time = current_time + timedelta(hours=6)
-        #     current_time_and_date = adjusted_time.strftime("%Y_%m_%d_%H_%M_%S")
-        #     session['username'] = 'tempuser'
-        # if 'deck' not in session:
-        #     session['deck'] = 'shas'
-        # if 'font' not in session:
-        #     session['font'] = 'Noto Sans Mono'
+            session['username'] = 'tempuser'
         return func(*args, **kwargs)
     return wrapper
 
@@ -386,6 +389,11 @@ from collections import defaultdict
 @app.route('/user_progress')
 @session_required
 def user_progress():
+
+    if session.get('username') == 'tempuser':
+        session['user_progress'] = flashcard_app.load_user_progress(None)
+        return redirect(url_for('login'))
+
     username = request.args.get('user', session.get('username'))
     deck = request.args.get('deck', session.get('deck'))
 
@@ -473,9 +481,12 @@ def check_session():
 
 
 @app.route('/flashcards')
-@session_required
+@hard_session_required
 @timing_decorator
 def flashcards():
+    session['user_progress'] = flashcard_app.load_user_progress(None)
+    print('created new user progress')
+    flashcard_app.save_user_progress(session['username'], session['user_progress'])
     return render_template('flashcards.html', username=session['username'], decks=flashcard_app.decks)
 
 @app.route('/pinyinenglish')
