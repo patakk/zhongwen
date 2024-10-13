@@ -132,6 +132,31 @@
         .flashcard-toggle:hover {
             color: #004080;
         }
+
+        * {
+            text-transform: lowercase;
+        }
+
+        a, h1 {
+            text-transform: none;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 1.5em;
+        }
+
+        /* Second level */
+        ul ul > li::before {
+            content: "▪ ";
+        }
+
+        /* Third level */
+        ul ul ul > li::before {
+            content: "• ";
+        }
+
+
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
