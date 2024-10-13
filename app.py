@@ -367,7 +367,7 @@ class FlashcardApp:
         
         flashcard_app.save_user_progress(session['username'], session['user_progress'])
         session['current_card'] = card_to_return
-        print('returning', card_to_return)
+        # print('returning', card_to_return)
         return card_to_return
 
 
@@ -420,8 +420,7 @@ def user_progress():
     # Sort by box (descending) and then by accuracy (descending)
     progress_stats.sort(key=lambda x: (-x['box'], -x['accuracy']))
 
-    print('afsasfas')
-    print(session['user_progress']["base_new_cards_limit"])
+    # print(session['user_progress']["base_new_cards_limit"])
     return render_template('userprogress.html', username=session.get('username'), deck=deck, progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=session['user_progress']["base_new_cards_limit"])
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -832,9 +831,6 @@ def search():
                             numbered_query = move_tone_number_to_end(query)
                             numbered_card_pinyin = lazy_pinyin(hanzi, style=Style.TONE3, neutral_tone_with_five=True)
                             if numbered_query in numbered_card_pinyin:
-                                print('!!!')
-                                print(numbered_query)
-                                print(numbered_card_pinyin)
                                 results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
                             else:
                                 pinyin_query = ''.join(lazy_pinyin(query))
@@ -909,7 +905,6 @@ def search():
 @app.route('/get_api_key', methods=['GET'])
 def get_api_key():
     api_key = os.environ.get('OPENAI_API_KEY_ZHONG_WEN')
-    print(api_key)
     if not api_key:
         file_path = '/home/patakk/scrt'
         try:
@@ -945,9 +940,11 @@ def get_audio():
                 with open(file_path2, 'rb') as f:
                     audio_chunks.append(f.read())
             else:
-                print(f"Audio file not found for character: {char}")
+                # print(f"Audio file not found for character: {char}")
+                pass
         else:
-            print(f"No audio mapping found for character: {char}")
+            # print(f"No audio mapping found for character: {char}")
+            pass
 
     if not audio_chunks:
         return "No audio found for the provided characters", 404
