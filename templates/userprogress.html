@@ -160,6 +160,24 @@
             background-color: rgb(0, 0, 0);
             color: rgb(255, 0, 0);
         }
+
+        .highlight {
+            display: inline-block;
+            background-color: #ff3c00; /* Light yellow background */
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .deck-highlight {
+            display: inline-block;
+            background-color: #ff3c00; /* Light blue background */
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #0277bd;
+        }
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
@@ -172,7 +190,9 @@
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li id="loginMenuItem"><a href="{{ url_for('home') }}">Home</a></li>
             <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
+            <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li class="has-submenu">
@@ -202,7 +222,7 @@
     </div>
 
     <div class="container">
-        <h1>Progress for {{ username }} in {{ deck }} deck</h1>
+        <h1>Progress for <span class="highlight">{{ username }}</span> in <span class="deck-highlight">{{ deck.name }}</span> deck</h1>
         <table>
             <tr>
                 <th>Character</th>
@@ -281,5 +301,27 @@
 
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+
+    <script>
+
+        function changeDeck(deck, func=getNextCard) {
+            fetch(`./change_deck?deck=${deck}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('Deck changed successfully');
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('There was a problem changing the deck:', error);
+            });
+        }
+    </script>
 </body>
 </html>
