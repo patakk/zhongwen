@@ -464,6 +464,7 @@ function changeDeck(deck) {
     const grid = document.getElementById('character-grid');
     grid.innerHTML = '';
     drawBothLayouts(currentData);
+    window.scrollTo(0, 0);
 }
 
 
