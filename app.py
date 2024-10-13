@@ -421,7 +421,7 @@ def user_progress():
     progress_stats.sort(key=lambda x: (-x['box'], -x['accuracy']))
 
     # print(session['user_progress']["base_new_cards_limit"])
-    return render_template('userprogress.html', username=session.get('username'), deck=deck, progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=session['user_progress']["base_new_cards_limit"])
+    return render_template('userprogress.html', username=session.get('username'), deck=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=session['user_progress']["base_new_cards_limit"])
 
 @app.route('/login', methods=['GET', 'POST'])
 @timing_decorator
