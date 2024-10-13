@@ -446,7 +446,7 @@ def login():
 @session_required
 @timing_decorator
 def welcome():
-    return render_template('welcome.html')
+    return render_template('welcome.html', username=session['username'])
 
 @app.route('/')
 @session_required
@@ -803,8 +803,14 @@ def record_answer():
 
     return jsonify({"message": "Answer recorded successfully"})
 
+from pypinyin import lazy_pinyin, Style
+
+def move_tone_number_to_end(pinyin):
+    return ''.join([char for char in pinyin if char not in '1234']) + ''.join([char for char in pinyin if char in '1234'])
+    
 @app.route('/search', methods=['GET', 'POST'])
 @timing_decorator
+@session_required
 def search():
     if request.method == 'POST' or request.args.get('query'):
         query = request.args.get('query') or request.form.get('query') or ''
@@ -815,12 +821,26 @@ def search():
             for hanzi, card in flashcard_app.cards[deck].items():
                 if query in hanzi.lower():
                     results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
-                elif query.isalpha():
+                elif query.replace(' ', '').isalnum():  # Allow spaces and numbers in query
                     if 'pinyin' in card:
-                        pinyin_query = remove_tones(convert_numerical_tones(query))
-                        card_pinyin = remove_tones(card['pinyin'].lower()).lower()
-                        if pinyin_query in card_pinyin:
-                            results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
+                        if '1' in query or '2' in query or '3' in query or '4' in query:
+                            numbered_query = move_tone_number_to_end(query)
+                            numbered_card_pinyin = lazy_pinyin(hanzi, style=Style.TONE3, neutral_tone_with_five=True)
+                            if numbered_query in numbered_card_pinyin:
+                                print('!!!')
+                                print(numbered_query)
+                                print(numbered_card_pinyin)
+                                results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
+                            else:
+                                pinyin_query = ''.join(lazy_pinyin(query))
+                                card_pinyin = ''.join(lazy_pinyin(card['pinyin'].lower()))
+                                if pinyin_query in card_pinyin:
+                                    results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
+                        else:
+                            pinyin_query = remove_tones(convert_numerical_tones(query))
+                            card_pinyin = remove_tones(card['pinyin'].lower()).lower()
+                            if pinyin_query in card_pinyin:
+                                results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
                     if 'english' in card and query in card['english'].lower():
                         results.append({'hanzi': hanzi, **card, 'match_type': 'english'})
         
@@ -840,20 +860,24 @@ def search():
             elif query in hanzi:
                 return (1, len(hanzi), hanzi)
             elif result['match_type'] == 'pinyin':
-                pinyin = remove_tones(result['pinyin'].lower())
-                return (2, not pinyin.startswith(remove_tones(convert_numerical_tones(query))), pinyin)
+                pinyin = convert_numerical_tones(result['pinyin'].lower())
+                accented_query = convert_numerical_tones(query)
+                return (2, not pinyin.startswith(accented_query), pinyin)
             else:  # english
                 english = result['english'].lower()
                 return (3, not english.startswith(query), english)
-
+            
         sorted_results = sorted(unique_results, key=sort_key)
         
         if not sorted_results:  # If no results found, perform fuzzy search
             fuzzy_results = []
             for deck in flashcard_app.decks:
                 for hanzi, card in flashcard_app.cards[deck].items():
-                    if 'pinyin' in card and fuzzy_match(query, card['pinyin']):
-                        fuzzy_results.append({'hanzi': hanzi, **card, 'match_type': 'fuzzy_pinyin'})
+                    if 'pinyin' in card:
+                        accented_query = convert_numerical_tones(query)
+                        accented_card_pinyin = convert_numerical_tones(card['pinyin'].lower())
+                        if fuzzy_match(accented_query, accented_card_pinyin):
+                            fuzzy_results.append({'hanzi': hanzi, **card, 'match_type': 'fuzzy_pinyin'})
                     elif 'english' in card and fuzzy_match(query, card['english']):
                         fuzzy_results.append({'hanzi': hanzi, **card, 'match_type': 'fuzzy_english'})
 
@@ -867,12 +891,14 @@ def search():
 
             # Sort fuzzy results
             sorted_results = sorted(unique_fuzzy_results, key=lambda result: 
-                fuzzy_sort_key(query, result['pinyin'] if result['match_type'] == 'fuzzy_pinyin' else result['english'])
+                fuzzy_sort_key(convert_numerical_tones(query), 
+                               convert_numerical_tones(result['pinyin']) if result['match_type'] == 'fuzzy_pinyin' else result['english'])
             )
 
         return render_template('search.html', results=sorted_results, query=query, decks=flashcard_app.decks, username=session['username'])
     
     return render_template('search.html', decks=flashcard_app.decks, username=session['username'])
+
 
 
 @app.route('/get_api_key', methods=['GET'])

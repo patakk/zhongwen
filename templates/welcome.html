@@ -33,6 +33,9 @@
         ul {
             padding-left: 1.5rem;
         }
+        li {
+            margin-bottom: 0.75rem; /* Added spacing between list items */
+        }
         .btn-container {
             text-align: center;
             margin-top: 1rem;
@@ -50,6 +53,16 @@
             background-color: black;
             color: white;
         }
+        a {
+            color: rgb(255, 255, 255);
+            text-decoration: none;
+            background-color: #ff3c00; /* Light red background */
+            padding: 2px 4px;
+        }
+        a:hover {
+            background-color: #ff0000; /* Darker red on hover */
+            color: #050505; /*rgb(12, 6, 6) red on hover */
+        }
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -60,21 +73,40 @@
             }
         }
     </style>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
 <body>
+    <div class="hamburger" id="hamburgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
+            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
+            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
+        </ul>
+    </div>
     <div class="container">
         <h1>Welcome {{ session['username'] }}!</h1>
-        <p>We're excited to have you here. Here's a quick guide to get you started:</p>
+        <p>here's a quick guide to get you started:</p>
         <ul>
-            <li>Browse our decks of flashcards</li>
-            <li>Create your own custom decks</li>
-            <li>Track your progress over time</li>
+            <li>browse <a href="{{ url_for('grid') }}">Hanzi Grid</a> to preview characters and their descriptions</li>
+            <li>browse <a href="{{ url_for('lists') }}">Example Lists</a> to learn grammar and characters in context</li>
+            <li>use <a href="{{ url_for('search') }}">Search</a> to find words (english/hanzi/pinyin supported)</li>
+            <li>decks that you browse and fonts that you use can be changed in the top right corner</li>
         </ul>
         <div class="btn-container">
             <a href="{{ url_for('home') }}" class="btn">Start Learning</a>
         </div>
     </div>
 
+    <script>
+        const username = {{ username | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
