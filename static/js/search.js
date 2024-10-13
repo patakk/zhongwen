@@ -15,7 +15,7 @@ function showFlashcard(character) {
             renderCardData(data);
             displayCard(true, true);
 
-            recordView(character);
+            // recordView(character);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -94,23 +94,23 @@ function handleOrientationChange() {
         }
     }
 }
-document.getElementById('font-select').addEventListener('change', function(event) {
-    currentFont = event.target.value;
-    document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
-    changeFont(currentFont);
-    this.blur();
-    event.stopPropagation(); // Add this line to prevent the event from bubbling up
-});
+// document.getElementById('font-select').addEventListener('change', function(event) {
+//     currentFont = event.target.value;
+//     document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
+//     changeFont(currentFont);
+//     this.blur();
+//     event.stopPropagation(); // Add this line to prevent the event from bubbling up
+// });
 
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay && !e.target.closest('#font-select')) {
         overlay.style.display = 'none';
-        document.getElementById('font-select').style.display = 'none';
+        // document.getElementById('font-select').style.display = 'none';
     }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('font-select').style.display = 'none';
+    // document.getElementById('font-select').style.display = 'none';
     getFont();
 
     const pinyinElement = document.getElementById('flashcard_pinyin');

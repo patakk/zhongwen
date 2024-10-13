@@ -52,6 +52,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background-color 0.5s;
 }
    
 .container {
@@ -201,6 +202,7 @@ body {
     margin: 0 2px;
     color: #fff;
     color: #000000;
+    transition: color 0.8s;
 }
 
 #space-instruction {

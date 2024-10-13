@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>welcome</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Noto Sans Mono', monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: white;
+        }
+        .container {
+            width: 60%;
+            max-width: 800px;
+            background-color: white;
+            padding: 2rem;
+            border: 2px dashed black;
+        }
+        h1 {
+            font-family: 'Noto Sans Mono', monospace;
+            color: #333;
+        }
+        ul {
+            padding-left: 1.5rem;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: white;
+            color: black;
+            text-decoration: none;
+            border: 2px solid black;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: black;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                width: 100%;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome {{ session['username'] }}!</h1>
+        <p>We're excited to have you here. Here's a quick guide to get you started:</p>
+        <ul>
+            <li>Browse our decks of flashcards</li>
+            <li>Create your own custom decks</li>
+            <li>Track your progress over time</li>
+        </ul>
+        <div class="btn-container">
+            <a href="{{ url_for('home') }}" class="btn">Start Learning</a>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

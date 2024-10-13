@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from flask import send_file
 from datetime import timedelta
 from datetime import datetime
+from datetime import date
 from functools import wraps
 from urllib.parse import unquote
 import random
@@ -14,7 +15,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(days=3650)
 
-ENABLE_TIMING = False
+ENABLE_TIMING = False 
 
 @app.before_request
 def make_session_permanent():
@@ -64,19 +65,26 @@ class FlashcardApp:
         self.REVIEW_INTERVALS = [0, 1, 3, 7, 14, 30]  # days for each box
         self.DIFFICULTY_CAP = 3.0
         self.STREAK_FACTOR = 20
+        self.BASE_NEW_CARDS_LIMIT = 15
 
+        self.daily_new_cards = {}
+        self.last_new_cards_date = {}
+        self.presented_new_cards = {}
         self.user_progress_dir = "user_progress"
         self.decks = {
-            "shas": "data/shas_class_cards.json",
-            "top140": "data/top140_cards.json",
-            "hsk1": "data/hsk1_cards.json",
-            "hsk2": "data/hsk2_cards.json",
-            "hsk3": "data/hsk3_cards.json",
-            "hsk4": "data/hsk4_cards.json",
-            "hsk5": "data/hsk5_cards.json",
-            "hsk6": "data/hsk6_cards.json",
+            "shas": {'file': "data/shas_class_cards.json", 'name': 'ShaSha\'s Class'},
+            "top140": {'file': "data/top140_cards.json", 'name': 'Top 140'},
+            "hsk1": {'file': "data/hsk1_cards.json", 'name': 'HSK 1'},
+            "hsk2": {'file': "data/hsk2_cards.json", 'name': 'HSK 2'},
+            "hsk3": {'file': "data/hsk3_cards.json", 'name': 'HSK 3'},
+            "hsk4": {'file': "data/hsk4_cards.json", 'name': 'HSK 4'},
+            "hsk5": {'file': "data/hsk5_cards.json", 'name': 'HSK 5'},
+            "hsk6": {'file': "data/hsk6_cards.json", 'name': 'HSK 6'},
+            "minideck": {'file': "data/mini_deck.json", 'name': 'Minideck'},
         }
+        self.user_prog = {}
         self.current_deck = "shas"
+        self.current_card = None
         self.cards = {}
         for deck in self.decks:
             self.cards[deck] = self.load_cards(deck)
@@ -87,20 +95,39 @@ class FlashcardApp:
             os.makedirs(self.user_progress_dir)
 
     def load_cards(self, deck):
-        with open(self.decks[deck], 'r', encoding='utf-8') as f:
+        with open(self.decks[deck]['file'], 'r', encoding='utf-8') as f:
             return json.load(f)
 
     def set_deck(self, deck):
         self.current_deck = deck
 
     def load_user_progress(self, username):
+        if self.user_prog and username == self.user_prog.get('username'):
+            print('returning cached user progress')
+            return self.user_prog
         file_path = os.path.join(self.user_progress_dir, f"{username}.json")
         if os.path.exists(file_path):
             with open(file_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        return {"progress": {}}
+                try:
+                    self.user_prog = json.load(f)
+                    return self.user_prog
+                except:
+                    print('retrying')
+                    time.sleep(0.1)
+                    self.user_prog = json.load(f)
+                    return self.user_prog
+        if not self.user_prog:
+            self.user_prog = {
+                "progress": {},
+                "last_new_cards_date": {},
+                "presented_new_cards": {},
+                "daily_new_cards": {},
+                "new_cards_limit": self.BASE_NEW_CARDS_LIMIT
+            }
+        return self.user_prog
 
     def save_user_progress(self, username, progress):
+        self.user_prog = progress
         file_path = os.path.join(self.user_progress_dir, f"{username}.json")
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(progress, f, ensure_ascii=False, indent=2)
@@ -144,6 +171,7 @@ class FlashcardApp:
                 user_progress["progress"][character]["decks"].append(session['deck'])
         else:
             user_progress["progress"][character]["views"] += 1
+        user_progress['username'] = username
         self.save_user_progress(username, user_progress)
 
     def record_answer(self, username, character, correct):
@@ -155,6 +183,7 @@ class FlashcardApp:
                 "box": 1,
                 "streak": 0,
                 "num_incorrect": 0,
+                "views": 0,
                 "difficulty": 1.0,
                 "next_review": datetime.now().isoformat()
             }
@@ -174,9 +203,12 @@ class FlashcardApp:
         if session['deck'] not in char_progress["decks"]:
             char_progress["decks"].append(session['deck'])
         
+        char_progress['views'] += 1
         char_progress["difficulty"] = self.calculate_difficulty(char_progress)
         char_progress["next_review"] = self.calculate_next_review_date(char_progress)
         
+        print(f"Character: {character}, Box: {char_progress['box']}, Next review: {char_progress['next_review']}")  # Debug info
+
         self.save_user_progress(username, user_progress)
 
     def calculate_difficulty(self, char_progress):
@@ -190,55 +222,129 @@ class FlashcardApp:
             return datetime.now().isoformat()  # Immediate review for box 1
         difficulty = char_progress["difficulty"]
         return (datetime.now() + timedelta(days=base_interval / difficulty)).isoformat()
-
+    
     def get_due_cards(self, username, deck, count=10000):
         user_progress = self.load_user_progress(username)
         due_cards = []
         current_time = datetime.now()
-        
-        for character, progress in user_progress["progress"].items():
-            if deck in progress["decks"]:
-                next_review = datetime.fromisoformat(progress["next_review"])
-                if next_review <= current_time:
-                    due_cards.append(character)
-        random.shuffle(due_cards)
-        return due_cards[:count]
-
-    def get_new_cards(self, username, deck, count):
-        user_progress = self.load_user_progress(username)
         all_deck_cards = set(self.cards[deck].keys())
-        current_time = datetime.now()
         
-        new_cards = []
         for character in all_deck_cards:
-            if character not in user_progress["progress"]:
-                new_cards.append(character)
-            else:
-                progress = user_progress["progress"][character]
-                if deck not in progress["decks"]:
-                    new_cards.append(character)
-                else:
-                    next_review = datetime.fromisoformat(progress["next_review"])
+            progress = user_progress["progress"].get(character, {})
+            next_review_str = progress.get('next_review')
+            if next_review_str:
+                try:
+                    next_review = datetime.fromisoformat(next_review_str)
                     if next_review <= current_time:
-                        new_cards.append(character)
+                        due_cards.append(character)
+                except ValueError:
+                    print(f"Invalid date format for character {character}: {next_review_str}")
         
-        random.shuffle(new_cards)
-        return new_cards[:count]
+        random.shuffle(due_cards)
+        due_cards = due_cards[:count]
+        
+        return due_cards
 
+    def get_new_cards(self, username, deck, force_new_cards=False):
+        user_progress = self.load_user_progress(username)
+        today = date.today()
+        user_deck_key = (username, deck)
+
+        # Check if we need to generate a new set of cards for today
+        if (deck not in user_progress["daily_new_cards"] or 
+            user_progress["last_new_cards_date"].get(deck) != today.isoformat()
+            or force_new_cards):
+            
+            all_deck_cards = set(self.cards[deck].keys())
+            
+            new_cards = [
+                character for character in all_deck_cards 
+                if character not in user_progress["progress"]
+            ]
+            
+            # Use today's date as seed for randomization
+            seed = int(f"{today.year}{today.month:02d}{today.day:02d}")
+            rng = random.Random(seed)
+            
+            new_cards = sorted(new_cards)
+            rng.shuffle(new_cards)
+            user_progress["daily_new_cards"][deck] = new_cards[:user_progress["new_cards_limit"]]
+            if force_new_cards:
+                print('Forced new cards')
+                print(user_progress["daily_new_cards"][deck])
+            user_progress["last_new_cards_date"][deck] = today.isoformat()
+            user_progress["presented_new_cards"][deck] = []
+            self.save_user_progress(username, user_progress)
+
+        # Return only the cards that haven't been presented yet
+        remaining_new_cards = [card for card in user_progress["daily_new_cards"][deck] 
+                               if card not in user_progress["presented_new_cards"].get(deck, [])]
+        return remaining_new_cards
 
     def select_card(self, username, deck):
-        due_cards = self.get_due_cards(username, deck)
-        new_cards = self.get_new_cards(username, deck, 30)
-        
-        new_cards = [card for card in new_cards if card not in due_cards]
-        
-        candidate_pool = due_cards + new_cards
-        if not candidate_pool:
+
+        if username == 'tempuser':
             return random.choice(list(self.cards[deck].keys()))
+
+        user_progress = self.load_user_progress(username)
+        due_cards = self.get_due_cards(username, deck)
+        new_cards = self.get_new_cards(username, deck)
         
-        # print('due_cards:', due_cards)
-        # print('new_cards:', new_cards)
-        return random.choice(candidate_pool)
+        print('/-------------')
+        print(f"Found {len(due_cards)} due cards for {username} in deck {deck}")
+        print('Due cards:\n   ', due_cards)
+        print('New cards:\n   ', new_cards)
+
+        card_to_return = None
+        attempts = 0
+        max_attempts = 10
+        while attempts < max_attempts:
+            if due_cards and new_cards:
+                if random.random() < 0.5:  # 50% chance for due cards
+                    print('Selecting from due cards')
+                    card_to_return = random.choice(due_cards)
+                else:
+                    print('Selecting from new cards')
+                    card_to_return = random.choice(new_cards)
+            elif due_cards:
+                print('Selecting from due cards only')
+                card_to_return = random.choice(due_cards)
+            elif new_cards:
+                print('Selecting from new cards only')
+                card_to_return = random.choice(new_cards)
+            else:
+                print('No due or new cards, increasing new cards limit and selecting random card from deck')
+                user_progress["new_cards_limit"] += self.BASE_NEW_CARDS_LIMIT
+                self.save_user_progress(username, user_progress)
+                new_cards = self.get_new_cards(username, deck, force_new_cards=True)
+                if len(new_cards) == 0:
+                    new_cards = list(self.cards[deck].keys())
+                    card_to_return = random.choice(new_cards)
+                    print('ctr', card_to_return)
+                else:
+                    print('jel ovo')
+                    print(new_cards)
+                    card_to_return = random.choice(new_cards)
+
+            
+            if card_to_return != self.current_card or self.current_card is None:
+                break
+            attempts += 1
+
+        if attempts == max_attempts:
+            print(f"Warning: Max attempts reached when selecting card")
+        
+        user_progress = self.load_user_progress(username)
+        if card_to_return in user_progress["daily_new_cards"].get(deck, []):
+            if deck not in user_progress["presented_new_cards"]:
+                user_progress["presented_new_cards"][deck] = []
+            user_progress["presented_new_cards"][deck].append(card_to_return)
+        self.save_user_progress(username, user_progress)
+        
+        print('/-------------')
+        self.current_card = card_to_return
+        print('returning', card_to_return)
+        return card_to_return
 
 
 flashcard_app = FlashcardApp()
@@ -296,16 +402,32 @@ def user_progress():
 @timing_decorator
 def login():
     if request.method == 'POST':
-       username = request.form['username']
-       session['username'] = username
-       return redirect(url_for('home'))
-    return render_template('login.html', username=session['username'])
+        username = request.form['username']
+        session['username'] = username
+        
+        user_progress_file = os.path.join('user_progress', f'{username}.json')
+        
+        if not os.path.exists(user_progress_file):
+            session['progress'] = flashcard_app.save_user_progress(username, flashcard_app.load_user_progress(username))
+            return redirect(url_for('welcome'))  # Redirect to welcome page
+        else:
+            session['progress'] = flashcard_app.load_user_progress(username)
+            return redirect(url_for('home'))
+    
+    return render_template('login.html')
+
+# New route for the welcome page
+@app.route('/welcome')
+@session_required
+@timing_decorator
+def welcome():
+    return render_template('welcome.html')
 
 @app.route('/')
 @session_required
 @timing_decorator
 def home():
-    return render_template('home.html', username=session['username'])
+    return render_template('home.html', username=session['username'], decks=flashcard_app.decks)
 
 @app.route('/check_session')
 @session_required
@@ -321,7 +443,7 @@ def check_session():
 @session_required
 @timing_decorator
 def flashcards():
-    return render_template('flashcards.html', username=session['username'])
+    return render_template('flashcards.html', username=session['username'], decks=flashcard_app.decks)
 
 @app.route('/pinyinenglish')
 @session_required
@@ -380,12 +502,12 @@ def grid():
     if not character:
         characters = list(flashcard_app.cards[session['deck']].keys())
         print(f"Initial characters: {len(characters)}")  # Debug print
-        return render_template('grid.html', username=session['username'], characters=characters, character=None)
+        return render_template('grid.html', username=session['username'], characters=characters, character=None, decks=flashcard_app.decks)
     
     pc = packed_data(character)
     characters = list(flashcard_app.cards[pc['deck']].keys())
     print(len(characters))
-    return render_template('grid.html', username=session['username'], characters=characters, character=pc)
+    return render_template('grid.html', username=session['username'], characters=characters, character=pc, decks=flashcard_app.decks)
 
 
 @app.route('/get_characters')
@@ -526,7 +648,7 @@ def examples():
 @timing_decorator
 def lists():
     uri = request.args.get('uri')
-    return render_template('lists.html', categories=example_lists, initial_uri=uri)
+    return render_template('lists.html', categories=example_lists, initial_uri=uri, decks=flashcard_app.decks, username=session['username'])
 
 
 @app.route('/get_lists_data/<uri>')
@@ -706,9 +828,9 @@ def search():
                 fuzzy_sort_key(query, result['pinyin'] if result['match_type'] == 'fuzzy_pinyin' else result['english'])
             )
 
-        return render_template('search.html', results=sorted_results, query=query)
+        return render_template('search.html', results=sorted_results, query=query, decks=flashcard_app.decks, username=session['username'])
     
-    return render_template('search.html')
+    return render_template('search.html', decks=flashcard_app.decks, username=session['username'])
 
 
 @app.route('/get_api_key', methods=['GET'])

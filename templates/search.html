@@ -18,13 +18,23 @@
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
 <body>
-    <a id="flashcard-link" href="{{ url_for('home') }}">home</a>
-    <select id="font-select">
-        <option value="Noto Sans Mono">Noto Sans Mono</option>
-        <option value="Noto Serif SC">Noto Serif SC</option>
-    </select>
+    
+    <div class="hamburger" id="hamburgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
+            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
+            <li><a href="{{ url_for('lists') }}">Topics</a></li>
+        </ul>
+    </div>
     <div class="search-container{% if results %} has-results{% endif %}">
         <h1>Search</h1>
         <form action="{{ url_for('search') }}" method="get">
@@ -60,6 +70,10 @@
         </div>
     </div>
     <p id="message"></p>
+    <script>
+        const username = {{ username | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
     <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>

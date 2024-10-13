@@ -1,6 +1,5 @@
 const overlay = document.getElementById('flashcard-overlay');
 const flashcardContent = document.getElementById('flashcard_container');
-let currentFont = 'Noto Sans Mono';
 let currentIndex = 0;
 let currentState = 'hanzi';
 let currentHanzi, currentPinyin, currentEnglish, currentTitle;
@@ -69,8 +68,6 @@ function showFlashcard(hanzi, pinyin, english) {
     // Reset scroll position
     const flashcardContainer = document.getElementById('flashcard_container');
     flashcardContainer.scrollTop = 0;
-
-    document.getElementById('font-select').style.display = 'block';
 
     let titleHtml = `
         <div class="title-wrapper">
@@ -278,15 +275,15 @@ function getFont() {
         });
 }
 
-document.getElementById('font-select').addEventListener('change', function(event) {
-    const selectedFont = event.target.value;
-    document.querySelector('.character').style.fontFamily = `"${selectedFont}", sans-serif`;
-    document.querySelector('.title').style.fontFamily = `"${selectedFont}", sans-serif`;
-    currentFont = event.target.value;
-    changeFont(currentFont);
-    this.blur();
-    event.stopPropagation(); // Add this line to prevent the event from bubbling up
-});
+// document.getElementById('font-select').addEventListener('change', function(event) {
+//     const selectedFont = event.target.value;
+//     document.querySelector('.character').style.fontFamily = `"${selectedFont}", sans-serif`;
+//     document.querySelector('.title').style.fontFamily = `"${selectedFont}", sans-serif`;
+//     currentFont = event.target.value;
+//     changeFont(currentFont);
+//     this.blur();
+//     event.stopPropagation(); // Add this line to prevent the event from bubbling up
+// });
 
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay && !e.target.closest('#font-select')) {

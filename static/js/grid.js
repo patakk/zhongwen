@@ -98,7 +98,7 @@ document.addEventListener('keydown', function(event) {
                 
                 console.log(inputString);
                 inputString = '';
-                document.getElementById('deck-select').value = null;
+                // document.getElementById('deck-select').value = null;
                 
                 // Hide the typed display
                 typedDisplay.style.display = 'none';
@@ -158,19 +158,8 @@ function createGrid(characters, useAllDecks){
 }
 
 function updateCounterTitle(){
-    document.getElementById('title').textContent = `grid (${charCounter})`;
     
-    // const namesmap = {
-    //     'shas': 'ShaSha\'s Class',
-    //     'top140': 'Top 140',
-    //     'hsk1': 'HSK 1',
-    //     'hsk2': 'HSK 2',
-    //     'hsk3': 'HSK 3',
-    //     'hsk4': 'HSK 4',
-    //     'hsk5': 'HSK 5',
-    //     'hsk6': 'HSK 6',
-    // };
-    // const deckLength = charCounter;
+    const deckLength = charCounter;
     // document.getElementById('title').textContent = `${namesmap[currentDeck]} (${deckLength} words)`;  
     // if(useAllDecks){
     //     document.getElementById('title').textContent = `${deckLength} words`;  
@@ -178,6 +167,8 @@ function updateCounterTitle(){
     // else{
     //     document.getElementById('title').textContent = `${namesmap[currentDeck]} (${deckLength} words)`;
     // }
+    // document.getElementById('title').textContent = `${namesmap[currentDeck]} (${charCounter})`;
+    document.getElementById('title').textContent = `${inputdecks[currentDeck].name} (${deckLength} words)`;  
 }
 
 function createLists(characters, useAllDecks) {
@@ -242,7 +233,7 @@ function showFlashcard(character) {
             renderCardData(data);
             displayCard(true, true);
 
-            recordView(character);
+            // recordView(character);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -406,10 +397,10 @@ function hideInfo(gridItem) {
 // }
 
 
-document.getElementById('deck-select').addEventListener('change', function(event) {
-    changeDeck(event.target.value);
-    this.blur(); // Remove focus from the dropdown after selection
-});
+// document.getElementById('deck-select').addEventListener('change', function(event) {
+//     changeDeck(event.target.value);
+//     this.blur(); // Remove focus from the dropdown after selection
+// });
 
 // Initial load of characters
 
@@ -494,7 +485,7 @@ function getDeck() {
         })
         .then(data => {
             currentDeck = data.deck;
-            document.getElementById('deck-select').value = currentDeck;
+            // document.getElementById('deck-select').value = currentDeck;
             drawBothLayouts(currentData);
         })
         .catch(error => {
@@ -505,9 +496,9 @@ function getDeck() {
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
         overlay.style.display = 'none';
-        document.getElementById('font-select').style.top = '45px';
-        document.getElementById('font-select').style.marginTop = '15px';
-        document.getElementById('deck-select').style.display = 'block';
+        // document.getElementById('font-select').style.top = '45px';
+        // document.getElementById('font-select').style.marginTop = '15px';
+        // document.getElementById('deck-select').style.display = 'block';
         
         // Remove the character parameter from the URL
         const newUrl = new URL(window.location);
@@ -576,7 +567,37 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+
 function changeFont(font) {
+
+    const fontInfo = fontMap[font];
+    
+    if (fontInfo) {
+        
+        document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", sans-serif`;
+        document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;
+        
+        // Set font size for grid items
+        const gridItems = grid.querySelectorAll('.char');
+        gridItems.forEach(item => {
+            item.style.fontSize = `${fontInfo.size}px`;
+        });
+        
+        // const flashcardCharacter = document.querySelector('.flashcard_character');
+        // flashcardCharacter.style.fontFamily = `"${fontInfo.family}", sans-serif`;
+
+        updateFontFamily(fontInfo.family);
+        
+        // Also set font size for the character in the flashcard overlay
+        // if (flashcardCharacter) {
+        //     flashcardCharacter.style.fontSize = `${fontInfo.size * 2}px`; // Larger size for the flashcard
+        // }
+        
+        currentFont = font;
+        console.log('selected font', currentFont);
+    }
+
+
     fetch(`./change_font?font=${font}`, {
         method: 'POST',
         headers: {
@@ -615,7 +636,7 @@ function getFont() {
 
             updateFontFamily(currentFont);
 
-            document.getElementById('font-select').value = currentFont;
+            // document.getElementById('font-select').value = currentFont;
             document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", sans-serif`;
             document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;
         })
@@ -668,43 +689,43 @@ function updateFontFamily(fontFamily) {
     `;
 }
 
-document.getElementById('font-select').addEventListener('change', function(event) {
-    const selectedFont = event.target.value;
-    const fontInfo = fontMap[selectedFont];
+// document.getElementById('font-select').addEventListener('change', function(event) {
+//     const selectedFont = event.target.value;
+//     const fontInfo = fontMap[selectedFont];
     
-    if (fontInfo) {
-        console.log(fontInfo.family)
-        const grid = document.querySelector('.grid');
-        grid.style.fontFamily = `"${fontInfo.family}", sans-serif`;
+//     if (fontInfo) {
+//         console.log(fontInfo.family)
+//         const grid = document.querySelector('.grid');
+//         grid.style.fontFamily = `"${fontInfo.family}", sans-serif`;
         
-        // Set font size for grid items
-        const gridItems = grid.querySelectorAll('.char');
-        gridItems.forEach(item => {
-            item.style.fontSize = `${fontInfo.size}px`;
-        });
+//         // Set font size for grid items
+//         const gridItems = grid.querySelectorAll('.char');
+//         gridItems.forEach(item => {
+//             item.style.fontSize = `${fontInfo.size}px`;
+//         });
         
-        const flashcardCharacter = document.querySelector('.flashcard_character');
-        flashcardCharacter.style.fontFamily = `"${fontInfo.family}", sans-serif`;
+//         const flashcardCharacter = document.querySelector('.flashcard_character');
+//         flashcardCharacter.style.fontFamily = `"${fontInfo.family}", sans-serif`;
 
-        updateFontFamily(fontInfo.family);
+//         updateFontFamily(fontInfo.family);
         
-        // Also set font size for the character in the flashcard overlay
-        // if (flashcardCharacter) {
-        //     flashcardCharacter.style.fontSize = `${fontInfo.size * 2}px`; // Larger size for the flashcard
-        // }
+//         // Also set font size for the character in the flashcard overlay
+//         // if (flashcardCharacter) {
+//         //     flashcardCharacter.style.fontSize = `${fontInfo.size * 2}px`; // Larger size for the flashcard
+//         // }
         
-        currentFont = selectedFont;
-        console.log('selected font', currentFont);
-        changeFont(currentFont);
-    }
+//         currentFont = selectedFont;
+//         console.log('selected font', currentFont);
+//         changeFont(currentFont);
+//     }
     
-    this.blur();
-    event.stopPropagation();
-});
+//     this.blur();
+//     event.stopPropagation();
+// });
 
 
-overlay.addEventListener('click', (e) => {
-    if (e.target === overlay && !e.target.closest('#font-select')) {
-        overlay.style.display = 'none';
-    }
-});
+// overlay.addEventListener('click', (e) => {
+//     if (e.target === overlay && !e.target.closest('#font-select')) {
+//         overlay.style.display = 'none';
+//     }
+// });

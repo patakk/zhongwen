@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Home - 中文</title>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+
     <style>
 
         html, body {
@@ -84,6 +86,7 @@
                 /* height: 60%; */
                 padding: 30px;
             }
+
             a {
                 width: 200px;
                 padding: 10px;
@@ -95,24 +98,60 @@
                 text-align: center;
                 font-size: 14px;
                 
+            }
         }
 
     </style>
 </head>
 <body>
+    <div class="hamburger" id="hamburgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
+            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
+            <li><a href="{{ url_for('lists') }}">Topics</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li class="has-submenu">
+                <span>Decks</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="#" class="deck-change" data-deck="{{ key }}">{{ deck.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <span>Fonts</span>
+                <ul class="submenu">
+                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
+                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+
     <div class="home-container">
         <h1>中文</h1>
         <div class="link-container">
             <a href="{{ url_for('search') }}">search</a>
-            <!-- <a href="{{ url_for('characters') }}">grid</a> -->
             <a href="{{ url_for('grid') }}">grid</a>
-            <!-- <a href="{{ url_for('pinyinenglish') }}">lexicon</a> -->
             <a href="{{ url_for('flashcards') }}">flashcards</a>
             <a href="{{ url_for('lists') }}">lists</a>
         </div>
     </div>
 
     <script>
+        const username = {{ username | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script>
+        
+
         function adjustHeight() {
             var vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -121,6 +160,11 @@
         window.addEventListener('resize', adjustHeight);
         window.addEventListener('orientationchange', adjustHeight);
         adjustHeight();
+
+        window.addEventListener('resize', adjustHeight);
+        window.addEventListener('orientationchange', adjustHeight);
+        adjustHeight();
+        
     </script>
 </body>
 </html>

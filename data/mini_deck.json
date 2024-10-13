@@ -1,0 +1,87 @@
+{
+    "爱": {
+        "pinyin": "ài",
+        "english": "love",
+        "traditional": "愛"
+    },
+    "八": {
+        "pinyin": "bā",
+        "english": "eight",
+        "traditional": ""
+    },
+    "爸爸": {
+        "pinyin": "bàba",
+        "english": "Dad",
+        "traditional": ""
+    },
+    "杯子": {
+        "pinyin": "bēizi",
+        "english": "cup; glass",
+        "traditional": ""
+    },
+    "北京": {
+        "pinyin": "Běijīng",
+        "english": "Beijing",
+        "traditional": ""
+    },
+    "本": {
+        "pinyin": "běn",
+        "english": "measure word for books",
+        "traditional": ""
+    },
+    "不客气": {
+        "pinyin": "bú kèqi",
+        "english": "you're welcome; don't be polite",
+        "traditional": "不客氣"
+    },
+    "不": {
+        "pinyin": "bù",
+        "english": "no; not",
+        "traditional": ""
+    },
+    "菜": {
+        "pinyin": "cài",
+        "english": "dish (type of food); vegetables",
+        "traditional": ""
+    },
+    "茶": {
+        "pinyin": "chá",
+        "english": "tea",
+        "traditional": ""
+    },
+    "吃": {
+        "pinyin": "chī",
+        "english": "eat",
+        "traditional": ""
+    },
+    "出租车": {
+        "pinyin": "chūzūchē",
+        "english": "taxi; cab",
+        "traditional": "出租車"
+    },
+    "打电话": {
+        "pinyin": "dǎ diànhuà",
+        "english": "make a phone call",
+        "traditional": "打電話"
+    },
+    "大": {
+        "pinyin": "dà",
+        "english": "big; large",
+        "traditional": ""
+    },
+    "的": {
+        "pinyin": "de",
+        "english": "indicates possession, like adding 's to a noun",
+        "traditional": ""
+    },
+    "点": {
+        "pinyin": "diǎn",
+        "english": "a dot; a little; o'clock",
+        "traditional": "點"
+    },
+    "电脑": {
+        "pinyin": "diànnǎo",
+        "english": "computer",
+        "traditional": "電腦"
+    }
+}

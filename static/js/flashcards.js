@@ -94,6 +94,14 @@ let isMouseDragging = false;
 let holdTimer = null;
 let isHolding = false;
 
+let correctColor = '#8cffcf';
+let incorrectColor = '#ff4f20';
+let neutralColor = '#ffffff';
+
+let hanziBlack = '#000000';
+let hanziWhite = '#ffffff';
+
+
 document.addEventListener('keydown', function(event) {
     // Check if the pressed key is the space bar
     if(isHolding)
@@ -102,19 +110,16 @@ document.addEventListener('keydown', function(event) {
     if(!showingAnswer){
         showingAnswer = true;
         displayCard(true, true);
-        let hanzichars = document.getElementById('flashcard_character').querySelectorAll('clickable-char');
-        hanzichars.forEach((element) => {
-            toneTextColor(element);
-        });
         return;
     }
     else if ((event.code === 'Space' || event.keyCode === 32 || event.key.toLowerCase() === 'x') && showingAnswer) {
         event.preventDefault();
         const flashcard = document.getElementById('flashcard_container');
+        const hanzi = document.getElementById('flashcard_character');
         isHolding = true;
-        flashcard.style.backgroundColor = '#49fc70';
+        flashcard.style.backgroundColor = correctColor;
         if(event.key.toLowerCase() === 'x'){
-            flashcard.style.backgroundColor = '#fc5549';
+            flashcard.style.backgroundColor = incorrectColor;
         }
 
         holdTimer = setTimeout(() => {
@@ -124,8 +129,7 @@ document.addEventListener('keydown', function(event) {
             else{
                 recordAnswer(true);
             }
-            getNextCard();
-            flashcard.style.backgroundColor = 'white';
+            flashcard.style.backgroundColor = neutralColor;
         }, 500);   
     }
 }, false);
@@ -136,7 +140,7 @@ document.addEventListener('keyup', function(event) {
     if ((event.code === 'Space' || event.keyCode === 32 || event.key.toLowerCase() === 'x') && isHolding) {
         isHolding = false;
         clearTimeout(holdTimer);
-        document.getElementById('flashcard_container').style.backgroundColor = 'white';
+        document.getElementById('flashcard_container').style.backgroundColor = neutralColor;
     }
 }, false);
 
@@ -150,6 +154,7 @@ function recordAnswer(isCorrect) {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+            getNextCard();
             return response.json();
         });
 }
@@ -158,12 +163,18 @@ document.getElementById('flashcard_container').addEventListener('mousedown', fun
     const flashcard = document.getElementById('flashcard_container');
     isHolding = true;
     clickStartTime = new Date().getTime();
+
     
     tmout = setTimeout(() => {
-        flashcard.style.backgroundColor = '#fc5549';
+        flashcard.style.backgroundColor = incorrectColor;
         if(event.clientX > window.innerWidth/2){
-            flashcard.style.backgroundColor = '#49fc70';
+            flashcard.style.backgroundColor = correctColor;
         }
+        // let hanzichars = document.getElementById('flashcard_character').querySelectorAll('.clickable-char');
+        // hanzichars.forEach((element) => {
+        //     element.style.color = hanziWhite;
+        //     element.style.transition = 'color 0.5s';
+        // });
         tmout = null;
     }, 100);
     
@@ -174,9 +185,13 @@ document.getElementById('flashcard_container').addEventListener('mousedown', fun
         else{
             recordAnswer(true);
         }
-        getNextCard();
         isHolding = false;
-        flashcard.style.backgroundColor = 'white';
+        flashcard.style.backgroundColor = neutralColor;
+        // let hanzichars = document.getElementById('flashcard_character').querySelectorAll('.clickable-char');
+        // hanzichars.forEach((element) => {
+        //     element.style.color = hanziBlack;
+        //     element.style.transition = 'color 0.5s';
+        // });
     }, 500);
 }, false);
 
@@ -200,7 +215,7 @@ document.getElementById('flashcard_container').addEventListener('mouseup', funct
     }
     
     console.log("mouse up");
-    flashcard.style.backgroundColor = 'white';
+    flashcard.style.backgroundColor = neutralColor;
     isHolding = false;
 }, false);
 
@@ -256,7 +271,6 @@ function handleTouchMove(dragDistance){
         else{
             recordAnswer(false);
         }
-        getNextCard();
         touchStartX = null;
         currentTouchX = null;
         isDragging = false;
@@ -264,7 +278,7 @@ function handleTouchMove(dragDistance){
         currentMouseX = null;
         isMouseDragging = false;
         flashcard.style.transform = isIPhone() ? 'translateY(8%)' : 'translateY(0%)';
-        flashcard.style.backgroundColor = 'white';
+        flashcard.style.backgroundColor = neutralColor;
     }
 }
 
@@ -278,7 +292,7 @@ function handleTouchEnd(){
     
     const flashcard = document.getElementById('flashcard_container');
     flashcard.style.transform = isIPhone() ? 'translateY(8%)' : 'translateY(0%)';
-    flashcard.style.backgroundColor = 'white';
+    flashcard.style.backgroundColor = neutralColor;
 }
 
 
@@ -319,6 +333,7 @@ function getNextCard() {
     } else {
     fetchCard()
         .then(data => {
+            console.log(data);
             renderCardData(data);
             showingAnswer = false;
             currentCharacter = data.character;
@@ -372,9 +387,7 @@ if(isMobileOrTablet()){
         }
 
         if (!event.target.classList.contains('clickable-char') && 
-            !event.target.closest('#font-select') && 
-            !event.target.closest('#flashcard_stroke_wrapper') && 
-            !event.target.closest('#deck-select')) {
+            !event.target.closest('#flashcard_stroke_wrapper')) {
             // advanceCardState(event);
         }
     });
@@ -384,16 +397,6 @@ if(isMobileOrTablet()){
         event.stopPropagation();
     });
 }
-
-
-document.getElementById('deck-select').addEventListener('change', function(event) {
-    currentDeck = event.target.value;
-    changeDeck(currentDeck, () => {
-        prefetchedCard = null;
-        getNextCard();    
-    });
-    this.blur();
-});
 
 function handleOrientationChange() {
     const container = document.getElementById('flashcard_container');
@@ -450,6 +453,7 @@ function isLandscape(){
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    
     getDeck(getNextCard);
     getFont();
     handleOrientationChange(); // Call this on initial load
@@ -471,15 +475,30 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('space-instruction').style.opacity = 0;
         }, 2000);
     }
+    else {
+        document.getElementById('flashcard_container').style.overflowY = 'hidden';
+    }
 });
 
-document.getElementById('font-select').addEventListener('change', function(event) {
-    const selectedFont = event.target.value;
-    document.getElementById('flashcard_character').style.fontFamily = `"${selectedFont}", sans-serif`;
-    currentFont = event.target.value;
-    changeFont(currentFont);
-    this.blur();
-});
+
+function changeDeck(deck, func=getNextCard) {
+    fetch(`./change_deck?deck=${deck}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        console.log('Deck changed successfully');
+        getNextCard();
+    })
+    .catch(error => {
+        console.error('There was a problem changing the deck:', error);
+    });
+}
 
 // document.getElementById('space-instruction').addEventListener('click', function(e) {
 //     e.stopPropagation();

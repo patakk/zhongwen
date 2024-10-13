@@ -11,16 +11,47 @@
     <title>Lists</title>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/lists.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
 <body>
     
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
-    <a id="characters-link" href="{{ url_for('home') }}">home</a>
-    <a id="characters-link" href="{{ url_for('home') }}">home</a>
-    <select id="font-select">
-        <option value="Noto Sans Mono">Noto Sans Mono</option>
-        <option value="Noto Serif SC">Noto Serif SC</option>
-    </select>
+    
+    <div class="hamburger" id="hamburgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
+            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+        </ul>
+    </div>
+
+    
+    
+    <div id="flashcard-overlay">
+        <div id="flashcard_container">
+            <div class="title-container hanzi-row-container" data-index="title">
+                <div class="title"></div>
+            </div>
+            <div class="character"></div>
+        </div>
+        <div id="hover-box">
+            <div class="pinyin"></div>
+            <div class="english"></div>
+        </div>
+    </div>
+    
+    <script>
+        const username = {{ username | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lists.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
 
     <div class="container">
         <h1>Lists</h1>
@@ -38,23 +69,6 @@
         </ul>
         {% endfor %}
     </div>
-    
-    
-    <div id="flashcard-overlay">
-        <div id="flashcard_container">
-            <div class="title-container hanzi-row-container" data-index="title">
-                <div class="title"></div>
-            </div>
-            <div class="character"></div>
-        </div>
-        <div id="hover-box">
-            <div class="pinyin"></div>
-            <div class="english"></div>
-        </div>
-    </div>
-    
-    <script src="{{ url_for('static', filename='js/lists.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

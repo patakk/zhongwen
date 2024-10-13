@@ -1,0 +1,141 @@
+.hamburger {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 1001;
+    padding: 5px;
+}
+
+.hamburger span {
+    display: block;
+    width: 30px;
+    height: 2px;
+    background-color: black;
+    margin: 6px 0;
+}
+
+.dropdown-menu {
+    display: none;
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    background-color: white;
+    border: 2px solid black;
+    z-index: 11000;
+    font-family: 'Noto Sans Mono', monospace;
+    font-weight: 400;
+    width: 200px;
+    box-sizing: border-box;
+}
+
+.dropdown-menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.dropdown-menu a {
+    margin: 0;
+}
+
+.dropdown-menu li {
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.dropdown-menu a, .dropdown-menu span {
+    text-decoration: none;
+    color: black;
+    display: block;
+    padding: 10px 15px;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    background-color: white;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dropdown-menu a:hover, .dropdown-menu span:hover {
+    background-color: black;
+    color: white;
+}
+
+.dropdown-menu li {
+    margin: 0;
+    list-style: none;
+}
+
+.has-submenu > span {
+    background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+    background-repeat: no-repeat;
+    background-position: right 5px top 50%;
+}
+
+.has-submenu > span:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23FFF' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    left: -202px;
+    top: 0;
+    background-color: white;
+    border: 2px solid black;
+    width: 200px;
+    box-sizing: border-box;
+}
+
+.has-submenu:hover .submenu {
+    display: block;
+}
+
+.has-submenu.active > .submenu {
+    display: block;
+}
+
+/* Add this new rule */
+.has-submenu:hover > span::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -2px;
+    width: 234px;
+    height: 100%;
+    background-color: rgba(255, 14, 14, 0);
+    z-index: 1;
+}
+
+@media screen and (max-width: 768px) {
+    .dropdown-menu {
+        width: 100%;
+        left: 0;
+        right: 0;
+    }
+
+    .submenu {
+        position: static;
+        width: 100%;
+        border: none;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .has-submenu > span::after {
+        content: '\25BC'; /* Down arrow */
+        float: right;
+    }
+
+    .has-submenu.active > span::after {
+        content: '\25B2'; /* Up arrow */
+    }
+}
+
+.dropdown-menu .selected-option {
+    background-color: #ff580a; /* Light gray background */
+    background-color: #f12400; /* Light gray background */
+    color: #ffffff;
+}
