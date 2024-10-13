@@ -340,6 +340,7 @@ body {
 
 h1 {
     text-align: center;
+    cursor: pointer;
 }
 
 @media only screen 
