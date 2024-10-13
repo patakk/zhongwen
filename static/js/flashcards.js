@@ -104,6 +104,10 @@ let hanziWhite = '#ffffff';
 
 document.addEventListener('keydown', function(event) {
     // Check if the pressed key is the space bar
+    if ((event.code === 'Space' || event.keyCode === 32 || event.key.toLowerCase() === 'x')) {
+        event.preventDefault();
+    }
+
     if(isHolding)
         return;
 
@@ -469,11 +473,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     if(!(isiPad() || isIPhone())){
-        document.getElementById('space-instruction').style.opacity = 1;
-        document.getElementById('space-instruction').style.transition = 'opacity 4s ease-out';
-        messageTimeout = setTimeout(() => {
-            document.getElementById('space-instruction').style.opacity = 0;
-        }, 2000);
+        // document.getElementById('space-instruction').style.opacity = 1;
+        // document.getElementById('space-instruction').style.transition = 'opacity 4s ease-out';
+        // messageTimeout = setTimeout(() => {
+        //     document.getElementById('space-instruction').style.opacity = 0;
+        // }, 2000);
     }
     else {
         document.getElementById('flashcard_container').style.overflowY = 'hidden';

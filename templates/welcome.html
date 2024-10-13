@@ -87,6 +87,34 @@
                 padding: 8px 16px;
             }
         }
+
+        .flashcard-guide {
+            /* display: none; */
+            background-color: #f9f9f9;
+            border: 2px solid #000000;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .flashcard-guide h4, .flashcard-guide h5 {
+            margin-top: 0;
+        }
+
+        .flashcard-guide ul {
+            padding-left: 20px;
+        }
+
+        .flashcard-toggle {
+            cursor: pointer;
+            color: #0066cc;
+            text-decoration: underline;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .flashcard-toggle:hover {
+            color: #004080;
+        }
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
@@ -109,19 +137,59 @@
         <h1>Welcome {{ session['username'] }}!</h1>
         <p>here's a quick guide to get you started:</p>
         <ul>
-            <li>browse <a href="{{ url_for('grid') }}">Hanzi Grid</a> to preview characters and their descriptions</li>
-            <li>learn using <a href="{{ url_for('flashcards') }}">Flashcards</a></li>
-            <li>browse <a href="{{ url_for('lists') }}">Example Lists</a> to learn grammar and characters in context</li>
-            <li>use <a href="{{ url_for('search') }}">Search</a> to find words (english/hanzi/pinyin supported)</li>
+            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a> - preview characters and their descriptions</li>
+            <li><a href="{{ url_for('lists') }}">Example Lists</a> - learn grammar and characters in context</li>
+            <li><a href="{{ url_for('search') }}">Search</a> - find words (english/hanzi/pinyin supported)</li>
+            <li>
+                <a href="{{ url_for('flashcards') }}">Flashcards</a> - test and learn characters using spaced repetition
+                <div class="flashcard-guide">
+                    <h5>On PC:</h5>
+                    <ul>
+                        <li>Press <strong>Space</strong> to reveal the answer.</li>
+                        <li>Hold <strong>Space</strong> to mark as correct.</li>
+                        <li>Hold <strong>X</strong> to mark as incorrect.</li>
+                        <li>Or, click and hold right side for correct, left side for incorrect.</li>
+                    </ul>
+                    <h5>On Tablet/Phone:</h5>
+                    <ul>
+                        <li>Tap to reveal the answer.</li>
+                        <li>Swipe right to mark as correct.</li>
+                        <li>Swipe left to mark as incorrect.</li>
+                    </ul>
+                </div>
+            </li>
         </ul>
         <div class="btn-container">
             <a href="{{ url_for('home') }}" class="btn">Start Learning</a>
         </div>
     </div>
+    
 
     <script>
         const username = {{ username | tojson | safe }};
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.createElement('span');
+            toggle.className = 'flashcard-toggle';
+            toggle.textContent = 'Show guide';
+            
+            const flashcardLink = document.querySelector('a[href="{{ url_for("flashcards") }}"]');
+            flashcardLink.parentNode.insertBefore(toggle, flashcardLink.nextSibling);
+    
+            const guide = document.querySelector('.flashcard-guide');
+    
+            toggle.addEventListener('click', function() {
+                if (guide.style.display === 'none' || guide.style.display === '') {
+                    guide.style.display = 'block';
+                    toggle.textContent = 'Hide guide';
+                } else {
+                    guide.style.display = 'none';
+                    toggle.textContent = 'Show guide';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
