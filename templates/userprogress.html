@@ -4,44 +4,256 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Progress - {{ username }} - {{ deck }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f0f0; }
-        h1 { color: #333; }
-        table { width: 100%; border-collapse: collapse; background-color: white; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #4CAF50; color: white; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
-        tr:hover { background-color: #ddd; }
-        .character { font-size: 24px; font-weight: bold; }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Noto Sans Mono', monospace;
+            margin: 0;
+            padding: 20px;
+            background-color: white;
+            color: black;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 2rem;
+            border: 2px dashed black;
+        }
+        h1 {
+            font-family: 'Noto Sans Mono', monospace;
+            color: #333;
+            font-size: 24px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid black;
+        }
+        th {
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+        .character {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                width: 100%;
+                padding: 1rem;
+                overflow-x: auto;
+                scrollbar-width: none;  /* Firefox */
+                -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            }
+            .container::-webkit-scrollbar {
+                display: none;  /* WebKit */
+            }
+            h1 {
+                font-size: 20px;
+            }
+            table {
+                font-size: 14px;
+            }
+            th, td {
+                padding: 5px;
+                white-space: nowrap;
+            }
+            .character {
+                font-size: 18px;
+            }
+        }
+
+        .settings-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+            background-color: white;
+            padding: 1rem;
+            border: 2px dashed black;
+        }
+        .settings-form {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Changed to align items to the left */
+            font-size: 16px; /* Increased font size */
+        }
+        .settings-form label {
+            margin-right: 10px;
+            white-space: nowrap; /* Prevent label from wrapping */
+        }
+        .settings-form input {
+            width: 80px; /* Slightly increased width */
+            padding: 5px;
+            border: 2px solid black; /* Changed to 2px solid black */
+            font-family: 'Noto Sans Mono', monospace; /* Set font to match the rest */
+            font-size: 16px; /* Increased font size */
+            margin-right: 10px; /* Added margin to separate from button */
+        }
+        .settings-form button {
+            padding: 5px 10px;
+            background-color: white;
+            border: 2px solid black;
+            cursor: pointer;
+            font-family: 'Noto Sans Mono', monospace; /* Set font to match the rest */
+            font-size: 16px; /* Increased font size */
+        }
+        .settings-form button:hover {
+            background-color: black;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .settings-container {
+                width: 100%;
+                padding: 0.5rem;
+            }
+            .settings-form {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+            .settings-form label {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .settings-form input {
+                width: calc(60% - 5px);
+                margin-right: 0;
+            }
+            .settings-form button {
+                width: calc(40% - 5px);
+            }
+        }
+
+        ::selection {
+            background-color: rgb(0, 0, 0);
+            color: rgb(255, 0, 0);
+        }
     </style>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
 <body>
-    <h1>Progress for {{ username }} in {{ deck }} deck</h1>
-    <table>
-        <tr>
-            <th>Character</th>
-            <th>Meaning</th>
-            <th>Pinyin</th>
-            <th>Box</th>
-            <th>Difficulty</th>
-            <th>Streak</th>
-            <th>Accuracy</th>
-            <th>Num. Incorrect</th>
-            <th>Next Review</th>
-        </tr>
-        {% for stat in progress_stats %}
-        <tr>
-            <td class="character">{{ stat.character }}</td>
-            <td>{{ stat.meaning }}</td>
-            <td>{{ stat.pinyin }}</td>
-            <td>{{ stat.box }}</td>
-            <td>{{ stat.difficulty }}</td>
-            <td>{{ stat.streak }}</td>
-            <td>{{ stat.accuracy }}%</td>
-            <td>{{ stat.num_incorrect }}</td>
-            <td>{{ stat.next_review }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="hamburger" id="hamburgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
+            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li class="has-submenu">
+                <span>Decks</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <span>Fonts</span>
+                <ul class="submenu">
+                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
+                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="settings-container">
+        <form class="settings-form" id="maxCardsForm">
+            <label for="maxNewCards">Max number of new cards:</label>
+            <input type="number" id="maxNewCards" name="maxNewCards" min="1" value="{{ current_max_cards }}">
+            <button type="submit" id="saveButton">Save</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h1>Progress for {{ username }} in {{ deck }} deck</h1>
+        <table>
+            <tr>
+                <th>Character</th>
+                <!-- <th>Meaning</th> -->
+                <!-- <th>Pinyin</th> -->
+                <th>Box</th>
+                <th>Difficulty</th>
+                <th>Streak</th>
+                <th>Accuracy</th>
+                <th>Num. Incorrect</th>
+                <th>Next Review</th>
+            </tr>
+            {% for stat in progress_stats %}
+            <tr>
+                <td class="character">{{ stat.character }}</td>
+                <!-- <td>{{ stat.meaning }}</td> -->
+                <!-- <td>{{ stat.pinyin }}</td> -->
+                <td>{{ stat.box }}</td>
+                <td>{{ stat.difficulty }}</td>
+                <td>{{ stat.streak }}</td>
+                <td>{{ stat.accuracy }}%</td>
+                <td>{{ stat.num_incorrect }}</td>
+                <td>{{ stat.next_review }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <script>
+        const username = {{ username | tojson | safe }};
+        const maxnumcard = {{ maxnumcards | tojson | safe }};
+        document.getElementById('maxNewCards').value = maxnumcard;
+        const saveButton = document.getElementById('saveButton');
+        
+        saveButton.textContent = 'Save';
+        saveButton.style.color = 'black';
+
+        document.getElementById('maxCardsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const maxCards = document.getElementById('maxNewCards').value;
+            const saveButton = document.getElementById('saveButton');
+            
+            saveButton.textContent = 'Saved';
+            saveButton.disabled = true;
+
+            fetch(`./set_max_cards?maxcards=${maxCards}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(() => {
+                setTimeout(() => {
+                    saveButton.textContent = 'Save';
+                    saveButton.disabled = false;
+                }, 1000);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred while updating max cards');
+                saveButton.textContent = 'Save';
+                saveButton.disabled = false;
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
 </body>
 </html>

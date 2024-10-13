@@ -53,6 +53,26 @@ function renderCardData(data) {
     document.getElementById('flashcard_pinyin').dataset.characters = data.character;
     document.getElementById('flashcard_english').textContent = data.english;
     document.getElementById('flashcard_description').innerHTML = data.html;
+    document.getElementById('flashcard_function').textContent = "(" + data.function + ")";
+
+    if( data.hsk_level == -1){
+        document.getElementById('flashcard_hsk').textContent = "N/A";
+    }
+    else{
+        // check if integer or list
+        if(data.hsk_level.constructor === Array){
+            data.hsk_level.forEach((level) => {
+                document.getElementById('flashcard_hsk').textContent += `HSK ${level} `;
+            });
+        }
+        else{
+            console.log(Number.isInteger(data.hsk_level), data.hsk_level);
+            if(Number.isInteger(data.hsk_level)){
+                document.getElementById('flashcard_hsk').textContent = `HSK ${data.hsk_level}`;
+            }
+        }
+    }
+
 
     if (chars.length < 4) {
         const strokesContainer = document.createElement('div');
@@ -125,9 +145,11 @@ function displayCard(showAnswer=true, showPinyin=true) {
     const flashcardElement = document.getElementById('flashcard_description');
     const englishElement = document.getElementById('flashcard_english');
     const pinyinElement = document.getElementById('flashcard_pinyin');
+    const functionElement = document.getElementById('flashcard_function');
     pinyinElement.classList.toggle('visible', showPinyin || showAnswer);
     flashcardElement.style.visibility = showAnswer ? 'visible' : 'hidden';
     englishElement.style.visibility = showAnswer ? 'visible' : 'hidden';
+    functionElement.style.visibility = showAnswer ? 'visible' : 'hidden';
 }
 
 

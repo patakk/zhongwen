@@ -2,86 +2,126 @@
     "爱": {
         "pinyin": "ài",
         "english": "love",
-        "traditional": "愛"
+        "traditional": "愛",
+        "function": "verb",
+        "hsk_level": 1
     },
     "八": {
         "pinyin": "bā",
         "english": "eight",
-        "traditional": ""
+        "traditional": "",
+        "function": "number",
+        "hsk_level": 1
     },
     "爸爸": {
         "pinyin": "bàba",
         "english": "Dad",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 1
     },
     "杯子": {
         "pinyin": "bēizi",
         "english": "cup; glass",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 1
     },
     "北京": {
         "pinyin": "Běijīng",
         "english": "Beijing",
-        "traditional": ""
+        "traditional": "",
+        "function": "place noun",
+        "hsk_level": 1
     },
     "本": {
         "pinyin": "běn",
         "english": "measure word for books",
-        "traditional": ""
+        "traditional": "",
+        "function": "pronoun",
+        "hsk_level": 1
     },
     "不客气": {
         "pinyin": "bú kèqi",
         "english": "you're welcome; don't be polite",
-        "traditional": "不客氣"
+        "traditional": "不客氣",
+        "function": [
+            "adverb",
+            "noun"
+        ],
+        "hsk_level": [
+            1,
+            -1
+        ]
     },
     "不": {
         "pinyin": "bù",
         "english": "no; not",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 1
     },
     "菜": {
         "pinyin": "cài",
         "english": "dish (type of food); vegetables",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 1
     },
     "茶": {
         "pinyin": "chá",
         "english": "tea",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 1
     },
     "吃": {
         "pinyin": "chī",
         "english": "eat",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 1
     },
     "出租车": {
         "pinyin": "chūzūchē",
         "english": "taxi; cab",
-        "traditional": "出租車"
+        "traditional": "出租車",
+        "function": "noun",
+        "hsk_level": 1
     },
     "打电话": {
         "pinyin": "dǎ diànhuà",
         "english": "make a phone call",
-        "traditional": "打電話"
+        "traditional": "打電話",
+        "function": "temporary word",
+        "hsk_level": 1
     },
     "大": {
         "pinyin": "dà",
         "english": "big; large",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 1
     },
     "的": {
         "pinyin": "de",
         "english": "indicates possession, like adding 's to a noun",
-        "traditional": ""
+        "traditional": "",
+        "function": "unknown",
+        "hsk_level": 1
     },
     "点": {
         "pinyin": "diǎn",
         "english": "a dot; a little; o'clock",
-        "traditional": "點"
+        "traditional": "點",
+        "function": "number",
+        "hsk_level": 1
     },
     "电脑": {
         "pinyin": "diànnǎo",
         "english": "computer",
-        "traditional": "電腦"
+        "traditional": "電腦",
+        "function": "noun",
+        "hsk_level": 1
     }
 }

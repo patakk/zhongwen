@@ -2,1501 +2,2101 @@
     "阿姨": {
         "pinyin": "āyí",
         "english": "auntie; step-mother; mother's younger sister",
-        "traditional": ""
+        "traditional": "",
+        "function": "proper noun",
+        "hsk_level": 3
     },
     "啊": {
         "pinyin": "a",
         "english": "ah; (particle showing elation, doubt, puzzled surprise, or approval)",
-        "traditional": ""
+        "traditional": "",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "矮": {
         "pinyin": "ǎi",
         "english": "short; low",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "爱好": {
         "pinyin": "àihào",
         "english": "hobby; fond of; to like; interest",
-        "traditional": "愛好"
+        "traditional": "愛好",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "安静": {
         "pinyin": "ānjìng",
         "english": "quiet; peaceful; calm",
-        "traditional": "安靜"
+        "traditional": "安靜",
+        "function": "proper noun",
+        "hsk_level": 3
     },
     "把": {
         "pinyin": "bǎ",
         "english": "(mw for things with handles); (pretransitive particle); to hold",
-        "traditional": ""
+        "traditional": "",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "班": {
         "pinyin": "bān",
         "english": "team; class; squad",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "搬": {
         "pinyin": "bān",
         "english": "to move; to transport",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "办法": {
         "pinyin": "bànfǎ",
         "english": "method; way (of doing something)",
-        "traditional": "辦法"
+        "traditional": "辦法",
+        "function": "noun",
+        "hsk_level": 3
     },
     "办公室": {
         "pinyin": "bàngōngshì",
         "english": "office",
-        "traditional": "辦公室"
+        "traditional": "辦公室",
+        "function": "noun",
+        "hsk_level": 3
     },
     "半": {
         "pinyin": "bàn",
         "english": "half; semi-; incomplete",
-        "traditional": ""
+        "traditional": "",
+        "function": "number",
+        "hsk_level": 3
     },
     "帮忙": {
         "pinyin": "bāngmáng",
         "english": "to help",
-        "traditional": "幫忙"
+        "traditional": "幫忙",
+        "function": "verb",
+        "hsk_level": 3
     },
     "包": {
         "pinyin": "bāo",
         "english": "to cover; to wrap; to hold; include; (mw for containers, packages, etc.)",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "饱": {
         "pinyin": "bǎo",
         "english": "eat until full; satisfied",
-        "traditional": "飽"
+        "traditional": "飽",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "北方": {
         "pinyin": "běifāng",
         "english": "north; the northern part of the country",
-        "traditional": ""
+        "traditional": "",
+        "function": "surname",
+        "hsk_level": 3
     },
     "被": {
         "pinyin": "bèi",
         "english": "by (indicates passive voice sentences); a quilt/blanket",
-        "traditional": ""
+        "traditional": "",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "鼻子": {
         "pinyin": "bízi",
         "english": "nose",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "比较": {
         "pinyin": "bǐjiào",
         "english": "compare; contrast; relatively",
-        "traditional": "比較"
+        "traditional": "比較",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "比赛": {
         "pinyin": "bǐsài",
         "english": "(sports) match; competition",
-        "traditional": "比賽"
+        "traditional": "比賽",
+        "function": "pronoun-verb",
+        "hsk_level": 3
     },
     "笔记本": {
         "pinyin": "bǐjìběn",
         "english": "notebook",
-        "traditional": "筆記本"
+        "traditional": "筆記本",
+        "function": "noun",
+        "hsk_level": 3
     },
     "必须": {
         "pinyin": "bìxū",
         "english": "must; have to",
-        "traditional": "必須"
+        "traditional": "必須",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "变化": {
         "pinyin": "biànhuà",
         "english": "change",
-        "traditional": "變化"
+        "traditional": "變化",
+        "function": "pronoun-verb",
+        "hsk_level": 3
     },
     "别人": {
         "pinyin": "biéren",
         "english": "other people; others",
-        "traditional": "別人"
+        "traditional": "別人",
+        "function": "pronoun",
+        "hsk_level": 3
     },
     "冰箱": {
         "pinyin": "bīngxiāng",
         "english": "refrigerator",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "不但": {
         "pinyin": "búdàn",
         "english": "not only",
-        "traditional": ""
+        "traditional": "",
+        "function": "complement",
+        "hsk_level": 3
     },
     "而且": {
         "pinyin": "érqiě",
         "english": "moreover; in addition; as well as",
-        "traditional": ""
+        "traditional": "",
+        "function": "complement",
+        "hsk_level": 3
     },
     "菜单": {
         "pinyin": "càidān",
         "english": "menu",
-        "traditional": "菜單"
+        "traditional": "菜單",
+        "function": "noun",
+        "hsk_level": 3
     },
     "参加": {
         "pinyin": "cānjiā",
         "english": "participate; join; take part in",
-        "traditional": "參加"
+        "traditional": "參加",
+        "function": "verb",
+        "hsk_level": 3
     },
     "草": {
         "pinyin": "cǎo",
         "english": "grass; straw; draft (of a document)",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "层": {
         "pinyin": "céng",
         "english": "(mw for layers, floors of buildings)",
-        "traditional": "層"
+        "traditional": "層",
+        "function": "classifier",
+        "hsk_level": 3
     },
     "差": {
         "pinyin": "chà",
         "english": "differ from; fall short of; poor; inferior",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "超市": {
         "pinyin": "chāoshì",
         "english": "supermarket",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "衬衫": {
         "pinyin": "chènshān",
         "english": "shirt; blouse",
-        "traditional": "襯衫"
+        "traditional": "襯衫",
+        "function": "noun",
+        "hsk_level": 3
     },
     "成绩": {
         "pinyin": "chéngjì",
         "english": "achievement; success; results (of work or study)",
-        "traditional": "成績"
+        "traditional": "成績",
+        "function": "noun",
+        "hsk_level": 3
     },
     "城市": {
         "pinyin": "chéngshì",
         "english": "city or town",
-        "traditional": ""
+        "traditional": "",
+        "function": "place noun",
+        "hsk_level": 3
     },
     "迟到": {
         "pinyin": "chídào",
         "english": "arrive late",
-        "traditional": "遲到"
+        "traditional": "遲到",
+        "function": "verb",
+        "hsk_level": 3
     },
     "除了": {
         "pinyin": "chúle",
         "english": "besides; except for; aside from; in addition to",
-        "traditional": ""
+        "traditional": "",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "船": {
         "pinyin": "chuán",
         "english": "a boat; vessel; ship",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "春": {
         "pinyin": "chūn",
         "english": "spring (season); joyful",
-        "traditional": ""
+        "traditional": "",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "词典": {
         "pinyin": "cídiǎn",
         "english": "dictionary",
-        "traditional": "詞典"
+        "traditional": "詞典",
+        "function": "noun",
+        "hsk_level": 3
     },
     "聪明": {
         "pinyin": "cōngming",
         "english": "intelligent; clever; bright; smart",
-        "traditional": "聰明"
+        "traditional": "聰明",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "打扫": {
         "pinyin": "dǎsǎo",
         "english": "to clean; to sweep",
-        "traditional": "打掃"
+        "traditional": "打掃",
+        "function": "verb",
+        "hsk_level": 3
     },
     "打算": {
         "pinyin": "dǎsuàn",
         "english": "to plan; intend",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "带": {
         "pinyin": "dài",
         "english": "band; belt; ribbon; carry; bring; take along; bring up (kids)",
-        "traditional": "帶"
+        "traditional": "帶",
+        "function": "verb",
+        "hsk_level": 3
     },
     "担心": {
         "pinyin": "dānxīn",
         "english": "to worry; feel anxious",
-        "traditional": "擔心"
+        "traditional": "擔心",
+        "function": "verb",
+        "hsk_level": 3
     },
     "蛋糕": {
         "pinyin": "dàngāo",
         "english": "cake",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "当然": {
         "pinyin": "dāngrán",
         "english": "of course; naturally",
-        "traditional": "當然"
+        "traditional": "當然",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "地": {
         "pinyin": "dì, de",
         "english": "earth; ground | (adverbial particle)",
-        "traditional": ""
+        "traditional": "",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "灯": {
         "pinyin": "dēng",
         "english": "lamp; light",
-        "traditional": "燈"
+        "traditional": "燈",
+        "function": "noun",
+        "hsk_level": 3
     },
     "地方": {
         "pinyin": "dìfang",
         "english": "place; space; room; part, (fāng: local; regional)",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "地铁": {
         "pinyin": "dìtiě",
         "english": "subway",
-        "traditional": "地鐵"
+        "traditional": "地鐵",
+        "function": "noun",
+        "hsk_level": 3
     },
     "地图": {
         "pinyin": "dìtú",
         "english": "map",
-        "traditional": "地圖"
+        "traditional": "地圖",
+        "function": "noun",
+        "hsk_level": 3
     },
     "电梯": {
         "pinyin": "diàntī",
         "english": "elevator",
-        "traditional": "電梯"
+        "traditional": "電梯",
+        "function": "noun",
+        "hsk_level": 3
     },
     "电子邮件": {
         "pinyin": "diànzǐ yóujiàn",
         "english": "email",
-        "traditional": "電子郵件"
+        "traditional": "電子郵件",
+        "function": "noun",
+        "hsk_level": 3
     },
     "东": {
         "pinyin": "dōng",
         "english": "East",
-        "traditional": "東"
+        "traditional": "東",
+        "function": "place noun",
+        "hsk_level": 3
     },
     "冬": {
         "pinyin": "dōng",
         "english": "winter",
-        "traditional": ""
+        "traditional": "",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "动物": {
         "pinyin": "dòngwù",
         "english": "animal",
-        "traditional": "動物"
+        "traditional": "動物",
+        "function": "noun",
+        "hsk_level": 3
     },
     "短": {
         "pinyin": "duǎn",
         "english": "short (in length, duration, or height); lack",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "段": {
         "pinyin": "duàn",
         "english": "paragraph; segment; section",
-        "traditional": ""
+        "traditional": "",
+        "function": "classifier",
+        "hsk_level": 3
     },
     "锻炼": {
         "pinyin": "duànliàn",
         "english": "to exercise; work out; toughen; to temper",
-        "traditional": "鍛煉"
+        "traditional": "鍛煉",
+        "function": "verb",
+        "hsk_level": 3
     },
     "多么": {
         "pinyin": "duōme",
         "english": "how (wonderful, etc.); what (a great idea)",
-        "traditional": "多麼"
+        "traditional": "多麼",
+        "function": "pronoun",
+        "hsk_level": 3
     },
     "饿": {
         "pinyin": "è",
         "english": "hungry",
-        "traditional": "餓"
+        "traditional": "餓",
+        "function": "verb",
+        "hsk_level": 3
     },
     "耳朵": {
         "pinyin": "ěrduo",
         "english": "ear",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "发": {
         "pinyin": "fā, fà",
         "english": "send out; to issue; to show (one's feelings) | hair",
-        "traditional": "發"
+        "traditional": "發",
+        "function": "verb",
+        "hsk_level": 3
     },
     "发烧": {
         "pinyin": "fāshāo",
         "english": "have a fever",
-        "traditional": "發燒"
+        "traditional": "發燒",
+        "function": "verb",
+        "hsk_level": 3
     },
     "发现": {
         "pinyin": "fāxiàn",
         "english": "discover; to find",
-        "traditional": "發現"
+        "traditional": "發現",
+        "function": "verb",
+        "hsk_level": 3
     },
     "方便": {
         "pinyin": "fāngbiàn",
         "english": "convenient",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "放": {
         "pinyin": "fàng",
         "english": "put; to place; to release; to free",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "放心": {
         "pinyin": "fàngxīn",
         "english": "relax; feel relieved; rest assured",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "分": {
         "pinyin": "fēn, fèn",
         "english": "divide; part; minute; cent | component; share; ingredient",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "附近": {
         "pinyin": "fùjìn",
         "english": "(in the) vicinity; nearby; neighboring",
-        "traditional": ""
+        "traditional": "",
+        "function": "surname",
+        "hsk_level": 3
     },
     "复习": {
         "pinyin": "fùxí",
         "english": "revise; to review",
-        "traditional": "復習"
+        "traditional": "復習",
+        "function": "verb",
+        "hsk_level": 3
     },
     "干净": {
         "pinyin": "gānjìng",
         "english": "clean; neat and tidy",
-        "traditional": "干淨"
+        "traditional": "干淨",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "感冒": {
         "pinyin": "gǎnmào",
         "english": "catch cold; (common) cold",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "感兴趣": {
         "pinyin": "gǎn xìngqù",
         "english": "be interested in",
-        "traditional": "感興趣"
+        "traditional": "感興趣",
+        "function": "noun",
+        "hsk_level": 3
     },
     "刚才": {
         "pinyin": "gāngcái",
         "english": "just now; a moment ago",
-        "traditional": "剛才"
+        "traditional": "剛才",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "个子": {
         "pinyin": "gèzi",
         "english": "height; stature; build",
-        "traditional": "個子"
+        "traditional": "個子",
+        "function": "noun",
+        "hsk_level": 3
     },
     "根据": {
         "pinyin": "gēnjù",
         "english": "according to; based on; basis",
-        "traditional": "根據"
+        "traditional": "根據",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "跟": {
         "pinyin": "gēn",
         "english": "to follow; go with; heel",
-        "traditional": ""
+        "traditional": "",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "更": {
         "pinyin": "gèng",
         "english": "more; even more",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "公斤": {
         "pinyin": "gōngjīn",
         "english": "kilogram",
-        "traditional": ""
+        "traditional": "",
+        "function": "classifier",
+        "hsk_level": 3
     },
     "公园": {
         "pinyin": "gōngyuán",
         "english": "public park",
-        "traditional": "公園"
+        "traditional": "公園",
+        "function": "noun",
+        "hsk_level": 3
     },
     "故事": {
         "pinyin": "gùshi",
         "english": "story; tale",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "刮风": {
         "pinyin": "guāfēng",
         "english": "windy; to blow (wind)",
-        "traditional": "刮風"
+        "traditional": "刮風",
+        "function": "noun",
+        "hsk_level": 3
     },
     "关": {
         "pinyin": "guān",
         "english": "to close; shut; concern; relationship; turn off; mountain pass",
-        "traditional": "關"
+        "traditional": "關",
+        "function": "verb",
+        "hsk_level": 3
     },
     "关系": {
         "pinyin": "guānxi",
         "english": "relation; to concern",
-        "traditional": "關系"
+        "traditional": "關系",
+        "function": "noun",
+        "hsk_level": 3
     },
     "关心": {
         "pinyin": "guānxīn",
         "english": "concerned about/with",
-        "traditional": "關心"
+        "traditional": "關心",
+        "function": "noun",
+        "hsk_level": 3
     },
     "关于": {
         "pinyin": "guānyú",
         "english": "about; regarding; concerning",
-        "traditional": "關於"
+        "traditional": "關於",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "国家": {
         "pinyin": "guójiā",
         "english": "country; state; nation",
-        "traditional": "國家"
+        "traditional": "國家",
+        "function": "noun",
+        "hsk_level": 3
     },
     "过": {
         "pinyin": "guò",
         "english": "to pass; to cross; go over; (indicates a past experience)",
-        "traditional": "過"
+        "traditional": "過",
+        "function": "unknown",
+        "hsk_level": 2
     },
     "过去": {
         "pinyin": "guòqù",
         "english": "in the past; formerly",
-        "traditional": "過去"
+        "traditional": "過去",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "还是": {
         "pinyin": "háishi",
         "english": "or; still; nevertheless; had better",
-        "traditional": "還是"
+        "traditional": "還是",
+        "function": "complement",
+        "hsk_level": 3
     },
     "害怕": {
         "pinyin": "hàipà",
         "english": "afraid of; to fear",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "黑板": {
         "pinyin": "hēibǎn",
         "english": "blackboard",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "后来": {
         "pinyin": "hòulái",
         "english": "afterwards; after; later",
-        "traditional": "后來"
+        "traditional": "后來",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "护照": {
         "pinyin": "hùzhào",
         "english": "passport",
-        "traditional": "護照"
+        "traditional": "護照",
+        "function": "noun",
+        "hsk_level": 3
     },
     "花": {
         "pinyin": "huā",
         "english": "flower; blossom; spend money; cost",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "画": {
         "pinyin": "huà",
         "english": "draw; picture; painting",
-        "traditional": "畫"
+        "traditional": "畫",
+        "function": "noun",
+        "hsk_level": 3
     },
     "坏": {
         "pinyin": "huài",
         "english": "bad; broken",
-        "traditional": "壞"
+        "traditional": "壞",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "欢迎": {
         "pinyin": "huānyíng",
         "english": "to welcome; greet",
-        "traditional": "歡迎"
+        "traditional": "歡迎",
+        "function": "verb",
+        "hsk_level": 3
     },
     "还": {
         "pinyin": "hái",
         "english": "still; yet; in addition; even",
-        "traditional": "還"
+        "traditional": "還",
+        "function": "adverb",
+        "hsk_level": 2
     },
     "环境": {
         "pinyin": "huánjìng",
         "english": "environment; surroundings",
-        "traditional": "環境"
+        "traditional": "環境",
+        "function": "noun",
+        "hsk_level": 3
     },
     "换": {
         "pinyin": "huàn",
         "english": "change; to exchange; to barter; to trade",
-        "traditional": "換"
+        "traditional": "換",
+        "function": "other noun",
+        "hsk_level": 3
     },
     "黄河": {
         "pinyin": "huánghé",
         "english": "Yellow River",
-        "traditional": "黃河"
+        "traditional": "黃河",
+        "function": "place noun",
+        "hsk_level": 3
     },
     "回答": {
         "pinyin": "huídá",
         "english": "to reply; to answer",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "会议": {
         "pinyin": "huìyì",
         "english": "meeting; conference",
-        "traditional": "會議"
+        "traditional": "會議",
+        "function": "noun",
+        "hsk_level": 3
     },
     "或者": {
         "pinyin": "huòzhě",
         "english": "or; possible; maybe; perhaps",
-        "traditional": ""
+        "traditional": "",
+        "function": "complement",
+        "hsk_level": 3
     },
     "几乎": {
         "pinyin": "jīhū",
         "english": "almost",
-        "traditional": "幾乎"
+        "traditional": "幾乎",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "机会": {
         "pinyin": "jīhuì",
         "english": "opportunity; chance; occasion",
-        "traditional": "機會"
+        "traditional": "機會",
+        "function": "noun",
+        "hsk_level": 3
     },
     "极": {
         "pinyin": "jí",
         "english": "an extreme; pole; very",
-        "traditional": "極"
+        "traditional": "極",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "记得": {
         "pinyin": "jìde",
         "english": "remember",
-        "traditional": "記得"
+        "traditional": "記得",
+        "function": "verb",
+        "hsk_level": 3
     },
     "季节": {
         "pinyin": "jìjié",
         "english": "season; time; period",
-        "traditional": "季節"
+        "traditional": "季節",
+        "function": "noun",
+        "hsk_level": 3
     },
     "检查": {
         "pinyin": "jiǎnchá",
         "english": "to check; examine; inspect",
-        "traditional": "檢查"
+        "traditional": "檢查",
+        "function": "pronoun-verb",
+        "hsk_level": 3
     },
     "简单": {
         "pinyin": "jiǎndān",
         "english": "simple; not complicated",
-        "traditional": "簡單"
+        "traditional": "簡單",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "见面": {
         "pinyin": "jiànmiàn",
         "english": "meet/see somebody; meeting",
-        "traditional": "見面"
+        "traditional": "見面",
+        "function": "noun",
+        "hsk_level": 3
     },
     "健康": {
         "pinyin": "jiànkāng",
         "english": "health; healthy",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "讲": {
         "pinyin": "jiǎng",
         "english": "to talk; to lecture; to explain; a speech",
-        "traditional": "講"
+        "traditional": "講",
+        "function": "verb",
+        "hsk_level": 3
     },
     "教": {
         "pinyin": "jiāo, jiào",
         "english": "teach; instruct | religion; teaching",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "角": {
         "pinyin": "jiǎo, jué",
         "english": "horn; angle; unit of money (1/10 yuan); corner (Kangxi radical 148) | role (theater)",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "脚": {
         "pinyin": "jiǎo",
         "english": "foot (body part)",
-        "traditional": "腳"
+        "traditional": "腳",
+        "function": "noun",
+        "hsk_level": 3
     },
     "接": {
         "pinyin": "jiē",
         "english": "connect; to meet; to pick up (somebody); to receive",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "街道": {
         "pinyin": "jiēdào",
         "english": "street",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "节目": {
         "pinyin": "jiémù",
         "english": "program; item (on a program)",
-        "traditional": "節目"
+        "traditional": "節目",
+        "function": "noun",
+        "hsk_level": 3
     },
     "节日": {
         "pinyin": "jiérì",
         "english": "holiday; festival",
-        "traditional": "節日"
+        "traditional": "節日",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "结婚": {
         "pinyin": "jiéhūn",
         "english": "get married",
-        "traditional": "結婚"
+        "traditional": "結婚",
+        "function": "verb",
+        "hsk_level": 3
     },
     "结束": {
         "pinyin": "jiéshù",
         "english": "to end; to finish; conclude",
-        "traditional": "結束"
+        "traditional": "結束",
+        "function": "verb",
+        "hsk_level": 3
     },
     "解决": {
         "pinyin": "jiějué",
         "english": "settle (a dispute); resolve; solve",
-        "traditional": "解決"
+        "traditional": "解決",
+        "function": "verb",
+        "hsk_level": 3
     },
     "借": {
         "pinyin": "jiè",
         "english": "lend; borrow; excuse",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "经常": {
         "pinyin": "jīngcháng",
         "english": "often; frequently; daily",
-        "traditional": "經常"
+        "traditional": "經常",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "经过": {
         "pinyin": "jīngguò",
         "english": "to pass; go through; as a result of",
-        "traditional": "經過"
+        "traditional": "經過",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "经理": {
         "pinyin": "jīnglǐ",
         "english": "manager; director",
-        "traditional": "經理"
+        "traditional": "經理",
+        "function": "noun",
+        "hsk_level": 3
     },
     "久": {
         "pinyin": "jiǔ",
         "english": "long (time)",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "旧": {
         "pinyin": "jiù",
         "english": "old; past; used",
-        "traditional": "舊"
+        "traditional": "舊",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "句子": {
         "pinyin": "jùzi",
         "english": "sentence",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "决定": {
         "pinyin": "juédìng",
         "english": "decide; resolve",
-        "traditional": "決定"
+        "traditional": "決定",
+        "function": "verb",
+        "hsk_level": 3
     },
     "可爱": {
         "pinyin": "kě'ài",
         "english": "cute; lovely",
-        "traditional": "可愛"
+        "traditional": "可愛",
+        "function": "verb",
+        "hsk_level": 3
     },
     "渴": {
         "pinyin": "kě",
         "english": "thirsty",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "刻": {
         "pinyin": "kè",
         "english": "quarter (hour); (mw for short time intervals); carve; to cut",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "客人": {
         "pinyin": "kèrén",
         "english": "guest; customer",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "空调": {
         "pinyin": "kōngtiáo",
         "english": "air conditioning",
-        "traditional": "空調"
+        "traditional": "空調",
+        "function": "noun",
+        "hsk_level": 3
     },
     "口": {
         "pinyin": "kǒu",
         "english": "mouth (Kangxi radical 30)",
-        "traditional": ""
+        "traditional": "",
+        "function": "classifier",
+        "hsk_level": 3
     },
     "哭": {
         "pinyin": "kū",
         "english": "cry; weep",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "裤子": {
         "pinyin": "kùzi",
         "english": "pants; trousers",
-        "traditional": "褲子"
+        "traditional": "褲子",
+        "function": "noun",
+        "hsk_level": 3
     },
     "筷子": {
         "pinyin": "kuàizi",
         "english": "chopsticks",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "蓝": {
         "pinyin": "lán",
         "english": "blue",
-        "traditional": "藍"
+        "traditional": "藍",
+        "function": "proper noun",
+        "hsk_level": 3
     },
     "老": {
         "pinyin": "lǎo",
         "english": "old; aged; tough; often (Kangxi radical 125)",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "离开": {
         "pinyin": "líkāi",
         "english": "leave; depart",
-        "traditional": "離開"
+        "traditional": "離開",
+        "function": "verb",
+        "hsk_level": 3
     },
     "礼物": {
         "pinyin": "lǐwù",
         "english": "gift; present",
-        "traditional": "禮物"
+        "traditional": "禮物",
+        "function": "noun",
+        "hsk_level": 3
     },
     "历史": {
         "pinyin": "lìshǐ",
         "english": "history",
-        "traditional": "歷史"
+        "traditional": "歷史",
+        "function": "noun",
+        "hsk_level": 3
     },
     "脸": {
         "pinyin": "liǎn",
         "english": "face",
-        "traditional": "臉"
+        "traditional": "臉",
+        "function": "noun",
+        "hsk_level": 3
     },
     "练习": {
         "pinyin": "liànxí",
         "english": "practice; exercise",
-        "traditional": "練習"
+        "traditional": "練習",
+        "function": "verb",
+        "hsk_level": 3
     },
     "辆": {
         "pinyin": "liàng",
         "english": "(mw for vehicles)",
-        "traditional": "輛"
+        "traditional": "輛",
+        "function": "number",
+        "hsk_level": 3
     },
     "聊天": {
         "pinyin": "liáotiān",
         "english": "to chat",
-        "traditional": ""
+        "traditional": "",
+        "function": "other noun",
+        "hsk_level": 3
     },
     "了解": {
         "pinyin": "liǎojiě",
         "english": "comprehend; understand; know; find out",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "邻居": {
         "pinyin": "línjū",
         "english": "neighbor",
-        "traditional": "鄰居"
+        "traditional": "鄰居",
+        "function": "verb",
+        "hsk_level": 3
     },
     "留学": {
         "pinyin": "liúxué",
         "english": "study abroad",
-        "traditional": "留學"
+        "traditional": "留學",
+        "function": "verb",
+        "hsk_level": 3
     },
     "楼": {
         "pinyin": "lóu",
         "english": "story; floor; (multi-story) building",
-        "traditional": "樓"
+        "traditional": "樓",
+        "function": "noun",
+        "hsk_level": 3
     },
     "绿": {
         "pinyin": "lǜ",
         "english": "green",
-        "traditional": "綠"
+        "traditional": "綠",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "马": {
         "pinyin": "mǎ",
         "english": "horse (Kangxi radical 187)",
-        "traditional": "馬"
+        "traditional": "馬",
+        "function": "noun",
+        "hsk_level": 3
     },
     "马上": {
         "pinyin": "mǎshàng",
         "english": "at once; immediately; right away",
-        "traditional": "馬上"
+        "traditional": "馬上",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "满意": {
         "pinyin": "mǎnyì",
         "english": "satisfied; pleased",
-        "traditional": "滿意"
+        "traditional": "滿意",
+        "function": "verb",
+        "hsk_level": 3
     },
     "帽子": {
         "pinyin": "màozi",
         "english": "hat; cap",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "米": {
         "pinyin": "mǐ",
         "english": "rice; meter (Kangxi radical 119)",
-        "traditional": ""
+        "traditional": "",
+        "function": "classifier",
+        "hsk_level": 3
     },
     "面包": {
         "pinyin": "miànbāo",
         "english": "bread",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "明白": {
         "pinyin": "míngbai",
         "english": "clear; obvious; understand; explicit",
-        "traditional": ""
+        "traditional": "",
+        "function": "proper noun",
+        "hsk_level": 3
     },
     "拿": {
         "pinyin": "ná",
         "english": "carry in your hand; seize; to catch",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "奶奶": {
         "pinyin": "nǎinai",
         "english": "grandma; (informal) paternal grandmother",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "南": {
         "pinyin": "nán",
         "english": "South",
-        "traditional": ""
+        "traditional": "",
+        "function": "place noun",
+        "hsk_level": 3
     },
     "难": {
         "pinyin": "nán",
         "english": "difficult",
-        "traditional": "難"
+        "traditional": "難",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "难过": {
         "pinyin": "nánguò",
         "english": "be grieved; be sad; have a hard time",
-        "traditional": "難過"
+        "traditional": "難過",
+        "function": "verb",
+        "hsk_level": 3
     },
     "年级": {
         "pinyin": "niánjí",
         "english": "grade; year (in school)",
-        "traditional": "年級"
+        "traditional": "年級",
+        "function": "other",
+        "hsk_level": 3
     },
     "年轻": {
         "pinyin": "niánqīng",
         "english": "young",
-        "traditional": "年輕"
+        "traditional": "年輕",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "鸟": {
         "pinyin": "niǎo",
         "english": "bird (Kangxi radical 196)",
-        "traditional": "鳥"
+        "traditional": "鳥",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "努力": {
         "pinyin": "nǔlì",
         "english": "to work hard; to strive",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "爬山": {
         "pinyin": "páshān",
         "english": "mountain climbing",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "盘子": {
         "pinyin": "pánzi",
         "english": "plate; dish; tray",
-        "traditional": "盤子"
+        "traditional": "盤子",
+        "function": "noun",
+        "hsk_level": 3
     },
     "胖": {
         "pinyin": "pàng",
         "english": "fat; plump",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "皮鞋": {
         "pinyin": "píxié",
         "english": "leather shoes",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "啤酒": {
         "pinyin": "píjiǔ",
         "english": "beer",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "瓶子": {
         "pinyin": "píngzi",
         "english": "bottle",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "其实": {
         "pinyin": "qíshí",
         "english": "actually; in fact",
-        "traditional": "其實"
+        "traditional": "其實",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "其他": {
         "pinyin": "qítā",
         "english": "other; else",
-        "traditional": ""
+        "traditional": "",
+        "function": "pronoun",
+        "hsk_level": 3
     },
     "奇怪": {
         "pinyin": "qíguài",
         "english": "strange; odd",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "骑": {
         "pinyin": "qí",
         "english": "to ride (an animal or bike); to sit astride",
-        "traditional": "騎"
+        "traditional": "騎",
+        "function": "verb",
+        "hsk_level": 3
     },
     "起飞": {
         "pinyin": "qǐfēi",
         "english": "take off (in an airplane); liftoff",
-        "traditional": "起飛"
+        "traditional": "起飛",
+        "function": "verb",
+        "hsk_level": 3
     },
     "起来": {
         "pinyin": "qǐlai",
         "english": "(beginning or continuing an action); to rise; get up (from bed)",
-        "traditional": "起來"
+        "traditional": "起來",
+        "function": "verb",
+        "hsk_level": 3
     },
     "清楚": {
         "pinyin": "qīngchu",
         "english": "clear; distinct; be clear about",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "请假": {
         "pinyin": "qǐngjià",
         "english": "to ask for time off",
-        "traditional": "請假"
+        "traditional": "請假",
+        "function": "verb",
+        "hsk_level": 3
     },
     "秋": {
         "pinyin": "qiū",
         "english": "autumn; fall; harvest time",
-        "traditional": ""
+        "traditional": "",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "裙子": {
         "pinyin": "qúnzi",
         "english": "skirt",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "然后": {
         "pinyin": "ránhòu",
         "english": "then; afterwards",
-        "traditional": ""
+        "traditional": "",
+        "function": "complement",
+        "hsk_level": 3
     },
     "热情": {
         "pinyin": "rèqíng",
         "english": "cordial; warm; enthusiastic",
-        "traditional": "熱情"
+        "traditional": "熱情",
+        "function": "noun",
+        "hsk_level": 3
     },
     "认为": {
         "pinyin": "rènwéi",
         "english": "believe; think that",
-        "traditional": "認為"
+        "traditional": "認為",
+        "function": "verb",
+        "hsk_level": 3
     },
     "认真": {
         "pinyin": "rènzhēn",
         "english": "serious; earnest; take seriously",
-        "traditional": "認真"
+        "traditional": "認真",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "容易": {
         "pinyin": "róngyì",
         "english": "easy; likely; liable (to)",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "如果": {
         "pinyin": "rúguǒ",
         "english": "if; in the event that",
-        "traditional": ""
+        "traditional": "",
+        "function": "complement",
+        "hsk_level": 3
     },
     "伞": {
         "pinyin": "sǎn",
         "english": "umbrella; parasol",
-        "traditional": "傘"
+        "traditional": "傘",
+        "function": "noun",
+        "hsk_level": 3
     },
     "上网": {
         "pinyin": "shàngwǎng",
         "english": "to surf the web; to go online",
-        "traditional": "上網"
+        "traditional": "上網",
+        "function": "verb",
+        "hsk_level": 3
     },
     "生气": {
         "pinyin": "shēngqì",
         "english": "angry; mad",
-        "traditional": "生氣"
+        "traditional": "生氣",
+        "function": "noun",
+        "hsk_level": 3
     },
     "声音": {
         "pinyin": "shēngyīn",
         "english": "sound; voice",
-        "traditional": "聲音"
+        "traditional": "聲音",
+        "function": "noun",
+        "hsk_level": 3
     },
     "世界": {
         "pinyin": "shìjiè",
         "english": "world",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "试": {
         "pinyin": "shì",
         "english": "to try; to test; examination",
-        "traditional": "試"
+        "traditional": "試",
+        "function": "verb",
+        "hsk_level": 3
     },
     "瘦": {
         "pinyin": "shòu",
         "english": "thin; tight; lean",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "叔叔": {
         "pinyin": "shūshu",
         "english": "(informal) father's younger brother; uncle",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "舒服": {
         "pinyin": "shūfu",
         "english": "comfortable; feeling well",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "树": {
         "pinyin": "shù",
         "english": "tree",
-        "traditional": "樹"
+        "traditional": "樹",
+        "function": "verb",
+        "hsk_level": 3
     },
     "数学": {
         "pinyin": "shùxué",
         "english": "mathematics",
-        "traditional": "數學"
+        "traditional": "數學",
+        "function": "noun",
+        "hsk_level": 3
     },
     "刷牙": {
         "pinyin": "shuāyá",
         "english": "brush one's teeth",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "双": {
         "pinyin": "shuāng",
         "english": "two; double; (mw for pairs)",
-        "traditional": "雙"
+        "traditional": "雙",
+        "function": "noun",
+        "hsk_level": 3
     },
     "水平": {
         "pinyin": "shuǐpíng",
         "english": "level; standard; horizontal",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "司机": {
         "pinyin": "sījī",
         "english": "driver; chauffeur",
-        "traditional": "司機"
+        "traditional": "司機",
+        "function": "noun",
+        "hsk_level": 3
     },
     "太阳": {
         "pinyin": "tàiyáng",
         "english": "the sun",
-        "traditional": "太陽"
+        "traditional": "太陽",
+        "function": "place noun",
+        "hsk_level": 3
     },
     "特别": {
         "pinyin": "tèbié",
         "english": "special; especially; particular",
-        "traditional": "特別"
+        "traditional": "特別",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "疼": {
         "pinyin": "téng",
         "english": "ache; sore; (it) hurts; love fondly",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "提高": {
         "pinyin": "tígāo",
         "english": "to raise; heighten; improve",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "体育": {
         "pinyin": "tǐyù",
         "english": "physical training; sports",
-        "traditional": "體育"
+        "traditional": "體育",
+        "function": "pronoun-verb",
+        "hsk_level": 3
     },
     "甜": {
         "pinyin": "tián",
         "english": "sweet",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "条": {
         "pinyin": "tiáo",
         "english": "strip; (mw for long thin objects); item",
-        "traditional": "條"
+        "traditional": "條",
+        "function": "noun",
+        "hsk_level": 3
     },
     "同事": {
         "pinyin": "tóngshì",
         "english": "colleague; co-worker",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "同意": {
         "pinyin": "tóngyì",
         "english": "agree; to consent; approve",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "头发": {
         "pinyin": "tóufa",
         "english": "hair (on the head)",
-        "traditional": "頭發"
+        "traditional": "頭發",
+        "function": "noun",
+        "hsk_level": 3
     },
     "突然": {
         "pinyin": "tūrán",
         "english": "sudden; abrupt",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "图书馆": {
         "pinyin": "túshūguǎn",
         "english": "library",
-        "traditional": "圖書館"
+        "traditional": "圖書館",
+        "function": "noun",
+        "hsk_level": 3
     },
     "腿": {
         "pinyin": "tuǐ",
         "english": "leg",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "完成": {
         "pinyin": "wánchéng",
         "english": "to complete; accomplish; to fulfill",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "碗": {
         "pinyin": "wǎn",
         "english": "bowl; cup",
-        "traditional": ""
+        "traditional": "",
+        "function": "classifier",
+        "hsk_level": 3
     },
     "万": {
         "pinyin": "wàn",
         "english": "ten thousand",
-        "traditional": "萬"
+        "traditional": "萬",
+        "function": "number",
+        "hsk_level": 3
     },
     "忘记": {
         "pinyin": "wàngjì",
         "english": "forget",
-        "traditional": "忘記"
+        "traditional": "忘記",
+        "function": "verb",
+        "hsk_level": 3
     },
     "为": {
         "pinyin": "wèi",
         "english": "for; because of; to; for the sake of",
-        "traditional": "為"
+        "traditional": "為",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "为了": {
         "pinyin": "wèile",
         "english": "in order to; for the sake of; for the purpose of",
-        "traditional": "為了"
+        "traditional": "為了",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "位": {
         "pinyin": "wèi",
         "english": "position; location; (polite mw for people)",
-        "traditional": ""
+        "traditional": "",
+        "function": "classifier",
+        "hsk_level": 3
     },
     "文化": {
         "pinyin": "wénhuà",
         "english": "culture; civilization",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "西": {
         "pinyin": "xī",
         "english": "West (Kangxi radical 146)",
-        "traditional": ""
+        "traditional": "",
+        "function": "surname",
+        "hsk_level": 3
     },
     "习惯": {
         "pinyin": "xíguàn",
         "english": "habit; be accustomed to; usual practice",
-        "traditional": "習慣"
+        "traditional": "習慣",
+        "function": "noun",
+        "hsk_level": 3
     },
     "洗手间": {
         "pinyin": "xǐshǒujiān",
         "english": "toilet; lavatory; washroom",
-        "traditional": "洗手間"
+        "traditional": "洗手間",
+        "function": "noun",
+        "hsk_level": 3
     },
     "洗澡": {
         "pinyin": "xǐzǎo",
         "english": "bathe; take a bath or shower; bath or shower",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "夏": {
         "pinyin": "xià",
         "english": "summer",
-        "traditional": ""
+        "traditional": "",
+        "function": "proper noun",
+        "hsk_level": 3
     },
     "先": {
         "pinyin": "xiān",
         "english": "first; early; before",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "相信": {
         "pinyin": "xiāngxìn",
         "english": "believe (sb.); be convinced of",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "香蕉": {
         "pinyin": "xiāngjiāo",
         "english": "banana",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "向": {
         "pinyin": "xiàng",
         "english": "direction; towards; to turn; to face",
-        "traditional": ""
+        "traditional": "",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "像": {
         "pinyin": "xiàng",
         "english": "be like; resemble; appearance; appear",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "小心": {
         "pinyin": "xiǎoxīn",
         "english": "be careful",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "校长": {
         "pinyin": "xiàozhǎng",
         "english": "principal (of school, college or university); president; headmaster",
-        "traditional": "校長"
+        "traditional": "校長",
+        "function": "noun",
+        "hsk_level": 3
     },
     "新闻": {
         "pinyin": "xīnwén",
         "english": "news",
-        "traditional": "新聞"
+        "traditional": "新聞",
+        "function": "noun",
+        "hsk_level": 3
     },
     "新鲜": {
         "pinyin": "xīnxiān",
         "english": "fresh (experience, food, etc.); new; novel",
-        "traditional": "新鮮"
+        "traditional": "新鮮",
+        "function": "place noun",
+        "hsk_level": 3
     },
     "信用卡": {
         "pinyin": "xìnyòngkǎ",
         "english": "credit card",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "行李箱": {
         "pinyin": "xínglǐxiāng",
         "english": "trunk; suitcase",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "熊猫": {
         "pinyin": "xióngmāo",
         "english": "panda",
-        "traditional": "熊貓"
+        "traditional": "熊貓",
+        "function": "proper noun",
+        "hsk_level": 3
     },
     "需要": {
         "pinyin": "xūyào",
         "english": "to need; to want; to demand",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "选择": {
         "pinyin": "xuǎnzé",
         "english": "select; to pick; choose",
-        "traditional": "選擇"
+        "traditional": "選擇",
+        "function": "verb",
+        "hsk_level": 3
     },
     "要求": {
         "pinyin": "yāoqiú",
         "english": "to request; to demand; requirement",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "爷爷": {
         "pinyin": "yéye",
         "english": "(informal) father's father; paternal grandfather",
-        "traditional": "爺爺"
+        "traditional": "爺爺",
+        "function": "noun",
+        "hsk_level": 3
     },
     "一般": {
         "pinyin": "yìbān",
         "english": "general; ordinary; common; same",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "一边": {
         "pinyin": "yìbiān",
         "english": "one side; on the one hand; at the same time",
-        "traditional": "一邊"
+        "traditional": "一邊",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "一定": {
         "pinyin": "yídìng",
         "english": "surely; certainly; necessarily; definite",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "一共": {
         "pinyin": "yígòng",
         "english": "altogether; in total",
-        "traditional": ""
+        "traditional": "",
+        "function": "abbreviation",
+        "hsk_level": 3
     },
     "一会儿": {
         "pinyin": "yíhuìr",
         "english": "a while; a moment",
-        "traditional": "一會兒"
+        "traditional": "一會兒",
+        "function": "number",
+        "hsk_level": 3
     },
     "一样": {
         "pinyin": "yíyàng",
         "english": "the same; alike; equal to",
-        "traditional": "一樣"
+        "traditional": "一樣",
+        "function": "pronoun",
+        "hsk_level": 3
     },
     "一直": {
         "pinyin": "yìzhí",
         "english": "always; all along; straight (in a straight line)",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "以前": {
         "pinyin": "yǐqián",
         "english": "before; formerly; previous",
-        "traditional": ""
+        "traditional": "",
+        "function": "surname",
+        "hsk_level": 3
     },
     "音乐": {
         "pinyin": "yīnyuè",
         "english": "music",
-        "traditional": "音樂"
+        "traditional": "音樂",
+        "function": "noun",
+        "hsk_level": 3
     },
     "银行": {
         "pinyin": "yínháng",
         "english": "bank",
-        "traditional": "銀行"
+        "traditional": "銀行",
+        "function": "noun",
+        "hsk_level": 3
     },
     "饮料": {
         "pinyin": "yǐnliào",
         "english": "beverage; drink",
-        "traditional": "飲料"
+        "traditional": "飲料",
+        "function": "noun",
+        "hsk_level": 3
     },
     "应该": {
         "pinyin": "yīnggāi",
         "english": "should; ought to; must",
-        "traditional": "應該"
+        "traditional": "應該",
+        "function": "verb",
+        "hsk_level": 3
     },
     "影响": {
         "pinyin": "yǐngxiǎng",
         "english": "influence; affect; effect",
-        "traditional": "影響"
+        "traditional": "影響",
+        "function": "pronoun-verb",
+        "hsk_level": 3
     },
     "用": {
         "pinyin": "yòng",
         "english": "to use (Kangxi radical 101)",
-        "traditional": ""
+        "traditional": "",
+        "function": "preposition",
+        "hsk_level": 3
     },
     "游戏": {
         "pinyin": "yóuxì",
         "english": "game; play; recreation",
-        "traditional": "游戲"
+        "traditional": "游戲",
+        "function": "noun",
+        "hsk_level": 3
     },
     "有名": {
         "pinyin": "yǒumíng",
         "english": "famous; well-known",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "又": {
         "pinyin": "yòu",
         "english": "(once) again; also; both (Kangxi radical 29)",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "遇到": {
         "pinyin": "yùdào",
         "english": "to meet; run into; come across",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "元": {
         "pinyin": "yuán",
         "english": "Chinese monetary unit; dollar; first; principal",
-        "traditional": ""
+        "traditional": "",
+        "function": "number",
+        "hsk_level": 3
     },
     "愿意": {
         "pinyin": "yuànyì",
         "english": "be willing; want to; be ready",
-        "traditional": "願意"
+        "traditional": "願意",
+        "function": "verb",
+        "hsk_level": 3
     },
     "月亮": {
         "pinyin": "yuèliang",
         "english": "the moon",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "越": {
         "pinyin": "yuè",
         "english": "even more; the more; exceed",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "站": {
         "pinyin": "zhàn",
         "english": "stand; a station; be on one's feet; service center",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "张": {
         "pinyin": "zhāng",
         "english": "(mw for flat objects); to spread out; (common surname)",
-        "traditional": "張"
+        "traditional": "張",
+        "function": "classifier",
+        "hsk_level": 3
     },
     "长": {
         "pinyin": "cháng, zhǎng",
         "english": "long; length | grow; chief (Kangxi radical 168)",
-        "traditional": "長"
+        "traditional": "長",
+        "function": "adjective",
+        "hsk_level": 2
     },
     "着急": {
         "pinyin": "zháojí",
         "english": "to worry; feel anxious",
-        "traditional": "著急"
+        "traditional": "著急",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "照顾": {
         "pinyin": "zhàogu",
         "english": "take care of; look after; give consideration",
-        "traditional": "照顧"
+        "traditional": "照顧",
+        "function": "verb",
+        "hsk_level": 3
     },
     "照片": {
         "pinyin": "zhàopiàn",
         "english": "picture; photograph",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "照相机": {
         "pinyin": "zhàoxiàngjī",
         "english": "camera",
-        "traditional": "照相機"
+        "traditional": "照相機",
+        "function": "noun",
+        "hsk_level": 3
     },
     "只": {
         "pinyin": "zhī, zhǐ",
         "english": "but; only; merely; just | (mw for birds and certain animals)",
-        "traditional": "隻"
+        "traditional": "隻",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "只有": {
         "pinyin": "zhǐyǒu",
         "english": "only",
-        "traditional": "隻有"
+        "traditional": "隻有",
+        "function": "complement",
+        "hsk_level": 3
     },
     "才": {
         "pinyin": "cái",
         "english": "ability; talent; just now; not until",
-        "traditional": ""
+        "traditional": "",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "中间": {
         "pinyin": "zhōngjiān",
         "english": "center; middle; between; among",
-        "traditional": "中間"
+        "traditional": "中間",
+        "function": "surname",
+        "hsk_level": 3
     },
     "中文": {
         "pinyin": "Zhōngwén",
         "english": "Chinese (language)",
-        "traditional": ""
+        "traditional": "",
+        "function": "other noun",
+        "hsk_level": 3
     },
     "终于": {
         "pinyin": "zhōngyú",
         "english": "at last; in the end; finally",
-        "traditional": "終於"
+        "traditional": "終於",
+        "function": "adverb",
+        "hsk_level": 3
     },
     "种": {
         "pinyin": "zhǒng",
         "english": "type; breed; race; seed",
-        "traditional": "種"
+        "traditional": "種",
+        "function": "number",
+        "hsk_level": 3
     },
     "重要": {
         "pinyin": "zhòngyào",
         "english": "important; significant; major",
-        "traditional": ""
+        "traditional": "",
+        "function": "adjective",
+        "hsk_level": 3
     },
     "周末": {
         "pinyin": "zhōumò",
         "english": "weekend",
-        "traditional": ""
+        "traditional": "",
+        "function": "unknown",
+        "hsk_level": 3
     },
     "主要": {
         "pinyin": "zhǔyào",
         "english": "main; principal; major",
-        "traditional": ""
+        "traditional": "",
+        "function": "other",
+        "hsk_level": 3
     },
     "注意": {
         "pinyin": "zhùyì",
         "english": "pay attention to; take notice of; be careful",
-        "traditional": ""
+        "traditional": "",
+        "function": "verb",
+        "hsk_level": 3
     },
     "自己": {
         "pinyin": "zìjǐ",
         "english": "oneself; self",
-        "traditional": ""
+        "traditional": "",
+        "function": "pronoun",
+        "hsk_level": 3
     },
     "自行车": {
         "pinyin": "zìxíngchē",
         "english": "bike; bicycle",
-        "traditional": "自行車"
+        "traditional": "自行車",
+        "function": "noun",
+        "hsk_level": 3
     },
     "总是": {
         "pinyin": "zǒngshì",
         "english": "always; eventually",
-        "traditional": "總是"
+        "traditional": "總是",
+        "function": "complement",
+        "hsk_level": 3
     },
     "嘴": {
         "pinyin": "zuǐ",
         "english": "mouth",
-        "traditional": ""
+        "traditional": "",
+        "function": "noun",
+        "hsk_level": 3
     },
     "最后": {
         "pinyin": "zuìhòu",
         "english": "last; final; ultimately",
-        "traditional": ""
+        "traditional": "",
+        "function": "surname",
+        "hsk_level": 3
     },
     "最近": {
         "pinyin": "zuìjìn",
         "english": "recently; lately; these days",
-        "traditional": ""
+        "traditional": "",
+        "function": "surname",
+        "hsk_level": 3
     },
     "作业": {
         "pinyin": "zuòyè",
         "english": "school assignment; homework; task",
-        "traditional": "作業"
+        "traditional": "作業",
+        "function": "noun",
+        "hsk_level": 3
     }
 }

@@ -112,25 +112,20 @@
 
 @media screen and (max-width: 768px) {
     .dropdown-menu {
-        width: 100%;
-        left: 0;
-        right: 0;
+        /* width: 100%; */
+        /* left: 0; */
+        font-size: 14px;
     }
 
-    .submenu {
-        position: static;
-        width: 100%;
-        border: none;
-        border-top: 1px solid #e0e0e0;
+    .dropdown-menu {
+        position: absolute;
+        width: 40vw;
     }
 
-    .has-submenu > span::after {
-        content: '\25BC'; /* Down arrow */
-        float: right;
-    }
-
-    .has-submenu.active > span::after {
-        content: '\25B2'; /* Up arrow */
+    .dropdown-menu ul .submenu {
+        position: absolute;
+        width: 40vw;
+        left: -41vw;
     }
 }
 
