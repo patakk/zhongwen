@@ -107,13 +107,32 @@
             background-color: white;
             border: 2px solid black;
             cursor: pointer;
-            font-family: 'Noto Sans Mono', monospace; /* Set font to match the rest */
-            font-size: 16px; /* Increased font size */
+            font-family: 'Noto Sans Mono', monospace;
+            font-size: 16px;
+            -webkit-tap-highlight-color: transparent; /* Removes the tap highlight on iOS */
+            user-select: none; /* Prevents text selection */
+            touch-action: manipulation; /* Improves touch event handling */
         }
+
         .settings-form button:hover {
             background-color: black;
             color: white;
         }
+
+        .settings-form button:active {
+            background-color: white;
+            color: black;
+        }
+
+        /* For browsers that support :focus-visible */
+        .settings-form button:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        .settings-form button:focus-visible {
+            outline: 2px solid black;
+        }
+
         @media (max-width: 768px) {
             .settings-container {
                 width: 100%;
@@ -227,6 +246,8 @@
             
             saveButton.textContent = 'Saved';
             saveButton.disabled = true;
+            saveButton.style.backgroundColor = 'black';
+            saveButton.style.color = 'white';
 
             fetch(`./set_max_cards?maxcards=${maxCards}`, {
                 method: 'POST',
@@ -244,6 +265,8 @@
                 setTimeout(() => {
                     saveButton.textContent = 'Save';
                     saveButton.disabled = false;
+                    saveButton.style.backgroundColor = 'white';
+                    saveButton.style.color = 'black';
                 }, 1000);
             })
             .catch((error) => {
@@ -251,8 +274,11 @@
                 alert('An error occurred while updating max cards');
                 saveButton.textContent = 'Save';
                 saveButton.disabled = false;
+                saveButton.style.backgroundColor = 'white';
+                saveButton.style.color = 'black';
             });
         });
+
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
 </body>

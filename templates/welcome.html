@@ -9,6 +9,10 @@
         * {
             box-sizing: border-box;
         }
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
         body {
             font-family: 'Noto Sans Mono', monospace;
             margin: 0;
@@ -16,8 +20,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             background-color: white;
+            font-size: 16px;
         }
         .container {
             width: 60%;
@@ -25,16 +29,20 @@
             background-color: white;
             padding: 2rem;
             border: 2px dashed black;
+            overflow-y: auto;
+            max-height: 90vh;
         }
         h1 {
             font-family: 'Noto Sans Mono', monospace;
             color: #333;
+            font-size: 1.5em;
+            margin-top: 0;
         }
         ul {
             padding-left: 1.5rem;
         }
         li {
-            margin-bottom: 0.75rem; /* Added spacing between list items */
+            margin-bottom: 0.75rem;
         }
         .btn-container {
             text-align: center;
@@ -56,20 +64,27 @@
         a {
             color: rgb(255, 255, 255);
             text-decoration: none;
-            background-color: #ff3c00; /* Light red background */
+            background-color: #ff3c00;
             padding: 2px 4px;
         }
         a:hover {
-            background-color: #ff0000; /* Darker red on hover */
-            color: #050505; /*rgb(12, 6, 6) red on hover */
+            background-color: #ff0000;
+            color: #050505;
         }
         @media (max-width: 768px) {
             body {
                 padding: 10px;
+                font-size: 14px;
             }
             .container {
-                width: 100%;
+                width: 95%;
                 padding: 1rem;
+            }
+            h1 {
+                font-size: 1.2em;
+            }
+            .btn {
+                padding: 8px 16px;
             }
         }
     </style>

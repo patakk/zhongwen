@@ -44,17 +44,21 @@ application = app
 def session_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        # if 'username' not in session:
-        #     return redirect(url_for('login'))
-        if 'username' not in session:
-            current_time = datetime.now()
-            adjusted_time = current_time + timedelta(hours=6)
-            current_time_and_date = adjusted_time.strftime("%Y_%m_%d_%H_%M_%S")
-            session['username'] = 'tempuser'
         if 'deck' not in session:
             session['deck'] = 'shas'
         if 'font' not in session:
             session['font'] = 'Noto Sans Mono'
+        if 'username' not in session:
+            return redirect(url_for('login'))
+        # if 'username' not in session:
+        #     current_time = datetime.now()
+        #     adjusted_time = current_time + timedelta(hours=6)
+        #     current_time_and_date = adjusted_time.strftime("%Y_%m_%d_%H_%M_%S")
+        #     session['username'] = 'tempuser'
+        # if 'deck' not in session:
+        #     session['deck'] = 'shas'
+        # if 'font' not in session:
+        #     session['font'] = 'Noto Sans Mono'
         return func(*args, **kwargs)
     return wrapper
 
@@ -380,6 +384,7 @@ def get_card_data():
 from collections import defaultdict
 
 @app.route('/user_progress')
+@session_required
 def user_progress():
     username = request.args.get('user', session.get('username'))
     deck = request.args.get('deck', session.get('deck'))
@@ -420,7 +425,6 @@ def user_progress():
     return render_template('userprogress.html', username=session.get('username'), deck=deck, progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=session['user_progress']["base_new_cards_limit"])
 
 @app.route('/login', methods=['GET', 'POST'])
-@session_required
 @timing_decorator
 def login():
     if request.method == 'POST':
@@ -433,6 +437,7 @@ def login():
             #session['user_progress'] = flashcard_app.save_user_progress(username, flashcard_app.load_user_progress(username))
             session['user_progress'] = flashcard_app.load_user_progress(None)
             print('created new user progress')
+            flashcard_app.save_user_progress(session['username'], session['user_progress'])
             return redirect(url_for('welcome'))
         else:
             session['user_progress'] = flashcard_app.load_user_progress(user_progress_file)
@@ -452,9 +457,9 @@ def welcome():
 @session_required
 @timing_decorator
 def home():
-    if session.get('username') == 'tempuser':
+    # if session.get('username') == 'tempuser':
+        # session['user_progress'] = flashcard_app.load_user_progress(None)
         # return redirect(url_for('login'))
-        session['user_progress'] = flashcard_app.load_user_progress(None)
     return render_template('home.html', username=session['username'], decks=flashcard_app.decks)
 
 @app.route('/check_session')
