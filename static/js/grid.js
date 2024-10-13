@@ -44,7 +44,8 @@ let typedDisplay = document.getElementById('typedDisplay');
 
 document.addEventListener('keydown', function(event) {
     if(document.getElementById('chatbox')){
-        if(document.getElementById('chatbox').style.display !== 'none'){
+        const chatboxStyle = document.getElementById('chatbox').style.display;
+        if (chatboxStyle !== 'none' && chatboxStyle !== '') {
             return;
         }
     }
@@ -565,6 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if(characterdata){
         showAfterLoad(characterdata);
     }
+
 });
 
 

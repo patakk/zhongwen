@@ -547,6 +547,13 @@ def grid():
     return render_template('grid.html', username=session['username'], characters=characters, character=pc, decks=flashcard_app.decks)
 
 
+@app.route('/hanzitest')
+@session_required
+@timing_decorator
+def hanzitest():
+    characters = dict(flashcard_app.cards[session['deck']].items())
+    return render_template('hanzitest.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+
 @app.route('/get_characters')
 @session_required
 def get_characters():
