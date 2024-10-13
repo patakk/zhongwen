@@ -112,12 +112,11 @@
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
-            <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
+            <li id="flashcardsUrl"><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
             <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('welcome') }}">Guide</a></li>
-            <li><a href="{{ url_for('login') }}" id="logoutButton">Logout</a></li>
             <li class="has-submenu">
                 <span>Decks</span>
                 <ul class="submenu">
@@ -133,6 +132,7 @@
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
                 </ul>
             </li>
+            <li><a href="{{ url_for('login') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
 
@@ -141,7 +141,7 @@
         <h1>中文</h1>
         <div class="link-container">
             <a href="{{ url_for('user_progress') }}">my progress</a>
-            <a href="{{ url_for('flashcards') }}">flashcards</a>
+            <a id="flashcardsUrlMain" href="{{ url_for('flashcards') }}">flashcards</a>
             <a href="{{ url_for('grid') }}">grid</a>
             <a href="{{ url_for('lists') }}">example lists</a>
             <a href="{{ url_for('search') }}">search</a>
