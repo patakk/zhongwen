@@ -227,7 +227,7 @@ class FlashcardApp:
         char_progress["difficulty"] = self.calculate_difficulty(char_progress)
         char_progress["next_review"] = self.calculate_next_review_date(char_progress)
         
-        print(f"Character: {character}, Box: {char_progress['box']}, Next review: {char_progress['next_review']}")  # Debug info
+        # print(f"Character: {character}, Box: {char_progress['box']}, Next review: {char_progress['next_review']}")  # Debug info
 
         #self.save_user_progress(username, user_progress)
 
@@ -962,4 +962,4 @@ def debug():
 
 if __name__ == '__main__':
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
-    app.run(host='0.0.0.0', port=5003, debug=True)
+    app.run(host='0.0.0.0', port=5003, debug=debug)
