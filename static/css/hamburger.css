@@ -130,7 +130,18 @@
 }
 
 .dropdown-menu .selected-option {
-    background-color: #ff580a; /* Light gray background */
-    background-color: #f12400; /* Light gray background */
+    background-color: #ff580a;
+    background-color: #f12400;
     color: #ffffff;
+}
+
+#logoutButton {
+    background-color: #cacaca;
+    color: rgb(0, 0, 0);
+    padding: 5px 10px;
+}
+
+#logoutButton:hover {
+    background-color: #ff0000;
+    color: rgb(255, 255, 255);
 }

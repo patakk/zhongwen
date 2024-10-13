@@ -176,6 +176,7 @@
             font-weight: bold;
             color: #fff;
         }
+
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
@@ -209,8 +210,10 @@
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
                 </ul>
             </li>
+            <li><a href="{{ url_for('login') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
+    
 
     <div class="settings-container">
         <form class="settings-form" id="maxCardsForm">
@@ -322,5 +325,8 @@
             });
         }
     </script>
+    <script>
+    </script>
+    
 </body>
 </html>
