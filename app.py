@@ -74,7 +74,7 @@ class FlashcardApp:
         self.REVIEW_INTERVALS = [0, 1, 3, 7, 14, 30]  # days for each box
         self.DIFFICULTY_CAP = 3.0
         self.STREAK_FACTOR = 20
-        self.BASE_NEW_CARDS_LIMIT = 10
+        self.BASE_NEW_CARDS_LIMIT = 20
 
         self.daily_new_cards = {}
         self.last_new_cards_date = {}
