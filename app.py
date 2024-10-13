@@ -311,10 +311,10 @@ class FlashcardApp:
         due_cards = self.get_due_cards(username, deck)
         new_cards = self.get_new_cards(username, deck)
         
-        print('/-------------')
-        print(f"Found {len(due_cards)} due cards for {username} in deck {deck}")
-        print('Due cards:\n   ', due_cards)
-        print('New cards:\n   ', new_cards)
+        # print('/-------------')
+        # print(f"Found {len(due_cards)} due cards for {username} in deck {deck}")
+        # print('Due cards:\n   ', due_cards)
+        # print('New cards:\n   ', new_cards)
 
         card_to_return = None
         attempts = 0
