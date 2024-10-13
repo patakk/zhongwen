@@ -11,12 +11,12 @@
         }
         html, body {
             height: 100%;
+            margin: 0;
+            padding: 0;
             overflow: hidden;
         }
         body {
             font-family: 'Noto Sans Mono', monospace;
-            margin: 0;
-            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,6 +31,11 @@
             border: 2px dashed black;
             overflow-y: auto;
             max-height: 90vh;
+            scrollbar-width: none; /* For Firefox */
+            -ms-overflow-style: none; /* For Internet Explorer and Edge */
+        }
+        .container::-webkit-scrollbar {
+            display: none; /* For Chrome, Safari, and Opera */
         }
         h1 {
             font-family: 'Noto Sans Mono', monospace;
@@ -41,9 +46,11 @@
         ul {
             padding-left: 1.5rem;
         }
-        li {
-            margin-bottom: 0.75rem;
+        li:not(:last-child) {
+            margin-bottom: 20px;
         }
+
+
         .btn-container {
             text-align: center;
             margin-top: 1rem;
@@ -73,12 +80,15 @@
         }
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 0;
                 font-size: 14px;
             }
             .container {
                 width: 95%;
+                height: 80vh; /* Set height to 80% of viewport height on mobile */
+                max-height: none; /* Remove max-height constraint */
                 padding: 1rem;
+                margin: auto; /* Center the container vertically */
             }
             h1 {
                 font-size: 1.2em;
@@ -93,7 +103,14 @@
             background-color: #f9f9f9;
             border: 2px solid #000000;
             padding: 10px;
-            margin-top: 10px;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        
+        
+        .flashcard-guide li:not(:last-child) {
+            margin-bottom: 10px;
         }
 
         .flashcard-guide h4, .flashcard-guide h5 {
@@ -130,6 +147,7 @@
             <li id="loginMenuItem"><a href="{{ url_for('home') }}">Home</a></li>
             <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
             <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
         </ul>
     </div>
@@ -137,26 +155,67 @@
         <h1>Welcome {{ session['username'] }}!</h1>
         <p>here's a quick guide to get you started:</p>
         <ul>
-            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a> - preview characters and their descriptions</li>
-            <li><a href="{{ url_for('lists') }}">Example Lists</a> - learn grammar and characters in context</li>
-            <li><a href="{{ url_for('search') }}">Search</a> - find words (english/hanzi/pinyin supported)</li>
+            <li>
+                <a href="{{ url_for('grid') }}">Hanzi Grid</a> - preview characters and their descriptions
+                <div class="flashcard-guide">
+                    <div>
+                        <ul>
+                            <li>Clicking on the title toggles between grid and list view.</li>
+                            <li>If you start typing, what you type will be searched, and filtered results will be shown</li>
+                            <ul>
+                                <li>Both pinyin and english queries are supported.</li>
+                                <li>Press <strong>Space</strong> to clear the filter.</li>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <a href="{{ url_for('search') }}">Search</a> - find words (english/hanzi/pinyin supported)
+                <div class="flashcard-guide">
+                    <div>
+                        <ul>
+                            <li>The following pinyin formats are supported:</li>
+                            <ul>
+                                <li>tone numbers (e.g. 'ni3 hao3', or ni3 ha3o)</li>
+                                <li>tone marks (e.g. 'nǐ hǎo')</li>
+                                <li>no tones (e.g. 'ni hao')</li>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+            </li>
             <li>
                 <a href="{{ url_for('flashcards') }}">Flashcards</a> - test and learn characters using spaced repetition
                 <div class="flashcard-guide">
-                    <h5>On PC:</h5>
-                    <ul>
-                        <li>Press <strong>Space</strong> to reveal the answer.</li>
-                        <li>Hold <strong>Space</strong> to mark as correct.</li>
-                        <li>Hold <strong>X</strong> to mark as incorrect.</li>
-                        <li>Or, click and hold right side for correct, left side for incorrect.</li>
-                    </ul>
-                    <h5>On Tablet/Phone:</h5>
-                    <ul>
-                        <li>Tap to reveal the answer.</li>
-                        <li>Swipe right to mark as correct.</li>
-                        <li>Swipe left to mark as incorrect.</li>
-                    </ul>
+                    <div id="pc-guide">
+                        <ul>
+                            <li>Press <strong>Space</strong> to reveal the answer.</li>
+                            <li>Hold <strong>Space</strong> to mark as correct.</li>
+                            <li>Hold <strong>X</strong> to mark as incorrect.</li>
+                            <li>Or, click and hold right side of the flashcard for correct, left side for incorrect.</li>
+                        </ul>
+                    </div>
+                    <div id="mobile-guide">
+                        <ul>
+                            <li><strong>Tap</strong> to reveal the answer.</li>
+                            <li>Swipe <strong>right</strong> to mark as correct.</li>
+                            <li>Swipe <strong>left</strong> to mark as incorrect.</li>
+                        </ul>
+                    </div>
                 </div>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('lists') }}">Example Lists</a> - learn grammar and characters in context
+                <!-- <div class="flashcard-guide">
+                    <div>
+                        <ul>
+                            <li>Clicking on the title toggles between grid and list view.</li>
+                            <li>The following pinyin formats are supported:</li>
+                        </ul>
+                    </div>
+                </div> -->
             </li>
         </ul>
         <div class="btn-container">
@@ -170,25 +229,35 @@
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script>
+        
+        function isIPhone(){
+            const ua = navigator.userAgent;
+            if (ua.includes('iPhone')) {
+                return true;
+            }
+            return false;
+        }
+
+        function isiPad(){
+            const ua = navigator.userAgent;
+            if (ua.includes('iPad')) {
+                return true;
+            }
+            return false;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            const toggle = document.createElement('span');
-            toggle.className = 'flashcard-toggle';
-            toggle.textContent = 'Show guide';
-            
-            const flashcardLink = document.querySelector('a[href="{{ url_for("flashcards") }}"]');
-            flashcardLink.parentNode.insertBefore(toggle, flashcardLink.nextSibling);
-    
             const guide = document.querySelector('.flashcard-guide');
-    
-            toggle.addEventListener('click', function() {
-                if (guide.style.display === 'none' || guide.style.display === '') {
-                    guide.style.display = 'block';
-                    toggle.textContent = 'Hide guide';
-                } else {
-                    guide.style.display = 'none';
-                    toggle.textContent = 'Show guide';
-                }
-            });
+            const pcGuide = document.getElementById('pc-guide');
+            const mobileGuide = document.getElementById('mobile-guide');
+
+            // Show/hide appropriate guide based on device
+            if (isIPhone() || isiPad()) {
+                pcGuide.style.display = 'none';
+            } else {
+                mobileGuide.style.display = 'none';
+            }
+            guide.style.display = 'block';
         });
     </script>
 </body>

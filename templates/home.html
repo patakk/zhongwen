@@ -114,8 +114,9 @@
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
             <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
             <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
-            <li><a href="{{ url_for('lists') }}">Topics</a></li>
+            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
             <li class="has-submenu">
                 <span>Decks</span>
                 <ul class="submenu">
@@ -138,11 +139,12 @@
     <div class="home-container">
         <h1>中文</h1>
         <div class="link-container">
-            <a href="{{ url_for('search') }}">search</a>
-            <a href="{{ url_for('grid') }}">grid</a>
-            <a href="{{ url_for('flashcards') }}">flashcards</a>
-            <a href="{{ url_for('lists') }}">lists</a>
             <a href="{{ url_for('user_progress') }}">my progress</a>
+            <a href="{{ url_for('flashcards') }}">flashcards</a>
+            <a href="{{ url_for('grid') }}">grid</a>
+            <a href="{{ url_for('lists') }}">example lists</a>
+            <a href="{{ url_for('search') }}">search</a>
+            <a href="{{ url_for('welcome') }}">guide</a>
         </div>
     </div>
 
