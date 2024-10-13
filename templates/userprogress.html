@@ -302,7 +302,7 @@
 
     <script>
 
-        function changeDeck(deck, func=getNextCard) {
+        function changeDeck(deck, func=null) {
             fetch(`./change_deck?deck=${deck}`, {
                 method: 'POST',
                 headers: {
