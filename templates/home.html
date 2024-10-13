@@ -140,7 +140,7 @@
     <div class="home-container">
         <h1>中文</h1>
         <div class="link-container">
-            <a href="{{ url_for('user_progress') }}">my progress</a>
+            <a id="progressUrl" href="{{ url_for('user_progress') }}">my progress</a>
             <a id="flashcardsUrlMain" href="{{ url_for('flashcards') }}">flashcards</a>
             <a href="{{ url_for('grid') }}">grid</a>
             <a href="{{ url_for('lists') }}">example lists</a>
@@ -155,6 +155,10 @@
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script>
         
+
+        if(username === 'tempuser'){
+            document.getElementById('progressUrl').textContent = 'login';
+        }
 
         function adjustHeight() {
             var vh = window.innerHeight * 0.01;
