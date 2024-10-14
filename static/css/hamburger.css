@@ -118,12 +118,10 @@
     }
 
     .dropdown-menu {
-        position: absolute;
         width: 40vw;
     }
 
     .dropdown-menu ul .submenu {
-        position: absolute;
         width: 40vw;
         left: -41vw;
     }
