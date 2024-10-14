@@ -102,6 +102,17 @@ body {
         width: 95%;
     }
 
+    body {
+        overflow: hidden;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+    h2 {
+        font-size: 16px;
+    }
+
     #answer-table-container {
         max-height: 70vh;
         overflow-y: auto;
@@ -118,5 +129,10 @@ body {
     .pinyin-option {
         padding: 8px 12px;
         font-size: 14px;
+    }
+
+    #character-display {
+        font-size: 62px;
+        margin-bottom: 10px;
     }
 }
