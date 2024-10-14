@@ -674,11 +674,6 @@ def check_records():
         mimetype='application/json'
     )
 
-#@app.route('/logout')
-#def logout():
-#    session.pop('username', None)
-#    return redirect(url_for('login'))
-
 with open('data/examples.json', 'r', encoding='utf-8') as f:
     parsed_data = json.load(f)
 

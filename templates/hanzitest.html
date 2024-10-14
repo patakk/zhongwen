@@ -57,13 +57,13 @@
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
                 </ul>
             </li>
-            <li><a href="{{ url_for('login') }}" id="logoutButton">Logout</a></li>
+            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
 
     <div id="test-container">
         <div id="character-display"></div>
-        <input type="text" id="pinyin-input" placeholder="Enter pinyin (e.g., xiang3)">
+        <input type="text" id="pinyin-input" placeholder="Enter pinyin (e.g., for 想 type in xiang)">
         <button id="submit-btn">Submit</button>
         <div id="progress"></div>
     </div>
