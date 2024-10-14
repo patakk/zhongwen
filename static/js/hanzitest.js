@@ -37,7 +37,6 @@ function startTest() {
 function showNextCharacter() {
     if (currentIndex < Math.min(NUM_QUESTIONS, shuffledCharacters.length)) {
         let character = shuffledCharacters[currentIndex];
-        character = '水'
         characterDisplay.textContent = character;
         pinyinInput.value = '';
         pinyinInput.focus();
@@ -71,7 +70,7 @@ function convertToNumberedPinyin(pinyin) {
 function simplifyPinyin(pinyin, removeAccents = true) {
     if (/[1-4]/.test(pinyin)) {
         // If it contains numbers, convert to accented pinyin
-        return pinyin.toLowerCase()
+        return pinyin.toLowerCase().trim()
             .replace(/a([1-4])/g, match => 'āáǎà'[parseInt(match[1]) - 1])
             .replace(/e([1-4])/g, match => 'ēéěè'[parseInt(match[1]) - 1])
             .replace(/i([1-4])/g, match => 'īíǐì'[parseInt(match[1]) - 1])
@@ -82,7 +81,7 @@ function simplifyPinyin(pinyin, removeAccents = true) {
     } else if (removeAccents) {
         // If it doesn't contain numbers and we want to remove accents
         return pinyin
-            .toLowerCase()
+            .toLowerCase().trim()
             .replace(/[āáǎà]/g, 'a')
             .replace(/[ēéěè]/g, 'e')
             .replace(/[īíǐì]/g, 'i')
@@ -101,7 +100,6 @@ function checkAnswer() {
     const hasNumbers = /[1-4]/.test(userInput);
     const userAnswer = simplifyPinyin(userInput);
     let character = shuffledCharacters[currentIndex];
-    character = '水'
     const correctPinyin = characters[character].pinyin;
     const simplifiedCorrectPinyin = simplifyPinyin(correctPinyin, !hasNumbers);
 
