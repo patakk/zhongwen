@@ -106,3 +106,45 @@ body {
         height: 0;
     }
 }
+
+@media screen and (max-width: 767px) {
+    h1 {
+        font-size: 26px;
+    }
+
+    h2 {
+        margin-top: 10px;
+    }
+
+    #title {
+        margin-top: 40px;
+    }
+    #deck-name {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    #answer-table-container {
+        max-height: 70vh;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        width: 100%;
+    }
+
+    #answer-table-container::-webkit-scrollbar { 
+        width: 0;
+        height: 0;
+    }
+
+    #character-display {
+        font-size: 62px;
+        margin-bottom: 10px;
+    }
+
+    #results {
+        text-align: center;
+        margin: 0 30px;
+    }
+
+}
