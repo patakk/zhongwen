@@ -36,7 +36,8 @@ function startTest() {
 
 function showNextCharacter() {
     if (currentIndex < Math.min(NUM_QUESTIONS, shuffledCharacters.length)) {
-        const character = shuffledCharacters[currentIndex];
+        let character = shuffledCharacters[currentIndex];
+        character = '水'
         characterDisplay.textContent = character;
         pinyinInput.value = '';
         pinyinInput.focus();
@@ -99,11 +100,13 @@ function checkAnswer() {
     const userInput = pinyinInput.value.trim();
     const hasNumbers = /[1-4]/.test(userInput);
     const userAnswer = simplifyPinyin(userInput);
-    const character = shuffledCharacters[currentIndex];
+    let character = shuffledCharacters[currentIndex];
+    character = '水'
     const correctPinyin = characters[character].pinyin;
     const simplifiedCorrectPinyin = simplifyPinyin(correctPinyin, !hasNumbers);
 
     const isCorrect = userAnswer === simplifiedCorrectPinyin;
+    console.log('Correct:', simplifiedCorrectPinyin, 'User:', userAnswer, 'Result:', isCorrect);
 
     userAnswers.push({
         character: character,
