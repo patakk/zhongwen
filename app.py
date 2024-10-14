@@ -311,7 +311,9 @@ class FlashcardApp:
 
         #user_progress = self.load_user_progress(username)
 
+        print('yyy', session['user_progress']["new_cards_limit"])
         due_cards = self.get_due_cards(username, deck)
+        print('xxxx', session['user_progress']["new_cards_limit"])
         new_cards = self.get_new_cards(username, deck)
         
         # print('/-------------')
@@ -319,10 +321,12 @@ class FlashcardApp:
         # print('Due cards:\n   ', due_cards)
         # print('New cards:\n   ', new_cards)
 
+        print('qwrqrqw', session['user_progress']["new_cards_limit"])
         card_to_return = None
         attempts = 0
         max_attempts = 10
         while attempts < max_attempts:
+            print('qwrqrqw', attempts, session['user_progress']["new_cards_limit"])
             if due_cards and new_cards:
                 if random.random() < 0.5:  # 50% chance for due cards
                     print('Selecting from due cards')
@@ -338,7 +342,9 @@ class FlashcardApp:
                 card_to_return = random.choice(new_cards)
             else:
                 print('No due or new cards, increasing new cards limit and selecting random card from deck')
-                session['user_progress']["new_cards_limit"] += session['user_progress']["base_new_cards_limit"]
+                print('qwrqrqw', attempts, session['user_progress']["new_cards_limit"])
+                session['user_progress']["new_cards_limit"] = int(session['user_progress']["new_cards_limit"])
+                session['user_progress']["new_cards_limit"] += int(session['user_progress']["base_new_cards_limit"])
                 session['user_progress']["new_cards_limit_last_updated"] = ''.join([str(s) for s in [datetime.today().year, datetime.today().month, datetime.today().day]])
                 #self.save_user_progress(username, self.user_prog)
                 new_cards = self.get_new_cards(username, deck, force_new_cards=True)
@@ -380,6 +386,7 @@ flashcard_app = FlashcardApp()
 @session_required
 def get_card_data():
     character = request.args.get('character')
+    print('aaa', session['user_progress']["new_cards_limit"])
     if not character:
         character = flashcard_app.select_card(session['username'], session['deck'])
     return  jsonify(packed_data(character))
@@ -430,7 +437,7 @@ def user_progress():
     progress_stats.sort(key=lambda x: (-x['box'], -x['accuracy']))
 
     # print(session['user_progress']["base_new_cards_limit"])
-    return render_template('userprogress.html', username=session.get('username'), deck=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=session['user_progress']["base_new_cards_limit"])
+    return render_template('userprogress.html', username=session.get('username'), deck=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=session['user_progress']["new_cards_limit"])
 
 @app.route('/login', methods=['GET', 'POST'])
 @timing_decorator
@@ -481,7 +488,7 @@ def home():
 @session_required
 def check_session():
     sess = dict(session)
-    sess['progress'] = flashcard_app.load_user_progress(session['username'])
+    # sess['progress'] = flashcard_app.load_user_progress(session['username'])
     return Response(
         json.dumps(sess, ensure_ascii=False, indent=4),
         mimetype='application/json'
@@ -492,9 +499,9 @@ def check_session():
 @hard_session_required
 @timing_decorator
 def flashcards():
-    session['user_progress'] = flashcard_app.load_user_progress(None)
-    print('created new user progress')
-    flashcard_app.save_user_progress(session['username'], session['user_progress'])
+    # session['user_progress'] = flashcard_app.load_user_progress(session['username'])
+    # print('loaded new user progress')
+    # flashcard_app.save_user_progress(session['username'], session['user_progress'])
     return render_template('flashcards.html', username=session['username'], decks=flashcard_app.decks)
 
 @app.route('/pinyinenglish')
@@ -623,7 +630,7 @@ def change_font():
 @app.route('/set_max_cards', methods=['POST'])
 @timing_decorator
 def set_max_cards():
-    session['user_progress']["base_new_cards_limit"] = request.args.get('maxcards')
+    session['user_progress']["base_new_cards_limit"] = int(request.args.get('maxcards'))
     session['user_progress']["new_cards_limit"] = session['user_progress']["base_new_cards_limit"]
     flashcard_app.save_user_progress(session['username'], session['user_progress'])
     print('set', session['user_progress']["base_new_cards_limit"])

@@ -15,6 +15,24 @@
             padding: 20px;
             background-color: white;
             color: black;
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        body {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Ensure the html and body take up full height */
+        html, body {
+            height: 100%;
+            overflow-y: auto;
         }
         .container {
             width: 90%;
