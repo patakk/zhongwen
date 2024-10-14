@@ -37,7 +37,6 @@ function startTest() {
 function showNextCharacter() {
     if (currentIndex < Math.min(NUM_QUESTIONS, shuffledCharacters.length)) {
         let character = shuffledCharacters[currentIndex];
-        character = '水'
         characterDisplay.textContent = character;
         pinyinInput.value = '';
         pinyinInput.focus();
@@ -101,7 +100,6 @@ function checkAnswer() {
     const hasNumbers = /[1-4]/.test(userInput);
     const userAnswer = simplifyPinyin(userInput);
     let character = shuffledCharacters[currentIndex];
-    character = '水'
     const correctPinyin = characters[character].pinyin;
     const simplifiedCorrectPinyin = simplifyPinyin(correctPinyin, !hasNumbers);
 
