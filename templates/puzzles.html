@@ -21,10 +21,10 @@
         }
         
         * {
-            font-family: "Noto Sans Mono", monospace;
-            font-weight: 400;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-weight: 600;
+            font-family: "Noto Sans Mono", monospace;
+            font-weight: 400;
         }
 
         ::selection {
@@ -114,6 +114,8 @@
             height: 1.5em; /* Adjust this value as needed */
             line-height: 1.5;
             overflow: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: 600;
         }
 
         /* Ensure consistent width */
@@ -153,8 +155,9 @@
 
 
     <div class="home-container">
-        <h1 class="toggle-title" data-cn="谜题" data-en="Puzzles">谜题</h1>
+        <h1 class="toggle-title" data-cn="谜题" data-en="Puzzles">Puzzles</h1>
         <div class="link-container">
+            <a href="{{ url_for('hanzitest_fillin') }}">fill in</a>
             <a href="{{ url_for('hanzitest_pinyin') }}">guess pinyin (input)</a>
             <a href="{{ url_for('hanzitest_choices') }}">guess pinyin (choices)</a>
         </div>
@@ -183,11 +186,12 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const title = document.querySelector('.toggle-title');
-            let isEnglish = false;
+            let isEnglish = true;
 
             function toggleTitle() {
                 isEnglish = !isEnglish;
                 title.textContent = isEnglish ? title.dataset.en : title.dataset.cn;
+                title.style.fontWeight = isEnglish ? '600' : '400';
             }
 
             // For desktop

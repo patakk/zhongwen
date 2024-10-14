@@ -16,20 +16,38 @@ body {
     text-align: center;
 }
 
-#character-display {
-    font-size: 72px;
+#example-display {
+    font-size: 24px;
     margin-bottom: 20px;
+    cursor: pointer;
 }
 
-#pinyin-options {
+#example-display .chinese {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+#example-display .chinese q {
+}
+
+#example-display .pinyin {
+    font-size: 18px;
+    color: #000000;
+    margin-top: 10px;
+}
+
+#example-display .pinyin q {
+}
+
+#proposal-options {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-top: 20px;
 }
 
-.pinyin-option {
+.proposal-option {
     padding: 10px 15px;
     font-size: 16px;
     background-color: white;
@@ -40,11 +58,11 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.pinyin-option:hover {
+.proposal-option:hover {
     background-color: #f0f0f0;
 }
 
-.pinyin-option:active {
+.proposal-option:active {
     background-color: #e0e0e0;
 }
 
@@ -82,6 +100,7 @@ body {
 #answer-table {
     width: 100%;
     border-collapse: collapse;
+    border: 3px solid #303030;
 }
 
 #answer-table td {
@@ -132,23 +151,25 @@ body {
         height: 0;
     }
 
-    .pinyin-option {
+    .proposal-option {
         padding: 8px 12px;
         font-size: 14px;
     }
 
-    #character-display {
-        font-size: 62px;
-        margin-bottom: 10px;
+    #example-display {
+        font-size: 20px;
+    }
+
+    #example-display .chinese {
+        font-size: 24px;
+    }
+
+    #example-display .pinyin {
+        font-size: 16px;
     }
 
     #results {
         text-align: center;
         margin: 0 30px;
     }
-
-}
-
-#answer-table {
-    border: 3px solid #303030;
 }

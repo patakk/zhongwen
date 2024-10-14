@@ -165,7 +165,7 @@ pinyinInput.addEventListener('keypress', (e) => {
 restartBtn.addEventListener('click', startTest);
 
 document.addEventListener('DOMContentLoaded', () => {
-    deckNameElement.textContent = `Current Deck: ${inputdeck}`;
+    deckNameElement.textContent = `Current Deck: ${inputdecks[inputdeck].name}`;
     let inputfield = document.getElementById('pinyin-input');
     inputfield.focus();
     startTest();

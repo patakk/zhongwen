@@ -322,7 +322,7 @@ class FlashcardApp:
         print('yyy', session['user_progress']["new_cards_limit"])
         due_cards = self.get_due_cards(username, deck)
         print('xxxx', session['user_progress']["new_cards_limit"])
-        new_cards = self.get_new_cards(username, deck)
+        new_cards = self.get_new_cards(username, deck)[:session['user_progress']["new_cards_limit"]]
         
         # print('/-------------')
         # print(f"Found {len(due_cards)} due cards for {username} in deck {deck}")
@@ -345,14 +345,21 @@ class FlashcardApp:
             elif len(due_cards) > 1:
                 print('Selecting from due cards only')
                 card_to_return = random.choice(due_cards)
+                if len(due_cards) <= min(5, session['user_progress']["new_cards_limit"]):
+                    print('too few due cards, adding new cards')
+                    print(new_cards)
+                    new_cards = self.get_new_cards(username, deck, force_new_cards=True)
+                    print(new_cards)
             elif new_cards:
                 print('Selecting from new cards only')
+                print('new cards len', len(new_cards))
                 card_to_return = random.choice(new_cards)
             else:
                 print('No due or new cards (or only 1 due card), increasing new cards limit and selecting random card from deck')
                 print('qwrqrqw', attempts, session['user_progress']["new_cards_limit"])
                 session['user_progress']["new_cards_limit"] = int(session['user_progress']["new_cards_limit"])
-                session['user_progress']["new_cards_limit"] += int(session['user_progress']["base_new_cards_limit"])
+                # session['user_progress']["new_cards_limit"] += int(session['user_progress']["base_new_cards_limit"])
+                session['user_progress']["new_cards_limit"] = int(session['user_progress']["base_new_cards_limit"])
                 session['user_progress']["new_cards_limit_last_updated"] = ''.join([str(s) for s in [datetime.today().year, datetime.today().month, datetime.today().day]])
                 #self.save_user_progress(username, self.user_prog)
                 new_cards = self.get_new_cards(username, deck, force_new_cards=True)
@@ -600,12 +607,17 @@ def hanzitest_choices():
     return render_template('puzzles/hanzitest_choices.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
 
 
-@app.route('/hanzitest_audio')
+@app.route('/hanzitest_fillin')
 @session_required
 @timing_decorator
-def hanzitest_audio():
+def hanzitest_fillin():
+    if 'fillin' not in session:
+        session['fillin'] = json.load(open('data/fillin_puzzles.json', 'r', encoding='utf-8'))
+    klist = session['fillin']['contextClues']
+    random.shuffle(klist)
+    fillin = {k: session['fillin']['contextClues'][k] for k in range(10)}
     characters = dict(flashcard_app.cards[session['deck']].items())
-    return render_template('puzzles/hanzitest_audio.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('puzzles/hanzitest_fillin.html', fillin=fillin, username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
 
 @app.route('/get_characters')
 @session_required
@@ -659,6 +671,8 @@ def change_font():
 def set_max_cards():
     session['user_progress']["base_new_cards_limit"] = int(request.args.get('maxcards'))
     session['user_progress']["new_cards_limit"] = session['user_progress']["base_new_cards_limit"]
+    cards = flashcard_app.get_new_cards(session['username'], session['deck'])
+    session['user_progress']["daily_new_cards"][session['deck']] = cards
     flashcard_app.save_user_progress(session['username'], session['user_progress'])
     print('set', session['user_progress']["base_new_cards_limit"])
     return jsonify({"message": "changed base new cards limit"})

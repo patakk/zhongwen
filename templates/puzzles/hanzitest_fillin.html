@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🧠</title>
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hanzitest_audio.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hanzitest_fillin.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <style id="dynamic-styles">
@@ -25,7 +25,7 @@
     </style>
 </head>
 <body>
-    <h1 id="title">Test your Hanzi 🧠</h1>
+    <h1 id="title">Fill-in Test 🧠</h1>
     <h2 id="deck-name"></h2>
 
     <div class="hamburger" id="hamburgerMenu">
@@ -33,6 +33,7 @@
         <span></span>
         <span></span>
     </div>
+    
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
@@ -55,8 +56,11 @@
     </div>
 
     <div id="test-container">
-        <div id="character-display"></div>
-        <div id="pinyin-options"></div>
+        <div id="example-display">
+            <div class="chinese"></div>
+            <div class="pinyin" style="opacity: 0;"></div>
+        </div>
+        <div id="proposal-options"></div>
         <div id="progress"></div>
     </div>
 
@@ -68,7 +72,7 @@
             <table id="answer-table">
                 <thead>
                     <tr style="font-weight: bold;">
-                        <td>Character</td>
+                        <td>Example</td>
                         <td>Your Answer</td>
                         <td>Correct Answer</td>
                     </tr>
@@ -83,28 +87,22 @@
     <script>
         const username = {{ username | tojson | safe }};
         const characters = {{ characters | tojson | safe }};
+        const fillin = {{ fillin | tojson | safe }};
         const inputdecks = {{ decks | tojson | safe }};
         const inputdeck = {{ deck | tojson | safe }};
 
-
         function isIPhone(){
             const ua = navigator.userAgent;
-            if (ua.includes('iPhone')) {
-                return true;
-            }
-            return false;
+            return ua.includes('iPhone');
         }
 
         function isiPad(){
             const ua = navigator.userAgent;
-            if (ua.includes('iPad')) {
-                return true;
-            }
-            return false;
+            return ua.includes('iPad');
         }
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/hanzitest_audio.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hanzitest_fillin.js') }}"></script>
 </body>
 </html>
