@@ -421,7 +421,8 @@ def user_progress():
                 'difficulty': char_progress.get('difficulty', 1),
                 'accuracy': round(accuracy, 2),
                 'num_incorrect': char_progress.get('num_incorrect', 1),
-                'next_review': char_progress.get('next_review', 'N/A')
+                'next_review': char_progress.get('next_review', 'N/A'),
+                'is_due': char_progress.get('next_review') and datetime.fromisoformat(char_progress['next_review']) <= datetime.now()
             }
             progress_stats.append(stats)
 

@@ -37,7 +37,7 @@
         th, td {
             padding: 10px;
             text-align: left;
-            border: 1px solid black;
+            border: 2px solid black;
         }
         th {
             font-weight: bold;
@@ -114,15 +114,11 @@
             touch-action: manipulation; /* Improves touch event handling */
         }
 
-        .settings-form button:hover {
-            background-color: black;
-            color: white;
-        }
-
         .settings-form button:active {
             background-color: white;
             color: black;
         }
+
 
         /* For browsers that support :focus-visible */
         .settings-form button:focus:not(:focus-visible) {
@@ -174,9 +170,25 @@
             background-color: #ff3c00; /* Light blue background */
             padding: 2px 5px;
             font-weight: bold;
-            color: #fff;
+            color: 
+            #fff;
         }
 
+        
+        .next-review-date {
+            position: relative;
+            cursor: pointer;
+        }
+        #pinyin-hover-box {
+            position: absolute;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 14px;
+        }
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
@@ -210,7 +222,7 @@
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
                 </ul>
             </li> -->
-            <li><a href="{{ url_for('login') }}" id="logoutButton">Logout</a></li>
+            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
     
@@ -222,36 +234,118 @@
             <button type="submit" id="saveButton">Save</button>
         </form>
     </div>
+    <script>
+        function formatDateTime(dateTimeString) {
+            // Parse the input string
+            const date = new Date(dateTimeString);
+            
+            // Format date
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            
+            // Format time
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            
+            // Combine into a nicely formatted string
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
 
+        function dateToPinyin(formattedDate) {
+            const numbersToPinyin = {
+                '0': 'líng', '1': 'yī', '2': 'èr', '3': 'sān', '4': 'sì', '5': 'wǔ',
+                '6': 'liù', '7': 'qī', '8': 'bā', '9': 'jiǔ', '10': 'shí'
+            };
+
+            function numberToPinyin(num) {
+                num = parseInt(num);
+                if (num <= 10) return numbersToPinyin[num];
+                if (num < 20) return `shí ${numbersToPinyin[num - 10]}`.trim();
+                const tens = Math.floor(num / 10);
+                const ones = num % 10;
+                return `${numbersToPinyin[tens]} shí ${ones ? numbersToPinyin[ones] : ''}`.trim();
+            }
+
+            const monthsToPinyin = {
+                '01': 'yī yuè', '02': 'èr yuè', '03': 'sān yuè', '04': 'sì yuè',
+                '05': 'wǔ yuè', '06': 'liù yuè', '07': 'qī yuè', '08': 'bā yuè',
+                '09': 'jiǔ yuè', '10': 'shí yuè', '11': 'shíyī yuè', '12': 'shí\'èr yuè'
+            };
+
+            const [datePart, timePart] = formattedDate.split(' ');
+            const [year, month, day] = datePart.split('-');
+            const [hour, minute, second] = timePart.split(':');
+
+            const yearPinyin = year.split('').map(digit => numbersToPinyin[digit]).join(' ') + ' nián';
+            const monthPinyin = monthsToPinyin[month];
+            const dayPinyin = numberToPinyin(day) + ' rì';
+            const hourPinyin = numberToPinyin(hour) + ' diǎn';
+            const minutePinyin = numberToPinyin(minute) + ' fēn';
+            const secondPinyin = numberToPinyin(second) + ' miǎo';
+
+            return `${yearPinyin}, ${monthPinyin}, ${dayPinyin}, ${hourPinyin}, ${minutePinyin}, ${secondPinyin}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateCells = document.querySelectorAll('.next-review-date');
+            const hoverBox = document.getElementById('pinyin-hover-box');
+
+            dateCells.forEach(cell => {
+                const originalDate = cell.textContent;
+                const formattedDate = formatDateTime(originalDate);
+                const pinyinDate = dateToPinyin(formattedDate);
+                
+                cell.textContent = formattedDate;
+                
+                cell.addEventListener('mouseover', function(e) {
+                    hoverBox.textContent = pinyinDate;
+                    hoverBox.style.display = 'block';
+                    hoverBox.style.left = `${e.pageX + 10}px`;
+                    hoverBox.style.top = `${e.pageY + 10}px`;
+                });
+
+                cell.addEventListener('mouseout', function() {
+                    hoverBox.style.display = 'none';
+                });
+
+                cell.addEventListener('mousemove', function(e) {
+                    hoverBox.style.left = `${e.pageX + 10}px`;
+                    hoverBox.style.top = `${e.pageY + 10}px`;
+                });
+            });
+        });
+    </script>
     <div class="container">
         <h1>Progress in <span class="deck-highlight">{{ deck }}</span> deck</h1>
         <table>
             <tr>
                 <th>Character</th>
-                <!-- <th>Meaning</th> -->
-                <!-- <th>Pinyin</th> -->
                 <th>Box</th>
                 <th>Difficulty</th>
                 <th>Streak</th>
-                <th>Accuracy</th>
                 <th>Num. Incorrect</th>
                 <th>Next Review</th>
             </tr>
             {% for stat in progress_stats %}
+            {% if stat.box == 1 %}
+            <tr style="border: 3px dashed red; background-color: #f7f7f7;">
+            {% else %}
             <tr>
+            {% endif %}
                 <td class="character">{{ stat.character }}</td>
-                <!-- <td>{{ stat.meaning }}</td> -->
-                <!-- <td>{{ stat.pinyin }}</td> -->
                 <td>{{ stat.box }}</td>
                 <td>{{ stat.difficulty }}</td>
                 <td>{{ stat.streak }}</td>
-                <td>{{ stat.accuracy }}%</td>
                 <td>{{ stat.num_incorrect }}</td>
-                <td>{{ stat.next_review }}</td>
+                <td class="next-review-date">{{ stat.next_review }}</td>
             </tr>
             {% endfor %}
         </table>
     </div>
+    <div id="pinyin-hover-box" style="display: none;"></div>
+
     <script>
         const username = {{ username | tojson | safe }};
         const maxnumcard = {{ maxnumcards | tojson | safe }};
