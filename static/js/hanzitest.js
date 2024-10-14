@@ -144,23 +144,32 @@ function showResults() {
         answerTableBody.appendChild(row);
     });
 }
+submitBtn.addEventListener('click', checkAnswer);
 
 function scrollToTop() {
     setTimeout(() => {
-        window.scrollTo(0, 1);
+        window.scrollTo({
+            top: 1,
+            left: 0,
+            behavior: 'smooth'
+        });
         setTimeout(() => {
-            window.scrollTo(0, 0);
+            window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+            });
         }, 0);
     }, 100);
 }
 
-submitBtn.addEventListener('click', checkAnswer);
 pinyinInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && pinyinInput.value.trim() !== '') {
         checkAnswer();
     }
     scrollToTop();
 });
+
 restartBtn.addEventListener('click', startTest);
 
 document.addEventListener('DOMContentLoaded', () => {
