@@ -10,6 +10,7 @@ import json
 import time
 import os
 import io
+import hashlib
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -150,10 +151,11 @@ class FlashcardApp:
         }
         return loaded_user_prog
 
-    def save_user_progress(self, username, progress):
-        file_path = os.path.join('user_progress', f"{username}.json")
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(progress, f, ensure_ascii=False, indent=2)
+        def save_user_progress(self, username, progress):
+            hashed_username = hashlib.sha256(username.encode()).hexdigest()
+            file_path = os.path.join('user_progress', f"{hashed_username}.json")
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(progress, f, ensure_ascii=False, indent=2)
 
     def get_card_examples(self, deck, character):
         base_data = self.cards[deck].get(character, {})
@@ -579,6 +581,13 @@ def grid():
 def hanzitest():
     characters = dict(flashcard_app.cards[session['deck']].items())
     return render_template('hanzitest.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+
+@app.route('/hanzisimpletest')
+@session_required
+@timing_decorator
+def hanzisimpletest():
+    characters = dict(flashcard_app.cards[session['deck']].items())
+    return render_template('hanzisimpletest.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
 
 @app.route('/get_characters')
 @session_required
