@@ -152,6 +152,7 @@ pinyinInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && pinyinInput.value.trim() !== '') {
         checkAnswer();
     }
+    window.scrollTo(0, 0);
 });
 restartBtn.addEventListener('click', startTest);
 
