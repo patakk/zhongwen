@@ -239,7 +239,6 @@ function showFlashcard(character) {
         .then(data => {
             renderCardData(data);
             displayCard(true, true);
-
             // recordView(character);
         })
         .catch(error => {
@@ -407,9 +406,13 @@ function getDeck() {
         });
 }
 
+
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
-        overlay.style.display = 'none';
+        // overlay.style.display = 'none';
+        
+        scrollToTop(document.getElementById('flashcard_container'), () => {overlay.style.display = 'none';});
+
         // document.getElementById('font-select').style.top = '45px';
         // document.getElementById('font-select').style.marginTop = '15px';
         // document.getElementById('deck-select').style.display = 'block';
@@ -477,6 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if(characterdata){
         showAfterLoad(characterdata);
+        scrollToTop(document.getElementById('flashcard_container'));
     }
 
 });

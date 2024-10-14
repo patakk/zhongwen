@@ -124,7 +124,6 @@ function renderCardData(data) {
             writers.push(writer);
         });
     }
-    container.scrollTop = 0;
     currentCharacter = data.character;
     // try
 
@@ -139,6 +138,18 @@ function renderCardData(data) {
     catch (e) {
         console.log(e);
     }
+}
+
+
+function scrollToTop(element, func=null) {
+    setTimeout(() => {
+        element.scrollTo(0, 1);
+        if(func)
+            func();
+        setTimeout(() => {
+            element.scrollTo(0, 0);
+        }, 0);
+    }, 22);
 }
 
 function displayCard(showAnswer=true, showPinyin=true) {
