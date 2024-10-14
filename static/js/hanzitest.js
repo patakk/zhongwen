@@ -67,38 +67,59 @@ function convertToNumberedPinyin(pinyin) {
 }
 
 
-function simplifyPinyin(pinyin) {
-    return pinyin
-        .toLowerCase()
-        .replace(/[āáǎà]/g, 'a')
-        .replace(/[ēéěè]/g, 'e')
-        .replace(/[īíǐì]/g, 'i')
-        .replace(/[ōóǒò]/g, 'o')
-        .replace(/[ūúǔù]/g, 'u')
-        .replace(/[ǖǘǚǜü]/g, 'v')
-        .replace(/\s+/g, '');
+function simplifyPinyin(pinyin, removeAccents = true) {
+    if (/[1-4]/.test(pinyin)) {
+        // If it contains numbers, convert to accented pinyin
+        return pinyin.toLowerCase()
+            .replace(/a([1-4])/g, match => 'āáǎà'[parseInt(match[1]) - 1])
+            .replace(/e([1-4])/g, match => 'ēéěè'[parseInt(match[1]) - 1])
+            .replace(/i([1-4])/g, match => 'īíǐì'[parseInt(match[1]) - 1])
+            .replace(/o([1-4])/g, match => 'ōóǒò'[parseInt(match[1]) - 1])
+            .replace(/u([1-4])/g, match => 'ūúǔù'[parseInt(match[1]) - 1])
+            .replace(/v([1-4])/g, match => 'ǖǘǚǜ'[parseInt(match[1]) - 1])
+            .replace(/\s+/g, '');
+    } else if (removeAccents) {
+        // If it doesn't contain numbers and we want to remove accents
+        return pinyin
+            .toLowerCase()
+            .replace(/[āáǎà]/g, 'a')
+            .replace(/[ēéěè]/g, 'e')
+            .replace(/[īíǐì]/g, 'i')
+            .replace(/[ōóǒò]/g, 'o')
+            .replace(/[ūúǔù]/g, 'u')
+            .replace(/[ǖǘǚǜü]/g, 'v')
+            .replace(/\s+/g, '');
+    } else {
+        // If it doesn't contain numbers and we want to keep accents
+        return pinyin.toLowerCase().replace(/\s+/g, '');
+    }
 }
 
 function checkAnswer() {
-    const userAnswer = simplifyPinyin(pinyinInput.value.trim());
+    const userInput = pinyinInput.value.trim();
+    const hasNumbers = /[1-4]/.test(userInput);
+    const userAnswer = simplifyPinyin(userInput);
     const character = shuffledCharacters[currentIndex];
     const correctPinyin = characters[character].pinyin;
-    const simplifiedCorrectPinyin = simplifyPinyin(correctPinyin);
+    const simplifiedCorrectPinyin = simplifyPinyin(correctPinyin, !hasNumbers);
+
+    const isCorrect = userAnswer === simplifiedCorrectPinyin;
 
     userAnswers.push({
         character: character,
-        userAnswer: pinyinInput.value.trim(),
+        userAnswer: userInput,
         correctAnswer: correctPinyin,
-        isCorrect: userAnswer === simplifiedCorrectPinyin
+        isCorrect: isCorrect
     });
 
-    if (userAnswer === simplifiedCorrectPinyin) {
+    if (isCorrect) {
         correctAnswers++;
     }
 
     currentIndex++;
     showNextCharacter();
 }
+
 
 // Modify the showResults function
 function showResults() {
