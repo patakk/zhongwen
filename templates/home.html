@@ -173,6 +173,11 @@
         window.addEventListener('orientationchange', adjustHeight);
         adjustHeight();
         
+
+        if(username === 'tempuser'){
+            let flashcardsUrlMain = document.getElementById('flashcardsUrlMain');
+            flashcardsUrlMain.style.display = 'none';
+        }
     </script>
 </body>
 </html>

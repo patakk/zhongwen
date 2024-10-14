@@ -184,8 +184,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if(username === 'tempuser'){
         let logoutbutton = document.getElementById('logoutButton');
         let flashcardsUrl = document.getElementById('flashcardsUrl');
-        let flashcardsUrlMain = document.getElementById('flashcardsUrlMain');
-        flashcardsUrlMain.style.display = 'none';
         flashcardsUrl.style.display = 'none';
         logoutbutton.style.display = 'none';
     }
