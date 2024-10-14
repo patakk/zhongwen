@@ -150,7 +150,12 @@ function createGrid(characters, useAllDecks){
             <span class="grid-pinyin">${charData.pinyin}</span>
         `;
         gridItem.setAttribute('data-length', charData.character.length);
-        gridItem.addEventListener('click', () => showFlashcard(charData.character));
+        gridItem.addEventListener('click', () => {
+            showFlashcard(charData.character); 
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('query', charData.character);
+            history.pushState({}, '', newUrl);
+        });
         grid.appendChild(gridItem);
         charCounter++;
     });

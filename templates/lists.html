@@ -30,7 +30,7 @@
             <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('welcome') }}">Guide</a></li>
-            <li><a href="{{ url_for('login') }}" id="logoutButton">Logout</a></li>
+            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
 
@@ -72,7 +72,6 @@
         </ul>
         {% endfor %}
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);

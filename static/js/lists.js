@@ -71,11 +71,11 @@ function showFlashcard(hanzi, pinyin, english) {
 
     let titleHtml = `
         <div class="title-wrapper">
-            <h2 class="title">${hanzi[0]}</h2>
+            <div class="title">${hanzi[0]}</div>
         </div>
     `;
     document.querySelector('.title').outerHTML = titleHtml;
-    document.querySelector('.title').style.fontFamily = `"${currentFont}", sans-serif`;
+    // document.querySelector('.title').style.fontFamily = `"${currentFont}", sans-serif`;
 
     currentHanzi = hanzi;
     currentPinyin = pinyin;
@@ -268,7 +268,7 @@ function getFont() {
             console.log('received font', currentFont);
             document.getElementById('font-select').value = currentFont;
             document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
-            document.querySelector('.title').style.fontFamily = `"${currentFont}", sans-serif`;
+            // document.querySelector('.title').style.fontFamily = `"${currentFont}", sans-serif`;
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);

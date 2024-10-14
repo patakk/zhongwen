@@ -164,6 +164,7 @@ li:hover {
     padding: 20px;
 }
 
+
 #flashcard_container {
     background-color: white;
     padding: 20px;
@@ -390,8 +391,10 @@ and (max-device-width : 1024px) {
 .title {
     text-align: center;
     font-size: 32px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     margin: 10px 0px;
 }
+
 .title-container {
     display: flex;
     align-items: center;
@@ -434,4 +437,10 @@ h2 {
     h1 {
         font-size: 2.4em;
     }
+}
+
+
+.title {
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: 600;
 }
