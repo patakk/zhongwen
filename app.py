@@ -151,11 +151,17 @@ class FlashcardApp:
         }
         return loaded_user_prog
 
-        def save_user_progress(self, username, progress):
-            hashed_username = hashlib.sha256(username.encode()).hexdigest()
-            file_path = os.path.join('user_progress', f"{hashed_username}.json")
-            with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(progress, f, ensure_ascii=False, indent=2)
+    # def save_user_progress(self, username, progress):
+    #     hashed_username = hashlib.sha256(username.encode()).hexdigest()
+    #     file_path = os.path.join('user_progress', f"{hashed_username}.json")
+    #     with open(file_path, 'w', encoding='utf-8') as f:
+    #         json.dump(progress, f, ensure_ascii=False, indent=2)
+
+    
+    def save_user_progress(self, username, progress):
+        file_path = os.path.join('user_progress', f"{username}.json")
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(progress, f, ensure_ascii=False, indent=2)
 
     def get_card_examples(self, deck, character):
         base_data = self.cards[deck].get(character, {})
