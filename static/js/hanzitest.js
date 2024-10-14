@@ -145,14 +145,21 @@ function showResults() {
     });
 }
 
-
+function scrollToTop() {
+    setTimeout(() => {
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+        }, 0);
+    }, 100);
+}
 
 submitBtn.addEventListener('click', checkAnswer);
 pinyinInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && pinyinInput.value.trim() !== '') {
         checkAnswer();
     }
-    window.scrollTo(0, 0);
+    scrollToTop();
 });
 restartBtn.addEventListener('click', startTest);
 
