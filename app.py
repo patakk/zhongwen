@@ -624,6 +624,7 @@ def change_font():
 @timing_decorator
 def set_max_cards():
     session['user_progress']["base_new_cards_limit"] = request.args.get('maxcards')
+    session['user_progress']["new_cards_limit"] = session['user_progress']["base_new_cards_limit"]
     flashcard_app.save_user_progress(session['username'], session['user_progress'])
     print('set', session['user_progress']["base_new_cards_limit"])
     return jsonify({"message": "changed base new cards limit"})
