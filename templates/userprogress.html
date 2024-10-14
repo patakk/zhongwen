@@ -208,6 +208,17 @@
             z-index: 1000;
             font-size: 14px;
         }
+
+        a {
+            text-decoration: none;
+            color: #110000;
+        }
+
+        .tooltip-header {
+            position: relative;
+            cursor: help;
+        }
+
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
@@ -340,12 +351,12 @@
         <h1>Progress in <span class="deck-highlight">{{ deck }}</span> deck</h1>
         <table>
             <tr>
-                <th>Character</th>
-                <th>Box</th>
-                <th>Difficulty</th>
-                <th>Streak</th>
-                <th>Num. Incorrect</th>
-                <th>Next Review</th>
+                <th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th>
+                <th class="tooltip-header" data-tooltip="Current learning stage of the character (1-5)">Box</th>
+                <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th>
+                <th class="tooltip-header" data-tooltip="Number of consecutive correct answers">Streak</th>
+                <th class="tooltip-header" data-tooltip="Total number of incorrect answers for this character">Num. Incorrect</th>
+                <th class="tooltip-header" data-tooltip="Scheduled date and time for the next review">Next Review</th>
             </tr>
             {% for stat in progress_stats %}
             {% if stat.box == 1 %}
@@ -353,7 +364,9 @@
             {% else %}
             <tr>
             {% endif %}
-                <td style="text-align: left;" class="character">{{ stat.character }}</td>
+                <td style="text-align: left;" class="character">
+                    <a href="/grid?query={{ stat.character }}">{{ stat.character }}</a>
+                </td>
                 <td style="text-align: right;">{{ stat.box }}</td>
                 <td style="text-align: right;">{{ stat.difficulty }}</td>
                 <td style="text-align: right;">{{ stat.streak }}</td>
@@ -439,7 +452,57 @@
         }
     </script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltipHeaders = document.querySelectorAll('.tooltip-header');
+            const dateCells = document.querySelectorAll('.next-review-date');
+            const hoverBox = document.getElementById('pinyin-hover-box');
+    
+            function showTooltip(element, content, event) {
+                hoverBox.textContent = content;
+                hoverBox.style.display = 'block';
+                hoverBox.style.left = `${event.pageX + 10}px`;
+                hoverBox.style.top = `${event.pageY + 10}px`;
+            }
+    
+            function hideTooltip() {
+                hoverBox.style.display = 'none';
+            }
+    
+            tooltipHeaders.forEach(header => {
+                header.addEventListener('mouseover', function(e) {
+                    const tooltip = this.getAttribute('data-tooltip');
+                    showTooltip(this, tooltip, e);
+                });
+    
+                header.addEventListener('mouseout', hideTooltip);
+    
+                header.addEventListener('mousemove', function(e) {
+                    hoverBox.style.left = `${e.pageX + 10}px`;
+                    hoverBox.style.top = `${e.pageY + 10}px`;
+                });
+            });
+    
+            dateCells.forEach(cell => {
+                const originalDate = cell.textContent;
+                const formattedDate = formatDateTime(originalDate);
+                const pinyinDate = dateToPinyin(formattedDate);
+                
+                cell.textContent = formattedDate;
+                
+                cell.addEventListener('mouseover', function(e) {
+                    showTooltip(this, pinyinDate, e);
+                });
+    
+                cell.addEventListener('mouseout', hideTooltip);
+    
+                cell.addEventListener('mousemove', function(e) {
+                    hoverBox.style.left = `${e.pageX + 10}px`;
+                    hoverBox.style.top = `${e.pageY + 10}px`;
+                });
+            });
+        });
     </script>
+    
     
 </body>
 </html>
