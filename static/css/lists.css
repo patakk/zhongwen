@@ -14,7 +14,7 @@ html, body {
 body {
     font-family: "Nunito Sans", sans-serif;
     font-family: "Crimson Pro", serif;
-    font-family: "Noto Sans Mono", monospace;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 400;
     margin: 0;
     font-style: normal;
@@ -27,7 +27,7 @@ body {
     width: 90%;
     max-width: 600px;
     border: 2px dashed black;
-    padding: 20px;
+    padding: 40px;
     display: flex;
     flex-direction: column;
     align-items: left;
@@ -45,7 +45,7 @@ body {
     .container {
         width: 90%;
         height: 85%;
-        padding: 20px;
+        padding: 25px;
     }
 }
 
@@ -416,4 +416,22 @@ and (max-device-width : 1024px) {
 
 .listlist {
     cursor: pointer;
+}
+
+h1 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-transform: capitalize;
+    font-size: 3em;
+}
+
+h2 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-transform: capitalize;
+}
+
+
+@media screen and (max-width: 768px) {
+    h1 {
+        font-size: 2.4em;
+    }
 }

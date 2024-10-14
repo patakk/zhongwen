@@ -76,7 +76,8 @@ body {
     height: 0;
 }
 h1 {
-    font-size: 36px;
+    font-size: 3em;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     margin-bottom: 20px;
     color: black;
     text-align: center;
@@ -168,6 +169,10 @@ input[type="submit"]:hover {
 
     .results {
         padding: 0 5px; /* Reduce padding */
+    }
+
+    h1 {
+        font-size: 2.4em;
     }
 
     .result-item {

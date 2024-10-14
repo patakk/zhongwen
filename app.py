@@ -394,7 +394,6 @@ flashcard_app = FlashcardApp()
 @session_required
 def get_card_data():
     character = request.args.get('character')
-    print('aaa', session['user_progress']["new_cards_limit"])
     if not character:
         character = flashcard_app.select_card(session['username'], session['deck'])
     return  jsonify(packed_data(character))
@@ -574,26 +573,39 @@ def grid():
         characters = list(flashcard_app.cards[session['deck']].keys())
         print(f"Initial characters: {len(characters)}")  # Debug print
         return render_template('grid.html', username=session['username'], characters=characters, character=None, decks=flashcard_app.decks)
-    
     pc = packed_data(character)
     characters = list(flashcard_app.cards[pc['deck']].keys())
-    print(len(characters))
     return render_template('grid.html', username=session['username'], characters=characters, character=pc, decks=flashcard_app.decks)
 
 
-@app.route('/hanzitest')
+@app.route('/puzzles')
 @session_required
 @timing_decorator
-def hanzitest():
+def puzzles():
     characters = dict(flashcard_app.cards[session['deck']].items())
-    return render_template('hanzitest.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('puzzles.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
 
-@app.route('/hanzisimpletest')
+@app.route('/hanzitest_pinyin')
 @session_required
 @timing_decorator
-def hanzisimpletest():
+def hanzitest_pinyin():
     characters = dict(flashcard_app.cards[session['deck']].items())
-    return render_template('hanzisimpletest.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('puzzles/hanzitest_pinyin.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+
+@app.route('/hanzitest_choices')
+@session_required
+@timing_decorator
+def hanzitest_choices():
+    characters = dict(flashcard_app.cards[session['deck']].items())
+    return render_template('puzzles/hanzitest_choices.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+
+
+@app.route('/hanzitest_audio')
+@session_required
+@timing_decorator
+def hanzitest_audio():
+    characters = dict(flashcard_app.cards[session['deck']].items())
+    return render_template('puzzles/hanzitest_audio.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
 
 @app.route('/get_characters')
 @session_required

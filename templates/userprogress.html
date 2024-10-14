@@ -10,7 +10,7 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Noto Sans Mono', monospace;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: white;
@@ -43,9 +43,10 @@
             border: 2px dashed black;
         }
         h1 {
-            font-family: 'Noto Sans Mono', monospace;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             color: #333;
-            font-size: 24px;
+            font-size: 34px;
+            margin-top: 0px;
         }
         table {
             width: 100%;
@@ -352,12 +353,12 @@
             {% else %}
             <tr>
             {% endif %}
-                <td class="character">{{ stat.character }}</td>
-                <td>{{ stat.box }}</td>
-                <td>{{ stat.difficulty }}</td>
-                <td>{{ stat.streak }}</td>
-                <td>{{ stat.num_incorrect }}</td>
-                <td class="next-review-date">{{ stat.next_review }}</td>
+                <td style="text-align: left;" class="character">{{ stat.character }}</td>
+                <td style="text-align: right;">{{ stat.box }}</td>
+                <td style="text-align: right;">{{ stat.difficulty }}</td>
+                <td style="text-align: right;">{{ stat.streak }}</td>
+                <td style="text-align: right;">{{ stat.num_incorrect }}</td>
+                <td style="text-align: right;" class="next-review-date">{{ stat.next_review }}</td>
             </tr>
             {% endfor %}
         </table>

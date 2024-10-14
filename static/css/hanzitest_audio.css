@@ -1,0 +1,154 @@
+* {
+    font-family: 'Noto Sans Mono', monospace;
+}
+
+body {
+    font-family: 'Noto Sans Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+#test-container {
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+#character-display {
+    font-size: 72px;
+    margin-bottom: 20px;
+}
+
+#pinyin-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.pinyin-option {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pinyin-option:hover {
+    background-color: #f0f0f0;
+}
+
+.pinyin-option:active {
+    background-color: #e0e0e0;
+}
+
+#restart-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#progress {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+#results {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#deck-name {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#answer-table-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+#answer-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#answer-table td {
+    padding: 8px;
+    border: 2px solid #444444;
+}
+
+.correct-row {
+    background-color: #d4edda;
+}
+
+.incorrect-row {
+    background-color: #f8d7da;
+}
+
+@media screen and (max-width: 767px) {
+    #test-container {
+        width: 95%;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    h2 {
+        margin-top: 10px;
+    }
+
+    #title {
+        margin-top: 40px;
+    }
+
+    #deck-name {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    #answer-table-container {
+        max-height: 70vh;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        width: 100%;
+    }
+
+    #answer-table-container::-webkit-scrollbar { 
+        width: 0;
+        height: 0;
+    }
+
+    .pinyin-option {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    #character-display {
+        font-size: 62px;
+        margin-bottom: 10px;
+    }
+
+    #results {
+        text-align: center;
+        margin: 0 30px;
+    }
+
+}
+
+#answer-table {
+    border: 3px solid #303030;
+}

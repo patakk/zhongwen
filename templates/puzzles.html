@@ -20,6 +20,12 @@
             overflow: hidden;
         }
         
+        * {
+            font-family: "Noto Sans Mono", monospace;
+            font-weight: 400;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: 600;
+        }
 
         ::selection {
             background-color: rgb(255, 66, 28);
@@ -27,10 +33,6 @@
         
 
         body {
-            font-family: "Nunito Sans", sans-serif;
-            font-family: "Crimson Pro", serif;
-            font-family: "Noto Sans Mono", monospace;
-            font-weight: 400;
             font-style: normal;
             display: flex;
             justify-content: center;
@@ -59,7 +61,7 @@
             align-items: center;
         }
         a {
-            width: 200px;
+            width: 300px;
             padding: 10px;
             margin: 10px 0;
             background-color: white;
@@ -80,14 +82,15 @@
         }
 
         
-        a {
-            text-transform: lowercase;
-        }
 
         @media screen and (max-width: 768px) {
             .home-container {
                 /* height: 60%; */
                 padding: 30px;
+            }
+
+            h1 {
+                font-size: 30px;
             }
 
             a {
@@ -102,10 +105,30 @@
                 font-size: 14px;
                 
             }
-            
-            a {
-                text-transform: lowercase;
-            }
+        }
+
+        .toggle-title {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            height: 1.5em; /* Adjust this value as needed */
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        /* Ensure consistent width */
+        .toggle-title::before {
+            content: attr(data-cn);
+            visibility: hidden;
+            height: 0;
+            position: absolute;
+            white-space: nowrap;
+        }
+
+        /* For better font rendering */
+        .toggle-title {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
     </style>
@@ -130,14 +153,10 @@
 
 
     <div class="home-container">
-        <h1>中文</h1>
+        <h1 class="toggle-title" data-cn="谜题" data-en="Puzzles">谜题</h1>
         <div class="link-container">
-            <a id="progressUrl" href="{{ url_for('user_progress') }}">my progress</a>
-            <a id="flashcardsUrlMain" href="{{ url_for('flashcards') }}">flashcards</a>
-            <a href="{{ url_for('grid') }}">grid</a>
-            <a href="{{ url_for('lists') }}">example lists</a>
-            <a href="{{ url_for('search') }}">search</a>
-            <a href="{{ url_for('welcome') }}">guide</a>
+            <a href="{{ url_for('hanzitest_pinyin') }}">guess pinyin (input)</a>
+            <a href="{{ url_for('hanzitest_choices') }}">guess pinyin (choices)</a>
         </div>
     </div>
 
@@ -147,10 +166,6 @@
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script>
         
-
-        if(username === 'tempuser'){
-            document.getElementById('progressUrl').textContent = 'login';
-        }
 
         function adjustHeight() {
             var vh = window.innerHeight * 0.01;
@@ -166,10 +181,29 @@
         adjustHeight();
         
 
-        if(username === 'tempuser'){
-            let flashcardsUrlMain = document.getElementById('flashcardsUrlMain');
-            flashcardsUrlMain.style.display = 'none';
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const title = document.querySelector('.toggle-title');
+            let isEnglish = false;
+
+            function toggleTitle() {
+                isEnglish = !isEnglish;
+                title.textContent = isEnglish ? title.dataset.en : title.dataset.cn;
+            }
+
+            // For desktop
+            title.addEventListener('mouseenter', toggleTitle);
+            title.addEventListener('mouseleave', toggleTitle);
+
+            // For mobile
+            title.addEventListener('click', function(e) {
+                // Prevent double-triggering on desktop
+                if (e.pointerType !== 'mouse') {
+                    toggleTitle();
+                }
+            });
+        });
+
+
     </script>
 </body>
 </html>

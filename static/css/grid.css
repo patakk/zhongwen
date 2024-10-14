@@ -352,15 +352,6 @@ and (orientation: landscape) {
 }
 
 
-@media (max-width: 768px) {
-    h1 {
-        text-align: left;
-        width: 90%;
-        font-size: 20px;
-        padding: 20px 0px;
-    }
-}
-
 ::selection {
     background-color: #000;
     color: #fff;
@@ -608,6 +599,23 @@ and (orientation: landscape) {
     font-size: 25px;
 }
 
+
+#title {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+
+#title_word_count {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1em;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+
+
 @media (max-width: 768px) {
     .lgrid-wrapper {
         display: grid;
@@ -617,6 +625,27 @@ and (orientation: landscape) {
     }
     .lgrid-item {
         padding: 4px;
+    }
+
+    #title_word_count {
+        text-align: left;
+        font-size: 1em;
+        width: 95%;
+        margin-top: 0;
+        padding-bottom: 15px;
+        
+        /* text-align: left;
+        width: 90%;
+        font-size: 20px;
+        padding: 20px 0px; */
+    }
+
+    #title {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 2.4em;
+        padding-bottom: 0px;
+        text-align: left;
+        width: 95%;
     }
 
     .pinyin-english-item {

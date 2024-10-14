@@ -95,7 +95,7 @@
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 20px;
+    padding: 40px;
     box-sizing: border-box;
     overflow-x: hidden;
     transition: transform 0.2s, background-color 0.7s;
@@ -138,7 +138,7 @@
     #flashcard_container {
         width: 90%;
         height: 80%;
-        padding: 10px;
+        padding: 20px;
     }
 
     #flashcard_character {
