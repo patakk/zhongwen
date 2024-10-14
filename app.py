@@ -334,14 +334,14 @@ class FlashcardApp:
                 else:
                     print('Selecting from new cards')
                     card_to_return = random.choice(new_cards)
-            elif due_cards:
+            elif len(due_cards) > 1:
                 print('Selecting from due cards only')
                 card_to_return = random.choice(due_cards)
             elif new_cards:
                 print('Selecting from new cards only')
                 card_to_return = random.choice(new_cards)
             else:
-                print('No due or new cards, increasing new cards limit and selecting random card from deck')
+                print('No due or new cards (or only 1 due card), increasing new cards limit and selecting random card from deck')
                 print('qwrqrqw', attempts, session['user_progress']["new_cards_limit"])
                 session['user_progress']["new_cards_limit"] = int(session['user_progress']["new_cards_limit"])
                 session['user_progress']["new_cards_limit"] += int(session['user_progress']["base_new_cards_limit"])
