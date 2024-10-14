@@ -146,20 +146,30 @@ function showResults() {
 }
 submitBtn.addEventListener('click', checkAnswer);
 
+let hastimeout = null;
+
 function scrollToTop() {
-    setTimeout(() => {
+    if (hastimeout !== null) {
+        clearTimeout(hastimeout);
+    }
+    
+    hastimeout = setTimeout(() => {
         window.scrollTo({
             top: 1,
             left: 0,
             behavior: 'smooth'
         });
+        
         setTimeout(() => {
             window.scrollTo({
                 top: 0,
                 left: 0,
                 behavior: 'smooth'
             });
-        }, 0);
+            
+            // Reset hastimeout after scrolling is complete
+            hastimeout = null;
+        }, 100); // Increased from 0 to give more time for the first scroll to complete
     }, 100);
 }
 
@@ -167,8 +177,9 @@ pinyinInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && pinyinInput.value.trim() !== '') {
         checkAnswer();
     }
-    scrollToTop();
+    scrollToTop(); // Always attempt to scroll, the function will handle whether to actually scroll or not
 });
+
 
 restartBtn.addEventListener('click', startTest);
 
