@@ -1032,7 +1032,7 @@ def debug():
 
 
 @app.route('/home')
-def debug():
+def home():
     return redirect(url_for('/'))
 
 if __name__ == '__main__':
