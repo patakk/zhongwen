@@ -1033,7 +1033,7 @@ def debug():
 
 @app.route('/home')
 def home2():
-    return redirect(url_for('/'))
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
