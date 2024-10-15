@@ -114,6 +114,10 @@ document.addEventListener('keydown', function(event) {
     if(!showingAnswer){
         showingAnswer = true;
         displayCard(true, true);
+        let chars = document.querySelectorAll('.clickable-char');
+        chars.forEach((char) => {
+            toneTextColor(char);
+        });
         return;
     }
     else if ((event.code === 'Space' || event.keyCode === 32 || event.key.toLowerCase() === 'x') && showingAnswer) {
@@ -215,6 +219,11 @@ document.getElementById('flashcard_container').addEventListener('mouseup', funct
         if(!showingAnswer){
             showingAnswer = true;
             displayCard(true, true);
+            
+            let chars = document.querySelectorAll('.clickable-char');
+            chars.forEach((char) => {
+                toneTextColor(char);
+            });
         }
     }
     
