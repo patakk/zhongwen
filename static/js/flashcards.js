@@ -138,7 +138,7 @@ document.addEventListener('keydown', function(event) {
                 recordAnswer(true);
             }
             flashcard.style.backgroundColor = neutralColor;
-        }, 500);   
+        }, 200);   
     }
 }, false);
 
