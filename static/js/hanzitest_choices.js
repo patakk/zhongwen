@@ -58,7 +58,8 @@ function generatePinyinOptions(character) {
         }
     }
 
-    shuffleArray(options);
+    // Sort options alphabetically
+    options.sort((a, b) => a.localeCompare(b));
 
     pinyinOptions.innerHTML = '';
     options.forEach(option => {
@@ -69,6 +70,7 @@ function generatePinyinOptions(character) {
         pinyinOptions.appendChild(button);
     });
 }
+
 
 function checkAnswer(selectedPinyin) {
     let character = shuffledCharacters[currentIndex];
