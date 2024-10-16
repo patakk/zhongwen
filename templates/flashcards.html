@@ -53,10 +53,11 @@
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
                 </ul>
             </li>
-            <li><a href="{{ url_for('login') }}" id="logoutButton">Logout</a></li>
+            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
 
+    <div id="indicator"></div>
     <div id="flashcard_container">
         <div id="flashcard_character"></div>
         <div id="flashcard_pinyin"></div>
@@ -76,9 +77,73 @@
     <script>
         const username = {{ username | tojson | safe }};
     </script>
+    <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/border.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/flashcards.js') }}"></script>
     <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
+    
+    <script>
+
+const sourceCanvas = document.createElement('canvas');
+    sourceCanvas.width = 400;
+    sourceCanvas.height = 400;
+    sourceCanvas.style.width = '300px';
+    sourceCanvas.style.height = '300px';
+    document.body.appendChild(sourceCanvas);
+
+    const sourceCtx = sourceCanvas.getContext('2d');
+    sourceCtx.fillStyle = 'white';
+    sourceCtx.fillRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+    sourceCtx.fillStyle = 'black';
+    sourceCtx.font = '150px Arial';
+    sourceCtx.textAlign = 'center';
+    sourceCtx.textBaseline = 'middle';
+    sourceCtx.fillText('喜', sourceCanvas.width / 2, sourceCanvas.height / 2);
+
+    // Create and set up the dot canvas
+    const dotCanvas = document.createElement('canvas');
+    dotCanvas.width = 400;
+    dotCanvas.height = 400;
+    dotCanvas.style.width = '300px';
+    dotCanvas.style.height = '300px';
+    document.body.appendChild(dotCanvas);
+
+    const dotCtx = dotCanvas.getContext('2d');
+    dotCtx.fillStyle = 'white';
+    dotCtx.fillRect(0, 0, dotCanvas.width, dotCanvas.height);
+
+    // Get image data from source canvas
+    const imageData = sourceCtx.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
+    const data = imageData.data;
+
+    // Render dots based on source image
+    const dotSize = 1.4;
+    const spacing = 1;
+
+    for (let y = 0; y < sourceCanvas.height; y += spacing) {
+        for (let x = 0; x < sourceCanvas.width; x += spacing) {
+            const i = (y * sourceCanvas.width + x) * 4;
+            if (data[i] < 128) {  // If pixel is dark (assuming grayscale)
+                let xx = x + spacing*1*(-.5 + Math.random());
+                let yy = y + spacing*1*(-.5 + Math.random())*y / sourceCanvas.height*10;
+                let ddotSize = dotSize + .5*(-.5 + Math.random());
+                
+                let randombrightness = Math.random() * 22;
+                if(Math.random() < .03){
+                    randombrightness = 255;
+                    ddotSize *= 5;
+                }
+                dotCtx.fillStyle = `rgb(${randombrightness}, ${randombrightness}, ${randombrightness})`;
+                dotCtx.beginPath();
+                dotCtx.arc(xx, yy, dotSize / 2, 0, Math.PI * 2);
+                dotCtx.fill();
+            }
+        }
+    }
+    </script>
+    
+    
 </body>
 </html>

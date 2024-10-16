@@ -2,6 +2,8 @@ const overlay = document.getElementById('flashcard-overlay');
 const flashcardContent = document.getElementById('flashcard_container');
 const messageElement = document.getElementById('message');
 
+let canvasrendered = false;
+
 function showFlashcard(character) {
     messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
@@ -12,8 +14,13 @@ function showFlashcard(character) {
             return response.json();
         })
         .then(data => {
+            bordercanvas.style.display = 'block';
             renderCardData(data);
             displayCard(true, true);
+            if(!canvasrendered){
+                renderBorder();
+                canvasrendered = true;
+            }
 
             // recordView(character);
         })
@@ -26,6 +33,7 @@ function showFlashcard(character) {
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
         overlay.style.display = 'none';
+        ccanvas.style.display = 'none';
     }
 });
 
@@ -105,6 +113,7 @@ function handleOrientationChange() {
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay && !e.target.closest('#font-select')) {
         overlay.style.display = 'none';
+        bordercanvas.style.display = 'none';
         // document.getElementById('font-select').style.display = 'none';
     }
 });
@@ -112,6 +121,7 @@ overlay.addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', function() {
     // document.getElementById('font-select').style.display = 'none';
     getFont();
+    setupBackgroundCanvas();
 
     const pinyinElement = document.getElementById('flashcard_pinyin');
     pinyinElement.addEventListener('click', function() {

@@ -226,6 +226,7 @@ function createListItem(char, idx) {
 
 // Call this function when the page loads and on window resize
 
+let canvasrendered = false;
 
 function showFlashcard(character) {
     messageElement.textContent = 'Loading...';
@@ -237,8 +238,13 @@ function showFlashcard(character) {
             return response.json();
         })
         .then(data => {
+            bordercanvas.style.display = 'block';
             renderCardData(data);
             displayCard(true, true);
+            if(!canvasrendered){
+                renderBorder();
+                canvasrendered = true;
+            }
             // recordView(character);
         })
         .catch(error => {
@@ -413,6 +419,8 @@ overlay.addEventListener('click', (e) => {
         
         scrollToTop(document.getElementById('flashcard_container'), () => {overlay.style.display = 'none';});
 
+        bordercanvas.style.display = 'none';
+
         // document.getElementById('font-select').style.top = '45px';
         // document.getElementById('font-select').style.marginTop = '15px';
         // document.getElementById('deck-select').style.display = 'block';
@@ -466,6 +474,7 @@ document.addEventListener('keyup', function(event) {
 document.addEventListener('DOMContentLoaded', function() {
     
     loadAllData();
+    setupBackgroundCanvas();
 
 
     const pinyinElement = document.getElementById('flashcard_pinyin');

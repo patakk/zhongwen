@@ -58,7 +58,6 @@ function generatePinyinOptions(character) {
         }
     }
 
-    // Sort options alphabetically
     options.sort((a, b) => a.localeCompare(b));
 
     pinyinOptions.innerHTML = '';

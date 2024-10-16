@@ -13,6 +13,7 @@
     margin-bottom: 30px;
     padding: 5px 10px;
     color: #000;
+    color: rgba(0, 0, 0, .4);
     min-width: 100px;
     display: inline-block;
     text-align: center;
@@ -48,12 +49,12 @@
 
 #flashcard_hsk {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 0px;
+    right: 0px;
+    padding: 22px;
     font-size: 16px;
     font-weight: 500;
     color: #000;
-    padding: 5px 10px;
     border-radius: 5px;
 }
 
@@ -86,8 +87,9 @@
     position: relative;
     width: 34%;
     height: 90%;
+    border: 2px dashed #00000000;
     border: 2px dashed #000000;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 1.0);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -95,10 +97,11 @@
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 40px;
+    padding: 42px;
     box-sizing: border-box;
     overflow-x: hidden;
     transition: transform 0.2s, background-color 0.7s;
+    transition: transform 0.2s, background-color 0.3s;
 }
 
 #flashcard_container::-webkit-scrollbar {
@@ -171,7 +174,11 @@
 @media screen and (max-width: 768px) {
     #flashcard_container {
         height: 80%;
-        transform: translateY(8%);
+        transform: translateY(0.00008%);
+    }
+
+    canvas {
+        width: 100%;
     }
 
     #flashcard_character {

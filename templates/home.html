@@ -150,6 +150,7 @@
 
         if(username === 'tempuser'){
             document.getElementById('progressUrl').textContent = 'login';
+            document.getElementById('progressUrl').href = "{{ url_for('login') }}";
         }
 
         function adjustHeight() {

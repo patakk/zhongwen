@@ -222,7 +222,11 @@
             position: relative;
             cursor: help;
         }
-
+        
+        .due-date {
+            color: red;
+            cursor: default;
+        }
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 </head>
@@ -268,89 +272,6 @@
             <button type="submit" id="saveButton">Save</button>
         </form>
     </div>
-    <script>
-        function formatDateTime(dateTimeString) {
-            // Parse the input string
-            const date = new Date(dateTimeString);
-            
-            // Format date
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            
-            // Format time
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            const seconds = String(date.getSeconds()).padStart(2, '0');
-            
-            // Combine into a nicely formatted string
-            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-        }
-
-        function dateToPinyin(formattedDate) {
-            const numbersToPinyin = {
-                '0': 'líng', '1': 'yī', '2': 'èr', '3': 'sān', '4': 'sì', '5': 'wǔ',
-                '6': 'liù', '7': 'qī', '8': 'bā', '9': 'jiǔ', '10': 'shí'
-            };
-
-            function numberToPinyin(num) {
-                num = parseInt(num);
-                if (num <= 10) return numbersToPinyin[num];
-                if (num < 20) return `shí ${numbersToPinyin[num - 10]}`.trim();
-                const tens = Math.floor(num / 10);
-                const ones = num % 10;
-                return `${numbersToPinyin[tens]} shí ${ones ? numbersToPinyin[ones] : ''}`.trim();
-            }
-
-            const monthsToPinyin = {
-                '01': 'yī yuè', '02': 'èr yuè', '03': 'sān yuè', '04': 'sì yuè',
-                '05': 'wǔ yuè', '06': 'liù yuè', '07': 'qī yuè', '08': 'bā yuè',
-                '09': 'jiǔ yuè', '10': 'shí yuè', '11': 'shíyī yuè', '12': 'shí\'èr yuè'
-            };
-
-            const [datePart, timePart] = formattedDate.split(' ');
-            const [year, month, day] = datePart.split('-');
-            const [hour, minute, second] = timePart.split(':');
-
-            const yearPinyin = year.split('').map(digit => numbersToPinyin[digit]).join(' ') + ' nián';
-            const monthPinyin = monthsToPinyin[month];
-            const dayPinyin = numberToPinyin(day) + ' rì';
-            const hourPinyin = numberToPinyin(hour) + ' diǎn';
-            const minutePinyin = numberToPinyin(minute) + ' fēn';
-            const secondPinyin = numberToPinyin(second) + ' miǎo';
-
-            return `${yearPinyin}, ${monthPinyin}, ${dayPinyin}, ${hourPinyin}, ${minutePinyin}, ${secondPinyin}`;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const dateCells = document.querySelectorAll('.next-review-date');
-            const hoverBox = document.getElementById('pinyin-hover-box');
-
-            dateCells.forEach(cell => {
-                const originalDate = cell.textContent;
-                const formattedDate = formatDateTime(originalDate);
-                const pinyinDate = dateToPinyin(formattedDate);
-                
-                cell.textContent = formattedDate;
-                
-                cell.addEventListener('mouseover', function(e) {
-                    hoverBox.textContent = pinyinDate;
-                    hoverBox.style.display = 'block';
-                    hoverBox.style.left = `${e.pageX + 10}px`;
-                    hoverBox.style.top = `${e.pageY + 10}px`;
-                });
-
-                cell.addEventListener('mouseout', function() {
-                    hoverBox.style.display = 'none';
-                });
-
-                cell.addEventListener('mousemove', function(e) {
-                    hoverBox.style.left = `${e.pageX + 10}px`;
-                    hoverBox.style.top = `${e.pageY + 10}px`;
-                });
-            });
-        });
-    </script>
     <div class="container">
         <h1>Progress in <span class="deck-highlight">{{ deck }}</span> deck</h1>
         <table>
@@ -435,6 +356,58 @@
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
 
     <script>
+        function formatDateTime(dateTimeString) {
+            // Parse the input string
+            const date = new Date(dateTimeString);
+            
+            // Format date
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            
+            // Format time
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            
+            // Combine into a nicely formatted string
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+        function dateToPinyin(formattedDate) {
+            const numbersToPinyin = {
+                '0': 'líng', '1': 'yī', '2': 'èr', '3': 'sān', '4': 'sì', '5': 'wǔ',
+                '6': 'liù', '7': 'qī', '8': 'bā', '9': 'jiǔ', '10': 'shí'
+            };
+
+            function numberToPinyin(num) {
+                num = parseInt(num);
+                if (num <= 10) return numbersToPinyin[num];
+                if (num < 20) return `shí ${numbersToPinyin[num - 10]}`.trim();
+                const tens = Math.floor(num / 10);
+                const ones = num % 10;
+                return `${numbersToPinyin[tens]} shí ${ones ? numbersToPinyin[ones] : ''}`.trim();
+            }
+
+            const monthsToPinyin = {
+                '01': 'yī yuè', '02': 'èr yuè', '03': 'sān yuè', '04': 'sì yuè',
+                '05': 'wǔ yuè', '06': 'liù yuè', '07': 'qī yuè', '08': 'bā yuè',
+                '09': 'jiǔ yuè', '10': 'shí yuè', '11': 'shíyī yuè', '12': 'shí\'èr yuè'
+            };
+
+            const [datePart, timePart] = formattedDate.split(' ');
+            const [year, month, day] = datePart.split('-');
+            const [hour, minute, second] = timePart.split(':');
+
+            const yearPinyin = year.split('').map(digit => numbersToPinyin[digit]).join(' ') + ' nián';
+            const monthPinyin = monthsToPinyin[month];
+            const dayPinyin = numberToPinyin(day) + ' rì';
+            const hourPinyin = numberToPinyin(hour) + ' diǎn';
+            const minutePinyin = numberToPinyin(minute) + ' fēn';
+            const secondPinyin = numberToPinyin(second) + ' miǎo';
+
+            return `${yearPinyin}, ${monthPinyin}, ${dayPinyin}, ${hourPinyin}, ${minutePinyin}, ${secondPinyin}`;
+        }
 
         function changeDeck(deck, func=null) {
             fetch(`./change_deck?deck=${deck}`, {
@@ -454,8 +427,7 @@
                 console.error('There was a problem changing the deck:', error);
             });
         }
-    </script>
-    <script>
+
         document.addEventListener('DOMContentLoaded', function() {
             const tooltipHeaders = document.querySelectorAll('.tooltip-header');
             const dateCells = document.querySelectorAll('.next-review-date');
@@ -486,23 +458,29 @@
                 });
             });
     
+            const now = new Date();
             dateCells.forEach(cell => {
-                const originalDate = cell.textContent;
-                const formattedDate = formatDateTime(originalDate);
-                const pinyinDate = dateToPinyin(formattedDate);
+                const originalDate = new Date(cell.textContent);
                 
-                cell.textContent = formattedDate;
-                
-                cell.addEventListener('mouseover', function(e) {
-                    showTooltip(this, pinyinDate, e);
-                });
-    
-                cell.addEventListener('mouseout', hideTooltip);
-    
-                cell.addEventListener('mousemove', function(e) {
-                    hoverBox.style.left = `${e.pageX + 10}px`;
-                    hoverBox.style.top = `${e.pageY + 10}px`;
-                });
+                if (originalDate < now) {
+                    // Date is in the past
+                    cell.textContent = "DUE";
+                    cell.classList.add('due-date'); // Add a class for styling if needed
+                } else {
+                    const formattedDate = formatDateTime(originalDate);
+                    const pinyinDate = dateToPinyin(formattedDate);
+                    cell.textContent = formattedDate;
+                    cell.addEventListener('mouseover', function(e) {
+                        showTooltip(this, pinyinDate, e);
+                    });
+        
+                    cell.addEventListener('mouseout', hideTooltip);
+        
+                    cell.addEventListener('mousemove', function(e) {
+                        hoverBox.style.left = `${e.pageX + 10}px`;
+                        hoverBox.style.top = `${e.pageY + 10}px`;
+                    });
+                }
             });
         });
     </script>

@@ -136,7 +136,6 @@ function renderCardData(data) {
         }
     }
     catch (e) {
-        console.log(e);
     }
 }
 
