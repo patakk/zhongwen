@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
+    <title>Chinese Character Visualization</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffffff;
+        }
+        #mainContainer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+        }
+        #canvasContainer, #textContainer {
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            transform: translate(-50%, -50%);
+        }
+        canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #sourceCanvas {
+            z-index: 1;
+        }
+        #dotCanvas {
+            z-index: 2;
+        }
+        #textContainer {
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #hanziText {
+            white-space: nowrap;
+            font-family: "Noto Serif SC", serif;
+            color: #fff0;
+        }
+        #hanziText::selection {
+            color: #fff0;
+            background-color: rgba(255, 202, 44, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="mainContainer">
+        <div id="canvasContainer"></div>
+        <div id="textContainer">
+            <div id="hanziText"></div>
+        </div>
+    </div>
+
+    <script>
+        const charactersdata = {{ characters | tojson | safe }};
+        let hanziChars = new URLSearchParams(window.location.search).get('c') || '中';
+
+        console.log(charactersdata);
+        let canvasSize, canvasWidth;
+
+        let container = null;
+        let sourceCanvas = null; 
+        let dotCanvas = null; 
+        let sourceCtx = null;
+        let dotCtx = null;
+        let rez = 400;
+
+
+        function createCanvas(id) {
+            const canvas = document.createElement('canvas');
+            canvas.id = id;
+            container.appendChild(canvas);
+            return canvas;
+        }
+
+        function getToneFromPinyin(pinyin) {
+            if (!pinyin) return 5;
+            const toneMarks = {
+                'ā': 1, 'ē': 1, 'ī': 1, 'ō': 1, 'ū': 1, 'ǖ': 1,
+                'á': 2, 'é': 2, 'í': 2, 'ó': 2, 'ú': 2, 'ǘ': 2,
+                'ǎ': 3, 'ě': 3, 'ǐ': 3, 'ǒ': 3, 'ǔ': 3, 'ǚ': 3,
+                'à': 4, 'è': 4, 'ì': 4, 'ò': 4, 'ù': 4, 'ǜ': 4
+            };
+            for (let char of pinyin) {
+                if (char in toneMarks) {
+                    return toneMarks[char];
+                }
+            }
+            return 5;
+        }
+
+        function drawWord(ctx, black=false, fblur=false) {
+            
+            let colors = ['#58d38f', '#ffd91c', '#9f5dc1', '#ff421c', '#b1cbff']; // Corresponds to tones 1, 2, 3, 4, and neutral
+            ctx.filter = 'none';
+            if(fblur){
+                ctx.filter = 'blur(24px)';
+            }
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const fontSize = sourceCanvas.height / 1.28;
+            ctx.font = `${fontSize}px Noto Serif SC`;
+            let pinyin = ''
+            if (hanziChars in charactersdata) {
+                pinyin = charactersdata[hanziChars]['pinyin_tones'];
+            }
+            else{
+                for (let hanziChar of hanziChars) {
+                    if (hanziChar in charactersdata) {
+                        pinyin += charactersdata[hanziChar]['pinyin_tones'] + ' ';
+                    }
+                }
+            }
+            pinyin = pinyin.trim();
+            let parts = pinyin.split(' ');
+            for (let i = 0; i < hanziChars.length; i++) {
+                const x = (i + 0.5) * (sourceCanvas.width / hanziChars.length);
+                const y = sourceCanvas.height / 2;
+                let syllable = parts[i]
+                let tone = getToneFromPinyin(syllable);
+                ctx.fillStyle = colors[tone - 1];
+                if(black){
+                    ctx.fillStyle = 'black';
+                }
+                ctx.fillText(hanziChars[i], x, y+sourceCanvas.height*.045);
+            }
+            // ctx.fillStyle = colors[1];
+            // ctx.fillText(hanziChars, sourceCanvas.width / 2, sourceCanvas.height / 2);
+            ctx.filter = 'none';
+        }
+
+        function rand(a, b) {
+            return a + Math.random() * (b - a);
+        }
+
+        function drawDots(ctx) {
+            const imageData = sourceCtx.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
+            const data = imageData.data;
+            const dotSize = 2.8;
+            const spacing = 1;
+            let drawn = false;
+            for (let y = 0; y < sourceCanvas.height; y += spacing) {
+                for (let x = 0; x < sourceCanvas.width; x += spacing) {
+                    const i = (Math.round(y) * sourceCanvas.width + Math.round(x)) * 4;
+                    if ((data[i]+data[i+1]+data[i+2])/3 < 255) {
+                        let rgb = data.slice(i, i + 3);
+                        let xx = x + spacing * (-.5 + Math.random());
+                        let yy = y + spacing * (-.5 + Math.random()) * y / sourceCanvas.height * 10;
+                        let ddotSize = dotSize + .5 * (-.5 + Math.random());
+                        ddotSize/=2;
+                        let randomBrightness = Math.random() * 22;
+                        
+                        if (Math.random() < .03) {
+                            randomBrightness = 255;
+                            ddotSize *= 2;
+                            // ctx.fillStyle = `rgb(${randomBrightness}, ${randomBrightness/3}, ${randomBrightness/3})`;
+                        } else {
+                            // ctx.fillStyle = `rgb(${randomBrightness}, ${randomBrightness}, ${randomBrightness})`;
+                        }
+
+                        if(Math.random() < 0.1){
+                            yy = y + 6*spacing * (Math.random()) * y / sourceCanvas.height * 10;
+                        }
+
+                        let redr = rgb[0] + rand(-120, 120);
+                        let greenr = rgb[1] + rand(-120, 120);
+                        let bluer = rgb[2] + rand(-120, 120);
+                        
+                        let redrd = rgb[0]*.2 + rand(-120, 120);
+                        let greenrd = rgb[1]*.2 + rand(-120, 120);
+                        let bluerd = rgb[2]*.2 + rand(-120, 120);
+
+                        if(Math.random() < 0.03){
+                            ddotSize *= 2;
+                            redr = rand(220, 255);
+                            greenr = rand(220, 255);
+                            bluer = rand(220, 255);
+                        }
+
+                        if(Math.random() < .5){
+                            ctx.fillStyle = `rgb(${redr}, ${greenr}, ${bluer})`;
+                            if(Math.random() < -.05){
+                                ctx.fillStyle = `rgb(${redr}, ${greenr/3}, ${bluer/3})`;
+                            }
+                            ctx.fillStyle = `#000`;
+                            ctx.beginPath();
+                            ctx.arc(xx+rand(-2, 2), yy+rand(0, 8), ddotSize / 2, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                        else{
+                            ctx.fillStyle = `rgb(${redrd}, ${greenrd}, ${bluerd})`;
+                            ctx.fillStyle = `#000`;
+                            ctx.beginPath();
+                            ctx.arc(xx, yy, ddotSize / 2, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+
+                    }
+                }
+            }
+        }
+
+
+        document.addEventListener('keydown', function(event) {
+        if (event.key === 'q') {
+            sourceCanvas.style.display = sourceCanvas.style.display === 'none' ? 'block' : 'none';
+            dotCanvas.style.display = dotCanvas.style.display === 'none' ? 'block' : 'none';
+        }
+        });
+
+        function updateHanziText() {
+            const textContainer = document.getElementById('textContainer');
+            const hanziText = document.getElementById('hanziText');
+            hanziText.textContent = hanziChars;
+            textContainer.style.width = `${canvasWidth}px`;
+            textContainer.style.height = `${canvasSize}px`;
+            hanziText.style.fontSize = `${canvasSize * 0.8}px`;
+        }
+
+
+        function resizeCanvases() {
+            const maxWidth = window.innerWidth * 0.9;
+            const maxHeight = window.innerHeight * 0.9;
+            canvasSize = Math.min(rez, maxHeight, maxWidth / hanziChars.length);
+            canvasWidth = canvasSize * hanziChars.length*0.8;
+            [sourceCanvas, dotCanvas].forEach(canvas => {
+                canvas.width = canvasWidth * 2;  // actual canvas size
+                canvas.height = canvasSize * 2;
+                canvas.style.width = `${canvasWidth}px`;  // CSS size
+                canvas.style.height = `${canvasSize}px`;
+            });
+            
+            sourceCtx.fillStyle = 'white';
+            sourceCtx.fillRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+            dotCtx.fillStyle = 'white';
+            dotCtx.fillRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+            drawWord(sourceCtx, false, false);
+            drawDots(dotCtx);
+            updateHanziText();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            container = document.getElementById('canvasContainer');
+            sourceCanvas = createCanvas('sourceCanvas');
+            dotCanvas = createCanvas('dotCanvas');
+            sourceCtx = sourceCanvas.getContext('2d');
+            dotCtx = dotCanvas.getContext('2d');
+            
+            const mainContainer = document.getElementById('mainContainer');
+            const textContainer = document.getElementById('textContainer'); 
+            const hanziText = document.getElementById('hanziText'); 
+            textContainer.appendChild(hanziText);
+            mainContainer.appendChild(textContainer);
+
+            resizeCanvases();
+        });
+    
+
+        window.addEventListener('resize', resizeCanvases);
+
+    </script>
+</body>
+</html>

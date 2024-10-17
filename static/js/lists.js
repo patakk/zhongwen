@@ -1,4 +1,4 @@
-const overlay = document.getElementById('flashcard-overlay');
+const overlay = document.getElementById('flashcard_overlay');
 const flashcardContent = document.getElementById('flashcard_container');
 let currentIndex = 0;
 let currentState = 'hanzi';

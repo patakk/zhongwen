@@ -28,7 +28,8 @@
           "爱戴"
         ]
       }
-    }
+    },
+    "pinyin_tones": "ài"
   },
   "八": {
     "pinyin": "bā",
@@ -36,7 +37,8 @@
     "traditional": "",
     "function": "number",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "bā"
   },
   "爸爸": {
     "pinyin": "bàba",
@@ -44,7 +46,8 @@
     "traditional": "",
     "function": "noun",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "bà ba"
   },
   "杯子": {
     "pinyin": "bēizi",
@@ -132,7 +135,8 @@
           "子弹"
         ]
       }
-    }
+    },
+    "pinyin_tones": "bēi zi"
   },
   "北京": {
     "pinyin": "Běijīng",
@@ -158,7 +162,8 @@
           "京剧"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Běi jīng"
   },
   "本": {
     "pinyin": "běn",
@@ -194,7 +199,8 @@
           "资本"
         ]
       }
-    }
+    },
+    "pinyin_tones": "běn"
   },
   "不客气": {
     "pinyin": "bú kèqi",
@@ -349,7 +355,8 @@
           "志气"
         ]
       }
-    }
+    },
+    "pinyin_tones": "bú kè qi"
   },
   "不": {
     "pinyin": "bù",
@@ -432,7 +439,8 @@
           "有条不紊"
         ]
       }
-    }
+    },
+    "pinyin_tones": "bù"
   },
   "菜": {
     "pinyin": "cài",
@@ -449,7 +457,8 @@
           "菜单"
         ]
       }
-    }
+    },
+    "pinyin_tones": "cài"
   },
   "茶": {
     "pinyin": "chá",
@@ -457,7 +466,8 @@
     "traditional": "",
     "function": "noun",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "chá"
   },
   "吃": {
     "pinyin": "chī",
@@ -485,7 +495,8 @@
           "吃力"
         ]
       }
-    }
+    },
+    "pinyin_tones": "chī"
   },
   "出租车": {
     "pinyin": "chūzūchē",
@@ -558,7 +569,8 @@
           "刹车"
         ]
       }
-    }
+    },
+    "pinyin_tones": "chū zū chē"
   },
   "打电话": {
     "pinyin": "dǎ diànhuà",
@@ -645,7 +657,8 @@
           "闲话"
         ]
       }
-    }
+    },
+    "pinyin_tones": "dǎ diàn huà"
   },
   "大": {
     "pinyin": "dà",
@@ -692,7 +705,8 @@
           "庞大"
         ]
       }
-    }
+    },
+    "pinyin_tones": "dà"
   },
   "的": {
     "pinyin": "de",
@@ -710,7 +724,8 @@
           "似的"
         ]
       }
-    }
+    },
+    "pinyin_tones": "de"
   },
   "点": {
     "pinyin": "diǎn",
@@ -743,7 +758,8 @@
           "终点"
         ]
       }
-    }
+    },
+    "pinyin_tones": "diǎn"
   },
   "电脑": {
     "pinyin": "diànnǎo",
@@ -780,6 +796,7 @@
           "伤脑筋"
         ]
       }
-    }
+    },
+    "pinyin_tones": "diàn nǎo"
   }
 }

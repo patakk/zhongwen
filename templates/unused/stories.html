@@ -105,7 +105,7 @@
             background-color: #000000;
             color: #f2f2f2;
         }
-        #flashcard-overlay {
+        #flashcard_overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -260,7 +260,7 @@
                 margin: 0; /* Ensure no margin on mobile */
                 transform: translateY(-7%);
             }
-            #flashcard-overlay {
+            #flashcard_overlay {
                 padding: 10px;
             }
             .title {
@@ -393,7 +393,7 @@
         </div>
     </div>
     
-    <div id="flashcard-overlay">
+    <div id="flashcard_overlay">
         <div id="flashcard_container">
             <div class="title"></div>
             <div class="character"></div>
@@ -405,7 +405,7 @@
     </div>
     
     <script>
-        const overlay = document.getElementById('flashcard-overlay');
+        const overlay = document.getElementById('flashcard_overlay');
         const flashcardContent = document.getElementById('flashcard_container');
         let currentFont = 'Noto Sans Mono';
         let currentIndex = 0;

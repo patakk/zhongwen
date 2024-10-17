@@ -1,5 +1,5 @@
 const grid = document.getElementById('character-grid');
-const overlay = document.getElementById('flashcard-overlay');
+const overlay = document.getElementById('flashcard_overlay');
 const flashcardContent = document.getElementById('flashcard_container');
 const messageElement = document.getElementById('message');
 
@@ -134,6 +134,7 @@ function toggleGridList(){
     }
 }
 
+
 let charCounter = 0;
 function createGrid(characters, useAllDecks){
     const grid = document.getElementById('character-grid');
@@ -228,6 +229,63 @@ function createListItem(char, idx) {
 
 let canvasrendered = false;
 
+function getColorByTime(colors) {
+    // Get current time
+    let now = new Date();
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    
+    // Print current time
+    console.log(`Current local time: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
+    // Calculate the total minutes passed since 9 AM
+    let totalMinutes = (hours * 60 + minutes - 9 * 60 + 24 * 60) % (24 * 60);
+    
+    // add last color to beggingn of array
+    colors.unshift(colors[colors.length-1]);
+    // Check if we're in the cycle period (9 AM to 10 PM)
+    if (totalMinutes < 13 * 60) { // 13 hours from 9 AM to 10 PM
+        let cycleDuration = 13 * 60; // 13 hours in minutes
+        let colorIndex = Math.floor(totalMinutes / (cycleDuration / colors.length));
+        let nextColorIndex = (colorIndex + 1) % colors.length;
+        
+        console.log(colorIndex)
+        console.log(nextColorIndex)
+        let interpolationFactor = (totalMinutes % (cycleDuration / colors.length)) / (cycleDuration / colors.length);
+        
+        let color1 = hexToRgb(colors[colorIndex]);
+        let color2 = hexToRgb(colors[nextColorIndex]);
+        
+        let r = Math.round(color1.r + (color2.r - color1.r) * interpolationFactor);
+        let g = Math.round(color1.g + (color2.g - color1.g) * interpolationFactor);
+        let b = Math.round(color1.b + (color2.b - color1.b) * interpolationFactor);
+        let a = 0.7;
+        
+        console.log(`Color cycle active. Using colors ${colorIndex} and ${nextColorIndex}`);
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
+    } else {
+        let lastColor = hexToRgb(colors[colors.length - 1]);
+        console.log(`Outside color cycle. Using last color.`);
+        return `rgba(${lastColor.r}, ${lastColor.g}, ${lastColor.b}, 0.7)`;
+    }
+}
+
+// Helper function to convert hex to RGB (unchanged)
+function hexToRgb(hex) {
+    let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+
+let overlaycolors = 'f94144-f3722c-f8961e-f9844a-f9c74f-90be6d-43aa8b-4d908e-577590-277da1'.split('-');
+overlaycolors = 'eaf4f4-F9844A-ffca3a-8ac926-1982c4-6a4c93'.split('-');
+overlaycolors.forEach((color, idx) => {
+    overlaycolors[idx] = `#${color}`;
+});
+
 function showFlashcard(character) {
     messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
@@ -238,12 +296,34 @@ function showFlashcard(character) {
             return response.json();
         })
         .then(data => {
-            bordercanvas.style.display = 'block';
+            try{
+                bordercanvas.style.display = 'block';
+            }
+            catch(e){
+
+            }
+
+            hsklvl = data.hsk_level-1
+            if(hsklvl < 0 || hsklvl > 6){
+                hsklvl = 6;
+            }
+
+            // overlay.style.backgroundColor = overlaycolors[hsklvl];
+            let overlay = document.getElementById('flashcard_overlay');
+            let currentColor = getColorByTime(overlaycolors);
+            overlay.style.backgroundColor = currentColor;
+            // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
+            // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
             renderCardData(data);
             displayCard(true, true);
-            if(!canvasrendered){
-                renderBorder();
-                canvasrendered = true;
+            try{
+                if(!canvasrendered || true){
+                    renderBorder();
+                    canvasrendered = true;
+                }
+            }
+            catch(e){
+
             }
             // recordView(character);
         })
@@ -419,7 +499,12 @@ overlay.addEventListener('click', (e) => {
         
         scrollToTop(document.getElementById('flashcard_container'), () => {overlay.style.display = 'none';});
 
-        bordercanvas.style.display = 'none';
+            try{
+                bordercanvas.style.display = 'none';
+            }
+            catch(e){
+                
+            }
 
         // document.getElementById('font-select').style.top = '45px';
         // document.getElementById('font-select').style.marginTop = '15px';
@@ -474,7 +559,14 @@ document.addEventListener('keyup', function(event) {
 document.addEventListener('DOMContentLoaded', function() {
     
     loadAllData();
-    setupBackgroundCanvas();
+
+    try{
+        setupBackgroundCanvas();
+
+    }
+    catch(e){
+
+    }
 
 
     const pinyinElement = document.getElementById('flashcard_pinyin');
@@ -489,6 +581,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if(characterdata){
         showAfterLoad(characterdata);
+        let overlay = document.getElementById('flashcard_overlay');
+        let currentColor = getColorByTime(overlaycolors);
+        overlay.style.backgroundColor = currentColor;
+        console.log(currentColor)
+        
         scrollToTop(document.getElementById('flashcard_container'));
     }
 

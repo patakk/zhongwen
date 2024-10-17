@@ -158,7 +158,7 @@
         }
 
 
-        #flashcard-overlay {
+        #flashcard_overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -423,7 +423,7 @@
             z-index: 1;
         }
 
-        #flashcard-overlay {
+        #flashcard_overlay {
             z-index: 1000; /* Higher than grid-container, lower than overlay */
         }
 
@@ -456,7 +456,7 @@
     <div class="grid-container">
         <div class="grid" id="character-grid"></div>
     </div>
-    <div id="flashcard-overlay">
+    <div id="flashcard_overlay">
         <div id="flashcard_container">
             <div class="character"></div>
             <div id="flashcard_pinyin" class="pinyin"></div>
@@ -500,7 +500,7 @@
         const characters = {{ characters | tojson | safe }};
         const characterdata = {{ character | tojson | safe }};
         const grid = document.getElementById('character-grid');
-        const overlay = document.getElementById('flashcard-overlay');
+        const overlay = document.getElementById('flashcard_overlay');
         const flashcardContent = document.getElementById('flashcard_container');
         const messageElement = document.getElementById('message');
 

@@ -1,4 +1,4 @@
-const overlay = document.getElementById('flashcard-overlay');
+const overlay = document.getElementById('flashcard_overlay');
 const flashcardContent = document.getElementById('flashcard_container');
 const messageElement = document.getElementById('message');
 

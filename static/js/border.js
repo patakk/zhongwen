@@ -7,10 +7,12 @@ const useBackgroundCanvas = true; // Set this to false to disable the canvas
 
 
 function renderBorder() {
+    let globalSeed = Math.round(Math.random()*100000);
+    noiseSeed(globalSeed);
     const flashcard = document.getElementById('flashcard_container');
     if(!useBackgroundCanvas){
-            flashcard.style.border = '2px dashed #000';
-            return;
+        flashcard.style.border = '2px dashed #000';
+        return;
     }
     bordercanvas.width = window.innerWidth*2;
     bordercanvas.height = window.innerHeight*2;
@@ -18,21 +20,26 @@ function renderBorder() {
     borderctx.fillStyle = 'rgba(255, 255, 255, 1)';
     borderctx.clearRect(0, 0, bordercanvas.width, bordercanvas.height);
     // borderctx.fillRect(0, 0, bordercanvas.width, bordercanvas.height);
-    drawDots();
-    borderctx.filter = 'blur(1px)';
+    // drawDots();
+    // borderctx.filter = 'blur(2px)';
+    // drawWigglyBorder();
+    borderctx.filter = 'none';
     drawWigglyBorder();
     // drawMarks();
-    borderctx.filter = 'none';
     flashcard.style.border = '2px dashed #f000';
 }
 
+function rand(min, max) {
+    return Math.random() * (max - min) + min;
+}
 
 function drawWigglyBorder() {
     const flashcard = document.getElementById('flashcard_container');
+    flashcard.style.backgroundColor = 'rgba(255, 255, 255, 0)';
     const rect = flashcard.getBoundingClientRect();
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
+    let scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    scrollLeft = scrollTop = 0;
     const vertices = [
         {x: rect.left + scrollLeft, y: rect.top + scrollTop},
         {x: rect.right + scrollLeft, y: rect.top + scrollTop},
@@ -40,30 +47,61 @@ function drawWigglyBorder() {
         {x: rect.left + scrollLeft, y: rect.bottom + scrollTop}
     ];
 
-    let density = Math.min(rect.width, rect.height) / 70;
+    let density = 33 / Math.min(rect.width, rect.height);
 
-    borderctx.strokeStyle = 'rgba(0, 0, 0, .85)';
-    borderctx.lineJoin = 'round';
-
-    // Start from the last point to close the loop
-    let lastPoint = getWigglyPoint(vertices[3], vertices[0], 1);
-
+    
+    let allPoints = [];
     for (let i = 0; i < vertices.length; i++) {
         const start = vertices[i];
         const end = vertices[(i + 1) % vertices.length];
-        let steps = Math.floor(Math.hypot(end.x - start.x, end.y - start.y) / density);
+        let steps = Math.floor(Math.hypot(end.x - start.x, end.y - start.y) * density);
         
         for (let j = 0; j <= steps; j++) {
-            borderctx.lineWidth = 1 + 1*noise((i*steps+j)*0.4);
             const t = j / steps;
-            const point = getWigglyPoint(start, end, t);
-            const pointp = getWigglyPoint(start, end, Math.max(0, t-1/steps));
-            borderctx.beginPath();
-            borderctx.moveTo(pointp.x, pointp.y);
-            borderctx.lineTo(point.x, point.y);
-            borderctx.stroke();
+            allPoints.push(getWigglyPoint(start, end, t));
         }
     }
+
+    // Start from the last point to close the loop
+    borderctx.fillStyle = '#fff';
+    borderctx.beginPath();
+    borderctx.lineJoin = 'round';
+    borderctx.moveTo(allPoints[0].x, allPoints[0].y);
+    for (let i = 1; i < allPoints.length - 2; i++) {
+        const xc = (allPoints[i].x + allPoints[i + 1].x) / 2;
+        const yc = (allPoints[i].y + allPoints[i + 1].y) / 2;
+        borderctx.quadraticCurveTo(allPoints[i].x, allPoints[i].y, xc, yc);
+    }
+    borderctx.quadraticCurveTo(
+        allPoints[allPoints.length - 2].x,
+        allPoints[allPoints.length - 2].y,
+        allPoints[allPoints.length - 1].x,
+        allPoints[allPoints.length - 1].y
+    );
+    borderctx.fill();
+    
+    // borderctx.beginPath();
+    // borderctx.strokeStyle = 'rgba(0, 0, 0, .9)';
+    // borderctx.lineJoin = 'round';
+    // borderctx.moveTo(allPoints[0].x, allPoints[0].y);
+    // for (let i = 1; i < allPoints.length - 2; i++) {
+    //     const xc = (allPoints[i].x + allPoints[i + 1].x) / 2;
+    //     const yc = (allPoints[i].y + allPoints[i + 1].y) / 2;
+    //     borderctx.quadraticCurveTo(allPoints[i].x, allPoints[i].y, xc, yc);
+    // }
+    // borderctx.quadraticCurveTo(
+    //     allPoints[allPoints.length - 2].x,
+    //     allPoints[allPoints.length - 2].y,
+    //     allPoints[allPoints.length - 1].x,
+    //     allPoints[allPoints.length - 1].y
+    // );
+    // borderctx.stroke();
+
+    // draw all vertices as dots
+    // allPoints.forEach(vertex => {
+    //     borderctx.fillStyle = 'rgba(222, 222, 222, 1)';
+    //     borderctx.fillRect(-6+vertex.x, -6+vertex.y, 12, 12);
+    // });
 
 }
 
@@ -72,9 +110,8 @@ function drawDots() {
         
     const flashcard = document.getElementById('flashcard_container');
     const rect = flashcard.getBoundingClientRect();
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
+    let scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     // Get the vertices of the flashcard
     const vertices = [
         {x: rect.left + scrollLeft, y: rect.top + scrollTop},
@@ -108,10 +145,11 @@ let frq = 0.02;
 function getWigglyPoint(start, end, t) {
     const x = start.x + (end.x - start.x) * t;
     const y = start.y + (end.y - start.y) * t;
-    const randomness = 7;
-    const strength = 0.3 + 0.5 * Math.pow(1 - Math.abs(t - 0.5) * 2, 2);
+    const randomness = 37;
+    // const strength = Math.pow(Math.abs(t - 0.5) * 2, 2);
+    const strength = Math.pow(Math.abs(t - 0.5) * 2, 3);
     const randomX = x + (noise(x*frq, y*frq) - 0.5) * randomness * strength;
-    const randomY = y + (noise(x*frq, y*frq) - 0.5) * randomness * strength;
+    const randomY = y + (noise(x*frq, y*frq, 128.31) - 0.5) * randomness * strength;
     return {x: randomX, y: randomY};
 }
 
@@ -152,7 +190,7 @@ function drawMarks(){
     let y2 = rect.top + scrollTop    + rect.height * .045;
     
     borderctx.strokeStyle = 'rgba(60,0,30, .25)';
-    borderctx.lineWidth = 1;
+    borderctx.lineWidth = 2;
     // drawWigglyLine(x1, y1, x2, y2, 100);
 
     for(let k = 0; k < 200; k++){
@@ -175,7 +213,13 @@ function power(p, g){
 }
 
 function setupBackgroundCanvas() {
-    document.body.insertAdjacentHTML('afterbegin', '<canvas id="backgroundCanvas"></canvas>');
+    const flashcardOverlay = document.getElementById('flashcard_overlay');
+
+    if (flashcardOverlay) {
+        flashcardOverlay.insertAdjacentHTML('afterbegin', '<canvas id="backgroundCanvas"></canvas>');
+    } else {
+        document.body.insertAdjacentHTML('afterbegin', '<canvas id="backgroundCanvas"></canvas>');
+    }
 
     bordercanvas = document.getElementById('backgroundCanvas');
     borderctx = bordercanvas.getContext('2d');
@@ -187,7 +231,7 @@ function setupBackgroundCanvas() {
             canvas.style.left = '0';
             canvas.style.width = '100%';
             canvas.style.height = '100%';
-            canvas.style.zIndex = '5555';
+            canvas.style.zIndex = '1005';
             canvas.style.pointerEvents = 'none';
             canvas.style.transition = 'transform 0.2s';
         } 
@@ -203,6 +247,5 @@ function setupBackgroundCanvas() {
     }
 
     setCanvasAttributes(bordercanvas);
-    let globalSeed = Math.round(Math.random()*100000);
     window.addEventListener('resize', renderBorder);
 }

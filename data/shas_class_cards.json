@@ -10,7 +10,8 @@
           "我们"
         ]
       }
-    }
+    },
+    "pinyin_tones": "wǒ"
   },
   "你": {
     "pinyin": "nǐ",
@@ -23,7 +24,8 @@
           "你姓什么"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nǐ"
   },
   "他": {
     "pinyin": "tā",
@@ -36,21 +38,24 @@
           "其他"
         ]
       }
-    }
+    },
+    "pinyin_tones": "tā"
   },
   "她": {
     "pinyin": "tā",
     "english": "she",
     "function": "pronoun",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "tā"
   },
   "它": {
     "pinyin": "tā",
     "english": "it",
     "function": "pronoun",
     "hsk_level": 2,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "tā"
   },
   "是": {
     "pinyin": "shì",
@@ -78,7 +83,8 @@
           "是非"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shì"
   },
   "的": {
     "pinyin": "de",
@@ -95,7 +101,8 @@
           "似的"
         ]
       }
-    }
+    },
+    "pinyin_tones": "de"
   },
   "了": {
     "pinyin": "le",
@@ -121,7 +128,8 @@
           "一目了然"
         ]
       }
-    }
+    },
+    "pinyin_tones": "le"
   },
   "也": {
     "pinyin": "yě",
@@ -134,14 +142,16 @@
           "也许"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yě"
   },
   "这": {
     "pinyin": "zhè",
     "english": "this",
     "function": "pronoun",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "zhè"
   },
   "那": {
     "pinyin": "nà",
@@ -154,7 +164,8 @@
           "刹那"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nà"
   },
   "哪": {
     "pinyin": "nǎ",
@@ -170,7 +181,8 @@
           "哪怕"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nǎ"
   },
   "有": {
     "pinyin": "yǒu",
@@ -201,7 +213,8 @@
           "有条不紊"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yǒu"
   },
   "好": {
     "pinyin": "hǎo",
@@ -240,7 +253,8 @@
           "讨好"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hǎo"
   },
   "在": {
     "pinyin": "zài",
@@ -268,7 +282,8 @@
           "在意"
         ]
       }
-    }
+    },
+    "pinyin_tones": "zài"
   },
   "不": {
     "pinyin": "bù",
@@ -350,7 +365,8 @@
           "有条不紊"
         ]
       }
-    }
+    },
+    "pinyin_tones": "bù"
   },
   "和": {
     "pinyin": "hé",
@@ -381,14 +397,16 @@
           "总和"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hé"
   },
   "吗": {
     "pinyin": "ma",
     "english": "question particle",
     "function": "language-particle",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "ma"
   },
   "吧": {
     "pinyin": "ba",
@@ -401,7 +419,8 @@
           "酒吧"
         ]
       }
-    }
+    },
+    "pinyin_tones": "ba"
   },
   "么": {
     "pinyin": "me",
@@ -425,7 +444,8 @@
           "多么"
         ]
       }
-    }
+    },
+    "pinyin_tones": "me"
   },
   "一": {
     "pinyin": "yī",
@@ -477,7 +497,8 @@
           "一向"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yī"
   },
   "二": {
     "pinyin": "èr",
@@ -490,7 +511,8 @@
           "二氧化碳"
         ]
       }
-    }
+    },
+    "pinyin_tones": "èr"
   },
   "三": {
     "pinyin": "sān",
@@ -506,7 +528,8 @@
           "丢三落四"
         ]
       }
-    }
+    },
+    "pinyin_tones": "sān"
   },
   "四": {
     "pinyin": "sì",
@@ -520,42 +543,48 @@
           "四肢"
         ]
       }
-    }
+    },
+    "pinyin_tones": "sì"
   },
   "五": {
     "pinyin": "wǔ",
     "english": "five",
     "function": "number",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "wǔ"
   },
   "六": {
     "pinyin": "liù",
     "english": "six",
     "function": "number",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "liù"
   },
   "七": {
     "pinyin": "qī",
     "english": "seven",
     "function": "number",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "qī"
   },
   "八": {
     "pinyin": "bā",
     "english": "eight",
     "function": "number",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "bā"
   },
   "九": {
     "pinyin": "jiǔ",
     "english": "nine",
     "function": "number",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "jiǔ"
   },
   "十": {
     "pinyin": "shí",
@@ -571,7 +600,8 @@
           "十足"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shí"
   },
   "百": {
     "pinyin": "bǎi",
@@ -590,7 +620,8 @@
           "千方百计"
         ]
       }
-    }
+    },
+    "pinyin_tones": "bǎi"
   },
   "千": {
     "pinyin": "qiān",
@@ -606,7 +637,8 @@
           "千方百计"
         ]
       }
-    }
+    },
+    "pinyin_tones": "qiān"
   },
   "万": {
     "pinyin": "wàn",
@@ -625,7 +657,8 @@
           "万分"
         ]
       }
-    }
+    },
+    "pinyin_tones": "wàn"
   },
   "上": {
     "pinyin": "shàng",
@@ -667,7 +700,8 @@
           "雪上加霜"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shàng"
   },
   "下": {
     "pinyin": "xià",
@@ -695,7 +729,8 @@
           "下属"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xià"
   },
   "左": {
     "pinyin": "zuǒ",
@@ -711,7 +746,8 @@
           "左右"
         ]
       }
-    }
+    },
+    "pinyin_tones": "zuǒ"
   },
   "右": {
     "pinyin": "yòu",
@@ -730,7 +766,8 @@
           "座右铭"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yòu"
   },
   "前": {
     "pinyin": "qián",
@@ -762,7 +799,8 @@
           "先前"
         ]
       }
-    }
+    },
+    "pinyin_tones": "qián"
   },
   "后": {
     "pinyin": "hòu",
@@ -796,7 +834,8 @@
           "争先恐后"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hòu"
   },
   "里": {
     "pinyin": "lǐ",
@@ -812,7 +851,8 @@
           "里程碑"
         ]
       }
-    }
+    },
+    "pinyin_tones": "lǐ"
   },
   "外": {
     "pinyin": "wài",
@@ -840,7 +880,8 @@
           "外向"
         ]
       }
-    }
+    },
+    "pinyin_tones": "wài"
   },
   "大": {
     "pinyin": "dà",
@@ -886,7 +927,8 @@
           "庞大"
         ]
       }
-    }
+    },
+    "pinyin_tones": "dà"
   },
   "小": {
     "pinyin": "xiǎo",
@@ -919,7 +961,8 @@
           "小心翼翼"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xiǎo"
   },
   "多": {
     "pinyin": "duō",
@@ -947,7 +990,8 @@
           "见多识广"
         ]
       }
-    }
+    },
+    "pinyin_tones": "duō"
   },
   "少": {
     "pinyin": "shǎo",
@@ -968,7 +1012,8 @@
           "青少年"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shǎo"
   },
   "日": {
     "pinyin": "rì",
@@ -1004,7 +1049,8 @@
           "与日俱增"
         ]
       }
-    }
+    },
+    "pinyin_tones": "rì"
   },
   "月": {
     "pinyin": "yuè",
@@ -1022,7 +1068,8 @@
           "正月"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yuè"
   },
   "年": {
     "pinyin": "nián",
@@ -1054,7 +1101,8 @@
           "逐年"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nián"
   },
   "星期": {
     "pinyin": "xīngqī",
@@ -1098,7 +1146,8 @@
           "周期"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xīng qī"
   },
   "早上": {
     "pinyin": "zǎoshang",
@@ -1151,7 +1200,8 @@
           "雪上加霜"
         ]
       }
-    }
+    },
+    "pinyin_tones": "zǎo shang"
   },
   "下午": {
     "pinyin": "xiàwǔ",
@@ -1191,7 +1241,8 @@
           "端午节"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xià wǔ"
   },
   "晚上": {
     "pinyin": "wǎnshang",
@@ -1242,7 +1293,8 @@
           "雪上加霜"
         ]
       }
-    }
+    },
+    "pinyin_tones": "wǎn shang"
   },
   "早上好": {
     "pinyin": "zǎoshang hǎo",
@@ -1328,7 +1380,8 @@
           "讨好"
         ]
       }
-    }
+    },
+    "pinyin_tones": "zǎo shang hǎo"
   },
   "下午好": {
     "pinyin": "xiàwǔ hǎo",
@@ -1405,7 +1458,8 @@
           "讨好"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xià wǔ hǎo"
   },
   "晚上好": {
     "pinyin": "wǎnshang hǎo",
@@ -1497,7 +1551,8 @@
           "讨好"
         ]
       }
-    }
+    },
+    "pinyin_tones": "wǎn shang hǎo"
   },
   "晚安": {
     "pinyin": "wǎn'ān",
@@ -1538,7 +1593,8 @@
           "治安"
         ]
       }
-    }
+    },
+    "pinyin_tones": "wǎn 'ā"
   },
   "吃": {
     "pinyin": "chī",
@@ -1565,7 +1621,8 @@
           "吃力"
         ]
       }
-    }
+    },
+    "pinyin_tones": "chī"
   },
   "喝": {
     "pinyin": "hē",
@@ -1579,7 +1636,8 @@
           "难喝"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hē"
   },
   "睡": {
     "pinyin": "shuì",
@@ -1592,7 +1650,8 @@
           "睡觉"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shuì"
   },
   "看": {
     "pinyin": "kàn",
@@ -1615,7 +1674,8 @@
           "看待"
         ]
       }
-    }
+    },
+    "pinyin_tones": "kàn"
   },
   "学习": {
     "pinyin": "xuéxí",
@@ -1667,7 +1727,8 @@
           "演习"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xué xí"
   },
   "复习": {
     "pinyin": "fùxí",
@@ -1713,7 +1774,8 @@
           "演习"
         ]
       }
-    }
+    },
+    "pinyin_tones": "fù xí"
   },
   "上课": {
     "pinyin": "shàngkè",
@@ -1767,7 +1829,8 @@
           "旷课"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shàng kè"
   },
   "书": {
     "pinyin": "shū",
@@ -1791,7 +1854,8 @@
           "证书"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shū"
   },
   "笔": {
     "pinyin": "bǐ",
@@ -1807,7 +1871,8 @@
           "笔记本"
         ]
       }
-    }
+    },
+    "pinyin_tones": "bǐ"
   },
   "纸": {
     "pinyin": "zhǐ",
@@ -1820,7 +1885,8 @@
           "报纸"
         ]
       }
-    }
+    },
+    "pinyin_tones": "zhǐ"
   },
   "名字": {
     "pinyin": "míngzi",
@@ -1868,14 +1934,16 @@
           "简体字"
         ]
       }
-    }
+    },
+    "pinyin_tones": "míng zi"
   },
   "叫": {
     "pinyin": "jiào",
     "english": "to be called",
     "function": "verb",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "jiào"
   },
   "请": {
     "pinyin": "qǐng",
@@ -1901,7 +1969,8 @@
           "请帖"
         ]
       }
-    }
+    },
+    "pinyin_tones": "qǐng"
   },
   "谢谢": {
     "pinyin": "xièxie",
@@ -1921,7 +1990,8 @@
           "新陈代谢"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xiè xie"
   },
   "对不起": {
     "pinyin": "duìbuqǐ",
@@ -2061,7 +2131,8 @@
           "掀起"
         ]
       }
-    }
+    },
+    "pinyin_tones": "duì bu qǐ"
   },
   "认识": {
     "pinyin": "rènshi",
@@ -2099,7 +2170,8 @@
           "意识"
         ]
       }
-    }
+    },
+    "pinyin_tones": "rèn shi"
   },
   "家": {
     "pinyin": "jiā",
@@ -2133,7 +2205,8 @@
           "儒家"
         ]
       }
-    }
+    },
+    "pinyin_tones": "jiā"
   },
   "学校": {
     "pinyin": "xuéxiào",
@@ -2173,7 +2246,8 @@
           "校长"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xué xiào"
   },
   "教室": {
     "pinyin": "jiàoshì",
@@ -2208,7 +2282,8 @@
           "卧室"
         ]
       }
-    }
+    },
+    "pinyin_tones": "jiào shì"
   },
   "老师": {
     "pinyin": "lǎoshī",
@@ -2246,7 +2321,8 @@
           "师范"
         ]
       }
-    }
+    },
+    "pinyin_tones": "lǎo shī"
   },
   "学生": {
     "pinyin": "xuésheng",
@@ -2327,14 +2403,16 @@
           "自力更生"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xué sheng"
   },
   "男": {
     "pinyin": "nán",
     "english": "male",
     "function": "noun",
     "hsk_level": 2,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "nán"
   },
   "女": {
     "pinyin": "nǚ",
@@ -2351,28 +2429,32 @@
           "女士"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nǚ"
   },
   "爸爸": {
     "pinyin": "bàba",
     "english": "father",
     "function": "noun",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "bà ba"
   },
   "妈妈": {
     "pinyin": "māma",
     "english": "mother",
     "function": "noun",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "mā ma"
   },
   "哥哥": {
     "pinyin": "gēge",
     "english": "older brother",
     "function": "place noun",
     "hsk_level": 2,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "gē ge"
   },
   "姐姐": {
     "pinyin": "jiějie",
@@ -2386,7 +2468,8 @@
           "小姐"
         ]
       }
-    }
+    },
+    "pinyin_tones": "jiě jie"
   },
   "弟弟": {
     "pinyin": "dìdi",
@@ -2404,21 +2487,24 @@
           "徒弟"
         ]
       }
-    }
+    },
+    "pinyin_tones": "dì di"
   },
   "妹妹": {
     "pinyin": "mèimei",
     "english": "younger sister",
     "function": "noun",
     "hsk_level": 2,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "mèi mei"
   },
   "爷爷": {
     "pinyin": "yéye",
     "english": "grandfather (paternal)",
     "function": "noun",
     "hsk_level": 3,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "yé ye"
   },
   "奶奶": {
     "pinyin": "nǎinai",
@@ -2432,7 +2518,8 @@
           "牛奶"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nǎi nai"
   },
   "朋友": {
     "pinyin": "péngyou",
@@ -2446,7 +2533,8 @@
           "友谊"
         ]
       }
-    }
+    },
+    "pinyin_tones": "péng you"
   },
   "同学": {
     "pinyin": "tóngxué",
@@ -2502,7 +2590,8 @@
           "学位"
         ]
       }
-    }
+    },
+    "pinyin_tones": "tóng xué"
   },
   "高兴": {
     "pinyin": "gāoxìng",
@@ -2551,7 +2640,8 @@
           "振兴"
         ]
       }
-    }
+    },
+    "pinyin_tones": "gāo xìng"
   },
   "快乐": {
     "pinyin": "kuàilè",
@@ -2600,7 +2690,8 @@
           "知足常乐"
         ]
       }
-    }
+    },
+    "pinyin_tones": "kuài lè"
   },
   "中文": {
     "pinyin": "Zhōngwén",
@@ -2658,7 +2749,8 @@
           "文艺"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Zhōng wén"
   },
   "汉语": {
     "pinyin": "Hànyǔ",
@@ -2687,7 +2779,8 @@
           "母语"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Hàn yǔ"
   },
   "听": {
     "pinyin": "tīng",
@@ -2703,7 +2796,8 @@
           "倾听"
         ]
       }
-    }
+    },
+    "pinyin_tones": "tīng"
   },
   "说": {
     "pinyin": "shuō",
@@ -2730,7 +2824,8 @@
           "学说"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shuō"
   },
   "读": {
     "pinyin": "dú",
@@ -2746,7 +2841,8 @@
           "朗读"
         ]
       }
-    }
+    },
+    "pinyin_tones": "dú"
   },
   "写": {
     "pinyin": "xiě",
@@ -2760,7 +2856,8 @@
           "写作"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xiě"
   },
   "去": {
     "pinyin": "qù",
@@ -2780,7 +2877,8 @@
           "失去"
         ]
       }
-    }
+    },
+    "pinyin_tones": "qù"
   },
   "来": {
     "pinyin": "lái",
@@ -2816,7 +2914,8 @@
           "向来"
         ]
       }
-    }
+    },
+    "pinyin_tones": "lái"
   },
   "回": {
     "pinyin": "huí",
@@ -2839,7 +2938,8 @@
           "挽回"
         ]
       }
-    }
+    },
+    "pinyin_tones": "huí"
   },
   "开": {
     "pinyin": "kāi",
@@ -2881,7 +2981,8 @@
           "盛开"
         ]
       }
-    }
+    },
+    "pinyin_tones": "kāi"
   },
   "关": {
     "pinyin": "guān",
@@ -2913,7 +3014,8 @@
           "关照"
         ]
       }
-    }
+    },
+    "pinyin_tones": "guān"
   },
   "门": {
     "pinyin": "mén",
@@ -2933,14 +3035,16 @@
           "热门"
         ]
       }
-    }
+    },
+    "pinyin_tones": "mén"
   },
   "买": {
     "pinyin": "mǎi",
     "english": "to buy",
     "function": "verb",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "mǎi"
   },
   "卖": {
     "pinyin": "mài",
@@ -2954,7 +3058,8 @@
           "贩卖"
         ]
       }
-    }
+    },
+    "pinyin_tones": "mài"
   },
   "钱": {
     "pinyin": "qián",
@@ -2971,7 +3076,8 @@
           "压岁钱"
         ]
       }
-    }
+    },
+    "pinyin_tones": "qián"
   },
   "元": {
     "pinyin": "yuán",
@@ -2992,7 +3098,8 @@
           "元宵节"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yuán"
   },
   "水": {
     "pinyin": "shuǐ",
@@ -3025,14 +3132,16 @@
           "薪水"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shuǐ"
   },
   "茶": {
     "pinyin": "chá",
     "english": "tea",
     "function": "noun",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "chá"
   },
   "可乐": {
     "pinyin": "kělè",
@@ -3093,7 +3202,8 @@
           "知足常乐"
         ]
       }
-    }
+    },
+    "pinyin_tones": "kě lè"
   },
   "米饭": {
     "pinyin": "mǐfàn",
@@ -3118,7 +3228,8 @@
           "饭店"
         ]
       }
-    }
+    },
+    "pinyin_tones": "mǐ fàn"
   },
   "面条": {
     "pinyin": "miàntiáo",
@@ -3179,7 +3290,8 @@
           "有条不紊"
         ]
       }
-    }
+    },
+    "pinyin_tones": "miàn tiáo"
   },
   "肉": {
     "pinyin": "ròu",
@@ -3195,14 +3307,16 @@
           "肌肉"
         ]
       }
-    }
+    },
+    "pinyin_tones": "ròu"
   },
   "鱼": {
     "pinyin": "yú",
     "english": "fish",
     "function": "noun",
     "hsk_level": 2,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "yú"
   },
   "牛": {
     "pinyin": "niú",
@@ -3221,7 +3335,8 @@
           "吹牛"
         ]
       }
-    }
+    },
+    "pinyin_tones": "niú"
   },
   "羊": {
     "pinyin": "yáng",
@@ -3234,7 +3349,8 @@
           "羊肉"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yáng"
   },
   "鸡": {
     "pinyin": "jī",
@@ -3247,7 +3363,8 @@
           "鸡蛋"
         ]
       }
-    }
+    },
+    "pinyin_tones": "jī"
   },
   "蔬菜": {
     "pinyin": "shūcài",
@@ -3263,7 +3380,8 @@
           "菜单"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shū cài"
   },
   "水果": {
     "pinyin": "shuǐguǒ",
@@ -3318,7 +3436,8 @@
           "果断"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shuǐ guǒ"
   },
   "颜色": {
     "pinyin": "yánsè",
@@ -3343,7 +3462,8 @@
           "棕色"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yán sè"
   },
   "红": {
     "pinyin": "hóng",
@@ -3359,14 +3479,16 @@
           "分红"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hóng"
   },
   "绿": {
     "pinyin": "lǜ",
     "english": "green",
     "function": "adjective",
     "hsk_level": 3,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "lǜ"
   },
   "蓝": {
     "pinyin": "lán",
@@ -3379,7 +3501,8 @@
           "蔚蓝"
         ]
       }
-    }
+    },
+    "pinyin_tones": "lán"
   },
   "黄": {
     "pinyin": "huáng",
@@ -3398,7 +3521,8 @@
           "黄昏"
         ]
       }
-    }
+    },
+    "pinyin_tones": "huáng"
   },
   "黑": {
     "pinyin": "hēi",
@@ -3414,7 +3538,8 @@
           "乌黑"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hēi"
   },
   "白": {
     "pinyin": "bái",
@@ -3433,7 +3558,8 @@
           "坦白"
         ]
       }
-    }
+    },
+    "pinyin_tones": "bái"
   },
   "天气": {
     "pinyin": "tiānqì",
@@ -3523,7 +3649,8 @@
           "志气"
         ]
       }
-    }
+    },
+    "pinyin_tones": "tiān qì"
   },
   "冷": {
     "pinyin": "lěng",
@@ -3544,7 +3671,8 @@
           "冷却"
         ]
       }
-    }
+    },
+    "pinyin_tones": "lěng"
   },
   "热": {
     "pinyin": "rè",
@@ -3571,7 +3699,8 @@
           "炎热"
         ]
       }
-    }
+    },
+    "pinyin_tones": "rè"
   },
   "雨": {
     "pinyin": "yǔ",
@@ -3584,7 +3713,8 @@
           "下雨"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yǔ"
   },
   "雪": {
     "pinyin": "xuě",
@@ -3597,7 +3727,8 @@
           "雪上加霜"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xuě"
   },
   "春": {
     "pinyin": "chūn",
@@ -3610,7 +3741,8 @@
           "青春"
         ]
       }
-    }
+    },
+    "pinyin_tones": "chūn"
   },
   "夏": {
     "pinyin": "xià",
@@ -3623,21 +3755,24 @@
           "夏令营"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xià"
   },
   "秋": {
     "pinyin": "qiū",
     "english": "autumn",
     "function": "unknown",
     "hsk_level": 3,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "qiū"
   },
   "冬": {
     "pinyin": "dōng",
     "english": "winter",
     "function": "unknown",
     "hsk_level": 3,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "dōng"
   },
   "山": {
     "pinyin": "shān",
@@ -3653,7 +3788,8 @@
           "山脉"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shān"
   },
   "海": {
     "pinyin": "hǎi",
@@ -3678,7 +3814,8 @@
           "沿海"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hǎi"
   },
   "河": {
     "pinyin": "hé",
@@ -3691,7 +3828,8 @@
           "黄河"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hé"
   },
   "动物": {
     "pinyin": "dòngwù",
@@ -3767,7 +3905,8 @@
           "物资"
         ]
       }
-    }
+    },
+    "pinyin_tones": "dòng wù"
   },
   "猫": {
     "pinyin": "māo",
@@ -3780,21 +3919,24 @@
           "熊猫"
         ]
       }
-    }
+    },
+    "pinyin_tones": "māo"
   },
   "狗": {
     "pinyin": "gǒu",
     "english": "dog",
     "function": "noun",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "gǒu"
   },
   "鸟": {
     "pinyin": "niǎo",
     "english": "bird",
     "function": "unknown",
     "hsk_level": 3,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "niǎo"
   },
   "熊": {
     "pinyin": "xióng",
@@ -3807,7 +3949,8 @@
           "熊猫"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xióng"
   },
   "衣服": {
     "pinyin": "yīfu",
@@ -3842,7 +3985,8 @@
           "制服"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yī fu"
   },
   "裤子": {
     "pinyin": "kùzi",
@@ -3929,7 +4073,8 @@
           "子弹"
         ]
       }
-    }
+    },
+    "pinyin_tones": "kù zi"
   },
   "鞋": {
     "pinyin": "xié",
@@ -3942,7 +4087,8 @@
           "皮鞋"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xié"
   },
   "手机": {
     "pinyin": "shǒujī",
@@ -4017,7 +4163,8 @@
           "危机"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shǒu jī"
   },
   "电脑": {
     "pinyin": "diànnǎo",
@@ -4053,7 +4200,8 @@
           "伤脑筋"
         ]
       }
-    }
+    },
+    "pinyin_tones": "diàn nǎo"
   },
   "电影": {
     "pinyin": "diànyǐng",
@@ -4091,7 +4239,8 @@
           "影子"
         ]
       }
-    }
+    },
+    "pinyin_tones": "diàn yǐng"
   },
   "音乐": {
     "pinyin": "yīnyuè",
@@ -4137,7 +4286,8 @@
           "知足常乐"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yīn yuè"
   },
   "运动": {
     "pinyin": "yùndòng",
@@ -4201,7 +4351,8 @@
           "无动于衷"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yùn dòng"
   },
   "跑步": {
     "pinyin": "pǎobù",
@@ -4226,7 +4377,8 @@
           "让步"
         ]
       }
-    }
+    },
+    "pinyin_tones": "pǎo bù"
   },
   "游泳": {
     "pinyin": "yóuyǒng",
@@ -4251,7 +4403,8 @@
           "上游"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yóu yǒng"
   },
   "工作": {
     "pinyin": "gōngzuò",
@@ -4308,7 +4461,8 @@
           "作息"
         ]
       }
-    }
+    },
+    "pinyin_tones": "gōng zuò"
   },
   "休息": {
     "pinyin": "xiūxi",
@@ -4336,7 +4490,8 @@
           "作息"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xiū xi"
   },
   "医生": {
     "pinyin": "yīshēng",
@@ -4395,7 +4550,8 @@
           "自力更生"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yī shēng"
   },
   "护士": {
     "pinyin": "hùshi",
@@ -4436,7 +4592,8 @@
           "绅士"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hù shi"
   },
   "飞机": {
     "pinyin": "fēijī",
@@ -4486,7 +4643,8 @@
           "危机"
         ]
       }
-    }
+    },
+    "pinyin_tones": "fēi jī"
   },
   "汽车": {
     "pinyin": "qìchē",
@@ -4528,7 +4686,8 @@
           "刹车"
         ]
       }
-    }
+    },
+    "pinyin_tones": "qì chē"
   },
   "自行车": {
     "pinyin": "zìxíngchē",
@@ -4626,7 +4785,8 @@
           "刹车"
         ]
       }
-    }
+    },
+    "pinyin_tones": "zì xíng chē"
   },
   "国家": {
     "pinyin": "guójiā",
@@ -4679,7 +4839,8 @@
           "儒家"
         ]
       }
-    }
+    },
+    "pinyin_tones": "guó jiā"
   },
   "城市": {
     "pinyin": "chéngshì",
@@ -4703,7 +4864,8 @@
           "市场"
         ]
       }
-    }
+    },
+    "pinyin_tones": "chéng shì"
   },
   "北京": {
     "pinyin": "Běijīng",
@@ -4728,7 +4890,8 @@
           "京剧"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Běi jīng"
   },
   "上海": {
     "pinyin": "Shànghǎi",
@@ -4787,7 +4950,8 @@
           "沿海"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Shàng hǎi"
   },
   "语言": {
     "pinyin": "yǔyán",
@@ -4833,7 +4997,8 @@
           "总而言之"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yǔ yán"
   },
   "英语": {
     "pinyin": "Yīngyǔ",
@@ -4874,7 +5039,8 @@
           "母语"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Yīng yǔ"
   },
   "法语": {
     "pinyin": "Fǎyǔ",
@@ -4929,7 +5095,8 @@
           "母语"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Fǎ yǔ"
   },
   "德语": {
     "pinyin": "Déyǔ",
@@ -4968,7 +5135,8 @@
           "母语"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Dé yǔ"
   },
   "问题": {
     "pinyin": "wèntí",
@@ -5012,7 +5180,8 @@
           "专题"
         ]
       }
-    }
+    },
+    "pinyin_tones": "wèn tí"
   },
   "回答": {
     "pinyin": "huídá",
@@ -5048,7 +5217,8 @@
           "答复"
         ]
       }
-    }
+    },
+    "pinyin_tones": "huí dá"
   },
   "时间": {
     "pinyin": "shíjiān",
@@ -5116,7 +5286,8 @@
           "瞬间"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shí jiān"
   },
   "分钟": {
     "pinyin": "fēnzhōng",
@@ -5160,7 +5331,8 @@
           "万分"
         ]
       }
-    }
+    },
+    "pinyin_tones": "fēn zhōng"
   },
   "小时": {
     "pinyin": "xiǎoshí",
@@ -5227,7 +5399,8 @@
           "时事"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xiǎo shí"
   },
   "好吃": {
     "pinyin": "hǎochī",
@@ -5285,7 +5458,8 @@
           "吃力"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hǎo chī"
   },
   "难吃": {
     "pinyin": "nánchī",
@@ -5338,7 +5512,8 @@
           "吃力"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nán chī"
   },
   "好喝": {
     "pinyin": "hǎohē",
@@ -5387,7 +5562,8 @@
           "难喝"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hǎo hē"
   },
   "难喝": {
     "pinyin": "nánhē",
@@ -5435,7 +5611,8 @@
           "好喝"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nán hē"
   },
   "漂亮": {
     "pinyin": "piàoliang",
@@ -5459,7 +5636,8 @@
           "响亮"
         ]
       }
-    }
+    },
+    "pinyin_tones": "piào liang"
   },
   "美丽": {
     "pinyin": "měilì",
@@ -5488,14 +5666,16 @@
           "壮丽"
         ]
       }
-    }
+    },
+    "pinyin_tones": "měi lì"
   },
   "帅": {
     "pinyin": "shuài",
     "english": "handsome",
     "function": "proper noun",
     "hsk_level": 4,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "shuài"
   },
   "高": {
     "pinyin": "gāo",
@@ -5528,28 +5708,32 @@
           "兴高采烈"
         ]
       }
-    }
+    },
+    "pinyin_tones": "gāo"
   },
   "矮": {
     "pinyin": "ǎi",
     "english": "short (height)",
     "function": "adjective",
     "hsk_level": 3,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "ǎi"
   },
   "胖": {
     "pinyin": "pàng",
     "english": "fat",
     "function": "adjective",
     "hsk_level": 3,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "pàng"
   },
   "瘦": {
     "pinyin": "shòu",
     "english": "thin",
     "function": "adjective",
     "hsk_level": 3,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "shòu"
   },
   "新": {
     "pinyin": "xīn",
@@ -5576,7 +5760,8 @@
           "崭新"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xīn"
   },
   "旧": {
     "pinyin": "jiù",
@@ -5591,7 +5776,8 @@
           "依旧"
         ]
       }
-    }
+    },
+    "pinyin_tones": "jiù"
   },
   "快": {
     "pinyin": "kuài",
@@ -5617,7 +5803,8 @@
           "爽快"
         ]
       }
-    }
+    },
+    "pinyin_tones": "kuài"
   },
   "慢": {
     "pinyin": "màn",
@@ -5631,7 +5818,8 @@
           "慢性"
         ]
       }
-    }
+    },
+    "pinyin_tones": "màn"
   },
   "贵": {
     "pinyin": "guì",
@@ -5653,7 +5841,8 @@
           "珍贵"
         ]
       }
-    }
+    },
+    "pinyin_tones": "guì"
   },
   "便宜": {
     "pinyin": "piányi",
@@ -5685,7 +5874,8 @@
           "适宜"
         ]
       }
-    }
+    },
+    "pinyin_tones": "pián yi"
   },
   "容易": {
     "pinyin": "róngyì",
@@ -5720,7 +5910,8 @@
           "交易"
         ]
       }
-    }
+    },
+    "pinyin_tones": "róng yì"
   },
   "困难": {
     "pinyin": "kùnnan",
@@ -5762,7 +5953,8 @@
           "灾难"
         ]
       }
-    }
+    },
+    "pinyin_tones": "kùn nan"
   },
   "开始": {
     "pinyin": "kāishǐ",
@@ -5812,7 +6004,8 @@
           "原始"
         ]
       }
-    }
+    },
+    "pinyin_tones": "kāi shǐ"
   },
   "结束": {
     "pinyin": "jiéshù",
@@ -5853,7 +6046,8 @@
           "约束"
         ]
       }
-    }
+    },
+    "pinyin_tones": "jié shù"
   },
   "欢迎": {
     "pinyin": "huānyíng",
@@ -5878,7 +6072,8 @@
           "迎面"
         ]
       }
-    }
+    },
+    "pinyin_tones": "huān yíng"
   },
   "再见": {
     "pinyin": "zàijiàn",
@@ -5923,7 +6118,8 @@
           "喜闻乐见"
         ]
       }
-    }
+    },
+    "pinyin_tones": "zài jiàn"
   },
   "理想": {
     "pinyin": "lǐxiǎng",
@@ -5995,7 +6191,8 @@
           "着想"
         ]
       }
-    }
+    },
+    "pinyin_tones": "lǐ xiǎng"
   },
   "老虎": {
     "pinyin": "lǎohǔ",
@@ -6029,7 +6226,8 @@
           "狼吞虎咽"
         ]
       }
-    }
+    },
+    "pinyin_tones": "lǎo hǔ"
   },
   "打扫": {
     "pinyin": "dǎsǎo",
@@ -6074,7 +6272,8 @@
           "无精打采"
         ]
       }
-    }
+    },
+    "pinyin_tones": "dǎ sǎo"
   },
   "喜欢": {
     "pinyin": "xǐhuan",
@@ -6100,7 +6299,8 @@
           "联欢"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xǐ huan"
   },
   "讨厌": {
     "pinyin": "tǎoyàn",
@@ -6126,7 +6326,8 @@
           "厌恶"
         ]
       }
-    }
+    },
+    "pinyin_tones": "tǎo yàn"
   },
   "房子": {
     "pinyin": "fángzi",
@@ -6215,7 +6416,8 @@
           "子弹"
         ]
       }
-    }
+    },
+    "pinyin_tones": "fáng zi"
   },
   "姓": {
     "pinyin": "xìng",
@@ -6232,7 +6434,8 @@
           "老百姓"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xìng"
   },
   "友好": {
     "pinyin": "yǒuhǎo",
@@ -6281,14 +6484,16 @@
           "讨好"
         ]
       }
-    }
+    },
+    "pinyin_tones": "yǒu hǎo"
   },
   "谁": {
     "pinyin": "shéi",
     "english": "who",
     "function": "pronoun",
     "hsk_level": 1,
-    "char_matches": {}
+    "char_matches": {},
+    "pinyin_tones": "shéi"
   },
   "您贵姓": {
     "pinyin": "nín guì xìng",
@@ -6332,7 +6537,8 @@
           "老百姓"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nín guì xìng"
   },
   "你姓什么": {
     "pinyin": "nǐ xìng shénme",
@@ -6388,7 +6594,8 @@
           "多么"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nǐ xìng shén me"
   },
   "星期日/天": {
     "pinyin": "xīngqī rì/tiān",
@@ -6496,7 +6703,8 @@
           "天文"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xīng qī rì / tiān"
   },
   "周": {
     "pinyin": "zhōu",
@@ -6528,7 +6736,8 @@
           "周转"
         ]
       }
-    }
+    },
+    "pinyin_tones": "zhōu"
   },
   "周末": {
     "pinyin": "zhōumò",
@@ -6563,7 +6772,8 @@
           "粉末"
         ]
       }
-    }
+    },
+    "pinyin_tones": "zhōu mò"
   },
   "上周": {
     "pinyin": "shàng zhōu",
@@ -6629,7 +6839,8 @@
           "周转"
         ]
       }
-    }
+    },
+    "pinyin_tones": "shàng zhōu"
   },
   "下周": {
     "pinyin": "xià zhōu",
@@ -6681,7 +6892,8 @@
           "周转"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xià zhōu"
   },
   "想": {
     "pinyin": "xiǎng",
@@ -6710,7 +6922,8 @@
           "着想"
         ]
       }
-    }
+    },
+    "pinyin_tones": "xiǎng"
   },
   "都": {
     "pinyin": "dōu",
@@ -6723,7 +6936,8 @@
           "首都"
         ]
       }
-    }
+    },
+    "pinyin_tones": "dōu"
   },
   "寒语": {
     "pinyin": "hányǔ",
@@ -6763,7 +6977,8 @@
           "母语"
         ]
       }
-    }
+    },
+    "pinyin_tones": "hán yǔ"
   },
   "欧洲": {
     "pinyin": "Ōuzhōu",
@@ -6780,7 +6995,8 @@
           "非洲"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Ōu zhōu"
   },
   "亚洲": {
     "pinyin": "Yàzhōu",
@@ -6802,7 +7018,8 @@
           "非洲"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Yà zhōu"
   },
   "北": {
     "pinyin": "běi",
@@ -6822,7 +7039,8 @@
           "南辕北辙"
         ]
       }
-    }
+    },
+    "pinyin_tones": "běi"
   },
   "南": {
     "pinyin": "nán",
@@ -6836,7 +7054,8 @@
           "指南针"
         ]
       }
-    }
+    },
+    "pinyin_tones": "nán"
   },
   "大洋洲": {
     "pinyin": "Dàyángzhōu",
@@ -6898,7 +7117,8 @@
           "非洲"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Dà yáng zhōu"
   },
   "非洲": {
     "pinyin": "Fēizhōu",
@@ -6932,6 +7152,7 @@
           "大洋洲"
         ]
       }
-    }
+    },
+    "pinyin_tones": "Fēi zhōu"
   }
 }

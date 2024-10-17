@@ -147,7 +147,7 @@ input[type="submit"]:hover {
 .result-item:hover {
     background-color: #f0f0f0;
 }
-#flashcard-overlay {
+#flashcard_overlay {
     display: none;
     position: fixed;
     top: 0;
@@ -157,6 +157,7 @@ input[type="submit"]:hover {
     background-color: rgba(0,0,0,0.27);
     justify-content: center;
     align-items: center;
+    z-index: 1000;
 }
 
 @media (max-width: 768px) {

@@ -59,7 +59,6 @@ function toneTextColor(element) {
                 return toneMarks[char];
             }
         }
-
         return 4; // Neutral tone if no tone mark found
     }
 
@@ -154,6 +153,7 @@ document.addEventListener('keydown', function(event) {
 
         setTimeout(() => {
             recordAnswer(isCorrect);
+            renderBorder();
             // flashcard.style.border = neutralBorderStyle;
             // flashcard.style.padding = neutralPadding;
             // flashcard_hsk.style.padding = "22px";
@@ -286,6 +286,7 @@ document.getElementById('flashcard_container').addEventListener('mousedown', fun
         // flashcard.style.background = isCorrect ? correctBackgroundColor : incorrectBackgroundColor;
         indicator.style.borderColor = isCorrect ? correctBackgroundColor : incorrectBackgroundColor;
 
+        renderBorder();
         recordAnswer(isCorrect);
         setTimeout(() => {
             // flashcard.style.border = neutralBorderStyle;
@@ -395,11 +396,11 @@ function handleTouchMove(dragDistance){
 
     if(isIPhone()){
         flashcard.style.transform = `translate(${dragDistance}px) translateY(0.00008%) rotate(${dragDistance/10}deg)`;
-        border.style.transform = `translate(${dragDistance*1.090909}px) translateY(0%) rotate(${dragDistance/10}deg)`;
+        bordercanvas.style.transform = `translate(${dragDistance*1.090909}px) translateY(0%) rotate(${dragDistance/10}deg)`;
     }
     else{
         flashcard.style.transform = `translate(${dragDistance}px) rotate(${dragDistance/10}deg)`;
-        border.style.transform = `translate(${dragDistance}px) rotate(${dragDistance/10}deg)`;
+        bordercanvas.style.transform = `translate(${dragDistance}px) rotate(${dragDistance/10}deg)`;
     }
 
     const dim = Math.max(0, 255-apercentage*255);
@@ -421,9 +422,11 @@ function handleTouchMove(dragDistance){
     }
     if(apercentage > threshold){
         if(dragDistance > 0){
+            renderBorder();
             recordAnswer(true);
         }
         else{
+            renderBorder();
             recordAnswer(false);
         }
         touchStartX = null;
@@ -435,7 +438,7 @@ function handleTouchMove(dragDistance){
         flashcard.style.transform = isIPhone() ? 'translateY(0.00008%)' : 'translateY(0%)';
         indicator.style.borderColor = neutralColor;
         const canvas = document.getElementById('backgroundCanvas');
-        border.style.transform = isIPhone() ? 'translateY(0%)' : 'translateY(0%)';
+        bordercanvas.style.transform = isIPhone() ? 'translateY(0%)' : 'translateY(0%)';
     }
 }
 
@@ -451,7 +454,7 @@ function handleTouchEnd(){
     flashcard.style.transform = isIPhone() ? 'translateY(0.00008%)' : 'translateY(0%)';
     indicator.style.borderColor = neutralColor;
     const canvas = document.getElementById('backgroundCanvas');
-    border.style.transform = isIPhone() ? 'translateY(0%)' : 'translateY(0%)';
+    bordercanvas.style.transform = isIPhone() ? 'translateY(0%)' : 'translateY(0%)';
 }
 
 
@@ -626,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
     handleOrientationChange(); // Call this on initial load
     setupBackgroundCanvas();
     renderBorder();
-    
+
     const flashcard = document.getElementById('flashcard_container');
     if(isMobileOrTablet()){
         flashcard.style.transition = 'transform 0.2s, background-color 0.0s';
@@ -666,6 +669,7 @@ function changeDeck(deck, func=getNextCard) {
             throw new Error('Network response was not ok');
         }
         console.log('Deck changed successfully');
+        prefetchedCard = null;
         getNextCard();
     })
     .catch(error => {

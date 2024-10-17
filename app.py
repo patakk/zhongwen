@@ -455,6 +455,15 @@ def user_progress():
 
 
 
+@app.route('/hanziviz')
+def hanziviz():
+    characters = {}
+    for key in flashcard_app.decks:
+        if 'hsk' in key:
+            for character in flashcard_app.cards[key]:
+                characters[character] = flashcard_app.cards[key][character]
+    return render_template('hanziviz.html', characters=characters)
+
 mysession = {}
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -523,6 +532,10 @@ def check_session():
     )
 
 
+@app.route('/get_crunch')
+def get_crunch():
+    return send_file('data/crunch.mp3', mimetype='audio/mpeg')
+
 @app.route('/flashcards')
 @hard_session_required
 @timing_decorator
@@ -555,8 +568,9 @@ def packed_data(character):
                 "pinyin": '',
                 "english": '',
                 "html": '',
-                "function": '',
                 "hsk_level": '',
+                "function": '',
+                "char_matches": '',
                 "deck": session['deck']
             }
     session['deck'] = foundDeck
@@ -567,6 +581,7 @@ def packed_data(character):
         "english": data.get('english', ''),
         "hsk_level": data.get('hsk_level', ''),
         "function": data.get('function', ''),
+        "char_matches": data.get('char_matches', ''),
         "html": data.get('examples', ''),
     }
 
@@ -652,22 +667,49 @@ def get_characters_with_pinyin():
     return jsonify({"characters": characters_data})
 
 
+from flask import request, jsonify
 
-@app.route('/get_characters_pinyinenglish')
+@app.route('/get_characters_pinyinenglish', methods=['GET', 'POST'])
 @session_required
 def get_characters_pinyinenglish():
     all_data = []
-    for deck in flashcard_app.cards:
-        #for character in flashcard_app.cards[session['deck']]:
-        for character in flashcard_app.cards[deck]:
-            #data = flashcard_app.get_card_examples(deck, character)
-            data = flashcard_app.get_char_from_deck(deck, character)
-            all_data.append({
-                "character": character,
-                "pinyin": data.get('pinyin', ''),
-                "english": data.get('english', ''),
-                "deck": deck
-            })
+    characters = None
+
+    if request.method == 'POST':
+        data = request.get_json()
+        characters = data.get('characters') if data else None
+    
+    print("Request method:", request.method)
+    print("Received characters:", characters)
+
+    if characters and isinstance(characters, list) and len(characters) > 0:
+        # If specific characters are provided
+        characters = sorted(characters)
+        for character in characters:
+            for deck in flashcard_app.cards:
+                if character in flashcard_app.cards[deck]:
+                    data = flashcard_app.get_char_from_deck(deck, character)
+                    all_data.append({
+                        "character": character,
+                        "pinyin": data.get('pinyin', ''),
+                        "english": data.get('english', ''),
+                        "hsk_level": data.get('hsk_level', ''),
+                        "deck": deck
+                    })
+                    break  # Stop searching once we find the character in a deck
+    else:
+        # If no specific characters are provided or it's a GET request, get all characters
+        for deck in flashcard_app.cards:
+            for character in flashcard_app.cards[deck]:
+                data = flashcard_app.get_char_from_deck(deck, character)
+                all_data.append({
+                    "character": character,
+                    "pinyin": data.get('pinyin', ''),
+                    "english": data.get('english', ''),
+                    "hsk_level": data.get('hsk_level', ''),
+                    "deck": deck
+                })
+
     return jsonify({"characters": all_data})
 
 

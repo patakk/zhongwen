@@ -150,7 +150,7 @@ li:hover {
     background-color: #000000;
     color: #f2f2f2;
 }
-#flashcard-overlay {
+#flashcard_overlay {
     display: none;
     position: fixed;
     top: 0;
@@ -293,7 +293,7 @@ li:hover {
         margin: 0; /* Ensure no margin on mobile */
         transform: translateY(-7%);
     }
-    #flashcard-overlay {
+    #flashcard_overlay {
         padding: 10px;
     }
     .title {

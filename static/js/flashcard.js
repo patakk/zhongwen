@@ -1,4 +1,110 @@
 
+function getCharactersPinyinEnglish(characters=null, func=null) {
+    const url = '/get_characters_pinyinenglish';
+    
+    // Convert Set to Array if it's a Set
+    const charactersArray = characters instanceof Set ? Array.from(characters) : characters;
+    
+    const payload = { characters: charactersArray };
+    
+    console.log("Sending payload:", payload);  // Debug log
+
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+    };
+
+    fetch(url, options)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Received data:", data);
+            if(func){
+                func(data);
+            }
+            // updateCharacterDisplay(data.characters);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+
+
+function displayCharMatches(charMatches) {
+    const container = document.getElementById('flashcard_char_matches');
+    container.innerHTML = ''; // Clear existing content
+
+    const wordsContainer = document.createElement('div');
+    wordsContainer.className = 'words-container';
+
+    // Flatten the structure and get all unique words
+    const allWords = new Set();
+    for (const char in charMatches) {
+        for (const hskLevel in charMatches[char]) {
+            charMatches[char][hskLevel].forEach(word => allWords.add(word));
+        }
+    }
+    getCharactersPinyinEnglish(allWords, (data)=>{
+        // Create a box for each unique word
+        let chardict = {};
+        for(const char of data.characters){
+            chardict[char.character] = char;
+        }
+        allWords.forEach(word => {
+            const wordLink = document.createElement('a');
+            // wordLink.href = `./grid?query=${encodeURIComponent(word)}`;
+            const hoverBox = document.getElementById('pinyin-hover-box');
+
+            function showTooltip(element, content, event) {
+                hoverBox.innerHTML = content;
+                hoverBox.style.display = 'block';
+                hoverBox.style.left = `${event.pageX + 10}px`;
+                hoverBox.style.top = `${event.pageY + 10}px`;
+            }
+
+            function hideTooltip() {
+                hoverBox.style.display = 'none';
+            }
+            
+            wordLink.onclick = function() {
+                showFlashcard(word); 
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('query', word);
+                history.pushState({}, '', newUrl);
+            };
+
+            
+            wordLink.addEventListener('mouseover', function(e) {
+                const pinyin = chardict[word].pinyin;
+                const english = chardict[word].english;
+                const hsklvl = chardict[word].hsk_level;
+                const tooltipContent = `<strong>${pinyin}</strong><br>${english}<br><span style="font-size: 12px; font-style: italic;"> HSK ${hsklvl}</span>`;
+                showTooltip(this, tooltipContent, e);
+            });
+            wordLink.addEventListener('mouseout', hideTooltip);
+            wordLink.addEventListener('mousemove', function(e) {
+                hoverBox.style.left = `${e.pageX + 10}px`;
+                hoverBox.style.top = `${e.pageY + 10}px`;
+            });
+
+
+            wordLink.textContent = word;
+            wordLink.className = 'word-link';
+            wordsContainer.appendChild(wordLink);
+            
+        });
+    });
+    container.appendChild(wordsContainer);
+}
+
+
+
 function renderCardData(data) {
     const container = document.getElementById('flashcard_container');
     const characterElement = document.getElementById('flashcard_character');
@@ -29,7 +135,7 @@ function renderCardData(data) {
         const span = document.createElement('span');
         span.textContent = char;
         span.dataset.char = char;
-        span.className = 'clickable-char';
+        span.className = 'e-char';
 
         let pinyin_part = pinyin_split_list[index];
         console.log("pinyin_part", pinyin_part);
@@ -54,16 +160,27 @@ function renderCardData(data) {
     document.getElementById('flashcard_english').textContent = data.english;
     document.getElementById('flashcard_description').innerHTML = data.html;
     document.getElementById('flashcard_function').textContent = "(" + data.function + ")";
+    displayCharMatches(data.char_matches);
 
     if( data.hsk_level == -1){
-        document.getElementById('flashcard_hsk').textContent = "N/A";
+        document.getElementById('flashcard_hsk').textContent = "";
     }
     else{
         // check if integer or list
         if(data.hsk_level.constructor === Array){
-            data.hsk_level.forEach((level) => {
-                document.getElementById('flashcard_hsk').textContent += `HSK ${level} `;
-            });
+            // find maximum level
+            let max_level = 0;
+            for(let i = 0; i < data.hsk_level.length; i++){
+                if(data.hsk_level[i] > max_level){
+                    max_level = data.hsk_level[i];
+                }
+            }
+            if(max_level > 0){
+                document.getElementById('flashcard_hsk').textContent = `HSK ${max_level}`;
+            }
+            else{
+                document.getElementById('flashcard_hsk').textContent = "";
+            }
         }
         else{
             console.log(Number.isInteger(data.hsk_level), data.hsk_level);
@@ -156,10 +273,12 @@ function displayCard(showAnswer=true, showPinyin=true) {
     const englishElement = document.getElementById('flashcard_english');
     const pinyinElement = document.getElementById('flashcard_pinyin');
     const functionElement = document.getElementById('flashcard_function');
+    const char_matchesElement = document.getElementById('flashcard_char_matches');
     pinyinElement.classList.toggle('visible', showPinyin || showAnswer);
     flashcardElement.style.visibility = showAnswer ? 'visible' : 'hidden';
     englishElement.style.visibility = showAnswer ? 'visible' : 'hidden';
     functionElement.style.visibility = showAnswer ? 'visible' : 'hidden';
+    char_matchesElement.style.visibility = showAnswer ? 'visible' : 'hidden';
 }
 
 

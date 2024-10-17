@@ -89,6 +89,7 @@
     height: 90%;
     border: 2px dashed #00000000;
     border: 2px dashed #000000;
+    background-color: rgba(255, 255, 255, .0);
     background-color: rgba(255, 255, 255, 1.0);
     display: flex;
     flex-direction: column;
@@ -102,6 +103,7 @@
     overflow-x: hidden;
     transition: transform 0.2s, background-color 0.7s;
     transition: transform 0.2s, background-color 0.3s;
+    z-index: 1032;
 }
 
 #flashcard_container::-webkit-scrollbar {
@@ -138,11 +140,11 @@
 }
 
 @media screen and (max-width: 1024px) {
-    #flashcard_container {
+    /* #flashcard_container {
         width: 90%;
         height: 80%;
         padding: 20px;
-    }
+    } */
 
     #flashcard_character {
         font-size: 60px;
@@ -172,12 +174,12 @@
 }
 
 @media screen and (max-width: 768px) {
-    #flashcard_container {
+    /* #flashcard_container {
         height: 80%;
         transform: translateY(0.00008%);
-    }
+    } */
 
-    canvas {
+    #bordercanvas {
         width: 100%;
     }
 
@@ -198,7 +200,7 @@
     transition: color 0.8s;
 }
 
-@media only screen 
+/* @media only screen 
 and (min-device-width: 768px) 
 and (max-device-width: 1024px) {
     #flashcard_container {
@@ -212,13 +214,97 @@ and (max-device-width: 1024px) {
         font-size: 130px;
         margin-top: 10px;
     }
-}
+} */
 
 @media only screen 
-and (orientation: landscape) {
+and (min-aspect-ratio: 0.8) {
     #flashcard_container {
-        max-width: 60%; /* Add a max-width */
-        width: 60%;
+        max-width: 69vh; /* Add a max-width */
+        width: 69vh;
     }
 }
 
+
+@media screen and (max-width: 768px) {
+
+    #flashcard_container {
+        width: 90%;
+        height: 80vh;
+        max-height: 80vh;
+        max-width: 95%;
+        margin-bottom: 20px;
+    }
+    
+    .clickable-char {
+        font-size: 130px;
+        margin-top: 10px;
+    }
+    .clickable-char {
+        font-size: 130px;
+        margin-top: 10px;
+    }
+}
+
+@media screen and (min-width: 768px)
+and (max-width: 1024px) {
+    #flashcard_container {
+        max-width: 95%;
+        width: 69vh;
+    }
+    
+    .clickable-char {
+        font-size: 130px;
+        margin-top: 10px;
+    }
+    .clickable-char {
+        font-size: 130px;
+        margin-top: 10px;
+    }
+}
+
+.char-match-group {
+    margin-bottom: 20px;
+}
+
+.hsk-level-group {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.words-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center;
+}
+
+.word-link {
+    display: inline-block;
+    padding: 2px 7px 0px 7px;
+    border: 2px solid #000;
+    border: 0;
+    text-decoration: none;
+    color: #000;
+    font-size: 19px;
+    cursor: pointer
+}
+
+
+#pinyin-hover-box {
+    position: absolute;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 11000;
+    font-size: 14px;
+}
+
+.word-link:nth-child(3n) { background-color: #e9e9e9; } /* Red */
+.word-link:nth-child(3n+1) { background-color: #e9e9e9; } /* Green */
+.word-link:nth-child(3n+2) { background-color: #e9e9e9; } /* Blue */
+
+.word-link:hover {
+    background-color: #f0f0f0;
+}
