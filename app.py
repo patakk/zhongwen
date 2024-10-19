@@ -22,6 +22,10 @@ ENABLE_TIMING = False
 def make_session_permanent():
     session.permanent = True
 
+
+mysession = {}
+
+
 def timing_decorator(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -466,7 +470,6 @@ def hanziviz():
                 characters[character] = flashcard_app.cards[key][character]
     return render_template('hanziviz.html', characters=characters)
 
-mysession = {}
 
 @app.route('/login', methods=['GET', 'POST'])
 @timing_decorator
@@ -477,6 +480,7 @@ def login():
         session['current_card'] = None
         if session['username'] not in mysession:
             mysession[session['username']] = {}
+            print('created new session with username', session['username'])
         user_progress_file = os.path.join('user_progress', f'{username}.json')
         
         if not os.path.exists(user_progress_file):
