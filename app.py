@@ -412,14 +412,14 @@ def get_card_data():
 from collections import defaultdict
 
 @app.route('/user_progress')
-@session_required
+@hard_session_required
 def user_progress():
 
-    if session.get('username') == 'tempuser':
-        if 'tempuser' not in mysession:
-            mysession['tempuser'] = {}
-        mysession[session['username']] = flashcard_app.load_user_progress(None)
-        return redirect(url_for('login'))
+    # if session.get('username') == 'tempuser':
+    #     if 'tempuser' not in mysession:
+    #         mysession['tempuser'] = {}
+    #     mysession[session['username']] = flashcard_app.load_user_progress(None)
+    #     return redirect(url_for('login'))
 
     username = request.args.get('user', session.get('username'))
     deck = request.args.get('deck', session.get('deck'))
@@ -478,9 +478,13 @@ def login():
         username = request.form['username']
         session['username'] = username
         session['current_card'] = None
+        print('login()')
         if session['username'] not in mysession:
             mysession[session['username']] = {}
             print('created new session with username', session['username'])
+        else:
+            print('loaded existing session with username', session['username'])
+            print(mysession[session['username']])
         user_progress_file = os.path.join('user_progress', f'{username}.json')
         
         if not os.path.exists(user_progress_file):
