@@ -104,7 +104,18 @@ document.addEventListener('keydown', function(event) {
                     const cleanedPinyinB = cleanString(removeTones(b.pinyin));
                     const cleanedEnglishA = cleanString(a.english);
                     const cleanedEnglishB = cleanString(b.english);
-                    return cleanedPinyinA.includes(cleanedInput) - cleanedPinyinB.includes(cleanedInput) || cleanedEnglishA.includes(cleanedInput) - cleanedEnglishB.includes(cleanedInput);
+                
+                    // Check if pinyin starts with input
+                    if (cleanedPinyinA.startsWith(cleanedInput) && !cleanedPinyinB.startsWith(cleanedInput)) return -1;
+                    if (!cleanedPinyinA.startsWith(cleanedInput) && cleanedPinyinB.startsWith(cleanedInput)) return 1;
+                
+                    // Check if English starts with input
+                    if (cleanedEnglishA.startsWith(cleanedInput) && !cleanedEnglishB.startsWith(cleanedInput)) return -1;
+                    if (!cleanedEnglishA.startsWith(cleanedInput) && cleanedEnglishB.startsWith(cleanedInput)) return 1;
+                
+                    // If neither starts with input, fall back to includes
+                    return cleanedPinyinA.includes(cleanedInput) - cleanedPinyinB.includes(cleanedInput) || 
+                           cleanedEnglishA.includes(cleanedInput) - cleanedEnglishB.includes(cleanedInput);
                 });
                 
                 
