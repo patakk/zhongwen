@@ -53,6 +53,7 @@ function displayCharMatches(charMatches) {
     if(allWords.size === 0){
         return;
     }
+    return;
     getCharactersPinyinEnglish(allWords, (data)=>{
         // Create a box for each unique word
         let chardict = {};
