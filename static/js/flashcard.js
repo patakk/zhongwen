@@ -50,6 +50,9 @@ function displayCharMatches(charMatches) {
             charMatches[char][hskLevel].forEach(word => allWords.add(word));
         }
     }
+    if(allWords.size === 0){
+        return;
+    }
     getCharactersPinyinEnglish(allWords, (data)=>{
         // Create a box for each unique word
         let chardict = {};
