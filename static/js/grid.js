@@ -111,7 +111,7 @@ document.addEventListener('keydown', function(event) {
                 
                     let minl = Math.min(cleanedPinyinA.length, cleanedInput.length);
                     for(let i = 0; i < minl; i++){
-                        if(cleanedPinyinA[i] !== cleanedInput[i]){
+                        if(cleanedPinyinA[i] !== cleanedInput[i] && i > 0){
                             return cleanedPinyinA[i].charCodeAt(0) - cleanedInput[i].charCodeAt(0);
                         }
                     }
