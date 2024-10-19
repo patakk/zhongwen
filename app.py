@@ -23,7 +23,6 @@ def make_session_permanent():
     session.permanent = True
 
 
-
 def timing_decorator(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -488,13 +487,13 @@ def login():
             print('created new user progress')
             flashcard_app.save_user_progress(session['username'], flashcard_app.user_session[session['username']])
             print('aaaa')
-            print(flashcard_app.user_session[session['username']])
+            print(flashcard_app.user_session)
             return redirect(url_for('welcome'))
         else:
             flashcard_app.user_session[session['username']] = flashcard_app.load_user_progress(user_progress_file)
             flashcard_app.save_user_progress(session['username'], flashcard_app.user_session[session['username']])
             print('bbbbb')
-            print(flashcard_app.user_session[session['username']])
+            print(flashcard_app.user_session)
             return redirect(url_for('home'))
     return render_template('login.html')
 
