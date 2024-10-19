@@ -35,7 +35,7 @@ def migrate_json_to_db(delete_files=False):
             file_path = os.path.join(json_dir, filename)
             username = os.path.splitext(filename)[0]  # Username is the filename without extension
 
-            if username not in ['贝海', 'beihai', 'triksi', 'Shuyu']:
+            if username not in ['贝海', 'beihai', 'Triksi', 'Shuyu']:
                 continue
             
             with open(file_path, 'r', encoding='utf-8') as f:
