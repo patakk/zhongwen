@@ -323,6 +323,7 @@ class FlashcardApp:
 
         #user_progress = self.load_user_progress(username)
 
+        print('yyy1', mysession)
         print('yyy', mysession[session['username']]["new_cards_limit"])
         due_cards = self.get_due_cards(username, deck)
         print('xxxx', mysession[session['username']]["new_cards_limit"])
@@ -493,7 +494,7 @@ def login():
         else:
             mysession[session['username']] = flashcard_app.load_user_progress(user_progress_file)
             flashcard_app.save_user_progress(session['username'], mysession[session['username']])
-            print('bbbb')
+            print('bbbbb')
             print(mysession[session['username']])
             return redirect(url_for('home'))
     return render_template('login.html')
