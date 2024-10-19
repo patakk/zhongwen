@@ -585,7 +585,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showAfterLoad(characterdata);
         let overlay = document.getElementById('flashcard_overlay');
         let currentColor = getColorByTime(overlaycolors);
-        overlay.style.backgroundColor = currentColor;
+        // overlay.style.backgroundColor = currentColor;
         console.log(currentColor)
         
         scrollToTop(document.getElementById('flashcard_container'));
