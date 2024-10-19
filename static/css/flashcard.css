@@ -166,7 +166,6 @@
         margin-bottom: 15px;
     }
 
-    
     #flashcard_hsk {
         font-size: 14px;
     }
@@ -284,9 +283,10 @@ and (max-width: 1024px) {
     border: 2px solid #000;
     border: 0;
     text-decoration: none;
-    color: #000;
+    color: #000000;
     font-size: 19px;
-    cursor: pointer
+    cursor: pointer;
+    background-color: rgb(60,60,60);
 }
 
 
@@ -300,10 +300,10 @@ and (max-width: 1024px) {
     z-index: 11000;
     font-size: 14px;
 }
-
-.word-link:nth-child(3n) { background-color: #e9e9e9; } /* Red */
-.word-link:nth-child(3n+1) { background-color: #e9e9e9; } /* Green */
-.word-link:nth-child(3n+2) { background-color: #e9e9e9; } /* Blue */
+/* 
+.word-link:nth-child(3n) { background-color: #e9e9e9; }
+.word-link:nth-child(3n+1) { background-color: #e9e9e9; } 
+.word-link:nth-child(3n+2) { background-color: #e9e9e9; } Blue */
 
 .word-link:hover {
     background-color: #f0f0f0;

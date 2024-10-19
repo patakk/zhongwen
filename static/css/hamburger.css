@@ -10,7 +10,7 @@
 .hamburger span {
     display: block;
     width: 30px;
-    height: 2px;
+    height: 3px;
     background-color: black;
     margin: 6px 0;
 }
@@ -24,7 +24,7 @@
     border: 2px solid black;
     z-index: 11000;
     font-family: 'Noto Sans Mono', monospace;
-    font-weight: 400;
+    font-weight: 500;
     width: 200px;
     box-sizing: border-box;
 }
@@ -136,10 +136,32 @@
 #logoutButton {
     background-color: #cacaca;
     color: rgb(0, 0, 0);
-    padding: 5px 10px;
+    padding: 7px 15px;
 }
 
 #logoutButton:hover {
     background-color: #ff0000;
     color: rgb(255, 255, 255);
 }
+
+/* .color-change {
+    display: flex !important;
+    align-items: center;
+}
+
+.color-change::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1px solid #000;
+    background-color: attr(data-color);
+}
+
+.color-change[data-color="#ff595e"]::before { background-color: #ff595e; }
+.color-change[data-color="#ffca3a"]::before { background-color: #ffca3a; }
+.color-change[data-color="#8ac926"]::before { background-color: #8ac926; }
+.color-change[data-color="#1982c4"]::before { background-color: #1982c4; }
+.color-change[data-color="#6a4c93"]::before { background-color: #6a4c93; }
+.color-change[data-color="#000000"]::before { background-color: #000000; } */

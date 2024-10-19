@@ -153,7 +153,7 @@ document.addEventListener('keydown', function(event) {
 
         setTimeout(() => {
             recordAnswer(isCorrect);
-            renderBorder();
+            // renderBorder();
             // flashcard.style.border = neutralBorderStyle;
             // flashcard.style.padding = neutralPadding;
             // flashcard_hsk.style.padding = "22px";
@@ -286,7 +286,7 @@ document.getElementById('flashcard_container').addEventListener('mousedown', fun
         // flashcard.style.background = isCorrect ? correctBackgroundColor : incorrectBackgroundColor;
         indicator.style.borderColor = isCorrect ? correctBackgroundColor : incorrectBackgroundColor;
 
-        renderBorder();
+        // renderBorder();
         recordAnswer(isCorrect);
         setTimeout(() => {
             // flashcard.style.border = neutralBorderStyle;
@@ -422,11 +422,11 @@ function handleTouchMove(dragDistance){
     }
     if(apercentage > threshold){
         if(dragDistance > 0){
-            renderBorder();
+            // renderBorder();
             recordAnswer(true);
         }
         else{
-            renderBorder();
+            // renderBorder();
             recordAnswer(false);
         }
         touchStartX = null;
@@ -495,6 +495,8 @@ function getNextCard(func=null) {
             func();
         }
         prefetchNextCard();
+        // toggleInvertAllElements();
+        // toggleInvertAllElements();
     } else {
     fetchCard()
         .then(data => {
@@ -507,6 +509,8 @@ function getNextCard(func=null) {
                 func();
             }
             prefetchNextCard();
+            // toggleInvertAllElements();
+            // toggleInvertAllElements();
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -627,8 +631,8 @@ document.addEventListener('DOMContentLoaded', function() {
     getDeck(getNextCard);
     getFont();
     handleOrientationChange(); // Call this on initial load
-    setupBackgroundCanvas();
-    renderBorder();
+    // setupBackgroundCanvas();
+    // renderBorder();
 
     const flashcard = document.getElementById('flashcard_container');
     if(isMobileOrTablet()){

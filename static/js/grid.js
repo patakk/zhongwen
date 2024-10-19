@@ -162,6 +162,8 @@ function createGrid(characters, useAllDecks){
     });
 
     updateCounterTitle();
+    // toggleInvertAllElements();
+    // toggleInvertAllElements();
 }
 
 function updateCounterTitle(){

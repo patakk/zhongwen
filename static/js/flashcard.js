@@ -96,6 +96,8 @@ function displayCharMatches(charMatches) {
 
             wordLink.textContent = word;
             wordLink.className = 'word-link';
+            if(wordsContainer.classList.contains('darkmode'))
+                wordLink.classList.add('darkmode');
             wordsContainer.appendChild(wordLink);
             
         });
@@ -135,7 +137,7 @@ function renderCardData(data) {
         const span = document.createElement('span');
         span.textContent = char;
         span.dataset.char = char;
-        span.className = 'e-char';
+        span.className = 'clickable-char';
 
         let pinyin_part = pinyin_split_list[index];
         console.log("pinyin_part", pinyin_part);

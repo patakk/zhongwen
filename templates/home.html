@@ -146,8 +146,6 @@
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script>
-        
-
         if(username === 'tempuser'){
             document.getElementById('progressUrl').textContent = 'login';
             document.getElementById('progressUrl').href = "{{ url_for('login') }}";

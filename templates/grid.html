@@ -18,6 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Character Grid</title>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
@@ -57,6 +58,17 @@
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
                 </ul>
             </li>
+            <!-- <li class="has-submenu">
+                <span>Colors</span>
+                <ul class="submenu">
+                    <li><a href="#" class="color-change" data-color="#ff595e">Red</a></li>
+                    <li><a href="#" class="color-change" data-color="#ffca3a">Yellow</a></li>
+                    <li><a href="#" class="color-change" data-color="#8ac926">Green</a></li>
+                    <li><a href="#" class="color-change" data-color="#1982c4">Blue</a></li>
+                    <li><a href="#" class="color-change" data-color="#6a4c93">Purple</a></li>
+                    <li><a href="#" class="color-change" data-color="#000000">Black</a></li>
+                </ul>
+            </li> -->
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
@@ -96,5 +108,6 @@
     <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/grid.js') }}"></script>
     <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
 </body>
 </html>

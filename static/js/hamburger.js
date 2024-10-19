@@ -248,6 +248,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
+    document.querySelectorAll('.color-change').forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            const color = this.getAttribute('data-color');
+            // Apply the color change here. For example:
+            // overlay.style.backgroundColor = color + "80";
+            // Or update your color variable:
+            // currentColor = color;
+            // You might need to call a function to redraw your canvas or update other elements
+        });
+    });
 
 
     // function changeFont(fontName) {

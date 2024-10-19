@@ -1,0 +1,54 @@
+
+.darkmode {
+    background-color: rgb(14, 14, 14);
+    color: white;
+    border-color: rgb(100, 100, 100);
+}
+
+.grid-item.darkmode {
+    background-color: rgb(14, 14, 14);
+    color: white;
+    border-color: rgb(100, 100, 100);
+}
+
+.grid-item.darkmode:hover {
+    background-color: rgb(14, 14, 14);
+    color: white;
+    border-color: rgb(100, 100, 100);
+}
+
+#flashcard_container.darkmode {
+    background-color: rgb(14, 14, 14);
+    color: white;
+    border-color: rgb(100, 100, 100);
+}
+
+
+#flashcard_character.darkmode {
+    color: white;
+}
+
+#flashcard_english.darkmode {
+    color: white;
+}
+
+#flashcard_pinyin.darkmode, #flashcard_pinyin.visible.darkmode {
+    color: white;
+}
+
+#flashcard_description.darkmode {
+    color: white;
+}
+
+#flashcard_function.darkmode {
+    color: white;
+}
+
+#flashcard_hsk.darkmode {
+    color: white;
+}
+
+.word-link.darkmode {
+    background: rgb(60,60,60);
+    color: rgb(200,200,200);
+}

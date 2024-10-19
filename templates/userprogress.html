@@ -6,21 +6,23 @@
     <title>User Progress - {{ username }} - {{ deck }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
         }
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-family: 'Noto Sans Mono', monospace; /* Set font to match the rest */
-            font-family: 'Courier Prime', monospace; /* Set font to match the rest */
+            font-family: 'Courier Prime', monospace;
+            font-family: 'Noto Sans Mono', monospace;
             margin: 0;
             padding: 20px;
-            background-color: white;
-            color: black;
+            background-color: #ffffff;
+            color: #000000;
             overflow-y: auto;
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            font-weight: 600;
         }
         body::-webkit-scrollbar {
             display: none;
@@ -41,13 +43,13 @@
             width: 90%;
             max-width: 1200px;
             margin: 0 auto;
-            background-color: white;
+            background-color: #ffffff;
             padding: 2rem;
-            border: 2px dashed black;
+            border: 2px dashed #000000;
         }
         h1 {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: #333;
+            color: #333333;
             font-size: 34px;
             margin-top: 0px;
         }
@@ -59,13 +61,14 @@
         th, td {
             padding: 10px;
             text-align: left;
-            border: 2px solid black;
+            border: 2px solid #000000;
         }
         td {
-            font-family: 'Noto Sans Mono', monospace; /* Set font to match the rest */
-            font-family: 'Courier Prime', monospace; /* Set font to match the rest */
+            font-family: 'Courier Prime', monospace;
+            font-family: 'Noto Sans Mono', monospace;
         }
         th {
+            font-family: 'Noto Sans Mono', monospace;
             font-weight: bold;
             background-color: #f2f2f2;
         }
@@ -106,9 +109,9 @@
             width: 90%;
             max-width: 1200px;
             margin: 0 auto 20px auto;
-            background-color: white;
+            background-color: #ffffff;
             padding: 1rem;
-            border: 2px dashed black;
+            border: 2px dashed #000000;
         }
         .settings-form {
             display: flex;
@@ -122,16 +125,16 @@
         }
         .settings-form input {
             width: 80px; /* Slightly increased width */
-            padding: 5px;
-            border: 2px solid black; /* Changed to 2px solid black */
-            font-family: 'Noto Sans Mono', monospace; /* Set font to match the rest */
+            padding: 5px 10px;
+            border: 2px solid #000000; /* Changed to 2px solid black */
+            font-family: 'Noto Sans Mono', monospace;
             font-size: 16px; /* Increased font size */
             margin-right: 10px; /* Added margin to separate from button */
         }
         .settings-form button {
             padding: 5px 10px;
-            background-color: white;
-            border: 2px solid black;
+            background-color: #ffffff;
+            border: 2px solid #646464;
             cursor: pointer;
             font-family: 'Noto Sans Mono', monospace;
             font-size: 16px;
@@ -141,8 +144,8 @@
         }
 
         .settings-form button:active {
-            background-color: white;
-            color: black;
+            background-color: #ffffff;
+            color: #101010;
         }
 
 
@@ -152,7 +155,7 @@
         }
 
         .settings-form button:focus-visible {
-            outline: 2px solid black;
+            outline: 2px solid #000000;
         }
 
         @media (max-width: 768px) {
@@ -179,8 +182,8 @@
         }
 
         ::selection {
-            background-color: rgb(0, 0, 0);
-            color: rgb(255, 0, 0);
+            background-color: #000000;
+            color: #ff0000;
         }
 
         .highlight {
@@ -188,7 +191,7 @@
             background-color: #ff3c00; /* Light yellow background */
             padding: 2px 5px;
             font-weight: bold;
-            color: #fff;
+            color: #ffffff;
         }
 
         .deck-highlight {
@@ -197,7 +200,7 @@
             padding: 2px 5px;
             font-weight: bold;
             color: 
-            #fff;
+            #ffffff;
         }
 
         
@@ -205,33 +208,66 @@
             position: relative;
             cursor: pointer;
         }
-        #pinyin-hover-box {
-            position: absolute;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 1000;
-            font-size: 14px;
-        }
-
         a {
             text-decoration: none;
             color: #110000;
         }
-
-        .tooltip-header {
-            position: relative;
-            cursor: help;
-        }
         
         .due-date {
-            color: red;
+            color: #ff0000;
             cursor: default;
         }
+
+
+
+        #saveButton {
+            color: rgb(0, 0, 0);
+            border-color: #646464;
+            background-color: #ffffff;
+            width: 7%;
+        }
+
+        #saveButton.darkmode {
+            color: #e9e9e9;
+            border-color: #646464;
+            background-color: #ff5c16;
+            background-color: #0e0e0e;
+        }
+        #pinyin-hover-box.darkmode {
+            color: #c8c8c8;
+            background-color: #0d0d0d;
+            border: 1px solid #2f2f2f;
+            box-shadow: 0 2px 5px #ffffff33;
+        }
+
+        .deck-highlight.darkmode {
+            background-color: rgb(255, 92, 22);
+            color: #000000;
+            border-color: #646464;
+        }
+        #maxNewCards {
+            /* font-family: 'Courier Prime', monospace; */
+            border-color: #646464;
+        }
+
+       
+        #pinyin-hover-box {
+            position: absolute;
+            background-color: #fafafa;
+            border: 1px solid #dedede;
+            color: rgb(22,22,22);
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px #00000033;
+            z-index: 1000;
+            font-size: 14px;
+        }
+
+
+
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
 </head>
 <body>
     <div class="hamburger" id="hamburgerMenu">
@@ -296,7 +332,7 @@
                     <a href="./grid?query={{ stat.character }}">{{ stat.character }}</a>
                 </td>
                 <td style="text-align: right;">{{ stat.box }}</td>
-                <td style="text-align: right;">{{ stat.difficulty }}</td>
+                <td style="text-align: right;">{{ '{:.2f}'.format(stat.difficulty) }}</td>
                 <td style="text-align: right;">{{ stat.streak }}</td>
                 <td style="text-align: right;">{{ stat.num_incorrect }}</td>
                 <td style="text-align: right;" class="next-review-date">{{ stat.next_review }}</td>
@@ -313,7 +349,10 @@
         const saveButton = document.getElementById('saveButton');
         
         saveButton.textContent = 'Save';
-        saveButton.style.color = 'black';
+        // saveButton.style.color = 'black';
+        // if(saveButton.classList.contains('darkmode')) {
+        //     saveButton.style.color = 'white';
+        // }
 
         document.getElementById('maxCardsForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -322,8 +361,8 @@
             
             saveButton.textContent = 'Saved';
             saveButton.disabled = true;
-            saveButton.style.backgroundColor = 'black';
-            saveButton.style.color = 'white';
+            // saveButton.style.backgroundColor = 'black';
+            // saveButton.style.color = 'white';
 
             fetch(`./set_max_cards?maxcards=${maxCards}`, {
                 method: 'POST',
@@ -342,7 +381,12 @@
                     saveButton.textContent = 'Save';
                     saveButton.disabled = false;
                     saveButton.style.backgroundColor = 'white';
-                    saveButton.style.color = 'black';
+                    saveButton.style.color = 'rgb(14,14,14)';
+                    if (saveButton.classList.contains('darkmode')) {
+                        saveButton.style.backgroundColor = 'rgb(14,14,14)';
+                        saveButton.style.color = 'white';
+                        saveButton.style.borderColor = 'rgb(100, 100, 100)';
+                    }
                 }, 1000);
             })
             .catch((error) => {
@@ -351,7 +395,14 @@
                 saveButton.textContent = 'Save';
                 saveButton.disabled = false;
                 saveButton.style.backgroundColor = 'white';
-                saveButton.style.color = 'black';
+                saveButton.style.color = 'rgb(14,14,14)';
+
+                // if darkmode in classlist, toggle colors
+                if (saveButton.classList.contains('darkmode')) {
+                    saveButton.style.backgroundColor = 'rgb(14,14,14)';
+                    saveButton.style.color = 'white';
+                    saveButton.style.borderColor = 'rgb(100, 100, 100)';
+                }
             });
         });
 
@@ -485,8 +536,11 @@
                     });
                 }
             });
+
         });
+
     </script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     
     
 </body>
