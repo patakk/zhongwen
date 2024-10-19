@@ -448,10 +448,10 @@ function handleTouchMove(dragDistance){
 
     let threshold = 0.3;
     if(isIPhone()){
-        threshold = 0.5;
+        threshold = 0.35;
     }
     if(isiPad()){
-        threshold = 0.2;
+        threshold = 0.13;
     }
     if(apercentage > threshold && recordLock === false){
         if(dragDistance > 0){
