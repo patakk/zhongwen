@@ -1,6 +1,6 @@
 
 function getCharactersPinyinEnglish(characters=null, func=null) {
-    const url = '/get_characters_pinyinenglish';
+    const url = './get_characters_pinyinenglish';
     
     // Convert Set to Array if it's a Set
     const charactersArray = characters instanceof Set ? Array.from(characters) : characters;
