@@ -313,7 +313,7 @@ function showFlashcard(character) {
             // overlay.style.backgroundColor = overlaycolors[hsklvl];
             let overlay = document.getElementById('flashcard_overlay');
             let currentColor = getColorByTime(overlaycolors);
-            overlay.style.backgroundColor = currentColor;
+            // overlay.style.backgroundColor = currentColor;
             // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
             // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
             renderCardData(data);
