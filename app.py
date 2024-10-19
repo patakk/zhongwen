@@ -33,8 +33,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'flashcards.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-with app.app_context():
-    db.create_all()
 
 class UserProgress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -71,6 +69,9 @@ class UserProgress(db.Model):
             progress=data["progress"]
         )
 
+with app.app_context():
+    db.create_all()
+    
 def save_user_progress(username, progress_data):
     user_prog = UserProgress.query.filter_by(username=username).first()
     if user_prog:
