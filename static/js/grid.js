@@ -96,6 +96,17 @@ document.addEventListener('keydown', function(event) {
                     return cleanedPinyin.includes(cleanedInput) || cleanedEnglish.includes(cleanedInput);
                 });
                 drawBothLayouts(filteredData, true);
+
+                // sort by piniyn
+                filteredData.characters.sort((a, b) => {
+                    const cleanedInput = cleanString(inputString);
+                    const cleanedPinyinA = cleanString(removeTones(a.pinyin));
+                    const cleanedPinyinB = cleanString(removeTones(b.pinyin));
+                    const cleanedEnglishA = cleanString(a.english);
+                    const cleanedEnglishB = cleanString(b.english);
+                    return cleanedPinyinA.includes(cleanedInput) - cleanedPinyinB.includes(cleanedInput) || cleanedEnglishA.includes(cleanedInput) - cleanedEnglishB.includes(cleanedInput);
+                });
+                
                 
                 console.log(inputString);
                 inputString = '';
