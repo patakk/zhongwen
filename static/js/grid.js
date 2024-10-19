@@ -95,25 +95,23 @@ document.addEventListener('keydown', function(event) {
 
                     return cleanedPinyin.includes(cleanedInput) || cleanedEnglish.includes(cleanedInput);
                 });
-                drawBothLayouts(filteredData, true);
 
                 // sort by piniyn
                 filteredData.characters.sort((a, b) => {
                     const cleanedInput = cleanString(inputString);
                     const cleanedPinyinA = cleanString(removeTones(a.pinyin));
                     const cleanedPinyinB = cleanString(removeTones(b.pinyin));
-                    const cleanedEnglishA = cleanString(a.english);
-                    const cleanedEnglishB = cleanString(b.english);
                 
                     // Check if pinyin starts with input
                     if (cleanedPinyinA.startsWith(cleanedInput)) return -1;
+                    if (cleanedPinyinB.startsWith(cleanedInput)) return 1;
                 
                     // Check if English starts with input
-                    if (cleanedEnglishA.startsWith(cleanedInput)) return -1;
                 
                     // If neither starts with input, fall back to includes
                     return cleanedPinyinA.includes(cleanedInput) - cleanedPinyinB.includes(cleanedInput);
                 });
+                drawBothLayouts(filteredData, true);
                 
                 
                 console.log(inputString);
