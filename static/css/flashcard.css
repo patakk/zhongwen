@@ -228,18 +228,19 @@ and (min-aspect-ratio: 0.8) {
 
     #flashcard_container {
         width: 90%;
-        height: 80vh;
-        max-height: 80vh;
+        height: 70vh;
+        transform: translateY(8%);
+        max-height: 70vh;
         max-width: 95%;
         margin-bottom: 20px;
     }
     
     .clickable-char {
-        font-size: 130px;
+        font-size: 80px;
         margin-top: 10px;
     }
     .clickable-char {
-        font-size: 130px;
+        font-size: 80px;
         margin-top: 10px;
     }
 }
@@ -252,11 +253,11 @@ and (max-width: 1024px) {
     }
     
     .clickable-char {
-        font-size: 130px;
+        font-size: 80px;
         margin-top: 10px;
     }
     .clickable-char {
-        font-size: 130px;
+        font-size: 80px;
         margin-top: 10px;
     }
 }

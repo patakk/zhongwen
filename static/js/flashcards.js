@@ -85,6 +85,7 @@ function initializeColorTime(element, timeout){
 
 // handle touch start and end, and measure distance
 let touchStartX = null;
+let touchStartY = null;
 let touchEndX = null;
 let isDragging = false;
 
@@ -334,19 +335,52 @@ document.getElementById('flashcard_container').addEventListener('mouseup', funct
 }, false);
 
 
+let isScrolling = false;
+const DRAG_THRESHOLD = 10; // pixels
+
 document.getElementById('flashcard_container').addEventListener('touchstart', function(event) {
-    touchStartX = event.changedTouches[0].screenX;
-    isDragging = true;
-}, false);
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+    isDragging = false;
+    recordLock = false;
+    isScrolling = false;
+}, { passive: true });
 
 document.getElementById('flashcard_container').addEventListener('touchmove', function(event) {
-    if (!isDragging) return;
-    currentTouchX = event.touches[0].clientX;
-    handleTouchMove(currentTouchX - touchStartX);
-}, false);
+    if (isScrolling) return; // If we've determined it's a scroll, do nothing
+    
+    const touchX = event.touches[0].clientX;
+    const touchY = event.touches[0].clientY;
+    const deltaX = touchX - touchStartX;
+    const deltaY = touchY - touchStartY;
+    
+    if (!isDragging) {
+        // Determine if it's a drag or scroll based on initial movement
+        if (Math.abs(deltaX) > DRAG_THRESHOLD || Math.abs(deltaY) > DRAG_THRESHOLD) {
+            if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                isScrolling = true;
+                return; // Allow default scrolling behavior
+            } else {
+                isDragging = true;
+                event.preventDefault(); // Prevent scrolling for horizontal drags
+            }
+        } else {
+            return; // Wait until we've moved enough to decide
+        }
+    }
+    
+    if (isDragging) {
+        event.preventDefault();
+        handleTouchMove(deltaX);
+    }
+}, { passive: false });
 
 document.getElementById('flashcard_container').addEventListener('touchend', function(event) {
-    handleTouchEnd();
+    if (isDragging) {
+        handleTouchEnd();
+    }
+    isDragging = false;
+    isScrolling = false;
 }, false);
 
 
@@ -379,6 +413,7 @@ function sendlogtoflask(string1, string2=null, string3=null, string4=null){
     });
 }
 
+let recordLock = false;
 function handleTouchMove(dragDistance){
     const screenwidth = window.innerWidth;
     const percentage = dragDistance/screenwidth;
@@ -395,12 +430,10 @@ function handleTouchMove(dragDistance){
     const ftop = rect.top;
 
     if(isIPhone()){
-        flashcard.style.transform = `translate(${dragDistance}px) translateY(0.00008%) rotate(${dragDistance/10}deg)`;
-        bordercanvas.style.transform = `translate(${dragDistance*1.090909}px) translateY(0%) rotate(${dragDistance/10}deg)`;
+        flashcard.style.transform = `translate(${dragDistance}px) translateY(8%) rotate(${dragDistance/10}deg)`;
     }
     else{
         flashcard.style.transform = `translate(${dragDistance}px) rotate(${dragDistance/10}deg)`;
-        bordercanvas.style.transform = `translate(${dragDistance}px) rotate(${dragDistance/10}deg)`;
     }
 
     const dim = Math.max(0, 255-apercentage*255);
@@ -420,7 +453,7 @@ function handleTouchMove(dragDistance){
     if(isiPad()){
         threshold = 0.2;
     }
-    if(apercentage > threshold){
+    if(apercentage > threshold && recordLock === false){
         if(dragDistance > 0){
             // renderBorder();
             recordAnswer(true);
@@ -430,15 +463,17 @@ function handleTouchMove(dragDistance){
             recordAnswer(false);
         }
         touchStartX = null;
+        touchStartY = null;
         currentTouchX = null;
         isDragging = false;
         mouseStartX = null;
         currentMouseX = null;
+        recordLock = true;
         isMouseDragging = false;
-        flashcard.style.transform = isIPhone() ? 'translateY(0.00008%)' : 'translateY(0%)';
+        flashcard.style.transform = isIPhone() ? 'translateY(8%)' : 'translateY(0%)';
         indicator.style.borderColor = neutralColor;
         const canvas = document.getElementById('backgroundCanvas');
-        bordercanvas.style.transform = isIPhone() ? 'translateY(0%)' : 'translateY(0%)';
+        // bordercanvas.style.transform = isIPhone() ? 'translateY(0%)' : 'translateY(0%)';
     }
 }
 
@@ -451,10 +486,10 @@ function handleTouchEnd(){
     isMouseDragging = false;
     
     const flashcard = document.getElementById('flashcard_container');
-    flashcard.style.transform = isIPhone() ? 'translateY(0.00008%)' : 'translateY(0%)';
+    flashcard.style.transform = isIPhone() ? 'translateY(8%)' : 'translateY(0%)';
     indicator.style.borderColor = neutralColor;
     const canvas = document.getElementById('backgroundCanvas');
-    bordercanvas.style.transform = isIPhone() ? 'translateY(0%)' : 'translateY(0%)';
+    // bordercanvas.style.transform = isIPhone() ? 'translateY(0%)' : 'translateY(0%)';
 }
 
 
@@ -656,7 +691,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // }, 2000);
     }
     else {
-        flashcard.style.overflowY = 'hidden';
     }
 });
 
