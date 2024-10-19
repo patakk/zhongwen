@@ -102,7 +102,9 @@ document.addEventListener('keydown', function(event) {
                     const cleanedPinyinA = cleanString(removeTones(a.pinyin));
                     const cleanedPinyinB = cleanString(removeTones(b.pinyin));
                 
-                    // Check if pinyin starts with input
+                    if (cleanedPinyinA === cleanedInput) return -1;
+                    if (cleanedPinyinB === cleanedInput) return 1;
+
                     if (cleanedPinyinA.startsWith(cleanedInput)) return -1;
                     if (cleanedPinyinB.startsWith(cleanedInput)) return 1;
                 
