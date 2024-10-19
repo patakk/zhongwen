@@ -485,7 +485,7 @@ def login():
             #flashcard_app.user_session[session['username']] = flashcard_app.save_user_progress(username, flashcard_app.load_user_progress(username))
             flashcard_app.user_session[session['username']] = flashcard_app.load_user_progress(None)
             print('created new user progress', session['username'], 'x', flashcard_app.user_session[session['username']])
-            flashcard_app.save_user_progress(session['username'], 'y', flashcard_app.user_session[session['username']])
+            flashcard_app.save_user_progress(session['username'], flashcard_app.user_session[session['username']])
             print('aaaa')
             print(flashcard_app.user_session)
             return redirect(url_for('welcome'))
