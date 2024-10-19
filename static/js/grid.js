@@ -105,6 +105,13 @@ document.addEventListener('keydown', function(event) {
                     if (cleanedPinyinA === cleanedInput) return -1;
                     if (cleanedPinyinB === cleanedInput) return 1;
 
+                    let minl = Math.min(cleanedPinyinA.length, cleanedInput.length);
+                    for(let i = 0; i < minl; i++){
+                        if(cleanedPinyinA[i] !== cleanedInput[i]){
+                            return cleanedPinyinA[i].charCodeAt(0) - cleanedInput[i].charCodeAt(0);
+                        }
+                    }
+
                     if (cleanedPinyinA.startsWith(cleanedInput)) return -1;
                     if (cleanedPinyinB.startsWith(cleanedInput)) return 1;
                 
