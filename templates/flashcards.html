@@ -19,7 +19,7 @@
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
-    <!-- <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}"> -->
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
 </head>
 <body id="body">
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
@@ -34,7 +34,14 @@
         <ul>
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
             <li id="loginMenuItem"><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
+            <li class="has-submenu">
+                <span>Hanzi Grid</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                        {% endfor %}
+                </ul>
+            </li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('welcome') }}">Guide</a></li>

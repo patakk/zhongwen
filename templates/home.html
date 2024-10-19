@@ -80,9 +80,6 @@
         }
 
         
-        a {
-            text-transform: lowercase;
-        }
 
         @media screen and (max-width: 768px) {
             .home-container {
@@ -103,10 +100,8 @@
                 
             }
             
-            a {
-                text-transform: lowercase;
-            }
         }
+
 
     </style>
 </head>
@@ -119,8 +114,15 @@
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li class="has-submenu">
+                <span>Hanzi Grid</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                        {% endfor %}
+                </ul>
+            </li>
             <li id="flashcardsUrl"><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
-            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('welcome') }}">Guide</a></li>

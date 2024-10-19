@@ -14,7 +14,7 @@ function showFlashcard(character) {
             return response.json();
         })
         .then(data => {
-            bordercanvas.style.display = 'block';
+            // bordercanvas.style.display = 'block';
             renderCardData(data);
             displayCard(true, true);
             if(!canvasrendered){
@@ -113,7 +113,7 @@ function handleOrientationChange() {
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay && !e.target.closest('#font-select')) {
         overlay.style.display = 'none';
-        bordercanvas.style.display = 'none';
+        // bordercanvas.style.display = 'none';
         // document.getElementById('font-select').style.display = 'none';
     }
 });

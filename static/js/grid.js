@@ -476,22 +476,26 @@ function isMobileOrTablet() {
 
 function changeDeck(deck) {
     currentDeck = deck;
-    fetch(`./change_deck?deck=${deck}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-    })
-    .catch(error => {
-        console.error('There was a problem changing the deck:', error);
-    });
+    // fetch(`./change_deck?deck=${deck}`, {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },
+    // })
+    // .then(response => {
+    //     if (!response.ok) {
+    //         throw new Error('Network response was not ok');
+    //     }
+    // })
+    // .catch(error => {
+    //     console.error('There was a problem changing the deck:', error);
+    // });
     const grid = document.getElementById('character-grid');
     grid.innerHTML = '';
+    // change url parameter deck to currentDeck
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.set('deck', deck);
+    history.pushState({}, '', newUrl);
     drawBothLayouts(currentData);
     window.scrollTo(0, 0);
 }
@@ -515,7 +519,6 @@ function getDeck() {
         })
         .then(data => {
             currentDeck = data.deck;
-            // document.getElementById('deck-select').value = currentDeck;
             drawBothLayouts(currentData);
         })
         .catch(error => {
@@ -564,7 +567,14 @@ function loadAllData(){
     .then(response => response.json())
     .then(data => {
         currentData = data;
-        getDeck();
+        // getDeck();
+        
+        // get deck from url
+        const urlParams = new URLSearchParams(window.location.search);
+        const deck = urlParams.get('deck');
+        currentDeck = deck;
+        drawBothLayouts(currentData);
+
         getFont();
         handleOrientationChange();
     })

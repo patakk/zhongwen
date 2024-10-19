@@ -40,17 +40,17 @@
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
             <li id="loginMenuItem"><a href="{{ url_for('home') }}">Home</a></li>
             <li id="flashcardsUrl"><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
-            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
-            <li><a href="{{ url_for('search') }}">Search</a></li>
-            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
             <li class="has-submenu">
-                <span>Decks</span>
+                <span>Hanzi Grid</span>
                 <ul class="submenu">
                     {% for key, deck in decks.items() %}
                         <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
                     {% endfor %}
                 </ul>
             </li>
+            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
             <li class="has-submenu">
                 <span>Fonts</span>
                 <ul class="submenu">

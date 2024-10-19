@@ -709,8 +709,10 @@ def characters():
 @timing_decorator
 def grid():
     character = request.args.get('query')
+    querydeck = request.args.get('deck')
+    logger.info(f"Query deck: {querydeck}")
     if not character:
-        characters = list(flashcard_app.cards[session['deck']].keys())
+        characters = list(flashcard_app.cards.get(querydeck, {}).keys())
         print(f"Initial characters: {len(characters)}")  # Debug print
         return render_template('grid.html', username=session['username'], characters=characters, character=None, decks=flashcard_app.decks)
     pc = packed_data(character)
@@ -875,14 +877,12 @@ def set_max_cards():
 @timing_decorator
 def get_font():
     response = jsonify({"font": session['font']})
-    logger.info(f"Current font: {session['font']}")
     return response
 
 @app.route('/change_deck', methods=['POST'])
 @timing_decorator
 def change_deck():
     session['deck'] = request.args.get('deck')
-    logger.info(f"Deck changed to {session['deck']}")
     return jsonify({"message": "Deck changed successfully"})
 
 @app.route('/get_deck')
