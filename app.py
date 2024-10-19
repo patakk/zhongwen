@@ -12,6 +12,7 @@ import os
 import io
 import hashlib
 
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(days=3650)
@@ -316,7 +317,7 @@ class FlashcardApp:
 
     def select_card(self, username, deck):
 
-        if username == 'tempuser':
+        if username == 'tempuser' or True:
             return random.choice(list(self.cards[deck].keys()))
 
         #user_progress = self.load_user_progress(username)
@@ -484,16 +485,11 @@ def login():
         if not os.path.exists(user_progress_file):
             #flashcard_app.user_session[session['username']] = flashcard_app.save_user_progress(username, flashcard_app.load_user_progress(username))
             flashcard_app.user_session[session['username']] = flashcard_app.load_user_progress(None)
-            print('created new user progress', session['username'], 'x', flashcard_app.user_session[session['username']])
             flashcard_app.save_user_progress(session['username'], flashcard_app.user_session[session['username']])
-            print('aaaa')
-            print(flashcard_app.user_session)
             return redirect(url_for('welcome'))
         else:
             flashcard_app.user_session[session['username']] = flashcard_app.load_user_progress(user_progress_file)
             flashcard_app.save_user_progress(session['username'], flashcard_app.user_session[session['username']])
-            print('bbbbb')
-            print(flashcard_app.user_session)
             return redirect(url_for('home'))
     return render_template('login.html')
 
