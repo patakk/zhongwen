@@ -317,7 +317,7 @@ class FlashcardApp:
 
     def select_card(self, username, deck):
 
-        if username == 'tempuser' or True:
+        if username == 'tempuser':
             return random.choice(list(self.cards[deck].keys()))
 
         #user_progress = self.load_user_progress(username)
