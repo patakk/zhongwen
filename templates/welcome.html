@@ -134,7 +134,7 @@
             color: #004080;
         }
 
-        * {
+        .container * {
             text-transform: lowercase;
         }
 
@@ -147,13 +147,11 @@
             padding-left: 1.5em;
         }
 
-        /* Second level */
-        ul ul > li::before {
+        .container ul ul > li::before {
             content: "▪ ";
         }
 
-        /* Third level */
-        ul ul ul > li::before {
+        .container ul ul ul > li::before {
             content: "• ";
         }
 
@@ -171,8 +169,22 @@
         <ul>
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
             <li id="loginMenuItem"><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
-            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
+            <li class="has-submenu">
+                <span>Hanzi Grid</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                        {% endfor %}
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <span>Flashcards</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                        {% endfor %}
+                </ul>
+            </li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>

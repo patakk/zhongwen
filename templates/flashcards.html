@@ -42,17 +42,17 @@
                         {% endfor %}
                 </ul>
             </li>
-            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
-            <li><a href="{{ url_for('search') }}">Search</a></li>
-            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
             <li class="has-submenu">
-                <span>Decks</span>
+                <span>Flashcards</span>
                 <ul class="submenu">
                     {% for key, deck in decks.items() %}
                         <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
                     {% endfor %}
                 </ul>
             </li>
+            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
             <li class="has-submenu">
                 <span>Fonts</span>
                 <ul class="submenu">
@@ -85,6 +85,7 @@
     <p id="message"></p>
     <script>
         const username = {{ username | tojson | safe }};
+        const inputdeck = {{ deck | tojson | safe }};
     </script>
     <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>
     <!-- <script src="{{ url_for('static', filename='js/border.js') }}"></script> -->

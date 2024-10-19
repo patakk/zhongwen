@@ -663,7 +663,15 @@ document.addEventListener('DOMContentLoaded', function() {
     body = document.getElementById('body');
     indicator = document.getElementById('indicator');
     
-    getDeck(getNextCard);
+    // getDeck(getNextCard);
+    currentDeck = inputdeck;
+    
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.set('deck', currentDeck);
+    history.pushState({}, '', newUrl);
+
+    changeDeck(currentDeck);
+    getNextCard();
     getFont();
     handleOrientationChange(); // Call this on initial load
     // setupBackgroundCanvas();
@@ -692,28 +700,53 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     else {
     }
+
+    document.querySelectorAll('.deck-option').forEach(function(deckOption) {
+        deckOption.addEventListener('click', function(e) {
+            currentDeck = this.getAttribute('data-deck');
+
+            // Change deck
+            
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('deck', currentDeck);
+            history.pushState({}, '', newUrl);
+
+            prefetchedCard = null;
+            changeDeck(currentDeck, getNextCard);
+            console.log("deck changed", currentDeck);
+
+            // Update highlighting
+            document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
+            this.classList.add('selected-option');
+
+            // Close dropdown
+            document.getElementById('dropdownMenu').style.display = 'none';
+            var menu = document.getElementById('dropdownMenu');
+            menu.style.display = 'none';
+        });
+    });
 });
 
 
-function changeDeck(deck, func=getNextCard) {
-    fetch(`./change_deck?deck=${deck}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        console.log('Deck changed successfully');
-        prefetchedCard = null;
-        getNextCard();
-    })
-    .catch(error => {
-        console.error('There was a problem changing the deck:', error);
-    });
-}
+// function changeDeck(deck, func=getNextCard) {
+//     fetch(`./change_deck?deck=${deck}`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//     })
+//     .then(response => {
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         console.log('Deck changed successfully');
+//         prefetchedCard = null;
+//         getNextCard();
+//     })
+//     .catch(error => {
+//         console.error('There was a problem changing the deck:', error);
+//     });
+// }
 
 // document.getElementById('space-instruction').addEventListener('click', function(e) {
 //     e.stopPropagation();

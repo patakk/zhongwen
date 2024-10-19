@@ -14,7 +14,7 @@ function changeDeck(deck, func=null) {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        console.log('Deck changed successfully');
+        console.log('Deck changed successfully to ', deck);
         if (func) {
             func();
         }
@@ -182,10 +182,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     
     if(username === 'tempuser'){
-        let logoutbutton = document.getElementById('logoutButton');
-        let flashcardsUrl = document.getElementById('flashcardsUrl');
-        flashcardsUrl.style.display = 'none';
-        logoutbutton.style.display = 'none';
+        try{
+            let logoutbutton = document.getElementById('logoutButton');
+            let flashcardsUrl = document.getElementById('flashcardsUrl');
+            flashcardsUrl.style.display = 'none';
+            logoutbutton.style.display = 'none';
+        }
+        catch(e){
+        }
     }
     
     currentFont = getFont_c();

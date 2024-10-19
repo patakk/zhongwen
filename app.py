@@ -621,7 +621,7 @@ def logout():
 @session_required
 @timing_decorator
 def welcome():
-    return render_template('welcome.html', username=session['username'])
+    return render_template('welcome.html', username=session['username'], decks=flashcard_app.decks)
 
 @app.route('/')
 @session_required
@@ -643,11 +643,16 @@ def check_session():
 def get_crunch():
     return send_file('data/crunch.mp3', mimetype='audio/mpeg')
 
-@app.route('/flashcards')
+@app.route('/flashcards', methods=['GET'])
 @hard_session_required
 @timing_decorator
 def flashcards():
-    return render_template('flashcards.html', username=session['username'], decks=flashcard_app.decks)
+    querydeck = request.args.get('deck')
+    if not querydeck:
+        querydeck = session.get('deck', 'shas')
+    session['deck'] = querydeck
+    logger.info(f"Query deck: {querydeck}")
+    return render_template('flashcards.html', username=session['username'], decks=flashcard_app.decks, deck=querydeck)
 
 @app.route('/pinyinenglish')
 @session_required
@@ -677,7 +682,7 @@ def packed_data(character):
                 "char_matches": '',
                 "deck": session['deck']
             }
-    session['deck'] = foundDeck
+    # session['deck'] = foundDeck
     return {
         "character": character,
         "deck": foundDeck,
@@ -704,12 +709,15 @@ def characters():
     print(len(characters))
     return render_template('characters.html', username=session['username'], characters=characters, character=pc)
 
-@app.route('/grid')
+
+@app.route('/grid', methods=['GET'])
 @session_required
 @timing_decorator
 def grid():
     character = request.args.get('query')
     querydeck = request.args.get('deck')
+    if not querydeck:
+        querydeck = session.get('deck', 'shas')
     logger.info(f"Query deck: {querydeck}")
     if not character:
         characters = list(flashcard_app.cards.get(querydeck, {}).keys())
