@@ -71,7 +71,7 @@ class UserProgress(db.Model):
 
 with app.app_context():
     db.create_all()
-    
+
 def save_user_progress(username, progress_data):
     user_prog = UserProgress.query.filter_by(username=username).first()
     if user_prog:
@@ -529,7 +529,6 @@ def user_progress():
     uprogress = load_user_progress(username)
 
     logger.info(f"User progress for {username} in deck {deck}")
-    logger.info(json.dumps(uprogress, indent=2))
 
     progress_stats = []
     for character in deck_cards:
