@@ -478,13 +478,8 @@ def login():
         username = request.form['username']
         session['username'] = username
         session['current_card'] = None
-        print('login()')
         if session['username'] not in mysession:
             mysession[session['username']] = {}
-            print('created new session with username', session['username'])
-        else:
-            print('loaded existing session with username', session['username'])
-            print(mysession[session['username']])
         user_progress_file = os.path.join('user_progress', f'{username}.json')
         
         if not os.path.exists(user_progress_file):
@@ -492,10 +487,14 @@ def login():
             mysession[session['username']] = flashcard_app.load_user_progress(None)
             print('created new user progress')
             flashcard_app.save_user_progress(session['username'], mysession[session['username']])
+            print('aaaa')
+            print(mysession[session['username']])
             return redirect(url_for('welcome'))
         else:
             mysession[session['username']] = flashcard_app.load_user_progress(user_progress_file)
             flashcard_app.save_user_progress(session['username'], mysession[session['username']])
+            print('bbbb')
+            print(mysession[session['username']])
             return redirect(url_for('home'))
     return render_template('login.html')
 
