@@ -145,8 +145,8 @@ function getDeck_c() {
                 const currentFontOption = document.querySelector(`.font-change[data-font="${currentFont}"]`);
                 if (currentFontOption) currentFontOption.classList.add('selected-option');
 
-                const currentDeckOption = document.querySelector(`.deck-option[data-deck="${currentDeck}"]`);
-                if (currentDeckOption) currentDeckOption.classList.add('selected-option');
+                // const currentDeckOption = document.querySelector(`.deck-option[data-deck="${currentDeck}"]`);
+                // if (currentDeckOption) currentDeckOption.classList.add('selected-option');
             }
 
             initializeHighlighting();

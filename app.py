@@ -638,7 +638,6 @@ def check_session():
         mimetype='application/json'
     )
 
-
 @app.route('/get_crunch')
 def get_crunch():
     return send_file('data/crunch.mp3', mimetype='audio/mpeg')
@@ -717,15 +716,16 @@ def grid():
     character = request.args.get('query')
     querydeck = request.args.get('deck')
     if not querydeck:
-        querydeck = session.get('deck', 'shas')
+        querydeck = 'shas'
     logger.info(f"Query deck: {querydeck}")
     if not character:
         characters = list(flashcard_app.cards.get(querydeck, {}).keys())
         print(f"Initial characters: {len(characters)}")  # Debug print
-        return render_template('grid.html', username=session['username'], characters=characters, character=None, decks=flashcard_app.decks)
+        print(querydeck)
+        return render_template('grid.html', username=session['username'], characters=characters, character=None, decks=flashcard_app.decks, deck=querydeck)
     pc = packed_data(character)
     characters = list(flashcard_app.cards[pc['deck']].keys())
-    return render_template('grid.html', username=session['username'], characters=characters, character=pc, decks=flashcard_app.decks)
+    return render_template('grid.html', username=session['username'], characters=characters, character=pc, decks=flashcard_app.decks, deck=querydeck)
 
 
 @app.route('/puzzles')

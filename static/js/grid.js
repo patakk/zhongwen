@@ -169,6 +169,13 @@ function createGrid(characters, useAllDecks){
     const grid = document.getElementById('character-grid');
     grid.innerHTML = '';
     charCounter = 0;
+    if(currentDeck === null){
+        try{
+            currentDeck = inputdeck;
+        } catch(e){
+            currentDeck = 'shas'
+        }
+    }
     characters.forEach(charData => {
         if (charData.deck !== currentDeck && !useAllDecks) {
             return;
@@ -206,6 +213,10 @@ function updateCounterTitle(){
     //     document.getElementById('title').textContent = `${namesmap[currentDeck]} (${deckLength} words)`;
     // }
     // document.getElementById('title').textContent = `${namesmap[currentDeck]} (${charCounter})`;
+    if(inputdeck){
+        currentDeck = inputdeck;
+        inputdeck = null;
+    }
     document.getElementById('title').textContent = `${inputdecks[currentDeck].name}`;  
     document.getElementById('title_word_count').textContent = `(${deckLength} words)`;  
 }
@@ -571,7 +582,7 @@ function loadAllData(){
         
         // get deck from url
         const urlParams = new URLSearchParams(window.location.search);
-        const deck = urlParams.get('deck');
+        const deck = urlParams.get('deck', currentDeck);
         currentDeck = deck;
         drawBothLayouts(currentData);
 
@@ -599,7 +610,14 @@ document.addEventListener('keyup', function(event) {
 
 document.addEventListener('DOMContentLoaded', function() {
     
+    if (inputdeck) {
+        currentDeck = inputdeck;
+    }
+
+    
     loadAllData();
+    document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
+    document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
 
     try{
         setupBackgroundCanvas();
