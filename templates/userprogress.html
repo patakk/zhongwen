@@ -342,7 +342,7 @@
                 <th class="tooltip-header" data-tooltip="Scheduled date and time for the next review">Next Review</th>
             </tr>
                 {% for stat in progress_stats %}
-                {% if stat.box == 1 %}
+                {% if stat.is_due == 1 %}
                 <!-- <tr style="border: 3px dashed red; background-color: #f7f7f7;"> -->
                 <tr style="background-color: #ffefea;">
                 {% elif stat.box == 6 %}
