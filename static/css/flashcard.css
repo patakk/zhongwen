@@ -104,6 +104,9 @@
     transition: transform 0.2s, background-color 0.7s;
     transition: transform 0.2s, background-color 0.3s;
     z-index: 1032;
+    
+    font-family: "Noto Sans Mono", monospace;
+    font-weight: 400;
 }
 
 #flashcard_container::-webkit-scrollbar {

@@ -27,7 +27,12 @@ function changeDeck(deck, func=null) {
 
 function changeFont(font) {
     try {
-        document.getElementById('flashcard_character').style.fontFamily = `"${font}", sans-serif`;
+        if(font === 'Noto Serif SC'){
+            console.log('changing font to', `"${font}", serif`);
+            document.getElementById('flashcard_character').style.fontFamily = `"${font}"`;
+        } else{
+            document.getElementById('flashcard_character').style.fontFamily = `"${font}", sans-serif`;
+        }
     }
     catch (e) {
         console.log(e);
@@ -44,7 +49,6 @@ function changeFont(font) {
             throw new Error('Network response was not ok');
         }
 
-        console.log('Font changed successfully');
     })
     .catch(error => {
         console.error('There was a problem changing the font:', error);
@@ -85,7 +89,11 @@ function getFont() {
             currentFont = data.font;
             console.log('received font', currentFont);
             try {
-                document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", sans-serif`;
+                if(currentFont === 'Noto Serif SC'){
+                    document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", serif`;
+                } else{
+                    document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", sans-serif`;
+                }
             }
             catch (e) {
                 console.log(e);

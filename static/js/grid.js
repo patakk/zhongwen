@@ -721,8 +721,13 @@ function getFont() {
             updateFontFamily(currentFont);
 
             // document.getElementById('font-select').value = currentFont;
-            document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", sans-serif`;
-            document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;
+            if(currentFont === 'Noto Serif SC'){
+                document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", serif`;
+                document.querySelector('.grid').style.fontFamily = `"${currentFont}", serif`;
+            } else{
+                document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", sans-serif`;
+                document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;
+            }
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
