@@ -344,7 +344,7 @@
                 {% for stat in progress_stats %}
                 {% if stat.is_due == 1 %}
                 <!-- <tr style="border: 3px dashed red; background-color: #f7f7f7;"> -->
-                <tr style="background-color: #ffefea;">
+                <tr style="background-color: #ffefea;" data-isdue="1">
                 {% elif stat.box == 6 %}
                 <tr style="background-color: #eafff6;">
                 {% else %}
@@ -542,7 +542,10 @@
             dateCells.forEach(cell => {
                 const originalDate = new Date(cell.textContent);
                 
-                if (originalDate < now) {
+                const parent = cell.parentElement;
+                const isDue = parent.getAttribute('data-isdue');
+
+                if (isDue) {
                     cell.textContent = "DUE";
                     cell.classList.add('due-date');
                 } else {
