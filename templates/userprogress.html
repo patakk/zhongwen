@@ -61,6 +61,7 @@
         th, td {
             padding: 10px;
             text-align: left;
+            max-width: 100px;
             border: 2px solid #000000;
         }
         td {
@@ -98,7 +99,6 @@
             }
             th, td {
                 padding: 5px;
-                white-space: nowrap;
             }
             .character {
                 font-size: 18px;
@@ -121,7 +121,7 @@
         }
         .settings-form label {
             margin-right: 10px;
-            white-space: nowrap; /* Prevent label from wrapping */
+            /* white-space: nowrap;  */
         }
         .settings-form input {
             width: 80px; /* Slightly increased width */
@@ -338,25 +338,28 @@
                 <th class="tooltip-header" data-tooltip="Current learning stage of the character (1-5)">Learned</th>
                 <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th>
                 <th class="tooltip-header" data-tooltip="Number of consecutive correct answers">Streak</th>
-                <th class="tooltip-header" data-tooltip="Total number of incorrect answers for this character">Num. Incorrect</th>
+                <th class="tooltip-header" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
                 <th class="tooltip-header" data-tooltip="Scheduled date and time for the next review">Next Review</th>
             </tr>
-            {% for stat in progress_stats %}
-            {% if stat.box == 1 %}
-            <tr style="border: 3px dashed red; background-color: #f7f7f7;">
-            {% else %}
-            <tr>
-            {% endif %}
-                <td style="text-align: left;" class="character">
-                    <a href="./grid?query={{ stat.character }}">{{ stat.character }}</a>
-                </td>
-                <td style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
-                <td style="text-align: right;">{{ '{:.2f}'.format(stat.difficulty) }}</td>
-                <td style="text-align: right;">{{ stat.streak }}</td>
-                <td style="text-align: right;">{{ stat.num_incorrect }}</td>
-                <td style="text-align: right;" class="next-review-date">{{ stat.next_review }}</td>
-            </tr>
-            {% endfor %}
+                {% for stat in progress_stats %}
+                {% if stat.box == 1 %}
+                <!-- <tr style="border: 3px dashed red; background-color: #f7f7f7;"> -->
+                <tr style="background-color: #ffefea;">
+                {% elif stat.box == 6 %}
+                <tr style="background-color: #eafff6;">
+                {% else %}
+                <tr>    
+                {% endif %}
+                    <td style="text-align: left;" class="character">
+                        <a href="./grid?query={{ stat.character }}">{{ stat.character }}</a>
+                    </td>
+                    <td style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
+                    <td style="text-align: right;">{{ '{:.2f}'.format(stat.difficulty) }}</td>
+                    <td style="text-align: right;">{{ stat.streak }}</td>
+                    <td style="text-align: right;">{{ stat.num_incorrect }}</td>
+                    <td style="text-align: right;" class="next-review-date">{{ stat.next_review }}</td>
+                </tr>
+                {% endfor %}
         </table>
     </div>
     <div id="pinyin-hover-box" style="display: none;"></div>
@@ -444,7 +447,7 @@
             const seconds = String(date.getSeconds()).padStart(2, '0');
             
             // Combine into a nicely formatted string
-            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            return `${year}-${month}-${day} <br> ${hours}:${minutes}:${seconds}`;
         }
 
         function dateToPinyin(formattedDate) {
@@ -540,13 +543,12 @@
                 const originalDate = new Date(cell.textContent);
                 
                 if (originalDate < now) {
-                    // Date is in the past
                     cell.textContent = "DUE";
-                    cell.classList.add('due-date'); // Add a class for styling if needed
+                    cell.classList.add('due-date');
                 } else {
                     const formattedDate = formatDateTime(originalDate);
-                    const pinyinDate = dateToPinyin(formattedDate);
-                    cell.textContent = formattedDate;
+                    const pinyinDate = dateToPinyin(formattedDate.replace('<br> ', ''));
+                    cell.innerHTML = formattedDate;
                     cell.addEventListener('mouseover', function(e) {
                         showTooltip(this, pinyinDate, e);
                     });

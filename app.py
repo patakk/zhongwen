@@ -556,7 +556,8 @@ def user_progress():
             progress_stats.append(stats)
 
     # Sort by box (descending) and then by accuracy (descending)
-    progress_stats.sort(key=lambda x: (-x['box'], -x['accuracy']))
+    #progress_stats.sort(key=lambda x: (-x['box'], -x['accuracy']))
+    progress_stats.sort(key=lambda x: x['next_review'])
 
     numcards = len(deck_cards)
     duecards = len([card for card in progress_stats if card['is_due']])
