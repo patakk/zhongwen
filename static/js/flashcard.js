@@ -53,7 +53,6 @@ function displayCharMatches(charMatches) {
     if(allWords.size === 0){
         return;
     }
-    return;
     getCharactersPinyinEnglish(allWords, (data)=>{
         // Create a box for each unique word
         let chardict = {};
@@ -209,7 +208,7 @@ function renderCardData(data) {
             strokeWrapper.id = 'flashcard_stroke_wrapper';
             strokesContainer.appendChild(strokeWrapper);
 
-            let writerSize = chars.length === 1 ? 150 : 150;
+            let writerSize = chars.length < 3 ? 221 : 150;
             if(screen.width < 768 && chars.length === 3){
                 writerSize = 90;
             }
@@ -222,11 +221,11 @@ function renderCardData(data) {
             const dashPattern = `${dashSize},${dashSize}`;
 
             svg.innerHTML = `
-                <rect x="0" y="0" width="${writerSize}" height="${writerSize}" fill="none" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                <line x1="0" y1="0" x2="${writerSize}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                <line x1="${writerSize}" y1="0" x2="0" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                <line x1="${writerSize/2}" y1="0" x2="${writerSize/2}" y2="${writerSize}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
-                <line x1="0" y1="${writerSize/2}" x2="${writerSize}" y2="${writerSize/2}" stroke="#AAA" stroke-dasharray="${dashPattern}" />
+                <rect x="0" y="0" width="${writerSize}" height="${writerSize}" fill="none" stroke="#A005" stroke-width="4" stroke-dasharray="${dashPattern}" />
+                <line x1="0" y1="0" x2="${writerSize}" y2="${writerSize}" stroke="#A005" stroke-width="2" stroke-dasharray="${dashPattern}" />
+                <line x1="${writerSize}" y1="0" x2="0" y2="${writerSize}" stroke="#A005" stroke-width="2" stroke-dasharray="${dashPattern}" />
+                <line x1="${writerSize/2}" y1="0" x2="${writerSize/2}" y2="${writerSize}" stroke="#A005" stroke-width="2" stroke-dasharray="${dashPattern}" />
+                <line x1="0" y1="${writerSize/2}" x2="${writerSize}" y2="${writerSize/2}" stroke="#A005" stroke-width="2" stroke-dasharray="${dashPattern}" />
             `;
 
             strokeWrapper.appendChild(svg);
@@ -238,7 +237,7 @@ function renderCardData(data) {
                 strokeColor: '#000000',
                 strokeAnimationSpeed: 1,
                 delayBetweenStrokes: 220,
-                radicalColor: '#ff0000'
+                radicalColor: '#e83a00'
             });
 
             strokeWrapper.addEventListener('click', function() {

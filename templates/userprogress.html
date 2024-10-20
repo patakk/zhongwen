@@ -335,7 +335,7 @@
         <table>
             <tr>
                 <th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th>
-                <th class="tooltip-header" data-tooltip="Current learning stage of the character (1-5)">Box</th>
+                <th class="tooltip-header" data-tooltip="Current learning stage of the character (1-5)">Learned</th>
                 <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th>
                 <th class="tooltip-header" data-tooltip="Number of consecutive correct answers">Streak</th>
                 <th class="tooltip-header" data-tooltip="Total number of incorrect answers for this character">Num. Incorrect</th>
@@ -350,7 +350,7 @@
                 <td style="text-align: left;" class="character">
                     <a href="./grid?query={{ stat.character }}">{{ stat.character }}</a>
                 </td>
-                <td style="text-align: right;">{{ stat.box }}</td>
+                <td style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
                 <td style="text-align: right;">{{ '{:.2f}'.format(stat.difficulty) }}</td>
                 <td style="text-align: right;">{{ stat.streak }}</td>
                 <td style="text-align: right;">{{ stat.num_incorrect }}</td>
