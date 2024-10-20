@@ -800,7 +800,7 @@ def get_characters_pinyinenglish():
         data = request.get_json()
         characters = data.get('characters') if data else None
     
-    print("Request method:", request.method)
+    # print("Request method:", request.method)
     # print("Received characters:", characters)
 
     if characters and isinstance(characters, list) and len(characters) > 0:
