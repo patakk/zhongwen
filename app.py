@@ -528,7 +528,7 @@ def set_client_time():
     client_time = request.json.get('client_time')
     logger.info(f"Client time received: {client_time}")
     if client_time:
-        if True:
+        try:
             # Convert the client time to a datetime object
             client_datetime = parser.isoparse(client_time)
             server_time = datetime.now(timezone.utc)  # Ensure server time is in UTC
@@ -536,8 +536,7 @@ def set_client_time():
             session['time_difference'] = time_difference
             logger.info(f"Time difference set: {time_difference}")
             return jsonify({"status": "success", "message": "Client time set successfully"}), 200
-        #except ValueError:
-        else:
+        except ValueError:
             return jsonify({"status": "error", "message": "Invalid time format"}), 400
     else:
         return jsonify({"status": "error", "message": "No client time provided"}), 400
