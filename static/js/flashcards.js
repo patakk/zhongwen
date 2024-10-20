@@ -560,6 +560,7 @@ function prefetchNextCard() {
     fetchCard()
         .then(data => {
             prefetchedCard = data;
+            console.log('Prefetched next card:', data.character);
         })
         .catch(error => {
             console.error('Error prefetching next card:', error);
