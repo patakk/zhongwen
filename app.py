@@ -440,7 +440,10 @@ class FlashcardApp:
         max_attempts = 10
         while attempts < max_attempts:
             if due_cards and new_cards:
-                if random.random() < 0.5:  # 50% chance for due cards
+                chance = 0.5
+                if len(due_cards) < 3:
+                    chance = 0.3
+                if random.random() < chance:  # 50% chance for due cards
                     logger.info('Selecting from due cards')
                     card_to_return = random.choice(due_cards)
                 else:
