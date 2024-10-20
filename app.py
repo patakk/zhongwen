@@ -558,8 +558,13 @@ def user_progress():
     # Sort by box (descending) and then by accuracy (descending)
     progress_stats.sort(key=lambda x: (-x['box'], -x['accuracy']))
 
+    numcards = len(deck_cards)
+    duecards = len([card for card in progress_stats if card['is_due']])
+    learnedcards = len([card for card in progress_stats if card['box'] == 6])
+    learningcards = len([card for card in progress_stats if card['box'] < 6])
+
     # print(session[session['username']]["base_new_cards_limit"])
-    return render_template('userprogress.html', username=session.get('username'), deck=deck, deckname=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=load_user_value(username, 'new_cards_limit'))
+    return render_template('userprogress.html', username=session.get('username'), deck=deck, deckname=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
 
 
 
