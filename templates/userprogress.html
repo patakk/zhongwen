@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Progress - {{ username }} - {{ deck }}</title>
+    <title>User Progress - {{ username }} - {{ deckname }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
@@ -326,7 +326,7 @@
         </form>
     </div>
     <div class="container">
-        <h1>Progress in <span class="deck-highlight">{{ deck }}</span> deck</h1>
+        <h1>Progress in <span class="deck-highlight">{{ deckname }}</span> deck</h1>
         <table>
             <tr>
                 <th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th>
@@ -501,6 +501,10 @@
             const dateCells = document.querySelectorAll('.next-review-date');
             const hoverBox = document.getElementById('pinyin-hover-box');
     
+            currentDeck = {{ deck | tojson | safe }};
+            const currentDeckOption = document.querySelector(`.deck-option[data-deck="${currentDeck}"]`);
+            if (currentDeckOption) currentDeckOption.classList.add('selected-option');
+
             function showTooltip(element, content, event) {
                 hoverBox.textContent = content;
                 hoverBox.style.display = 'block';

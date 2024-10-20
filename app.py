@@ -556,7 +556,7 @@ def user_progress():
     progress_stats.sort(key=lambda x: (-x['box'], -x['accuracy']))
 
     # print(session[session['username']]["base_new_cards_limit"])
-    return render_template('userprogress.html', username=session.get('username'), deck=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=load_user_value(username, 'new_cards_limit'))
+    return render_template('userprogress.html', username=session.get('username'), deck=deck, deckname=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=load_user_value(username, 'new_cards_limit'))
 
 
 
@@ -721,7 +721,6 @@ def grid():
     if not character:
         characters = list(flashcard_app.cards.get(querydeck, {}).keys())
         print(f"Initial characters: {len(characters)}")  # Debug print
-        print(querydeck)
         return render_template('grid.html', username=session['username'], characters=characters, character=None, decks=flashcard_app.decks, deck=querydeck)
     pc = packed_data(character)
     characters = list(flashcard_app.cards[pc['deck']].keys())
