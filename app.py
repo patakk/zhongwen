@@ -3,6 +3,7 @@ from flask import send_file
 from datetime import timedelta
 from datetime import datetime
 from datetime import date
+from datetime import timezone
 from functools import wraps
 from urllib.parse import unquote
 import logging
@@ -16,6 +17,7 @@ import hashlib
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.sqlite import JSON
 from sqlalchemy.exc import SQLAlchemyError
+from dateutil import parser
 
 
 app = Flask(__name__)
@@ -524,21 +526,18 @@ from collections import defaultdict
 @app.route('/set_client_time', methods=['POST'])
 def set_client_time():
     client_time = request.json.get('client_time')
+    logger.info(f"Client time received: {client_time}")
     if client_time:
-        try:
+        if True:
             # Convert the client time to a datetime object
-            client_datetime = datetime.fromisoformat(client_time)
-            
-            # Store in session
-            session['client_time'] = client_datetime.isoformat()
-            
-            # Optionally, calculate and store the time difference
-            server_time = datetime.now()
-            time_difference = server_time - client_datetime
-            session['time_difference'] = time_difference.total_seconds()
-            
+            client_datetime = parser.isoparse(client_time)
+            server_time = datetime.now(timezone.utc)  # Ensure server time is in UTC
+            time_difference = (server_time - client_datetime.replace(tzinfo=timezone.utc)).total_seconds()
+            session['time_difference'] = time_difference
+            logger.info(f"Time difference set: {time_difference}")
             return jsonify({"status": "success", "message": "Client time set successfully"}), 200
-        except ValueError:
+        #except ValueError:
+        else:
             return jsonify({"status": "error", "message": "Invalid time format"}), 400
     else:
         return jsonify({"status": "error", "message": "No client time provided"}), 400
