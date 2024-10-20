@@ -346,6 +346,7 @@ document.getElementById('flashcard_container').addEventListener('touchstart', fu
     isScrolling = false;
 }, { passive: true });
 
+let lasttouchX = 0;
 document.getElementById('flashcard_container').addEventListener('touchmove', function(event) {
     if (isScrolling) return; // If we've determined it's a scroll, do nothing
     
@@ -353,6 +354,8 @@ document.getElementById('flashcard_container').addEventListener('touchmove', fun
     const touchY = event.touches[0].clientY;
     const deltaX = touchX - touchStartX;
     const deltaY = touchY - touchStartY;
+
+    lasttouchX = touchX;
     
     if (!isDragging) {
         // Determine if it's a drag or scroll based on initial movement
@@ -448,10 +451,10 @@ function handleTouchMove(dragDistance){
 
     let threshold = 0.3;
     if(isIPhone()){
-        threshold = 0.35;
+        threshold = 0.45;
     }
     if(isiPad()){
-        threshold = 0.13;
+        threshold = 0.18;
     }
     if(apercentage > threshold && recordLock === false){
         if(dragDistance > 0){
@@ -478,6 +481,18 @@ function handleTouchMove(dragDistance){
 }
 
 function handleTouchEnd(){
+
+    const deltaX = lasttouchX - touchStartX;
+    
+    if(recordLock === false && Math.abs(deltaX) > 100){
+        if(deltaX > 0){
+            recordAnswer(true);
+        }
+        else{
+            recordAnswer(false);
+        }
+    }
+
     touchStartX = null;
     currentTouchX = null;
     isDragging = false;
