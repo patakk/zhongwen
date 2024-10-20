@@ -686,6 +686,8 @@ document.addEventListener('DOMContentLoaded', function() {
     newUrl.searchParams.set('deck', currentDeck);
     history.pushState({}, '', newUrl);
 
+    document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
+    document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
     changeDeck(currentDeck);
     getNextCard();
     getFont();
