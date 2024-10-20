@@ -159,7 +159,7 @@
             function sendClientTime() {
             const clientTime = new Date().toISOString();
             
-            fetch('/set_client_time', {
+            fetch('./set_client_time', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
