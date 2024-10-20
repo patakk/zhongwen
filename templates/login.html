@@ -104,6 +104,26 @@
         }
     </style>
 </head>
+<script>
+    function sendClientTime() {
+    const clientTime = new Date().toISOString();
+    
+    fetch('/set_client_time', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ client_time: clientTime }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+</script>
 <body>
     <div class="login-container">
         <h1>Login</h1>
@@ -125,6 +145,10 @@
 
         let inputfield = document.querySelector('input[type="text"]');
         inputfield.focus();
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            sendClientTime();
+        });
     </script>
 </body>
 </html>

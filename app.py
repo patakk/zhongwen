@@ -196,8 +196,11 @@ def session_required(func):
     return wrapper
 
 def get_date():
-    da = ''.join([str(s) for s in [datetime.today().year, datetime.today().month, datetime.today().day]])
-    return da
+    server_time = datetime.now()
+    time_difference = session.get('time_difference', 0)
+    adjusted_time = server_time - timedelta(seconds=time_difference)
+    formatted_date = adjusted_time.strftime('%Y%m%d')
+    return formatted_date
 
 
 class FlashcardApp:
@@ -332,7 +335,7 @@ class FlashcardApp:
                 "num_incorrect": 0,
                 "views": 0,
                 "difficulty": 1.0,
-                "next_review": datetime.now().isoformat()
+                "next_review": (datetime.now() - timedelta(seconds=session.get('time_difference', 0))).isoformat()
             }
         
         char_progress = uprogress['progress'][character]
@@ -365,13 +368,13 @@ class FlashcardApp:
     def calculate_next_review_date(self, char_progress):
         base_interval = self.REVIEW_INTERVALS[char_progress["box"] - 1]
         if base_interval == 0:
-            return datetime.now().isoformat()  # Immediate review for box 1
+            return (datetime.now() - timedelta(seconds=session.get('time_difference', 0))).isoformat()  # Immediate review for box 1
         difficulty = char_progress["difficulty"]
-        return (datetime.now() + timedelta(days=base_interval / difficulty)).isoformat()
+        return (datetime.now() - timedelta(seconds=session.get('time_difference', 0)) + timedelta(days=base_interval / difficulty)).isoformat()
     
     def get_due_cards(self, username, deck, count=10000):
         due_cards = []
-        current_time = datetime.now()
+        current_time = datetime.now() - timedelta(seconds=session.get('time_difference', 0))
         all_deck_cards = set(self.cards[deck].keys())
         
         uprogress = load_user_progress(username)
@@ -467,7 +470,7 @@ class FlashcardApp:
                 new_cards_limit = int(new_cards_limit)
                 # session[session['username']]["new_cards_limit"] += int(session[session['username']]["base_new_cards_limit"])
                 new_cards_limit = int(base_new_cards_limit)
-                new_cards_limit_last_updated = ''.join([str(s) for s in [datetime.today().year, datetime.today().month, datetime.today().day]])
+                new_cards_limit_last_updated = get_date()
                 #self.save_user_progress(username, self.user_prog)
                 new_cards = self.get_new_cards(username, deck, force_new_cards=True)
                 if len(new_cards) == 0:
@@ -518,6 +521,28 @@ def get_card_data():
 
 from collections import defaultdict
 
+@app.route('/set_client_time', methods=['POST'])
+def set_client_time():
+    client_time = request.json.get('client_time')
+    if client_time:
+        try:
+            # Convert the client time to a datetime object
+            client_datetime = datetime.fromisoformat(client_time)
+            
+            # Store in session
+            session['client_time'] = client_datetime.isoformat()
+            
+            # Optionally, calculate and store the time difference
+            server_time = datetime.now()
+            time_difference = server_time - client_datetime
+            session['time_difference'] = time_difference.total_seconds()
+            
+            return jsonify({"status": "success", "message": "Client time set successfully"}), 200
+        except ValueError:
+            return jsonify({"status": "error", "message": "Invalid time format"}), 400
+    else:
+        return jsonify({"status": "error", "message": "No client time provided"}), 400
+
 @app.route('/user_progress')
 @hard_session_required
 def user_progress():
@@ -551,7 +576,7 @@ def user_progress():
                 'accuracy': round(accuracy, 2),
                 'num_incorrect': char_progress.get('num_incorrect', 1),
                 'next_review': char_progress.get('next_review', 'N/A'),
-                'is_due': char_progress.get('next_review') and datetime.fromisoformat(char_progress['next_review']) <= datetime.now()
+                'is_due': char_progress.get('next_review') and datetime.fromisoformat(char_progress['next_review']) <= (datetime.now() - timedelta(seconds=session.get('time_difference', 0)))
             }
             progress_stats.append(stats)
 
@@ -596,7 +621,7 @@ def login():
                 username=username,
                 base_new_cards_limit=20,  # Default value
                 new_cards_limit=20,  # Default value
-                new_cards_limit_last_updated=datetime.now().strftime("%Y%m%d"),
+                new_cards_limit_last_updated=get_date(),
                 daily_new_cards={},
                 last_new_cards_date={},
                 presented_new_cards={},
