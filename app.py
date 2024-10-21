@@ -404,7 +404,8 @@ class FlashcardApp:
                 logger.info('Forced new cards')
                 logger.info(uprogress["daily_new_cards"][deck])
             uprogress["last_new_cards_date"][deck] = today.isoformat()
-            uprogress["presented_new_cards"][deck] = []
+            if not force_new_cards:
+                uprogress["presented_new_cards"][deck] = []
             save_user_progress(username, uprogress)
 
         remaining_new_cards = [card for card in uprogress["daily_new_cards"].get(deck, [])
@@ -466,7 +467,8 @@ class FlashcardApp:
                 logger.info('No due or new cards (or only 1 due card),  adding new cards')
                 new_cards = self.get_new_cards(username, deck, force_new_cards=True)
                 logger.info(new_cards)
-                message = 'message_1'
+                card_to_return = random.choice(new_cards)
+                message = ''
                 # if len(due_cards) == 1:
                 #     message = 'message_1'
                 # elif len(new_cards) == 0:
@@ -657,8 +659,8 @@ def login():
             logger.info(f"Creating new user: {username}")
             new_user = UserProgress(
                 username=username,
-                base_new_cards_limit=20,  # Default value
-                new_cards_limit=20,  # Default value
+                base_new_cards_limit=5,  # Default value
+                new_cards_limit=5,  # Default value
                 new_cards_limit_last_updated=getshortdate(),
                 daily_new_cards={},
                 last_new_cards_date={},
