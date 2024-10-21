@@ -661,8 +661,8 @@ def login():
             logger.info(f"Creating new user: {username}")
             new_user = UserProgress(
                 username=username,
-                base_new_cards_limit=5,  # Default value
-                new_cards_limit=5,  # Default value
+                base_new_cards_limit=20,  # Default value
+                new_cards_limit=20,  # Default value
                 new_cards_limit_last_updated=getshortdate(),
                 daily_new_cards={},
                 last_new_cards_date={},
