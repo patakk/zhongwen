@@ -277,3 +277,44 @@ body {
     }
     
 }
+#prompt-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 2px solid black;
+    text-align: center;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    font-size: 21px;
+    z-index: 22000;
+    max-width: 70%;
+    width: 500px;   
+  }
+  
+  #prompt-text {
+    margin-bottom: 20px;
+  }
+  
+  #button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  #prompt-container button {
+    padding: 10px 20px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    border: 2px solid black;
+    background-color: white;
+    font-size: 21px;
+    min-width: 100px;
+    cursor: pointer;
+}
+
+#prompt-container button:hover {
+    background-color: #f0f0f0;
+}

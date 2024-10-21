@@ -112,6 +112,11 @@ function displayCharMatches(charMatches) {
 
 function renderCardData(data) {
     const container = document.getElementById('flashcard_container');
+
+    if(container.style.display === 'none'){
+        container.style.display = 'flex';
+    }
+
     const characterElement = document.getElementById('flashcard_character');
     characterElement.innerHTML = ''; // Clear existing content
 

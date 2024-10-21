@@ -156,26 +156,6 @@
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     
     <script>
-            function sendClientTime() {
-            const clientTime = new Date().toISOString();
-            
-            fetch('./set_client_time', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ client_time: clientTime }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-
-        sendClientTime();
         
         if(username === 'tempuser'){
             document.getElementById('progressUrl').textContent = 'login';

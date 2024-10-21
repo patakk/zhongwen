@@ -545,7 +545,7 @@
                 const parent = cell.parentElement;
                 const isDue = parent.getAttribute('data-isdue');
 
-                if (isDue) {
+                if (isDue && false) {
                     cell.textContent = "DUE";
                     cell.classList.add('due-date');
                 } else {

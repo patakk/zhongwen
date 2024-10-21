@@ -90,9 +90,9 @@ def load_user_progress(username):
         data = user_prog.to_dict()
         
         # Check if the new cards limit needs to be reset
-        if get_date() != data.get('new_cards_limit_last_updated'):
+        if getshortdate() != data.get('new_cards_limit_last_updated'):
             data["new_cards_limit"] = data["base_new_cards_limit"]
-            data["new_cards_limit_last_updated"] = get_date()
+            data["new_cards_limit_last_updated"] = getshortdate()
             
             # Update the database with the new values
             user_prog.new_cards_limit = data["new_cards_limit"]
@@ -100,25 +100,6 @@ def load_user_progress(username):
             db.session.commit()
         logger.info(f"User progress found for user '{username}'")
         return data
-    else:
-        # Create a new user progress entry
-        logger.info(f"User progress not found for user '{username}', creating new entry")
-        new_user_prog = {
-            "progress": {},
-            "last_new_cards_date": {},
-            "presented_new_cards": {},
-            "daily_new_cards": {},
-            "new_cards_limit": 20,
-            "base_new_cards_limit": 20,
-            "new_cards_limit_last_updated": get_date()
-        }
-        
-        # Save the new user progress to the database
-        new_user = UserProgress.from_dict(username, new_user_prog)
-        db.session.add(new_user)
-        db.session.commit()
-        
-        return new_user_prog
 
 def load_user_value(username, key):
     user_prog = UserProgress.query.filter_by(username=username).first()
@@ -197,12 +178,8 @@ def session_required(func):
         return func(*args, **kwargs)
     return wrapper
 
-def get_date():
-    server_time = datetime.now()
-    time_difference = session.get('time_difference', 0)
-    adjusted_time = server_time - timedelta(seconds=time_difference)
-    formatted_date = adjusted_time.strftime('%Y%m%d')
-    return formatted_date
+def getshortdate():
+    return datetime.now(timezone.utc).strftime('%Y%m%d')
 
 
 class FlashcardApp:
@@ -213,7 +190,7 @@ class FlashcardApp:
         self.REVIEW_INTERVALS = [0, 1, 3, 7, 14, 30]  # days for each box
         self.DIFFICULTY_CAP = 3.0
         self.STREAK_FACTOR = 20
-        self.BASE_NEW_CARDS_LIMIT = 20
+        self.BASE_NEW_CARDS_LIMIT = 5
 
         self.daily_new_cards = {}
         self.last_new_cards_date = {}
@@ -251,26 +228,17 @@ class FlashcardApp:
             with open(file_path, 'r', encoding='utf-8') as f:
                 try:
                     loaded_user_prog = json.load(f)
-                    if get_date() != loaded_user_prog.get('new_cards_limit_last_updated'):
+                    if getshortdate() != loaded_user_prog.get('new_cards_limit_last_updated'):
                         loaded_user_prog["new_cards_limit"] = loaded_user_prog["base_new_cards_limit"]
-                        loaded_user_prog["new_cards_limit_last_updated"] = get_date()
+                        loaded_user_prog["new_cards_limit_last_updated"] = getshortdate()
                     return loaded_user_prog
                 except:
                     time.sleep(0.1)
                     loaded_user_prog = json.load(f)
-                    if get_date() != loaded_user_prog.get('new_cards_limit_last_updated'):
+                    if getshortdate() != loaded_user_prog.get('new_cards_limit_last_updated'):
                         loaded_user_prog["new_cards_limit"] = loaded_user_prog["base_new_cards_limit"]
-                        loaded_user_prog["new_cards_limit_last_updated"] = get_date()
+                        loaded_user_prog["new_cards_limit_last_updated"] = getshortdate()
                     return loaded_user_prog
-        loaded_user_prog = {
-            "progress": {},
-            "last_new_cards_date": {},
-            "presented_new_cards": {},
-            "daily_new_cards": {},
-            "new_cards_limit": 20,
-            "base_new_cards_limit": 20,
-            "new_cards_limit_last_updated": get_date()
-        }
         return loaded_user_prog
 
     # def save_user_progress(self, username, progress):
@@ -317,7 +285,7 @@ class FlashcardApp:
     #             "streak": 0,
     #             "num_incorrect": 0,
     #             "difficulty": 1.0,
-    #             "next_review": datetime.now().isoformat()
+    #             "next_review": datetime.now(timezone.utc).isoformat()
     #         }
     #         if session['deck'] not in session[session['username']]["progress"][character]["decks"]:
     #             session[session['username']]["progress"][character]["decks"].append(session['deck'])
@@ -337,18 +305,26 @@ class FlashcardApp:
                 "num_incorrect": 0,
                 "views": 0,
                 "difficulty": 1.0,
-                "next_review": (datetime.now() - timedelta(seconds=session.get('time_difference', 0))).isoformat()
+                "next_review": datetime.now(timezone.utc).isoformat()
             }
         
         char_progress = uprogress['progress'][character]
         
+        is_ahead_of_schedule = char_progress.get('next_review') > datetime.now(timezone.utc).isoformat()
+
         if correct == 'true':
             char_progress["answers"].append('correct')
-            char_progress["box"] = min(self.NUM_BOXES, char_progress["box"] + 1)
+            if not is_ahead_of_schedule:
+                char_progress["box"] = min(self.NUM_BOXES, char_progress["box"] + 1)
+            else:
+                logger.info(f"Character {character} is ahead of schedule, so not advancing to next box")
             char_progress["streak"] += 1
         else:
             char_progress["answers"].append('incorrect')
-            char_progress["box"] = 1
+            if not is_ahead_of_schedule:
+                char_progress["box"] = 1
+            else:
+                logger.info(f"Character {character} is ahead of schedule, so not resetting to box 1")
             char_progress["num_incorrect"] += 1
             char_progress["streak"] = 0
         
@@ -357,7 +333,10 @@ class FlashcardApp:
         
         char_progress['views'] += 1
         char_progress["difficulty"] = self.calculate_difficulty(char_progress)
-        char_progress["next_review"] = self.calculate_next_review_date(char_progress)
+        if not is_ahead_of_schedule:
+            char_progress["next_review"] = self.calculate_next_review_date(char_progress)
+        else:
+            logger.info(f"Character {character} is ahead of schedule, so not updating next review date")
         uprogress['progress'][character] = char_progress
         
         save_user_progress(username, uprogress)
@@ -370,13 +349,14 @@ class FlashcardApp:
     def calculate_next_review_date(self, char_progress):
         base_interval = self.REVIEW_INTERVALS[char_progress["box"] - 1]
         if base_interval == 0:
-            return (datetime.now() - timedelta(seconds=session.get('time_difference', 0))).isoformat()  # Immediate review for box 1
+            return datetime.now(timezone.utc).isoformat()  # Immediate review for box 1
         difficulty = char_progress["difficulty"]
-        return (datetime.now() - timedelta(seconds=session.get('time_difference', 0)) + timedelta(days=base_interval / difficulty)).isoformat()
+        #return (datetime.now(timezone.utc) + timedelta(days=base_interval / difficulty)).isoformat()
+        return (datetime.now(timezone.utc) + timedelta(days=base_interval / difficulty)).isoformat()
     
     def get_due_cards(self, username, deck, count=10000):
         due_cards = []
-        current_time = datetime.now() - timedelta(seconds=session.get('time_difference', 0))
+        current_time = datetime.now(timezone.utc)
         all_deck_cards = set(self.cards[deck].keys())
         
         uprogress = load_user_progress(username)
@@ -386,6 +366,8 @@ class FlashcardApp:
             if next_review_str:
                 try:
                     next_review = datetime.fromisoformat(next_review_str)
+                    if next_review.tzinfo is None:
+                        next_review = next_review.replace(tzinfo=timezone.utc)
                     if next_review <= current_time:
                         due_cards.append(character)
                 except ValueError:
@@ -404,6 +386,7 @@ class FlashcardApp:
             load_user_value(username, 'last_new_cards_date').get(deck) != today.isoformat()
             or force_new_cards):
             
+            logger.info(f"Generating new cards for user {username} in deck {deck}")
             all_deck_cards = set(self.cards[deck].keys())
             
             new_cards = [
@@ -430,85 +413,156 @@ class FlashcardApp:
 
     def select_card(self, username, deck):
         if username == 'tempuser':
-            return random.choice(list(self.cards[deck].keys()))
+            return '', random.choice(list(self.cards[deck].keys()))
 
-        daily_new_cards = load_user_value(username, 'daily_new_cards') or {}
-        new_cards_limit = load_user_value(username, 'new_cards_limit') or 20
-        base_new_cards_limit = load_user_value(username, 'base_new_cards_limit') or 20
-        new_cards_limit_last_updated = load_user_value(username, 'new_cards_limit_last_updated') or get_date()
+        new_cards_limit = load_user_value(username, 'new_cards_limit')
+        # base_new_cards_limit = load_user_value(username, 'base_new_cards_limit')
+        new_cards_limit_last_updated = load_user_value(username, 'new_cards_limit_last_updated') or getshortdate()
+
+        message = ''
 
         due_cards = self.get_due_cards(username, deck)
         new_cards = self.get_new_cards(username, deck)[:new_cards_limit]
+        presented_new_cards = load_user_value(username, 'presented_new_cards') or {}
 
         card_to_return = None
         attempts = 0
         max_attempts = 10
         while attempts < max_attempts:
-            if due_cards and new_cards:
+
+            has_due_cards = len(due_cards) > 0
+            has_new_cards = len(new_cards) > 0
+
+            if has_due_cards and has_new_cards:
                 chance = 0.5
-                if len(due_cards) < 3:
+                if len(due_cards) < 5:
                     chance = 0.3
+                if len(due_cards) < 3:
+                    chance = 0.2
+                if len(due_cards) > 16:
+                    chance = 0.75
                 if random.random() < chance:  # 50% chance for due cards
                     logger.info('Selecting from due cards')
                     card_to_return = random.choice(due_cards)
                 else:
                     logger.info('Selecting from new cards')
                     card_to_return = random.choice(new_cards)
-            elif len(due_cards) > 1:
+            elif has_due_cards and len(due_cards) > 1:
                 logger.info('Selecting from due cards only')
                 card_to_return = random.choice(due_cards)
-                if len(due_cards) <= min(5, new_cards_limit):
-                    logger.info('too few due cards, adding new cards')
-                    logger.info(new_cards)
-                    new_cards = self.get_new_cards(username, deck, force_new_cards=True)
-                    logger.info(new_cards)
-            elif new_cards:
+                # if len(due_cards) <= min(5, new_cards_limit):
+                #     logger.info('too few due cards, adding new cards')
+                #     logger.info(new_cards)
+                #     new_cards = self.get_new_cards(username, deck, force_new_cards=True)
+                #     logger.info(new_cards)
+            elif has_new_cards:
                 logger.info('Selecting from new cards only')
-                logger.info('new cards len ' + str(len(new_cards)))
+                logger.info('new cards len ' + str(len( new_cards )))
                 card_to_return = random.choice(new_cards)
             else:
-                logger.info('No due or new cards (or only 1 due card), increasing new cards limit and selecting random card from deck')
-                logger.info('Attempts ' + str(attempts) + " " + str(new_cards_limit))
-                new_cards_limit = int(new_cards_limit)
-                # session[session['username']]["new_cards_limit"] += int(session[session['username']]["base_new_cards_limit"])
-                new_cards_limit = int(base_new_cards_limit)
-                new_cards_limit_last_updated = get_date()
-                #self.save_user_progress(username, self.user_prog)
+                card_to_return = random.choice(presented_new_cards[deck])
+                logger.info('No due or new cards (or only 1 due card),  adding new cards')
                 new_cards = self.get_new_cards(username, deck, force_new_cards=True)
-                if len(new_cards) == 0:
-                    new_cards = list(self.cards[deck].keys())
-                    card_to_return = random.choice(new_cards)
-                    logger.info('Card to return ' + str(card_to_return))
-                else:
-                    logger.info(new_cards)
-                    card_to_return = random.choice(new_cards)
+                logger.info(new_cards)
+                message = 'message_1'
+                # if len(due_cards) == 1:
+                #     message = 'message_1'
+                # elif len(new_cards) == 0:
+                #     message = 'message_2'
 
+            # elif new_cards:
+            #     logger.info('Selecting from new cards only')
+            #     logger.info('new cards len ' + str(len(new_cards)))
+            #     card_to_return = random.choice(new_cards)
+            # else:
+            #     logger.info('No due or new cards (or only 1 due card), increasing new cards limit and selecting random card from deck')
+            #     logger.info('Attempts ' + str(attempts) + " " + str(new_cards_limit))
+            #     new_cards_limit = int(new_cards_limit)
+            #     # session[session['username']]["new_cards_limit"] += int(session[session['username']]["base_new_cards_limit"])
+            #     new_cards_limit = int(base_new_cards_limit)
+            #     new_cards_limit_last_updated = getshortdate()
+            #     #self.save_user_progress(username, self.user_prog)
+            #     new_cards = self.get_new_cards(username, deck, force_new_cards=True)
+            #     if len(new_cards) == 0:
+            #         new_cards = list(self.cards[deck].keys())
+            #         card_to_return = random.choice(new_cards)
+            #         logger.info('Card to return ' + str(card_to_return))
+            #     else:
+            #         logger.info(new_cards)
+            #         card_to_return = random.choice(new_cards)
             
             if card_to_return != session['current_card'] or session['current_card'] is None:
                 break
             attempts += 1
+        # while attempts < max_attempts:
+        #     if due_cards and new_cards:
+        #         chance = 0.5
+        #         if len(due_cards) < 5:
+        #             chance = 0.3
+        #         if random.random() < chance:  # 50% chance for due cards
+        #             logger.info('Selecting from due cards')
+        #             card_to_return = random.choice(due_cards)
+        #         else:
+        #             logger.info('Selecting from new cards')
+        #             card_to_return = random.choice(new_cards)
+        #     elif len(due_cards) > 1:
+        #         logger.info('Selecting from due cards only')
+        #         card_to_return = random.choice(due_cards)
+        #         if len(due_cards) <= min(5, new_cards_limit):
+        #             logger.info('too few due cards, adding new cards')
+        #             logger.info(new_cards)
+        #             new_cards = self.get_new_cards(username, deck, force_new_cards=True)
+        #             logger.info(new_cards)
+        #     elif new_cards:
+        #         logger.info('Selecting from new cards only')
+        #         logger.info('new cards len ' + str(len(new_cards)))
+        #         card_to_return = random.choice(new_cards)
+        #     else:
+        #         logger.info('No due or new cards (or only 1 due card), increasing new cards limit and selecting random card from deck')
+        #         logger.info('Attempts ' + str(attempts) + " " + str(new_cards_limit))
+        #         new_cards_limit = int(new_cards_limit)
+        #         # session[session['username']]["new_cards_limit"] += int(session[session['username']]["base_new_cards_limit"])
+        #         new_cards_limit = int(base_new_cards_limit)
+        #         new_cards_limit_last_updated = getshortdate()
+        #         #self.save_user_progress(username, self.user_prog)
+        #         new_cards = self.get_new_cards(username, deck, force_new_cards=True)
+        #         if len(new_cards) == 0:
+        #             new_cards = list(self.cards[deck].keys())
+        #             card_to_return = random.choice(new_cards)
+        #             logger.info('Card to return ' + str(card_to_return))
+        #         else:
+        #             logger.info(new_cards)
+        #             card_to_return = random.choice(new_cards)
+
+            
+        #     if card_to_return != session['current_card'] or session['current_card'] is None:
+        #         break
+        #     attempts += 1
 
         if attempts == max_attempts:
             print(f"Warning: Max attempts reached when selecting card")
 
+        daily_new_cards = load_user_value(username, 'daily_new_cards') or {}
         presented_new_cards = load_user_value(username, 'presented_new_cards') or {}
         if card_to_return in daily_new_cards.get(deck, []):
             if deck not in presented_new_cards:
                 presented_new_cards[deck] = []
-            presented_new_cards[deck].append(card_to_return)
+            if card_to_return not in presented_new_cards[deck]:
+                presented_new_cards[deck].append(card_to_return)
 
         store_user_value(username, 'presented_new_cards', presented_new_cards)
         store_user_value(username, 'new_cards_limit', new_cards_limit)
         store_user_value(username, 'new_cards_limit_last_updated', new_cards_limit_last_updated)
         
-        logger.info(f"Selected card: {card_to_return}")
-        logger.info(f"Due cards: {due_cards}")
         logger.info(f"New cards: {new_cards}")
+        logger.info(f"Due cards: {due_cards}")
+        logger.info(f"Selected card: {card_to_return}")
+        logger.info(f"presented_new_cards: {presented_new_cards}")
         
         # flashcard_app.save_user_progress(session['username'], session[session['username']])
         session['current_card'] = card_to_return
         # print('returning', card_to_return)
-        return card_to_return
+        return message, card_to_return
 
 
 flashcard_app = FlashcardApp()
@@ -517,29 +571,12 @@ flashcard_app = FlashcardApp()
 @session_required
 def get_card_data():
     character = request.args.get('character')
+    message = ''
     if not character:
-        character = flashcard_app.select_card(session['username'], session['deck'])
-    return  jsonify(packed_data(character))
+        message, character = flashcard_app.select_card(session['username'], session['deck'])
+    return  jsonify({'message': message, **packed_data(character)})
 
 from collections import defaultdict
-
-@app.route('/set_client_time', methods=['POST'])
-def set_client_time():
-    client_time = request.json.get('client_time')
-    logger.info(f"Client time received: {client_time}")
-    if client_time:
-        try:
-            # Convert the client time to a datetime object
-            client_datetime = parser.isoparse(client_time)
-            server_time = datetime.now(timezone.utc)  # Ensure server time is in UTC
-            time_difference = (server_time - client_datetime.replace(tzinfo=timezone.utc)).total_seconds()
-            session['time_difference'] = time_difference
-            logger.info(f"Time difference set: {time_difference}")
-            return jsonify({"status": "success", "message": "Client time set successfully"}), 200
-        except ValueError:
-            return jsonify({"status": "error", "message": "Invalid time format"}), 400
-    else:
-        return jsonify({"status": "error", "message": "No client time provided"}), 400
 
 @app.route('/user_progress')
 @hard_session_required
@@ -563,6 +600,7 @@ def user_progress():
             correct_answers = char_progress['answers'].count('correct')
             total_answers = len(char_progress['answers'])
             accuracy = (correct_answers / total_answers * 100) if total_answers > 0 else 0
+
             stats = {
                 'character': character,
                 'meaning': deck_cards[character].get('english', 'N/A'),
@@ -574,7 +612,7 @@ def user_progress():
                 'accuracy': round(accuracy, 2),
                 'num_incorrect': char_progress.get('num_incorrect', 1),
                 'next_review': char_progress.get('next_review', 'N/A'),
-                'is_due': char_progress.get('next_review') and datetime.fromisoformat(char_progress['next_review']) <= (datetime.now() - timedelta(seconds=session.get('time_difference', 0)))
+                'is_due': char_progress.get('next_review') and datetime.fromisoformat(char_progress['next_review']).replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc),
             }
             progress_stats.append(stats)
 
@@ -619,7 +657,7 @@ def login():
                 username=username,
                 base_new_cards_limit=20,  # Default value
                 new_cards_limit=20,  # Default value
-                new_cards_limit_last_updated=get_date(),
+                new_cards_limit_last_updated=getshortdate(),
                 daily_new_cards={},
                 last_new_cards_date={},
                 presented_new_cards={},
@@ -665,6 +703,7 @@ def home():
 @session_required
 def check_session():
     sess = dict(session)
+    sess = {**sess, **load_user_progress(session['username'])}
     return Response(
         json.dumps(sess, ensure_ascii=False, indent=4),
         mimetype='application/json'
@@ -863,8 +902,24 @@ def get_characters_pinyinenglish():
 @timing_decorator
 def change_font():
     session['font'] = request.args.get('font')
-    print('set', session['font'])
+    logger.info(f"Font changed to {session['font']}")
     return jsonify({"message": "font changed successfully to " + session['font']})
+
+
+@app.route('/increase_max_cards', methods=['POST'])
+@timing_decorator
+@session_required
+def increase_max_cards():
+    username = session.get('username')
+    current_base_new = load_user_value(username, 'base_new_cards_limit')
+    current_new_cards = load_user_value(username, 'new_cards_limit')
+    max_cards = current_base_new + current_base_new*0
+    success, message = store_user_value(username, 'new_cards_limit', max_cards)
+    logger.info(f"Max cards increased to {max_cards}")
+    session['new_cards_limit'] = max_cards
+    cards = flashcard_app.get_new_cards(username, session['deck'], force_new_cards=True)
+    logger.info(f"New cards: {cards}")
+    return jsonify({"message": "Increased max cards to " + str(max_cards)})
 
 
 @app.route('/set_max_cards', methods=['POST'])
@@ -874,7 +929,7 @@ def set_max_cards():
     username = session.get('username')
     if not username:
         logger.warning("Attempt to set max cards without logged in user")
-        return jsonify({"error": "User not logged in"}), 401
+        return jsonify({"message": "User not logged in"}), 401
 
     try:
         max_cards = int(request.args.get('maxcards'))
@@ -904,7 +959,7 @@ def set_max_cards():
                 return jsonify({"error": message}), 500
         except Exception as e:
             logger.exception(f"Error updating daily_new_cards for user {username}")
-            return jsonify({"error": "An error occurred updating daily new cards"}), 500
+            return jsonify({"message": "An error occurred updating daily new cards"}), 500
 
     logger.info(f"Successfully set base_new_cards_limit for user {username} to {max_cards}")
     return jsonify({"message": "Changed base new cards limit successfully"})
@@ -942,17 +997,6 @@ def record_view():
     return jsonify({"message": "View recorded successfully"})
 
 from flask import Response
-# @app.route('/check_records')
-# def check_records():
-#     d = {}
-#     for username in os.listdir(flashcard_app.user_progress_dir):
-#         usrnm = username.split('.')[0]
-#         d[usrnm] = session[session['username']]['progress']
-#     return Response(
-#         json.dumps(d, ensure_ascii=False, indent=4),
-#         mimetype='application/json'
-#     )
-
 with open('data/examples.json', 'r', encoding='utf-8') as f:
     parsed_data = json.load(f)
 
@@ -1095,8 +1139,8 @@ def record_answer():
     character = request.args.get('character')
     correct = request.args.get('correct')
     username = session['username']
+    logger.info(f"Answer recorded for {character}: {correct}")
     flashcard_app.record_answer(username, character, correct)
-
     return jsonify({"message": "Answer recorded successfully"})
 
 from pypinyin import lazy_pinyin, Style

@@ -534,33 +534,119 @@ function fetchCard() {
         });
 }
 
+let alertMessage = 'hello';
+
+function increaseNewCardCount(){
+    prefetchedCard = null;
+    fetch(`./increase_max_cards`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        getNextCard();
+        return response.json();
+    })
+    .then(() => {
+        
+    })
+    .catch((error) => {
+        
+    });
+
+}
+
+
+function showCustomPrompt(message) {
+    // Create the prompt container
+    let flashcard = document.getElementById('flashcard_container');
+    flashcard.style.display = 'none';
+
+    const promptContainer = document.createElement('div');
+    promptContainer.id = 'prompt-container';
+    promptContainer.innerHTML = `
+        <p id="prompt-text">${message}</p>
+        <div id="button-container">
+            <button id="yes-button">Add more</button>
+            <button id="no-button">Review</button>
+        </div>
+    `;
+
+    document.body.appendChild(promptContainer);
+    document.getElementById('yes-button').addEventListener('click', function() {
+        increaseNewCardCount();
+        promptContainer.remove();
+    });
+    
+    document.getElementById('no-button').addEventListener('click', function() {
+        getNextCard();
+        promptContainer.remove();
+    });
+}
+
 function getNextCard(func=null) {
-    if (prefetchedCard) {
-        renderCardData(prefetchedCard);
+    if (prefetchedCard && !(prefetchedCard.message && prefetchedCard.message.length > 0)) {
+        console.log('Using prefetched card:', prefetchedCard);
         showingAnswer = false;
-        displayCard(false, false);
         currentCharacter = prefetchedCard.character;
-        prefetchedCard = null;
+        if(prefetchedCard.message && prefetchedCard.message.length > 0){
+            // let promptMessage = "";
+            // if(prefetchedCard.message === "message_1"){
+            //     promptMessage = "You have only 1 due card. <br> <span style=\"color:#000000;\">Do you want to add more new cards, or keep reviewing today's cards?</span>";
+            // }
+            // else if(prefetchedCard.message === "message_2"){
+            //     promptMessage = "No more due cards. <br> <span style=\"color:#000000;\">Do you want to add more new cards, or keep reviewing today's cards?</span>";
+            // }
+
+            // if (promptMessage) {
+            //     showCustomPrompt(promptMessage);
+            // }
+        }
+        else{
+            renderCardData(prefetchedCard);
+            displayCard(false, false);
+        }
         if (func) {
             func();
         }
+        prefetchedCard = null;
         prefetchNextCard();
         // toggleInvertAllElements();
         // toggleInvertAllElements();
     } else {
-    fetchCard()
-        .then(data => {
-            console.log(data);
-            renderCardData(data);
-            showingAnswer = false;
-            currentCharacter = data.character;
-            displayCard(false, false);
-            if (func) {
-                func();
-            }
-            prefetchNextCard();
-            // toggleInvertAllElements();
-            // toggleInvertAllElements();
+        console.log('Fetching new card');
+        fetchCard()
+            .then(data => {
+                showingAnswer = false;
+                currentCharacter = data.character;
+                if(data.message && data.message.length > 0){
+                    getNextCard();
+                    // let promptMessage = "";
+                    // if(data.message === "message_1"){
+                    //     promptMessage = "You have only 1 due card and no new cards. <br> <span style=\"color:#000000;\">Do you want to add more new cards, or keep reviewing today's cards?</span>";
+                    // }
+                    // else if(data.message === "message_2"){
+                    //     promptMessage = "No more due cards. <br> <span style=\"color:#000000;\">Do you want to add more new cards, or keep reviewing today's cards?</span>";
+                    // }
+
+                    // if (promptMessage) {
+                    //     showCustomPrompt(promptMessage);
+                    // }
+                }
+                else{
+                    renderCardData(data);
+                    displayCard(false, false);
+                }
+                if (func) {
+                    func();
+                }
+                prefetchNextCard();
+                // toggleInvertAllElements();
+                // toggleInvertAllElements();
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -743,6 +829,8 @@ document.addEventListener('DOMContentLoaded', function() {
             menu.style.display = 'none';
         });
     });
+
+    
 });
 
 
