@@ -441,6 +441,8 @@ class FlashcardApp:
                     chance = 0.2
                 if len(due_cards) > 16:
                     chance = 0.75
+                if len(due_cards) > 20:
+                    chance = 0.9
                 if random.random() < chance:  # 50% chance for due cards
                     logger.info('Selecting from due cards')
                     card_to_return = random.choice(due_cards)
