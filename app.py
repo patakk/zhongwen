@@ -316,6 +316,7 @@ class FlashcardApp:
             char_progress["answers"].append('correct')
             if not is_ahead_of_schedule:
                 char_progress["box"] = min(self.NUM_BOXES, char_progress["box"] + 1)
+                logger.info(f"Character {character} is not ahead of schedule, so advancing to next box")
             else:
                 logger.info(f"Character {character} is ahead of schedule, so not advancing to next box")
             char_progress["streak"] += 1
@@ -323,6 +324,7 @@ class FlashcardApp:
             char_progress["answers"].append('incorrect')
             if not is_ahead_of_schedule:
                 char_progress["box"] = 1
+                logger.info(f"Character {character} is not ahead of schedule, so resetting to box 1")
             else:
                 logger.info(f"Character {character} is ahead of schedule, so not resetting to box 1")
             char_progress["num_incorrect"] += 1

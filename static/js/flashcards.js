@@ -41,7 +41,6 @@ function randomizeTextColor(element){
 function toneTextColor(element) {
     let colors = ['#58d38f', '#ffd91c', '#9f5dc1', '#ff421c', '#b1cbff']; // Corresponds to tones 1, 2, 3, 4, and neutral
 
-    console.log("pinnn", element.dataset.pinyin);
     // Function to determine tone from pinyin
     function getToneFromPinyin(pinyin) {
         if (!pinyin) return 4; // Default to neutral tone if no pinyin
@@ -236,9 +235,9 @@ function recordAnswer(isCorrect, func=null) {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            getNextCard(func);
             return response.json();
         });
+    getNextCard(func);
 }
 
 document.getElementById('flashcard_container').addEventListener('mousedown', function(event) {

@@ -148,8 +148,6 @@ function renderCardData(data) {
         span.className = 'clickable-char';
 
         let pinyin_part = pinyin_split_list[index];
-        console.log("pinyin_part", pinyin_part);
-
 
         span.dataset.pinyin = pinyin_part;
         if(isMobileOrTablet()){
@@ -193,7 +191,6 @@ function renderCardData(data) {
             }
         }
         else{
-            console.log(Number.isInteger(data.hsk_level), data.hsk_level);
             if(Number.isInteger(data.hsk_level)){
                 document.getElementById('flashcard_hsk').textContent = `HSK ${data.hsk_level}`;
             }
