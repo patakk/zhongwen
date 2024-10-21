@@ -397,7 +397,7 @@ class FlashcardApp:
             ]
             
             seed = int(f"{today.year}{today.month:02d}{today.day:02d}")
-            rng = random.Random(seed)
+            rng = random.Random(seed+17238)
             
             new_cards = sorted(new_cards)
             rng.shuffle(new_cards)
