@@ -608,6 +608,7 @@ function getNextCard(func=null) {
         else{
             renderCardData(prefetchedCard);
             displayCard(false, false);
+            console.log('ooovo')
         }
         if (func) {
             func();
@@ -731,7 +732,6 @@ window.addEventListener('resize', handleOrientationChange);
 
 function playHanziAudio() {
     const pinyinElement = document.getElementById('flashcard_pinyin');
-    console.log(pinyinElement);
     const encodedHanzi = encodeURIComponent(pinyinElement.dataset.characters);
     const audio = new Audio(`./get_audio?chars=${encodedHanzi}`);
     

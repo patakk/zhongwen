@@ -251,11 +251,7 @@ and (max-width: 1024px) {
     }
     
     .clickable-char {
-        font-size: 80px;
-        margin-top: 10px;
-    }
-    .clickable-char {
-        font-size: 80px;
+        font-size: 110px;
         margin-top: 10px;
     }
 }
