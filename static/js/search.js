@@ -17,10 +17,10 @@ function showFlashcard(character) {
             // bordercanvas.style.display = 'block';
             renderCardData(data);
             displayCard(true, true);
-            if(!canvasrendered){
-                renderBorder();
-                canvasrendered = true;
-            }
+            // if(!canvasrendered){
+            //     renderBorder();
+            //     canvasrendered = true;
+            // }
 
             // recordView(character);
         })
@@ -109,6 +109,7 @@ function handleOrientationChange() {
 //     this.blur();
 //     event.stopPropagation(); // Add this line to prevent the event from bubbling up
 // });
+
 
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay && !e.target.closest('#font-select')) {
