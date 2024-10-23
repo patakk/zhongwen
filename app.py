@@ -24,7 +24,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(days=3650)
 
-app.config['APPLICATION_ROOT'] = os.environ.get('APPLICATION_ROOT', '')
+app.config['APP_ROOT'] = os.environ.get('APP_ROOT', '')
 
 # logging
 logging.basicConfig(level=logging.INFO,
