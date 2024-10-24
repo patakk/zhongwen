@@ -31,8 +31,6 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 # get app root from environment variable
-app.config['APPLICATION_ROOT'] = os.getenv('APPLICATION_ROOT', '/')
-
 logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
 
 # DB
