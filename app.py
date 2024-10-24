@@ -30,6 +30,11 @@ logging.basicConfig(level=logging.INFO,
                     filename='app.log')
 logger = logging.getLogger(__name__)
 
+# get app root from environment variable
+app.config['APPLICATION_ROOT'] = os.getenv('APPLICATION_ROOT', '/')
+
+logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
+
 # DB
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'flashcards.db')
@@ -162,6 +167,7 @@ def hard_session_required(func):
         if 'font' not in session:
             session['font'] = 'Noto Sans Mono'
         if session.get('username', 'tempuser') == 'tempuser':
+            logger.info("User not logged in, redirecting to login page")
             return redirect(url_for('login'))
         return func(*args, **kwargs)
     return wrapper
@@ -673,6 +679,7 @@ def login():
             db.session.commit()
             return redirect(url_for('welcome'))
         else:
+            logger.info(f"User {username} logged in")
             return redirect(url_for('home'))
     return render_template('login.html')
 
@@ -1325,4 +1332,4 @@ def debug():
 
 if __name__ == '__main__':
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
-    app.run(host='0.0.0.0', port=5003, debug=debug)
+    app.run(host='0.0.0.0', port=5015, debug=debug)
