@@ -19,7 +19,6 @@ from sqlalchemy.dialects.sqlite import JSON
 from sqlalchemy.exc import SQLAlchemyError
 from dateutil import parser
 
-
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(hours=32)
