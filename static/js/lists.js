@@ -75,7 +75,6 @@ function showFlashcard(hanzi, pinyin, english) {
         </div>
     `;
     document.querySelector('.title').outerHTML = titleHtml;
-    // document.querySelector('.title').style.fontFamily = `"${currentFont}", sans-serif`;
 
     currentHanzi = hanzi;
     currentPinyin = pinyin;
@@ -99,6 +98,11 @@ function updateFlashcardContent() {
     ).join('');
     
     document.querySelector('.character').innerHTML = content;
+    document.querySelector('.title').style.fontFamily = `"${currentFont}"`;
+    document.querySelectorAll('.hanzi-row').forEach(row => {
+        console.log(currentFont)
+        row.style.fontFamily = `"${currentFont}"`;
+    });
 
     setupHoverEffects();
 }
@@ -222,6 +226,11 @@ function changeFont(font) {
         basePath = '/zhongwen';
     }
     const url = `${origin}${basePath}/change_font?font=${font}`;
+    currentFont = font;
+    document.querySelectorAll('.hanzi-row').forEach(row => {
+        row.style.fontFamily = `"${font}"`;
+    });
+    document.querySelector('.title').style.fontFamily = `"${currentFont}"`;
 
     fetch(url, {
         method: 'POST',
@@ -266,9 +275,11 @@ function getFont() {
         .then(data => {
             currentFont = data.font;
             console.log('received font', currentFont);
-            document.getElementById('font-select').value = currentFont;
-            document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
-            // document.querySelector('.title').style.fontFamily = `"${currentFont}", sans-serif`;
+            document.querySelectorAll('.hanzi-row').forEach(row => {
+                row.style.fontFamily = `"${currentFont}"`;
+            });
+            document.querySelector('.title').style.fontFamily = `"${currentFont}"`;
+            // document.querySelector('.title').style.fontFamily = `"${currentFont}"`;
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -277,8 +288,8 @@ function getFont() {
 
 // document.getElementById('font-select').addEventListener('change', function(event) {
 //     const selectedFont = event.target.value;
-//     document.querySelector('.character').style.fontFamily = `"${selectedFont}", sans-serif`;
-//     document.querySelector('.title').style.fontFamily = `"${selectedFont}", sans-serif`;
+//     document.querySelector('.character').style.fontFamily = `"${selectedFont}"`;
+//     document.querySelector('.title').style.fontFamily = `"${selectedFont}"`;
 //     currentFont = event.target.value;
 //     changeFont(currentFont);
 //     this.blur();
@@ -395,7 +406,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    document.getElementById('font-select').style.display = 'none';
+    // document.getElementById('font-select').style.display = 'none';
+
     getFont();
     setupHoverEffects();
 });
