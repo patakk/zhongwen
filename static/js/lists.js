@@ -288,6 +288,9 @@ function getFont() {
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay && !e.target.closest('#font-select')) {
         closeStory();
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('query');
+        history.pushState({}, '', newUrl);
     }
 });
 
@@ -306,7 +309,7 @@ function displayStoryData(data, title) {
 function closeStory() {
     overlay.style.display = 'none';
     currentFetch = null;
-    document.getElementById('font-select').style.display = 'none';
+    // document.getElementById('font-select').style.display = 'none';
     if (isMobileOrTablet()) {
         flashcardContent.removeEventListener('click', cycleContent);
     } else {
