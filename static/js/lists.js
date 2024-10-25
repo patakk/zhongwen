@@ -307,7 +307,11 @@ overlay.addEventListener('click', (e) => {
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+        console.log('Escape key pressed');
         closeStory();
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('query');
+        history.pushState({}, '', newUrl);
     }
 });
 
