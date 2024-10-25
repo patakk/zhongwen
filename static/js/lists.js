@@ -305,6 +305,11 @@ overlay.addEventListener('click', (e) => {
     }
 });
 
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeStory();
+    }
+});
 
 function displayStoryData(data, title) {
     console.log("Story data received:", data);
