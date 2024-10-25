@@ -27,10 +27,14 @@ app.config['SESSION_COOKIE_SECURE'] = True  # for HTTPS
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
+log_file = 'zhongwen.log'
+if os.path.exists('/home/patakk/logs/zhongwen.log'):
+    log_file = '/home/patakk/logs/zhongwen.log'
+
 # logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    filename='app.log')
+                    filename=log_file)
 logger = logging.getLogger(__name__)
 
 # get app root from environment variable
