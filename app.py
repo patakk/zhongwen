@@ -22,7 +22,10 @@ from dateutil import parser
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-app.permanent_session_lifetime = timedelta(days=3650)
+app.permanent_session_lifetime = timedelta(hours=32)
+app.config['SESSION_COOKIE_SECURE'] = True  # for HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # logging
 logging.basicConfig(level=logging.INFO,
@@ -135,6 +138,7 @@ ENABLE_TIMING = False
 @app.before_request
 def make_session_permanent():
     session.permanent = True
+    app.logger.info(f"Session at start of request: {session}")
 
 
 def timing_decorator(f):
@@ -160,10 +164,12 @@ application = app
 def hard_session_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
+        logger.info(f"Session data: {session}")
         if 'deck' not in session:
             session['deck'] = 'shas'
         if 'font' not in session:
             session['font'] = 'Noto Sans Mono'
+        logger.info(f"Username in session: {session.get('username', 'Not set')}")
         if session.get('username', 'tempuser') == 'tempuser':
             logger.info("User not logged in, redirecting to login page")
             return redirect(url_for('login'))
