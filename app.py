@@ -1281,7 +1281,7 @@ def search():
 def get_api_key():
     api_key = os.environ.get('OPENAI_API_KEY_ZHONG_WEN')
     if not api_key:
-        file_path = '/home/patakk/scrt'
+        file_path = '/home/patakk/.zhongwen-openai-apikey'
         try:
             with open(file_path, 'r') as file:
                 api_key = file.read().strip()
