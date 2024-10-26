@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lists</title>
+    <!-- <link  rel="stylesheet" href="{{ url_for('static', filename='css/kongzi.css') }}"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+</head>
+
+<body>
+
+    <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
+
+    <div class="hamburger" id="hamburgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li id="loginMenuItem"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="has-submenu">
+                <span>Hanzi Grid</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                    <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <span>Flashcards</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                    <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
+            <li class="has-submenu">
+                <span>Fonts</span>
+                <ul class="submenu">
+                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
+                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
+        </ul>
+    </div>
+
+
+
+    <div id="flashcard_overlay">
+        <div id="flashcard_container">
+            <div class="title-container hanzi-row-container" data-index="title">
+                <div class="title"></div>
+            </div>
+            <div class="character"></div>
+        </div>
+        <div id="hover-box">
+            <div class="pinyin"></div>
+            <div class="english"></div>
+        </div>
+    </div>
+
+    <script>
+        const username = {{ username | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='js/kongzi.js') }}"></script> -->
+    <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
+
+    <style>
+        html::-webkit-scrollbar {
+            display: none;
+        }
+
+        html {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans Mono', monospace;
+            font-family: 'Domine', 'Noto Serif JP', serif;
+            margin: 0;
+            overflow-y: scroll;
+            /* Allow vertical scrolling */
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-family: Helvetica, Arial, sans-serif;
+            font-weight: bold;
+            font-size: 50px;
+            margin: 10px 20px;
+        }
+
+        .container {
+            max-width: 35%;
+            width: 35%;
+            margin: 0 auto;
+            background-color: #ededed;
+            padding: 30px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        a {
+            color: #000;
+        }
+
+        ol {
+            padding-left: 0px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            margin-left: 30px;
+            /* Added spacing between list items */
+        }
+
+        .lesson>*:not(h1) {
+            display: none;
+        }
+
+        .lesson>h1:not(:last-child) {
+            border-top: 1px solid #ccc;
+        }
+
+        .lesson>h1 {
+            color: #000;
+        }
+
+        .lesson.expanded>* {
+            display: block;
+        }
+
+        .lesson.expanded>h1 {
+            color: #0000ff;
+            color: #ff3c00;
+        }
+
+        #title {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 70px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            #title {
+                font-size: 40px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+        }
+
+        .hanzi {
+            font-family: 'Noto Sans Mono', monospace;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.lesson h1').forEach(header => {
+                header.addEventListener('click', () => {
+                    console.log(header);
+                    header.parentElement.classList.toggle('expanded');
+                });
+            });
+        });
+    </script>
+
+    <div class="container">
+        <div id="title"> Kong Zi Lessons</div>
+        <div class="lesson" id="lesson12">
+            <h1><span class="hanzi">第十二课</span> Lesson 12</h1>
+            <h2><span class="hanzi">第二单元</span> Unit 2</h2>
+            <h3><span class="hanzi">复习</span> (fùxí) Review</h3>
+            <div>
+                <p>Negation and question forms:</p>
+                <ul>
+                    <li><span class="hanzi">不吃</span> (bù chī) - don't eat</li>
+                    <li><span class="hanzi">不喝</span> (bù hē) - don't drink</li>
+                    <li><span class="hanzi">不难</span> (bù nán) - not difficult</li>
+                    <li><span class="hanzi">不忙</span> (bù máng) - not busy</li>
+                    <li><span class="hanzi">不想</span> (bù xiǎng) - don't want</li>
+                    <li><span class="hanzi">不喜欢</span> (bù xǐhuan) - don't like</li>
+                </ul>
+                <p>Question forms:</p>
+                <ul>
+                    <li><span class="hanzi">吃不吃</span>？(chī bu chī) - Eat or not?</li>
+                    <li><span class="hanzi">喝不喝</span>？(hē bu hē) - Drink or not?</li>
+                    <li><span class="hanzi">难不难</span>？(nán bu nán) - Difficult or not?</li>
+                    <li><span class="hanzi">忙不忙</span>？(máng bu máng) - Busy or not?</li>
+                    <li><span class="hanzi">想不想</span>？(xiǎng bu xiǎng) - Want or not?</li>
+                    <li><span class="hanzi">喜不喜欢</span>？(xǐ bu xǐhuan) - Like or not?</li>
+                </ul>
+            </div>
+            <h4>Conversation 1</h4>
+            <div>
+                <p>A：<span class="hanzi">你觉得汉语怎么样</span>？(nǐ juéde hànyǔ zěnmeyàng) - What do you think of Chinese?</p>
+                <p>B：<span class="hanzi">汉语很有意思</span>。(hànyǔ hěn yǒuyìsi) - Chinese is interesting.</p>
+                <p>A：<span class="hanzi">难不难</span>？(nán bu nán) - Is it difficult?</p>
+                <p>B：<span class="hanzi">不太难</span>。(bù tài nán) - Not too difficult.</p>
+            </div>
+            <h4>Conversation 3</h4>
+            <div>
+                <p>A：<span class="hanzi">这个叫什么</span>？(zhège jiào shénme) - What do you call this (in Chinese)?</p>
+                <p>B：<span class="hanzi">苹果</span>。(píngguǒ) - Apple.</p>
+                <p>A：<span class="hanzi">那个叫什么</span>？(nàge jiào shénme) - What do you call that (in Chinese)?</p>
+                <p>B：<span class="hanzi">香蕉</span>。<span class="hanzi">你要不要</span>。(xiāngjiāo. nǐ yào bu yào) - Banana.
+                    Do you want (to buy)?</p>
+                <p>A：<span class="hanzi">我不要</span>。(wǒ bú yào) - No.</p>
+            </div>
+            <h4>Conversation 4</h4>
+            <div>
+                <p>A：<span class="hanzi">今天几号</span>？(jīntiān jǐ hào) - What's the date today?</p>
+                <p>B：<span class="hanzi">今天十二月二十五号</span>。(jīntiān shí'èr yuè èrshíwǔ hào) - Today is December 25th.</p>
+                <p>A：<span class="hanzi">今天天气不错</span>。(jīntiān tiānqì bú cuò) - It's a fine day.</p>
+                <p>B：<span class="hanzi">是啊</span>，<span class="hanzi">不冷不热</span>，<span class="hanzi">很舒服</span>。(shì
+                    a, bù lěng bù rè, hěn shūfu) - Yes. It's neither cold nor hot. It's very comfortable.</p>
+            </div>
+            <h3>Grammar Points</h3>
+            <h4>Question Patterns</h4>
+            <div>
+                <p>1. ...<span class="hanzi">吗</span>？(...ma?)</p>
+                <ul>
+                    <li><span class="hanzi">你是老师吗</span>？(nǐ shì lǎoshī ma) - Are you a teacher?</li>
+                    <li><span class="hanzi">是</span>。/<span class="hanzi">我是老师</span>。(shì. / wǒ shì lǎoshī) - Yes. / I
+                        am a teacher.</li>
+                    <li><span class="hanzi">不</span>。/<span class="hanzi">我不是老师</span>。(bù. / wǒ bú shì lǎoshī) - No. /
+                        I am not a teacher.</li>
+                </ul>
+                <p>2. <span class="hanzi">是不是</span> (shì bú shì) / A<span class="hanzi">不</span>A</p>
+                <ul>
+                    <li><span class="hanzi">你是不是克罗地亚人</span>？(nǐ shì bú shì kèluódìyà rén) - Are you Croatian?</li>
+                    <li><span class="hanzi">你吃不吃汉堡</span>？(nǐ chī bu chī hànbǎo) - Do you eat hamburgers?</li>
+                </ul>
+                <p>3. AB phrase: A<span class="hanzi">不</span>AB</p>
+                <ul>
+                    <li><span class="hanzi">你喜不喜欢吃汉堡</span>？(nǐ xǐ bu xǐhuan chī hànbǎo) - Do you like eating
+                        hamburgers?</li>
+                </ul>
+            </div>
+            <h4><span class="hanzi">也</span> (yě) - also</h4>
+            <div>
+                <p>Examples:</p>
+                <ul>
+                    <li><span class="hanzi">我也是老师</span>。(wǒ yě shì lǎoshī) - I am also a teacher.</li>
+                    <li><span class="hanzi">我也喝可乐</span>。(wǒ yě hē kělè) - I also drink cola.</li>
+                </ul>
+            </div>
+            <h4><span class="hanzi">都</span> (dōu) - both/all</h4>
+            <div>
+                <p>Example:</p>
+                <ul>
+                    <li><span class="hanzi">我们都是克罗地亚人</span>。(wǒmen dōu shì kèluódìyà rén) - We are all Croatian.</li>
+                </ul>
+            </div>
+            <h4><span class="hanzi">只</span> (zhǐ) - only</h4>
+            <div>
+                <p>Example:</p>
+                <ul>
+                    <li><span class="hanzi">我只吃汉堡</span>。(wǒ zhǐ chī hànbǎo) - I only eat hamburgers.</li>
+                </ul>
+            </div>
+            <h4><span class="hanzi">还是</span> (háishì) - or (in questions)</h4>
+            <div>
+                <p>Example:</p>
+                <ul>
+                    <li><span class="hanzi">你喜欢咖啡还是可乐</span>？(nǐ xǐhuan kāfēi háishì kělè) - Do you like coffee or cola?
+                    </li>
+                </ul>
+            </div>
+            <h4>Open Questions</h4>
+            <div>
+                <p><span class="hanzi">什么</span> (shénme) - what</p>
+                <p><span class="hanzi">哪</span> (nǎ) - which</p>
+                <p>Examples:</p>
+                <ul>
+                    <li><span class="hanzi">你叫什么名字</span>？(nǐ jiào shénme míngzi) - What's your name?</li>
+                    <li><span class="hanzi">你是哪国人</span>？(nǐ shì nǎ guó rén) - Which country are you from?</li>
+                </ul>
+            </div>
+            <h3><span class="hanzi">新课</span> (xīn kè) New Lesson</h3>
+            <h4>Numbers and Phone Numbers</h4>
+            <div>
+                <p>Read the following telephone numbers:</p>
+                <ul>
+                    <li>385-976762600</li>
+                    <li>86-18177201527</li>
+                    <li>385-14843601</li>
+                    <li>9758104</li>
+                    <li>33041218</li>
+                    <li>86-21-65642222</li>
+                </ul>
+            </div>
+            <h3><span class="hanzi">语法点</span> (yǔfǎ diǎn) Grammar Points</h3>
+            <h4>Grammar #1: Possessive Pronouns</h4>
+            <div>
+                <table>
+                    <tr>
+                        <td><span class="hanzi">你的</span> (nǐde) - your</td>
+                        <td><span class="hanzi">你们的</span> (nǐmende) - your (plural)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">我的</span> (wǒde) - my</td>
+                        <td><span class="hanzi">我们的</span> (wǒmende) - our</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">他的</span> (tāde) - his</td>
+                        <td><span class="hanzi">他们的</span> (tāmende) - their</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">她的</span> (tāde) - her</td>
+                        <td><span class="hanzi">她们的</span> (tāmende) - their</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">它的</span> (tāde) - its</td>
+                        <td><span class="hanzi">它们的</span> (tāmende) - their</td>
+                    </tr>
+                </table>
+            </div>
+            <h4>Grammar #2: Location (<span class="hanzi">在</span> zài)</h4>
+            <div>
+                <p>Common locations:</p>
+                <ul>
+                    <li><span class="hanzi">公司</span> (gōngsī) - company</li>
+                    <li><span class="hanzi">医院</span> (yīyuàn) - hospital</li>
+                    <li><span class="hanzi">大学</span> (dàxué) - university</li>
+                    <li><span class="hanzi">饭店</span> (fàndiàn) - restaurant</li>
+                    <li><span class="hanzi">咖啡馆</span> (kāfēiguǎn) - café</li>
+                </ul>
+            </div>
+            <h4>Grammar #3: Subject + <span class="hanzi">在</span> + Location + Activity</h4>
+            <div>
+                <p>Activities:</p>
+                <ul>
+                    <li><span class="hanzi">喝咖啡</span> (hē kāfēi) - drink coffee</li>
+                    <li><span class="hanzi">喝可乐</span> (hē kělè) - drink cola</li>
+                    <li><span class="hanzi">吃汉堡</span> (chī hànbǎo) - eat hamburger</li>
+                    <li><span class="hanzi">学习</span> (xuéxí) - study</li>
+                    <li><span class="hanzi">看朋友</span> (kàn péngyou) - see friends</li>
+                    <li><span class="hanzi">工作</span> (gōngzuò) - work</li>
+                </ul>
+            </div>
+            <h4>Grammar #4: Can; Be able to (<span class="hanzi">可以</span> kěyǐ)</h4>
+            <div>
+                <p>Activities that can be done:</p>
+                <ul>
+                    <li><span class="hanzi">打电话</span> (dǎ diànhuà) - make a phone call</li>
+                    <li><span class="hanzi">发邮件</span> (fā yóujiàn) - send an email</li>
+                    <li><span class="hanzi">看书</span> (kàn shū) - read a book</li>
+                    <li><span class="hanzi">看电视</span> (kàn diànshì) - watch TV</li>
+                    <li><span class="hanzi">听音乐</span> (tīng yīnyuè) - listen to music</li>
+                    <li><span class="hanzi">唱歌</span> (chàng gē) - sing</li>
+                    <li><span class="hanzi">跳舞</span> (tiào wǔ) - dance</li>
+                </ul>
+                <p>To negate, use <span class="hanzi">不可以</span> (bù kěyǐ)</p>
+            </div>
+            <h4>Grammar #5: To someone (<span class="hanzi">给</span> gěi)</h4>
+            <div>
+                <p><span class="hanzi">给你</span> (gěi nǐ) - to you</p>
+                <p><span class="hanzi">给我</span> (gěi wǒ) - to me</p>
+                <p>Examples:</p>
+                <ul>
+                    <li><span class="hanzi">给你我的电话号码</span>。(gěi nǐ wǒ de diànhuà hàomǎ) - Give you my phone number.
+                    </li>
+                    <li><span class="hanzi">给我你的电话号码</span>。(gěi wǒ nǐ de diànhuà hàomǎ) - Give me your phone number.
+                    </li>
+                </ul>
+            </div>
+            <h3><span class="hanzi">练习</span> (liànxí) Exercises</h3>
+            <div>
+                <ol>
+                    <li><span class="hanzi">我很高兴认识您</span>。(wǒ hěn gāoxìng rènshi nín)</li>
+                    <li><span class="hanzi">我在公司工作</span>。(wǒ zài gōngsī gōngzuò)</li>
+                    <li><span class="hanzi">我们可以合作</span>。(wǒmen kěyǐ hézuò)</li>
+                    <li><span class="hanzi">你可以给我发邮件</span>。(nǐ kěyǐ gěi wǒ fā yóujiàn)</li>
+                    <li><span class="hanzi">我可以不可以给你打电话</span>？(wǒ kěyǐ bu kěyǐ gěi nǐ dǎ diànhuà)</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="lesson" id="lesson13">
+            <h1><span class="hanzi">第十三课</span> Lesson 13</h1>
+            <h2><span class="hanzi">第二单元</span> Unit 2</h2>
+            <h3><span class="hanzi">复习课</span> (fùxí kè) Review Lesson</h3>
+            <h4>Conversation 1</h4>
+            <div>
+                <p>A：<span class="hanzi">你觉得克罗地亚语怎么样</span>？(nǐ juéde kèluòdìyà yǔ zěnmeyàng) - What do you think of
+                    Croatian (language)?</p>
+                <p>B：<span class="hanzi">克罗地亚语很有意思</span>。(kèluòdìyà yǔ hěn yǒuyìsi) - Croatian is interesting.</p>
+                <p>A：<span class="hanzi">难不难</span>？(nán bu nán) - Is it difficult?</p>
+                <p>B：<span class="hanzi">很难</span>。(hěn nán) - It's very difficult.</p>
+            </div>
+            <h4>Conversation 4</h4>
+            <div>
+                <p>A：<span class="hanzi">今天几号</span>？(jīntiān jǐ hào) - What's the date today?</p>
+                <p>B：<span class="hanzi">今天四月三号</span>。(jīntiān sì yuè sān hào) - Today is April 3rd.</p>
+                <p>A：<span class="hanzi">今天天气不好</span>。(jīntiān tiānqì bù hǎo) - The weather is bad today.</p>
+                <p>B：<span class="hanzi">是啊</span>，<span class="hanzi">风很大</span>，<span class="hanzi">很冷</span>，<span
+                        class="hanzi">不舒服</span>。(shì a, fēng hěn dà, hěn lěng, bù shūfu) - Yes. The wind is strong and
+                    very cold. It's not comfortable.</p>
+            </div>
+            <h3><span class="hanzi">新课</span> (xīn kè) New Lesson</h3>
+            <h4>Numbers</h4>
+            <div>
+                <p><span class="hanzi">零</span> (líng) - zero</p>
+                <p>In China, people like to say <span class="hanzi">一</span> (yī) as <span class="hanzi">幺</span> (yāo)
+                    when talking about phone numbers.</p>
+                <p>Read the following telephone numbers:</p>
+                <ul>
+                    <li>385-976762600</li>
+                    <li>86-18177201527</li>
+                    <li>385-14843601</li>
+                    <li>110 (The police; like 911)</li>
+                    <li>120 (Emergency number)</li>
+                    <li>119</li>
+                </ul>
+            </div>
+            <h4>Sentence Formation Exercise</h4>
+            <div>
+                <ol>
+                    <li><span class="hanzi">高兴</span> <span class="hanzi">我</span> <span class="hanzi">认识</span> <span
+                            class="hanzi">您</span> <span class="hanzi">很</span></li>
+                    <li><span class="hanzi">我可以</span> <span class="hanzi">可以</span> <span class="hanzi">不</span> <span
+                            class="hanzi">打电话</span> <span class="hanzi">给你</span></li>
+                    <li><span class="hanzi">你</span> <span class="hanzi">可以</span> <span class="hanzi">发</span> <span
+                            class="hanzi">电子邮件</span> <span class="hanzi">给我</span></li>
+                    <li><span class="hanzi">合作</span> <span class="hanzi">可以</span> <span class="hanzi">我们</span></li>
+                    <li><span class="hanzi">我</span> <span class="hanzi">工作</span> <span class="hanzi">进出口</span> <span
+                            class="hanzi">公司</span> <span class="hanzi">在</span></li>
+                </ol>
+            </div>
+            <h4>Fill in the Blanks</h4>
+            <div>
+                <p><span class="hanzi">给</span> (gěi) <span class="hanzi">在</span> (zài) <span class="hanzi">的</span>
+                    (de)</p>
+                <ol>
+                    <li><span class="hanzi">你</span>____<span class="hanzi">的汉语很好</span>。</li>
+                    <li><span class="hanzi">我</span>____<span class="hanzi">杰克</span>____<span
+                            class="hanzi">公司工作</span>。</li>
+                    <li><span class="hanzi">你可以</span>____<span class="hanzi">我打电话</span>，<span
+                            class="hanzi">也可以</span>____<span class="hanzi">我发电子邮件</span>。</li>
+                </ol>
+            </div>
+            <h3><span class="hanzi">语法点</span> (yǔfǎ diǎn) Grammar Points</h3>
+            <h4>Grammar #1: Possessive Pronouns</h4>
+            <div>
+                <table>
+                    <tr>
+                        <td><span class="hanzi">你的</span> (nǐde) - your</td>
+                        <td><span class="hanzi">你们的</span> (nǐmende) - your (plural)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">我的</span> (wǒde) - my</td>
+                        <td><span class="hanzi">我们的</span> (wǒmende) - our</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">他的</span> (tāde) - his</td>
+                        <td><span class="hanzi">他们的</span> (tāmende) - their</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">她的</span> (tāde) - her</td>
+                        <td><span class="hanzi">她们的</span> (tāmende) - their</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">它的</span> (tāde) - its</td>
+                        <td><span class="hanzi">它们的</span> (tāmende) - their</td>
+                    </tr>
+                </table>
+            </div>
+            <h4>Translate the following phrases (<span class="hanzi">的</span>)</h4>
+            <div>
+                <ul>
+                    <li><span class="hanzi">今天的天气</span> (jīntiān de tiānqì) - Today's weather</li>
+                    <li><span class="hanzi">昨天的作业</span> (zuótiān de zuòyè) - Yesterday's homework</li>
+                    <li><span class="hanzi">麦当劳的汉堡</span> (màidāngláo de hànbǎo) - McDonald's hamburger</li>
+                    <li><span class="hanzi">我的红包</span> (wǒ de hóngbāo) - My red envelope</li>
+                    <li><span class="hanzi">今天的日期</span> (jīntiān de rìqī) - Today's date</li>
+                    <li><span class="hanzi">克罗地亚的首都</span> (kèluòdìyà de shǒudū) - The capital of Croatia</li>
+                    <li><span class="hanzi">我的狗</span> (wǒ de gǒu) - My dog</li>
+                </ul>
+            </div>
+            <h4>Grammar #2: Location (<span class="hanzi">在</span> zài)</h4>
+            <div>
+                <p>Common locations:</p>
+                <ul>
+                    <li><span class="hanzi">公司</span> (gōngsī) - company</li>
+                    <li><span class="hanzi">医院</span> (yīyuàn) - hospital</li>
+                    <li><span class="hanzi">大学</span> (dàxué) - university</li>
+                    <li><span class="hanzi">饭店</span> (fàndiàn) - restaurant</li>
+                    <li><span class="hanzi">咖啡馆</span> (kāfēiguǎn) - café</li>
+                    <li><span class="hanzi">家</span> (jiā) - home</li>
+                </ul>
+            </div>
+            <h4>Grammar #3: Subject + <span class="hanzi">在</span> + Location + Activity</h4>
+            <div>
+                <p>Activities:</p>
+                <ul>
+                    <li><span class="hanzi">喝咖啡</span> (hē kāfēi) - drink coffee</li>
+                    <li><span class="hanzi">喝可乐</span> (hē kělè) - drink cola</li>
+                    <li><span class="hanzi">吃汉堡</span> (chī hànbǎo) - eat hamburger</li>
+                    <li><span class="hanzi">学习</span> (xuéxí) - study</li>
+                    <li><span class="hanzi">看朋友</span> (kàn péngyou) - see friends</li>
+                    <li><span class="hanzi">工作</span> (gōngzuò) - work</li>
+                    <li><span class="hanzi">看电视</span> (kàn diànshì) - watch TV</li>
+                </ul>
+            </div>
+            <h4>Grammar #4: Can; Be able to (<span class="hanzi">可以</span> kěyǐ)</h4>
+            <div>
+                <p>Activities that can be done:</p>
+                <ul>
+                    <li><span class="hanzi">打电话</span> (dǎ diànhuà) - make a phone call</li>
+                    <li><span class="hanzi">发邮件</span> (fā yóujiàn) - send an email</li>
+                    <li><span class="hanzi">看书</span> (kàn shū) - read a book</li>
+                    <li><span class="hanzi">看电视</span> (kàn diànshì) - watch TV</li>
+                    <li><span class="hanzi">听音乐</span> (tīng yīnyuè) - listen to music</li>
+                    <li><span class="hanzi">唱歌</span> (chàng gē) - sing</li>
+                    <li><span class="hanzi">跳舞</span> (tiào wǔ) - dance</li>
+                </ul>
+                <p>To negate, use <span class="hanzi">不可以</span> (bù kěyǐ)</p>
+            </div>
+            <h4>Grammar #5: To someone (<span class="hanzi">给</span> gěi)</h4>
+            <div>
+                <p><span class="hanzi">给你</span> (gěi nǐ) - to you</p>
+                <p><span class="hanzi">给我</span> (gěi wǒ) - to me</p>
+                <p>Examples:</p>
+                <ul>
+                    <li><span class="hanzi">给你我的电话号码</span>。(gěi nǐ wǒ de diànhuà hàomǎ) - Give you my phone number.
+                    </li>
+                    <li><span class="hanzi">给我你的电话号码</span>。(gěi wǒ nǐ de diànhuà hàomǎ) - Give me your phone number.
+                    </li>
+                </ul>
+            </div>
+            <h3><span class="hanzi">练习</span> (liànxí) Exercises</h3>
+            <div>
+                <ol>
+                    <li><span class="hanzi">我很高兴认识您</span>。(wǒ hěn gāoxìng rènshi nín)</li>
+                    <li><span class="hanzi">我在公司工作</span>。(wǒ zài gōngsī gōngzuò)</li>
+                    <li><span class="hanzi">我们可以合作</span>。(wǒmen kěyǐ hézuò)</li>
+                    <li><span class="hanzi">你可以给我发邮件</span>。(nǐ kěyǐ gěi wǒ fā yóujiàn)</li>
+                    <li><span class="hanzi">我可以不可以给你打电话</span>？(wǒ kěyǐ bu kěyǐ gěi nǐ dǎ diànhuà)</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="lesson" id="lesson14">
+            <h1><span class="hanzi">第十四课</span> Lesson 14</h1>
+            <h2><span class="hanzi">第二单元</span> Unit 2</h2>
+            <h3><span class="hanzi">复习</span> Review</h3>
+            <div>
+                <p>Translate the following Chinese numbers into English.</p>
+                <ul>
+                    <li><span class="hanzi">八六</span> <span class="hanzi">幺八幺七七二零幺五二七</span></li>
+                    <li><span class="hanzi">三八五</span> <span class="hanzi">零九七六七六二六零</span></li>
+                    <li><span class="hanzi">三八五</span> <span class="hanzi">幺四八四三六零幺</span></li>
+                    <li><span class="hanzi">幺幺二</span></li>
+                    <li><span class="hanzi">幺幺零</span></li>
+                    <li><span class="hanzi">幺幺九</span></li>
+                    <li><span class="hanzi">幺二零</span></li>
+                </ul>
+                <p>Chinese numbers translated to English:</p>
+                <ul>
+                    <li>86 18177201527</li>
+                    <li>385 097676260</li>
+                    <li>385 148436001</li>
+                    <li>112</li>
+                    <li>110</li>
+                    <li>119</li>
+                    <li>120</li>
+                </ul>
+            </div>
+            <h3>Grammar #1: Possessive Pronouns</h3>
+            <div>
+                <p><span class="hanzi">的</span> (de) is used to show possession:</p>
+                <ul>
+                    <li><span class="hanzi">你的</span> (nǐde) - your</li>
+                    <li><span class="hanzi">你们的</span> (nǐmende) - your (plural)</li>
+                    <li><span class="hanzi">我的</span> (wǒde) - my</li>
+                    <li><span class="hanzi">我们的</span> (wǒmende) - our</li>
+                    <li><span class="hanzi">他的</span> (tāde) - his</li>
+                    <li><span class="hanzi">他们的</span> (tāmende) - their (masculine)</li>
+                    <li><span class="hanzi">她的</span> (tāde) - her</li>
+                    <li><span class="hanzi">她们的</span> (tāmende) - their (feminine)</li>
+                    <li><span class="hanzi">它的</span> (tāde) - its</li>
+                    <li><span class="hanzi">它们的</span> (tāmende) - their (neutral)</li>
+                </ul>
+            </div>
+            <div>
+                <p>Examples of phrases using <span class="hanzi">的</span>:</p>
+                <ul>
+                    <li><span class="hanzi">今天的天气</span> - Today's weather</li>
+                    <li><span class="hanzi">明天的作业</span> - Tomorrow's homework</li>
+                    <li><span class="hanzi">麦当劳的可乐</span> - McDonald's Cola</li>
+                    <li><span class="hanzi">我的红包</span> - My red envelope</li>
+                    <li><span class="hanzi">今天的日期</span> - Today's date</li>
+                    <li><span class="hanzi">克罗地亚的首都</span> - The capital of Croatia</li>
+                    <li><span class="hanzi">我的汉语老师</span> - My Chinese language teacher</li>
+                </ul>
+            </div>
+            <h3>Grammar #2: Location (<span class="hanzi">在</span> zài)</h3>
+            <div>
+                <p>Common locations:</p>
+                <ul>
+                    <li><span class="hanzi">公司</span> (gōngsī) - company</li>
+                    <li><span class="hanzi">医院</span> (yīyuàn) - hospital</li>
+                    <li><span class="hanzi">大学</span> (dàxué) - university</li>
+                    <li><span class="hanzi">饭店</span> (fàndiàn) - restaurant</li>
+                    <li><span class="hanzi">咖啡馆</span> (kāfēiguǎn) - café</li>
+                    <li><span class="hanzi">家</span> (jiā) - home</li>
+                </ul>
+            </div>
+            <h3>Grammar #3: Subject + <span class="hanzi">在</span> + Location + Activity</h3>
+            <div>
+                <p>Activities:</p>
+                <ul>
+                    <li><span class="hanzi">喝咖啡</span> (hē kāfēi) - drink coffee</li>
+                    <li><span class="hanzi">喝可乐</span> (hē kělè) - drink cola</li>
+                    <li><span class="hanzi">吃汉堡</span> (chī hànbǎo) - eat hamburger</li>
+                    <li><span class="hanzi">学习</span> (xuéxí) - study</li>
+                    <li><span class="hanzi">看朋友</span> (kàn péngyou) - see friends</li>
+                    <li><span class="hanzi">工作</span> (gōngzuò) - work</li>
+                    <li><span class="hanzi">看电视</span> (kàn diànshì) - watch TV</li>
+                </ul>
+            </div>
+            <h3>Grammar #4: Can; Be able to (<span class="hanzi">可以</span> kěyǐ)</h3>
+            <div>
+                <p>Activities that can be done:</p>
+                <ul>
+                    <li><span class="hanzi">打电话</span> (dǎ diànhuà) - make a phone call</li>
+                    <li><span class="hanzi">发邮件</span> (fā yóujiàn) - send an email</li>
+                    <li><span class="hanzi">看书</span> (kàn shū) - read a book</li>
+                    <li><span class="hanzi">看电视</span> (kàn diànshì) - watch TV</li>
+                    <li><span class="hanzi">听音乐</span> (tīng yīnyuè) - listen to music</li>
+                    <li><span class="hanzi">唱歌</span> (chàng gē) - sing</li>
+                    <li><span class="hanzi">跳舞</span> (tiào wǔ) - dance</li>
+                </ul>
+                <p>To negate, use <span class="hanzi">不可以</span> (bù kěyǐ)</p>
+            </div>
+            <h3>New Lesson</h3>
+            <div>
+                <p>Entertaining guests in Chinese culture:</p>
+                <ul>
+                    <li><span class="hanzi">请坐</span> (qǐng zuò) - Please sit</li>
+                    <li><span class="hanzi">你的公司怎么样</span> (nǐ de gōngsī zěnmeyàng) - How is your company?</li>
+                    <li><span class="hanzi">这是我的女朋友</span> (zhè shì wǒ de nǚpéngyou) - This is my girlfriend</li>
+                    <li><span class="hanzi">他的女朋友很漂亮</span> (tā de nǚpéngyou hěn piàoliang) - His girlfriend is very
+                        beautiful</li>
+                    <li><span class="hanzi">你喜欢喝中国茶吗</span> (nǐ xǐhuan hē zhōngguó chá ma) - Do you like drinking
+                        Chinese tea?</li>
+                    <li><span class="hanzi">我在英国东方学院中文系学习</span> (wǒ zài yīngguó dōngfāng xuéyuàn zhōngwén xì xuéxí) - I
+                        study Chinese at the Oriental Institute in England</li>
+                </ul>
+            </div>
+            <h3>Grammar Points</h3>
+            <h4>#1 Sequence of Address</h4>
+            <div>
+                <p><span class="hanzi">大</span> (dà) - big, <span class="hanzi">小</span> (xiǎo) - small</p>
+                <p>Examples:</p>
+                <ul>
+                    <li><span class="hanzi">中国上海黄浦区</span> (zhōngguó shànghǎi huángpǔ qū) - China, Shanghai, Huangpu
+                        District</li>
+                    <li><span class="hanzi">中国浙江省杭州市</span> (zhōngguó zhèjiāng shěng hángzhōu shì) - China, Zhejiang
+                        Province, Hangzhou City</li>
+                    <li><span class="hanzi">克罗地亚萨格勒布市</span>Savska<span class="hanzi">街</span> (kèluòdìyà sàgélēbù shì
+                        Savska jiē) - Croatia, Zagreb, Savska Street</li>
+                </ul>
+            </div>
+            <h4>#2 <span class="hanzi">这</span> (zhè) - this, <span class="hanzi">那</span> (nà) - that</h4>
+            <div>
+                <ul>
+                    <li><span class="hanzi">这个</span> (zhège) - this + quantifier</li>
+                    <li><span class="hanzi">这些</span> (zhèxiē) - these</li>
+                    <li><span class="hanzi">那个</span> (nàge) - that + quantifier</li>
+                    <li><span class="hanzi">那些</span> (nàxiē) - those</li>
+                </ul>
+                <p><span class="hanzi">朋友</span> (péngyou) - friend</p>
+                <p><span class="hanzi">男</span> (nán) - male, <span class="hanzi">女</span> (nǚ) - female</p>
+            </div>
+            <h4>#3 <span class="hanzi">请</span> (qǐng) - please</h4>
+            <div>
+                <p>Used with actions like:</p>
+                <ul>
+                    <li><span class="hanzi">坐</span> (zuò) - sit</li>
+                    <li><span class="hanzi">看</span> (kàn) - look</li>
+                    <li><span class="hanzi">吃</span> (chī) - eat</li>
+                    <li><span class="hanzi">喝茶</span> (hē chá) - drink tea</li>
+                    <li><span class="hanzi">进</span> (jìn) - enter</li>
+                </ul>
+                <p><span class="hanzi">请</span> also means "to treat":</p>
+                <ul>
+                    <li><span class="hanzi">我请你喝咖啡</span> (wǒ qǐng nǐ hē kāfēi) - I'll treat you to coffee</li>
+                    <li><span class="hanzi">我请你吃饭</span> (wǒ qǐng nǐ chīfàn) - I'll treat you to a meal</li>
+                </ul>
+            </div>
+            <h4>#4 <span class="hanzi">怎么样</span> (zěnmeyàng) - how</h4>
+            <div>
+                <p>Used to ask about state or condition:</p>
+                <ul>
+                    <li><span class="hanzi">你怎么样</span>？(nǐ zěnmeyàng) - How are you?</li>
+                    <li><span class="hanzi">我很好</span> (wǒ hěn hǎo) - I'm very good</li>
+                    <li><span class="hanzi">我还行</span> (wǒ hái xíng) - I'm okay</li>
+                    <li><span class="hanzi">你的学习怎么样</span>？(nǐ de xuéxí zěnmeyàng) - How's your studying?</li>
+                    <li><span class="hanzi">我的学习很好</span> (wǒ de xuéxí hěn hǎo) - My studying is going well</li>
+                    <li><span class="hanzi">一般般</span> (yībānbān) - So-so</li>
+                </ul>
+            </div>
+            <h3><span class="hanzi">课文</span> (kèwén) - Text</h3>
+            <div>
+                <ol>
+                    <li><span class="hanzi">江山的女朋友是张园园</span> (jiāngshān de nǚpéngyou shì zhāngyuányuán)</li>
+                    <li><span class="hanzi">丁汉生的家</span> (dīnghànshēng de jiā)</li>
+                    <li><span class="hanzi">东方学院</span> (dōngfāng xuéyuàn)</li>
+                    <li><span class="hanzi">很好</span> <span class="hanzi">很大</span> <span class="hanzi">很漂亮</span> <span
+                            class="hanzi">很喜欢</span> (hěn hǎo hěn dà hěn piàoliang hěn xǐhuan)</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="lesson" id="lesson15">
+            <h1><span class="hanzi">第十五课</span> Lesson 15</h1>
+            <h2><span class="hanzi">第二单元</span> Unit 2</h2>
+            <h3><span class="hanzi">复习课</span> (fùxí kè) Review Lesson</h3>
+            <h4>Grammar #1: Possessive Pronouns</h4>
+            <div>
+                <p><span class="hanzi">的</span> (de) is used to show possession:</p>
+                <ul>
+                    <li><span class="hanzi">你的</span> (nǐde) - your</li>
+                    <li><span class="hanzi">你们的</span> (nǐmende) - your (plural)</li>
+                    <li><span class="hanzi">我的</span> (wǒde) - my</li>
+                    <li><span class="hanzi">我们的</span> (wǒmende) - our</li>
+                    <li><span class="hanzi">他的</span> (tāde) - his</li>
+                    <li><span class="hanzi">他们的</span> (tāmende) - their (masculine)</li>
+                    <li><span class="hanzi">她的</span> (tāde) - her</li>
+                    <li><span class="hanzi">她们的</span> (tāmende) - their (feminine)</li>
+                    <li><span class="hanzi">它的</span> (tāde) - its</li>
+                    <li><span class="hanzi">它们的</span> (tāmende) - their (neutral)</li>
+                </ul>
+            </div>
+            <div>
+                <p>Examples of phrases using <span class="hanzi">的</span>:</p>
+                <ul>
+                    <li><span class="hanzi">今天的天气</span> (jīntiān de tiānqì) - Today's weather</li>
+                    <li><span class="hanzi">汉语课的作业</span> (hànyǔ kè de zuòyè) - The homework of Chinese class</li>
+                    <li><span class="hanzi">麦当劳的冰淇淋</span> (màidāngláo de bīngqílín) - McDonald's ice cream</li>
+                    <li><span class="hanzi">我的红包</span> (wǒ de hóngbāo) - My red envelope</li>
+                    <li><span class="hanzi">北京的大学</span> (běijīng de dàxué) - Universities in Beijing</li>
+                    <li><span class="hanzi">你的电话号码</span> (nǐ de diànhuà hàomǎ) - Your telephone number</li>
+                    <li><span class="hanzi">我们的汉语老师</span> (wǒmen de hànyǔ lǎoshī) - Our Chinese language teacher</li>
+                </ul>
+            </div>
+            <h4>Grammar #2: Subject + <span class="hanzi">在</span> (zài) + Location + Activity</h4>
+            <div>
+                <p>Common locations:</p>
+                <ul>
+                    <li><span class="hanzi">公司</span> (gōngsī) - company</li>
+                    <li><span class="hanzi">医院</span> (yīyuàn) - hospital</li>
+                    <li><span class="hanzi">大学</span> (dàxué) - university</li>
+                    <li><span class="hanzi">饭店</span> (fàndiàn) - restaurant</li>
+                    <li><span class="hanzi">咖啡馆</span> (kāfēiguǎn) - café</li>
+                    <li><span class="hanzi">家</span> (jiā) - home</li>
+                </ul>
+            </div>
+            <div>
+                <p>Activities:</p>
+                <ul>
+                    <li><span class="hanzi">喝咖啡</span> (hē kāfēi) - drink coffee</li>
+                    <li><span class="hanzi">喝可乐</span> (hē kělè) - drink cola</li>
+                    <li><span class="hanzi">吃汉堡</span> (chī hànbǎo) - eat hamburger</li>
+                    <li><span class="hanzi">学习</span> (xuéxí) - study</li>
+                    <li><span class="hanzi">看朋友</span> (kàn péngyou) - see friends</li>
+                    <li><span class="hanzi">工作</span> (gōngzuò) - work</li>
+                    <li><span class="hanzi">看电视</span> (kàn diànshì) - watch TV</li>
+                </ul>
+            </div>
+            <h4>Grammar #3: Can; Be able to (<span class="hanzi">可以</span> kěyǐ)</h4>
+            <div>
+                <p>Activities that can be done:</p>
+                <ul>
+                    <li><span class="hanzi">打电话</span> (dǎ diànhuà) - make a phone call</li>
+                    <li><span class="hanzi">发邮件</span> (fā yóujiàn) - send an email</li>
+                    <li><span class="hanzi">看书</span> (kàn shū) - read a book</li>
+                    <li><span class="hanzi">看电视</span> (kàn diànshì) - watch TV</li>
+                    <li><span class="hanzi">听音乐</span> (tīng yīnyuè) - listen to music</li>
+                    <li><span class="hanzi">唱歌</span> (chàng gē) - sing</li>
+                    <li><span class="hanzi">跳舞</span> (tiào wǔ) - dance</li>
+                </ul>
+                <p>To negate, use <span class="hanzi">不可以</span> (bù kěyǐ)</p>
+            </div>
+            <h3>New Content</h3>
+            <div>
+                <p>Chinese people often enjoy eating <span class="hanzi">火锅</span> (huǒguō) - hotpot when dining
+                    together with friends.</p>
+            </div>
+            <h4>Grammar Points</h4>
+            <h5>#1 Sequence of Address</h5>
+            <div>
+                <p><span class="hanzi">大</span> (dà) - big, <span class="hanzi">小</span> (xiǎo) - small</p>
+                <p>Examples:</p>
+                <ul>
+                    <li><span class="hanzi">中国广东省广州市白云区</span> (zhōngguó guǎngdōng shěng guǎngzhōu shì báiyún qū) -
+                        Baiyun District, Guangzhou City, Guangdong Province, China</li>
+                    <li><span class="hanzi">中国浙江省杭州市</span> (zhōngguó zhèjiāng shěng hángzhōu shì) - Hangzhou City,
+                        Zhejiang Province, China</li>
+                    <li><span class="hanzi">克罗地亚萨格勒布</span>Marijana Haberlea<span class="hanzi">街</span> (kèluòdìyà
+                        sàgélēbù Marijana Haberlea jiē) - Marijana Haberlea Street, Zagreb, Croatia</li>
+                </ul>
+            </div>
+            <h5>#2 <span class="hanzi">这</span> (zhè) - this, <span class="hanzi">那</span> (nà) - that</h5>
+            <div>
+                <ul>
+                    <li><span class="hanzi">这个</span> (zhège) - this + quantifier</li>
+                    <li><span class="hanzi">这些</span> (zhèxiē) - these</li>
+                    <li><span class="hanzi">那个</span> (nàge) - that + quantifier</li>
+                    <li><span class="hanzi">那些</span> (nàxiē) - those</li>
+                </ul>
+                <p><span class="hanzi">朋友</span> (péngyou) - friend</p>
+                <p><span class="hanzi">男</span> (nán) - male, <span class="hanzi">女</span> (nǚ) - female</p>
+                <p>Examples:</p>
+                <ul>
+                    <li><span class="hanzi">这是我的男朋友</span>。(zhè shì wǒ de nánpéngyou) - This is my boyfriend.</li>
+                    <li><span class="hanzi">那是他的女朋友</span>。(nà shì tā de nǚpéngyou) - That is his girlfriend.</li>
+                    <li><span class="hanzi">这些是我的老师</span>（<span class="hanzi">们</span>）。(zhèxiē shì wǒ de lǎoshī (men))
+                        - These are my teachers.</li>
+                    <li><span class="hanzi">那些是我的同学</span>（<span class="hanzi">们</span>）。(nàxiē shì wǒ de tóngxué (men))
+                        - Those are my classmates.</li>
+                </ul>
+            </div>
+            <h5>#3 <span class="hanzi">请</span> (qǐng) - please</h5>
+            <div>
+                <p>Used with actions like:</p>
+                <ul>
+                    <li><span class="hanzi">坐</span> (zuò) - sit</li>
+                    <li><span class="hanzi">看</span> (kàn) - look</li>
+                    <li><span class="hanzi">吃</span> (chī) - eat</li>
+                    <li><span class="hanzi">喝茶</span> (hē chá) - drink tea</li>
+                    <li><span class="hanzi">进</span> (jìn) - enter</li>
+                </ul>
+                <p><span class="hanzi">请</span> also means "to treat":</p>
+                <ul>
+                    <li><span class="hanzi">我请你喝咖啡</span>。(wǒ qǐng nǐ hē kāfēi) - I'll treat you to coffee.</li>
+                    <li><span class="hanzi">我请你吃饭</span>。(wǒ qǐng nǐ chīfàn) - I'll treat you to a meal.</li>
+                </ul>
+            </div>
+            <h5>#4 <span class="hanzi">怎么样</span> (zěnmeyàng) - how</h5>
+            <div>
+                <p>Used to ask about state or condition:</p>
+                <ul>
+                    <li><span class="hanzi">你怎么样</span>？(nǐ zěnmeyàng) - How are you?</li>
+                    <li><span class="hanzi">我很好</span>。(wǒ hěn hǎo) - I'm very good.</li>
+                    <li><span class="hanzi">我还行</span>。(wǒ hái xíng) - I'm okay.</li>
+                    <li><span class="hanzi">你的学习怎么样</span>？(nǐ de xuéxí zěnmeyàng) - How's your studying?</li>
+                    <li><span class="hanzi">我的学习很好</span>。(wǒ de xuéxí hěn hǎo) - My studying is going well.</li>
+                    <li><span class="hanzi">一般般</span>。(yībānbān) - So-so.</li>
+                </ul>
+            </div>
+            <h3><span class="hanzi">课文</span> (kèwén) - Text</h3>
+            <div>
+                <ol>
+                    <li><span class="hanzi">江山的女朋友是张园园</span> (jiāngshān de nǚpéngyou shì zhāngyuányuán)</li>
+                    <li><span class="hanzi">丁汉生的家</span> (dīnghànshēng de jiā)</li>
+                    <li><span class="hanzi">东方学院</span> (dōngfāng xuéyuàn)</li>
+                    <li><span class="hanzi">很好</span> <span class="hanzi">很大</span> <span class="hanzi">很漂亮</span> <span
+                            class="hanzi">很喜欢</span> (hěn hǎo hěn dà hěn piàoliang hěn xǐhuan)</li>
+                </ol>
+            </div>
+            <h3><span class="hanzi">作业</span> (zuòyè) - Task 1</h3>
+            <p>Write an essay to introduce yourself. (Please write on paper and take a photo to upload.)</p>
+            <ol>
+                <li><span class="hanzi">大家好</span>，<span class="hanzi">我的名字是</span>____，<span
+                        class="hanzi">我来自</span>____，<span class="hanzi">很高兴认识你</span>。(dàjiā hǎo, wǒ de míngzi shì____,
+                    wǒ láizì____, hěn gāoxìng rènshi nǐ)</li>
+                <li><span class="hanzi">我是学生</span>，<span class="hanzi">我在萨格勒布大学学习</span>，<span
+                        class="hanzi">我不上班</span>。(wǒ shì xuésheng, wǒ zài sàgélēbù dàxué xuéxí, wǒ bù shàngbān)<br>
+                    <span class="hanzi">我不是学生</span>，<span class="hanzi">我学过一点儿汉语</span>。(wǒ bú shì xuésheng, wǒ xué guo
+                    yīdiǎnr hànyǔ)</li>
+                <li><span class="hanzi">我在</span>____<span class="hanzi">公司</span>/<span class="hanzi">医院</span>/<span
+                        class="hanzi">工作</span>。(wǒ zài____ gōngsī/yīyuàn/gōngzuò)</li>
+                <li><span class="hanzi">我喜欢吃汉堡喝可乐</span>/<span class="hanzi">吃面喝白酒</span>，<span
+                        class="hanzi">我不喜欢喝热水</span>，<span class="hanzi">我喜欢吃火锅</span>。(wǒ xǐhuan chī hànbǎo hē kělè/chī
+                    miàn hē báijiǔ, wǒ bù xǐhuan hē rèshuǐ, wǒ xǐhuan chī huǒguō)</li>
+                <li><span class="hanzi">我的家</span>/<span class="hanzi">孩子</span>/<span class="hanzi">爸爸妈妈</span>/<span
+                        class="hanzi">狗</span>/<span class="hanzi">车</span>……<span class="hanzi">很大</span>，<span
+                        class="hanzi">很好</span>，<span class="hanzi">很漂亮</span>，<span class="hanzi">我很喜欢</span>。(wǒ de
+                    jiā/háizi/bàba māma/gǒu/chē... hěn dà, hěn hǎo, hěn piàoliang, wǒ hěn xǐhuan)</li>
+            </ol>
+        </div>
+
+        <div class="lesson" id="lesson16">
+            <h1><span class="hanzi">第十六课</span> Lesson 16</h1>
+            <h2><span class="hanzi">第二单元</span> Unit 2</h2>
+            <h3><span class="hanzi">语法课</span> (yǔfǎ kè) Grammar Lesson</h3>
+            <h4>Grammar 1: Possessive Pronouns</h4>
+            <div>
+                <table>
+                    <tr>
+                        <td><span class="hanzi">你的</span> (nǐde) - Your</td>
+                        <td><span class="hanzi">你们的</span> (nǐmende) - Your (plural)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">我的</span> (wǒde) - My</td>
+                        <td><span class="hanzi">我们的</span> (wǒmende) - Our</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">他的</span> (tāde) - His</td>
+                        <td><span class="hanzi">他们的</span> (tāmende) - Their (masculine)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">她的</span> (tāde) - Her</td>
+                        <td><span class="hanzi">她们的</span> (tāmende) - Their (feminine)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="hanzi">它的</span> (tāde) - Its</td>
+                        <td><span class="hanzi">它们的</span> (tāmende) - Their (neutral)</td>
+                    </tr>
+                </table>
+            </div>
+            <h4>Grammar 2: <span class="hanzi">在</span> (zài) - at/in</h4>
+            <div>
+                <p>Location words:</p>
+                <ul>
+                    <li><span class="hanzi">公司</span> (gōngsī) - company</li>
+                    <li><span class="hanzi">医院</span> (yīyuàn) - hospital</li>
+                    <li><span class="hanzi">大学</span> (dàxué) - university</li>
+                    <li><span class="hanzi">饭店</span> (fàndiàn) - restaurant</li>
+                    <li><span class="hanzi">咖啡馆</span> (kāfēiguǎn) - café</li>
+                    <li><span class="hanzi">家</span> (jiā) - home</li>
+                </ul>
+                <p>Example questions and answers:</p>
+                <ul>
+                    <li><span class="hanzi">你在哪儿工作</span>？(nǐ zài nǎr gōngzuò) - Where do you work?</li>
+                    <li><span class="hanzi">我在医院工作</span>。(wǒ zài yīyuàn gōngzuò) - I work at the hospital.</li>
+                    <li><span class="hanzi">你在哪儿喝咖啡</span>？(nǐ zài nǎr hē kāfēi) - Where do you drink coffee?</li>
+                    <li><span class="hanzi">我在咖啡馆喝咖啡</span>。(wǒ zài kāfēiguǎn hē kāfēi) - I drink coffee at the café.
+                    </li>
+                    <li><span class="hanzi">你在哪儿吃汉堡</span>？(nǐ zài nǎr chī hànbǎo) - Where do you eat hamburgers?</li>
+                    <li><span class="hanzi">我在</span>Burger King（<span class="hanzi">汉堡王</span>）<span
+                            class="hanzi">吃汉堡</span>。(wǒ zài Burger King (hànbǎo wáng) chī hànbǎo) - I eat hamburgers at
+                        Burger King.</li>
+                    <li><span class="hanzi">你在哪儿看电视</span>？(nǐ zài nǎr kàn diànshì) - Where do you watch TV?</li>
+                    <li><span class="hanzi">我在家看电视</span>。(wǒ zài jiā kàn diànshì) - I watch TV at home.</li>
+                </ul>
+            </div>
+            <h4>Grammar 3: Demonstrative Pronouns</h4>
+            <div>
+                <ul>
+                    <li><span class="hanzi">这</span> (zhè) - this</li>
+                    <li><span class="hanzi">这个</span> (zhège) - this (with quantifier)</li>
+                    <li><span class="hanzi">这些</span> (zhèxiē) - these</li>
+                    <li><span class="hanzi">那</span> (nà) - that</li>
+                    <li><span class="hanzi">那个</span> (nàge) - that (with quantifier)</li>
+                    <li><span class="hanzi">那些</span> (nàxiē) - those</li>
+                </ul>
+                <p>Examples:</p>
+                <ul>
+                    <li><span class="hanzi">这是我的男朋友</span>。(zhè shì wǒ de nánpéngyou) - This is my boyfriend.</li>
+                    <li><span class="hanzi">那是他的女朋友</span>。(nà shì tā de nǚpéngyou) - That is his girlfriend.</li>
+                    <li><span class="hanzi">这些是我的老师</span>（<span class="hanzi">们</span>）。(zhèxiē shì wǒ de lǎoshī (men))
+                        - These are my teachers.</li>
+                    <li><span class="hanzi">那些是我的同学</span>（<span class="hanzi">们</span>）。(nàxiē shì wǒ de tóngxué (men))
+                        - Those are my classmates.</li>
+                </ul>
+            </div>
+            <h4>Grammar 4: Describing Quality</h4>
+            <div>
+                <p>Structure: Subject + <span class="hanzi">非常</span> (fēicháng) + Adjective</p>
+                <p>Example: <span class="hanzi">这个电影非常好</span>。(zhège diànyǐng fēicháng hǎo) - This movie is very good.
+                </p>
+                <p>How to ask about quality: Subject + <span class="hanzi">怎么样</span>？(zěnmeyàng)</p>
+                <p>Other examples:</p>
+                <ul>
+                    <li><span class="hanzi">我的答案对</span>，<span class="hanzi">你的答案不对</span>。(wǒ de dá'àn duì, nǐ de dá'àn
+                        bú duì) - My answer is correct, your answer is incorrect.</li>
+                    <li><span class="hanzi">我的答案对</span>，<span class="hanzi">你的答案错</span>。(wǒ de dá'àn duì, nǐ de dá'àn
+                        cuò) - My answer is right, your answer is wrong.</li>
+                </ul>
+            </div>
+            <h3>Additional Resource</h3>
+            <p>【TED <span class="hanzi">科普</span>】<span class="hanzi">茶的历史</span>（<span class="hanzi">中英字幕</span>）-
+                TED-Ed: The history of tea (with Chinese and English subtitles)</p>
+            <h3><span class="hanzi">作业</span> (zuòyè) - Task 1</h3>
+            <p>Write an essay to introduce yourself. (Please write on paper and take a photo to upload.)</p>
+            <ol>
+                <li><span class="hanzi">大家好</span>，<span class="hanzi">我的名字是</span>____，<span
+                        class="hanzi">我来自</span>____，<span class="hanzi">很高兴认识你</span>。(dàjiā hǎo, wǒ de míngzi shì____,
+                    wǒ láizì____, hěn gāoxìng rènshi nǐ)</li>
+                <li><span class="hanzi">我是学生</span>，<span class="hanzi">我在萨格勒布大学学习</span>，<span
+                        class="hanzi">我不上班</span>。(wǒ shì xuésheng, wǒ zài sàgélēbù dàxué xuéxí, wǒ bù shàngbān)<br>
+                    <span class="hanzi">我不是学生</span>，<span class="hanzi">我学过一点儿汉语</span>。(wǒ bú shì xuésheng, wǒ xué guo
+                    yīdiǎnr hànyǔ)</li>
+                <li><span class="hanzi">我在</span>____<span class="hanzi">公司</span>/<span class="hanzi">医院</span>/<span
+                        class="hanzi">工作</span>。(wǒ zài____ gōngsī/yīyuàn/gōngzuò)</li>
+                <li><span class="hanzi">我喜欢吃汉堡喝可乐</span>/<span class="hanzi">吃面喝白酒</span>，<span
+                        class="hanzi">我不喜欢喝热水</span>，<span class="hanzi">我喜欢吃火锅</span>。(wǒ xǐhuan chī hànbǎo hē kělè/chī
+                    miàn hē báijiǔ, wǒ bù xǐhuan hē rèshuǐ, wǒ xǐhuan chī huǒguō)</li>
+                <li><span class="hanzi">我的家</span>/<span class="hanzi">孩子</span>/<span class="hanzi">爸爸妈妈</span>/<span
+                        class="hanzi">狗</span>/<span class="hanzi">车</span>……<span class="hanzi">很大</span>，<span
+                        class="hanzi">很好</span>，<span class="hanzi">很漂亮</span>，<span class="hanzi">我很喜欢</span>。(wǒ de
+                    jiā/háizi/bàba māma/gǒu/chē... hěn dà, hěn hǎo, hěn piàoliang, wǒ hěn xǐhuan)</li>
+            </ol>
+        </div>
+    </div>
+    <script>
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const urlParams = new URLSearchParams(window.location.search);
+        //     const initialUri = urlParams.get('uri') || '{{ initial_uri }}';
+        //     if (initialUri && initialUri !== 'None' && initialUri.trim() !== '') {
+        //         console.log('Initial URI:', initialUri);
+        //         loadStory(initialUri);
+        //     }
+        // });
+    </script>
+
+</body>
+
+</html>

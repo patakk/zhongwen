@@ -1051,6 +1051,13 @@ def lists():
     uri = request.args.get('uri')
     return render_template('lists.html', categories=example_lists, initial_uri=uri, decks=flashcard_app.decks, username=session['username'])
 
+@app.route('/kongzi')
+@session_required
+@timing_decorator
+def kongzi():
+    uri = request.args.get('uri')
+    return render_template('kongzi.html',  decks=flashcard_app.decks, username=session['username'])
+
 
 @app.route('/get_lists_data/<uri>')
 @session_required

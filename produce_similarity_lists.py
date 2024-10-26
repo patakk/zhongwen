@@ -3,13 +3,13 @@ from collections import defaultdict
 
 FILES = [
     'data/shas_class_cards.json',
-    'data/hsk1_cards.json',
-    'data/hsk2_cards.json',
-    'data/hsk3_cards.json',
-    'data/hsk4_cards.json',
-    'data/hsk5_cards.json',
-    'data/hsk6_cards.json',
-    'data/mini_deck.json',
+    #'data/hsk1_cards.json',
+    #'data/hsk2_cards.json',
+    #'data/hsk3_cards.json',
+    #'data/hsk4_cards.json',
+    #'data/hsk5_cards.json',
+    #'data/hsk6_cards.json',
+    #'data/mini_deck.json',
 ]
 
 HSK_FILES = [file for file in FILES if 'hsk' in file]
