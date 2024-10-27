@@ -1,7 +1,10 @@
 .ipynb_checkpoints
 *.ipynb
 
+*.tab
 download_tables.py
+db_query_check.py
+migrate_jsons_to_db.py
 get.py
 cliapp.py
 parser.py
