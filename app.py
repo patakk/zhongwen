@@ -14,17 +14,31 @@ import sys
 import os
 import io
 import hashlib
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.dialects.sqlite import JSON
 from sqlalchemy.exc import SQLAlchemyError
 from dateutil import parser
 
-app = Flask(__name__)
-app.secret_key = os.urandom(24)
-app.permanent_session_lifetime = timedelta(hours=32)
-app.config['SESSION_COOKIE_SECURE'] = True  # for HTTPS
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+from extensions import db
+from dbmodels import UserProgress, Card
+
+def create_app():
+    app = Flask(__name__)
+    app.secret_key = os.urandom(24)
+    app.permanent_session_lifetime = timedelta(hours=32)
+    app.config['SESSION_COOKIE_SECURE'] = True  # for HTTPS
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'flashcards.db')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
+
+    return app
+
+app = create_app()
 
 log_file = 'zhongwen.log'
 if os.path.exists('/home/patakk/logs/zhongwen.log'):
@@ -38,46 +52,7 @@ logger = logging.getLogger(__name__)
 
 logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
 
-# DB
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'flashcards.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
-class UserProgress(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    base_new_cards_limit = db.Column(db.Integer, nullable=False)
-    new_cards_limit = db.Column(db.Integer, nullable=False)
-    new_cards_limit_last_updated = db.Column(db.String(32), nullable=False)
-    daily_new_cards = db.Column(JSON, nullable=False)
-    last_new_cards_date = db.Column(JSON, nullable=False)
-    presented_new_cards = db.Column(JSON, nullable=False)
-    progress = db.Column(JSON, nullable=False)
-
-    def to_dict(self):
-        return {
-            "base_new_cards_limit": self.base_new_cards_limit,
-            "daily_new_cards": self.daily_new_cards,
-            "last_new_cards_date": self.last_new_cards_date,
-            "new_cards_limit": self.new_cards_limit,
-            "new_cards_limit_last_updated": self.new_cards_limit_last_updated,
-            "presented_new_cards": self.presented_new_cards,
-            "progress": self.progress
-        }
-
-    @classmethod
-    def from_dict(cls, username, data):
-        return cls(
-            username=username,
-            base_new_cards_limit=data["base_new_cards_limit"],
-            new_cards_limit=data["new_cards_limit"],
-            new_cards_limit_last_updated=data["new_cards_limit_last_updated"],
-            daily_new_cards=data["daily_new_cards"],
-            last_new_cards_date=data["last_new_cards_date"],
-            presented_new_cards=data["presented_new_cards"],
-            progress=data["progress"]
-        )
 
 with app.app_context():
     db.create_all()
