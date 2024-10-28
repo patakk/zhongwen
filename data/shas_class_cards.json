@@ -1,2688 +1,2705 @@
 {
-  "我": {
-    "pinyin": "wǒ",
-    "english": "I, me",
-    "function": "pronoun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "wǒ"
-  },
-  "你": {
-    "pinyin": "nǐ",
-    "english": "you",
-    "function": "pronoun",
-    "hsk_level": 1,
-    "char_matches": {
-      "你": {
-        "unknown": [
-          "你姓什么"
-        ]
-      }
-    },
-    "pinyin_tones": "nǐ"
-  },
-  "他": {
-    "pinyin": "tā",
-    "english": "he",
-    "function": "pronoun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "tā"
-  },
-  "她": {
-    "pinyin": "tā",
-    "english": "she",
-    "function": "pronoun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "tā"
-  },
-  "它": {
-    "pinyin": "tā",
-    "english": "it",
-    "function": "pronoun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "tā"
-  },
-  "是": {
-    "pinyin": "shì",
-    "english": "to be",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "shì"
-  },
-  "的": {
-    "pinyin": "de",
-    "english": "possessive particle",
-    "function": "unknown",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "de"
-  },
-  "了": {
-    "pinyin": "le",
-    "english": "particle indicating completed action",
-    "function": "unknown",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "le"
-  },
-  "也": {
-    "pinyin": "yě",
-    "english": "also, too",
-    "function": "adverb",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "yě"
-  },
-  "这": {
-    "pinyin": "zhè",
-    "english": "this",
-    "function": "pronoun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "zhè"
-  },
-  "那": {
-    "pinyin": "nà",
-    "english": "that",
-    "function": "pronoun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "nà"
-  },
-  "哪": {
-    "pinyin": "nǎ",
-    "english": "which",
-    "function": "pronoun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "nǎ"
-  },
-  "有": {
-    "pinyin": "yǒu",
-    "english": "to have",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "yǒu"
-  },
-  "好": {
-    "pinyin": "hǎo",
-    "english": "good",
-    "function": "adjective",
-    "hsk_level": 1,
-    "char_matches": {
-      "好": {
-        "unknown": [
-          "早上好",
-          "下午好",
-          "晚上好",
-          "好吃",
-          "好喝",
-          "友好"
-        ]
-      }
-    },
-    "pinyin_tones": "hǎo"
-  },
-  "在": {
-    "pinyin": "zài",
-    "english": "at, in, on",
-    "function": "preposition",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "zài"
-  },
-  "不": {
-    "pinyin": "bù",
-    "english": "not",
-    "function": "adverb",
-    "hsk_level": 1,
-    "char_matches": {
-      "不": {
-        "unknown": [
-          "对不起"
-        ]
-      }
-    },
-    "pinyin_tones": "bù"
-  },
-  "和": {
-    "pinyin": "hé",
-    "english": "and",
-    "function": "complement",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "hé"
-  },
-  "吗": {
-    "pinyin": "ma",
-    "english": "question particle",
-    "function": "language-particle",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "ma"
-  },
-  "吧": {
-    "pinyin": "ba",
-    "english": "particle indicating suggestion",
-    "function": "language-particle",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "ba"
-  },
-  "么": {
-    "pinyin": "me",
-    "english": "particle used in questions",
-    "function": "language-particle",
-    "hsk_level": -1,
-    "char_matches": {
-      "么": {
-        "unknown": [
-          "你姓什么"
-        ]
-      }
-    },
-    "pinyin_tones": "me"
-  },
-  "一": {
-    "pinyin": "yī",
-    "english": "one",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "yī"
-  },
-  "二": {
-    "pinyin": "èr",
-    "english": "two",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "èr"
-  },
-  "三": {
-    "pinyin": "sān",
-    "english": "three",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "sān"
-  },
-  "四": {
-    "pinyin": "sì",
-    "english": "four",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "sì"
-  },
-  "五": {
-    "pinyin": "wǔ",
-    "english": "five",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "wǔ"
-  },
-  "六": {
-    "pinyin": "liù",
-    "english": "six",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "liù"
-  },
-  "七": {
-    "pinyin": "qī",
-    "english": "seven",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "qī"
-  },
-  "八": {
-    "pinyin": "bā",
-    "english": "eight",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "bā"
-  },
-  "九": {
-    "pinyin": "jiǔ",
-    "english": "nine",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "jiǔ"
-  },
-  "十": {
-    "pinyin": "shí",
-    "english": "ten",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "shí"
-  },
-  "百": {
-    "pinyin": "bǎi",
-    "english": "hundred",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "bǎi"
-  },
-  "千": {
-    "pinyin": "qiān",
-    "english": "thousand",
-    "function": "number",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "qiān"
-  },
-  "万": {
-    "pinyin": "wàn",
-    "english": "ten thousand",
-    "function": "number",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "wàn"
-  },
-  "上": {
-    "pinyin": "shàng",
-    "english": "up, above",
-    "function": "surname",
-    "hsk_level": 1,
-    "char_matches": {
-      "上": {
-        "unknown": [
-          "早上",
-          "晚上",
-          "早上好",
-          "晚上好",
-          "上课",
-          "上海",
-          "上周"
-        ]
-      }
-    },
-    "pinyin_tones": "shàng"
-  },
-  "下": {
-    "pinyin": "xià",
-    "english": "down, below",
-    "function": "surname",
-    "hsk_level": 1,
-    "char_matches": {
-      "下": {
-        "unknown": [
-          "下午",
-          "下午好",
-          "下周"
-        ]
-      }
-    },
-    "pinyin_tones": "xià"
-  },
-  "左": {
-    "pinyin": "zuǒ",
-    "english": "left",
-    "function": "number",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "zuǒ"
-  },
-  "右": {
-    "pinyin": "yòu",
-    "english": "right",
-    "function": "surname",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "yòu"
-  },
-  "前": {
-    "pinyin": "qián",
-    "english": "front",
-    "function": "surname",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "qián"
-  },
-  "后": {
-    "pinyin": "hòu",
-    "english": "back",
-    "function": "surname",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "hòu"
-  },
-  "里": {
-    "pinyin": "lǐ",
-    "english": "inside",
-    "function": "surname",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "lǐ"
-  },
-  "外": {
-    "pinyin": "wài",
-    "english": "outside",
-    "function": "surname",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "wài"
-  },
-  "大": {
-    "pinyin": "dà",
-    "english": "big",
-    "function": "adjective",
-    "hsk_level": 1,
-    "char_matches": {
-      "大": {
-        "unknown": [
-          "大洋洲"
-        ]
-      }
-    },
-    "pinyin_tones": "dà"
-  },
-  "小": {
-    "pinyin": "xiǎo",
-    "english": "small",
-    "function": "adjective",
-    "hsk_level": 1,
-    "char_matches": {
-      "小": {
-        "unknown": [
-          "小时"
-        ]
-      }
-    },
-    "pinyin_tones": "xiǎo"
-  },
-  "多": {
-    "pinyin": "duō",
-    "english": "many, much",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "duō"
-  },
-  "少": {
-    "pinyin": "shǎo",
-    "english": "few, little",
-    "function": "adjective",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "shǎo"
-  },
-  "早": {
-    "pinyin": "zǎo",
-    "english": "early, morning",
-    "function": "adverb, adjective",
-    "hsk_level": 1,
-    "char_matches": {
-      "早": {
-        "unknown": [
-          "早上",
-          "早上好"
-        ]
-      }
-    },
-    "pinyin_tones": "zǎo"
-  },
-  "晚": {
-    "pinyin": "wǎn",
-    "english": "evening, night, late",
-    "function": "noun, adverb",
-    "hsk_level": 1,
-    "char_matches": {
-      "晚": {
-        "unknown": [
-          "晚上",
-          "晚上好",
-          "晚安"
-        ]
-      }
-    },
-    "pinyin_tones": "wǎn"
-  },
-  "日": {
-    "pinyin": "rì",
-    "english": "day, sun",
-    "function": "number",
-    "hsk_level": 2,
-    "char_matches": {
-      "日": {
-        "unknown": [
-          "星期日/天"
-        ]
-      }
-    },
-    "pinyin_tones": "rì"
-  },
-  "月": {
-    "pinyin": "yuè",
-    "english": "month, moon",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "yuè"
-  },
-  "年": {
-    "pinyin": "nián",
-    "english": "year",
-    "function": "number",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "nián"
-  },
-  "星期": {
-    "pinyin": "xīngqī",
-    "english": "week",
-    "function": "unknown",
-    "hsk_level": 1,
-    "char_matches": {
-      "星": {
-        "unknown": [
-          "星期日/天"
-        ]
-      },
-      "期": {
-        "unknown": [
-          "星期日/天"
-        ]
-      }
-    },
-    "pinyin_tones": "xīng qī"
-  },
-  "早上": {
-    "pinyin": "zǎoshang",
-    "english": "morning",
-    "function": "unknown",
-    "hsk_level": 2,
-    "char_matches": {
-      "早": {
-        "unknown": [
-          "早",
-          "早上好"
-        ]
-      },
-      "上": {
-        "unknown": [
-          "上",
-          "晚上",
-          "早上好",
-          "晚上好",
-          "上课",
-          "上海",
-          "上周"
-        ]
-      }
-    },
-    "pinyin_tones": "zǎo shang"
-  },
-  "下午": {
-    "pinyin": "xiàwǔ",
-    "english": "afternoon",
-    "function": "unknown",
-    "hsk_level": 1,
-    "char_matches": {
-      "下": {
-        "unknown": [
-          "下",
-          "下午好",
-          "下周"
-        ]
-      },
-      "午": {
-        "unknown": [
-          "下午好"
-        ]
-      }
-    },
-    "pinyin_tones": "xià wǔ"
-  },
-  "晚上": {
-    "pinyin": "wǎnshang",
-    "english": "evening",
-    "function": "unknown",
-    "hsk_level": 2,
-    "char_matches": {
-      "晚": {
-        "unknown": [
-          "晚",
-          "晚上好",
-          "晚安"
-        ]
-      },
-      "上": {
-        "unknown": [
-          "上",
-          "早上",
-          "早上好",
-          "晚上好",
-          "上课",
-          "上海",
-          "上周"
-        ]
-      }
-    },
-    "pinyin_tones": "wǎn shang"
-  },
-  "早上好": {
-    "pinyin": "zǎoshang hǎo",
-    "english": "good morning",
-    "function": "temporary word",
-    "hsk_level": -1,
-    "char_matches": {
-      "早": {
-        "unknown": [
-          "早",
-          "早上"
-        ]
-      },
-      "上": {
-        "unknown": [
-          "上",
-          "早上",
-          "晚上",
-          "晚上好",
-          "上课",
-          "上海",
-          "上周"
-        ]
-      },
-      "好": {
-        "unknown": [
-          "好",
-          "下午好",
-          "晚上好",
-          "好吃",
-          "好喝",
-          "友好"
-        ]
-      }
-    },
-    "pinyin_tones": "zǎo shang hǎo"
-  },
-  "下午好": {
-    "pinyin": "xiàwǔ hǎo",
-    "english": "good afternoon",
-    "function": [
-      "unknown",
-      "adjective"
-    ],
-    "hsk_level": [
-      1,
-      1
-    ],
-    "char_matches": {
-      "下": {
-        "unknown": [
-          "下",
-          "下午",
-          "下周"
-        ]
-      },
-      "午": {
-        "unknown": [
-          "下午"
-        ]
-      },
-      "好": {
-        "unknown": [
-          "好",
-          "早上好",
-          "晚上好",
-          "好吃",
-          "好喝",
-          "友好"
-        ]
-      }
-    },
-    "pinyin_tones": "xià wǔ hǎo"
-  },
-  "晚上好": {
-    "pinyin": "wǎnshang hǎo",
-    "english": "good evening",
-    "function": [
-      "unknown",
-      "adjective"
-    ],
-    "hsk_level": [
-      2,
-      1
-    ],
-    "char_matches": {
-      "晚": {
-        "unknown": [
-          "晚",
-          "晚上",
-          "晚安"
-        ]
-      },
-      "上": {
-        "unknown": [
-          "上",
-          "早上",
-          "晚上",
-          "早上好",
-          "上课",
-          "上海",
-          "上周"
-        ]
-      },
-      "好": {
-        "unknown": [
-          "好",
-          "早上好",
-          "下午好",
-          "好吃",
-          "好喝",
-          "友好"
-        ]
-      }
-    },
-    "pinyin_tones": "wǎn shang hǎo"
-  },
-  "晚安": {
-    "pinyin": "wǎn'ān",
-    "english": "good night",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "晚": {
-        "unknown": [
-          "晚",
-          "晚上",
-          "晚上好"
-        ]
-      }
-    },
-    "pinyin_tones": "wǎn 'ā"
-  },
-  "吃": {
-    "pinyin": "chī",
-    "english": "to eat",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {
-      "吃": {
-        "unknown": [
-          "好吃",
-          "难吃"
-        ]
-      }
-    },
-    "pinyin_tones": "chī"
-  },
-  "喝": {
-    "pinyin": "hē",
-    "english": "to drink",
-    "function": "verb-object",
-    "hsk_level": 1,
-    "char_matches": {
-      "喝": {
-        "unknown": [
-          "好喝",
-          "难喝"
-        ]
-      }
-    },
-    "pinyin_tones": "hē"
-  },
-  "睡": {
-    "pinyin": "shuì",
-    "english": "to sleep",
-    "function": "verb",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "shuì"
-  },
-  "看": {
-    "pinyin": "kàn",
-    "english": "to look, to watch",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "kàn"
-  },
-  "学习": {
-    "pinyin": "xuéxí",
-    "english": "to study",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {
-      "学": {
-        "unknown": [
-          "学校",
-          "学生",
-          "同学"
-        ]
-      },
-      "习": {
-        "unknown": [
-          "复习"
-        ]
-      }
-    },
-    "pinyin_tones": "xué xí"
-  },
-  "复习": {
-    "pinyin": "fùxí",
-    "english": "to review",
-    "function": "verb",
-    "hsk_level": 3,
-    "char_matches": {
-      "习": {
-        "unknown": [
-          "学习"
-        ]
-      }
-    },
-    "pinyin_tones": "fù xí"
-  },
-  "上课": {
-    "pinyin": "shàngkè",
-    "english": "to attend class",
-    "function": "verb",
-    "hsk_level": -1,
-    "char_matches": {
-      "上": {
-        "unknown": [
-          "上",
-          "早上",
-          "晚上",
-          "早上好",
-          "晚上好",
-          "上海",
-          "上周"
-        ]
-      }
-    },
-    "pinyin_tones": "shàng kè"
-  },
-  "书": {
-    "pinyin": "shū",
-    "english": "book",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "shū"
-  },
-  "笔": {
-    "pinyin": "bǐ",
-    "english": "pen",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "bǐ"
-  },
-  "纸": {
-    "pinyin": "zhǐ",
-    "english": "paper",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "zhǐ"
-  },
-  "名字": {
-    "pinyin": "míngzi",
-    "english": "name",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "míng zi"
-  },
-  "叫": {
-    "pinyin": "jiào",
-    "english": "to be called",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "jiào"
-  },
-  "请": {
-    "pinyin": "qǐng",
-    "english": "please",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "qǐng"
-  },
-  "谢谢": {
-    "pinyin": "xièxie",
-    "english": "thank you",
-    "function": "proper noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "xiè xie"
-  },
-  "对不起": {
-    "pinyin": "duìbuqǐ",
-    "english": "sorry",
-    "function": "temporary word",
-    "hsk_level": 1,
-    "char_matches": {
-      "不": {
-        "unknown": [
-          "不"
-        ]
-      }
-    },
-    "pinyin_tones": "duì bu qǐ"
-  },
-  "认识": {
-    "pinyin": "rènshi",
-    "english": "to know, to recognize",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "rèn shi"
-  },
-  "家": {
-    "pinyin": "jiā",
-    "english": "home, family",
-    "function": "classifier",
-    "hsk_level": 1,
-    "char_matches": {
-      "家": {
-        "unknown": [
-          "国家"
-        ]
-      }
-    },
-    "pinyin_tones": "jiā"
-  },
-  "学校": {
-    "pinyin": "xuéxiào",
-    "english": "school",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "学": {
-        "unknown": [
-          "学习",
-          "学生",
-          "同学"
-        ]
-      }
-    },
-    "pinyin_tones": "xué xiào"
-  },
-  "教室": {
-    "pinyin": "jiàoshì",
-    "english": "classroom",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "jiào shì"
-  },
-  "老师": {
-    "pinyin": "lǎoshī",
-    "english": "teacher",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "老": {
-        "unknown": [
-          "老虎"
-        ]
-      }
-    },
-    "pinyin_tones": "lǎo shī"
-  },
-  "学生": {
-    "pinyin": "xuésheng",
-    "english": "student",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "学": {
-        "unknown": [
-          "学习",
-          "学校",
-          "同学"
-        ]
-      },
-      "生": {
-        "unknown": [
-          "医生"
-        ]
-      }
-    },
-    "pinyin_tones": "xué sheng"
-  },
-  "男": {
-    "pinyin": "nán",
-    "english": "male",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "nán"
-  },
-  "女": {
-    "pinyin": "nǚ",
-    "english": "female",
-    "function": "other",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "nǚ"
-  },
-  "爸爸": {
-    "pinyin": "bàba",
-    "english": "father",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "bà ba"
-  },
-  "妈妈": {
-    "pinyin": "māma",
-    "english": "mother",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "mā ma"
-  },
-  "哥哥": {
-    "pinyin": "gēge",
-    "english": "older brother",
-    "function": "place noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "gē ge"
-  },
-  "姐姐": {
-    "pinyin": "jiějie",
-    "english": "older sister",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "jiě jie"
-  },
-  "弟弟": {
-    "pinyin": "dìdi",
-    "english": "younger brother",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "dì di"
-  },
-  "妹妹": {
-    "pinyin": "mèimei",
-    "english": "younger sister",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "mèi mei"
-  },
-  "爷爷": {
-    "pinyin": "yéye",
-    "english": "grandfather (paternal)",
-    "function": "noun",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "yé ye"
-  },
-  "奶奶": {
-    "pinyin": "nǎinai",
-    "english": "grandmother (paternal)",
-    "function": "noun",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "nǎi nai"
-  },
-  "朋友": {
-    "pinyin": "péngyou",
-    "english": "friend",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "友": {
-        "unknown": [
-          "友好"
-        ]
-      }
-    },
-    "pinyin_tones": "péng you"
-  },
-  "同学": {
-    "pinyin": "tóngxué",
-    "english": "classmate",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "学": {
-        "unknown": [
-          "学习",
-          "学校",
-          "学生"
-        ]
-      }
-    },
-    "pinyin_tones": "tóng xué"
-  },
-  "高兴": {
-    "pinyin": "gāoxìng",
-    "english": "happy",
-    "function": "other",
-    "hsk_level": 1,
-    "char_matches": {
-      "高": {
-        "unknown": [
-          "高"
-        ]
-      }
-    },
-    "pinyin_tones": "gāo xìng"
-  },
-  "快乐": {
-    "pinyin": "kuàilè",
-    "english": "happy, joyful",
-    "function": "adjective",
-    "hsk_level": 2,
-    "char_matches": {
-      "快": {
-        "unknown": [
-          "快"
-        ]
-      },
-      "乐": {
-        "unknown": [
-          "可乐",
-          "音乐"
-        ]
-      }
-    },
-    "pinyin_tones": "kuài lè"
-  },
-  "中文": {
-    "pinyin": "Zhōngwén",
-    "english": "Chinese language",
-    "function": "other noun",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "Zhōng wén"
-  },
-  "汉语": {
-    "pinyin": "Hànyǔ",
-    "english": "Chinese language",
-    "function": "other noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "语": {
-        "unknown": [
-          "语言",
-          "英语",
-          "法语",
-          "德语",
-          "寒语"
-        ]
-      }
-    },
-    "pinyin_tones": "Hàn yǔ"
-  },
-  "听": {
-    "pinyin": "tīng",
-    "english": "to listen",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "tīng"
-  },
-  "说": {
-    "pinyin": "shuō",
-    "english": "to speak",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "shuō"
-  },
-  "读": {
-    "pinyin": "dú",
-    "english": "to read",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "dú"
-  },
-  "写": {
-    "pinyin": "xiě",
-    "english": "to write",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "xiě"
-  },
-  "去": {
-    "pinyin": "qù",
-    "english": "to go",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "qù"
-  },
-  "来": {
-    "pinyin": "lái",
-    "english": "to come",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "lái"
-  },
-  "回": {
-    "pinyin": "huí",
-    "english": "to return",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {
-      "回": {
-        "unknown": [
-          "回答"
-        ]
-      }
-    },
-    "pinyin_tones": "huí"
-  },
-  "开": {
-    "pinyin": "kāi",
-    "english": "to open",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {
-      "开": {
-        "unknown": [
-          "开始"
-        ]
-      }
-    },
-    "pinyin_tones": "kāi"
-  },
-  "关": {
-    "pinyin": "guān",
-    "english": "to close",
-    "function": "verb",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "guān"
-  },
-  "门": {
-    "pinyin": "mén",
-    "english": "door",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "mén"
-  },
-  "买": {
-    "pinyin": "mǎi",
-    "english": "to buy",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "mǎi"
-  },
-  "卖": {
-    "pinyin": "mài",
-    "english": "to sell",
-    "function": "verb",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "mài"
-  },
-  "钱": {
-    "pinyin": "qián",
-    "english": "money",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "qián"
-  },
-  "元": {
-    "pinyin": "yuán",
-    "english": "yuan (Chinese currency)",
-    "function": "number",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "yuán"
-  },
-  "水": {
-    "pinyin": "shuǐ",
-    "english": "water",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "水": {
-        "unknown": [
-          "水果"
-        ]
-      }
-    },
-    "pinyin_tones": "shuǐ"
-  },
-  "茶": {
-    "pinyin": "chá",
-    "english": "tea",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "chá"
-  },
-  "可乐": {
-    "pinyin": "kělè",
-    "english": "cola",
-    "function": "adjective",
-    "hsk_level": -1,
-    "char_matches": {
-      "乐": {
-        "unknown": [
-          "快乐",
-          "音乐"
-        ]
-      }
-    },
-    "pinyin_tones": "kě lè"
-  },
-  "米饭": {
-    "pinyin": "mǐfàn",
-    "english": "rice",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "mǐ fàn"
-  },
-  "面条": {
-    "pinyin": "miàntiáo",
-    "english": "noodles",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "miàn tiáo"
-  },
-  "肉": {
-    "pinyin": "ròu",
-    "english": "meat",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "ròu"
-  },
-  "鱼": {
-    "pinyin": "yú",
-    "english": "fish",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "yú"
-  },
-  "牛": {
-    "pinyin": "niú",
-    "english": "cow",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "niú"
-  },
-  "羊": {
-    "pinyin": "yáng",
-    "english": "sheep",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "yáng"
-  },
-  "鸡": {
-    "pinyin": "jī",
-    "english": "chicken",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "jī"
-  },
-  "蔬菜": {
-    "pinyin": "shūcài",
-    "english": "vegetables",
-    "function": "noun",
-    "hsk_level": 5,
-    "char_matches": {},
-    "pinyin_tones": "shū cài"
-  },
-  "水果": {
-    "pinyin": "shuǐguǒ",
-    "english": "fruit",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "水": {
-        "unknown": [
-          "水"
-        ]
-      }
-    },
-    "pinyin_tones": "shuǐ guǒ"
-  },
-  "颜色": {
-    "pinyin": "yánsè",
-    "english": "color",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "yán sè"
-  },
-  "红": {
-    "pinyin": "hóng",
-    "english": "red",
-    "function": "adjective",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "hóng"
-  },
-  "绿": {
-    "pinyin": "lǜ",
-    "english": "green",
-    "function": "adjective",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "lǜ"
-  },
-  "蓝": {
-    "pinyin": "lán",
-    "english": "blue",
-    "function": "proper noun",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "lán"
-  },
-  "黄": {
-    "pinyin": "huáng",
-    "english": "yellow",
-    "function": "adjective",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "huáng"
-  },
-  "黑": {
-    "pinyin": "hēi",
-    "english": "black",
-    "function": "adjective",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "hēi"
-  },
-  "白": {
-    "pinyin": "bái",
-    "english": "white",
-    "function": "adjective",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "bái"
-  },
-  "天气": {
-    "pinyin": "tiānqì",
-    "english": "weather",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "天": {
-        "unknown": [
-          "星期日/天"
-        ]
-      }
-    },
-    "pinyin_tones": "tiān qì"
-  },
-  "冷": {
-    "pinyin": "lěng",
-    "english": "cold",
-    "function": "adjective",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "lěng"
-  },
-  "热": {
-    "pinyin": "rè",
-    "english": "hot",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "rè"
-  },
-  "雨": {
-    "pinyin": "yǔ",
-    "english": "rain",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "yǔ"
-  },
-  "雪": {
-    "pinyin": "xuě",
-    "english": "snow",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "xuě"
-  },
-  "春": {
-    "pinyin": "chūn",
-    "english": "spring",
-    "function": "unknown",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "chūn"
-  },
-  "夏": {
-    "pinyin": "xià",
-    "english": "summer",
-    "function": "proper noun",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "xià"
-  },
-  "秋": {
-    "pinyin": "qiū",
-    "english": "autumn",
-    "function": "unknown",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "qiū"
-  },
-  "冬": {
-    "pinyin": "dōng",
-    "english": "winter",
-    "function": "unknown",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "dōng"
-  },
-  "山": {
-    "pinyin": "shān",
-    "english": "mountain",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "shān"
-  },
-  "海": {
-    "pinyin": "hǎi",
-    "english": "sea",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "海": {
-        "unknown": [
-          "上海"
-        ]
-      }
-    },
-    "pinyin_tones": "hǎi"
-  },
-  "河": {
-    "pinyin": "hé",
-    "english": "river",
-    "function": "place noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "hé"
-  },
-  "动物": {
-    "pinyin": "dòngwù",
-    "english": "animal",
-    "function": "noun",
-    "hsk_level": 3,
-    "char_matches": {
-      "动": {
-        "unknown": [
-          "运动"
-        ]
-      }
-    },
-    "pinyin_tones": "dòng wù"
-  },
-  "猫": {
-    "pinyin": "māo",
-    "english": "cat",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "māo"
-  },
-  "狗": {
-    "pinyin": "gǒu",
-    "english": "dog",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "gǒu"
-  },
-  "鸟": {
-    "pinyin": "niǎo",
-    "english": "bird",
-    "function": "unknown",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "niǎo"
-  },
-  "熊": {
-    "pinyin": "xióng",
-    "english": "bear",
-    "function": "proper noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "xióng"
-  },
-  "衣服": {
-    "pinyin": "yīfu",
-    "english": "clothes",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "yī fu"
-  },
-  "裤子": {
-    "pinyin": "kùzi",
-    "english": "pants",
-    "function": "noun",
-    "hsk_level": 3,
-    "char_matches": {
-      "子": {
-        "unknown": [
-          "房子"
-        ]
-      }
-    },
-    "pinyin_tones": "kù zi"
-  },
-  "鞋": {
-    "pinyin": "xié",
-    "english": "shoes",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {},
-    "pinyin_tones": "xié"
-  },
-  "手机": {
-    "pinyin": "shǒujī",
-    "english": "mobile phone",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {
-      "机": {
-        "unknown": [
-          "飞机"
-        ]
-      }
-    },
-    "pinyin_tones": "shǒu jī"
-  },
-  "电脑": {
-    "pinyin": "diànnǎo",
-    "english": "computer",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "电": {
-        "unknown": [
-          "电影"
-        ]
-      }
-    },
-    "pinyin_tones": "diàn nǎo"
-  },
-  "电影": {
-    "pinyin": "diànyǐng",
-    "english": "movie",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "电": {
-        "unknown": [
-          "电脑"
-        ]
-      }
-    },
-    "pinyin_tones": "diàn yǐng"
-  },
-  "音乐": {
-    "pinyin": "yīnyuè",
-    "english": "music",
-    "function": "noun",
-    "hsk_level": 3,
-    "char_matches": {
-      "乐": {
-        "unknown": [
-          "快乐",
-          "可乐"
-        ]
-      }
-    },
-    "pinyin_tones": "yīn yuè"
-  },
-  "运动": {
-    "pinyin": "yùndòng",
-    "english": "sports, exercise",
-    "function": "pronoun-verb",
-    "hsk_level": 2,
-    "char_matches": {
-      "动": {
-        "unknown": [
-          "动物"
-        ]
-      }
-    },
-    "pinyin_tones": "yùn dòng"
-  },
-  "跑步": {
-    "pinyin": "pǎobù",
-    "english": "to run",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "pǎo bù"
-  },
-  "游泳": {
-    "pinyin": "yóuyǒng",
-    "english": "to swim",
-    "function": "pronoun-verb",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "yóu yǒng"
-  },
-  "工作": {
-    "pinyin": "gōngzuò",
-    "english": "work",
-    "function": "pronoun-verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "gōng zuò"
-  },
-  "休息": {
-    "pinyin": "xiūxi",
-    "english": "rest",
-    "function": "verb",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "xiū xi"
-  },
-  "医生": {
-    "pinyin": "yīshēng",
-    "english": "doctor",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "生": {
-        "unknown": [
-          "学生"
-        ]
-      }
-    },
-    "pinyin_tones": "yī shēng"
-  },
-  "护士": {
-    "pinyin": "hùshi",
-    "english": "nurse",
-    "function": "noun",
-    "hsk_level": 4,
-    "char_matches": {},
-    "pinyin_tones": "hù shi"
-  },
-  "飞机": {
-    "pinyin": "fēijī",
-    "english": "airplane",
-    "function": "noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "机": {
-        "unknown": [
-          "手机"
-        ]
-      }
-    },
-    "pinyin_tones": "fēi jī"
-  },
-  "汽车": {
-    "pinyin": "qìchē",
-    "english": "car",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "车": {
-        "unknown": [
-          "自行车"
-        ]
-      }
-    },
-    "pinyin_tones": "qì chē"
-  },
-  "自行车": {
-    "pinyin": "zìxíngchē",
-    "english": "bicycle",
-    "function": "noun",
-    "hsk_level": 3,
-    "char_matches": {
-      "车": {
-        "unknown": [
-          "汽车"
-        ]
-      }
-    },
-    "pinyin_tones": "zì xíng chē"
-  },
-  "国家": {
-    "pinyin": "guójiā",
-    "english": "country",
-    "function": "noun",
-    "hsk_level": 3,
-    "char_matches": {
-      "家": {
-        "unknown": [
-          "家"
-        ]
-      }
-    },
-    "pinyin_tones": "guó jiā"
-  },
-  "城市": {
-    "pinyin": "chéngshì",
-    "english": "city",
-    "function": "place noun",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "chéng shì"
-  },
-  "北京": {
-    "pinyin": "Běijīng",
-    "english": "Beijing",
-    "function": "place noun",
-    "hsk_level": 1,
-    "char_matches": {
-      "北": {
-        "unknown": [
-          "北"
-        ]
-      }
-    },
-    "pinyin_tones": "Běi jīng"
-  },
-  "上海": {
-    "pinyin": "Shànghǎi",
-    "english": "Shanghai",
-    "function": "place noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "上": {
-        "unknown": [
-          "上",
-          "早上",
-          "晚上",
-          "早上好",
-          "晚上好",
-          "上课",
-          "上周"
-        ]
-      },
-      "海": {
-        "unknown": [
-          "海"
-        ]
-      }
-    },
-    "pinyin_tones": "Shàng hǎi"
-  },
-  "语言": {
-    "pinyin": "yǔyán",
-    "english": "language",
-    "function": "noun",
-    "hsk_level": 4,
-    "char_matches": {
-      "语": {
-        "unknown": [
-          "汉语",
-          "英语",
-          "法语",
-          "德语",
-          "寒语"
-        ]
-      }
-    },
-    "pinyin_tones": "yǔ yán"
-  },
-  "英语": {
-    "pinyin": "Yīngyǔ",
-    "english": "English language",
-    "function": "other noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "语": {
-        "unknown": [
-          "汉语",
-          "语言",
-          "法语",
-          "德语",
-          "寒语"
-        ]
-      }
-    },
-    "pinyin_tones": "Yīng yǔ"
-  },
-  "法语": {
-    "pinyin": "Fǎyǔ",
-    "english": "French language",
-    "function": "other noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "语": {
-        "unknown": [
-          "汉语",
-          "语言",
-          "英语",
-          "德语",
-          "寒语"
-        ]
-      }
-    },
-    "pinyin_tones": "Fǎ yǔ"
-  },
-  "德语": {
-    "pinyin": "Déyǔ",
-    "english": "German language",
-    "function": "other noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "语": {
-        "unknown": [
-          "汉语",
-          "语言",
-          "英语",
-          "法语",
-          "寒语"
-        ]
-      }
-    },
-    "pinyin_tones": "Dé yǔ"
-  },
-  "问题": {
-    "pinyin": "wèntí",
-    "english": "question, problem",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "wèn tí"
-  },
-  "回答": {
-    "pinyin": "huídá",
-    "english": "to answer",
-    "function": "verb",
-    "hsk_level": 3,
-    "char_matches": {
-      "回": {
-        "unknown": [
-          "回"
-        ]
-      }
-    },
-    "pinyin_tones": "huí dá"
-  },
-  "时间": {
-    "pinyin": "shíjiān",
-    "english": "time",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {
-      "时": {
-        "unknown": [
-          "小时"
-        ]
-      }
-    },
-    "pinyin_tones": "shí jiān"
-  },
-  "分钟": {
-    "pinyin": "fēnzhōng",
-    "english": "minute",
-    "function": "classifier",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "fēn zhōng"
-  },
-  "小时": {
-    "pinyin": "xiǎoshí",
-    "english": "hour",
-    "function": "noun",
-    "hsk_level": 2,
-    "char_matches": {
-      "小": {
-        "unknown": [
-          "小"
-        ]
-      },
-      "时": {
-        "unknown": [
-          "时间"
-        ]
-      }
-    },
-    "pinyin_tones": "xiǎo shí"
-  },
-  "好吃": {
-    "pinyin": "hǎochī",
-    "english": "delicious",
-    "function": "verb",
-    "hsk_level": 2,
-    "char_matches": {
-      "好": {
-        "unknown": [
-          "好",
-          "早上好",
-          "下午好",
-          "晚上好",
-          "好喝",
-          "友好"
-        ]
-      },
-      "吃": {
-        "unknown": [
-          "吃",
-          "难吃"
-        ]
-      }
-    },
-    "pinyin_tones": "hǎo chī"
-  },
-  "难吃": {
-    "pinyin": "nánchī",
-    "english": "not tasty",
-    "function": "adjective",
-    "hsk_level": -1,
-    "char_matches": {
-      "难": {
-        "unknown": [
-          "难喝",
-          "困难"
-        ]
-      },
-      "吃": {
-        "unknown": [
-          "吃",
-          "好吃"
-        ]
-      }
-    },
-    "pinyin_tones": "nán chī"
-  },
-  "好喝": {
-    "pinyin": "hǎohē",
-    "english": "tasty (for drinks)",
-    "function": "verb",
-    "hsk_level": -1,
-    "char_matches": {
-      "好": {
-        "unknown": [
-          "好",
-          "早上好",
-          "下午好",
-          "晚上好",
-          "好吃",
-          "友好"
-        ]
-      },
-      "喝": {
-        "unknown": [
-          "喝",
-          "难喝"
-        ]
-      }
-    },
-    "pinyin_tones": "hǎo hē"
-  },
-  "难喝": {
-    "pinyin": "nánhē",
-    "english": "not tasty (for drinks)",
-    "function": [
-      "adjective",
-      "verb-object"
-    ],
-    "hsk_level": [
-      3,
-      1
-    ],
-    "char_matches": {
-      "难": {
-        "unknown": [
-          "难吃",
-          "困难"
-        ]
-      },
-      "喝": {
-        "unknown": [
-          "喝",
-          "好喝"
-        ]
-      }
-    },
-    "pinyin_tones": "nán hē"
-  },
-  "漂亮": {
-    "pinyin": "piàoliang",
-    "english": "beautiful",
-    "function": "adjective",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "piào liang"
-  },
-  "美丽": {
-    "pinyin": "měilì",
-    "english": "beautiful",
-    "function": "place noun",
-    "hsk_level": 4,
-    "char_matches": {},
-    "pinyin_tones": "měi lì"
-  },
-  "帅": {
-    "pinyin": "shuài",
-    "english": "handsome",
-    "function": "proper noun",
-    "hsk_level": 4,
-    "char_matches": {},
-    "pinyin_tones": "shuài"
-  },
-  "高": {
-    "pinyin": "gāo",
-    "english": "tall",
-    "function": "adjective",
-    "hsk_level": 2,
-    "char_matches": {
-      "高": {
-        "unknown": [
-          "高兴"
-        ]
-      }
-    },
-    "pinyin_tones": "gāo"
-  },
-  "矮": {
-    "pinyin": "ǎi",
-    "english": "short (height)",
-    "function": "adjective",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "ǎi"
-  },
-  "胖": {
-    "pinyin": "pàng",
-    "english": "fat",
-    "function": "adjective",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "pàng"
-  },
-  "瘦": {
-    "pinyin": "shòu",
-    "english": "thin",
-    "function": "adjective",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "shòu"
-  },
-  "新": {
-    "pinyin": "xīn",
-    "english": "new",
-    "function": "adjective",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "xīn"
-  },
-  "旧": {
-    "pinyin": "jiù",
-    "english": "old (not new)",
-    "function": "adjective",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "jiù"
-  },
-  "快": {
-    "pinyin": "kuài",
-    "english": "fast",
-    "function": "adjective",
-    "hsk_level": 2,
-    "char_matches": {
-      "快": {
-        "unknown": [
-          "快乐"
-        ]
-      }
-    },
-    "pinyin_tones": "kuài"
-  },
-  "慢": {
-    "pinyin": "màn",
-    "english": "slow",
-    "function": "adjective",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "màn"
-  },
-  "贵": {
-    "pinyin": "guì",
-    "english": "expensive",
-    "function": "adjective",
-    "hsk_level": 2,
-    "char_matches": {
-      "贵": {
-        "unknown": [
-          "您贵姓"
-        ]
-      }
-    },
-    "pinyin_tones": "guì"
-  },
-  "便宜": {
-    "pinyin": "piányi",
-    "english": "cheap",
-    "function": "adjective",
-    "hsk_level": 2,
-    "char_matches": {},
-    "pinyin_tones": "pián yi"
-  },
-  "容易": {
-    "pinyin": "róngyì",
-    "english": "easy",
-    "function": "adjective",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "róng yì"
-  },
-  "困难": {
-    "pinyin": "kùnnan",
-    "english": "difficult",
-    "function": "prenoun",
-    "hsk_level": 4,
-    "char_matches": {
-      "难": {
-        "unknown": [
-          "难吃",
-          "难喝"
-        ]
-      }
-    },
-    "pinyin_tones": "kùn nan"
-  },
-  "开始": {
-    "pinyin": "kāishǐ",
-    "english": "to start",
-    "function": "verb",
-    "hsk_level": 2,
-    "char_matches": {
-      "开": {
-        "unknown": [
-          "开"
-        ]
-      }
-    },
-    "pinyin_tones": "kāi shǐ"
-  },
-  "结束": {
-    "pinyin": "jiéshù",
-    "english": "to end",
-    "function": "verb",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "jié shù"
-  },
-  "欢迎": {
-    "pinyin": "huānyíng",
-    "english": "welcome",
-    "function": "verb",
-    "hsk_level": 3,
-    "char_matches": {
-      "欢": {
-        "unknown": [
-          "喜欢"
-        ]
-      }
-    },
-    "pinyin_tones": "huān yíng"
-  },
-  "再见": {
-    "pinyin": "zàijiàn",
-    "english": "goodbye",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "zài jiàn"
-  },
-  "理想": {
-    "pinyin": "lǐxiǎng",
-    "english": "ideal; dream",
-    "function": "noun",
-    "hsk_level": 4,
-    "char_matches": {
-      "想": {
-        "unknown": [
-          "想"
-        ]
-      }
-    },
-    "pinyin_tones": "lǐ xiǎng"
-  },
-  "老虎": {
-    "pinyin": "lǎohǔ",
-    "english": "tiger",
-    "function": "proper noun",
-    "hsk_level": 4,
-    "char_matches": {
-      "老": {
-        "unknown": [
-          "老师"
-        ]
-      }
-    },
-    "pinyin_tones": "lǎo hǔ"
-  },
-  "打扫": {
-    "pinyin": "dǎsǎo",
-    "english": "to clean; to sweep",
-    "function": "verb",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "dǎ sǎo"
-  },
-  "喜欢": {
-    "pinyin": "xǐhuan",
-    "english": "to like",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {
-      "欢": {
-        "unknown": [
-          "欢迎"
-        ]
-      }
-    },
-    "pinyin_tones": "xǐ huan"
-  },
-  "讨厌": {
-    "pinyin": "tǎoyàn",
-    "english": "to dislike; to loathe",
-    "function": "verb",
-    "hsk_level": 4,
-    "char_matches": {},
-    "pinyin_tones": "tǎo yàn"
-  },
-  "房子": {
-    "pinyin": "fángzi",
-    "english": "house; building",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "子": {
-        "unknown": [
-          "裤子"
-        ]
-      }
-    },
-    "pinyin_tones": "fáng zi"
-  },
-  "姓": {
-    "pinyin": "xìng",
-    "english": "surname; family name",
-    "function": "verb",
-    "hsk_level": 2,
-    "char_matches": {
-      "姓": {
-        "unknown": [
-          "您贵姓",
-          "你姓什么"
-        ]
-      }
-    },
-    "pinyin_tones": "xìng"
-  },
-  "友好": {
-    "pinyin": "yǒuhǎo",
-    "english": "friendly; amicable",
-    "function": "adjective",
-    "hsk_level": 4,
-    "char_matches": {
-      "友": {
-        "unknown": [
-          "朋友"
-        ]
-      },
-      "好": {
-        "unknown": [
-          "好",
-          "早上好",
-          "下午好",
-          "晚上好",
-          "好吃",
-          "好喝"
-        ]
-      }
-    },
-    "pinyin_tones": "yǒu hǎo"
-  },
-  "谁": {
-    "pinyin": "shéi",
-    "english": "who",
-    "function": "pronoun",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "shéi"
-  },
-  "您贵姓": {
-    "pinyin": "nín guì xìng",
-    "english": "What is your (honorific) surname?",
-    "function": [
-      "unknown",
-      "noun"
-    ],
-    "hsk_level": [
-      2,
-      -1
-    ],
-    "char_matches": {
-      "贵": {
-        "unknown": [
-          "贵"
-        ]
-      },
-      "姓": {
-        "unknown": [
-          "姓",
-          "你姓什么"
-        ]
-      }
-    },
-    "pinyin_tones": "nín guì xìng"
-  },
-  "你姓什么": {
-    "pinyin": "nǐ xìng shénme",
-    "english": "What is your surname?",
-    "function": [
-      "pronoun",
-      "verb",
-      "pronoun"
-    ],
-    "hsk_level": [
-      1,
-      2,
-      1
-    ],
-    "char_matches": {
-      "你": {
-        "unknown": [
-          "你"
-        ]
-      },
-      "姓": {
-        "unknown": [
-          "姓",
-          "您贵姓"
-        ]
-      },
-      "么": {
-        "unknown": [
-          "么"
-        ]
-      }
-    },
-    "pinyin_tones": "nǐ xìng shén me"
-  },
-  "星期日/天": {
-    "pinyin": "xīngqī rì/tiān",
-    "english": "Sunday",
-    "function": [
-      "unknown",
-      "non-lexeme",
-      "classifier"
-    ],
-    "hsk_level": [
-      -1,
-      -1,
-      -1
-    ],
-    "char_matches": {
-      "星": {
-        "unknown": [
-          "星期"
-        ]
-      },
-      "期": {
-        "unknown": [
-          "星期"
-        ]
-      },
-      "日": {
-        "unknown": [
-          "日"
-        ]
-      },
-      "天": {
-        "unknown": [
-          "天气"
-        ]
-      }
-    },
-    "pinyin_tones": "xīng qī rì / tiān"
-  },
-  "周": {
-    "pinyin": "zhōu",
-    "english": "week",
-    "function": "proper noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "周": {
-        "unknown": [
-          "周末",
-          "上周",
-          "下周"
-        ]
-      }
-    },
-    "pinyin_tones": "zhōu"
-  },
-  "周末": {
-    "pinyin": "zhōumò",
-    "english": "weekend",
-    "function": "unknown",
-    "hsk_level": 3,
-    "char_matches": {
-      "周": {
-        "unknown": [
-          "周",
-          "上周",
-          "下周"
-        ]
-      }
-    },
-    "pinyin_tones": "zhōu mò"
-  },
-  "上周": {
-    "pinyin": "shàng zhōu",
-    "english": "last week",
-    "function": "unknown",
-    "hsk_level": -1,
-    "char_matches": {
-      "上": {
-        "unknown": [
-          "上",
-          "早上",
-          "晚上",
-          "早上好",
-          "晚上好",
-          "上课",
-          "上海"
-        ]
-      },
-      "周": {
-        "unknown": [
-          "周",
-          "周末",
-          "下周"
-        ]
-      }
-    },
-    "pinyin_tones": "shàng zhōu"
-  },
-  "下周": {
-    "pinyin": "xià zhōu",
-    "english": "next week",
-    "function": "unknown",
-    "hsk_level": -1,
-    "char_matches": {
-      "下": {
-        "unknown": [
-          "下",
-          "下午",
-          "下午好"
-        ]
-      },
-      "周": {
-        "unknown": [
-          "周",
-          "周末",
-          "上周"
-        ]
-      }
-    },
-    "pinyin_tones": "xià zhōu"
-  },
-  "想": {
-    "pinyin": "xiǎng",
-    "english": "to think; to want; to miss",
-    "function": "verb",
-    "hsk_level": 1,
-    "char_matches": {
-      "想": {
-        "unknown": [
-          "理想"
-        ]
-      }
-    },
-    "pinyin_tones": "xiǎng"
-  },
-  "都": {
-    "pinyin": "dōu",
-    "english": "all; both; entirely",
-    "function": "adverb",
-    "hsk_level": 1,
-    "char_matches": {},
-    "pinyin_tones": "dōu"
-  },
-  "寒语": {
-    "pinyin": "hányǔ",
-    "english": "cold words; harsh speech",
-    "function": "noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "语": {
-        "unknown": [
-          "汉语",
-          "语言",
-          "英语",
-          "法语",
-          "德语"
-        ]
-      }
-    },
-    "pinyin_tones": "hán yǔ"
-  },
-  "欧洲": {
-    "pinyin": "Ōuzhōu",
-    "english": "Europe",
-    "function": "place noun",
-    "hsk_level": 5,
-    "char_matches": {
-      "洲": {
-        "unknown": [
-          "亚洲",
-          "大洋洲",
-          "非洲"
-        ]
-      }
-    },
-    "pinyin_tones": "Ōu zhōu"
-  },
-  "亚洲": {
-    "pinyin": "Yàzhōu",
-    "english": "Asia",
-    "function": "place noun",
-    "hsk_level": 4,
-    "char_matches": {
-      "洲": {
-        "unknown": [
-          "欧洲",
-          "大洋洲",
-          "非洲"
-        ]
-      }
-    },
-    "pinyin_tones": "Yà zhōu"
-  },
-  "北": {
-    "pinyin": "běi",
-    "english": "north",
-    "function": "place noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "北": {
-        "unknown": [
-          "北京"
-        ]
-      }
-    },
-    "pinyin_tones": "běi"
-  },
-  "南": {
-    "pinyin": "nán",
-    "english": "south",
-    "function": "place noun",
-    "hsk_level": 3,
-    "char_matches": {},
-    "pinyin_tones": "nán"
-  },
-  "大洋洲": {
-    "pinyin": "Dàyángzhōu",
-    "english": "Oceania",
-    "function": "place noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "大": {
-        "unknown": [
-          "大"
-        ]
-      },
-      "洲": {
-        "unknown": [
-          "欧洲",
-          "亚洲",
-          "非洲"
-        ]
-      }
-    },
-    "pinyin_tones": "Dà yáng zhōu"
-  },
-  "非洲": {
-    "pinyin": "Fēizhōu",
-    "english": "Africa",
-    "function": "place noun",
-    "hsk_level": -1,
-    "char_matches": {
-      "洲": {
-        "unknown": [
-          "欧洲",
-          "亚洲",
-          "大洋洲"
-        ]
-      }
-    },
-    "pinyin_tones": "Fēi zhōu"
-  }
+    "我": {
+        "pinyin": "wǒ",
+        "english": "I, me",
+        "function": "pronoun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "wǒ"
+    },
+    "你": {
+        "pinyin": "nǐ",
+        "english": "you",
+        "function": "pronoun",
+        "hsk_level": 1,
+        "char_matches": {
+            "你": {
+                "unknown": [
+                    "你姓什么"
+                ]
+            }
+        },
+        "pinyin_tones": "nǐ"
+    },
+    "他": {
+        "pinyin": "tā",
+        "english": "he",
+        "function": "pronoun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "tā"
+    },
+    "她": {
+        "pinyin": "tā",
+        "english": "she",
+        "function": "pronoun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "tā"
+    },
+    "它": {
+        "pinyin": "tā",
+        "english": "it",
+        "function": "pronoun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "tā"
+    },
+    "是": {
+        "pinyin": "shì",
+        "english": "to be",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "shì"
+    },
+    "的": {
+        "pinyin": "de",
+        "english": "possessive particle",
+        "function": "unknown",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "de"
+    },
+    "了": {
+        "pinyin": "le",
+        "english": "particle indicating completed action",
+        "function": "unknown",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "le"
+    },
+    "也": {
+        "pinyin": "yě",
+        "english": "also, too",
+        "function": "adverb",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "yě"
+    },
+    "这": {
+        "pinyin": "zhè",
+        "english": "this",
+        "function": "pronoun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "zhè"
+    },
+    "那": {
+        "pinyin": "nà",
+        "english": "that",
+        "function": "pronoun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "nà"
+    },
+    "哪": {
+        "pinyin": "nǎ",
+        "english": "which",
+        "function": "pronoun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "nǎ"
+    },
+    "有": {
+        "pinyin": "yǒu",
+        "english": "to have",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "yǒu"
+    },
+    "好": {
+        "pinyin": "hǎo",
+        "english": "good",
+        "function": "adjective",
+        "hsk_level": 1,
+        "char_matches": {
+            "好": {
+                "unknown": [
+                    "早上好",
+                    "下午好",
+                    "晚上好",
+                    "好吃",
+                    "好喝",
+                    "友好"
+                ]
+            }
+        },
+        "pinyin_tones": "hǎo"
+    },
+    "在": {
+        "pinyin": "zài",
+        "english": "at, in, on",
+        "function": "preposition",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "zài"
+    },
+    "不": {
+        "pinyin": "bù",
+        "english": "not",
+        "function": "adverb",
+        "hsk_level": 1,
+        "char_matches": {
+            "不": {
+                "unknown": [
+                    "对不起"
+                ]
+            }
+        },
+        "pinyin_tones": "bù"
+    },
+    "和": {
+        "pinyin": "hé",
+        "english": "and",
+        "function": "complement",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "hé"
+    },
+    "吗": {
+        "pinyin": "ma",
+        "english": "question particle",
+        "function": "language-particle",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "ma"
+    },
+    "吧": {
+        "pinyin": "ba",
+        "english": "particle indicating suggestion",
+        "function": "language-particle",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "ba"
+    },
+    "么": {
+        "pinyin": "me",
+        "english": "particle used in questions",
+        "function": "language-particle",
+        "hsk_level": -1,
+        "char_matches": {
+            "么": {
+                "unknown": [
+                    "你姓什么"
+                ]
+            }
+        },
+        "pinyin_tones": "me"
+    },
+    "一": {
+        "pinyin": "yī",
+        "english": "one",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "yī"
+    },
+    "二": {
+        "pinyin": "èr",
+        "english": "two",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "èr"
+    },
+    "三": {
+        "pinyin": "sān",
+        "english": "three",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "sān"
+    },
+    "四": {
+        "pinyin": "sì",
+        "english": "four",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "sì"
+    },
+    "五": {
+        "pinyin": "wǔ",
+        "english": "five",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "wǔ"
+    },
+    "六": {
+        "pinyin": "liù",
+        "english": "six",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "liù"
+    },
+    "七": {
+        "pinyin": "qī",
+        "english": "seven",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "qī"
+    },
+    "八": {
+        "pinyin": "bā",
+        "english": "eight",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "bā"
+    },
+    "九": {
+        "pinyin": "jiǔ",
+        "english": "nine",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "jiǔ"
+    },
+    "十": {
+        "pinyin": "shí",
+        "english": "ten",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "shí"
+    },
+    "百": {
+        "pinyin": "bǎi",
+        "english": "hundred",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "bǎi"
+    },
+    "千": {
+        "pinyin": "qiān",
+        "english": "thousand",
+        "function": "number",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "qiān"
+    },
+    "万": {
+        "pinyin": "wàn",
+        "english": "ten thousand",
+        "function": "number",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "wàn"
+    },
+    "上": {
+        "pinyin": "shàng",
+        "english": "up, above",
+        "function": "surname",
+        "hsk_level": 1,
+        "char_matches": {
+            "上": {
+                "unknown": [
+                    "早上",
+                    "晚上",
+                    "早上好",
+                    "晚上好",
+                    "上课",
+                    "上海",
+                    "上周"
+                ]
+            }
+        },
+        "pinyin_tones": "shàng"
+    },
+    "下": {
+        "pinyin": "xià",
+        "english": "down, below",
+        "function": "surname",
+        "hsk_level": 1,
+        "char_matches": {
+            "下": {
+                "unknown": [
+                    "下午",
+                    "下午好",
+                    "下周"
+                ]
+            }
+        },
+        "pinyin_tones": "xià"
+    },
+    "左": {
+        "pinyin": "zuǒ",
+        "english": "left",
+        "function": "number",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "zuǒ"
+    },
+    "右": {
+        "pinyin": "yòu",
+        "english": "right",
+        "function": "surname",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "yòu"
+    },
+    "前": {
+        "pinyin": "qián",
+        "english": "front",
+        "function": "surname",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "qián"
+    },
+    "后": {
+        "pinyin": "hòu",
+        "english": "back",
+        "function": "surname",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "hòu"
+    },
+    "里": {
+        "pinyin": "lǐ",
+        "english": "inside",
+        "function": "surname",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "lǐ"
+    },
+    "外": {
+        "pinyin": "wài",
+        "english": "outside",
+        "function": "surname",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "wài"
+    },
+    "大": {
+        "pinyin": "dà",
+        "english": "big",
+        "function": "adjective",
+        "hsk_level": 1,
+        "char_matches": {
+            "大": {
+                "unknown": [
+                    "大洋洲",
+                    "加拿大"
+                ]
+            }
+        },
+        "pinyin_tones": "dà"
+    },
+    "小": {
+        "pinyin": "xiǎo",
+        "english": "small",
+        "function": "adjective",
+        "hsk_level": 1,
+        "char_matches": {
+            "小": {
+                "unknown": [
+                    "小时"
+                ]
+            }
+        },
+        "pinyin_tones": "xiǎo"
+    },
+    "多": {
+        "pinyin": "duō",
+        "english": "many, much",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "duō"
+    },
+    "少": {
+        "pinyin": "shǎo",
+        "english": "few, little",
+        "function": "adjective",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "shǎo"
+    },
+    "早": {
+        "pinyin": "zǎo",
+        "english": "early, morning",
+        "function": "adverb, adjective",
+        "hsk_level": 1,
+        "char_matches": {
+            "早": {
+                "unknown": [
+                    "早上",
+                    "早上好"
+                ]
+            }
+        },
+        "pinyin_tones": "zǎo"
+    },
+    "晚": {
+        "pinyin": "wǎn",
+        "english": "evening, night, late",
+        "function": "noun, adverb",
+        "hsk_level": 1,
+        "char_matches": {
+            "晚": {
+                "unknown": [
+                    "晚上",
+                    "晚上好",
+                    "晚安"
+                ]
+            }
+        },
+        "pinyin_tones": "wǎn"
+    },
+    "日": {
+        "pinyin": "rì",
+        "english": "day, sun",
+        "function": "number",
+        "hsk_level": 2,
+        "char_matches": {
+            "日": {
+                "unknown": [
+                    "星期日/天"
+                ]
+            }
+        },
+        "pinyin_tones": "rì"
+    },
+    "月": {
+        "pinyin": "yuè",
+        "english": "month, moon",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "yuè"
+    },
+    "年": {
+        "pinyin": "nián",
+        "english": "year",
+        "function": "number",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "nián"
+    },
+    "星期": {
+        "pinyin": "xīngqī",
+        "english": "week",
+        "function": "unknown",
+        "hsk_level": 1,
+        "char_matches": {
+            "星": {
+                "unknown": [
+                    "星期日/天"
+                ]
+            },
+            "期": {
+                "unknown": [
+                    "星期日/天"
+                ]
+            }
+        },
+        "pinyin_tones": "xīng qī"
+    },
+    "早上": {
+        "pinyin": "zǎoshang",
+        "english": "morning",
+        "function": "unknown",
+        "hsk_level": 2,
+        "char_matches": {
+            "早": {
+                "unknown": [
+                    "早",
+                    "早上好"
+                ]
+            },
+            "上": {
+                "unknown": [
+                    "上",
+                    "晚上",
+                    "早上好",
+                    "晚上好",
+                    "上课",
+                    "上海",
+                    "上周"
+                ]
+            }
+        },
+        "pinyin_tones": "zǎo shang"
+    },
+    "下午": {
+        "pinyin": "xiàwǔ",
+        "english": "afternoon",
+        "function": "unknown",
+        "hsk_level": 1,
+        "char_matches": {
+            "下": {
+                "unknown": [
+                    "下",
+                    "下午好",
+                    "下周"
+                ]
+            },
+            "午": {
+                "unknown": [
+                    "下午好"
+                ]
+            }
+        },
+        "pinyin_tones": "xià wǔ"
+    },
+    "晚上": {
+        "pinyin": "wǎnshang",
+        "english": "evening",
+        "function": "unknown",
+        "hsk_level": 2,
+        "char_matches": {
+            "晚": {
+                "unknown": [
+                    "晚",
+                    "晚上好",
+                    "晚安"
+                ]
+            },
+            "上": {
+                "unknown": [
+                    "上",
+                    "早上",
+                    "早上好",
+                    "晚上好",
+                    "上课",
+                    "上海",
+                    "上周"
+                ]
+            }
+        },
+        "pinyin_tones": "wǎn shang"
+    },
+    "早上好": {
+        "pinyin": "zǎoshang hǎo",
+        "english": "good morning",
+        "function": "temporary word",
+        "hsk_level": -1,
+        "char_matches": {
+            "早": {
+                "unknown": [
+                    "早",
+                    "早上"
+                ]
+            },
+            "上": {
+                "unknown": [
+                    "上",
+                    "早上",
+                    "晚上",
+                    "晚上好",
+                    "上课",
+                    "上海",
+                    "上周"
+                ]
+            },
+            "好": {
+                "unknown": [
+                    "好",
+                    "下午好",
+                    "晚上好",
+                    "好吃",
+                    "好喝",
+                    "友好"
+                ]
+            }
+        },
+        "pinyin_tones": "zǎo shang hǎo"
+    },
+    "下午好": {
+        "pinyin": "xiàwǔ hǎo",
+        "english": "good afternoon",
+        "function": [
+            "unknown",
+            "adjective"
+        ],
+        "hsk_level": [
+            1,
+            1
+        ],
+        "char_matches": {
+            "下": {
+                "unknown": [
+                    "下",
+                    "下午",
+                    "下周"
+                ]
+            },
+            "午": {
+                "unknown": [
+                    "下午"
+                ]
+            },
+            "好": {
+                "unknown": [
+                    "好",
+                    "早上好",
+                    "晚上好",
+                    "好吃",
+                    "好喝",
+                    "友好"
+                ]
+            }
+        },
+        "pinyin_tones": "xià wǔ hǎo"
+    },
+    "晚上好": {
+        "pinyin": "wǎnshang hǎo",
+        "english": "good evening",
+        "function": [
+            "unknown",
+            "adjective"
+        ],
+        "hsk_level": [
+            2,
+            1
+        ],
+        "char_matches": {
+            "晚": {
+                "unknown": [
+                    "晚",
+                    "晚上",
+                    "晚安"
+                ]
+            },
+            "上": {
+                "unknown": [
+                    "上",
+                    "早上",
+                    "晚上",
+                    "早上好",
+                    "上课",
+                    "上海",
+                    "上周"
+                ]
+            },
+            "好": {
+                "unknown": [
+                    "好",
+                    "早上好",
+                    "下午好",
+                    "好吃",
+                    "好喝",
+                    "友好"
+                ]
+            }
+        },
+        "pinyin_tones": "wǎn shang hǎo"
+    },
+    "晚安": {
+        "pinyin": "wǎn'ān",
+        "english": "good night",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "晚": {
+                "unknown": [
+                    "晚",
+                    "晚上",
+                    "晚上好"
+                ]
+            }
+        },
+        "pinyin_tones": "wǎn 'ā"
+    },
+    "吃": {
+        "pinyin": "chī",
+        "english": "to eat",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {
+            "吃": {
+                "unknown": [
+                    "好吃",
+                    "难吃"
+                ]
+            }
+        },
+        "pinyin_tones": "chī"
+    },
+    "喝": {
+        "pinyin": "hē",
+        "english": "to drink",
+        "function": "verb-object",
+        "hsk_level": 1,
+        "char_matches": {
+            "喝": {
+                "unknown": [
+                    "好喝",
+                    "难喝"
+                ]
+            }
+        },
+        "pinyin_tones": "hē"
+    },
+    "睡": {
+        "pinyin": "shuì",
+        "english": "to sleep",
+        "function": "verb",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "shuì"
+    },
+    "看": {
+        "pinyin": "kàn",
+        "english": "to look, to watch",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "kàn"
+    },
+    "学习": {
+        "pinyin": "xuéxí",
+        "english": "to study",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {
+            "学": {
+                "unknown": [
+                    "学校",
+                    "学生",
+                    "同学"
+                ]
+            },
+            "习": {
+                "unknown": [
+                    "复习"
+                ]
+            }
+        },
+        "pinyin_tones": "xué xí"
+    },
+    "复习": {
+        "pinyin": "fùxí",
+        "english": "to review",
+        "function": "verb",
+        "hsk_level": 3,
+        "char_matches": {
+            "习": {
+                "unknown": [
+                    "学习"
+                ]
+            }
+        },
+        "pinyin_tones": "fù xí"
+    },
+    "上课": {
+        "pinyin": "shàngkè",
+        "english": "to attend class",
+        "function": "verb",
+        "hsk_level": -1,
+        "char_matches": {
+            "上": {
+                "unknown": [
+                    "上",
+                    "早上",
+                    "晚上",
+                    "早上好",
+                    "晚上好",
+                    "上海",
+                    "上周"
+                ]
+            }
+        },
+        "pinyin_tones": "shàng kè"
+    },
+    "书": {
+        "pinyin": "shū",
+        "english": "book",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "shū"
+    },
+    "笔": {
+        "pinyin": "bǐ",
+        "english": "pen",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "bǐ"
+    },
+    "纸": {
+        "pinyin": "zhǐ",
+        "english": "paper",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "zhǐ"
+    },
+    "名字": {
+        "pinyin": "míngzi",
+        "english": "name",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "míng zi"
+    },
+    "叫": {
+        "pinyin": "jiào",
+        "english": "to be called",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "jiào"
+    },
+    "请": {
+        "pinyin": "qǐng",
+        "english": "please",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "qǐng"
+    },
+    "谢谢": {
+        "pinyin": "xièxie",
+        "english": "thank you",
+        "function": "proper noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "xiè xie"
+    },
+    "对不起": {
+        "pinyin": "duìbuqǐ",
+        "english": "sorry",
+        "function": "temporary word",
+        "hsk_level": 1,
+        "char_matches": {
+            "不": {
+                "unknown": [
+                    "不"
+                ]
+            }
+        },
+        "pinyin_tones": "duì bu qǐ"
+    },
+    "认识": {
+        "pinyin": "rènshi",
+        "english": "to know, to recognize",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "rèn shi"
+    },
+    "家": {
+        "pinyin": "jiā",
+        "english": "home, family",
+        "function": "classifier",
+        "hsk_level": 1,
+        "char_matches": {
+            "家": {
+                "unknown": [
+                    "国家"
+                ]
+            }
+        },
+        "pinyin_tones": "jiā"
+    },
+    "学校": {
+        "pinyin": "xuéxiào",
+        "english": "school",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "学": {
+                "unknown": [
+                    "学习",
+                    "学生",
+                    "同学"
+                ]
+            }
+        },
+        "pinyin_tones": "xué xiào"
+    },
+    "教室": {
+        "pinyin": "jiàoshì",
+        "english": "classroom",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "jiào shì"
+    },
+    "老师": {
+        "pinyin": "lǎoshī",
+        "english": "teacher",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "老": {
+                "unknown": [
+                    "老虎"
+                ]
+            }
+        },
+        "pinyin_tones": "lǎo shī"
+    },
+    "学生": {
+        "pinyin": "xuésheng",
+        "english": "student",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "学": {
+                "unknown": [
+                    "学习",
+                    "学校",
+                    "同学"
+                ]
+            },
+            "生": {
+                "unknown": [
+                    "医生"
+                ]
+            }
+        },
+        "pinyin_tones": "xué sheng"
+    },
+    "男": {
+        "pinyin": "nán",
+        "english": "male",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "nán"
+    },
+    "女": {
+        "pinyin": "nǚ",
+        "english": "female",
+        "function": "other",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "nǚ"
+    },
+    "爸爸": {
+        "pinyin": "bàba",
+        "english": "father",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "bà ba"
+    },
+    "妈妈": {
+        "pinyin": "māma",
+        "english": "mother",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "mā ma"
+    },
+    "哥哥": {
+        "pinyin": "gēge",
+        "english": "older brother",
+        "function": "place noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "gē ge"
+    },
+    "姐姐": {
+        "pinyin": "jiějie",
+        "english": "older sister",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "jiě jie"
+    },
+    "弟弟": {
+        "pinyin": "dìdi",
+        "english": "younger brother",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "dì di"
+    },
+    "妹妹": {
+        "pinyin": "mèimei",
+        "english": "younger sister",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "mèi mei"
+    },
+    "爷爷": {
+        "pinyin": "yéye",
+        "english": "grandfather (paternal)",
+        "function": "noun",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "yé ye"
+    },
+    "奶奶": {
+        "pinyin": "nǎinai",
+        "english": "grandmother (paternal)",
+        "function": "noun",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "nǎi nai"
+    },
+    "朋友": {
+        "pinyin": "péngyou",
+        "english": "friend",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "友": {
+                "unknown": [
+                    "友好"
+                ]
+            }
+        },
+        "pinyin_tones": "péng you"
+    },
+    "同学": {
+        "pinyin": "tóngxué",
+        "english": "classmate",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "学": {
+                "unknown": [
+                    "学习",
+                    "学校",
+                    "学生"
+                ]
+            }
+        },
+        "pinyin_tones": "tóng xué"
+    },
+    "高兴": {
+        "pinyin": "gāoxìng",
+        "english": "happy",
+        "function": "other",
+        "hsk_level": 1,
+        "char_matches": {
+            "高": {
+                "unknown": [
+                    "高"
+                ]
+            }
+        },
+        "pinyin_tones": "gāo xìng"
+    },
+    "快乐": {
+        "pinyin": "kuàilè",
+        "english": "happy, joyful",
+        "function": "adjective",
+        "hsk_level": 2,
+        "char_matches": {
+            "快": {
+                "unknown": [
+                    "快"
+                ]
+            },
+            "乐": {
+                "unknown": [
+                    "可乐",
+                    "音乐"
+                ]
+            }
+        },
+        "pinyin_tones": "kuài lè"
+    },
+    "中文": {
+        "pinyin": "Zhōngwén",
+        "english": "Chinese language",
+        "function": "other noun",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "Zhōng wén"
+    },
+    "汉语": {
+        "pinyin": "Hànyǔ",
+        "english": "Chinese language",
+        "function": "other noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "语": {
+                "unknown": [
+                    "语言",
+                    "英语",
+                    "法语",
+                    "德语",
+                    "寒语"
+                ]
+            }
+        },
+        "pinyin_tones": "Hàn yǔ"
+    },
+    "听": {
+        "pinyin": "tīng",
+        "english": "to listen",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "tīng"
+    },
+    "说": {
+        "pinyin": "shuō",
+        "english": "to speak",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "shuō"
+    },
+    "读": {
+        "pinyin": "dú",
+        "english": "to read",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "dú"
+    },
+    "写": {
+        "pinyin": "xiě",
+        "english": "to write",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "xiě"
+    },
+    "去": {
+        "pinyin": "qù",
+        "english": "to go",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "qù"
+    },
+    "来": {
+        "pinyin": "lái",
+        "english": "to come",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "lái"
+    },
+    "回": {
+        "pinyin": "huí",
+        "english": "to return",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {
+            "回": {
+                "unknown": [
+                    "回答"
+                ]
+            }
+        },
+        "pinyin_tones": "huí"
+    },
+    "开": {
+        "pinyin": "kāi",
+        "english": "to open",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {
+            "开": {
+                "unknown": [
+                    "开始"
+                ]
+            }
+        },
+        "pinyin_tones": "kāi"
+    },
+    "关": {
+        "pinyin": "guān",
+        "english": "to close",
+        "function": "verb",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "guān"
+    },
+    "门": {
+        "pinyin": "mén",
+        "english": "door",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "mén"
+    },
+    "买": {
+        "pinyin": "mǎi",
+        "english": "to buy",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "mǎi"
+    },
+    "卖": {
+        "pinyin": "mài",
+        "english": "to sell",
+        "function": "verb",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "mài"
+    },
+    "钱": {
+        "pinyin": "qián",
+        "english": "money",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "qián"
+    },
+    "元": {
+        "pinyin": "yuán",
+        "english": "yuan (Chinese currency)",
+        "function": "number",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "yuán"
+    },
+    "水": {
+        "pinyin": "shuǐ",
+        "english": "water",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "水": {
+                "unknown": [
+                    "水果"
+                ]
+            }
+        },
+        "pinyin_tones": "shuǐ"
+    },
+    "茶": {
+        "pinyin": "chá",
+        "english": "tea",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "chá"
+    },
+    "可乐": {
+        "pinyin": "kělè",
+        "english": "cola",
+        "function": "adjective",
+        "hsk_level": -1,
+        "char_matches": {
+            "乐": {
+                "unknown": [
+                    "快乐",
+                    "音乐"
+                ]
+            }
+        },
+        "pinyin_tones": "kě lè"
+    },
+    "米饭": {
+        "pinyin": "mǐfàn",
+        "english": "rice",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "mǐ fàn"
+    },
+    "面条": {
+        "pinyin": "miàntiáo",
+        "english": "noodles",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "miàn tiáo"
+    },
+    "肉": {
+        "pinyin": "ròu",
+        "english": "meat",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "ròu"
+    },
+    "鱼": {
+        "pinyin": "yú",
+        "english": "fish",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "yú"
+    },
+    "牛": {
+        "pinyin": "niú",
+        "english": "cow",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "niú"
+    },
+    "羊": {
+        "pinyin": "yáng",
+        "english": "sheep",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "yáng"
+    },
+    "鸡": {
+        "pinyin": "jī",
+        "english": "chicken",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "jī"
+    },
+    "蔬菜": {
+        "pinyin": "shūcài",
+        "english": "vegetables",
+        "function": "noun",
+        "hsk_level": 5,
+        "char_matches": {},
+        "pinyin_tones": "shū cài"
+    },
+    "水果": {
+        "pinyin": "shuǐguǒ",
+        "english": "fruit",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "水": {
+                "unknown": [
+                    "水"
+                ]
+            }
+        },
+        "pinyin_tones": "shuǐ guǒ"
+    },
+    "颜色": {
+        "pinyin": "yánsè",
+        "english": "color",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "yán sè"
+    },
+    "红": {
+        "pinyin": "hóng",
+        "english": "red",
+        "function": "adjective",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "hóng"
+    },
+    "绿": {
+        "pinyin": "lǜ",
+        "english": "green",
+        "function": "adjective",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "lǜ"
+    },
+    "蓝": {
+        "pinyin": "lán",
+        "english": "blue",
+        "function": "proper noun",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "lán"
+    },
+    "黄": {
+        "pinyin": "huáng",
+        "english": "yellow",
+        "function": "adjective",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "huáng"
+    },
+    "黑": {
+        "pinyin": "hēi",
+        "english": "black",
+        "function": "adjective",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "hēi"
+    },
+    "白": {
+        "pinyin": "bái",
+        "english": "white",
+        "function": "adjective",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "bái"
+    },
+    "天气": {
+        "pinyin": "tiānqì",
+        "english": "weather",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "天": {
+                "unknown": [
+                    "星期日/天"
+                ]
+            }
+        },
+        "pinyin_tones": "tiān qì"
+    },
+    "冷": {
+        "pinyin": "lěng",
+        "english": "cold",
+        "function": "adjective",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "lěng"
+    },
+    "热": {
+        "pinyin": "rè",
+        "english": "hot",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "rè"
+    },
+    "雨": {
+        "pinyin": "yǔ",
+        "english": "rain",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "yǔ"
+    },
+    "雪": {
+        "pinyin": "xuě",
+        "english": "snow",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "xuě"
+    },
+    "春": {
+        "pinyin": "chūn",
+        "english": "spring",
+        "function": "unknown",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "chūn"
+    },
+    "夏": {
+        "pinyin": "xià",
+        "english": "summer",
+        "function": "proper noun",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "xià"
+    },
+    "秋": {
+        "pinyin": "qiū",
+        "english": "autumn",
+        "function": "unknown",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "qiū"
+    },
+    "冬": {
+        "pinyin": "dōng",
+        "english": "winter",
+        "function": "unknown",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "dōng"
+    },
+    "山": {
+        "pinyin": "shān",
+        "english": "mountain",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "shān"
+    },
+    "海": {
+        "pinyin": "hǎi",
+        "english": "sea",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "海": {
+                "unknown": [
+                    "上海"
+                ]
+            }
+        },
+        "pinyin_tones": "hǎi"
+    },
+    "河": {
+        "pinyin": "hé",
+        "english": "river",
+        "function": "place noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "hé"
+    },
+    "动物": {
+        "pinyin": "dòngwù",
+        "english": "animal",
+        "function": "noun",
+        "hsk_level": 3,
+        "char_matches": {
+            "动": {
+                "unknown": [
+                    "运动"
+                ]
+            }
+        },
+        "pinyin_tones": "dòng wù"
+    },
+    "猫": {
+        "pinyin": "māo",
+        "english": "cat",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "māo"
+    },
+    "狗": {
+        "pinyin": "gǒu",
+        "english": "dog",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "gǒu"
+    },
+    "鸟": {
+        "pinyin": "niǎo",
+        "english": "bird",
+        "function": "unknown",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "niǎo"
+    },
+    "熊": {
+        "pinyin": "xióng",
+        "english": "bear",
+        "function": "proper noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "xióng"
+    },
+    "衣服": {
+        "pinyin": "yīfu",
+        "english": "clothes",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "yī fu"
+    },
+    "裤子": {
+        "pinyin": "kùzi",
+        "english": "pants",
+        "function": "noun",
+        "hsk_level": 3,
+        "char_matches": {
+            "子": {
+                "unknown": [
+                    "房子"
+                ]
+            }
+        },
+        "pinyin_tones": "kù zi"
+    },
+    "鞋": {
+        "pinyin": "xié",
+        "english": "shoes",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {},
+        "pinyin_tones": "xié"
+    },
+    "手机": {
+        "pinyin": "shǒujī",
+        "english": "mobile phone",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {
+            "机": {
+                "unknown": [
+                    "飞机"
+                ]
+            }
+        },
+        "pinyin_tones": "shǒu jī"
+    },
+    "电脑": {
+        "pinyin": "diànnǎo",
+        "english": "computer",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "电": {
+                "unknown": [
+                    "电影"
+                ]
+            }
+        },
+        "pinyin_tones": "diàn nǎo"
+    },
+    "电影": {
+        "pinyin": "diànyǐng",
+        "english": "movie",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "电": {
+                "unknown": [
+                    "电脑"
+                ]
+            }
+        },
+        "pinyin_tones": "diàn yǐng"
+    },
+    "音乐": {
+        "pinyin": "yīnyuè",
+        "english": "music",
+        "function": "noun",
+        "hsk_level": 3,
+        "char_matches": {
+            "乐": {
+                "unknown": [
+                    "快乐",
+                    "可乐"
+                ]
+            }
+        },
+        "pinyin_tones": "yīn yuè"
+    },
+    "运动": {
+        "pinyin": "yùndòng",
+        "english": "sports, exercise",
+        "function": "pronoun-verb",
+        "hsk_level": 2,
+        "char_matches": {
+            "动": {
+                "unknown": [
+                    "动物"
+                ]
+            }
+        },
+        "pinyin_tones": "yùn dòng"
+    },
+    "跑步": {
+        "pinyin": "pǎobù",
+        "english": "to run",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "pǎo bù"
+    },
+    "游泳": {
+        "pinyin": "yóuyǒng",
+        "english": "to swim",
+        "function": "pronoun-verb",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "yóu yǒng"
+    },
+    "工作": {
+        "pinyin": "gōngzuò",
+        "english": "work",
+        "function": "pronoun-verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "gōng zuò"
+    },
+    "休息": {
+        "pinyin": "xiūxi",
+        "english": "rest",
+        "function": "verb",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "xiū xi"
+    },
+    "医生": {
+        "pinyin": "yīshēng",
+        "english": "doctor",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "生": {
+                "unknown": [
+                    "学生"
+                ]
+            }
+        },
+        "pinyin_tones": "yī shēng"
+    },
+    "护士": {
+        "pinyin": "hùshi",
+        "english": "nurse",
+        "function": "noun",
+        "hsk_level": 4,
+        "char_matches": {},
+        "pinyin_tones": "hù shi"
+    },
+    "飞机": {
+        "pinyin": "fēijī",
+        "english": "airplane",
+        "function": "noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "机": {
+                "unknown": [
+                    "手机"
+                ]
+            }
+        },
+        "pinyin_tones": "fēi jī"
+    },
+    "汽车": {
+        "pinyin": "qìchē",
+        "english": "car",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "车": {
+                "unknown": [
+                    "自行车"
+                ]
+            }
+        },
+        "pinyin_tones": "qì chē"
+    },
+    "自行车": {
+        "pinyin": "zìxíngchē",
+        "english": "bicycle",
+        "function": "noun",
+        "hsk_level": 3,
+        "char_matches": {
+            "车": {
+                "unknown": [
+                    "汽车"
+                ]
+            }
+        },
+        "pinyin_tones": "zì xíng chē"
+    },
+    "国家": {
+        "pinyin": "guójiā",
+        "english": "country",
+        "function": "noun",
+        "hsk_level": 3,
+        "char_matches": {
+            "家": {
+                "unknown": [
+                    "家"
+                ]
+            }
+        },
+        "pinyin_tones": "guó jiā"
+    },
+    "城市": {
+        "pinyin": "chéngshì",
+        "english": "city",
+        "function": "place noun",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "chéng shì"
+    },
+    "北京": {
+        "pinyin": "Běijīng",
+        "english": "Beijing",
+        "function": "place noun",
+        "hsk_level": 1,
+        "char_matches": {
+            "北": {
+                "unknown": [
+                    "北"
+                ]
+            }
+        },
+        "pinyin_tones": "Běi jīng"
+    },
+    "上海": {
+        "pinyin": "Shànghǎi",
+        "english": "Shanghai",
+        "function": "place noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "上": {
+                "unknown": [
+                    "上",
+                    "早上",
+                    "晚上",
+                    "早上好",
+                    "晚上好",
+                    "上课",
+                    "上周"
+                ]
+            },
+            "海": {
+                "unknown": [
+                    "海"
+                ]
+            }
+        },
+        "pinyin_tones": "Shàng hǎi"
+    },
+    "语言": {
+        "pinyin": "yǔyán",
+        "english": "language",
+        "function": "noun",
+        "hsk_level": 4,
+        "char_matches": {
+            "语": {
+                "unknown": [
+                    "汉语",
+                    "英语",
+                    "法语",
+                    "德语",
+                    "寒语"
+                ]
+            }
+        },
+        "pinyin_tones": "yǔ yán"
+    },
+    "英语": {
+        "pinyin": "Yīngyǔ",
+        "english": "English language",
+        "function": "other noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "语": {
+                "unknown": [
+                    "汉语",
+                    "语言",
+                    "法语",
+                    "德语",
+                    "寒语"
+                ]
+            }
+        },
+        "pinyin_tones": "Yīng yǔ"
+    },
+    "法语": {
+        "pinyin": "Fǎyǔ",
+        "english": "French language",
+        "function": "other noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "语": {
+                "unknown": [
+                    "汉语",
+                    "语言",
+                    "英语",
+                    "德语",
+                    "寒语"
+                ]
+            }
+        },
+        "pinyin_tones": "Fǎ yǔ"
+    },
+    "德语": {
+        "pinyin": "Déyǔ",
+        "english": "German language",
+        "function": "other noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "语": {
+                "unknown": [
+                    "汉语",
+                    "语言",
+                    "英语",
+                    "法语",
+                    "寒语"
+                ]
+            }
+        },
+        "pinyin_tones": "Dé yǔ"
+    },
+    "问题": {
+        "pinyin": "wèntí",
+        "english": "question, problem",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "wèn tí"
+    },
+    "回答": {
+        "pinyin": "huídá",
+        "english": "to answer",
+        "function": "verb",
+        "hsk_level": 3,
+        "char_matches": {
+            "回": {
+                "unknown": [
+                    "回"
+                ]
+            }
+        },
+        "pinyin_tones": "huí dá"
+    },
+    "时间": {
+        "pinyin": "shíjiān",
+        "english": "time",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {
+            "时": {
+                "unknown": [
+                    "小时"
+                ]
+            }
+        },
+        "pinyin_tones": "shí jiān"
+    },
+    "分钟": {
+        "pinyin": "fēnzhōng",
+        "english": "minute",
+        "function": "classifier",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "fēn zhōng"
+    },
+    "小时": {
+        "pinyin": "xiǎoshí",
+        "english": "hour",
+        "function": "noun",
+        "hsk_level": 2,
+        "char_matches": {
+            "小": {
+                "unknown": [
+                    "小"
+                ]
+            },
+            "时": {
+                "unknown": [
+                    "时间"
+                ]
+            }
+        },
+        "pinyin_tones": "xiǎo shí"
+    },
+    "好吃": {
+        "pinyin": "hǎochī",
+        "english": "delicious",
+        "function": "verb",
+        "hsk_level": 2,
+        "char_matches": {
+            "好": {
+                "unknown": [
+                    "好",
+                    "早上好",
+                    "下午好",
+                    "晚上好",
+                    "好喝",
+                    "友好"
+                ]
+            },
+            "吃": {
+                "unknown": [
+                    "吃",
+                    "难吃"
+                ]
+            }
+        },
+        "pinyin_tones": "hǎo chī"
+    },
+    "难吃": {
+        "pinyin": "nánchī",
+        "english": "not tasty",
+        "function": "adjective",
+        "hsk_level": -1,
+        "char_matches": {
+            "难": {
+                "unknown": [
+                    "难喝",
+                    "困难"
+                ]
+            },
+            "吃": {
+                "unknown": [
+                    "吃",
+                    "好吃"
+                ]
+            }
+        },
+        "pinyin_tones": "nán chī"
+    },
+    "好喝": {
+        "pinyin": "hǎohē",
+        "english": "tasty (for drinks)",
+        "function": "verb",
+        "hsk_level": -1,
+        "char_matches": {
+            "好": {
+                "unknown": [
+                    "好",
+                    "早上好",
+                    "下午好",
+                    "晚上好",
+                    "好吃",
+                    "友好"
+                ]
+            },
+            "喝": {
+                "unknown": [
+                    "喝",
+                    "难喝"
+                ]
+            }
+        },
+        "pinyin_tones": "hǎo hē"
+    },
+    "难喝": {
+        "pinyin": "nánhē",
+        "english": "not tasty (for drinks)",
+        "function": [
+            "adjective",
+            "verb-object"
+        ],
+        "hsk_level": [
+            3,
+            1
+        ],
+        "char_matches": {
+            "难": {
+                "unknown": [
+                    "难吃",
+                    "困难"
+                ]
+            },
+            "喝": {
+                "unknown": [
+                    "喝",
+                    "好喝"
+                ]
+            }
+        },
+        "pinyin_tones": "nán hē"
+    },
+    "漂亮": {
+        "pinyin": "piàoliang",
+        "english": "beautiful",
+        "function": "adjective",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "piào liang"
+    },
+    "美丽": {
+        "pinyin": "měilì",
+        "english": "beautiful",
+        "function": "place noun",
+        "hsk_level": 4,
+        "char_matches": {},
+        "pinyin_tones": "měi lì"
+    },
+    "帅": {
+        "pinyin": "shuài",
+        "english": "handsome",
+        "function": "proper noun",
+        "hsk_level": 4,
+        "char_matches": {},
+        "pinyin_tones": "shuài"
+    },
+    "高": {
+        "pinyin": "gāo",
+        "english": "tall",
+        "function": "adjective",
+        "hsk_level": 2,
+        "char_matches": {
+            "高": {
+                "unknown": [
+                    "高兴"
+                ]
+            }
+        },
+        "pinyin_tones": "gāo"
+    },
+    "矮": {
+        "pinyin": "ǎi",
+        "english": "short (height)",
+        "function": "adjective",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "ǎi"
+    },
+    "胖": {
+        "pinyin": "pàng",
+        "english": "fat",
+        "function": "adjective",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "pàng"
+    },
+    "瘦": {
+        "pinyin": "shòu",
+        "english": "thin",
+        "function": "adjective",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "shòu"
+    },
+    "新": {
+        "pinyin": "xīn",
+        "english": "new",
+        "function": "adjective",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "xīn"
+    },
+    "旧": {
+        "pinyin": "jiù",
+        "english": "old (not new)",
+        "function": "adjective",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "jiù"
+    },
+    "快": {
+        "pinyin": "kuài",
+        "english": "fast",
+        "function": "adjective",
+        "hsk_level": 2,
+        "char_matches": {
+            "快": {
+                "unknown": [
+                    "快乐"
+                ]
+            }
+        },
+        "pinyin_tones": "kuài"
+    },
+    "慢": {
+        "pinyin": "màn",
+        "english": "slow",
+        "function": "adjective",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "màn"
+    },
+    "贵": {
+        "pinyin": "guì",
+        "english": "expensive",
+        "function": "adjective",
+        "hsk_level": 2,
+        "char_matches": {
+            "贵": {
+                "unknown": [
+                    "您贵姓"
+                ]
+            }
+        },
+        "pinyin_tones": "guì"
+    },
+    "便宜": {
+        "pinyin": "piányi",
+        "english": "cheap",
+        "function": "adjective",
+        "hsk_level": 2,
+        "char_matches": {},
+        "pinyin_tones": "pián yi"
+    },
+    "容易": {
+        "pinyin": "róngyì",
+        "english": "easy",
+        "function": "adjective",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "róng yì"
+    },
+    "困难": {
+        "pinyin": "kùnnan",
+        "english": "difficult",
+        "function": "prenoun",
+        "hsk_level": 4,
+        "char_matches": {
+            "难": {
+                "unknown": [
+                    "难吃",
+                    "难喝"
+                ]
+            }
+        },
+        "pinyin_tones": "kùn nan"
+    },
+    "开始": {
+        "pinyin": "kāishǐ",
+        "english": "to start",
+        "function": "verb",
+        "hsk_level": 2,
+        "char_matches": {
+            "开": {
+                "unknown": [
+                    "开"
+                ]
+            }
+        },
+        "pinyin_tones": "kāi shǐ"
+    },
+    "结束": {
+        "pinyin": "jiéshù",
+        "english": "to end",
+        "function": "verb",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "jié shù"
+    },
+    "欢迎": {
+        "pinyin": "huānyíng",
+        "english": "welcome",
+        "function": "verb",
+        "hsk_level": 3,
+        "char_matches": {
+            "欢": {
+                "unknown": [
+                    "喜欢"
+                ]
+            }
+        },
+        "pinyin_tones": "huān yíng"
+    },
+    "再见": {
+        "pinyin": "zàijiàn",
+        "english": "goodbye",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "zài jiàn"
+    },
+    "理想": {
+        "pinyin": "lǐxiǎng",
+        "english": "ideal; dream",
+        "function": "noun",
+        "hsk_level": 4,
+        "char_matches": {
+            "想": {
+                "unknown": [
+                    "想"
+                ]
+            }
+        },
+        "pinyin_tones": "lǐ xiǎng"
+    },
+    "老虎": {
+        "pinyin": "lǎohǔ",
+        "english": "tiger",
+        "function": "proper noun",
+        "hsk_level": 4,
+        "char_matches": {
+            "老": {
+                "unknown": [
+                    "老师"
+                ]
+            }
+        },
+        "pinyin_tones": "lǎo hǔ"
+    },
+    "打扫": {
+        "pinyin": "dǎsǎo",
+        "english": "to clean; to sweep",
+        "function": "verb",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "dǎ sǎo"
+    },
+    "喜欢": {
+        "pinyin": "xǐhuan",
+        "english": "to like",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {
+            "欢": {
+                "unknown": [
+                    "欢迎"
+                ]
+            }
+        },
+        "pinyin_tones": "xǐ huan"
+    },
+    "讨厌": {
+        "pinyin": "tǎoyàn",
+        "english": "to dislike; to loathe",
+        "function": "verb",
+        "hsk_level": 4,
+        "char_matches": {},
+        "pinyin_tones": "tǎo yàn"
+    },
+    "房子": {
+        "pinyin": "fángzi",
+        "english": "house; building",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "子": {
+                "unknown": [
+                    "裤子"
+                ]
+            }
+        },
+        "pinyin_tones": "fáng zi"
+    },
+    "姓": {
+        "pinyin": "xìng",
+        "english": "surname; family name",
+        "function": "verb",
+        "hsk_level": 2,
+        "char_matches": {
+            "姓": {
+                "unknown": [
+                    "您贵姓",
+                    "你姓什么"
+                ]
+            }
+        },
+        "pinyin_tones": "xìng"
+    },
+    "友好": {
+        "pinyin": "yǒuhǎo",
+        "english": "friendly; amicable",
+        "function": "adjective",
+        "hsk_level": 4,
+        "char_matches": {
+            "友": {
+                "unknown": [
+                    "朋友"
+                ]
+            },
+            "好": {
+                "unknown": [
+                    "好",
+                    "早上好",
+                    "下午好",
+                    "晚上好",
+                    "好吃",
+                    "好喝"
+                ]
+            }
+        },
+        "pinyin_tones": "yǒu hǎo"
+    },
+    "谁": {
+        "pinyin": "shéi",
+        "english": "who",
+        "function": "pronoun",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "shéi"
+    },
+    "您贵姓": {
+        "pinyin": "nín guì xìng",
+        "english": "What is your (honorific) surname?",
+        "function": [
+            "unknown",
+            "noun"
+        ],
+        "hsk_level": [
+            2,
+            -1
+        ],
+        "char_matches": {
+            "贵": {
+                "unknown": [
+                    "贵"
+                ]
+            },
+            "姓": {
+                "unknown": [
+                    "姓",
+                    "你姓什么"
+                ]
+            }
+        },
+        "pinyin_tones": "nín guì xìng"
+    },
+    "你姓什么": {
+        "pinyin": "nǐ xìng shénme",
+        "english": "What is your surname?",
+        "function": [
+            "pronoun",
+            "verb",
+            "pronoun"
+        ],
+        "hsk_level": [
+            1,
+            2,
+            1
+        ],
+        "char_matches": {
+            "你": {
+                "unknown": [
+                    "你"
+                ]
+            },
+            "姓": {
+                "unknown": [
+                    "姓",
+                    "您贵姓"
+                ]
+            },
+            "么": {
+                "unknown": [
+                    "么"
+                ]
+            }
+        },
+        "pinyin_tones": "nǐ xìng shén me"
+    },
+    "星期日/天": {
+        "pinyin": "xīngqī rì/tiān",
+        "english": "Sunday",
+        "function": [
+            "unknown",
+            "non-lexeme",
+            "classifier"
+        ],
+        "hsk_level": [
+            -1,
+            -1,
+            -1
+        ],
+        "char_matches": {
+            "星": {
+                "unknown": [
+                    "星期"
+                ]
+            },
+            "期": {
+                "unknown": [
+                    "星期"
+                ]
+            },
+            "日": {
+                "unknown": [
+                    "日"
+                ]
+            },
+            "天": {
+                "unknown": [
+                    "天气"
+                ]
+            }
+        },
+        "pinyin_tones": "xīng qī rì / tiān"
+    },
+    "周": {
+        "pinyin": "zhōu",
+        "english": "week",
+        "function": "proper noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "周": {
+                "unknown": [
+                    "周末",
+                    "上周",
+                    "下周"
+                ]
+            }
+        },
+        "pinyin_tones": "zhōu"
+    },
+    "周末": {
+        "pinyin": "zhōumò",
+        "english": "weekend",
+        "function": "unknown",
+        "hsk_level": 3,
+        "char_matches": {
+            "周": {
+                "unknown": [
+                    "周",
+                    "上周",
+                    "下周"
+                ]
+            }
+        },
+        "pinyin_tones": "zhōu mò"
+    },
+    "上周": {
+        "pinyin": "shàng zhōu",
+        "english": "last week",
+        "function": "unknown",
+        "hsk_level": -1,
+        "char_matches": {
+            "上": {
+                "unknown": [
+                    "上",
+                    "早上",
+                    "晚上",
+                    "早上好",
+                    "晚上好",
+                    "上课",
+                    "上海"
+                ]
+            },
+            "周": {
+                "unknown": [
+                    "周",
+                    "周末",
+                    "下周"
+                ]
+            }
+        },
+        "pinyin_tones": "shàng zhōu"
+    },
+    "下周": {
+        "pinyin": "xià zhōu",
+        "english": "next week",
+        "function": "unknown",
+        "hsk_level": -1,
+        "char_matches": {
+            "下": {
+                "unknown": [
+                    "下",
+                    "下午",
+                    "下午好"
+                ]
+            },
+            "周": {
+                "unknown": [
+                    "周",
+                    "周末",
+                    "上周"
+                ]
+            }
+        },
+        "pinyin_tones": "xià zhōu"
+    },
+    "想": {
+        "pinyin": "xiǎng",
+        "english": "to think; to want; to miss",
+        "function": "verb",
+        "hsk_level": 1,
+        "char_matches": {
+            "想": {
+                "unknown": [
+                    "理想"
+                ]
+            }
+        },
+        "pinyin_tones": "xiǎng"
+    },
+    "都": {
+        "pinyin": "dōu",
+        "english": "all; both; entirely",
+        "function": "adverb",
+        "hsk_level": 1,
+        "char_matches": {},
+        "pinyin_tones": "dōu"
+    },
+    "寒语": {
+        "pinyin": "hányǔ",
+        "english": "cold words; harsh speech",
+        "function": "noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "语": {
+                "unknown": [
+                    "汉语",
+                    "语言",
+                    "英语",
+                    "法语",
+                    "德语"
+                ]
+            }
+        },
+        "pinyin_tones": "hán yǔ"
+    },
+    "欧洲": {
+        "pinyin": "Ōuzhōu",
+        "english": "Europe",
+        "function": "place noun",
+        "hsk_level": 5,
+        "char_matches": {
+            "洲": {
+                "unknown": [
+                    "亚洲",
+                    "大洋洲",
+                    "非洲"
+                ]
+            }
+        },
+        "pinyin_tones": "Ōu zhōu"
+    },
+    "亚洲": {
+        "pinyin": "Yàzhōu",
+        "english": "Asia",
+        "function": "place noun",
+        "hsk_level": 4,
+        "char_matches": {
+            "洲": {
+                "unknown": [
+                    "欧洲",
+                    "大洋洲",
+                    "非洲"
+                ]
+            }
+        },
+        "pinyin_tones": "Yà zhōu"
+    },
+    "北": {
+        "pinyin": "běi",
+        "english": "north",
+        "function": "place noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "北": {
+                "unknown": [
+                    "北京"
+                ]
+            }
+        },
+        "pinyin_tones": "běi"
+    },
+    "南": {
+        "pinyin": "nán",
+        "english": "south",
+        "function": "place noun",
+        "hsk_level": 3,
+        "char_matches": {},
+        "pinyin_tones": "nán"
+    },
+    "大洋洲": {
+        "pinyin": "Dàyángzhōu",
+        "english": "Oceania",
+        "function": "place noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "大": {
+                "unknown": [
+                    "大",
+                    "加拿大"
+                ]
+            },
+            "洲": {
+                "unknown": [
+                    "欧洲",
+                    "亚洲",
+                    "非洲"
+                ]
+            }
+        },
+        "pinyin_tones": "Dà yáng zhōu"
+    },
+    "非洲": {
+        "pinyin": "Fēizhōu",
+        "english": "Africa",
+        "function": "place noun",
+        "hsk_level": -1,
+        "char_matches": {
+            "洲": {
+                "unknown": [
+                    "欧洲",
+                    "亚洲",
+                    "大洋洲"
+                ]
+            }
+        },
+        "pinyin_tones": "Fēi zhōu"
+    },
+    "加拿大": {
+        "pinyin": "Jiānádà",
+        "english": "Canada",
+        "char_matches": {
+            "大": {
+                "unknown": [
+                    "大",
+                    "大洋洲"
+                ]
+            }
+        },
+        "pinyin_tones": "Jiā ná dà",
+        "function": "place noun",
+        "hsk_level": -1
+    }
 }

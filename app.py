@@ -191,6 +191,7 @@ class FlashcardApp:
             "hsk4": {'file': "data/hsk4_cards.json", 'name': 'HSK 4'},
             "hsk5": {'file': "data/hsk5_cards.json", 'name': 'HSK 5'},
             "hsk6": {'file': "data/hsk6_cards.json", 'name': 'HSK 6'},
+            "review": {'file': "data/review_cards.json", 'name': 'ReviewDeck'},
             "minideck": {'file': "data/mini_deck.json", 'name': 'Minideck'},
         }
         self.current_deck = "shas"
@@ -1327,7 +1328,7 @@ def book1():
     # Get user strokes
     user_strokes = get_user_strokes(session['username'])
     
-    return render_template('book1.html', images=images, user_strokes=user_strokes)
+    return render_template('book1.html', images=images, user_strokes=user_strokes, username=session['username'], decks=flashcard_app.decks)
 
 @app.route('/save_stroke', methods=['POST'])
 @session_required
@@ -1339,6 +1340,7 @@ def save_stroke():
     save_user_stroke(session['username'], canvas_id, stroke)
     
     return jsonify({"status": "success"})
+
 
 def get_user_strokes(username):
     strokes_path = f'data/user_strokes/{username}'
