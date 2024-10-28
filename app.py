@@ -192,7 +192,7 @@ class FlashcardApp:
             "hsk5": {'file': "data/hsk5_cards.json", 'name': 'HSK 5'},
             "hsk6": {'file': "data/hsk6_cards.json", 'name': 'HSK 6'},
             "minideck": {'file': "data/mini_deck.json", 'name': 'Minideck'},
-            "review": {'file': "data/review_cards.json", 'name': 'ReviewDeck'},
+            "review": {'file': "data/review_deck.json", 'name': 'ReviewDeck'},
         }
         self.current_deck = "shas"
         self.cards = {}
