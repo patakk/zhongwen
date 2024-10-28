@@ -1861,22 +1861,16 @@
         "function": "complement",
         "hsk_level": 2
     },
-    "我可以给我打电话": {
-        "hanzi": "我可以给我打电话",
-        "pinyin": "wǒ kěyǐ gěi wǒ dǎ diànhuà",
-        "literal": "I can to me make phone call",
-        "english": "I can call myself",
+    "我可以给你打电话": {
+        "hanzi": "我可以给你打电话",
+        "pinyin": "wǒ kěyǐ gěi nǐ dǎ diànhuà",
+        "literal": "I can to you make phone call",
+        "english": "I can call you",
         "char_matches": {
-            "我": {
+            "你": {
                 "unknown": [
-                    "我不姓王",
-                    "我不叫王英",
-                    "我",
-                    "我们",
-                    "我不姓王",
-                    "我不叫王英",
-                    "我",
-                    "我们"
+                    "你",
+                    "你们"
                 ]
             },
             "可": {
@@ -1913,7 +1907,7 @@
                 ]
             }
         },
-        "pinyin_tones": "wǒ kě yǐ gěi wǒ dǎ diàn huà",
+        "pinyin_tones": "wǒ kě yǐ gěi nǐ dǎ diàn huà",
         "function": [
             "pronoun",
             "complement",
