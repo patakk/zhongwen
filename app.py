@@ -807,6 +807,20 @@ def hanzitest_pinyin():
     characters = dict(flashcard_app.cards[session['deck']].items())
     return render_template('puzzles/hanzitest_pinyin.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
 
+@app.route('/hanzitest_draw')
+@session_required
+@timing_decorator
+def hanzitest_draw():
+    deck = session['deck']
+    characters_data = []
+    for char, data in flashcard_app.cards[deck].items():
+        characters_data.append({
+            "character": char,
+            "pinyin": data['pinyin'],
+            "english": data['english'],
+        })
+    return render_template('puzzles/hanzitest_draw.html', username=session['username'], characters=characters_data, decks=flashcard_app.decks, deck=session['deck'])
+
 @app.route('/hanzitest_choices')
 @session_required
 @timing_decorator
