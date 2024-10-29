@@ -110,6 +110,11 @@ body {
     }
 }
 
+
+#english-display {
+    font-size: 44px;
+}
+
 @media screen and (max-width: 767px) {
     h1 {
         font-size: 26px;
@@ -150,12 +155,12 @@ body {
         margin: 0 30px;
     }
 
-}
 
-#english-display {
-    font-size: 44px;
+    #english-display {
+        font-size: 26px;
+    }
+    
 }
-
 #drawing-area {
     display: flex;
     flex-wrap: wrap;
@@ -182,4 +187,7 @@ body {
         width: 100%;
         max-width: 100%;
     }
+#english-display {
+    font-size: 44px;
+}
 }
