@@ -109,10 +109,15 @@ skipBtn.addEventListener('click', () => {
             totalStrokeCount += writer._character.strokes.length;
             totalMistakeCount += writer._character.strokes.length;
 
-            writer.addEventListener('click', () => {
+        });
+
+        drawingArea.addEventListener('click', () => {
+            currentWriters.forEach(writer => {
+                writer.cancelQuiz();
                 writer.animateCharacter();
             });
         });
+
         
         userAnswers.push({
             correctCharacter: currentWord,
