@@ -10,6 +10,19 @@ body {
     padding: 20px;
 }
 
+
+html {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
 #test-container {
     width: 60%;
     max-width: 90%;

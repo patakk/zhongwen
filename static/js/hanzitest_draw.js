@@ -284,6 +284,9 @@ document.addEventListener('DOMContentLoaded', () => {
     startTest();
 });
 
+window.addEventListener('resize', () => {
+    startTest();
+});
 
 
 function changeDeck(deck, func=null) {
