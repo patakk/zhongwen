@@ -52,6 +52,9 @@ function startTest() {
 }
 
 function showNextWord() {
+    if(pinyinLabel.classList.contains('active')){
+        pinyinLabel.classList.remove('active');
+    }
     window.scrollTo(0, 0);
     if (currentIndex < Math.min(NUM_QUESTIONS, shuffledWords.length)) {
         let characterData = shuffledWords[currentIndex];
@@ -78,13 +81,11 @@ restartBtn.addEventListener('click', () => {
 let skipState = 0;
 
 pinyinLabel.addEventListener('click', () => {
-    // toggle active class
-    pinyinLabel.classList.toggle('active');
     if(pinyinLabel.classList.contains('active')){
-        // pinyinLabel.textContent = currentPinyin;
+        pinyinLabel.classList.remove('active');
     }
     else{
-        // pinyinLabel.textContent = 'Pinyin';
+        pinyinLabel.classList.add('active');
     }
 });
 
