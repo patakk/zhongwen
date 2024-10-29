@@ -11,7 +11,7 @@ const restartBtn = document.getElementById('restart-btn');
 
 let currentIndex = 0;
 let correctAnswers = 0;
-let shuffledCharacters = [];
+let shuffledWords = [];
 let userAnswers = [];
 let wordTotalMistakeCount = 0;
 let wordTotalStrokeCount = 0;
@@ -31,8 +31,12 @@ function shuffleArray(array) {
 }
 
 function startTest() {
-    shuffledCharacters = [...characters];
-    shuffleArray(shuffledCharacters);
+    shuffledWords = [...characters];
+    shuffleArray(shuffledWords);
+
+    // filter out words with more than 2 characters
+    shuffledWords = shuffledWords.filter(word => word.character.length <= 2);
+
     currentIndex = 0;
     correctAnswers = 0;
     wordTotalMistakeCount = 0;
@@ -48,13 +52,13 @@ function startTest() {
 }
 
 function showNextWord() {
-    if (currentIndex < Math.min(NUM_QUESTIONS, shuffledCharacters.length)) {
-        let characterData = shuffledCharacters[currentIndex];
+    if (currentIndex < Math.min(NUM_QUESTIONS, shuffledWords.length)) {
+        let characterData = shuffledWords[currentIndex];
         englishDisplay.textContent = characterData.english;
         wordTotalMistakeCount = 0;
         wordTotalStrokeCount = 0;
         createHanziWriters(characterData.character);
-        progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledCharacters.length)}`;
+        progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledWords.length)}`;
     } else {
         showResults();
     }
@@ -153,7 +157,7 @@ function createHanziWriters(characters) {
 }
 
 function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
-    const characterData = shuffledCharacters[currentIndex];
+    const characterData = shuffledWords[currentIndex];
     let isCorrect = false;
     console.log('**********************')
     console.log('Word mistake count:', wordTotalMistakeCount);
@@ -179,7 +183,7 @@ function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
 function showResults() {
     document.getElementById('test-container').style.display = 'none';
     resultsDiv.style.display = 'block';
-    const totalQuestions = Math.min(NUM_QUESTIONS, shuffledCharacters.length);
+    const totalQuestions = Math.min(NUM_QUESTIONS, shuffledWords.length);
     const score = (correctAnswers / totalQuestions) * 100;
     scoreSpan.textContent = `${correctAnswers} / ${totalQuestions}`;
     accuracySpan.textContent = `${score.toFixed(2)}%`;
