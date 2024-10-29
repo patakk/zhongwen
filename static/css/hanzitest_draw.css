@@ -90,7 +90,6 @@ body {
 
 @media screen and (max-width: 767px) {
     #test-container {
-        width: 90%;
     }
 
     #answer-table-container {
@@ -160,25 +159,23 @@ body {
     align-items: center;
     gap: 10px;
     margin: 20px auto;
+    width: 100%;
     max-width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-    max-height: 80vh;
 }
 
 #flashcard_stroke_wrapper {
     flex: 0 0 auto;
-    width: 400px; /* Default size for desktop */
-    height: 400px;
 }
 
-@media (max-width: 768px) {
+@media (max-aspect-ratio: 1) {
     #drawing-area {
         flex-direction: column;
+        width: 100%;
     }
-
-    #flashcard_stroke_wrapper {
-        width: 200px; /* Smaller size for mobile */
-        height: 200px;
+    #test-container {
+        width: 100%;
+        max-width: 100%;
     }
 }

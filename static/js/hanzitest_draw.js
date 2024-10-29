@@ -67,10 +67,14 @@ restartBtn.addEventListener('click', () => {
 function createHanziWriters(characters) {
     drawingArea.innerHTML = '';
     currentWriters = [];
-    const writerSize = 400;
-    const containerWidth = characters.length * (writerSize + 10); // 10px gap between writers
-
+    let writerSize = 400;
+    let containerWidth = characters.length * (writerSize + 10); // 10px gap between writers
     drawingArea.style.width = `${containerWidth}px`;
+    if(window.innerWidth < window.innerHeight){
+        writerSize = window.innerWidth*0.8;
+        drawingArea.style.width = window.innerWidth+"px";
+    }
+
     drawingArea.style.display = 'flex';
     drawingArea.style.justifyContent = 'center';
     drawingArea.style.alignItems = 'center';
