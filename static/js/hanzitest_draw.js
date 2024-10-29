@@ -1,6 +1,5 @@
 const englishDisplay = document.getElementById('english-display');
 const drawingArea = document.getElementById('drawing-area');
-const submitBtn = document.getElementById('submit-btn');
 const clearBtn = document.getElementById('clear-btn');
 const progressDiv = document.getElementById('progress');
 const resultsDiv = document.getElementById('results');
@@ -8,6 +7,7 @@ const scoreSpan = document.getElementById('score');
 const accuracySpan = document.getElementById('accuracy');
 const strokeAccuracySpan = document.getElementById('stroke_accuracy');
 const restartBtn = document.getElementById('restart-btn');
+const skipBtn = document.getElementById('skip-btn');
 
 let currentIndex = 0;
 let correctAnswers = 0;
@@ -56,6 +56,10 @@ function showNextWord() {
         englishDisplay.textContent = characterData.english;
         wordTotalMistakeCount = 0;
         wordTotalStrokeCount = 0;
+        
+        currentWord = characterData.character;
+        currentEnglish = characterData.english;
+        currentPinyin = characterData.pinyin;
         createHanziWriters(characterData.character);
         progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledWords.length)}`;
     } else {
@@ -67,7 +71,44 @@ restartBtn.addEventListener('click', () => {
     startTest();
 });
 
+
+let skipState = 0;
+
+skipBtn.addEventListener('click', () => {
+    if(skipState == 0){
+        skipState = 1;
+        skipBtn.textContent = 'Next';
+
+        currentWriters.forEach(writer => {
+            console.log('Cancelling quiz');
+            writer.cancelQuiz();
+            writer.showCharacter();
+            totalStrokeCount += writer._character.strokes.length;
+            totalMistakeCount += writer._character.strokes.length;
+        });
+        
+        userAnswers.push({
+            correctCharacter: currentWord,
+            english: currentEnglish,
+            isCorrect: false
+        });
+    }
+    else{
+        skipState = 0;
+        currentIndex++;
+        numFinished = 0;
+
+        showNextWord();
+        skipBtn.textContent = 'Reveal';
+    }
+});
+
+let currentWord = '';
+let currentEnglish = '';
+let currentPinyin = '';
+
 function createHanziWriters(characters) {
+
     drawingArea.innerHTML = '';
     currentWriters = [];
     let writerSize = 400;
@@ -142,7 +183,7 @@ function createHanziWriters(characters) {
                 console.log('currecnt wordTotalMistakeCount:', wordTotalMistakeCount);
                 console.log('');
                 wordTotalMistakeCount += summaryData.totalMistakes;
-                totalMistakeCount += summaryData.totalMistakes;
+                totalMistakeCount += Math.min(summaryData.totalMistakes, writer._character.strokes.length);
                 wordTotalStrokeCount += writer._character.strokes.length;
                 totalStrokeCount += writer._character.strokes.length;
                 numFinished++;

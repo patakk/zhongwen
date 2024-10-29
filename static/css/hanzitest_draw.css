@@ -28,7 +28,7 @@ body {
     margin-bottom: 10px;
 }
 
-#submit-btn, #restart-btn {
+#skip-btn, #restart-btn {
     padding: 10px 20px;
     font-size: 16px;
     background-color: white;
@@ -38,6 +38,10 @@ body {
 }
 
 #restart-btn {
+    margin-top: 10px;
+}
+
+#skip-btn {
     margin-top: 10px;
 }
 
