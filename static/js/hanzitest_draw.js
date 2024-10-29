@@ -34,7 +34,6 @@ function startTest() {
     shuffledWords = [...characters];
     shuffleArray(shuffledWords);
 
-    // filter out words with more than 2 characters
     shuffledWords = shuffledWords.filter(word => word.character.length <= 2);
 
     currentIndex = 0;
