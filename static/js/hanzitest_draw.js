@@ -47,7 +47,7 @@ function startTest() {
     showNextWord();
     resultsDiv.style.display = 'none';
     document.getElementById('test-container').style.display = 'block';
-    deckNameElement.textContent = `Current Deck: ${inputdecks[inputdeck].name}`;
+    deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[inputdeck].name}</span>)`;
 }
 
 function showNextWord() {
@@ -242,7 +242,7 @@ function showResults() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    deckNameElement.textContent = `Current Deck: ${inputdecks[inputdeck].name}`;
+    deckNameElement.textContent = `(current Deck: ${inputdecks[inputdeck].name})`;
     startTest();
 });
 

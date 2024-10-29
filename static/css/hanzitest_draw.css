@@ -58,6 +58,7 @@ body {
 #deck-name {
     text-align: center;
     margin-bottom: 20px;
+    font-weight: 300;
 }
 
 #answer-table-container {
@@ -112,21 +113,32 @@ body {
 
 
 #english-display {
+    border-top: 1px solid #00000055;
+    padding-top: 16px;
     font-size: 44px;
+}
+
+h1 {
+    font-family: "Helvetica", sans-serif;
+    font-size: 60px;
 }
 
 @media screen and (max-width: 767px) {
     h1 {
-        font-size: 26px;
+        font-size: 33px;
+        margin-bottom: 4px;
+        margin-top: 34px;
     }
 
     h2 {
         margin-top: 10px;
     }
 
-    .title {
-        margin-top: 40px;
+    h5 {
+        padding-top: 10px;
+        margin-top: 10px;
     }
+
     #deck-name {
         font-size: 16px;
         margin-bottom: 10px;
@@ -187,7 +199,4 @@ body {
         width: 100%;
         max-width: 100%;
     }
-#english-display {
-    font-size: 44px;
-}
 }
