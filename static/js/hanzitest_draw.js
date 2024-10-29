@@ -144,6 +144,11 @@ function createHanziWriters(characters) {
     if(window.innerWidth < window.innerHeight){
         writerSize = window.innerWidth*0.8;
         drawingArea.style.width = window.innerWidth+"px";
+        if(window.innerWidth < 1224){
+            writerSize = window.innerWidth*0.6;
+            drawingArea.style.width = window.innerWidth*.8+"px";
+            console.log('ipad');
+        }
     }
 
     drawingArea.style.display = 'flex';

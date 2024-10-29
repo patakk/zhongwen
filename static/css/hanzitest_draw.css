@@ -140,6 +140,20 @@ body {
 }
 
 
+@media screen and (max-width: 768px) {
+    #test-container {
+    }
+
+    #answer-table-container {
+        max-height: 70vh;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        width: 50%; /* Full width on mobile */
+    } 
+}
+
+
 #english-display {
     border-top: 1px solid #00000055;
     padding-top: 55px;
