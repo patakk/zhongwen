@@ -8,6 +8,7 @@ const accuracySpan = document.getElementById('accuracy');
 const strokeAccuracySpan = document.getElementById('stroke_accuracy');
 const restartBtn = document.getElementById('restart-btn');
 const skipBtn = document.getElementById('skip-btn');
+const endBtn = document.getElementById('end-btn');
 const pinyinLabel = document.getElementById('pinyin-display');
 
 let currentIndex = 0;
@@ -19,9 +20,10 @@ let wordTotalStrokeCount = 0;
 let totalStrokeCount = 0;
 let totalMistakeCount = 0;
 let numFinished = 0;
+let totalAnswered = 0;
 const deckNameElement = document.getElementById('deck-name');
 const answerTableBody = document.getElementById('answer-table-body');
-const NUM_QUESTIONS = 5;
+let NUM_QUESTIONS = 5;
 let currentWriters = [];
 
 function shuffleArray(array) {
@@ -40,6 +42,7 @@ function startTest() {
     currentIndex = 0;
     correctAnswers = 0;
     wordTotalMistakeCount = 0;
+    totalAnswered = 0;
     wordTotalStrokeCount = 0;
     totalStrokeCount = 0;
     totalMistakeCount = 0;
@@ -52,6 +55,7 @@ function startTest() {
 }
 
 function showNextWord() {
+    totalAnswered++;
     if(pinyinLabel.classList.contains('active')){
         pinyinLabel.classList.remove('active');
     }
@@ -89,6 +93,10 @@ pinyinLabel.addEventListener('click', () => {
     }
 });
 
+endBtn.addEventListener('click', () => {
+    showResults();
+});
+
 skipBtn.addEventListener('click', () => {
     if(skipState == 0){
         skipState = 1;
@@ -97,9 +105,13 @@ skipBtn.addEventListener('click', () => {
         currentWriters.forEach(writer => {
             console.log('Cancelling quiz');
             writer.cancelQuiz();
-            writer.showCharacter();
+            writer.animateCharacter();
             totalStrokeCount += writer._character.strokes.length;
             totalMistakeCount += writer._character.strokes.length;
+
+            writer.addEventListener('click', () => {
+                writer.animateCharacter();
+            });
         });
         
         userAnswers.push({
@@ -239,10 +251,15 @@ function showResults() {
     document.getElementById('test-container').style.display = 'none';
     resultsDiv.style.display = 'block';
     const totalQuestions = Math.min(NUM_QUESTIONS, shuffledWords.length);
-    const score = (correctAnswers / totalQuestions) * 100;
-    scoreSpan.textContent = `${correctAnswers} / ${totalQuestions}`;
+    const score = (correctAnswers / (totalAnswered-1)) * 100;
+    scoreSpan.textContent = `${correctAnswers} / ${(totalAnswered-1)} (of ${totalQuestions})`;
     accuracySpan.textContent = `${score.toFixed(2)}%`;
     strokeAccuracySpan.textContent = `${((totalStrokeCount - totalMistakeCount) / totalStrokeCount * 100).toFixed(2)}% (${totalStrokeCount-totalMistakeCount}/${totalStrokeCount})`;
+    if(totalAnswered-1 == 0){
+        strokeAccuracySpan.textContent = `0% (0/0)`;
+        scoreSpan.textContent = `0 / 0 of ${totalQuestions}`;
+        accuracySpan.textContent = `0%`;
+    }
 
     answerTableBody.innerHTML = '';
     userAnswers.forEach(answer => {
@@ -258,6 +275,7 @@ function showResults() {
 
 document.addEventListener('DOMContentLoaded', () => {
     deckNameElement.textContent = `(current Deck: ${inputdecks[inputdeck].name})`;
+    NUM_QUESTIONS = Math.max(5, characters.length);
     startTest();
 });
 
