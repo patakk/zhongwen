@@ -1,7 +1,84 @@
 
-let isDarkMode = false;
+function confirmDarkmode(){
+    document.querySelectorAll('*').forEach(element => {
+        if(isDarkMode){
+            if(!element.classList.contains('darkmode')){
+                element.classList.add('darkmode');
+            }
+        }
+        else{
+            if(element.classList.contains('darkmode')){
+                element.classList.remove('darkmode');
+            }
+        }
+    });
+
+    try{
+        if(isDarkMode){
+            console.log(writers)
+            writers.forEach(writer => {
+                writer.updateColor('strokeColor', '#eee');
+                writer.updateColor('outlineColor', '#222');
+            });
+        }
+        else{
+            writers.forEach(writer => {
+                writer.updateColor('strokeColor', '#000');
+                writer.updateColor('outlineColor', '#777');
+            });
+        }
+    }
+    catch(e){
+        console.log(e)
+    }
+}
+
+document.addEventListener('keydown', function(event) {
+   
+});
+
+document.getElementById('darkmode-toggle').addEventListener('click', function() {
+    isDarkMode = !isDarkMode;
+    setDarkmode();
+});
 
 
+function setDarkmode() {
+    confirmDarkmode();
+    fetch(`./setdarkmode?darkmode=${isDarkMode}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+    })
+    .catch(error => {
+        console.error('There was a problem changing darkmode', error);
+    });
+}
+
+
+function getDarkmode(func=null) {
+    fetch('./getdarkmode')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            isDarkMode = data.darkmode;
+            confirmDarkmode();
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
 // function toggleInvertAllElements() {
 //     isDarkMode = !isDarkMode; 
 //     const allElements = document.getElementsByTagName('*');
@@ -86,8 +163,10 @@ let isDarkMode = false;
 //     });
 // }
 
-// document.addEventListener('DOMContentLoaded', function() {
-// });
+confirmDarkmode();
+document.addEventListener('DOMContentLoaded', function() {
+    confirmDarkmode();
+});
 
 // document.addEventListener('keydown', function(event) {
 //     if (event.ctrlKey && event.key === 'i') {

@@ -77,6 +77,7 @@
                     <li><a href="#" class="color-change" data-color="#000000">Black</a></li>
                 </ul>
             </li> -->
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
@@ -105,8 +106,10 @@
     <script>
         const characters = {{ characters | tojson | safe }};
         const characterdata = {{ character | tojson | safe }};
-        const inputdecks = {{ decks | tojson | safe }};
+        const inputdecks = {{ decks | tojson | safe }};        
+
         let inputdeck = {{ deck | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
     </script>
     <script>
         const username = {{ username | tojson | safe }};

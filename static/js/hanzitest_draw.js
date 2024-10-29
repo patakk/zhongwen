@@ -55,6 +55,17 @@ function startTest() {
 }
 
 function showNextWord() {
+    
+    currentWriters.forEach(writer => {
+        if(isDarkMode){
+            writer.updateColor('strokeColor', '#fff')
+            writer.updateColor('radicalColor', '#fff')
+        }
+        else{
+            writer.updateColor('strokeColor', '#000')
+            writer.updateColor('radicalColor', '#000')
+        }
+    });
     totalAnswered++;
     if(pinyinLabel.classList.contains('active')){
         pinyinLabel.classList.remove('active');
@@ -102,14 +113,23 @@ skipBtn.addEventListener('click', () => {
         skipState = 1;
         skipBtn.textContent = 'Next';
 
-        currentWriters.forEach(writer => {
-            console.log('Cancelling quiz');
+        function animateCharactersSequentially(writers, index = 0) {
+            if (index >= writers.length) {
+                return;
+            }
+            const writer = writers[index];
             writer.cancelQuiz();
-            writer.animateCharacter();
-            totalStrokeCount += writer._character.strokes.length;
-            totalMistakeCount += writer._character.strokes.length;
-
-        });
+            writer.animateCharacter({
+                onComplete: function() {
+                    totalStrokeCount += writer._character.strokes.length;
+                    totalMistakeCount += writer._character.strokes.length;
+                    animateCharactersSequentially(writers, index + 1);
+                }
+            });
+        }
+        
+        // Start the sequential animation
+        animateCharactersSequentially(currentWriters);
 
         drawingArea.addEventListener('click', () => {
             currentWriters.forEach(writer => {
@@ -188,7 +208,7 @@ function createHanziWriters(characters) {
             width: writerSize,
             height: writerSize,
             padding: 5,
-            strokeColor: '#000000',
+            strokeColor: '#000',
             strokeAnimationSpeed: 1,
             delayBetweenStrokes: 220,
             
@@ -233,6 +253,39 @@ function createHanziWriters(characters) {
     });
 }
 
+function confetti() {
+    const container = document.getElementById('confetti-container');
+    const emojis = ['🎉', '🎊', '🥳', '🎈', '🎊', '🍰', '🎂', '🥂'];
+    const confettiCount = 150;
+
+    for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+            const emoji = document.createElement('div');
+            emoji.className = 'confetti';
+            emoji.style.left = Math.random() * 100 + 'vw';
+            const duration = (Math.random() * 3 + 2);
+            emoji.style.animationDuration = duration + 's';
+            emoji.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            container.appendChild(emoji);
+
+            // Remove the emoji after it has completed its animation
+            setTimeout(() => {
+                emoji.remove();
+            }, duration * 1000);
+        }, i * 100/3);
+    }
+}
+
+let isDarkMode = false;
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'c') {
+        confetti();
+    }
+});
+
 function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
     const characterData = shuffledWords[currentIndex];
     let isCorrect = false;
@@ -242,6 +295,10 @@ function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
     if (wordTotalMistakeCount < wordTotalStrokeCount*0.2+1) {
         correctAnswers++;
         isCorrect = true;
+    }
+
+    if(correctAnswers == 2){
+
     }
 
     userAnswers.push({

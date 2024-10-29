@@ -219,3 +219,34 @@ and (orientation: landscape) {
     display: inline-block;
     margin: 0 2px;
 }
+
+#srch-btn {
+    color: rgb(14,14,14);
+    background-color: rgb(222,222,222);
+}
+
+#srch-btn.darkmode {
+    background-color: rgb(14,14,14);
+    color: rgb(222,222,222);
+}
+
+.result-item.darkmode {
+    border-color: rgb(128, 128, 128);
+    background-color: rgb(14,14,14);
+    color: rgb(222,222,222);
+}
+
+.darkmode {
+    border-color: rgb(128, 128, 128);
+}
+
+
+input[type="text"].darkmode {
+    border-color: rgb(128, 128, 128);
+}
+input[type="submit"].darkmode {
+    border-color: rgb(128, 128, 128);
+}
+input[type="submit"].darkmode:hover {
+    border-color: rgb(128, 128, 128);
+}

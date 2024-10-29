@@ -52,6 +52,7 @@
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
                 </ul>
             </li>
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
@@ -73,6 +74,7 @@
     
     <script>
         const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/lists.js') }}"></script>

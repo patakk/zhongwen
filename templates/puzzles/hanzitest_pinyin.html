@@ -20,6 +20,7 @@
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hanzitest_pinyin.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
     <style id="dynamic-styles">
         
     </style>
@@ -51,6 +52,7 @@
                     {% endfor %}
                 </ul>
             </li>
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
@@ -106,5 +108,6 @@
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hanzitest_pinyin.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
 </body>
 </html>

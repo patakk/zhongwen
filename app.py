@@ -160,6 +160,8 @@ def session_required(func):
             session['deck'] = 'review'
         if 'font' not in session:
             session['font'] = 'Noto Sans Mono'
+        if 'darkmode' not in session:
+            session['darkmode'] = False
         if 'username' not in session:
             session['username'] = 'tempuser'
         return func(*args, **kwargs)
@@ -620,7 +622,7 @@ def user_progress():
     learningcards = len([card for card in progress_stats if card['box'] < 6])
 
     # print(session[session['username']]["base_new_cards_limit"])
-    return render_template('userprogress.html', username=session.get('username'), deck=deck, deckname=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
+    return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), deck=deck, deckname=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
 
 
 
@@ -631,7 +633,7 @@ def hanziviz():
         if 'hsk' in key:
             for character in flashcard_app.cards[key]:
                 characters[character] = flashcard_app.cards[key][character]
-    return render_template('hanziviz.html', characters=characters)
+    return render_template('hanziviz.html', darkmode=session['darkmode'], characters=characters)
 
 
 
@@ -686,13 +688,13 @@ def logout():
 @session_required
 @timing_decorator
 def welcome():
-    return render_template('welcome.html', username=session['username'], decks=flashcard_app.decks)
+    return render_template('welcome.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks)
 
 @app.route('/')
 @session_required
 @timing_decorator
 def home():
-    return render_template('home.html', username=session['username'], decks=flashcard_app.decks)
+    return render_template('home.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks)
 
 @app.route('/check_session')
 @session_required
@@ -717,13 +719,13 @@ def flashcards():
         querydeck = session.get('deck', 'shas')
     session['deck'] = querydeck
     logger.info(f"Query deck: {querydeck}")
-    return render_template('flashcards.html', username=session['username'], decks=flashcard_app.decks, deck=querydeck)
+    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks, deck=querydeck)
 
 @app.route('/pinyinenglish')
 @session_required
 @timing_decorator
 def pinyinenglish():
-    return render_template('pinyinenglish.html', username=session['username'])
+    return render_template('pinyinenglish.html', darkmode=session['darkmode'], username=session['username'])
 
 
 def packed_data(character):
@@ -787,10 +789,10 @@ def grid():
     if not character:
         characters = list(flashcard_app.cards.get(querydeck, {}).keys())
         print(f"Initial characters: {len(characters)}")  # Debug print
-        return render_template('grid.html', username=session['username'], characters=characters, character=None, decks=flashcard_app.decks, deck=querydeck)
+        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=None, decks=flashcard_app.decks, deck=querydeck)
     pc = packed_data(character)
     characters = list(flashcard_app.cards[pc['deck']].keys())
-    return render_template('grid.html', username=session['username'], characters=characters, character=pc, decks=flashcard_app.decks, deck=querydeck)
+    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=pc, decks=flashcard_app.decks, deck=querydeck)
 
 
 @app.route('/puzzles')
@@ -798,14 +800,14 @@ def grid():
 @timing_decorator
 def puzzles():
     characters = dict(flashcard_app.cards[session['deck']].items())
-    return render_template('puzzles.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('puzzles.html', darkmode=session['darkmode'], username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
 
 @app.route('/hanzitest_pinyin')
 @session_required
 @timing_decorator
 def hanzitest_pinyin():
     characters = dict(flashcard_app.cards[session['deck']].items())
-    return render_template('puzzles/hanzitest_pinyin.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('puzzles/hanzitest_pinyin.html', darkmode=session['darkmode'], username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
 
 @app.route('/hanzitest_draw')
 @session_required
@@ -819,14 +821,14 @@ def hanzitest_draw():
             "pinyin": data['pinyin'],
             "english": data['english'],
         })
-    return render_template('puzzles/hanzitest_draw.html', username=session['username'], characters=characters_data, decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('puzzles/hanzitest_draw.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=flashcard_app.decks, deck=session['deck'])
 
 @app.route('/hanzitest_choices')
 @session_required
 @timing_decorator
 def hanzitest_choices():
     characters = dict(flashcard_app.cards[session['deck']].items())
-    return render_template('puzzles/hanzitest_choices.html', username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('puzzles/hanzitest_choices.html', darkmode=session['darkmode'], username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
 
 
 @app.route('/hanzitest_fillin')
@@ -839,7 +841,7 @@ def hanzitest_fillin():
     random.shuffle(klist)
     fillin = {k: session['fillin']['contextClues'][k] for k in range(10)}
     characters = dict(flashcard_app.cards[session['deck']].items())
-    return render_template('puzzles/hanzitest_fillin.html', fillin=fillin, username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('puzzles/hanzitest_fillin.html', darkmode=session['darkmode'], fillin=fillin, username=session['username'], characters=characters, decks=flashcard_app.decks, deck=session['deck'])
 
 @app.route('/get_characters')
 @session_required
@@ -913,6 +915,19 @@ def change_font():
     session['font'] = request.args.get('font')
     logger.info(f"Font changed to {session['font']}")
     return jsonify({"message": "font changed successfully to " + session['font']})
+
+
+@app.route('/setdarkmode', methods=['POST'])
+@timing_decorator
+def setdarkmode():
+    session['darkmode'] = request.args.get('darkmode')
+    return jsonify({"message": "darkmode changed successfully to " + session['darkmode']})
+
+
+@app.route('/getdarkmode', methods=['GET'])
+@timing_decorator
+def getdarkmode():
+    return jsonify({"darkmode": session['darkmode']})
 
 
 @app.route('/increase_max_cards', methods=['POST'])
@@ -1039,7 +1054,7 @@ def examples():
 @timing_decorator
 def lists():
     uri = request.args.get('uri')
-    return render_template('lists.html', categories=example_lists, initial_uri=uri, decks=flashcard_app.decks, username=session['username'])
+    return render_template('lists.html', darkmode=session['darkmode'], categories=example_lists, initial_uri=uri, decks=flashcard_app.decks, username=session['username'])
 
 @app.route('/kongzi')
 @session_required
@@ -1268,9 +1283,9 @@ def search():
                                convert_numerical_tones(result['pinyin']) if result['match_type'] == 'fuzzy_pinyin' else result['english'])
             )
 
-        return render_template('search.html', results=sorted_results, query=query, decks=flashcard_app.decks, username=session['username'])
+        return render_template('search.html', results=sorted_results, darkmode=session['darkmode'], query=query, decks=flashcard_app.decks, username=session['username'])
     
-    return render_template('search.html', decks=flashcard_app.decks, username=session['username'])
+    return render_template('search.html', darkmode=session['darkmode'], decks=flashcard_app.decks, username=session['username'])
 
 
 

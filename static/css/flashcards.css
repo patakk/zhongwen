@@ -197,8 +197,6 @@ body {
 .clickable-char {
     display: inline-block;
     margin: 0 2px;
-    color: #fff;
-    color: #000000;
     transition: color 0.8s;
 }
 
@@ -317,4 +315,8 @@ body {
 
 #prompt-container button:hover {
     background-color: #f0f0f0;
+}
+
+.clickable-char.darkmode {
+    color: rgb(233,233,233);
 }

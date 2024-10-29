@@ -146,6 +146,11 @@ document.addEventListener('keydown', function(event) {
             typedDisplay.style.display = 'none';
         }
     }
+
+    if (event.key === 'c') {
+        confetti();
+    }
+
 });
 
 
@@ -187,6 +192,9 @@ function createGrid(characters, useAllDecks){
             <span class="grid-pinyin">${charData.pinyin}</span>
         `;
         gridItem.setAttribute('data-length', charData.character.length);
+        if(isDarkMode){
+            gridItem.classList.add('darkmode');
+        }
         gridItem.addEventListener('click', () => {
             showFlashcard(charData.character); 
             const newUrl = new URL(window.location);

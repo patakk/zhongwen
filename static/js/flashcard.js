@@ -1,4 +1,5 @@
 
+let writers = [];
 function getCharactersPinyinEnglish(characters=null, func=null) {
     const url = './get_characters_pinyinenglish';
     
@@ -87,7 +88,12 @@ function displayCharMatches(charMatches) {
                 const pinyin = chardict[word].pinyin;
                 const english = chardict[word].english;
                 const hsklvl = chardict[word].hsk_level;
-                const tooltipContent = `<strong>${pinyin}</strong><br>${english}<br><span style="font-size: 12px; font-style: italic;"> HSK ${hsklvl}</span>`;
+                let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br><span style="font-size: 12px; font-style: italic;"> HSK ${hsklvl}</span>`;
+
+                if(isDarkMode){
+                    tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span><br><span style="font-size: 12px; font-style: italic; color: #ffd91c;"> HSK ${hsklvl}</span>`;
+                    hoverBox.style.backgroundColor = '#1a1a1a';
+                }
                 showTooltip(this, tooltipContent, e);
             });
             wordLink.addEventListener('mouseout', hideTooltip);
@@ -99,7 +105,7 @@ function displayCharMatches(charMatches) {
 
             wordLink.textContent = word;
             wordLink.className = 'word-link';
-            if(wordsContainer.classList.contains('darkmode'))
+            if(isDarkMode)
                 wordLink.classList.add('darkmode');
             wordsContainer.appendChild(wordLink);
             
@@ -118,10 +124,8 @@ function isMobileOrTablet() {
 function renderCardData(data) {
     const container = document.getElementById('flashcard_container');
     if(container.style.display === 'none' || !container.style.display){
-        console.log('aaa')
         container.style.display = 'flex';
     }
-    console.log(container.style.display)
 
     const characterElement = document.getElementById('flashcard_character');
     characterElement.innerHTML = ''; // Clear existing content
@@ -176,6 +180,18 @@ function renderCardData(data) {
     document.getElementById('flashcard_function').textContent = "(" + data.function + ")";
     displayCharMatches(data.char_matches);
 
+    try{
+        // if(isDarkMode){
+        //     const wordLinks = document.querySelectorAll('.word-link');
+        //     wordLinks.forEach(wordLink => {
+        //         wordLink.classList.add('darkmode');
+        //     });
+        // }
+    }
+    catch(e){
+        console.log(e);
+    }
+
     if( data.hsk_level == -1){
         document.getElementById('flashcard_hsk').textContent = "";
     }
@@ -209,7 +225,6 @@ function renderCardData(data) {
         strokesContainer.id = 'flashcard_strokes_container';
         document.getElementById('flashcard_description').appendChild(strokesContainer);
         
-        let writers = [];
         chars.forEach((char, i) => {
             const strokeWrapper = document.createElement('div');
             strokeWrapper.style.position = 'relative';
@@ -238,14 +253,20 @@ function renderCardData(data) {
 
             strokeWrapper.appendChild(svg);
 
+            let strokeColor = '#000000';
+            let radicalColor = '#e83a00';
+            if(isDarkMode){
+                strokeColor = '#ffffff';
+            }
+
             const writer = HanziWriter.create(`grid-background-${i}`, char, {
                 width: writerSize,
                 height: writerSize,
                 padding: 5,
-                strokeColor: '#000000',
+                strokeColor: strokeColor,
                 strokeAnimationSpeed: 1,
                 delayBetweenStrokes: 220,
-                radicalColor: '#e83a00'
+                radicalColor: radicalColor
             });
 
             strokeWrapper.addEventListener('click', function() {
@@ -287,16 +308,6 @@ function displayCard(showAnswer=true, showPinyin=true) {
     const pinyinElement = document.getElementById('flashcard_pinyin');
     const functionElement = document.getElementById('flashcard_function');
     const char_matchesElement = document.getElementById('flashcard_char_matches');
-    console.log(showPinyin || showAnswer);
-    console.log(showPinyin || showAnswer);
-    console.log(showPinyin || showAnswer);
-    console.log(showPinyin || showAnswer);
-    console.log(showPinyin || showAnswer);
-    console.log(showPinyin || showAnswer);
-    console.log(showPinyin || showAnswer);
-    console.log(showPinyin || showAnswer);
-    console.log(showPinyin || showAnswer);
-    console.log(showPinyin || showAnswer);
     pinyinElement.classList.toggle('visible', showPinyin || showAnswer);
     flashcardElement.style.visibility = showAnswer ? 'visible' : 'hidden';
     englishElement.style.visibility = showAnswer ? 'visible' : 'hidden';

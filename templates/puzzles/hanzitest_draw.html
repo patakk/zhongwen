@@ -26,8 +26,6 @@
 </head>
 <body>
     <h1 class="title">Test your Hanzi 🖌️</h1>
-    <!-- <h5 class="title" style="max-width:500px; flex-wrap: wrap; text-align: center; font-weight: 300;">(The Grand Imperial Examination of Celestial Brush Mastery and Profound Sinographic Recollection for Aspiring Scholars of the Middle Kingdom's Ancient Scriptural Arts)</h1> -->
-    
     <h2 id="deck-name"></h2>
 
     <div class="hamburger" id="hamburgerMenu">
@@ -53,6 +51,7 @@
                     {% endfor %}
                 </ul>
             </li>
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
@@ -86,6 +85,7 @@
         </div>
         <button id="restart-btn">Restart Test</button>
     </div>
+    <div id="confetti-container"></div>
 
     <script>
         const characters = {{ characters | tojson | safe }};
@@ -113,5 +113,6 @@
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hanzitest_draw.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
 </body>
 </html>

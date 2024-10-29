@@ -188,6 +188,7 @@
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
@@ -266,6 +267,7 @@
 
     <script>
         const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script>

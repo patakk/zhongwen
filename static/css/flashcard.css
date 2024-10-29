@@ -303,3 +303,17 @@ and (max-width: 1024px) {
 .word-link:hover {
     background-color: #f0f0f0;
 }
+
+.word-link.darkmode {
+    background: rgb(60,60,60);
+    color: rgb(200,200,200);
+}
+
+.word-link.darkmode:hover {
+    background: rgb(80,80,80);
+}
+
+
+.clickable-char.darkmode {
+    color: rgb(233,233,233);
+}

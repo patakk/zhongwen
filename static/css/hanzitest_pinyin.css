@@ -148,3 +148,8 @@ body {
     }
 
 }
+
+
+.hamburger.darkmode span {
+    background-color: rgb(222,222,222);
+}

@@ -314,6 +314,7 @@
             <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('welcome') }}">Guide</a></li>
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li class="has-submenu">
                 <span>Decks</span>
                 <ul class="submenu">
@@ -437,6 +438,7 @@
     <script>
         const username = {{ username | tojson | safe }};
         const maxnumcard = {{ maxnumcards | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
         // const saveButton = document.getElementById('saveButton');
         
         // saveButton.textContent = 'Save';

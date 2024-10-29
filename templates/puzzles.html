@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Home - 中文</title>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
 
     <style>
 
@@ -150,6 +151,7 @@
             <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('welcome') }}">Guide</a></li>
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
@@ -167,8 +169,10 @@
 
     <script>
         const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     <script>
         
 

@@ -51,6 +51,7 @@
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
             <li><a href="{{ url_for('welcome') }}">Guide</a></li>
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
@@ -58,7 +59,7 @@
         <h1>Search</h1>
         <form action="{{ url_for('search') }}" method="get">
             <input type="text" name="query" value="{{ query or '' }}">
-            <input type="submit" value="Search">
+            <input id="srch-btn" type="submit" value="Search">
         </form>
         
         <div class="results">
@@ -94,6 +95,7 @@
     <p id="message"></p>
     <script>
         const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
 
     </script>
     <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>

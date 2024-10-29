@@ -19,36 +19,58 @@
 
 #flashcard_container.darkmode {
     background-color: rgb(14, 14, 14);
-    color: white;
+    color: rgb(233, 233, 233);
     border-color: rgb(100, 100, 100);
 }
 
 
 #flashcard_character.darkmode {
-    color: white;
+    color: rgb(233, 233, 233);
 }
 
 #flashcard_english.darkmode {
-    color: white;
+    color: rgb(233, 233, 233);
 }
 
 #flashcard_pinyin.darkmode, #flashcard_pinyin.visible.darkmode {
-    color: white;
+    color: rgb(233, 233, 233);
 }
 
 #flashcard_description.darkmode {
-    color: white;
+    color: rgb(233, 233, 233);
 }
 
 #flashcard_function.darkmode {
-    color: white;
+    color: rgb(233, 233, 233);
 }
 
 #flashcard_hsk.darkmode {
-    color: white;
+    color: rgb(233, 233, 233);
 }
 
 .word-link.darkmode {
     background: rgb(60,60,60);
-    color: rgb(200,200,200);
+    color: rgb(214,214,214);
+}
+
+.hamburger.darkmode span {
+    background-color: rgb(222,222,222);
+}
+
+
+#flashcard_pinyin.darkmode {
+    background-color: rgb(233,233,233);
+}
+
+#flashcard_pinyin.darkmode.visible {
+    background-color: rgb(233,233,233, 0);
+}
+
+#flashcard_pinyin.darkmode:hover {
+    color: rgb(214,214,214);
+    background-color: rgb(233,233,233, 0);
+}
+
+.clickable-char.darkmode {
+    color: rgb(233,233,233);
 }
