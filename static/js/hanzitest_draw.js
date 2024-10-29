@@ -8,6 +8,7 @@ const accuracySpan = document.getElementById('accuracy');
 const strokeAccuracySpan = document.getElementById('stroke_accuracy');
 const restartBtn = document.getElementById('restart-btn');
 const skipBtn = document.getElementById('skip-btn');
+const pinyinLabel = document.getElementById('pinyin-display');
 
 let currentIndex = 0;
 let correctAnswers = 0;
@@ -51,6 +52,7 @@ function startTest() {
 }
 
 function showNextWord() {
+    window.scrollTo(0, 0);
     if (currentIndex < Math.min(NUM_QUESTIONS, shuffledWords.length)) {
         let characterData = shuffledWords[currentIndex];
         englishDisplay.textContent = characterData.english;
@@ -61,6 +63,7 @@ function showNextWord() {
         currentEnglish = characterData.english;
         currentPinyin = characterData.pinyin;
         createHanziWriters(characterData.character);
+        pinyinLabel.textContent = characterData.pinyin;
         progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledWords.length)}`;
     } else {
         showResults();
@@ -73,6 +76,17 @@ restartBtn.addEventListener('click', () => {
 
 
 let skipState = 0;
+
+pinyinLabel.addEventListener('click', () => {
+    // toggle active class
+    pinyinLabel.classList.toggle('active');
+    if(pinyinLabel.classList.contains('active')){
+        // pinyinLabel.textContent = currentPinyin;
+    }
+    else{
+        // pinyinLabel.textContent = 'Pinyin';
+    }
+});
 
 skipBtn.addEventListener('click', () => {
     if(skipState == 0){
