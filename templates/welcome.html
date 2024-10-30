@@ -155,9 +155,18 @@
             content: "• ";
         }
 
+        a.darkmode {
+            color: rgb(255, 255, 255);
+            background-color: #b82b00;
+        }
+        a.darkmode:hover {
+            background-color: #b82b00;
+            color: #050505;
+        }
 
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
 </head>
 <body>
     <div class="hamburger" id="hamburgerMenu">
@@ -270,6 +279,7 @@
         let isDarkMode = {{ darkmode | tojson | safe }};
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     <script>
         
         function isIPhone(){

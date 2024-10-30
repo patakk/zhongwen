@@ -1,5 +1,5 @@
 
-let writers = [];
+let currentWriters = [];
 function getCharactersPinyinEnglish(characters=null, func=null) {
     const url = './get_characters_pinyinenglish';
     
@@ -264,6 +264,7 @@ function renderCardData(data) {
                 height: writerSize,
                 padding: 5,
                 strokeColor: strokeColor,
+                drawingColor: strokeColor,
                 strokeAnimationSpeed: 1,
                 delayBetweenStrokes: 220,
                 radicalColor: radicalColor
@@ -272,7 +273,7 @@ function renderCardData(data) {
             strokeWrapper.addEventListener('click', function() {
                 writer.animateCharacter();
             });
-            writers.push(writer);
+            currentWriters.push(writer);
         });
     }
     currentCharacter = data.character;

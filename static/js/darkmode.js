@@ -15,16 +15,19 @@ function confirmDarkmode(){
 
     try{
         if(isDarkMode){
-            console.log(writers)
-            writers.forEach(writer => {
+            currentWriters.forEach(writer => {
                 writer.updateColor('strokeColor', '#eee');
+                writer.updateColor('radicalColor', '#eee');
                 writer.updateColor('outlineColor', '#222');
+                writer.updateColor('drawingColor', '#ccc');
             });
         }
         else{
-            writers.forEach(writer => {
+            currentWriters.forEach(writer => {
                 writer.updateColor('strokeColor', '#000');
+                writer.updateColor('radicalColor', '#000');
                 writer.updateColor('outlineColor', '#777');
+                writer.updateColor('drawingColor', '#555');
             });
         }
     }

@@ -57,8 +57,7 @@ html::-webkit-scrollbar {
 }
 
 #skip-btn.darkmode, #restart-btn.darkmode, #end-btn.darkmode {
-    
-    background-color: black;
+    background-color: rgb(14, 14, 14);
     color: rgb(243, 243, 243);
     border: 2px solid white;
 }
@@ -125,8 +124,16 @@ html::-webkit-scrollbar {
     background-color: #d4edda;
 }
 
+.correct-row.darkmode {
+    background-color: #7b8d7f;
+}
+
 .incorrect-row {
     background-color: #f8d7da;
+}
+
+.incorrect-row.darkmode {
+    background-color: #886467;
 }
 
 @media screen and (min-width: 768px) {

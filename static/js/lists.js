@@ -85,6 +85,7 @@ function showFlashcard(hanzi, pinyin, english) {
     overlay.style.display = 'flex';
     updateFlashcardContent();
     setupHoverEffects();
+    confirmDarkmode();
 }
 
 function updateFlashcardContent() {

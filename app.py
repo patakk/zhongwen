@@ -918,6 +918,7 @@ def change_font():
 
 
 @app.route('/setdarkmode', methods=['POST'])
+@session_required
 @timing_decorator
 def setdarkmode():
     session['darkmode'] = request.args.get('darkmode')
@@ -925,6 +926,7 @@ def setdarkmode():
 
 
 @app.route('/getdarkmode', methods=['GET'])
+@session_required
 @timing_decorator
 def getdarkmode():
     return jsonify({"darkmode": session['darkmode']})

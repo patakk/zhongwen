@@ -46,6 +46,7 @@ function startTest() {
     wordTotalStrokeCount = 0;
     totalStrokeCount = 0;
     totalMistakeCount = 0;
+    skipState = 0;
     numFinished = 0;
     userAnswers = [];
     showNextWord();
@@ -55,17 +56,20 @@ function startTest() {
 }
 
 function showNextWord() {
+    drawingArea.removeEventListener('click', handleAreaClick);
     
-    currentWriters.forEach(writer => {
-        if(isDarkMode){
-            writer.updateColor('strokeColor', '#fff')
-            writer.updateColor('radicalColor', '#fff')
-        }
-        else{
-            writer.updateColor('strokeColor', '#000')
-            writer.updateColor('radicalColor', '#000')
-        }
-    });
+    // currentWriters.forEach(writer => {
+    //     if(isDarkMode){
+    //         writer.updateColor('strokeColor', '#fff')
+    //         writer.updateColor('radicalColor', '#fff')
+    //     }
+    //     else{
+    //         writer.updateColor('strokeColor', '#000')
+    //         writer.updateColor('radicalColor', '#000')
+    //     }
+    // });
+    // remove event listenrrs from 
+            
     totalAnswered++;
     if(pinyinLabel.classList.contains('active')){
         pinyinLabel.classList.remove('active');
@@ -131,13 +135,7 @@ skipBtn.addEventListener('click', () => {
         // Start the sequential animation
         animateCharactersSequentially(currentWriters);
 
-        drawingArea.addEventListener('click', () => {
-            currentWriters.forEach(writer => {
-                writer.cancelQuiz();
-                writer.animateCharacter();
-            });
-        });
-
+        drawingArea.addEventListener('click', handleAreaClick);
         
         userAnswers.push({
             correctCharacter: currentWord,
@@ -154,6 +152,13 @@ skipBtn.addEventListener('click', () => {
         skipBtn.textContent = 'Reveal';
     }
 });
+
+function handleAreaClick(){
+    currentWriters.forEach(writer => {
+        writer.cancelQuiz();
+        writer.animateCharacter();
+    });
+}
 
 let currentWord = '';
 let currentEnglish = '';
@@ -204,14 +209,20 @@ function createHanziWriters(characters) {
 
         strokeWrapper.appendChild(svg);
 
+        let strokeColor = '#000000';
+        let radicalColor = '#000000';
+        if(isDarkMode){
+            strokeColor = '#ffffff';
+            radicalColor = '#ffffff';
+        }
         const writer = HanziWriter.create(`grid-background-${index}`, char, {
             width: writerSize,
             height: writerSize,
             padding: 5,
-            strokeColor: '#000',
+            strokeColor: strokeColor,
             strokeAnimationSpeed: 1,
             delayBetweenStrokes: 220,
-            
+            drawingWidth: 16,
             showCharacter: false,
             showOutline: false,
             showHintAfterMisses: 2,
@@ -338,9 +349,11 @@ function showResults() {
         `;
         answerTableBody.appendChild(row);
     });
+    confirmDarkmode();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    getDarkmode();
     deckNameElement.textContent = `(current Deck: ${inputdecks[inputdeck].name})`;
     NUM_QUESTIONS = Math.max(5, characters.length);
     startTest();
