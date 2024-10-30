@@ -580,6 +580,13 @@ and (orientation: landscape) {
     display: flex;
 }
 
+.lgrid-item.darkmode {
+    border: 2px dashed #636363;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+}
+
 .lgrid-item:hover {
     cursor: pointer;
 }
@@ -640,7 +647,7 @@ and (orientation: landscape) {
     }
     
     .lgrid-item {
-        padding: 10px;
+        padding: 5px;
     }
     
     .lgrid-item:hover {

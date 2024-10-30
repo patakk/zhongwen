@@ -142,6 +142,7 @@ skipBtn.addEventListener('click', () => {
         userAnswers.push({
             correctCharacter: currentWord,
             english: currentEnglish,
+            pinyin: currentPinyin,
             isCorrect: false
         });
         
@@ -264,9 +265,9 @@ function createHanziWriters(characters) {
                 console.log('currecnt wordTotalStrokeCount:', wordTotalStrokeCount);
                 console.log('currecnt wordTotalMistakeCount:', wordTotalMistakeCount);
                 console.log('');
-                if(streakCount > streakCheckpoint){
+                if(streakCount >= streakCheckpoint){
                     confetti(streakCheckpoint);
-                    while(streakCount > streakCheckpoint){
+                    while(streakCount >= streakCheckpoint){
                         streakCheckpoint += streakIncrement;
                     }
                 }
@@ -287,7 +288,10 @@ function createHanziWriters(characters) {
 function confetti(congrats=null) {
     const container = document.getElementById('confetti-container');
     const emojis = ['🎉', '🎊', '🥳', '🎈', '🎊', '🍰', '🎂', '🥂'];
-    const confettiCount = 150;
+    let confettiCount = 60;
+    if(window.innerWidth < window.innerHeight){
+        confettiCount = 30;
+    }
 
     for (let i = 0; i < confettiCount; i++) {
         setTimeout(() => {
@@ -296,7 +300,12 @@ function confetti(congrats=null) {
             emoji.style.left = Math.random() * 100 + 'vw';
             const duration = (Math.random() * 3 + 2);
             emoji.style.animationDuration = duration + 's';
-            emoji.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            if(window.innerWidth < window.innerHeight){
+                emoji.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            }
+            else{
+                emoji.style.fontSize = (Math.random() * 20 + 16) + 'px';
+            }
             emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
             
             container.appendChild(emoji);
@@ -305,17 +314,23 @@ function confetti(congrats=null) {
             setTimeout(() => {
                 emoji.remove();
             }, duration * 1000);
-        }, i * 100/3);
+        }, i * 22);
     }
 
     if(congrats){
         const congratsEmoji = document.createElement('div');
+        congratsEmoji.id = 'congrats';
         congratsEmoji.className = 'congrats';
-        congratsEmoji.innerHTML = `${congrats} correct strokes in a row!`;
+        if(isDarkMode){
+            congratsEmoji.innerHTML = `<span>${congrats} correct strokes in a row!</span>`;
+        }
+        else{
+            congratsEmoji.innerHTML = `<span>${congrats} correct strokes in a row!</span>`;
+        }
         container.appendChild(congratsEmoji);
         setTimeout(() => {
             congratsEmoji.remove();
-        }, 3000);
+        }, 2000);
     }
 }
 
@@ -344,6 +359,7 @@ function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
 
     userAnswers.push({
         english: characterData.english,
+        pinyin: characterData.pinyin,
         correctCharacter: characterData.character,
         isCorrect: isCorrect
     });
@@ -374,8 +390,9 @@ function showResults() {
         const row = document.createElement('tr');
         row.className = answer.isCorrect ? 'correct-row' : 'incorrect-row';
         row.innerHTML = `
-            <td>${answer.english}</td>
             <td>${answer.correctCharacter}</td>
+            <td>${answer.pinyin}</td>
+            <td>${answer.english}</td>
         `;
         answerTableBody.appendChild(row);
     });
