@@ -173,8 +173,8 @@ let currentWord = '';
 let currentEnglish = '';
 let currentPinyin = '';
 let streakCount = 0;
-let streakCheckpoint = 5;
-let streakIncrement = 5;
+let streakIncrement = 50;
+let streakCheckpoint = streakIncrement;
 
 function createHanziWriters(characters) {
 
