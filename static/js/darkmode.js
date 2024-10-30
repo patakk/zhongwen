@@ -14,7 +14,17 @@ function confirmDarkmode(){
     });
 
     try{
+        function changeAllSvgStrokeColors(newColor) {
+            const svgs = document.querySelectorAll('svg');
+            svgs.forEach(svg => {
+                const elements = svg.querySelectorAll('line, rect');
+                elements.forEach(element => {
+                    element.setAttribute('stroke', newColor);
+                });
+            });
+        }
         if(isDarkMode){
+            changeAllSvgStrokeColors('#F7A5');
             currentWriters.forEach(writer => {
                 writer.updateColor('strokeColor', '#eee');
                 writer.updateColor('radicalColor', '#eee');
@@ -23,6 +33,7 @@ function confirmDarkmode(){
             });
         }
         else{
+            changeAllSvgStrokeColors('#A005');
             currentWriters.forEach(writer => {
                 writer.updateColor('strokeColor', '#000');
                 writer.updateColor('radicalColor', '#000');
@@ -30,6 +41,7 @@ function confirmDarkmode(){
                 writer.updateColor('drawingColor', '#555');
             });
         }
+
     }
     catch(e){
         console.log(e)

@@ -166,6 +166,7 @@ function toggleGridList(){
         }
         showList = true;
     }
+    confirmDarkmode();
 }
 
 

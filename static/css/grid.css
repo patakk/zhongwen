@@ -92,7 +92,7 @@ body {
 
 .grid-item.darkmode {
     background-color: rgb(14, 14, 14);
-    color: rgb(250, 250, 250);
+    color: rgb(211, 211, 211);
     border-color: rgb(100, 100, 100);
 }
 
@@ -786,5 +786,48 @@ and (orientation: landscape) {
 }
 
 .char-pinyin-group:hover {
+    background: #fff0;
+}
+
+.list-english {
+    background: #fff0;
+}
+
+.list-english:hover {
+    background: #fff0;
+}
+
+.list-character:hover {
+    background: #fff0;
+}
+
+.list-character {
+    background: #fff0;
+}
+
+
+.index-container {
+    background: #fff0;
+}
+
+
+.index-container:hover {
+    background: #fff0;
+}
+
+.list-index {
+    background: #fff0;
+}
+
+
+.list-index:hover {
+    background: #fff0;
+}
+
+.list-pinyin {
+    background: #fff0;
+}
+
+.list-pinyin:hover {
     background: #fff0;
 }

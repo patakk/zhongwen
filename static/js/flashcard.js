@@ -276,6 +276,7 @@ function renderCardData(data) {
             currentWriters.push(writer);
         });
     }
+    confirmDarkmode();
     currentCharacter = data.character;
     // try
 

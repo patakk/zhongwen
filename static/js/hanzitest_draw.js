@@ -47,6 +47,7 @@ function startTest() {
     totalStrokeCount = 0;
     totalMistakeCount = 0;
     skipState = 0;
+    streakCount = 0;
     numFinished = 0;
     userAnswers = [];
     showNextWord();
@@ -143,11 +144,17 @@ skipBtn.addEventListener('click', () => {
             english: currentEnglish,
             isCorrect: false
         });
+        
+        streakCount = 0;
+        streakCheckpoint = streakIncrement;
     }
     else{
         skipState = 0;
         currentIndex++;
         numFinished = 0;
+        
+        streakCount = 0;
+        streakCheckpoint = streakIncrement;
 
         showNextWord();
         skipBtn.textContent = 'Reveal';
@@ -164,6 +171,9 @@ function handleAreaClick(){
 let currentWord = '';
 let currentEnglish = '';
 let currentPinyin = '';
+let streakCount = 0;
+let streakCheckpoint = 5;
+let streakIncrement = 5;
 
 function createHanziWriters(characters) {
 
@@ -237,8 +247,11 @@ function createHanziWriters(characters) {
                 console.log("You've made " + strokeData.totalMistakes + " total mistakes on this quiz");
                 console.log("There are " + strokeData.strokesRemaining + " strokes remaining in this character");
                 console.log('');
+                streakCount = 0;
+                streakCheckpoint = streakIncrement;
             },
             onCorrectStroke: function(strokeData) {
+                streakCount++;
                 console.log('Yes!!! You got stroke ' + strokeData.strokeNum + ' correct!');
                 console.log('You made ' + strokeData.mistakesOnStroke + ' mistakes on this stroke');
                 console.log("You've made " + strokeData.totalMistakes + ' total mistakes on this quiz');
@@ -251,6 +264,12 @@ function createHanziWriters(characters) {
                 console.log('currecnt wordTotalStrokeCount:', wordTotalStrokeCount);
                 console.log('currecnt wordTotalMistakeCount:', wordTotalMistakeCount);
                 console.log('');
+                if(streakCount > streakCheckpoint){
+                    confetti(streakCheckpoint);
+                    while(streakCount > streakCheckpoint){
+                        streakCheckpoint += streakIncrement;
+                    }
+                }
                 wordTotalMistakeCount += summaryData.totalMistakes;
                 totalMistakeCount += Math.min(summaryData.totalMistakes, writer._character.strokes.length);
                 wordTotalStrokeCount += writer._character.strokes.length;
@@ -265,7 +284,7 @@ function createHanziWriters(characters) {
     });
 }
 
-function confetti() {
+function confetti(congrats=null) {
     const container = document.getElementById('confetti-container');
     const emojis = ['🎉', '🎊', '🥳', '🎈', '🎊', '🍰', '🎂', '🥂'];
     const confettiCount = 150;
@@ -287,6 +306,16 @@ function confetti() {
                 emoji.remove();
             }, duration * 1000);
         }, i * 100/3);
+    }
+
+    if(congrats){
+        const congratsEmoji = document.createElement('div');
+        congratsEmoji.className = 'congrats';
+        congratsEmoji.innerHTML = `${congrats} correct strokes in a row!`;
+        container.appendChild(congratsEmoji);
+        setTimeout(() => {
+            congratsEmoji.remove();
+        }, 3000);
     }
 }
 

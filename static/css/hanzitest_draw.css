@@ -334,3 +334,20 @@ h1 {
 .hamburger.darkmode span {
     background-color: rgb(222,222,222);
 }
+
+.congrats {
+    left: 50vw;
+    top: 50vh;
+    position: fixed;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    transform: translate(-50%, -50%);
+    font-size: 70px;
+}
+
+
+@media screen and (max-width: 767px) {
+    .congrats {
+        font-size: 50px;
+    }
+}
