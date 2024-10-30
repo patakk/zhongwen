@@ -404,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
     deckNameElement.textContent = `(current Deck: ${inputdecks[inputdeck].name})`;
     NUM_QUESTIONS = Math.max(5, characters.length);
     startTest();
+    window.scrollTo(0, 0);
 });
 
 window.addEventListener('resize', () => {
