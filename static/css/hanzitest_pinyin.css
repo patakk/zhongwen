@@ -108,9 +108,7 @@ body {
 }
 
 @media screen and (max-width: 767px) {
-    h1 {
-        font-size: 26px;
-    }
+   
 
     h2 {
         margin-top: 10px;
@@ -119,6 +117,12 @@ body {
     #title {
         margin-top: 40px;
     }
+    h1 {
+        font-size: 33px;
+        margin-bottom: 4px;
+        margin-top: 34px;
+    }
+    
     #deck-name {
         font-size: 16px;
         margin-bottom: 10px;

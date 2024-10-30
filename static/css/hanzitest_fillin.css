@@ -116,13 +116,10 @@ body {
     background-color: #f8d7da;
 }
 
+
 @media screen and (max-width: 767px) {
     #test-container {
         width: 95%;
-    }
-
-    h1 {
-        font-size: 26px;
     }
 
     h2 {
@@ -133,6 +130,12 @@ body {
         margin-top: 40px;
     }
 
+    h1 {
+        font-size: 33px;
+        margin-bottom: 4px;
+        margin-top: 34px;
+    }
+    
     #deck-name {
         font-size: 16px;
         margin-bottom: 10px;
