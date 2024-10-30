@@ -50,6 +50,8 @@ function startTest() {
     streakCount = 0;
     numFinished = 0;
     userAnswers = [];
+    window.scrollTo(0, 0);
+    window.scrollTo(0, 1);
     showNextWord();
     resultsDiv.style.display = 'none';
     document.getElementById('test-container').style.display = 'block';
@@ -404,7 +406,6 @@ document.addEventListener('DOMContentLoaded', () => {
     deckNameElement.textContent = `(current Deck: ${inputdecks[inputdeck].name})`;
     NUM_QUESTIONS = Math.max(5, characters.length);
     startTest();
-    window.scrollTo(0, 0);
 });
 
 window.addEventListener('resize', () => {
