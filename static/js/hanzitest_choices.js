@@ -43,6 +43,7 @@ function showNextCharacter() {
     } else {
         showResults();
     }
+    confirmDarkmode();
 }
 
 function generatePinyinOptions(character) {
@@ -110,6 +111,7 @@ function showResults() {
         `;
         answerTableBody.appendChild(row);
     });
+    confirmDarkmode();
 }
 
 restartBtn.addEventListener('click', startTest);

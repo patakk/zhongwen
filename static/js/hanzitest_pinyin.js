@@ -44,6 +44,7 @@ function showNextCharacter() {
     } else {
         showResults();
     }
+    confirmDarkmode();
 }
 
 function convertToNumberedPinyin(pinyin) {
@@ -143,6 +144,7 @@ function showResults() {
         `;
         answerTableBody.appendChild(row);
     });
+    confirmDarkmode();
 }
 submitBtn.addEventListener('click', checkAnswer);
 

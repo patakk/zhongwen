@@ -572,7 +572,7 @@ and (orientation: landscape) {
 }
 
 .lgrid-item {
-    border: 2px dashed #ddd;
+    border: 2px dashed #dddddd;
     border-left: 0;
     border-right: 0;
     border-top: 0;
@@ -644,8 +644,6 @@ and (orientation: landscape) {
     }
     
     .lgrid-item:hover {
-        background-color: #000000; /* Light gray background on hover */
-        color: white;
     }
     
     .lgrid-wrapper {
@@ -768,4 +766,25 @@ and (orientation: landscape) {
     font-family: 'Noto Sans Mono', monospace;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 700;
+}
+
+.lgrid-item:hover {
+    background-color: rgba(127, 127, 127, 0.1);
+}
+
+.char-pinyin-group.darkmode {
+    background-color: rgb(14, 14, 14);
+    color: rgb(235, 235, 235);
+}
+
+.char-pinyin-group {
+    background: #fff0;
+}
+
+.char-pinyin-group.darkmode {
+    background: #fff0;
+}
+
+.char-pinyin-group:hover {
+    background: #fff0;
 }

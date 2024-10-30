@@ -22,7 +22,7 @@ body {
 }
 
 #pinyin-input {
-    width: 100%;
+    width: 90%;
     padding: 10px;
     font-size: 16px;
     margin-bottom: 10px;
@@ -152,4 +152,44 @@ body {
 
 .hamburger.darkmode span {
     background-color: rgb(222,222,222);
+}
+
+
+.correct-row {
+    background-color: #d4edda;
+}
+
+.correct-row.darkmode {
+    background-color: #7b8d7f;
+}
+
+.incorrect-row {
+    background-color: #f8d7da;
+}
+
+.incorrect-row.darkmode {
+    background-color: #886467;
+}
+
+
+#restart-btn.darkmode {
+    background-color: rgb(14, 14, 14);
+    color: rgb(236, 236, 236);
+    border: 2px solid rgb(199, 199, 199);
+}
+
+
+#submit-btn.darkmode {
+    background-color: rgb(14, 14, 14);
+    color: rgb(236, 236, 236);
+    border: 2px solid rgb(199, 199, 199);
+}
+
+#pinyin-input.darkmode {
+    border-color: rgb(233, 233, 233, 0.6);
+    color: rgb(14, 14, 14);
+}
+
+#character-display {
+    min-height: 100px;
 }

@@ -34,29 +34,36 @@
         <span></span>
         <span></span>
     </div>
+    
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
-            <li id="loginMenuItem"><a href="{{ url_for('home') }}">Home</a></li>
-            <li id="flashcardsUrl"><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="has-submenu">
+                <span>Hanzi Grid</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                        {% endfor %}
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <span>Flashcards</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                        {% endfor %}
+                </ul>
+            </li>
             <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('welcome') }}">Guide</a></li>
-            <li class="has-submenu">
-                <span>Decks</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </li>
             <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
-
     <div id="test-container">
         <div id="character-display"></div>
         <div id="pinyin-options"></div>
@@ -88,6 +95,7 @@
         const inputdecks = {{ decks | tojson | safe }};
         const inputdeck = {{ deck | tojson | safe }};
         const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
 
 
         function isIPhone(){
