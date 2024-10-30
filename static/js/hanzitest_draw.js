@@ -90,6 +90,7 @@ function showNextWord() {
     } else {
         showResults();
     }
+    confirmDarkmode();
 }
 
 restartBtn.addEventListener('click', () => {
