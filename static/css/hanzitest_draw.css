@@ -98,7 +98,7 @@ html::-webkit-scrollbar {
 #deck-name {
     text-align: center;
     margin-bottom: 20px;
-    font-weight: 300;
+    font-weight: bold;
 }
 
 #answer-table-container {
