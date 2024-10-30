@@ -94,6 +94,8 @@ function showNextWord() {
         showResults();
     }
     confirmDarkmode();
+    
+    window.scrollTo(0, 1);
 }
 
 restartBtn.addEventListener('click', () => {
