@@ -61,7 +61,6 @@ document.getElementById('darkmode-toggle').addEventListener('click', function() 
     setDarkmode();
 });
 
-
 function setDarkmode() {
     confirmDarkmode();
     fetch(`./setdarkmode?darkmode=${isDarkMode}`, {
