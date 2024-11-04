@@ -12,7 +12,9 @@ parser.py
 fire
 
 user_progress/
+user_strokes/
 audio_files/
+chinese_audio_clips/
 audio_files2/
 
 *.txt

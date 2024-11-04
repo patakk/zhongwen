@@ -73,7 +73,6 @@ function showNextWord() {
     // });
     // remove event listenrrs from 
             
-    totalAnswered++;
     if(pinyinLabel.classList.contains('active')){
         pinyinLabel.classList.remove('active');
     }
@@ -129,6 +128,7 @@ skipBtn.addEventListener('click', () => {
             }
             const writer = writers[index];
             writer.cancelQuiz();
+
             writer.animateCharacter({
                 onComplete: function() {
                     totalStrokeCount += writer._character.strokes.length;
@@ -138,10 +138,19 @@ skipBtn.addEventListener('click', () => {
             });
         }
         
+        totalAnswered++;
         // Start the sequential animation
         animateCharactersSequentially(currentWriters);
+        
+        currentWriters.forEach(writer => {
+            writer.showOutline();
+        });
 
         drawingArea.addEventListener('click', handleAreaClick);
+        
+        if(!pinyinLabel.classList.contains('active')){
+            pinyinLabel.classList.add('active');
+        }
         
         userAnswers.push({
             correctCharacter: currentWord,
@@ -216,17 +225,19 @@ function createHanziWriters(characters) {
         const dashPattern = `${dashSize},${dashSize}`;
 
         svg.innerHTML = `
-            <rect x="0" y="0" width="${writerSize}" height="${writerSize}" fill="none" stroke="#A005" stroke-width="4" stroke-dasharray="${dashPattern}" />
-            <line x1="0" y1="0" x2="${writerSize}" y2="${writerSize}" stroke="#A005" stroke-width="2" stroke-dasharray="${dashPattern}" />
-            <line x1="${writerSize}" y1="0" x2="0" y2="${writerSize}" stroke="#A005" stroke-width="2" stroke-dasharray="${dashPattern}" />
-            <line x1="${writerSize/2}" y1="0" x2="${writerSize/2}" y2="${writerSize}" stroke="#A005" stroke-width="2" stroke-dasharray="${dashPattern}" />
-            <line x1="0" y1="${writerSize/2}" x2="${writerSize}" y2="${writerSize/2}" stroke="#A005" stroke-width="2" stroke-dasharray="${dashPattern}" />
+            <rect x="0" y="0" width="${writerSize}" height="${writerSize}" fill="none" stroke="#7e779155" stroke-width="4" stroke-dasharray="${dashPattern}" />
+            <line x1="0" y1="0" x2="${writerSize}" y2="${writerSize}" stroke="#7e779155" stroke-width="2" stroke-dasharray="${dashPattern}" />
+            <line x1="${writerSize}" y1="0" x2="0" y2="${writerSize}" stroke="#7e779155" stroke-width="2" stroke-dasharray="${dashPattern}" />
+            <line x1="${writerSize/2}" y1="0" x2="${writerSize/2}" y2="${writerSize}" stroke="#7e779155" stroke-width="2" stroke-dasharray="${dashPattern}" />
+            <line x1="0" y1="${writerSize/2}" x2="${writerSize}" y2="${writerSize/2}" stroke="#7e779155" stroke-width="2" stroke-dasharray="${dashPattern}" />
         `;
 
         strokeWrapper.appendChild(svg);
 
         let strokeColor = '#000000';
         let radicalColor = '#000000';
+            
+        
         if(isDarkMode){
             strokeColor = '#ffffff';
             radicalColor = '#ffffff';
@@ -237,8 +248,8 @@ function createHanziWriters(characters) {
             padding: 5,
             strokeColor: strokeColor,
             strokeAnimationSpeed: 1,
-            delayBetweenStrokes: 220,
-            drawingWidth: 16,
+            delayBetweenStrokes: 170,
+            drawingWidth: 40,
             showCharacter: false,
             showOutline: false,
             showHintAfterMisses: 2,
@@ -367,23 +378,39 @@ function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
         correctCharacter: characterData.character,
         isCorrect: isCorrect
     });
+    totalAnswered++;
 
-    currentIndex++;
+    //++;
     numFinished = 0;
+    skipState = 1;
+    skipBtn.textContent = 'Next';
+     
+    if(!pinyinLabel.classList.contains('active')){
+        pinyinLabel.classList.add('active');
+    }
+    
     setTimeout(() => {
-        showNextWord();
-    }, 1000);
+        //showNextWord();
+        //skipState = 1;
+        //skipBtn.textContent = 'Next';
+        
+        drawingArea.addEventListener('click', handleAreaClick);
+        
+        currentWriters.forEach(writer => {
+            writer.showOutline();
+        });
+    }, 200);
 }
 
 function showResults() {
     document.getElementById('test-container').style.display = 'none';
     resultsDiv.style.display = 'block';
     const totalQuestions = Math.min(NUM_QUESTIONS, shuffledWords.length);
-    const score = (correctAnswers / (totalAnswered-1)) * 100;
-    scoreSpan.textContent = `${correctAnswers} / ${(totalAnswered-1)} (of ${totalQuestions})`;
+    const score = (correctAnswers / (totalAnswered)) * 100;
+    scoreSpan.textContent = `${correctAnswers} / ${(totalAnswered)} (of ${totalQuestions})`;
     accuracySpan.textContent = `${score.toFixed(2)}%`;
     strokeAccuracySpan.textContent = `${((totalStrokeCount - totalMistakeCount) / totalStrokeCount * 100).toFixed(2)}% (${totalStrokeCount-totalMistakeCount}/${totalStrokeCount})`;
-    if(totalAnswered-1 == 0){
+    if(totalAnswered == 0){
         strokeAccuracySpan.textContent = `0% (0/0)`;
         scoreSpan.textContent = `0 / 0 of ${totalQuestions}`;
         accuracySpan.textContent = `0%`;

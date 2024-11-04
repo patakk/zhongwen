@@ -59,6 +59,14 @@
             <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('welcome') }}">Guide</a></li>
+            <li class="has-submenu">
+                <span>Decks</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
             <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
