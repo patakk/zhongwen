@@ -572,6 +572,27 @@ def get_card_data():
         message, character = flashcard_app.select_card(session['username'], session['deck'])
     return  jsonify({'message': message, **packed_data(character)})
 
+@app.route('/get_simple_char_data')
+@session_required
+def get_simple_char_data():
+    character = request.args.get('character')
+    
+    if character in flashcard_app.cards[session['deck']]:
+        data = flashcard_app.get_card_examples(session['deck'], character)
+    else: # look into all decks
+        for deck_name in flashcard_app.cards:
+            if character in flashcard_app.cards[deck_name]:
+                data = flashcard_app.get_card_examples(deck_name, character)
+                break
+    # session['deck'] = foundDeck
+    cdata = {
+        "character": character,
+        "pinyin": data.get('pinyin', ''),
+        "english": data.get('english', ''),
+    }
+    
+    return  jsonify({'message': 'success', **cdata})
+
 from collections import defaultdict
 
 @app.route('/user_progress')
@@ -822,6 +843,20 @@ def hanzitest_draw():
             "english": data['english'],
         })
     return render_template('puzzles/hanzitest_draw.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=flashcard_app.decks, deck=session['deck'])
+
+@app.route('/hanzipractice')
+@session_required
+@timing_decorator
+def hanzipractice():
+    deck = session['deck']
+    characters_data = []
+    for char, data in flashcard_app.cards[deck].items():
+        characters_data.append({
+            "character": char,
+            "pinyin": data['pinyin'],
+            "english": data['english'],
+        })
+    return render_template('hanzipractice.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=flashcard_app.decks, deck=session['deck'])
 
 @app.route('/hanzitest_choices')
 @session_required

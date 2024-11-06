@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/hanzi-writer-custom.js') }}"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hanzi 🖌️</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hanzipractice.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <style id="dynamic-styles"></style>
+        
+    </style>
+</head>
+<body>
+    <h1 class="title">Practice Hanzi 🖌️</h1>
+    <h2 id="deck-name"></h2>
+
+    <div class="hamburger" id="hamburgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="has-submenu">
+                <span>Hanzi Grid</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                        {% endfor %}
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <span>Flashcards</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                        {% endfor %}
+                </ul>
+            </li>
+            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
+            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
+            <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
+            <li class="has-submenu">
+                <span>Decks</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
+            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
+        </ul>
+    </div>
+    
+    <div id="test-container">
+        <div id="english-display"></div>
+        <div id="pinyin-display"></div>
+        <div id="drawing-area"></div>
+        <div id="buttons">
+            <button id="restart-btn">Reset</button>
+            <button id="skip-btn">Reveal</button>
+        </div>
+    </div>
+
+    <div id="confetti-container"></div>
+
+    <script>
+        const characters = {{ characters | tojson | safe }};
+        const inputdecks = {{ decks | tojson | safe }};
+        const inputdeck = {{ deck | tojson | safe }};
+        const username = {{ username | tojson | safe }};
+
+
+        function isIPhone(){
+            const ua = navigator.userAgent;
+            if (ua.includes('iPhone')) {
+                return true;
+            }
+            return false;
+        }
+
+        function isiPad(){
+            const ua = navigator.userAgent;
+            if (ua.includes('iPad')) {
+                return true;
+            }
+            return false;
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hanzipractice.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+</body>
+</html>
