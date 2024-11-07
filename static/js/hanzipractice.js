@@ -11,6 +11,7 @@ const skipBtn = document.getElementById('skip-btn');
 const pinyinLabel = document.getElementById('pinyin-display');
 
 let currentIndex = 0;
+let currentCharacterData = null;
 let correctAnswers = 0;
 let shuffledWords = [];
 let userAnswers = [];
@@ -78,19 +79,23 @@ function showNextWord(charData) {
         pinyinLabel.classList.remove('active');
     }
     window.scrollTo(0, 0);
-    let characterData = shuffledWords[currentIndex];
+    currentCharacterData = shuffledWords[currentIndex];
     
     if (charData) {
-        characterData = charData;
+        currentCharacterData = charData;
     }
 
-    englishDisplay.textContent = characterData.english;
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.set('character', currentCharacterData.character);
+    history.pushState({}, '', newUrl);
+
+    englishDisplay.textContent = currentCharacterData.english;
     wordTotalMistakeCount = 0;
     wordTotalStrokeCount = 0;
-    currentEnglish = characterData.english;
-    currentPinyin = characterData.pinyin;
-    createHanziWriters(characterData.character);
-    pinyinLabel.textContent = characterData.pinyin;
+    currentEnglish = currentCharacterData.english;
+    currentPinyin = currentCharacterData.pinyin;
+    createHanziWriters(currentCharacterData.character);
+    pinyinLabel.textContent = currentCharacterData.pinyin;
     confirmDarkmode();
     
     window.scrollTo(0, 1);
@@ -109,8 +114,7 @@ pinyinLabel.addEventListener('click', () => {
 
 function resetWord(){
     window.scrollTo(0, 0);
-    let characterData = shuffledWords[currentIndex];
-    englishDisplay.textContent = characterData.english;
+    englishDisplay.textContent = currentCharacterData.english;
     wordTotalMistakeCount = 0;
     wordTotalStrokeCount = 0;
     
@@ -120,13 +124,13 @@ function resetWord(){
     streakCount = 0;
     streakCheckpoint = streakIncrement;
 
-    skipBtn.textContent = skipButtonLable2;
+    skipBtn.textContent = skipButtonLable1;
     
-    currentWord = characterData.character;
-    currentEnglish = characterData.english;
-    currentPinyin = characterData.pinyin;
-    createHanziWriters(characterData.character);
-    pinyinLabel.textContent = characterData.pinyin;
+    currentWord = currentCharacterData.character;
+    currentEnglish = currentCharacterData.english;
+    currentPinyin = currentCharacterData.pinyin;
+    createHanziWriters(currentCharacterData.character);
+    pinyinLabel.textContent = currentCharacterData.pinyin;
     confirmDarkmode();
     
     drawingArea.removeEventListener('click', handleAreaClick);
@@ -476,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
     NUM_QUESTIONS = Math.max(5, characters.length);
 
     const urlParams = new URLSearchParams(window.location.search);
-    const word = urlParams.get('word');
+    const word = urlParams.get('character');
 
     if(word){
         getCimpleCharData(word, startTest);

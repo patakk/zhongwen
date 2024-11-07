@@ -63,6 +63,22 @@
     color: white;
 }
 
+#flashcard_practice {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    padding: 22px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+    border-radius: 5px;
+}
+
+#flashcard_practice::selection {
+    background-color: black;
+    color: white;
+}
+
 #flashcard_description {
     width: 100%;
     font-size: 16px;
@@ -165,6 +181,10 @@
     }
 
     #flashcard_hsk {
+        font-size: 14px;
+    }
+
+    #flashcard_practice {
         font-size: 14px;
     }
 

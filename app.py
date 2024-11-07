@@ -577,6 +577,7 @@ def get_card_data():
 def get_simple_char_data():
     character = request.args.get('character')
     
+    data = {}
     if character in flashcard_app.cards[session['deck']]:
         data = flashcard_app.get_card_examples(session['deck'], character)
     else: # look into all decks
