@@ -10,14 +10,11 @@ import logging
 import random
 import json
 import time
-import sys
 import os
 import io
-import hashlib
 from sqlalchemy.exc import SQLAlchemyError
-from dateutil import parser
 
-from gen_data_from_word_list import gen_data_from_word_list
+# from gen_data_from_word_list import gen_data_from_word_list
 
 from extensions import db
 from dbmodels import UserProgress, Card
@@ -215,7 +212,7 @@ class FlashcardApp:
                 return json.load(f)
         elif filename.endswith('.txt'):
             words = open(filename, 'r', encoding='utf-8').read().strip().split('\n')
-            words_data = gen_data_from_word_list(words)
+            # words_data = gen_data_from_word_list(words)
             return words_data
     def set_deck(self, deck):
         self.current_deck = deck
