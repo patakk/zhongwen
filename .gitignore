@@ -9,6 +9,13 @@ get.py
 cliapp.py
 parser.py
 
+create_deck.py
+gen_data_from_word_list.py
+generate_descriptions.py
+static/css/hanzipractice_backup.js
+static/js/hanzipractice_backup.js
+templates/hanzipractice_backup.html
+
 fire
 
 user_progress/

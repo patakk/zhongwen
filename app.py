@@ -17,6 +17,8 @@ import hashlib
 from sqlalchemy.exc import SQLAlchemyError
 from dateutil import parser
 
+from gen_data_from_word_list import gen_data_from_word_list
+
 from extensions import db
 from dbmodels import UserProgress, Card
 
@@ -185,6 +187,7 @@ class FlashcardApp:
         self.last_new_cards_date = {}
         self.presented_new_cards = {}
         self.decks = {
+            "minideck": {'file': "data/mini_deck.json", 'name': 'Minideck'},
             "shas": {'file': "data/shas_class_cards.json", 'name': 'ShaSha\'s Class'},
             "top140": {'file': "data/top140_cards.json", 'name': 'Top 140'},
             "hsk1": {'file': "data/hsk1_cards.json", 'name': 'HSK 1'},
@@ -193,7 +196,6 @@ class FlashcardApp:
             "hsk4": {'file': "data/hsk4_cards.json", 'name': 'HSK 4'},
             "hsk5": {'file': "data/hsk5_cards.json", 'name': 'HSK 5'},
             "hsk6": {'file': "data/hsk6_cards.json", 'name': 'HSK 6'},
-            "minideck": {'file': "data/mini_deck.json", 'name': 'Minideck'},
             "review": {'file': "data/review_deck.json", 'name': 'ReviewDeck'},
         }
         self.current_deck = "shas"
@@ -207,9 +209,14 @@ class FlashcardApp:
             os.makedirs('user_progress')
 
     def load_cards(self, deck):
-        with open(self.decks[deck]['file'], 'r', encoding='utf-8') as f:
-            return json.load(f)
-
+        filename = self.decks[deck]['file']
+        if filename.endswith('.json'):
+            with open(filename, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        elif filename.endswith('.txt'):
+            words = open(filename, 'r', encoding='utf-8').read().strip().split('\n')
+            words_data = gen_data_from_word_list(words)
+            return words_data
     def set_deck(self, deck):
         self.current_deck = deck
 
@@ -256,9 +263,12 @@ class FlashcardApp:
     def get_char_from_deck(self, deck, character):
         base_data = self.cards[deck].get(character, {})
         if not base_data:
+            print(f"Character {character} not found in deck {deck}")
             for deck_name in self.cards:
                 if deck_name != deck and character in self.cards[deck_name]:
                     base_data = self.cards[deck_name][character]
+                    print(base_data)
+
                     break
         return base_data
 
@@ -913,12 +923,13 @@ def get_characters_pinyinenglish():
     # print("Request method:", request.method)
     # print("Received characters:", characters)
 
+    inserted = []
     if characters and isinstance(characters, list) and len(characters) > 0:
         # If specific characters are provided
         characters = sorted(characters)
         for character in characters:
             for deck in flashcard_app.cards:
-                if character in flashcard_app.cards[deck]:
+                if character in flashcard_app.cards[deck] and character not in inserted:
                     data = flashcard_app.get_char_from_deck(deck, character)
                     all_data.append({
                         "character": character,
@@ -927,6 +938,7 @@ def get_characters_pinyinenglish():
                         "hsk_level": data.get('hsk_level', ''),
                         "deck": deck
                     })
+                    inserted.append(character)
                     break  # Stop searching once we find the character in a deck
     else:
         # If no specific characters are provided or it's a GET request, get all characters
@@ -1434,5 +1446,4 @@ def save_user_stroke(username, canvas_id, stroke):
         json.dump(stroke, f)
 
 if __name__ == '__main__':
-    debug = os.environ.get('DEBUG', 'False').lower() == 'true'
-    app.run(host='0.0.0.0', port=5135, debug=debug)
+    app.run(host='0.0.0.0', port=5135, debug=True)

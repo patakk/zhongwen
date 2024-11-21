@@ -175,7 +175,7 @@ function renderCardData(data) {
 
     document.getElementById('flashcard_pinyin').textContent = data.pinyin;
     document.getElementById('flashcard_pinyin').dataset.characters = data.character;
-    document.getElementById('flashcard_english').textContent = data.english;
+    document.getElementById('flashcard_english').innerHTML = data.english;
     document.getElementById('flashcard_description').innerHTML = data.html;
     document.getElementById('flashcard_function').textContent = "(" + data.function + ")";
     document.getElementById('flashcard_practice').textContent = data.character.length <= 3 ? "practice" : "";
