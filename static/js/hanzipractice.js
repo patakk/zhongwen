@@ -80,7 +80,7 @@ function showNextWord(charData) {
     }
     window.scrollTo(0, 0);
     if(currentIndex >= shuffledWords.length){
-        shuffledWords = shuffleArray(shuffledWords);
+        shuffleArray(shuffledWords);
         currentIndex = 0;
     }
     currentCharacterData = shuffledWords[currentIndex];
