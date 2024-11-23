@@ -651,6 +651,9 @@ def user_progress():
     # print(session[session['username']]["base_new_cards_limit"])
     return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), deck=deck, deckname=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
 
+@app.route('/version')
+def version():
+    return "v0.0.1"
 
 
 @app.route('/hanziviz')
