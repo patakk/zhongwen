@@ -165,6 +165,10 @@ function toggleGridList(){
         if(window.innerWidth / window.innerHeight > 16/9){
         }
         showList = true;
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('list', 'true');
+        history.pushState({}, '', newUrl);
+
     }
     confirmDarkmode();
 }
