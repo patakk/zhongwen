@@ -265,7 +265,7 @@ function populateList(list, characters) {
     });
 }
 
-function createListItem(char, idx) {
+function createListItem(charData, idx) {
     const item = document.createElement('div');
     item.className = 'pinyin-english-item';
     item.innerHTML = `
@@ -273,10 +273,10 @@ function createListItem(char, idx) {
             <div class="index-container">
                 <span class="list-index">${idx + 1}.</span>
             </div>
-            <span class=" list-character list-character-size">${char.character}</span>
-            <span class="list-pinyin">${char.pinyin}</span>
+            <span class=" list-character list-character-size">${charData.character}</span>
+            <span class="list-pinyin">${charData.pinyin}</span>
         </div>
-        <span class="list-english">${char.english}</span>
+        <span class="list-english">${charData.english}</span>
     `;
     item.addEventListener('click', () => {
         showFlashcard(charData.character); 
