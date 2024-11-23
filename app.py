@@ -140,7 +140,7 @@ def hard_session_required(func):
     def wrapper(*args, **kwargs):
         logger.info(f"Session data: {session}")
         if 'deck' not in session:
-            session['deck'] = 'review'
+            session['deck'] = 'minideck'
         if 'font' not in session:
             session['font'] = 'Noto Sans Mono'
         logger.info(f"Username in session: {session.get('username', 'Not set')}")
@@ -154,7 +154,7 @@ def session_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if 'deck' not in session:
-            session['deck'] = 'review'
+            session['deck'] = 'minideck'
         if 'font' not in session:
             session['font'] = 'Noto Sans Mono'
         if 'darkmode' not in session:
@@ -822,7 +822,7 @@ def grid():
     character = request.args.get('query')
     querydeck = request.args.get('deck')
     if not querydeck:
-        querydeck = 'review'
+        querydeck = 'minideck'
     logger.info(f"Query deck: {querydeck}")
     if not character:
         characters = list(flashcard_app.cards.get(querydeck, {}).keys())
