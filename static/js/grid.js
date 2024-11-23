@@ -159,6 +159,9 @@ function toggleGridList(){
         showList = false;
         document.getElementById('grid-cont').style.display = 'block';
         document.getElementById('lcontainer').style.display = 'none';
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('list');
+        history.pushState({}, '', newUrl);
     } else {
         document.getElementById('lcontainer').style.display = 'block';
         document.getElementById('grid-cont').style.display = 'none';
@@ -168,7 +171,6 @@ function toggleGridList(){
         const newUrl = new URL(window.location);
         newUrl.searchParams.set('list', 'true');
         history.pushState({}, '', newUrl);
-
     }
     confirmDarkmode();
 }
