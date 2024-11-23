@@ -511,6 +511,10 @@ function changeDeck(deck, func=null) {
             throw new Error('Network response was not ok');
         }
         console.log('Deck changed successfully');
+        // remove character query from url
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('character');
+        history.pushState({}, '', newUrl);
         window.location.reload();
     })
     .catch(error => {
