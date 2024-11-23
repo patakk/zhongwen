@@ -26,24 +26,24 @@ function confirmDarkmode(){
         if(isDarkMode){
             //changeAllSvgStrokeColors('#F7A5');7e779155
             changeAllSvgStrokeColors('#7e779155');
-            // currentWriters.forEach(writer => {
-            //     writer.updateColor('strokeColor', '#ccc');
-            //     writer.updateColor('radicalColor', '#ccc');
-            //     writer.updateColor('outlineColor', '#222');
-            //     //writer.updateColor('drawingColor', '#7e7791');
-            //     writer.updateColor('drawingColor', '#ccc');
-            // });
+            currentWriters.forEach(writer => {
+                writer.updateColor('strokeColor', '#ccc');
+                writer.updateColor('radicalColor', '#ccc');
+                writer.updateColor('outlineColor', '#222');
+                //writer.updateColor('drawingColor', '#7e7791');
+                writer.updateColor('drawingColor', '#ccc');
+            });
         }
         else{
             //changeAllSvgStrokeColors('#A005');
             changeAllSvgStrokeColors('#aea5c955');
-            // currentWriters.forEach(writer => {
-            //     writer.updateColor('strokeColor', '#111');
-            //     writer.updateColor('radicalColor', '#111');
-            //     writer.updateColor('outlineColor', '#BBB');
-            //     //writer.updateColor('drawingColor', '#aea5c9');
-            //     writer.updateColor('drawingColor', '#111');
-            // });
+            currentWriters.forEach(writer => {
+                writer.updateColor('strokeColor', '#111');
+                writer.updateColor('radicalColor', '#111');
+                writer.updateColor('outlineColor', '#BBB');
+                //writer.updateColor('drawingColor', '#aea5c9');
+                writer.updateColor('drawingColor', '#111');
+            });
         }
 
     }
