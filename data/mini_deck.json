@@ -391,14 +391,14 @@
         "function": "adverb",
         "hsk_level": 4
     },
-    "秘方": {
-        "hanzi": "秘方",
-        "pinyin": "mì fāng",
+    "地方": {
+        "hanzi": "地方",
+        "pinyin": "dì fāng",
         "literal": "",
-        "english": " secret recipe",
+        "english": "1)  region; regional (away from the central administration); local 2)  area; place; space; room; territory",
         "char_matches": {},
-        "pinyin_tones": "mi4 fang1",
+        "pinyin_tones": "di4 fang1",
         "function": "noun",
-        "hsk_level": -1
+        "hsk_level": 3
     }
 }
