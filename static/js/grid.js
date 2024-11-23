@@ -272,7 +272,12 @@ function createListItem(char, idx) {
         </div>
         <span class="list-english">${char.english}</span>
     `;
-    item.addEventListener('click', () => showFlashcard(char.character));
+    item.addEventListener('click', () => {
+        showFlashcard(charData.character); 
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('query', charData.character);
+        history.pushState({}, '', newUrl);
+    });
     return item;
 }
 
@@ -655,6 +660,13 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(currentColor)
         
         scrollToTop(document.getElementById('flashcard_container'));
+    }
+
+    // if there is a query parameter for togglign the list grid, apply it
+    const urlParams = new URLSearchParams(window.location.search);
+    const list = urlParams.get('list');
+    if(list === 'true'){
+        toggleGridList();
     }
 
 });
