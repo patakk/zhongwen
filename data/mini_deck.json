@@ -158,5 +158,227 @@
         "pinyin_tones": "zhen1",
         "function": "adverb",
         "hsk_level": 2
+    },
+    "来": {
+        "hanzi": "来",
+        "pinyin": "lái",
+        "literal": "",
+        "english": " to come; to arrive; to come round; ever since; next",
+        "char_matches": {},
+        "pinyin_tones": "lai2",
+        "function": "verb",
+        "hsk_level": 1
+    },
+    "欢迎": {
+        "hanzi": "欢迎",
+        "pinyin": "huān yíng",
+        "literal": "",
+        "english": " to welcome; welcome",
+        "char_matches": {},
+        "pinyin_tones": "huan1 ying2",
+        "function": "verb",
+        "hsk_level": 3
+    },
+    "为什么": {
+        "hanzi": "为什么",
+        "pinyin": "wèi shén me",
+        "literal": "",
+        "english": " why?; for what reason?",
+        "char_matches": {},
+        "pinyin_tones": "wei4 shen2 me",
+        "function": "pronoun",
+        "hsk_level": 2
+    },
+    "为": {
+        "hanzi": "为",
+        "pinyin": "wèi",
+        "literal": "",
+        "english": "1)  as (in the capacity of); to take sth as; to act as; to serve as; to behave as; to become; to be; to do; by (in the passive voice) 2)  because of; for; to 3)  variant of 為|为[wei2]; as (i.e. in the capacity of); to take sth as; to act as; to serve as; to behave as; to become; to be; to do 4)  variant of 為|为[wei4], because of; for; to ",
+        "char_matches": {},
+        "pinyin_tones": "wei4",
+        "function": "preposition",
+        "hsk_level": 3
+    },
+    "因为": {
+        "hanzi": "因为",
+        "pinyin": "yīn wèi",
+        "literal": "",
+        "english": " because; owing to; on account of",
+        "char_matches": {},
+        "pinyin_tones": "yin1 wei4",
+        "function": "complement",
+        "hsk_level": 2
+    },
+    "分": {
+        "hanzi": "分",
+        "pinyin": "fēn",
+        "literal": "",
+        "english": "1)  to divide; to separate; to distribute; to allocate; to distinguish (good and bad); part or subdivision; fraction; one tenth (of certain units); unit of length equivalent to 0.33 cm; minute (unit of time); minute (angular measurement unit); a point (in sports or games); 0.01 yuan (unit of money) 2)  part; share; ingredient; component ",
+        "char_matches": {},
+        "pinyin_tones": "fen1",
+        "function": "verb",
+        "hsk_level": 3
+    },
+    "分公司": {
+        "hanzi": "分公司",
+        "pinyin": "fēn gōng sī",
+        "literal": "",
+        "english": " subsidiary company; branch office",
+        "char_matches": {},
+        "pinyin_tones": "fen1 gong1 si1",
+        "function": "noun",
+        "hsk_level": -1
+    },
+    "老板": {
+        "hanzi": "老板",
+        "pinyin": "lǎo bǎn",
+        "literal": "",
+        "english": "1)  variant of 老闆|老板[lao3 ban3] 2)  Robam (brand) 3)  boss; business proprietor",
+        "char_matches": {},
+        "pinyin_tones": "lao3 ban3",
+        "function": "noun",
+        "hsk_level": 5
+    },
+    "让": {
+        "hanzi": "让",
+        "pinyin": "ràng",
+        "literal": "",
+        "english": " to yield; to permit; to let sb do sth; to have sb do sth; to make sb (feel sad etc); by (indicates the agent in a passive clause, like 被[bei4])",
+        "char_matches": {},
+        "pinyin_tones": "rang4",
+        "function": "verb",
+        "hsk_level": 2
+    },
+    "当让": {
+        "hanzi": "当让",
+        "pinyin": "dāng ràng",
+        "literal": "",
+        "english": "",
+        "char_matches": {},
+        "pinyin_tones": "dang1 rang4",
+        "function": [
+            "preposition",
+            "verb"
+        ],
+        "hsk_level": [
+            4,
+            2
+        ]
+    },
+    "想": {
+        "hanzi": "想",
+        "pinyin": "xiǎng",
+        "literal": "",
+        "english": " to think; to believe; to suppose; to wish; to want; to miss (feel wistful about the absence of sb or sth)",
+        "char_matches": {},
+        "pinyin_tones": "xiang3",
+        "function": "verb",
+        "hsk_level": 1
+    },
+    "可爱": {
+        "hanzi": "可爱",
+        "pinyin": "kě ài",
+        "literal": "",
+        "english": " adorable; cute; lovely",
+        "char_matches": {},
+        "pinyin_tones": "ke3 ai4",
+        "function": "verb",
+        "hsk_level": 3
+    },
+    "想一想": {
+        "hanzi": "想一想",
+        "pinyin": "xiǎng yī xiǎng",
+        "literal": "",
+        "english": "",
+        "char_matches": {},
+        "pinyin_tones": "xiang3 yi1 xiang3",
+        "function": "idiom",
+        "hsk_level": -1
+    },
+    "家": {
+        "hanzi": "家",
+        "pinyin": "jiā",
+        "literal": "",
+        "english": "1)  see 傢伙|家伙[jia1 huo5] 2)  home; family; (polite) my (sister, uncle etc); classifier for families or businesses; refers to the philosophical schools of pre-Han China; noun suffix for a specialist in some activity, such as a musician or revolutionary, corresponding to English -ist, -er, -ary or -ian",
+        "char_matches": {},
+        "pinyin_tones": "jia1",
+        "function": "classifier",
+        "hsk_level": 1
+    },
+    "家人": {
+        "hanzi": "家人",
+        "pinyin": "jiā rén",
+        "literal": "",
+        "english": " household; (one's) family",
+        "char_matches": {},
+        "pinyin_tones": "jia1 ren2",
+        "function": "noun",
+        "hsk_level": -1
+    },
+    "有": {
+        "hanzi": "有",
+        "pinyin": "yǒu",
+        "literal": "",
+        "english": " to have; there is; there are; to exist; to be",
+        "char_matches": {},
+        "pinyin_tones": "you3",
+        "function": "verb",
+        "hsk_level": 1
+    },
+    "钱": {
+        "hanzi": "钱",
+        "pinyin": "qián",
+        "literal": "",
+        "english": "1)  surname Qian 2)  coin; money; unit of weight, one tenth of a tael 兩|两[liang3] ",
+        "char_matches": {},
+        "pinyin_tones": "qian2",
+        "function": "noun",
+        "hsk_level": 1
+    },
+    "多少": {
+        "hanzi": "多少",
+        "pinyin": "duō shǎo",
+        "literal": "",
+        "english": "1)  number; amount; somewhat 2)  how much?; how many?; (phone number, student ID etc) what number? ",
+        "char_matches": {},
+        "pinyin_tones": "duo1 shao3",
+        "function": "number",
+        "hsk_level": 1
+    },
+    "几岁": {
+        "hanzi": "几岁",
+        "pinyin": "jǐ suì",
+        "literal": "",
+        "english": " how old are you? (familiar, or to a child)",
+        "char_matches": {},
+        "pinyin_tones": "ji3 sui4",
+        "function": "number",
+        "hsk_level": -1
+    },
+    "几": {
+        "hanzi": "几",
+        "pinyin": "jǐ",
+        "literal": "",
+        "english": "1)  small table 2)  almost 3)  how much; how many; several; a few ",
+        "char_matches": {},
+        "pinyin_tones": "ji3",
+        "function": "number",
+        "hsk_level": 1
+    },
+    "多大": {
+        "hanzi": "多大",
+        "pinyin": "duō dà",
+        "literal": "",
+        "english": " how old?; how big?; how much?; so big; that much",
+        "char_matches": {},
+        "pinyin_tones": "duo1 da4",
+        "function": [
+            "number",
+            "adjective"
+        ],
+        "hsk_level": [
+            1,
+            1
+        ]
     }
 }
