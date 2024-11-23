@@ -40,7 +40,7 @@ def create_app():
 app = create_app()
 
 log_file = 'zhongwen.log'
-if os.path.exists('/home/patakk/logs/zhongwen.log'):
+if os.path.exists('/home/patakk/logs'):
     log_file = '/home/patakk/logs/zhongwen.log'
 
 # logging
