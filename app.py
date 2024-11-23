@@ -51,8 +51,6 @@ logger = logging.getLogger(__name__)
 
 logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
 
-
-
 with app.app_context():
     db.create_all()
 
