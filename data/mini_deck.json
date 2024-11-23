@@ -380,5 +380,25 @@
             1,
             1
         ]
+    },
+    "大概": {
+        "hanzi": "大概",
+        "pinyin": "dà gài",
+        "literal": "",
+        "english": " roughly; probably; rough; approximate; about; general idea",
+        "char_matches": {},
+        "pinyin_tones": "da4 gai4",
+        "function": "adverb",
+        "hsk_level": 4
+    },
+    "秘方": {
+        "hanzi": "秘方",
+        "pinyin": "mì fāng",
+        "literal": "",
+        "english": " secret recipe",
+        "char_matches": {},
+        "pinyin_tones": "mi4 fang1",
+        "function": "noun",
+        "hsk_level": -1
     }
 }
