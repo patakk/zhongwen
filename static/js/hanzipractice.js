@@ -79,6 +79,10 @@ function showNextWord(charData) {
         pinyinLabel.classList.remove('active');
     }
     window.scrollTo(0, 0);
+    if(currentIndex >= shuffledWords.length){
+        shuffledWords = shuffleArray(shuffledWords);
+        currentIndex = 0;
+    }
     currentCharacterData = shuffledWords[currentIndex];
     
     if (charData) {
