@@ -509,7 +509,7 @@ window.addEventListener('resize', () => {
     // startTest();
 });
 
-function get_characters_for_practice() {
+function get_characters_for_practice(func=null) {
     fetch(`./get_characters_for_practice?deck=${currentDeck}`)
         .then(response => {
             if (!response.ok) {
@@ -519,6 +519,9 @@ function get_characters_for_practice() {
         })
         .then(data => {
             characters = data.characters;
+            if(func){
+                func();
+            }
         })
         .catch(error => {
             console.error('Error:', error);
@@ -547,9 +550,8 @@ function changeDeck(deck, func=null) {
         document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
 
         deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[currentDeck].name}</span>)`;
-        startTest();
+        get_characters_for_practice(startTest);
 
-        get_characters_for_practice();
 
         // window.location.reload();
     })
