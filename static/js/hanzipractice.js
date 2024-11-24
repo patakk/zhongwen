@@ -94,6 +94,20 @@ function showNextWord(charData) {
     history.pushState({}, '', newUrl);
 
     englishDisplay.textContent = currentCharacterData.english;
+    
+    if(currentCharacterData.english.constructor === Array){
+        englishDisplay.innerHTML = '';
+        let englishList = document.createElement('ul');
+        currentCharacterData.english.forEach(english => {
+            let englishItem = document.createElement('li');
+            englishItem.textContent = english;
+            englishList.appendChild(englishItem);
+        });
+        englishDisplay.appendChild(englishList);
+    } else {
+        englishDisplay.innerHTML = currentCharacterData.english;
+    }
+
     wordTotalMistakeCount = 0;
     wordTotalStrokeCount = 0;
     currentEnglish = currentCharacterData.english;

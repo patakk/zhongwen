@@ -173,16 +173,39 @@ html::-webkit-scrollbar {
     } 
 }
 
-
 #english-display {
+    display: flex;
+    justify-content: center;
+
     border-top: 1px solid #00000055;
     padding-top: 55px;
     padding-bottom: 22px;
-    font-size: 33px;
+    font-size: 18px;
 }
 
+
+#english-display ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    text-align: left;
+}
+
+#english-display li {
+    padding: 10px;
+    border-bottom: 2px dashed #6665;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#english-display li:last-child {
+    border-bottom: none;
+}
+
+
 #pinyin-display {
-    font-size: 33px;
+    font-size: 26px;
     background-color: #000000;
     width: 200px;
     text-align: center;

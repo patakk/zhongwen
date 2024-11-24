@@ -175,11 +175,22 @@ function renderCardData(data) {
 
     document.getElementById('flashcard_pinyin').textContent = data.pinyin;
     document.getElementById('flashcard_pinyin').dataset.characters = data.character;
-    document.getElementById('flashcard_english').innerHTML = data.english;
+    if(data.english.constructor === Array){
+        document.getElementById('flashcard_english').innerHTML = '';
+        let englishList = document.createElement('ul');
+        data.english.forEach(english => {
+            let englishItem = document.createElement('li');
+            englishItem.textContent = english;
+            englishList.appendChild(englishItem);
+        });
+        document.getElementById('flashcard_english').appendChild(englishList);
+    } else {
+        document.getElementById('flashcard_english').innerHTML = data.english;
+    }
     document.getElementById('flashcard_description').innerHTML = data.html;
     document.getElementById('flashcard_function').textContent = "(" + data.function + ")";
     document.getElementById('flashcard_practice').textContent = data.character.length <= 3 ? "practice" : "";
-    // change the url it's leading to
+    
     document.getElementById('flashcard_practice').href = `./hanzipractice?character=${encodeURIComponent(data.character)}`;
     displayCharMatches(data.char_matches);
 
