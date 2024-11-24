@@ -1,5 +1,5 @@
 
-let currentDeck = 'shas';
+let currentDeck = 'minideck';
 let currentFont = 'Noto Sans Mono';
 
 
@@ -126,6 +126,11 @@ function getDeck_c() {
                     // Update highlighting
                     document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
                     this.classList.add('selected-option');
+                    console.log('Deck changed to', currentDeck);
+                    
+                    const newUrl = new URL(window.location);
+                    newUrl.searchParams.set('deck', currentDeck);
+                    history.pushState({}, '', newUrl);
 
                     // Close dropdown
                     document.getElementById('dropdownMenu').style.display = 'none';
@@ -188,15 +193,18 @@ document.addEventListener('DOMContentLoaded', function() {
     var fontChangers = document.querySelectorAll('.font-change');
     var deckChangers = document.querySelectorAll('.deck-change');
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const deck = urlParams.get('deck') || 'minideck';
+    currentDeck = deck;
     
     if(username === 'tempuser'){
         try{
+            console.log('tempuser');
             let logoutbutton = document.getElementById('logoutButton');
-            let flashcardsUrl = document.getElementById('flashcardsUrl');
-            flashcardsUrl.style.display = 'none';
             logoutbutton.style.display = 'none';
         }
         catch(e){
+            console.log(e);
         }
     }
     

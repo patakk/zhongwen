@@ -337,3 +337,7 @@ and (max-width: 1024px) {
 .clickable-char.darkmode {
     color: rgb(233,233,233);
 }
+
+#flashcard_practice.darkmode {
+    color: rgb(233,233,233);
+}

@@ -85,7 +85,7 @@
     <div id="confetti-container"></div>
 
     <script>
-        const characters = {{ characters | tojson | safe }};
+        let characters = {{ characters | tojson | safe }};
         const inputdecks = {{ decks | tojson | safe }};
         const inputdeck = {{ deck | tojson | safe }};
         const username = {{ username | tojson | safe }};

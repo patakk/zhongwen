@@ -60,10 +60,22 @@
     cursor: pointer;
 }
 
+.dropdown-menu.darkmode a, .dropdown-menu.darkmode span {
+    color: #ffffff;
+    background-color: #161616;
+}
+
 .dropdown-menu a:hover, .dropdown-menu span:hover {
     background-color: black;
     color: white;
 }
+
+
+.dropdown-menu.darkmode a:hover, .dropdown-menu.darkmode span:hover {
+    background-color: #ffffff;
+    color: #222;
+}
+
 
 .dropdown-menu li {
     margin: 0;
@@ -80,6 +92,16 @@
     background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23FFF' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
 }
 
+.has-submenu.darkmode > span {
+    background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23FFF' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+    background-repeat: no-repeat;
+    background-position: right 5px top 50%;
+}
+
+.has-submenu.darkmode > span:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+}
+
 .submenu {
     display: none;
     position: absolute;
@@ -89,6 +111,10 @@
     border: 2px solid black;
     width: 200px;
     box-sizing: border-box;
+}
+
+.submenu.darkmode {
+    border: 1px solid white;
 }
 
 .has-submenu:hover .submenu {
@@ -143,6 +169,46 @@
 #logoutButton:hover {
     background-color: #ff0000;
     color: rgb(255, 255, 255);
+}
+
+#logoutButton.darkmode {
+    background-color: #161616;
+    color: #ffffff;
+}
+
+#logoutButton.darkmode:hover {
+    background-color: #ff0000;
+    color: rgb(255, 255, 255);
+}
+
+.dropdown-menu.darkmode {
+    background-color: #161616;
+    color: #ffffff;
+}
+
+.dropdown-menu.darkmode a {
+    color: #ffffff;
+    background-color: #161616;
+}
+
+.dropdown-menu.darkmode a:hover {
+    background-color: #ffffff;
+    color: #222;
+}
+
+.dropdown-menu.darkmode .selected-option {
+    background-color: #ff580a;
+    background-color: #f12400;
+    color: #ffffff;
+}
+
+
+.hamburger.darkmode span {
+    background-color: white;
+}
+
+.dropdown-menu.darkmode {
+    border: 1px solid white;
 }
 
 /* .color-change {

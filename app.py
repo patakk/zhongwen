@@ -258,12 +258,11 @@ class FlashcardApp:
     def get_char_from_deck(self, deck, character):
         base_data = self.cards[deck].get(character, {})
         if not base_data:
-            print(f"Character {character} not found in deck {deck}")
+            logger.info(f"Character {character} not found in deck {deck}")
             for deck_name in self.cards:
                 if deck_name != deck and character in self.cards[deck_name]:
                     base_data = self.cards[deck_name][character]
-                    print(base_data)
-
+                    logger.info(base_data)
                     break
         return base_data
 
@@ -541,7 +540,7 @@ class FlashcardApp:
         #     attempts += 1
 
         if attempts == max_attempts:
-            print(f"Warning: Max attempts reached when selecting card")
+            logger.info(f"Warning: Max attempts reached when selecting card")
 
         daily_new_cards = load_user_value(username, 'daily_new_cards') or {}
         presented_new_cards = load_user_value(username, 'presented_new_cards') or {}
@@ -711,7 +710,7 @@ def log():
     if data and 'log' in data:
         log_message = data['log']
         # Do something with the log message, e.g., print it or save it to a file
-        print(f"[LOG] {log_message}")
+        logger.info(f"[LOG] {log_message}")
         return jsonify({"status": "success", "message": "Log received"}), 200
     return jsonify({"status": "error", "message": "Invalid log data"}), 400
 
@@ -806,12 +805,11 @@ def characters():
     character = request.args.get('query')
     if not character:
         characters = list(flashcard_app.cards[session['deck']].keys())
-        print(f"Initial characters: {len(characters)}")  # Debug print
+        logger.info(f"Initial characters: {len(characters)}")  # Debug print
         return render_template('characters.html', username=session['username'], characters=characters, character=None)
     
     pc = packed_data(character)
     characters = list(flashcard_app.cards[pc['deck']].keys())
-    print(len(characters))
     return render_template('characters.html', username=session['username'], characters=characters, character=pc)
 
 
@@ -826,7 +824,7 @@ def grid():
     logger.info(f"Query deck: {querydeck}")
     if not character:
         characters = list(flashcard_app.cards.get(querydeck, {}).keys())
-        print(f"Initial characters: {len(characters)}")  # Debug print
+        logger.info(f"Initial characters: {len(characters)}")  # Debug print
         return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=None, decks=flashcard_app.decks, deck=querydeck)
     pc = packed_data(character)
     characters = list(flashcard_app.cards[pc['deck']].keys())
@@ -874,6 +872,20 @@ def hanzipractice():
             "english": data['english'],
         })
     return render_template('hanzipractice.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=flashcard_app.decks, deck=session['deck'])
+
+@app.route('/get_characters_for_practice', methods=['GET'])
+@session_required
+@timing_decorator
+def get_characters_for_practice():
+    deck = session['deck']
+    characters_data = []
+    for char, data in flashcard_app.cards[deck].items():
+        characters_data.append({
+            "character": char,
+            "pinyin": data['pinyin'],
+            "english": data['english'],
+        })
+    return jsonify({"characters": characters_data})
 
 @app.route('/hanzitest_choices')
 @session_required

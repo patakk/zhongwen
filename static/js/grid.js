@@ -602,7 +602,7 @@ function loadAllData(){
         
         // get deck from url
         const urlParams = new URLSearchParams(window.location.search);
-        const deck = urlParams.get('deck', currentDeck);
+        const deck = urlParams.get('deck') || 'minideck';
         currentDeck = deck;
         drawBothLayouts(currentData);
 

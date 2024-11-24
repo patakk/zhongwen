@@ -57,7 +57,7 @@ function startTest(charData) {
     window.scrollTo(0, 1);
     showNextWord(charData);
     document.getElementById('test-container').style.display = 'block';
-    deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[inputdeck].name}</span>)`;
+    // deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[currentDeck].name}</span>)`;
 }
 
 function showNextWord(charData) {
@@ -480,11 +480,22 @@ function showResults() {
 
 document.addEventListener('DOMContentLoaded', () => {
     getDarkmode();
-    deckNameElement.textContent = `(current Deck: ${inputdecks[inputdeck].name})`;
-    NUM_QUESTIONS = Math.max(5, characters.length);
 
     const urlParams = new URLSearchParams(window.location.search);
+    const urldeck = urlParams.get('deck');
+    if(urldeck){
+        changeDeck(urldeck);
+    }
+    else{
+        currentDeck = "minideck";
+    }
+
+    deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[currentDeck].name}</span>)`;
+
     const word = urlParams.get('character');
+
+    document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
+    document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
 
     if(word){
         getCimpleCharData(word, startTest);
@@ -497,6 +508,22 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('resize', () => {
     // startTest();
 });
+
+function get_characters_for_practice() {
+    fetch(`./get_characters_for_practice?deck=${currentDeck}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            characters = data.characters;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
 
 
 function changeDeck(deck, func=null) {
@@ -515,7 +542,16 @@ function changeDeck(deck, func=null) {
         const newUrl = new URL(window.location);
         newUrl.searchParams.delete('character');
         history.pushState({}, '', newUrl);
-        window.location.reload();
+
+        document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
+        document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
+
+        deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[currentDeck].name}</span>)`;
+        startTest();
+
+        get_characters_for_practice();
+
+        // window.location.reload();
     })
     .catch(error => {
         console.error('There was a problem changing the deck:', error);
