@@ -502,6 +502,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     else{
         currentDeck = "minideck";
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('deck', currentDeck);
+        history.pushState({}, '', newUrl);
     }
 
     deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[currentDeck].name}</span>)`;

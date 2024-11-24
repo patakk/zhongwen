@@ -184,6 +184,11 @@ html::-webkit-scrollbar {
 }
 
 
+#english-display.darkmode {
+    border-top: 1px solid #ffffff55;
+}
+
+
 #english-display ul {
     list-style-type: none;
     padding: 0;
