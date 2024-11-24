@@ -249,22 +249,6 @@
         "function": "verb",
         "hsk_level": 2
     },
-    "当让": {
-        "hanzi": "当让",
-        "pinyin": "dāng ràng",
-        "literal": "",
-        "english": "of course; certainly; indeed; undoubtedly",
-        "char_matches": {},
-        "pinyin_tones": "dang1 rang4",
-        "function": [
-            "preposition",
-            "verb"
-        ],
-        "hsk_level": [
-            4,
-            2
-        ]
-    },
     "想": {
         "hanzi": "想",
         "pinyin": "xiǎng",
@@ -400,5 +384,25 @@
         "pinyin_tones": "di4 fang1",
         "function": "noun",
         "hsk_level": 3
+    },
+    "当然": {
+        "hanzi": "当然",
+        "pinyin": "dāng rán",
+        "literal": "",
+        "english": " only natural; as it should be; certainly; of course; without doubt",
+        "char_matches": {},
+        "pinyin_tones": "dang1 ran2",
+        "function": "adverb",
+        "hsk_level": 3
+    },
+    "能": {
+        "hanzi": "能",
+        "pinyin": "néng",
+        "literal": "",
+        "english": "1)  surname Neng 2)  can; to be able to; might possibly; ability; (physics) energy ",
+        "char_matches": {},
+        "pinyin_tones": "neng2",
+        "function": "verb",
+        "hsk_level": 1
     }
 }
