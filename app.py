@@ -672,7 +672,6 @@ def hanziviz():
     return render_template('hanziviz.html', darkmode=session['darkmode'], characters=characters)
 
 
-
 @app.route('/login', methods=['GET', 'POST'])
 @timing_decorator
 def login():
