@@ -662,7 +662,6 @@ def version():
             return 'Error reading version file', 500
     return 'unknown'
 
-
 @app.route('/hanziviz')
 def hanziviz():
     characters = {}
