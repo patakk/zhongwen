@@ -672,6 +672,9 @@ and (orientation: landscape) {
     margin-bottom: 10px;
 }
 
+#title:hover {
+    text-decoration: underline;
+}
 
 #title_word_count {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
