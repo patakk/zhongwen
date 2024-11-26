@@ -25,7 +25,11 @@
     </style>
 </head>
 <body>
-    <h1 class="title">Hanzi Strokes History <a href="{{ url_for('hanzipractice') }}" style="text-decoration: none;">🦕</a></h1>
+    <h1 class="title">
+        <span id="toggle-view">Hanzi Strokes History</span> 
+        <a href="{{ url_for('hanzipractice') }}" style="text-decoration: none;">🦕</a>
+    </h1>
+
     <h2 id="deck-name"></h2>
 
     <div class="hamburger" id="hamburgerMenu">

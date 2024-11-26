@@ -27,21 +27,6 @@ function saveData(data) {
     });
 }
 
-// function loadStrokeData() {
-//     fetch(`./get_all_stroke_data`)
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error('Network response was not ok');
-//             }
-//             return response.json();
-//         })
-//         .then(data => {
-//             console.log('Data:', data);
-//         })
-//         .catch(error => {
-//             console.error('Error:', error);
-//         });
-// }
 
 function drawLinesBg(canvas) {
     let ctx = canvas.getContext('2d');
@@ -125,13 +110,22 @@ function drawStrokes(canvas, strokes, positioner) {
     });
   }
 
-  function initStats(){
+let isGridView = false;
+
+function toggleView() {
+    isGridView = !isGridView;
+    const container = document.getElementById('characters-container');
+    if (isGridView) {
+        container.classList.add('grid-view');
+    } else {
+        container.classList.remove('grid-view');
+    }
+}
+  
+function initStats(){
     
     const charactersContainer = document.getElementById('characters-container');
 
-    console.log('Loading stroke data...');
-    console.log(strokes_per_character);
-    console.log(isDarkMode)
     charactersContainer.innerHTML = '';
 
     Object.entries(strokes_per_character).forEach(([character, attempts]) => {
@@ -154,7 +148,6 @@ function drawStrokes(canvas, strokes, positioner) {
             canvas.className = 'character-canvas';
             canvasContainer.appendChild(canvas);
 
-            // dict of strokes
             let dict_of_strokes = attempt.strokes;
             let strokes = [];
             for (let key in dict_of_strokes) {
@@ -169,7 +162,9 @@ function drawStrokes(canvas, strokes, positioner) {
     });
 }
   
-
 document.addEventListener('DOMContentLoaded', () => {
     getDarkmode(initStats);
+    
+    const toggleViewElement = document.getElementById('toggle-view');
+    toggleViewElement.addEventListener('click', toggleView);
 });

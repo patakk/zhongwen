@@ -98,3 +98,34 @@ h1 {
     margin-bottom: 0px;
     /* border: 1px solid #ccc; */
 }
+
+.grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(33px, 1fr));
+    gap: 0;
+}
+
+.grid-view .character-row {
+    display: contents;
+}
+
+.grid-view .character-row h2 {
+    display: none;
+}
+
+.grid-view .canvas-container {
+    display: contents;
+}
+
+.grid-view .character-canvas {
+    width: 100%;
+    height: auto;
+}
+
+#toggle-view {
+    cursor: pointer;
+}
+
+#toggle-view:hover {
+    text-decoration: underline;
+}
