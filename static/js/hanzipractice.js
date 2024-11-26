@@ -208,7 +208,11 @@ skipBtn.addEventListener('click', () => {
     else{
         skipState = 0;
         // currentIndex++;
-        currentIndex = Math.floor(Math.random() * shuffledWords.length);
+        let nextIndex = Math.floor(Math.random() * shuffledWords.length);
+        while(nextIndex == currentIndex && shuffledWords.length > 1){
+            nextIndex = Math.floor(Math.random() * shuffledWords.length);
+        }
+        currentIndex = nextIndex;
         numFinished = 0;
         
         streakCount = 0;
