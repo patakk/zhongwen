@@ -207,7 +207,8 @@ skipBtn.addEventListener('click', () => {
     }
     else{
         skipState = 0;
-        currentIndex++;
+        // currentIndex++;
+        currentIndex = Math.floor(Math.random() * shuffledWords.length);
         numFinished = 0;
         
         streakCount = 0;
