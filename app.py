@@ -1472,7 +1472,7 @@ def get_all_stroke_data():
     return jsonify(get_all_stroke_data_())
 
 @app.route('/hanzi_strokes_history')
-@session_required
+@hard_session_required
 def hanzi_strokes_history():
     strokes_per_character = get_all_stroke_data_()
     return render_template('hanzistats.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks, strokes_per_character=strokes_per_character)
