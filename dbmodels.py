@@ -1,6 +1,7 @@
 from extensions import db
 
 from sqlalchemy.dialects.sqlite import JSON
+
 deck_cards = db.Table('deck_cards',
     db.Column('deck_id', db.Integer, db.ForeignKey('deck.id'), primary_key=True),
     db.Column('card_id', db.Integer, db.ForeignKey('card.id'), primary_key=True)
@@ -62,4 +63,29 @@ class UserProgress(db.Model):
             last_new_cards_date=data["last_new_cards_date"],
             presented_new_cards=data["presented_new_cards"],
             progress=data["progress"]
+        )
+    
+
+class StrokeData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), db.ForeignKey('user_progress.username'), nullable=False)
+    character = db.Column(db.String(10), nullable=False)
+    strokes = db.Column(JSON, nullable=False)
+    positioner = db.Column(JSON, nullable=False)
+    mistakes = db.Column(db.Integer, nullable=False)
+    stroke_count = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f'<StrokeData {self.username} - {self.character}>'
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            username=data['username'],
+            character=data['character'],
+            strokes=data['strokes'],
+            positioner=data['positioner'],
+            mistakes=data['mistakes'],
+            stroke_count=data['strokeCount']
         )

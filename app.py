@@ -17,7 +17,7 @@ from sqlalchemy.exc import SQLAlchemyError
 # from gen_data_from_word_list import gen_data_from_word_list
 
 from extensions import db
-from dbmodels import UserProgress, Card
+from dbmodels import UserProgress, Card, StrokeData
 
 def create_app():
     app = Flask(__name__)
@@ -1415,53 +1415,117 @@ def get_audio():
 def debug():
     return jsonify({"debug": app.debug})
 
-
-@app.route('/book1')
+@app.route('/save_stroke_data', methods=['POST'])
 @session_required
-def book1():
-    image_folder = 'static/images/book_1_unit_1_8'
-    images = sorted([img for img in os.listdir(image_folder) if img.endswith('.jpg')])
-    
-    # Get user strokes
-    user_strokes = get_user_strokes(session['username'])
-    
-    return render_template('book1.html', images=images, user_strokes=user_strokes, username=session['username'], decks=flashcard_app.decks)
-
-@app.route('/save_stroke', methods=['POST'])
-@session_required
-def save_stroke():
+def save_stroke_data():
     data = request.json
-    canvas_id = data['canvasId']
-    stroke = data['stroke']
+    character : str = data.get('character')
+    strokes : dict[dict[str, float]] = data.get('strokes')
+    positioner : dict = data.get('positioner')
+    mistakes: int = data.get('mistakes')
+    stroke_count : int = data.get('strokeCount')
+    username : str = session['username']
+    chardata = {
+        'character': character,
+        'strokes': strokes,
+        'positioner': positioner,
+        'mistakes': mistakes,
+        'strokeCount': stroke_count,
+        'username': username,
+    }
     
-    save_user_stroke(session['username'], canvas_id, stroke)
-    
-    return jsonify({"status": "success"})
+    new_stroke_data = StrokeData.from_dict(chardata)
+    db.session.add(new_stroke_data)
+    db.session.commit()
+    return jsonify({"message": "Stroke data saved successfully"})
 
 
-def get_user_strokes(username):
-    strokes_path = f'data/user_strokes/{username}'
-    if not os.path.exists(strokes_path):
-        return {}
+def get_all_stroke_data_():
+    username = session['username']
     
-    user_strokes = {}
-    for canvas_folder in os.listdir(strokes_path):
-        canvas_path = os.path.join(strokes_path, canvas_folder)
-        if os.path.isdir(canvas_path):
-            user_strokes[canvas_folder] = []
-            for stroke_file in os.listdir(canvas_path):
-                with open(os.path.join(canvas_path, stroke_file), 'r') as f:
-                    user_strokes[canvas_folder].append(f.read())
-    
-    return user_strokes
+    characters = db.session.query(StrokeData.character).filter_by(username=username).distinct().all()
+    characters = [char[0] for char in characters]
 
-def save_user_stroke(username, canvas_id, stroke):
-    strokes_path = f'data/user_strokes/{username}/{canvas_id}'
-    os.makedirs(strokes_path, exist_ok=True)
+    result = {}
+    for character in characters:
+        stroke_data_entries = StrokeData.query.filter_by(
+            username=username,
+            character=character
+        ).order_by(StrokeData.timestamp.desc()).all()
+
+        character_attempts = []
+        for entry in stroke_data_entries:
+            character_attempts.append({
+                "id": entry.id,
+                "strokes": entry.strokes,
+                "positioner": entry.positioner,
+                "mistakes": entry.mistakes,
+                "stroke_count": entry.stroke_count,
+                "timestamp": entry.timestamp.isoformat()
+            })
+
+        result[character] = character_attempts
+
+    return result
+
+@app.route('/get_all_stroke_data', methods=['GET'])
+@session_required
+def get_all_stroke_data():
+    return jsonify(get_all_stroke_data_())
+
+@app.route('/hanzi_strokes_history')
+@session_required
+def hanzi_strokes_history():
+    strokes_per_character = get_all_stroke_data_()
+    return render_template('hanzistats.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks, strokes_per_character=strokes_per_character)
+
+
+# @app.route('/book1')
+# @session_required
+# def book1():
+#     image_folder = 'static/images/book_1_unit_1_8'
+#     images = sorted([img for img in os.listdir(image_folder) if img.endswith('.jpg')])
     
-    stroke_file = f'{strokes_path}/stroke_{int(time.time() * 1000)}.json'
-    with open(stroke_file, 'w') as f:
-        json.dump(stroke, f)
+#     # Get user strokes
+#     user_strokes = get_user_strokes(session['username'])
+    
+#     return render_template('book1.html', images=images, user_strokes=user_strokes, username=session['username'], decks=flashcard_app.decks)
+
+# @app.route('/save_stroke', methods=['POST'])
+# @session_required
+# def save_stroke():
+#     data = request.json
+#     canvas_id = data['canvasId']
+#     stroke = data['stroke']
+    
+#     save_user_stroke(session['username'], canvas_id, stroke)
+    
+#     return jsonify({"status": "success"})
+
+
+# def get_user_strokes(username):
+#     strokes_path = f'data/user_strokes/{username}'
+#     if not os.path.exists(strokes_path):
+#         return {}
+    
+#     user_strokes = {}
+#     for canvas_folder in os.listdir(strokes_path):
+#         canvas_path = os.path.join(strokes_path, canvas_folder)
+#         if os.path.isdir(canvas_path):
+#             user_strokes[canvas_folder] = []
+#             for stroke_file in os.listdir(canvas_path):
+#                 with open(os.path.join(canvas_path, stroke_file), 'r') as f:
+#                     user_strokes[canvas_folder].append(f.read())
+    
+#     return user_strokes
+
+# def save_user_stroke(username, canvas_id, stroke):
+#     strokes_path = f'data/user_strokes/{username}/{canvas_id}'
+#     os.makedirs(strokes_path, exist_ok=True)
+    
+#     stroke_file = f'{strokes_path}/stroke_{int(time.time() * 1000)}.json'
+#     with open(stroke_file, 'w') as f:
+#         json.dump(stroke, f)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5135, debug=True)
