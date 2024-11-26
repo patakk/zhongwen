@@ -306,6 +306,7 @@ function createHanziWriters(characters) {
             highlightOnComplete: true,
             highlightCompleteColor: '#77FFAA',
         });
+        let strokesdata = [];
         writer.quiz({
             onMistake: function(strokeData) {
                 console.log('Oh no! you made a mistake on stroke ' + strokeData.strokeNum);
@@ -315,12 +316,7 @@ function createHanziWriters(characters) {
                 console.log('');
                 streakCount = 0;
                 streakCheckpoint = streakIncrement;
-                if(!(char in correctnessdict))
-                    correctnessdict[char] = [];
-                correctnessdict[char].push(false);
                 console.log("aaaaa")
-                console.log(strokeData)
-                console.log(correctnessdict)
             },
             onCorrectStroke: function(strokeData) {
                 streakCount++;
@@ -329,15 +325,13 @@ function createHanziWriters(characters) {
                 console.log("You've made " + strokeData.totalMistakes + ' total mistakes on this quiz');
                 console.log('There are ' + strokeData.strokesRemaining + ' strokes remaining in this character');
                 console.log('');
-                if(!(char in correctnessdict))
-                    correctnessdict[char] = [];
-                correctnessdict[char].push(true);
+                strokesdata.push(strokeData.drawnPath.points);
             },
             onComplete: function(summaryData) {
                 console.log('You did it! You finished drawing ' + summaryData.character);
                 console.log('You made ' + summaryData.totalMistakes + ' total mistakes on this quiz');
-                console.log('currecnt wordTotalStrokeCount:', wordTotalStrokeCount);
-                console.log('currecnt wordTotalMistakeCount:', wordTotalMistakeCount);
+                console.log('current wordTotalStrokeCount:', wordTotalStrokeCount);
+                console.log('current wordTotalMistakeCount:', wordTotalMistakeCount);
                 console.log('');
                 if(streakCount >= streakCheckpoint){
                     confetti(streakCheckpoint);
@@ -357,23 +351,15 @@ function createHanziWriters(characters) {
                 let ssscale = writer._positioner.scale;
                 www = www/ssscale;
                 hhh = hhh/ssscale;
-                let strokedict = writer._renderState.state.userStrokes;
-                let filtered = {};
-                let idx = 0;
-                for (let key in strokedict) {
-                    let stroke = strokedict[key].points;
+                strokesdata.forEach(stroke => {
                     stroke.forEach(function(point){
                         point.x = (point.x+xoff)/www;
                         point.y = (point.y+yoff)/hhh;
                     });
-                    if(correctnessdict[summaryData.character][idx]){
-                        filtered[key] = stroke;
-                    }
-                    idx++;
-                }
+                });
                 let data = {
                     character: summaryData.character,
-                    strokes: filtered,
+                    strokes: strokesdata,
                     positioner: writer._positioner,
                     mistakes: summaryData.totalMistakes,
                     strokeCount: writer._character.strokes.length
