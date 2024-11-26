@@ -41,7 +41,7 @@ function startTest(charData) {
     shuffleArray(shuffledWords);
 
     shuffledWords = shuffledWords.filter(word => word.character.length <= 2);
-
+    correctnessdict = {};
     currentIndex = 0;
     correctAnswers = 0;
     wordTotalMistakeCount = 0;
@@ -232,6 +232,8 @@ let streakCount = 0;
 let streakIncrement = 20;
 let streakCheckpoint = streakIncrement;
 
+let correctnessdict = {};
+
 function createHanziWriters(characters) {
 
     drawingArea.innerHTML = '';
@@ -308,6 +310,12 @@ function createHanziWriters(characters) {
                 console.log('');
                 streakCount = 0;
                 streakCheckpoint = streakIncrement;
+                if(!(char in correctnessdict))
+                    correctnessdict[char] = [];
+                correctnessdict[char].push(false);
+                console.log("aaaaa")
+                console.log(strokeData)
+                console.log(correctnessdict)
             },
             onCorrectStroke: function(strokeData) {
                 streakCount++;
@@ -316,6 +324,9 @@ function createHanziWriters(characters) {
                 console.log("You've made " + strokeData.totalMistakes + ' total mistakes on this quiz');
                 console.log('There are ' + strokeData.strokesRemaining + ' strokes remaining in this character');
                 console.log('');
+                if(!(char in correctnessdict))
+                    correctnessdict[char] = [];
+                correctnessdict[char].push(true);
             },
             onComplete: function(summaryData) {
                 console.log('You did it! You finished drawing ' + summaryData.character);
@@ -333,7 +344,38 @@ function createHanziWriters(characters) {
                 totalMistakeCount += Math.min(summaryData.totalMistakes, writer._character.strokes.length);
                 wordTotalStrokeCount += writer._character.strokes.length;
                 totalStrokeCount += writer._character.strokes.length;
+                let www = writer._positioner.width;
+                let hhh = writer._positioner.height;
+                let xoff = writer._positioner.xOffset;
+                let yoff = writer._positioner.yOffset;
+                let ppadding = writer._positioner.padding;
+                let ssscale = writer._positioner.scale;
+                www = www/ssscale;
+                hhh = hhh/ssscale;
+                let strokedict = writer._renderState.state.userStrokes;
+                let filtered = {};
+                let idx = 0;
+                for (let key in strokedict) {
+                    let stroke = strokedict[key].points;
+                    stroke.forEach(function(point){
+                        point.x = (point.x+xoff)/www;
+                        point.y = (point.y+yoff)/hhh;
+                    });
+                    if(correctnessdict[summaryData.character][idx]){
+                        filtered[key] = stroke;
+                    }
+                    idx++;
+                }
+                let data = {
+                    character: summaryData.character,
+                    strokes: filtered,
+                    positioner: writer._positioner,
+                    mistakes: summaryData.totalMistakes,
+                    strokeCount: writer._character.strokes.length
+                };
+                saveData(data);
                 numFinished++;
+                correctnessdict = {};
                 if (numFinished === characters.length) {
                     handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount);
                 }
@@ -341,6 +383,41 @@ function createHanziWriters(characters) {
         });
         currentWriters.push(writer);
     });
+}
+
+function saveData(data) {
+    fetch('./save_stroke_data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        console.log('Data saved successfully');
+    })
+    .catch(error => {
+        console.error('There was a problem saving the data:', error);
+    });
+}
+
+function loadStrokeData() {
+    fetch(`./get_all_stroke_data`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Data:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
 
 function confetti(congrats=null) {

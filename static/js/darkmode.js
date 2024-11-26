@@ -50,6 +50,12 @@ function confirmDarkmode(){
     catch(e){
         console.log(e)
     }
+    try{
+        initStats();
+    }
+    catch(e){
+        console.log(e)
+    }
 }
 
 document.addEventListener('keydown', function(event) {
@@ -92,6 +98,9 @@ function getDarkmode(func=null) {
         .then(data => {
             isDarkMode = data.darkmode;
             confirmDarkmode();
+            if(func){
+                func();
+            }
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);

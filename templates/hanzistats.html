@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hanzi 🖌️</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/hanzipractice.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hanzistats.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <style id="dynamic-styles"></style>
@@ -25,7 +25,7 @@
     </style>
 </head>
 <body>
-    <h1 class="title">Practice Hanzi <a href="{{ url_for('hanzi_strokes_history') }}" style="text-decoration: none;">🖌️</a></h1>
+    <h1 class="title">Hanzi Strokes History <a href="{{ url_for('hanzipractice') }}" style="text-decoration: none;">🦕</a></h1>
     <h2 id="deck-name"></h2>
 
     <div class="hamburger" id="hamburgerMenu">
@@ -72,24 +72,17 @@
         </ul>
     </div>
     
-    <div id="test-container">
-        <div id="english-display"></div>
-        <div id="pinyin-display"></div>
-        <div id="drawing-area"></div>
-        <div id="buttons">
-            <button id="restart-btn">Reset</button>
-            <button id="skip-btn">Reveal</button>
-        </div>
+    <div id="characters-container">
+
     </div>
 
     <div id="confetti-container"></div>
 
     <script>
-        let characters = {{ characters | tojson | safe }};
-        const inputdecks = {{ decks | tojson | safe }};
-        const inputdeck = {{ deck | tojson | safe }};
+        let strokes_per_character = {{ strokes_per_character | tojson | safe }};
+        let decks = {{ decks | tojson | safe }};
         const username = {{ username | tojson | safe }};
-
+        
 
         function isIPhone(){
             const ua = navigator.userAgent;
@@ -108,7 +101,7 @@
         }
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/hanzipractice.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hanzistats.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
 </body>
 </html>
