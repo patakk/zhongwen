@@ -324,6 +324,7 @@ function createHanziWriters(characters) {
                 console.log('You made ' + strokeData.mistakesOnStroke + ' mistakes on this stroke');
                 console.log("You've made " + strokeData.totalMistakes + ' total mistakes on this quiz');
                 console.log('There are ' + strokeData.strokesRemaining + ' strokes remaining in this character');
+                console.log("pushed stroke points");
                 console.log('');
                 strokesdata.push(strokeData.drawnPath.points);
             },
