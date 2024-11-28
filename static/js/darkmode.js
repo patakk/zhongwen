@@ -51,7 +51,7 @@ function confirmDarkmode(){
         console.log(e)
     }
     try{
-        initStats();
+        // initStats();
     }
     catch(e){
         console.log(e)

@@ -307,6 +307,10 @@ function createHanziWriters(characters) {
             highlightCompleteColor: '#77FFAA',
         });
         let strokesdata = [];
+        // let trueStrokeData = [];
+        // writer._character.strokes.forEach(stroke => {
+        //     trueStrokeData.push(stroke.points);
+        // });
         writer.quiz({
             onMistake: function(strokeData) {
                 console.log('Oh no! you made a mistake on stroke ' + strokeData.strokeNum);
@@ -316,7 +320,6 @@ function createHanziWriters(characters) {
                 console.log('');
                 streakCount = 0;
                 streakCheckpoint = streakIncrement;
-                console.log("aaaaa")
             },
             onCorrectStroke: function(strokeData) {
                 streakCount++;
@@ -358,6 +361,12 @@ function createHanziWriters(characters) {
                         point.y = (point.y+yoff)/hhh;
                     });
                 });
+                // trueStrokeData.forEach(stroke => {
+                //     stroke.forEach(function(point){
+                //         point.x = (point.x+xoff)/www;
+                //         point.y = (point.y+yoff)/hhh;
+                //     });
+                // });
                 let data = {
                     character: summaryData.character,
                     strokes: strokesdata,

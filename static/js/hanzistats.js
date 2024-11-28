@@ -76,37 +76,48 @@ function drawStrokes(canvas, strokes, positioner) {
 
     ctx.strokeStyle = 'black';
     ctx.fillStyle = 'black';
-    ctx.lineWidth = 3;
     if(isDarkMode) {
         ctx.strokeStyle = 'white';
         ctx.fillStyle = 'white';
     }
 
     let fixy = 0.05;
+    // strokes.forEach(stroke => {
+    //     ctx.beginPath();
+    //     stroke.forEach((point, index) => {
+    //       const x = point.x * positioner.width * scale;
+    //       const y = (1. - point.y - fixy) * positioner.height * scale;
+    //       if (index === 0) {
+    //         ctx.moveTo(x, y);
+    //       } else {
+    //         ctx.lineTo(x, y);
+    //       }
+    //     });
+    //     ctx.stroke();
+    //   });
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 6;
+
     strokes.forEach(stroke => {
         ctx.beginPath();
         stroke.forEach((point, index) => {
-          const x = point.x * positioner.width * scale;
-          const y = (1. - point.y - fixy) * positioner.height * scale;
-          if (index === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
+            var x = point.x * canvas.width;
+            var y = (.9-point.y) * canvas.height;
+            x = (x-canvas.width*.5) * .9 + canvas.width*.5;
+            y = (y-canvas.height*.5) * .9 + canvas.height*.5;
+            const radius = canvas.width*.0142 + canvas.width*.02 * (1.-index / stroke.length);
+            // ctx.beginPath();
+            // ctx.arc(x, y, radius*.5, 0, 2 * Math.PI);
+            // ctx.fill();
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
         });
         ctx.stroke();
-      });
-
-
-    strokes.forEach(stroke => {
-        stroke.forEach((point, index) => {
-            const x = point.x * positioner.width * scale;
-            const y = (1. - point.y - fixy) * positioner.height * scale;
-            const radius = canvas.width*.0142 + canvas.width*.02 * (1.-index / stroke.length);
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, 2 * Math.PI);
-            ctx.fill();
-        });
     });
   }
 
@@ -153,12 +164,40 @@ async function loadAllCharacterAnimations() {
     }
 }
 
+function createInvisibleHanziWriter(character, func) {
+    const offScreenDiv = document.createElement('div');
+    offScreenDiv.style.position = 'absolute';
+    offScreenDiv.style.left = '-9999px';
+    offScreenDiv.style.top = '-9999px';
+    document.body.appendChild(offScreenDiv);
+    var writer2 = HanziWriter.create(offScreenDiv, character, {
+        width: 100,
+        height: 100,
+        onLoadCharDataSuccess: (data) => {
+            try{
+                setTimeout(() => {
+                    writer2.animateCharacter();
+                    func(writer2._character.strokes);
+                }, 1000);
+            }
+            catch(err){
+            }
+        },
+        onLoadCharDataError: function(reason) {
+          console.log('Oh No! Something went wrong :(');
+        }
+    });
+    document.body.removeChild(offScreenDiv);
+    return writer2;
+}
 
 function initStats(){
     
     const charactersContainer = document.getElementById('characters-container');
 
     charactersContainer.innerHTML = '';
+    console.log("1111");
+
 
     Object.entries(strokes_per_character).forEach(([character, attempts]) => {
         const characterRow = document.createElement('div');
@@ -168,26 +207,45 @@ function initStats(){
         characterLabel.textContent = character;
         characterRow.appendChild(characterLabel);
     
+
         const canvasContainer = document.createElement('div');
         canvasContainer.className = 'canvas-container';
+        const canvas = document.createElement('canvas')
+        canvas.width = 100;
+        canvas.height = 100;
+        function func(strokes) {
+            let trueStrokeData = [];
+            strokes.forEach(stroke => {
+                trueStrokeData.push(stroke.points);
+            });
+            trueStrokeData.forEach(stroke => {
+                stroke.forEach(point => {
+                    point.x = point.x / 1000;
+                    point.y = point.y / 1000;
+                });
+            });
+            console.log("trueStrokeData");
+            console.log(trueStrokeData);
+            drawStrokes(canvas, trueStrokeData, attempts[0].positioner);
+        }
+        var wwriter = createInvisibleHanziWriter(character, func);
+        canvasContainer.appendChild(canvas);
 
-        attempts.forEach((attempt, index) => {
-            const canvas = document.createElement('canvas');
-            canvas.width = DIMS;
-            canvas.height = canvas.width;
-            canvas.style.width = canvas.width/2 + 'px';
-            canvas.style.height = canvas.height/2 + 'px';
-            canvas.className = 'character-canvas';
-            canvasContainer.appendChild(canvas);
+        // attempts.forEach((attempt, index) => {
+        //     const canvas = document.createElement('canvas');
+        //     canvas.width = DIMS;
+        //     canvas.height = canvas.width;
+        //     canvas.style.width = canvas.width/2 + 'px';
+        //     canvas.style.height = canvas.height/2 + 'px';
+        //     canvas.className = 'character-canvas';
+        //     canvasContainer.appendChild(canvas);
 
-            let dict_of_strokes = attempt.strokes;
-            let strokes = [];
-            for (let key in dict_of_strokes) {
-                strokes.push(dict_of_strokes[key]);
-            }
-
-            drawStrokes(canvas, strokes, attempt.positioner);
-        });
+        //     let dict_of_strokes = attempt.strokes;
+        //     let strokes = [];
+        //     for (let key in dict_of_strokes) {
+        //         strokes.push(dict_of_strokes[key]);
+        //     }
+        // });
 
         characterRow.appendChild(canvasContainer);
         charactersContainer.appendChild(characterRow);

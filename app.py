@@ -459,11 +459,13 @@ class FlashcardApp:
                 logger.info('new cards len ' + str(len( new_cards )))
                 card_to_return = random.choice(new_cards)
             else:
-                card_to_return = random.choice(presented_new_cards[deck])
                 logger.info('No due or new cards (or only 1 due card),  adding new cards')
                 new_cards = self.get_new_cards(username, deck, force_new_cards=True)
                 logger.info(new_cards)
-                card_to_return = random.choice(new_cards)
+                if len(new_cards) > 0:
+                    card_to_return = random.choice(new_cards)
+                else:
+                    card_to_return = random.choice(presented_new_cards[deck])
                 message = ''
                 # if len(due_cards) == 1:
                 #     message = 'message_1'
@@ -1523,16 +1525,23 @@ def get_all_stroke_data():
     return jsonify(get_all_stroke_data_())
 
 @app.route('/hanzi_strokes_history')
-@hard_session_required
+@session_required
+# @hard_session_required
 def hanzi_strokes_history():
     strokes_per_character = get_all_stroke_data_()
     return render_template('hanzistats.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks, strokes_per_character=strokes_per_character)
 
 @app.route('/hanzi_strokes_charlist')
-@hard_session_required
+@session_required
+# @hard_session_required
 def hanzi_strokes_charlist():
     strokes_per_character = get_all_stroke_data_()
     return jsonify(list(strokes_per_character.keys()))
+    
+@app.route('/strokerender')
+# @hard_session_required
+def strokerender():
+    return render_template('strokerender.html')
     
 
 
