@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleViewElement.addEventListener('click', toggleView);
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'g' && event.ctrlKey) {
+        if (event.key === 'b' && event.ctrlKey) {
             loadAllCharacterAnimations();
         }
     });
