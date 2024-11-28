@@ -121,7 +121,39 @@ function toggleView() {
         container.classList.remove('grid-view');
     }
 }
+
+async function fetchCharacterList() {
+    const response = await fetch('/hanzi_strokes_charlist');
+    if (!response.ok) {
+        throw new Error('Failed to fetch character list');
+    }
+    return response.json();
+}
+
   
+async function loadAllCharacterAnimations() {
+    const characters = await fetchCharacterList();
+    const container = document.createElement('div');
+    container.id = 'character-animations';
+    document.body.appendChild(container);
+
+    for (const character of characters) {
+        const charDiv = document.createElement('div');
+        charDiv.className = 'character-animation';
+        
+        const img = document.createElement('img');
+        img.alt = `Animation for ${character}`;
+        
+        const response = await fetch(`/character_animation/${character}`);
+        if (response.ok) {
+            img.src = URL.createObjectURL(await response.blob());
+            charDiv.appendChild(img);
+            container.appendChild(charDiv);
+        }
+    }
+}
+
+
 function initStats(){
     
     const charactersContainer = document.getElementById('characters-container');
@@ -167,4 +199,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const toggleViewElement = document.getElementById('toggle-view');
     toggleViewElement.addEventListener('click', toggleView);
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'g' && event.ctrlKey) {
+            loadAllCharacterAnimations();
+        }
+    });
 });

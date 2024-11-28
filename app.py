@@ -1466,6 +1466,57 @@ def get_all_stroke_data_():
 
     return result
 
+from io import BytesIO
+from flask import send_file
+
+from PIL import Image, ImageDraw
+from io import BytesIO
+
+@app.route('/character_animation/<character>', methods=['GET'])
+@session_required
+def character_animation(character):
+    strokes_per_character = get_all_stroke_data_()
+    if character not in strokes_per_character:
+        return "Character not found", 404
+
+    strokes_datas = strokes_per_character[character]
+    frames = []
+    
+    # Set up the image parameters
+    width, height = 100, 100
+    background_color = (255, 255, 255)  # White background
+    point_color = (0, 0, 0)  # Black points
+    
+    if len(strokes_datas) < 4:
+        return "Not enough data to create animation", 400
+    for data in strokes_datas:
+        # Create a blank image
+        img = Image.new('RGB', (width, height), background_color)
+        draw = ImageDraw.Draw(img)
+        strokes = data['strokes']
+        # Draw strokes up to the current index
+        for key in strokes:
+            try:
+                stroke = strokes[key]
+            except:
+                stroke = key
+            for point in stroke:
+                x = int(point['x'] * width)
+                y = int((1 - point['y']) * height - height*0.05) 
+                draw.ellipse([x-2, y-2, x+2, y+2], fill=point_color)
+        
+        # Add the frame to our list
+        frames.append(img)
+    
+    # Create GIF
+    output = BytesIO()
+    frames[0].save(output, format='GIF', save_all=True, append_images=frames[1:], duration=100, loop=0)
+    output.seek(0)
+    
+    return send_file(output, mimetype='image/gif')
+
+
+
 @app.route('/get_all_stroke_data', methods=['GET'])
 @session_required
 def get_all_stroke_data():
@@ -1476,6 +1527,13 @@ def get_all_stroke_data():
 def hanzi_strokes_history():
     strokes_per_character = get_all_stroke_data_()
     return render_template('hanzistats.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks, strokes_per_character=strokes_per_character)
+
+@app.route('/hanzi_strokes_charlist')
+@hard_session_required
+def hanzi_strokes_charlist():
+    strokes_per_character = get_all_stroke_data_()
+    return jsonify(list(strokes_per_character.keys()))
+    
 
 
 # @app.route('/book1')

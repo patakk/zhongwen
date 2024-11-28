@@ -129,3 +129,51 @@ h1 {
 #toggle-view:hover {
     text-decoration: underline;
 }
+
+#character-animations {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 33px);
+    gap: 0px;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.character-animation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.character-animation:hover {
+    transform: scale(1.05);
+}
+
+.character-animation img {
+    width: 33px;
+    height: 33px;
+    object-fit: contain;
+}
+
+.character-animation p {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    #character-animations {
+        grid-template-columns: repeat(auto-fill, 33px);
+        gap: 0px;
+    }
+
+    .character-animation img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .character-animation p {
+        font-size: 14px;
+    }
+}
