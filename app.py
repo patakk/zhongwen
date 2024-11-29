@@ -466,6 +466,9 @@ class FlashcardApp:
                     card_to_return = random.choice(new_cards)
                 elif len(presented_new_cards.get(deck, [])) > 0:
                     card_to_return = random.choice(presented_new_cards[deck])
+                elif has_due_cards and len(due_cards) > 0:
+                    logger.info('Selecting from due cards only')
+                    card_to_return = random.choice(due_cards)
                 else:
                     card_to_return = random.choice(list(self.cards[deck].keys()))
                 message = ''
