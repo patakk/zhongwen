@@ -98,7 +98,7 @@ function drawStrokes(canvas, strokes, positioner) {
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.lineWidth = 6;
+    ctx.lineWidth = 3;
 
     strokes.forEach(stroke => {
         ctx.beginPath();
@@ -224,34 +224,35 @@ function initStats(){
                     point.y = point.y / 1000;
                 });
             });
-            console.log("trueStrokeData");
-            console.log(trueStrokeData);
             drawStrokes(canvas, trueStrokeData, attempts[0].positioner);
         }
         var wwriter = createInvisibleHanziWriter(character, func);
-        canvasContainer.appendChild(canvas);
+        // canvasContainer.appendChild(canvas);
 
-        // attempts.forEach((attempt, index) => {
-        //     const canvas = document.createElement('canvas');
-        //     canvas.width = DIMS;
-        //     canvas.height = canvas.width;
-        //     canvas.style.width = canvas.width/2 + 'px';
-        //     canvas.style.height = canvas.height/2 + 'px';
-        //     canvas.className = 'character-canvas';
-        //     canvasContainer.appendChild(canvas);
+        attempts.forEach((attempt, index) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = DIMS;
+            canvas.height = canvas.width;
+            canvas.style.width = canvas.width/2 + 'px';
+            canvas.style.height = canvas.height/2 + 'px';
+            canvas.className = 'character-canvas';
+            canvasContainer.appendChild(canvas);
 
-        //     let dict_of_strokes = attempt.strokes;
-        //     let strokes = [];
-        //     for (let key in dict_of_strokes) {
-        //         strokes.push(dict_of_strokes[key]);
-        //     }
-        // });
+            let dict_of_strokes = attempt.strokes;
+            let strokes = [];
+            for (let key in dict_of_strokes) {
+                strokes.push(dict_of_strokes[key]);
+            }
+            drawStrokes(canvas, strokes, attempt.positioner);
+        });
 
         characterRow.appendChild(canvasContainer);
         charactersContainer.appendChild(characterRow);
     });
 }
   
+let alreadloadedanims = false;
+
 document.addEventListener('DOMContentLoaded', () => {
     getDarkmode(initStats);
     
@@ -259,8 +260,9 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleViewElement.addEventListener('click', toggleView);
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'b' && event.ctrlKey) {
+        if (event.key === 'b' && event.ctrlKey && !alreadloadedanims) {
             loadAllCharacterAnimations();
+            alreadloadedanims = true;
         }
     });
 });
