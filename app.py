@@ -464,8 +464,10 @@ class FlashcardApp:
                 logger.info(new_cards)
                 if len(new_cards) > 0:
                     card_to_return = random.choice(new_cards)
-                else:
+                elif len(presented_new_cards.get(deck, [])) > 0:
                     card_to_return = random.choice(presented_new_cards[deck])
+                else:
+                    card_to_return = random.choice(list(self.cards[deck].keys()))
                 message = ''
                 # if len(due_cards) == 1:
                 #     message = 'message_1'
@@ -1593,4 +1595,4 @@ def strokerender():
 #         json.dump(stroke, f)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5135, debug=True)
+    app.run(host='0.0.0.0', port=5115, debug=True)
