@@ -341,7 +341,7 @@ for puri in example_lists_j:
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return '', 404
+    return 'aaaaa', 404
 
 
 @app.route('/examples')
