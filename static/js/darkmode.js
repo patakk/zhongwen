@@ -95,7 +95,12 @@ function setDarkmode() {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
+        else{
+            return response.json();
+        }
 
+    }).then(data => {
+        console.log(data);
     })
     .catch(error => {
         console.error('There was a problem changing darkmode', error);
@@ -117,6 +122,7 @@ function getDarkmode(func=null) {
             if(func){
                 func();
             }
+            console.log('Darkmode set to: ' + isDarkMode);
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -206,7 +212,6 @@ function getDarkmode(func=null) {
 //     });
 // }
 
-confirmDarkmode();
 document.addEventListener('DOMContentLoaded', function() {
     confirmDarkmode();
 });

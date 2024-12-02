@@ -44,7 +44,12 @@
         }
     </style>
 </head>
+
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
 <body>
+{% endif %}
     <h1 id="title">Character Grid</h1>
     <h3 id="title_word_count"></h3>
     <div class="hamburger" id="hamburgerMenu" style="font-size:22px">

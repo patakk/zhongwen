@@ -24,7 +24,11 @@
         
     </style>
 </head>
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
 <body>
+{% endif %}
     <h1 class="title">Practice Hanzi <a href="{{ url_for('hanzi_strokes_history') }}" style="text-decoration: none;">🖌️</a></h1>
     <h2 id="deck-name"></h2>
 

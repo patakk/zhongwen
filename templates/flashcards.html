@@ -23,12 +23,20 @@
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <script src="{{ url_for('static', filename='js/plotter.js') }}"></script>
 </head>
+{% if darkmode %}
+<body class="darkmode" id="body">
+{% else %}
 <body id="body">
+{% endif %}
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
     <audio id="crunchSound" src="{{ url_for('get_crunch') }}" preload="auto"></audio>
 
-    <div class="hamburger" id="hamburgerMenu">
-        <span></span>
+{% if darkmode %}
+<div class="hamburger darkmode" id="hamburgerMenu">
+{% else %}
+<div class="hamburger" id="hamburgerMenu">
+    {% endif %}
+<span></span>
         <span></span>
         <span></span>
     </div>
@@ -71,7 +79,11 @@
     </div>
 
     <div id="indicator"></div>
+    {% if darkmode %}
+    <div id="flashcard_container" class="darkmode">
+    {% else %}
     <div id="flashcard_container">
+    {% endif %}
         <div id="flashcard_plotter"></div>
         <div id="flashcard_character"></div>
         <div id="flashcard_pinyin"></div>

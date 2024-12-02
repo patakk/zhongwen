@@ -76,7 +76,7 @@
             background-color: #f2f2f2;
         }
         .character {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 400;
             cursor: pointer;
         }
@@ -285,15 +285,23 @@
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
 </head>
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
 <body>
+{% endif %}
+    {% if darkmode %}
+    <div class="hamburger darkmode" id="hamburgerMenu">
+    {% else %}
     <div class="hamburger" id="hamburgerMenu">
+    {% endif %}
         <span></span>
         <span></span>
         <span></span>
     </div>
     <div class="dropdown-menu" id="dropdownMenu">
-        <ul>
-            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+    <ul>
+    <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
             <li><a href="{{ url_for('home') }}">Home</a></li>
             <li class="has-submenu">
                 <span>Hanzi Grid</span>
@@ -343,38 +351,78 @@
     <script>
             
     </script>
+    {% if darkmode %}
+    <div class="container darkmode">
+    {% else %}
     <div class="container">
+    {% endif %}
+        {% if darkmode %}
+        <h1 class="darkmode">Progress in <span class="deck-highlight darkmode">{{ deckname }}</span> deck</h1>
+        {% else %}
         <h1>Progress in <span class="deck-highlight">{{ deckname }}</span> deck</h1>
+        {% endif %}
         <p>Cards in deck: {{ numcards }}</p>
         <p>Due cards: {{ duecards }}</p>
         <p>Learning cards: {{ learningcards }}</p>
         <p>Learned cards: {{ learnedcards }}</p>
+        {% if darkmode %}
+        <table class="darkmode" >
+        {% else %}
         <table>
-            <tr>
+            {% endif %}
+        <tr>
+        <table>
+        {% if darkmode %}
+                <th class="tooltip-header darkmode" data-tooltip="The Chinese character being learned">Character</th>
+                <th class="tooltip-header darkmode" data-tooltip="Current learning stage of the character (1-5)">Learned</th>
+                <th class="tooltip-header darkmode" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th>
+                <th class="tooltip-header darkmode" data-tooltip="Number of consecutive correct answers">Streak</th>
+                <th class="tooltip-header darkmode" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
+                <th class="tooltip-header darkmode" data-tooltip="Scheduled date and time for the next review">Next Review</th>
+                {% else %}
                 <th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th>
                 <th class="tooltip-header" data-tooltip="Current learning stage of the character (1-5)">Learned</th>
                 <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th>
                 <th class="tooltip-header" data-tooltip="Number of consecutive correct answers">Streak</th>
                 <th class="tooltip-header" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
                 <th class="tooltip-header" data-tooltip="Scheduled date and time for the next review">Next Review</th>
+                {% endif %}
             </tr>
                 {% for stat in progress_stats %}
-                {% if stat.is_due == 1 %}
-                <!-- <tr style="border: 3px dashed red; background-color: #f7f7f7;"> -->
-                <tr style="background-color: #ffefea;" data-isdue="1">
-                {% elif stat.box == 6 %}
-                <tr style="background-color: #eafff6;">
-                {% else %}
-                <tr>    
-                {% endif %}
+                    {% if darkmode %}
+                        {% if stat.is_due == 1 %}
+                        <tr data-isdue="1" class="darkmode">
+                        {% elif stat.box == 6 %}
+                        <tr class="darkmode">
+                        {% else %}
+                        <tr class="darkmode">    
+                        {% endif %}
+                    {% else %}
+                        {% if stat.is_due == 1 %}
+                        <tr style="background-color: #ffefea;" data-isdue="1">
+                        {% elif stat.box == 6 %}
+                        <tr style="background-color: #eafff6;">
+                        {% else %}
+                        <tr>    
+                        {% endif %}
+                    {% endif %}
+
                     <td style="text-align: left;" class="character" onclick="showFlashcard('{{ stat.character }}')">
+                        {% if darkmode %}
+                        <a class="darkmode">{{ stat.character }}</a>
+                        {% else %}
                         <a>{{ stat.character }}</a>
+                        {% endif %}
                     </td>
                     <td style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
                     <td style="text-align: right;">{{ '{:.2f}'.format(stat.difficulty) }}</td>
                     <td style="text-align: right;">{{ stat.streak }}</td>
                     <td style="text-align: right;">{{ stat.num_incorrect }}</td>
-                    <td style="text-align: right;" class="next-review-date">{{ stat.next_review }}</td>
+                        {% if stat.is_due == 1 %}
+                        <td style="text-align: right;" class="next-review-date">DUE</td>
+                        {% else %}
+                        <td style="text-align: right;" class="next-review-date">{{ stat.next_review }}</td>
+                        {% endif %}
                 </tr>
                 {% endfor %}
         </table>
@@ -607,7 +655,7 @@
                 const parent = cell.parentElement;
                 const isDue = parent.getAttribute('data-isdue');
 
-                if (isDue || false) {
+                if (isDue) {
                     cell.textContent = "DUE";
                     cell.classList.add('due-date');
                 } else {

@@ -100,9 +100,15 @@ def change_font():
 @session_required
 @timing_decorator
 def setdarkmode():
-    session["darkmode"] = request.args.get("darkmode")
+    darkmode = request.args.get("darkmode")
+    if darkmode not in ["true", "false"]:
+        return jsonify({"error": "Invalid darkmode value"}), 400
+    if darkmode == "true":
+        session["darkmode"] = True
+    else:
+        session["darkmode"] = False
     return jsonify(
-        {"message": "darkmode changed successfully to " + session["darkmode"]}
+        {"message": "darkmode changed successfully to " + str(session["darkmode"])}
     )
 
 
