@@ -314,7 +314,6 @@
             <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
-            <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
             <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li class="has-submenu">
                 <span>Decks</span>
@@ -331,6 +330,7 @@
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
                 </ul>
             </li> -->
+            <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
@@ -343,6 +343,8 @@
             <button type="submit" id="saveButton">Save</button>
         </form>
     </div> -->
+    <script src="{{ url_for('static', filename='js/plotter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>
 
     <script>
         function showFlashcard(character) {
@@ -355,6 +357,7 @@
             })
             .then(data => {
                 // bordercanvas.style.display = 'block';
+                data.plotters = createPlotters(data);
                 renderCardData(data);
                 displayCard(true, true);
                 // recordView(character);
@@ -410,8 +413,8 @@
                 {% else %}
                 <tr>    
                 {% endif %}
-                    <td style="text-align: left;" class="character">
-                        <a onclick="showFlashcard('{{ stat.character }}')">{{ stat.character }}</a>
+                    <td style="text-align: left;" class="character" onclick="showFlashcard('{{ stat.character }}')">
+                        <a>{{ stat.character }}</a>
                     </td>
                     <td style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
                     <td style="text-align: right;">{{ '{:.2f}'.format(stat.difficulty) }}</td>
@@ -426,6 +429,7 @@
 
     <div id="flashcard_overlay">
         <div id="flashcard_container">
+            <div id="flashcard_plotter"></div>
             <div id="flashcard_character"></div>
             <div id="flashcard_pinyin"></div>
             <div id="flashcard_function"></div>

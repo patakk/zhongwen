@@ -607,7 +607,7 @@ overlay.addEventListener('click', (e) => {
 function playHanziAudio() {
     const pinyinElement = document.getElementById('flashcard_pinyin');
     const encodedHanzi = encodeURIComponent(pinyinElement.dataset.characters);
-    const audio = new Audio(`./get_audio?chars=${encodedHanzi}`);
+    const audio = new Audio(`./api/get_audio?chars=${encodedHanzi}`);
     
     audio.play().catch(error => {
         console.error('Error playing audio:', error);

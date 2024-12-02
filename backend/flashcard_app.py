@@ -184,11 +184,11 @@ class FlashcardApp:
             )
         else:
             logger.info(
-                f"Character {character} is ahead of schedule, so not updating next review date"
+                "Character %s is ahead of schedule, so not updating next review date", character
             )
         uprogress["progress"][character] = char_progress
 
-        self.save_user_progress(username, uprogress)
+        save_user_progress(username, uprogress)
 
     def calculate_difficulty(self, char_progress):
         base_difficulty = 1 + max(0, char_progress["num_incorrect"] - 2) / 10
@@ -265,7 +265,7 @@ class FlashcardApp:
             uprogress["last_new_cards_date"][deck] = today.isoformat()
             if not force_new_cards:
                 uprogress["presented_new_cards"][deck] = []
-            self.save_user_progress(username, uprogress)
+            save_user_progress(username, uprogress)
 
         remaining_new_cards = [
             card

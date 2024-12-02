@@ -219,7 +219,8 @@
         }
 
         .btn.darkmode {
-            border: 2px dashed white;
+            border: 2px dashed rgb(197, 197, 197);
+            color: rgb(197, 197, 197);
         }
     </style>
 </head>
@@ -254,8 +255,8 @@
             <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
             <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
-            <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
             <li><span id="darkmode-toggle">Toggle darkmode</span></li>
+            <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
@@ -280,10 +281,6 @@
                     <li style="padding-top:5px;">Twitter: <a href="https://twitter.com/patakk" target="_blank">@patakk</a></li>
                 </ul>
             </div>
-        </div>
-        </br>
-        <div class="usage-section">
-            <h1>Usage</h2>
         </div>
         </br>
         <div class="attribution-section">

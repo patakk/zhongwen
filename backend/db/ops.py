@@ -34,7 +34,6 @@ def get_all_stroke_data_(username):
     result = {}
     for character in characters:
         stroke_data_entries = db_get_stroke_entries(username, character)
-
         character_attempts = []
         for entry in stroke_data_entries:
             character_attempts.append(
@@ -78,12 +77,11 @@ def db_create_user(
 
 
 def db_user_exists(username):
-    user_exists = UserProgress.query.filter_by(username=username).first() is not None
-    return user_exists
+    return UserProgress.query.filter_by(username=username).first() is not None
 
 
 def db_get_stroke_entries(username, character):
-    StrokeData.query.filter_by(username=username, character=character).order_by(
+    return StrokeData.query.filter_by(username=username, character=character).order_by(
         StrokeData.timestamp.desc()
     ).all()
 

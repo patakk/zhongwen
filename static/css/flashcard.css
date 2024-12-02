@@ -18,7 +18,7 @@
     margin-bottom: 30px;
     padding: 5px 10px;
     color: #000;
-    color: rgba(0, 0, 0, .4);
+    color: rgba(0, 0, 0);
     min-width: 100px;
     display: inline-block;
     text-align: center;
@@ -69,7 +69,7 @@
 #flashcard_function {
     font-size: 20px;
     font-weight: 500;
-    color: #000;
+    color: rgba(0, 0, 0, .4);
     margin-bottom: 30px;
     padding: 5px 10px;
     min-width: 100px;
@@ -352,7 +352,7 @@ and (max-width: 1024px) {
     color: #000000;
     font-size: 19px;
     cursor: pointer;
-    background-color: rgba(235, 235, 235, 0);
+    background-color: rgba(0, 0, 0, 0.05)
 }
 
 
