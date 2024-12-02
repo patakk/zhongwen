@@ -804,6 +804,8 @@ const fontMap = {
     "Kaiti": { family: "Kaiti", size: 26 }
 };
 
+
+
 let currentToggleFont = 0;
 function changeFont(font) {
     const characterDiv = document.getElementById('flashcard_character');
