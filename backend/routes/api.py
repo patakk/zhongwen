@@ -9,6 +9,7 @@ from flask import Blueprint, jsonify, request, send_file, session
 from backend.db.ops import db_add_stroke_data
 from backend.decorators import session_required, timing_decorator
 from backend.flashcard_app import get_flashcard_app
+from backend.db.ops import get_all_stroke_data_
 
 logger = logging.getLogger(__name__)
 
@@ -133,18 +134,6 @@ def change_deck():
 def get_deck():
     logger.info(f"Current deck: {session['deck']}")
     return jsonify({"deck": session["deck"]})
-
-
-@api_bp.route("/record_view", methods=["POST"])
-@session_required
-@timing_decorator
-def record_view():
-    data = request.json
-    username = session["username"]
-    character = data["character"]
-    flashcard_app.record_view(username, character)
-    return jsonify({"message": "View recorded successfully"})
-
 
 @api_bp.route("/get_api_key", methods=["GET"])
 def get_api_key():
@@ -290,8 +279,21 @@ def character_animation(character):
 
     return send_file(output, mimetype="image/gif")
 
+@api_bp.route("/get_characters_for_practice", methods=["GET"])
+@session_required
+@timing_decorator
+def get_characters_for_practice():
+    deck = session["deck"]
+    characters_data = [
+        {
+            "character": char,
+            "pinyin": data["pinyin"],
+            "english": data["english"],
+        }
+        for char, data in flashcard_app.cards[deck].items()
+    ]
+    return jsonify({"characters": characters_data})
 
-from backend.db.ops import get_all_stroke_data_
 
 
 @api_bp.route("/get_all_stroke_data", methods=["GET"])

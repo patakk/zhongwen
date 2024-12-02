@@ -37,6 +37,7 @@ function shuffleArray(array) {
 }
 
 function startTest(charData) {
+    console.log(charData)
     shuffledWords = [...characters];
     shuffleArray(shuffledWords);
 
@@ -587,30 +588,31 @@ document.addEventListener('DOMContentLoaded', () => {
     getDarkmode();
 
     const urlParams = new URLSearchParams(window.location.search);
-    const urldeck = urlParams.get('deck');
-    if(urldeck){
-        changeDeck(urldeck);
-    }
-    else{
-        currentDeck = "minideck";
-        const newUrl = new URL(window.location);
-        newUrl.searchParams.set('deck', currentDeck);
-        history.pushState({}, '', newUrl);
-    }
-
-    deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[currentDeck].name}</span>)`;
-
     const word = urlParams.get('character');
-
-    document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
-    document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
-
+    const urldeck = urlParams.get('deck');
+    
     if(word){
         getCimpleCharData(word, startTest);
     }
     else{
-        startTest();
+        if(urldeck){
+            changeDeck(urldeck);
+        }
+        else{
+            currentDeck = "minideck";
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('deck', currentDeck);
+            history.pushState({}, '', newUrl);
+            startTest();
+        }
     }
+
+    deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[currentDeck].name}</span>)`;
+
+
+    document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
+    document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
+
 });
 
 window.addEventListener('resize', () => {

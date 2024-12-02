@@ -30,16 +30,16 @@ def puzzles():
     return render_template("puzzles.html", **context)
 
 
-def hanzitest_pinyin():
-    characters = dict(flashcard_app.cards[session["deck"]].items())
-    return render_template(
-        "puzzles/hanzitest_pinyin.html",
-        darkmode=session["darkmode"],
-        username=session["username"],
-        characters=characters,
-        decks=flashcard_app.decks,
-        deck=session["deck"],
-    )
+# def hanzitest_pinyin():
+#     characters = dict(flashcard_app.cards[session["deck"]].items())
+#     return render_template(
+#         "puzzles/hanzitest_pinyin.html",
+#         darkmode=session["darkmode"],
+#         username=session["username"],
+#         characters=characters,
+#         decks=flashcard_app.decks,
+#         deck=session["deck"],
+#     )
 
 
 @puzzles_bp.route("/hanzitest_pinyin")
@@ -68,22 +68,6 @@ def hanzitest_draw():
     context = get_common_context()
     context["characters"] = characters_data
     return render_template("puzzles/hanzitest_draw.html", **context)
-
-
-@puzzles_bp.route("/get_characters_for_practice", methods=["GET"])
-@session_required
-@timing_decorator
-def get_characters_for_practice():
-    deck = session["deck"]
-    characters_data = [
-        {
-            "character": char,
-            "pinyin": data["pinyin"],
-            "english": data["english"],
-        }
-        for char, data in flashcard_app.cards[deck].items()
-    ]
-    return jsonify({"characters": characters_data})
 
 
 @puzzles_bp.route("/hanzitest_choices")
