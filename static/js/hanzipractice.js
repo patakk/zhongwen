@@ -599,7 +599,7 @@ document.addEventListener('DOMContentLoaded', () => {
             changeDeck(urldeck);
         }
         else{
-            currentDeck = "minideck";
+            currentDeck = "hsk1";
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('deck', currentDeck);
             history.pushState({}, '', newUrl);

@@ -1,5 +1,5 @@
 
-let currentDeck = 'minideck';
+let currentDeck = 'hsk1';
 let currentFont = 'Noto Sans Mono';
 
 
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var deckChangers = document.querySelectorAll('.deck-change');
 
     const urlParams = new URLSearchParams(window.location.search);
-    const deck = urlParams.get('deck') || 'minideck';
+    const deck = urlParams.get('deck') || 'hsk1';
     currentDeck = deck;
     
     if(username === 'tempuser'){
