@@ -339,6 +339,11 @@ for puri in example_lists_j:
     example_lists[cat].append({'title': example_lists_j[puri]['english'][0], 'uri': puri})
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return '', 404
+
+
 @app.route('/examples')
 @session_required
 @timing_decorator
