@@ -720,7 +720,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 let currentToggleFont = 0;
-
 function changeFont(font) {
     const characterDiv = document.getElementById('flashcard_character');
     const plotterDiv = document.getElementById('flashcard_plotter');

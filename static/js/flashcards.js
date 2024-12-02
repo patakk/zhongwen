@@ -590,31 +590,6 @@ function showCustomPrompt(message) {
 }
 
 
-
-function adjustFlashCardChars(){
-    try{
-        let cc = document.getElementById('flashcard_character');
-        if(isMobileOrTablet()){
-            if(currentFont === 'Kaiti'){
-                cc.style.fontSize = .23*7 + "em";
-            }
-            else{
-                cc.style.fontSize = .23*6 + "em";
-            }
-        }
-        else {
-            if(currentFont === 'Kaiti'){
-                cc.style.fontSize = .23*11.5 + "em";
-            }
-            else{
-                cc.style.fontSize = .23*9 + "em";
-            }
-        }
-    }
-    catch(e){
-    }
-}
-
 function getNextCard(func=null) {
     if (prefetchedCard && !(prefetchedCard.message && prefetchedCard.message.length > 0)) {
         console.log('Using prefetched card:', prefetchedCard);
@@ -822,6 +797,62 @@ function isiPad(){
 function isLandscape(){
     return window.innerHeight > window.innerWidth;
 }
+
+const fontMap = {
+    "Noto Sans Mono": { family: "Noto Sans Mono", size: 22 },
+    "Noto Serif SC": { family: "Noto Serif SC", size: 22 },
+    "Kaiti": { family: "Kaiti", size: 26 }
+};
+
+let currentToggleFont = 0;
+function changeFont(font) {
+    const characterDiv = document.getElementById('flashcard_character');
+    const plotterDiv = document.getElementById('flashcard_plotter');
+    console.log("calling change font")
+    if(font === 'Render'){
+        characterDiv.style.display = 'none';
+        plotterDiv.style.display = 'block';
+        currentToggleFont = 3;
+        return;
+    }
+    else{
+        let fontMapKeys = Object.keys(fontMap);
+        currentToggleFont = fontMapKeys.indexOf(font);
+        characterDiv.style.display = 'block';
+        // plotterDiv.style.display = 'none';
+        if(font === 'Noto Serif SC'){
+            console.log('changing font to', `"${font}", serif`);
+            document.getElementById('flashcard_character').style.fontFamily = `"${font}"`;
+        } else{
+            document.getElementById('flashcard_character').style.fontFamily = `"${font}", sans-serif`;
+        }
+    }
+    const fontInfo = fontMap[font];
+    console.log(fontInfo)
+    
+    if (fontInfo) {
+        currentFont = font;
+        adjustFlashCardChars();
+        console.log('selected font', currentFont);
+    }
+
+    fetch(`./api/change_font?font=${font}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        console.log('Font changed successfully');
+    })
+    .catch(error => {
+        console.error('There was a problem changing the font:', error);
+    });
+}
+
 
 document.addEventListener('DOMContentLoaded', function() {
     body = document.getElementById('body');

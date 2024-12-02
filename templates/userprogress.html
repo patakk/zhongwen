@@ -6,6 +6,7 @@
     <title>User Progress - {{ username }} - {{ deckname }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
     <style>
@@ -312,24 +313,17 @@
             </li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
-            <li><a href="{{ url_for('search') }}">Search</a></li>
             <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
-            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
             <li class="has-submenu">
-                <span>Decks</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </li>
-            <!-- <li class="has-submenu">
                 <span>Fonts</span>
                 <ul class="submenu">
                     <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
+                    <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
                 </ul>
-            </li> -->
+            </li>
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
@@ -347,47 +341,7 @@
     <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>
 
     <script>
-        function showFlashcard(character) {
-            fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // bordercanvas.style.display = 'block';
-                data.plotters = createPlotters(data);
-                renderCardData(data);
-                displayCard(true, true);
-                // recordView(character);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
-        let overlay, flashcardContent, messageElement;
-        document.addEventListener('DOMContentLoaded', function() {
-            overlay = document.getElementById('flashcard_overlay');
-            flashcardContent = document.getElementById('flashcard_container');
-            messageElement = document.getElementById('message');
-
-
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    overlay.style.display = 'none';
-                }
-            });
-
-
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay && !e.target.closest('#font-select')) {
-                    overlay.style.display = 'none';
-                    // bordercanvas.style.display = 'none';
-                    // document.getElementById('font-select').style.display = 'none';
-                }
-            });
-        });
+            
     </script>
     <div class="container">
         <h1>Progress in <span class="deck-highlight">{{ deckname }}</span> deck</h1>
@@ -582,6 +536,33 @@
             });
         }
 
+        function getFont() {
+            console.log('getting font');
+            fetch('./api/get_font', {
+                    method: 'GET',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    },
+                    cache: 'no-store'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    currentFont = data.font;
+                    console.log('received font', currentFont);
+
+                    applyFont(currentFont);
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const tooltipHeaders = document.querySelectorAll('.tooltip-header');
             const dateCells = document.querySelectorAll('.next-review-date');
@@ -601,6 +582,9 @@
             function hideTooltip() {
                 hoverBox.style.display = 'none';
             }
+            
+            getFont();
+            adjustFlashCardChars();
     
             tooltipHeaders.forEach(header => {
                 header.addEventListener('mouseover', function(e) {
@@ -645,6 +629,112 @@
 
         });
 
+        const fontMap = {
+                "Noto Sans Mono": { family: "Noto Sans Mono", size: 22 },
+                "Noto Serif SC": { family: "Noto Serif SC", size: 22 },
+                "Kaiti": { family: "Kaiti", size: 26 }
+            };
+
+
+        function applyFont(font) {
+            const fontInfo = fontMap[font];
+            const characterDiv = document.getElementById('flashcard_character');
+            const plotterDiv = document.getElementById('flashcard_plotter');
+            if(font === 'Render'){
+                characterDiv.style.display = 'none';
+                plotterDiv.style.display = 'block';
+                currentToggleFont = 3;
+                return;
+            }
+            else{
+                let fontMapKeys = Object.keys(fontMap);
+                currentToggleFont = fontMapKeys.indexOf(font);
+                characterDiv.style.display = 'block';
+                // plotterDiv.style.display = 'none';
+                if(font === 'Noto Serif SC'){
+                    document.getElementById('flashcard_character').style.fontFamily = `"${font}"`;
+                } else{
+                    document.getElementById('flashcard_character').style.fontFamily = `"${font}", sans-serif`;
+                }
+            }
+            if (fontInfo) {
+                currentFont = font;
+                adjustFlashCardChars();
+                
+                const gridItems = document.querySelectorAll('.character');
+                gridItems.forEach(item => {
+                    item.style.fontSize = `${fontInfo.size}px`;
+                    item.style.fontFamily = `"${currentFont}"`;
+                });
+                console.log('selected font', currentFont);
+            }
+            console.log(fontInfo)
+            
+        }
+
+        let currentToggleFont = 0;
+        function changeFont(font) {
+            console.log("calling change font")
+            const fontInfo = fontMap[font];
+            applyFont(font);
+
+            fetch(`./api/change_font?font=${font}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('Font changed successfully');
+            })
+            .catch(error => {
+                console.error('There was a problem changing the font:', error);
+            });
+        }
+
+        function showFlashcard(character) {
+            fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // bordercanvas.style.display = 'block';
+                data.plotters = createPlotters(data);
+                renderCardData(data);
+                displayCard(true, true);
+                // recordView(character);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        let overlay, flashcardContent, messageElement;
+        document.addEventListener('DOMContentLoaded', function() {
+            overlay = document.getElementById('flashcard_overlay');
+            flashcardContent = document.getElementById('flashcard_container');
+            messageElement = document.getElementById('message');
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.style.display = 'none';
+                }
+            });
+
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay && !e.target.closest('#font-select')) {
+                    overlay.style.display = 'none';
+                    // bordercanvas.style.display = 'none';
+                    // document.getElementById('font-select').style.display = 'none';
+                }
+            });
+        });
     </script>
     <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>

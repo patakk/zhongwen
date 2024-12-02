@@ -125,6 +125,33 @@ function isMobileOrTablet() {
     return check || /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
+
+
+function adjustFlashCardChars(){
+    try{
+        let cc = document.getElementById('flashcard_character');
+        if(isMobileOrTablet()){
+            if(currentFont === 'Kaiti'){
+                cc.style.fontSize = .23*7 + "em";
+            }
+            else{
+                cc.style.fontSize = .23*6 + "em";
+            }
+        }
+        else {
+            if(currentFont === 'Kaiti'){
+                cc.style.fontSize = .23*11.5 + "em";
+            }
+            else{
+                cc.style.fontSize = .23*9 + "em";
+            }
+        }
+    }
+    catch(e){
+    }
+}
+
+
 function renderCardData(data) {
     const container = document.getElementById('flashcard_container');
     if(container.style.display === 'none' || !container.style.display){
