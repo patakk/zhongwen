@@ -168,9 +168,10 @@
                 </ul>
             </li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
-            <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
-            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
+            <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
             <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
@@ -184,9 +185,10 @@
             <a id="flashcardsUrlMain" href="{{ url_for('flashcards') }}">flashcards</a>
             <a href="{{ url_for('grid') }}">grid</a>
             <a href="{{ url_for('lists') }}">example lists</a>
-            <a href="{{ url_for('puzzles') }}">puzzles</a></li>
+            <a href="{{ url_for('puzzles.puzzles') }}">puzzles</a></li>
+            <a href="{{ url_for('hanzipractice') }}">practice 汉字</a>
             <a href="{{ url_for('search') }}">search</a>
-            <a href="{{ url_for('welcome') }}">guide</a>
+            <a href="{{ url_for('pageinfo') }}">info</a>
         </div>
     </div>
 

@@ -4,7 +4,7 @@ let currentFont = 'Noto Sans Mono';
 
 
 function changeDeck(deck, func=null) {
-    fetch(`./change_deck?deck=${deck}`, {
+    fetch(`./api/change_deck?deck=${deck}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ function changeFont(font) {
         console.log(e);
     }
 
-    fetch(`./change_font?font=${font}`, {
+    fetch(`./api/change_font?font=${font}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ function changeFont(font) {
 
 
 function getDeck(func=null) {
-    fetch('./get_deck')
+    fetch('./api/get_deck')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -78,7 +78,7 @@ function getDeck(func=null) {
 
 
 function getFont() {
-    fetch('./get_font')
+    fetch('./api/get_font')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -105,7 +105,7 @@ function getFont() {
 }
 
 function getDeck_c() {
-    fetch('./get_deck')
+    fetch('./api/get_deck')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -170,7 +170,7 @@ function getDeck_c() {
 }
 
 function getFont_c() {
-    fetch('./get_font')
+    fetch('./api/get_font')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fontChanger.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            changeFont(this.getAttribute('data-font'));
+            // changeFont(this.getAttribute('data-font'));
         });
     });
 

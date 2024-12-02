@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>welcome</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Noto Sans Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            font-size: 16px;
+        }
+
+        .container {
+            width: 60%;
+            max-width: 1200px;
+            background-color: white;
+            padding: 2rem;
+            border: 2px dashed black;
+            overflow-y: auto;
+            max-height: 90vh;
+            scrollbar-width: none;
+            /* For Firefox */
+            -ms-overflow-style: none;
+            /* For Internet Explorer and Edge */
+        }
+
+        .container::-webkit-scrollbar {
+            display: none;
+            /* For Chrome, Safari, and Opera */
+        }
+
+        h1 {
+            font-family: 'Noto Sans Mono', monospace;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #333;
+            font-size: 2em;
+            margin-top: 0;
+        }
+
+
+        li:not(:last-child) {
+            margin-bottom: 0px;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: white;
+            color: black;
+            text-decoration: none;
+            border: 2px solid black;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background-color: black;
+            color: white;
+        }
+
+        a {
+            color: rgb(15, 15, 15);
+            text-decoration: none;
+            background-color: #d4d4d4;
+            padding: 0px 4px;
+        }
+
+        a:hover {
+            background-color: #ff0000;
+            color: #ffffff;
+        }
+
+        .flashcard-guide {
+            background-color: #f9f9f9;
+            border: 2px solid #000000;
+            padding: 10px;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .flashcard-guide li:not(:last-child) {
+            margin-bottom: 4px;
+        }
+
+        .flashcard-guide h4,
+        .flashcard-guide h5 {
+            margin-top: 0;
+        }
+
+        .flashcard-guide ul {
+            /* padding-left: 20px; */
+        }
+
+        ul {
+            list-style-type: none;
+            /* padding-left: 1.5em; */
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                padding: 0;
+                font-size: 14px;
+            }
+
+            .container {
+                width: 95%;
+                height: 80vh;
+                /* Set height to 80% of viewport height on mobile */
+                max-height: none;
+                /* Remove max-height constraint */
+                padding: 1rem;
+                margin: auto;
+                /* Center the container vertically */
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+
+            .btn {
+                padding: 8px 16px;
+            }
+
+            .flashcard-guide {
+                width: 100%;
+                background-color: #f9f9f9;
+                border: 2px solid #000000;
+                padding: 5px;
+                margin: 5px auto;
+                margin-bottom: 14px;
+            }
+
+            .flashcard-guide ul {
+                padding-left: 5px;
+            }
+
+            ul {
+                padding-left: 0em;
+            }
+
+        }
+
+        .flashcard-toggle {
+            cursor: pointer;
+            color: #0066cc;
+            text-decoration: underline;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .flashcard-toggle:hover {
+            color: #004080;
+        }
+
+        .container * {
+            /* text-transform: lowercase; */
+        }
+
+        a,
+        h1 {
+            text-transform: none;
+        }
+
+        .container ul ul>li::before {
+            content: " ";
+        }
+
+        .container ul ul ul>li::before {
+            content: " ";
+        }
+
+        a.darkmode {
+            color: rgb(255, 255, 255);
+            background-color: #2e2e2e;
+        }
+
+        a.darkmode:hover {
+            background-color: #e03400;
+            color: #f3f3f3;
+        }
+
+        .smallh {}
+
+        p {
+            margin: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
+
+    <style>
+
+        .btn {
+            border: 2px dashed black;
+        }
+
+        .btn.darkmode {
+            border: 2px dashed white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hamburger" id="hamburgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="has-submenu">
+                <span>Hanzi Grid</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                    <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <span>Flashcards</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                    <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
+            <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
+            <li><span id="darkmode-toggle">Toggle darkmode</span></li>
+            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
+        </ul>
+    </div>
+    <div class="container">
+        <div class="about-section">
+            <h1>About This Project</h2>
+            <p>
+                This is a personal learning tool I'm developing alongside my Mandarin Chinese 
+                studies. 
+                It began as a way to enhance my own learning experience, and as I continue learning, 
+                I've made it public hoping others might find it useful too.
+            </p>
+            </br>
+            <p>
+                Start <a href="{{ url_for('welcome') }}">here</a> to access the main features of the website.
+            </p>
+            </br>
+            <div class="contact-info">
+                <p>Contact:</p>
+                <ul>
+                    <li>Email: <a href="mailto:paolo@patakk.xyz">paolo@patakk.xyz</a></li>
+                    <li style="padding-top:5px;">Twitter: <a href="https://twitter.com/patakk" target="_blank">@patakk</a></li>
+                </ul>
+            </div>
+        </div>
+        </br>
+        <div class="usage-section">
+            <h1>Usage</h2>
+        </div>
+        </br>
+        <div class="attribution-section">
+            <h1>Licensing and Attribution</h1>
+            <ul>
+                <li> <strong class="subheader">Data Sources and Licensing</strong>
+                    <div class="flashcard-guide">
+                        <p>
+                            <span class="smallh">Chinese-English translations:</span></br>
+                            <p style="margin-left:20px;">CC-CEDICT database, licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+                            </br>
+                            <span class="smallh">Character animations:</span>
+                            <p style="margin-left:20px;">Derived from <a href="https://github.com/chanind/hanzi-writer-data" target="_blank">hanzi-writer-data</a> and the <a href="https://github.com/skishore/makemeahanzi" target="_blank">Make Me A Hanzi project</a>, using Arphic Technology fonts under the <a href="{{ url_for('static', filename='licenses/ARPHICPL.TXT') }}" target="_blank">Arphic Public License</a>.</p>
+                            </br>
+                            <span class="smallh">Hanzi drawing puzzle:</span></br>
+                            <p style="margin-left:20px;">Modified implementation of the 
+                                <a href="https://github.com/chanind/hanzi-writer" target="_blank">Hanzi Writer library</a>
+                                (<a href="{{ url_for('static', filename='licenses/MIT-LICENSE.txt') }}" target="_blank">MIT License</a>).
+                            </p>
+                        </p>
+                    </div>
+                </li>
+                <li> <strong class="subheader">Content Generation and Disclaimer</strong>
+                    <div class="flashcard-guide">
+                        <p>
+                            Character descriptions and examples are generated using Claude AI by Anthropic. While we strive for accuracy, all content on this website is provided "as is" without warranty
+                            of any kind. Users are encouraged to independently verify information for their specific needs.
+                        </p>
+                        <p>
+                            By using this website, you acknowledge and accept these terms.
+                        </p>
+                    </div>
+                </li>
+                <li> <strong class="subheader">Project License</strong>
+                    <div class="flashcard-guide">
+                        <p>
+                            This project is available under the <a href="{{ url_for('static', filename='licenses/MIT-LICENSE.txt') }}" target="_blank">MIT License</a>. You are free to use, modify, and distribute it, provided you include the original copyright notice and license terms.
+                        </p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- <ul class="disclaimer">
+            <li>
+                <p style="text-align: center;">By using this website, you acknowledge and accept all terms and conditions stated above.</p>
+            </li>
+        </ul> -->
+        <div class="btn-container"> <a href="{{ url_for('home') }}" class="btn">Back to Home</a> </div>
+    </div>
+    
+
+    <script>
+        const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    <script>
+
+        function isIPhone() {
+            const ua = navigator.userAgent;
+            if (ua.includes('iPhone')) {
+                return true;
+            }
+            return false;
+        }
+
+        function isiPad() {
+            const ua = navigator.userAgent;
+            if (ua.includes('iPad')) {
+                return true;
+            }
+            return false;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const guide = document.querySelector('.flashcard-guide');
+            const pcGuide = document.getElementById('pc-guide');
+            const mobileGuide = document.getElementById('mobile-guide');
+
+            // Show/hide appropriate guide based on device
+            if (isIPhone() || isiPad()) {
+                pcGuide.style.display = 'none';
+            } else {
+                mobileGuide.style.display = 'none';
+            }
+            guide.style.display = 'block';
+        });
+    </script>
+</body>
+
+</html>

@@ -168,9 +168,12 @@
             </li>
             <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
-            <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
+            <!-- <a href="{{ url_for('hanzipractice') }}">practice hanzi</a> -->
+
             <li><a href="{{ url_for('search') }}">Search</a></li>
-            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
+            <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
             <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
@@ -180,11 +183,11 @@
     <div class="home-container">
         <h1 class="toggle-title" data-cn="谜题" data-en="Puzzles">Puzzles</h1>
         <div class="link-container">
-            <!-- <a href="{{ url_for('hanzitest_fillin') }}">fill in</a> -->
-            <a href="{{ url_for('hanzitest_pinyin') }}">guess pinyin (input)</a>
-            <a href="{{ url_for('hanzitest_choices') }}">guess pinyin (choices)</a>
-            <a href="{{ url_for('hanzitest_draw') }}">test hanzi</a>
-            <a href="{{ url_for('hanzipractice') }}">practice hanzi</a>
+            <!-- <a href="{{ url_for('puzzles.hanzitest_fillin') }}">fill in</a> -->
+            <a href="{{ url_for('puzzles.hanzitest_pinyin') }}">guess pinyin (input)</a>
+            <a href="{{ url_for('puzzles.hanzitest_choices') }}">guess pinyin (choices)</a>
+            <a href="{{ url_for('puzzles.hanzitest_draw') }}">test hanzi</a>
+            <!-- <a href="{{ url_for('hanzipractice') }}">practice hanzi</a> -->
         </div>
     </div>
 

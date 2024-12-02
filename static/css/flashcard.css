@@ -1,10 +1,15 @@
 
 #flashcard_character {
-    font-size: 122px;
+    /* font-size: 122px; */
     margin-top: 30px;
     font-weight: 400;
     font-family: "Noto Serif SC", serif;
     color: #000;
+    align-items: center;
+}
+
+#flashcard_plotter {
+    margin-top: 30px;
 }
 
 #flashcard_english {
@@ -52,6 +57,13 @@
 #flashcard_pinyin.visible {
     background-color: transparent;
     color: #000;
+}
+
+#flashcard_character.darkmode:hover + #flashcard_pinyin.darkmode,
+#flashcard_pinyin.darkmode:hover,
+#flashcard_pinyin.darkmode.visible {
+    background-color: transparent;
+    color: #d6d6d6;
 }
 
 #flashcard_function {
@@ -136,9 +148,7 @@
     box-sizing: border-box;
     overflow-x: hidden;
     transition: transform 0.2s, background-color 0.7s;
-    transition: transform 0.2s, background-color 0.3s;
     z-index: 1032;
-    
     font-family: "Noto Sans Mono", monospace;
     font-weight: 400;
 }
@@ -148,6 +158,25 @@
     height: 0;
 }
 
+#flashcard_plotter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#flashcard_character {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#flashcard_character span {
+    display: inline-block;
+}
 
 #flashcard_strokes_container {
     display: flex;
@@ -179,7 +208,11 @@
     } */
 
     #flashcard_character {
-        font-size: 60px;
+        /* font-size: 60px; */
+        margin-top: 10px;
+    }
+
+    #flashcard_plotter {
         margin-top: 10px;
     }
 
@@ -219,7 +252,7 @@
     }
 
     #flashcard_character {
-        font-size: 60px;
+        /* font-size: 60px; */
     }
 
     #flashcard_english, #flashcard_pinyin {
@@ -272,11 +305,11 @@ and (min-aspect-ratio: 0.8) {
     }
     
     .clickable-char {
-        font-size: 80px;
+        /* font-size: 80px; */
         margin-top: 10px;
     }
     .clickable-char {
-        font-size: 80px;
+        /* font-size: 80px; */
         margin-top: 10px;
     }
 }
@@ -289,7 +322,7 @@ and (max-width: 1024px) {
     }
     
     .clickable-char {
-        font-size: 110px;
+        /* font-size: 110px; */
         margin-top: 10px;
     }
 }
@@ -332,6 +365,7 @@ and (max-width: 1024px) {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     z-index: 11000;
     font-size: 14px;
+    font-family: "Noto Sans Mono", monospace;
 }
 /* 
 .word-link:nth-child(3n) { background-color: #e9e9e9; }

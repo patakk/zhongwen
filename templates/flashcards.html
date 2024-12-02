@@ -21,6 +21,7 @@
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <script src="{{ url_for('static', filename='js/plotter.js') }}"></script>
 </head>
 <body id="body">
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
@@ -52,9 +53,10 @@
                 </ul>
             </li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
-            <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
-            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
+            <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
             <li class="has-submenu">
                 <span>Fonts</span>
                 <ul class="submenu">
@@ -69,6 +71,7 @@
 
     <div id="indicator"></div>
     <div id="flashcard_container">
+        <div id="flashcard_plotter"></div>
         <div id="flashcard_character"></div>
         <div id="flashcard_pinyin"></div>
         <div id="flashcard_function"></div>

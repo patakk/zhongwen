@@ -255,6 +255,19 @@ function createHanziWriters(characters) {
             showHintAfterMisses: 2,
             highlightOnComplete: true,
             highlightCompleteColor: '#77FFAA',
+            charDataLoader: function(char) {
+                return fetch(`/static/strokes_data/${char}.json`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        console.error('Error loading character data:', error);
+                        return null;
+                    });
+            }
         });
         writer.quiz({
             onMistake: function(strokeData) {
@@ -443,7 +456,7 @@ window.addEventListener('resize', () => {
 
 
 function changeDeck(deck, func=null) {
-    fetch(`./change_deck?deck=${deck}`, {
+    fetch(`./api/change_deck?deck=${deck}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -1,408 +1,1659 @@
 {
-    "森": {
-        "hanzi": "森",
-        "pinyin": "sēn",
-        "literal": "",
-        "english": "forest / Mori (Japanese surname)",
-        "char_matches": {},
-        "pinyin_tones": "sen1",
-        "function": "noun",
-        "hsk_level": -1
-    },
-    "林": {
-        "hanzi": "林",
-        "pinyin": "lín",
-        "literal": "",
-        "english": "woods / forest / circle(s) (i.e. specific group of people) / a collection (of similar things) / surname Lin / Japanese surname Hayashi",
-        "char_matches": {},
-        "pinyin_tones": "lin2",
-        "function": "gender noun",
-        "hsk_level": -1
-    },
-    "森林": {
-        "hanzi": "森林",
-        "pinyin": "sēn lín",
-        "literal": "",
-        "english": "forest",
-        "char_matches": {},
-        "pinyin_tones": "sen1 lin2",
-        "function": "noun",
-        "hsk_level": 4
-    },
-    "冷": {
-        "hanzi": "冷",
-        "pinyin": "lěng",
-        "literal": "",
-        "english": "cold / surname Leng",
-        "char_matches": {},
-        "pinyin_tones": "leng3",
-        "function": "adjective",
-        "hsk_level": 1
-    },
-    "热": {
-        "hanzi": "热",
-        "pinyin": "rè",
-        "literal": "",
-        "english": "to warm up / to heat up / hot (of weather) / heat / fervent",
-        "char_matches": {},
-        "pinyin_tones": "re4",
-        "function": "noun",
-        "hsk_level": 1
-    },
-    "冰": {
-        "hanzi": "冰",
-        "pinyin": "bīng",
-        "literal": "",
-        "english": "ice / to chill sth / (of an object or substance) to feel cold / (of a person) cold / unfriendly / (slang) methamphetamine / variant of 冰[bing1]",
-        "char_matches": {},
-        "pinyin_tones": "bing1",
-        "function": "noun",
-        "hsk_level": -1
-    },
-    "冰淇淋": {
-        "hanzi": "冰淇淋",
-        "pinyin": "bīng qí lín",
-        "literal": "",
-        "english": "ice cream",
-        "char_matches": {},
-        "pinyin_tones": "bing1 qi2 lin2",
-        "function": "proper noun",
-        "hsk_level": -1
-    },
-    "西": {
-        "hanzi": "西",
-        "pinyin": "xī",
-        "literal": "",
-        "english": "the West / abbr. for Spain 西班牙[Xi1 ban1 ya2] / Spanish / west",
-        "char_matches": {},
-        "pinyin_tones": "xi1",
-        "function": "surname",
-        "hsk_level": 3
-    },
-    "北": {
-        "hanzi": "北",
-        "pinyin": "běi",
-        "literal": "",
-        "english": "north / (classical) to be defeated",
-        "char_matches": {},
-        "pinyin_tones": "bei3",
-        "function": "place noun",
-        "hsk_level": -1
-    },
-    "东": {
-        "hanzi": "东",
-        "pinyin": "dōng",
-        "literal": "",
-        "english": "east / host (i.e. sitting on east side of guest) / landlord / surname Dong",
-        "char_matches": {},
-        "pinyin_tones": "dong1",
-        "function": "place noun",
-        "hsk_level": 3
-    },
-    "南": {
-        "hanzi": "南",
-        "pinyin": "nán",
-        "literal": "",
-        "english": "south / surname Nan",
-        "char_matches": {},
-        "pinyin_tones": "nan2",
-        "function": "place noun",
-        "hsk_level": 3
-    },
-    "东南西北": {
-        "hanzi": "东南西北",
-        "pinyin": "dōng nán xī běi",
-        "literal": "",
-        "english": "east, south, west and north / all directions",
-        "char_matches": {},
-        "pinyin_tones": "dong1 nan2 xi1 bei3",
-        "function": "place noun",
-        "hsk_level": -1
-    },
-    "百": {
-        "hanzi": "百",
-        "pinyin": "bǎi",
-        "literal": "",
-        "english": "hundred / numerous / all kinds of / surname Bai",
-        "char_matches": {},
-        "pinyin_tones": "bai3",
-        "function": "noun",
-        "hsk_level": 2
-    },
-    "千": {
-        "hanzi": "千",
-        "pinyin": "qiān",
-        "literal": "",
-        "english": "thousand / see 鞦韆|秋千[qiu1 qian1]",
-        "char_matches": {},
-        "pinyin_tones": "qian1",
-        "function": "number",
-        "hsk_level": 2
-    },
-    "万": {
-        "hanzi": "万",
-        "pinyin": "wàn",
-        "literal": "",
-        "english": "see 万俟[Mo4 qi2] / ten thousand / a great number / surname Wan",
-        "char_matches": {},
-        "pinyin_tones": "wan4",
-        "function": "number",
-        "hsk_level": 3
-    },
-    "真": {
-        "hanzi": "真",
-        "pinyin": "zhēn",
-        "literal": "",
-        "english": "really / truly / indeed / real / true / genuine",
-        "char_matches": {},
-        "pinyin_tones": "zhen1",
-        "function": "adverb",
-        "hsk_level": 2
-    },
-    "来": {
-        "hanzi": "来",
-        "pinyin": "lái",
-        "literal": "",
-        "english": "to come / to arrive / to come round / ever since / next",
-        "char_matches": {},
-        "pinyin_tones": "lai2",
-        "function": "verb",
-        "hsk_level": 1
-    },
-    "欢迎": {
-        "hanzi": "欢迎",
-        "pinyin": "huān yíng",
-        "literal": "",
-        "english": "to welcome / welcome",
-        "char_matches": {},
-        "pinyin_tones": "huan1 ying2",
-        "function": "verb",
-        "hsk_level": 3
-    },
-    "为什么": {
-        "hanzi": "为什么",
-        "pinyin": "wèi shén me",
-        "literal": "",
-        "english": "why? / for what reason?",
-        "char_matches": {},
-        "pinyin_tones": "wei4 shen2 me",
-        "function": "pronoun",
-        "hsk_level": 2
-    },
-    "为": {
-        "hanzi": "为",
-        "pinyin": "wèi",
-        "literal": "",
-        "english": "as (in the capacity of) / to take sth as / to act as / to serve as / to behave as / to become / to be / to do / by (in the passive voice) / because of / for / to / variant of 為|为[wei2] / as (i.e. in the capacity of) / to take sth as / to act as / to serve as / to behave as / to become / to be / to do / variant of 為|为[wei4], because of / for / to",
-        "char_matches": {},
-        "pinyin_tones": "wei4",
-        "function": "preposition",
-        "hsk_level": 3
-    },
-    "因为": {
-        "hanzi": "因为",
-        "pinyin": "yīn wèi",
-        "literal": "",
-        "english": "because / owing to / on account of",
-        "char_matches": {},
-        "pinyin_tones": "yin1 wei4",
-        "function": "complement",
-        "hsk_level": 2
-    },
-    "分": {
-        "hanzi": "分",
-        "pinyin": "fēn",
-        "literal": "",
-        "english": "to divide / to separate / to distribute / to allocate / to distinguish (good and bad) / part or subdivision / fraction / one tenth (of certain units) / unit of length equivalent to 0.33 cm / minute (unit of time) / minute (angular measurement unit) / a point (in sports or games) / 0.01 yuan (unit of money) / part / share / ingredient / component",
-        "char_matches": {},
-        "pinyin_tones": "fen1",
-        "function": "verb",
-        "hsk_level": 3
-    },
-    "分公司": {
-        "hanzi": "分公司",
-        "pinyin": "fēn gōng sī",
-        "literal": "",
-        "english": "subsidiary company / branch office",
-        "char_matches": {},
-        "pinyin_tones": "fen1 gong1 si1",
-        "function": "noun",
-        "hsk_level": -1
-    },
-    "老板": {
-        "hanzi": "老板",
-        "pinyin": "lǎo bǎn",
-        "literal": "",
-        "english": "variant of 老闆|老板[lao3 ban3] / Robam (brand) / boss / business proprietor",
-        "char_matches": {},
-        "pinyin_tones": "lao3 ban3",
-        "function": "noun",
-        "hsk_level": 5
-    },
-    "让": {
-        "hanzi": "让",
-        "pinyin": "ràng",
-        "literal": "",
-        "english": "to yield / to permit / to let sb do sth / to have sb do sth / to make sb (feel sad etc) / by (indicates the agent in a passive clause, like 被[bei4])",
-        "char_matches": {},
-        "pinyin_tones": "rang4",
-        "function": "verb",
-        "hsk_level": 2
-    },
-    "当然": {
-        "hanzi": "当然",
-        "pinyin": "dāng rán",
-        "literal": "",
-        "english": "only natural / as it should be / certainly / of course / without doubt",
-        "char_matches": {},
-        "pinyin_tones": "dang1 ran2",
-        "function": "adverb",
-        "hsk_level": 3
-    },
-    "想": {
-        "hanzi": "想",
-        "pinyin": "xiǎng",
-        "literal": "",
-        "english": "to think / to believe / to suppose / to wish / to want / to miss (feel wistful about the absence of sb or sth)",
-        "char_matches": {},
-        "pinyin_tones": "xiang3",
-        "function": "verb",
-        "hsk_level": 1
-    },
-    "能": {
-        "hanzi": "能",
-        "pinyin": "néng",
-        "literal": "",
-        "english": "can / to be able to / might possibly / ability / (physics) energy / surname Neng",
-        "char_matches": {},
-        "pinyin_tones": "neng2",
-        "function": "verb",
-        "hsk_level": 1
-    },
-    "想一想": {
-        "hanzi": "想一想",
-        "pinyin": "xiǎng yī xiǎng",
-        "literal": "",
-        "english": "to think about",
-        "char_matches": {},
-        "pinyin_tones": "xiang3 yi1 xiang3",
-        "function": "idiom",
-        "hsk_level": -1
-    },
-    "可爱": {
-        "hanzi": "可爱",
-        "pinyin": "kě ài",
-        "literal": "",
-        "english": "adorable / cute / lovely",
-        "char_matches": {},
-        "pinyin_tones": "ke3 ai4",
-        "function": "verb",
-        "hsk_level": 3
-    },
-    "家": {
-        "hanzi": "家",
-        "pinyin": "jiā",
-        "literal": "",
-        "english": "see 傢伙|家伙[jia1 huo5] / home / family / (polite) my (sister, uncle etc) / classifier for families or businesses / refers to the philosophical schools of pre-Han China / noun suffix for a specialist in some activity, such as a musician or revolutionary, corresponding to English -ist, -er, -ary or -ian",
-        "char_matches": {},
-        "pinyin_tones": "jia1",
-        "function": "classifier",
-        "hsk_level": 1
-    },
-    "家人": {
-        "hanzi": "家人",
-        "pinyin": "jiā rén",
-        "literal": "",
-        "english": "household / (one's) family",
-        "char_matches": {},
-        "pinyin_tones": "jia1 ren2",
-        "function": "noun",
-        "hsk_level": -1
-    },
-    "有": {
-        "hanzi": "有",
-        "pinyin": "yǒu",
-        "literal": "",
-        "english": "to have / there is / there are / to exist / to be",
-        "char_matches": {},
-        "pinyin_tones": "you3",
-        "function": "verb",
-        "hsk_level": 1
-    },
-    "钱": {
-        "hanzi": "钱",
-        "pinyin": "qián",
-        "literal": "",
-        "english": "coin / money / unit of weight, one tenth of a tael 兩|两[liang3] / surname Qian",
-        "char_matches": {},
-        "pinyin_tones": "qian2",
-        "function": "noun",
-        "hsk_level": 1
-    },
-    "多少": {
-        "hanzi": "多少",
-        "pinyin": "duō shǎo",
-        "literal": "",
-        "english": "number / amount / somewhat / how much? / how many? / (phone number, student ID etc) what number?",
-        "char_matches": {},
-        "pinyin_tones": "duo1 shao3",
-        "function": "number",
-        "hsk_level": 1
-    },
-    "几岁": {
-        "hanzi": "几岁",
-        "pinyin": "jǐ suì",
-        "literal": "",
-        "english": "how old are you? (familiar, or to a child)",
-        "char_matches": {},
-        "pinyin_tones": "ji3 sui4",
-        "function": "number",
-        "hsk_level": -1
-    },
-    "几": {
-        "hanzi": "几",
-        "pinyin": "jǐ",
-        "literal": "",
-        "english": "small table / almost / how much / how many / several / a few",
-        "char_matches": {},
-        "pinyin_tones": "ji3",
-        "function": "number",
-        "hsk_level": 1
-    },
-    "多大": {
-        "hanzi": "多大",
-        "pinyin": "duō dà",
-        "literal": "",
-        "english": "how old? / how big? / how much? / so big / that much",
-        "char_matches": {},
-        "pinyin_tones": "duo1 da4",
-        "function": [
-            "number",
-            "adjective"
-        ],
-        "hsk_level": [
-            1,
-            1
+  "森": {
+    "hanzi": "森",
+    "pinyin": "sēn",
+    "literal": "",
+    "english": "forest / Mori (Japanese surname)",
+    "char_matches": {
+      "森": {
+        "hsk4": [
+          "森林"
         ]
+      }
     },
-    "大概": {
-        "hanzi": "大概",
-        "pinyin": "dà gài",
-        "literal": "",
-        "english": "roughly / probably / rough / approximate / about / general idea",
-        "char_matches": {},
-        "pinyin_tones": "da4 gai4",
-        "function": "adverb",
-        "hsk_level": 4
+    "pinyin_tones": "sen1",
+    "function": "noun",
+    "hsk_level": -1
+  },
+  "林": {
+    "hanzi": "林",
+    "pinyin": "lín",
+    "literal": "",
+    "english": "woods / forest / circle(s) (i.e. specific group of people) / a collection (of similar things) / surname Lin / Japanese surname Hayashi",
+    "char_matches": {
+      "林": {
+        "hsk4": [
+          "森林"
+        ],
+        "hsk6": [
+          "园林"
+        ]
+      }
     },
-    "地方": {
-        "hanzi": "地方",
-        "pinyin": "dì fāng",
-        "literal": "",
-        "english": "region / regional (away from the central administration) / local / area / place / space / room / territory",
-        "char_matches": {},
-        "pinyin_tones": "di4 fang1",
-        "function": "noun",
-        "hsk_level": 3
-    }
+    "pinyin_tones": "lin2",
+    "function": "gender noun",
+    "hsk_level": -1
+  },
+  "森林": {
+    "hanzi": "森林",
+    "pinyin": "sēn lín",
+    "literal": "",
+    "english": "forest",
+    "char_matches": {
+      "森": {
+        "unknown": [
+          "森"
+        ]
+      },
+      "林": {
+        "hsk6": [
+          "园林"
+        ],
+        "unknown": [
+          "林"
+        ]
+      }
+    },
+    "pinyin_tones": "sen1 lin2",
+    "function": "noun",
+    "hsk_level": 4
+  },
+  "冷": {
+    "hanzi": "冷",
+    "pinyin": "lěng",
+    "literal": "",
+    "english": "cold / surname Leng",
+    "char_matches": {
+      "冷": {
+        "hsk4": [
+          "冷静"
+        ],
+        "hsk5": [
+          "冷淡"
+        ],
+        "hsk6": [
+          "冷酷",
+          "冷落",
+          "冷却"
+        ]
+      }
+    },
+    "pinyin_tones": "leng3",
+    "function": "adjective",
+    "hsk_level": 1
+  },
+  "热": {
+    "hanzi": "热",
+    "pinyin": "rè",
+    "literal": "",
+    "english": "to warm up / to heat up / hot (of weather) / heat / fervent",
+    "char_matches": {
+      "热": {
+        "hsk3": [
+          "热情"
+        ],
+        "hsk4": [
+          "热闹"
+        ],
+        "hsk5": [
+          "热爱",
+          "热烈",
+          "热心"
+        ],
+        "hsk6": [
+          "亲热",
+          "热泪盈眶",
+          "热门",
+          "炎热"
+        ]
+      }
+    },
+    "pinyin_tones": "re4",
+    "function": "noun",
+    "hsk_level": 1
+  },
+  "冰": {
+    "hanzi": "冰",
+    "pinyin": "bīng",
+    "literal": "",
+    "english": "ice / to chill sth / (of an object or substance) to feel cold / (of a person) cold / unfriendly / (slang) methamphetamine / variant of 冰[bing1]",
+    "char_matches": {
+      "冰": {
+        "hsk3": [
+          "冰箱"
+        ],
+        "hsk5": [
+          "冰激凌"
+        ],
+        "hsk6": [
+          "冰雹"
+        ],
+        "unknown": [
+          "冰淇淋"
+        ]
+      }
+    },
+    "pinyin_tones": "bing1",
+    "function": "noun",
+    "hsk_level": -1
+  },
+  "冰淇淋": {
+    "hanzi": "冰淇淋",
+    "pinyin": "bīng qí lín",
+    "literal": "",
+    "english": "ice cream",
+    "char_matches": {
+      "冰": {
+        "hsk3": [
+          "冰箱"
+        ],
+        "hsk5": [
+          "冰激凌"
+        ],
+        "hsk6": [
+          "冰雹"
+        ],
+        "unknown": [
+          "冰"
+        ]
+      },
+      "淋": {
+        "hsk6": [
+          "淋"
+        ]
+      }
+    },
+    "pinyin_tones": "bing1 qi2 lin2",
+    "function": "proper noun",
+    "hsk_level": -1
+  },
+  "西": {
+    "hanzi": "西",
+    "pinyin": "xī",
+    "literal": "",
+    "english": "the West / abbr. for Spain 西班牙[Xi1 ban1 ya2] / Spanish / west",
+    "char_matches": {
+      "西": {
+        "hsk1": [
+          "东西"
+        ],
+        "hsk2": [
+          "西瓜"
+        ],
+        "hsk4": [
+          "西红柿"
+        ],
+        "hsk6": [
+          "东张西望"
+        ],
+        "unknown": [
+          "东南西北"
+        ]
+      }
+    },
+    "pinyin_tones": "xi1",
+    "function": "surname",
+    "hsk_level": 3
+  },
+  "北": {
+    "hanzi": "北",
+    "pinyin": "běi",
+    "literal": "",
+    "english": "north / (classical) to be defeated",
+    "char_matches": {
+      "北": {
+        "hsk1": [
+          "北京"
+        ],
+        "hsk3": [
+          "北方"
+        ],
+        "hsk6": [
+          "北极",
+          "南辕北辙"
+        ],
+        "unknown": [
+          "东南西北"
+        ]
+      }
+    },
+    "pinyin_tones": "bei3",
+    "function": "place noun",
+    "hsk_level": -1
+  },
+  "东": {
+    "hanzi": "东",
+    "pinyin": "dōng",
+    "literal": "",
+    "english": "east / host (i.e. sitting on east side of guest) / landlord / surname Dong",
+    "char_matches": {
+      "东": {
+        "hsk1": [
+          "东西"
+        ],
+        "hsk4": [
+          "房东"
+        ],
+        "hsk6": [
+          "东道主",
+          "东张西望",
+          "股东"
+        ],
+        "unknown": [
+          "东南西北",
+          "东方学院"
+        ]
+      }
+    },
+    "pinyin_tones": "dong1",
+    "function": "place noun",
+    "hsk_level": 3
+  },
+  "南": {
+    "hanzi": "南",
+    "pinyin": "nán",
+    "literal": "",
+    "english": "south / surname Nan",
+    "char_matches": {
+      "南": {
+        "hsk6": [
+          "南辕北辙",
+          "指南针"
+        ],
+        "unknown": [
+          "东南西北"
+        ]
+      }
+    },
+    "pinyin_tones": "nan2",
+    "function": "place noun",
+    "hsk_level": 3
+  },
+  "东南西北": {
+    "hanzi": "东南西北",
+    "pinyin": "dōng nán xī běi",
+    "literal": "",
+    "english": "east, south, west and north / all directions",
+    "char_matches": {
+      "东": {
+        "hsk1": [
+          "东西"
+        ],
+        "hsk3": [
+          "东"
+        ],
+        "hsk4": [
+          "房东"
+        ],
+        "hsk6": [
+          "东道主",
+          "东张西望",
+          "股东"
+        ],
+        "unknown": [
+          "东方学院"
+        ]
+      },
+      "南": {
+        "hsk3": [
+          "南"
+        ],
+        "hsk6": [
+          "南辕北辙",
+          "指南针"
+        ]
+      },
+      "西": {
+        "hsk1": [
+          "东西"
+        ],
+        "hsk2": [
+          "西瓜"
+        ],
+        "hsk3": [
+          "西"
+        ],
+        "hsk4": [
+          "西红柿"
+        ],
+        "hsk6": [
+          "东张西望"
+        ]
+      },
+      "北": {
+        "hsk1": [
+          "北京"
+        ],
+        "unknown": [
+          "北"
+        ],
+        "hsk3": [
+          "北方"
+        ],
+        "hsk6": [
+          "北极",
+          "南辕北辙"
+        ]
+      }
+    },
+    "pinyin_tones": "dong1 nan2 xi1 bei3",
+    "function": "place noun",
+    "hsk_level": -1
+  },
+  "百": {
+    "hanzi": "百",
+    "pinyin": "bǎi",
+    "literal": "",
+    "english": "hundred / numerous / all kinds of / surname Bai",
+    "char_matches": {
+      "百": {
+        "hsk4": [
+          "百分之"
+        ],
+        "hsk5": [
+          "老百姓"
+        ],
+        "hsk6": [
+          "千方百计"
+        ]
+      }
+    },
+    "pinyin_tones": "bai3",
+    "function": "noun",
+    "hsk_level": 2
+  },
+  "千": {
+    "hanzi": "千",
+    "pinyin": "qiān",
+    "literal": "",
+    "english": "thousand / see 鞦韆|秋千[qiu1 qian1]",
+    "char_matches": {
+      "千": {
+        "hsk4": [
+          "千万"
+        ],
+        "hsk6": [
+          "千方百计"
+        ]
+      }
+    },
+    "pinyin_tones": "qian1",
+    "function": "number",
+    "hsk_level": 2
+  },
+  "万": {
+    "hanzi": "万",
+    "pinyin": "wàn",
+    "literal": "",
+    "english": "see 万俟[Mo4 qi2] / ten thousand / a great number / surname Wan",
+    "char_matches": {
+      "万": {
+        "hsk4": [
+          "千万"
+        ],
+        "hsk5": [
+          "万一"
+        ],
+        "hsk6": [
+          "万分"
+        ]
+      }
+    },
+    "pinyin_tones": "wan4",
+    "function": "number",
+    "hsk_level": 3
+  },
+  "真": {
+    "hanzi": "真",
+    "pinyin": "zhēn",
+    "literal": "",
+    "english": "really / truly / indeed / real / true / genuine",
+    "char_matches": {
+      "真": {
+        "hsk3": [
+          "认真"
+        ],
+        "hsk4": [
+          "传真",
+          "真正"
+        ],
+        "hsk5": [
+          "天真",
+          "真实"
+        ],
+        "hsk6": [
+          "清真",
+          "真理",
+          "真相",
+          "真挚"
+        ]
+      }
+    },
+    "pinyin_tones": "zhen1",
+    "function": "adverb",
+    "hsk_level": 2
+  },
+  "来": {
+    "hanzi": "来",
+    "pinyin": "lái",
+    "literal": "",
+    "english": "to come / to arrive / to come round / ever since / next",
+    "char_matches": {
+      "来": {
+        "hsk3": [
+          "后来",
+          "起来"
+        ],
+        "hsk4": [
+          "本来",
+          "从来",
+          "将来",
+          "来不及",
+          "来得及",
+          "来自",
+          "原来"
+        ],
+        "hsk5": [
+          "未来",
+          "以来"
+        ],
+        "hsk6": [
+          "近来",
+          "苦尽甘来",
+          "来历",
+          "来源",
+          "礼尚往来",
+          "历来",
+          "向来"
+        ]
+      }
+    },
+    "pinyin_tones": "lai2",
+    "function": "verb",
+    "hsk_level": 1
+  },
+  "欢迎": {
+    "hanzi": "欢迎",
+    "pinyin": "huān yíng",
+    "literal": "",
+    "english": "to welcome / welcome",
+    "char_matches": {
+      "欢": {
+        "hsk1": [
+          "喜欢"
+        ],
+        "hsk6": [
+          "欢乐",
+          "联欢"
+        ]
+      },
+      "迎": {
+        "hsk5": [
+          "迎接"
+        ],
+        "hsk6": [
+          "迎面"
+        ]
+      }
+    },
+    "pinyin_tones": "huan1 ying2",
+    "function": "verb",
+    "hsk_level": 3
+  },
+  "为什么": {
+    "hanzi": "为什么",
+    "pinyin": "wèi shén me",
+    "literal": "",
+    "english": "why? / for what reason?",
+    "char_matches": {
+      "为": {
+        "hsk2": [
+          "因为"
+        ],
+        "hsk3": [
+          "认为",
+          "为",
+          "为了"
+        ],
+        "hsk4": [
+          "成为",
+          "以为"
+        ],
+        "hsk5": [
+          "行为",
+          "作为"
+        ],
+        "hsk6": [
+          "见义勇为",
+          "迄今为止",
+          "人为",
+          "为难",
+          "为期",
+          "无能为力"
+        ]
+      },
+      "什": {
+        "unknown": [
+          "你姓什么"
+        ],
+        "hsk1": [
+          "什么"
+        ]
+      },
+      "么": {
+        "unknown": [
+          "么",
+          "你姓什么"
+        ],
+        "hsk1": [
+          "什么",
+          "怎么",
+          "怎么样"
+        ],
+        "hsk3": [
+          "多么"
+        ]
+      }
+    },
+    "pinyin_tones": "wei4 shen2 me",
+    "function": "pronoun",
+    "hsk_level": 2
+  },
+  "为": {
+    "hanzi": "为",
+    "pinyin": "wèi",
+    "literal": "",
+    "english": "as (in the capacity of) / to take sth as / to act as / to serve as / to behave as / to become / to be / to do / by (in the passive voice) / because of / for / to / variant of 為|为[wei2] / as (i.e. in the capacity of) / to take sth as / to act as / to serve as / to behave as / to become / to be / to do / variant of 為|为[wei4], because of / for / to",
+    "char_matches": {
+      "为": {
+        "hsk2": [
+          "为什么",
+          "因为"
+        ],
+        "hsk3": [
+          "认为",
+          "为了"
+        ],
+        "hsk4": [
+          "成为",
+          "以为"
+        ],
+        "hsk5": [
+          "行为",
+          "作为"
+        ],
+        "hsk6": [
+          "见义勇为",
+          "迄今为止",
+          "人为",
+          "为难",
+          "为期",
+          "无能为力"
+        ]
+      }
+    },
+    "pinyin_tones": "wei4",
+    "function": "preposition",
+    "hsk_level": 3
+  },
+  "因为": {
+    "hanzi": "因为",
+    "pinyin": "yīn wèi",
+    "literal": "",
+    "english": "because / owing to / on account of",
+    "char_matches": {
+      "因": {
+        "hsk4": [
+          "因此",
+          "原因"
+        ],
+        "hsk5": [
+          "因而",
+          "因素"
+        ],
+        "hsk6": [
+          "基因"
+        ]
+      },
+      "为": {
+        "hsk2": [
+          "为什么"
+        ],
+        "hsk3": [
+          "认为",
+          "为",
+          "为了"
+        ],
+        "hsk4": [
+          "成为",
+          "以为"
+        ],
+        "hsk5": [
+          "行为",
+          "作为"
+        ],
+        "hsk6": [
+          "见义勇为",
+          "迄今为止",
+          "人为",
+          "为难",
+          "为期",
+          "无能为力"
+        ]
+      }
+    },
+    "pinyin_tones": "yin1 wei4",
+    "function": "complement",
+    "hsk_level": 2
+  },
+  "分": {
+    "hanzi": "分",
+    "pinyin": "fēn",
+    "literal": "",
+    "english": "to divide / to separate / to distribute / to allocate / to distinguish (good and bad) / part or subdivision / fraction / one tenth (of certain units) / unit of length equivalent to 0.33 cm / minute (unit of time) / minute (angular measurement unit) / a point (in sports or games) / 0.01 yuan (unit of money) / part / share / ingredient / component",
+    "char_matches": {
+      "分": {
+        "hsk1": [
+          "分钟"
+        ],
+        "hsk4": [
+          "百分之",
+          "部分",
+          "十分"
+        ],
+        "hsk5": [
+          "成分",
+          "充分",
+          "分别",
+          "分布",
+          "分配",
+          "分手",
+          "分析",
+          "过分"
+        ],
+        "hsk6": [
+          "处分",
+          "分辨",
+          "分寸",
+          "分红",
+          "分解",
+          "分裂",
+          "分泌",
+          "分明",
+          "分歧",
+          "分散",
+          "分量",
+          "划分",
+          "区分",
+          "万分"
+        ],
+        "unknown": [
+          "分公司"
+        ]
+      }
+    },
+    "pinyin_tones": "fen1",
+    "function": "verb",
+    "hsk_level": 3
+  },
+  "分公司": {
+    "hanzi": "分公司",
+    "pinyin": "fēn gōng sī",
+    "literal": "",
+    "english": "subsidiary company / branch office",
+    "char_matches": {
+      "分": {
+        "hsk1": [
+          "分钟"
+        ],
+        "hsk3": [
+          "分"
+        ],
+        "hsk4": [
+          "百分之",
+          "部分",
+          "十分"
+        ],
+        "hsk5": [
+          "成分",
+          "充分",
+          "分别",
+          "分布",
+          "分配",
+          "分手",
+          "分析",
+          "过分"
+        ],
+        "hsk6": [
+          "处分",
+          "分辨",
+          "分寸",
+          "分红",
+          "分解",
+          "分裂",
+          "分泌",
+          "分明",
+          "分歧",
+          "分散",
+          "分量",
+          "划分",
+          "区分",
+          "万分"
+        ]
+      },
+      "公": {
+        "hsk2": [
+          "公共汽车",
+          "公司"
+        ],
+        "hsk3": [
+          "办公室",
+          "公斤",
+          "公园"
+        ],
+        "hsk4": [
+          "高速公路",
+          "公里"
+        ],
+        "hsk5": [
+          "公布",
+          "公开",
+          "公平",
+          "公寓",
+          "公元",
+          "公主",
+          "外公"
+        ],
+        "hsk6": [
+          "公安局",
+          "公道",
+          "公告",
+          "公关",
+          "公民",
+          "公然",
+          "公认",
+          "公式",
+          "公务",
+          "公正",
+          "公证"
+        ]
+      },
+      "司": {
+        "hsk2": [
+          "公司"
+        ],
+        "hsk3": [
+          "司机"
+        ],
+        "hsk6": [
+          "打官司",
+          "司法",
+          "司令"
+        ]
+      }
+    },
+    "pinyin_tones": "fen1 gong1 si1",
+    "function": "noun",
+    "hsk_level": -1
+  },
+  "老板": {
+    "hanzi": "老板",
+    "pinyin": "lǎo bǎn",
+    "literal": "",
+    "english": "variant of 老闆|老板[lao3 ban3] / Robam (brand) / boss / business proprietor",
+    "char_matches": {
+      "老": {
+        "hsk1": [
+          "老师"
+        ],
+        "hsk4": [
+          "老虎"
+        ],
+        "hsk3": [
+          "老"
+        ],
+        "hsk5": [
+          "老百姓",
+          "老婆",
+          "老实",
+          "老鼠"
+        ],
+        "hsk6": [
+          "衰老"
+        ],
+        "unknown": [
+          "老朋友",
+          "老同学"
+        ]
+      },
+      "板": {
+        "hsk3": [
+          "黑板"
+        ]
+      }
+    },
+    "pinyin_tones": "lao3 ban3",
+    "function": "noun",
+    "hsk_level": 5
+  },
+  "让": {
+    "hanzi": "让",
+    "pinyin": "ràng",
+    "literal": "",
+    "english": "to yield / to permit / to let sb do sth / to have sb do sth / to make sb (feel sad etc) / by (indicates the agent in a passive clause, like 被[bei4])",
+    "char_matches": {
+      "让": {
+        "hsk6": [
+          "让步",
+          "转让"
+        ]
+      }
+    },
+    "pinyin_tones": "rang4",
+    "function": "verb",
+    "hsk_level": 2
+  },
+  "当然": {
+    "hanzi": "当然",
+    "pinyin": "dāng rán",
+    "literal": "",
+    "english": "only natural / as it should be / certainly / of course / without doubt",
+    "char_matches": {
+      "当": {
+        "hsk4": [
+          "当",
+          "当时"
+        ],
+        "hsk5": [
+          "当地",
+          "当心",
+          "上当",
+          "相当"
+        ],
+        "hsk6": [
+          "不敢当",
+          "充当",
+          "当场",
+          "当初",
+          "当代",
+          "当面",
+          "当前",
+          "当事人",
+          "当务之急",
+          "当选",
+          "理所当然",
+          "恰当",
+          "妥当",
+          "正当"
+        ]
+      },
+      "然": {
+        "hsk2": [
+          "虽然"
+        ],
+        "hsk3": [
+          "然后",
+          "突然"
+        ],
+        "hsk4": [
+          "既然",
+          "竟然",
+          "然而",
+          "仍然",
+          "自然"
+        ],
+        "hsk5": [
+          "必然",
+          "不然",
+          "果然",
+          "忽然",
+          "居然",
+          "偶然",
+          "显然",
+          "依然"
+        ],
+        "hsk6": [
+          "公然",
+          "固然",
+          "恍然大悟",
+          "理所当然",
+          "茫然",
+          "天然气",
+          "一目了然",
+          "毅然"
+        ]
+      }
+    },
+    "pinyin_tones": "dang1 ran2",
+    "function": "adverb",
+    "hsk_level": 3
+  },
+  "想": {
+    "hanzi": "想",
+    "pinyin": "xiǎng",
+    "literal": "",
+    "english": "to think / to believe / to suppose / to wish / to want / to miss (feel wistful about the absence of sb or sth)",
+    "char_matches": {
+      "想": {
+        "hsk4": [
+          "理想"
+        ],
+        "hsk5": [
+          "感想",
+          "幻想",
+          "梦想",
+          "思想",
+          "想念",
+          "想象"
+        ],
+        "hsk6": [
+          "空想",
+          "联想",
+          "设想",
+          "妄想",
+          "想方设法",
+          "着想"
+        ],
+        "unknown": [
+          "想一想"
+        ]
+      }
+    },
+    "pinyin_tones": "xiang3",
+    "function": "verb",
+    "hsk_level": 1
+  },
+  "能": {
+    "hanzi": "能",
+    "pinyin": "néng",
+    "literal": "",
+    "english": "can / to be able to / might possibly / ability / (physics) energy / surname Neng",
+    "char_matches": {
+      "能": {
+        "hsk2": [
+          "可能"
+        ],
+        "hsk4": [
+          "能力"
+        ],
+        "hsk5": [
+          "功能",
+          "能干",
+          "能源"
+        ],
+        "hsk6": [
+          "本能",
+          "力所能及",
+          "难能可贵",
+          "能量",
+          "无能为力",
+          "性能",
+          "职能",
+          "智能"
+        ]
+      }
+    },
+    "pinyin_tones": "neng2",
+    "function": "verb",
+    "hsk_level": 1
+  },
+  "想一想": {
+    "hanzi": "想一想",
+    "pinyin": "xiǎng yī xiǎng",
+    "literal": "",
+    "english": "to think about",
+    "char_matches": {
+      "想": {
+        "hsk4": [
+          "理想",
+          "理想"
+        ],
+        "hsk1": [
+          "想",
+          "想"
+        ],
+        "hsk5": [
+          "感想",
+          "幻想",
+          "梦想",
+          "思想",
+          "想念",
+          "想象",
+          "感想",
+          "幻想",
+          "梦想",
+          "思想",
+          "想念",
+          "想象"
+        ],
+        "hsk6": [
+          "空想",
+          "联想",
+          "设想",
+          "妄想",
+          "想方设法",
+          "着想",
+          "空想",
+          "联想",
+          "设想",
+          "妄想",
+          "想方设法",
+          "着想"
+        ]
+      },
+      "一": {
+        "hsk1": [
+          "一",
+          "一点儿"
+        ],
+        "hsk2": [
+          "第一",
+          "一起",
+          "一下"
+        ],
+        "hsk3": [
+          "一般",
+          "一边",
+          "一定",
+          "一共",
+          "一会儿",
+          "一样",
+          "一直"
+        ],
+        "hsk4": [
+          "一切"
+        ],
+        "hsk5": [
+          "统一",
+          "万一",
+          "唯一",
+          "一辈子",
+          "一旦",
+          "一律",
+          "一再",
+          "一致"
+        ],
+        "hsk6": [
+          "不屑一顾",
+          "一度",
+          "一帆风顺",
+          "一贯",
+          "一举两得",
+          "一流",
+          "一目了然",
+          "一如既往",
+          "一丝不苟",
+          "一向"
+        ]
+      }
+    },
+    "pinyin_tones": "xiang3 yi1 xiang3",
+    "function": "idiom",
+    "hsk_level": -1
+  },
+  "可爱": {
+    "hanzi": "可爱",
+    "pinyin": "kě ài",
+    "literal": "",
+    "english": "adorable / cute / lovely",
+    "char_matches": {
+      "可": {
+        "unknown": [
+          "可乐",
+          "我可以给你打电话"
+        ],
+        "hsk2": [
+          "可能",
+          "可以"
+        ],
+        "hsk4": [
+          "可怜",
+          "可是",
+          "可惜"
+        ],
+        "hsk5": [
+          "可见",
+          "可靠",
+          "可怕",
+          "宁可"
+        ],
+        "hsk6": [
+          "不可思议",
+          "可观",
+          "可口",
+          "可恶",
+          "可行",
+          "难能可贵",
+          "认可",
+          "许可"
+        ]
+      },
+      "爱": {
+        "hsk1": [
+          "爱"
+        ],
+        "hsk3": [
+          "爱好"
+        ],
+        "hsk4": [
+          "爱情"
+        ],
+        "hsk5": [
+          "爱护",
+          "爱惜",
+          "爱心",
+          "恋爱",
+          "亲爱",
+          "热爱",
+          "疼爱"
+        ],
+        "hsk6": [
+          "爱不释手",
+          "爱戴"
+        ]
+      }
+    },
+    "pinyin_tones": "ke3 ai4",
+    "function": "verb",
+    "hsk_level": 3
+  },
+  "家": {
+    "hanzi": "家",
+    "pinyin": "jiā",
+    "literal": "",
+    "english": "see 傢伙|家伙[jia1 huo5] / home / family / (polite) my (sister, uncle etc) / classifier for families or businesses / refers to the philosophical schools of pre-Han China / noun suffix for a specialist in some activity, such as a musician or revolutionary, corresponding to English -ist, -er, -ary or -ian",
+    "char_matches": {
+      "家": {
+        "hsk3": [
+          "国家"
+        ],
+        "hsk2": [
+          "大家"
+        ],
+        "hsk4": [
+          "家具",
+          "作家"
+        ],
+        "hsk5": [
+          "家庭",
+          "家务",
+          "家乡",
+          "专家"
+        ],
+        "hsk6": [
+          "家常",
+          "家伙",
+          "家属",
+          "家喻户晓",
+          "人家",
+          "儒家"
+        ],
+        "unknown": [
+          "家人"
+        ]
+      }
+    },
+    "pinyin_tones": "jia1",
+    "function": "classifier",
+    "hsk_level": 1
+  },
+  "家人": {
+    "hanzi": "家人",
+    "pinyin": "jiā rén",
+    "literal": "",
+    "english": "household / (one's) family",
+    "char_matches": {
+      "家": {
+        "hsk1": [
+          "家"
+        ],
+        "hsk3": [
+          "国家"
+        ],
+        "hsk2": [
+          "大家"
+        ],
+        "hsk4": [
+          "家具",
+          "作家"
+        ],
+        "hsk5": [
+          "家庭",
+          "家务",
+          "家乡",
+          "专家"
+        ],
+        "hsk6": [
+          "家常",
+          "家伙",
+          "家属",
+          "家喻户晓",
+          "人家",
+          "儒家"
+        ]
+      },
+      "人": {
+        "hsk1": [
+          "人"
+        ],
+        "hsk3": [
+          "别人",
+          "客人"
+        ],
+        "hsk5": [
+          "成人",
+          "敌人",
+          "个人",
+          "工人",
+          "人才",
+          "人口",
+          "人类",
+          "人民币",
+          "人生",
+          "人事",
+          "人物",
+          "人员",
+          "私人",
+          "行人",
+          "主人"
+        ],
+        "hsk6": [
+          "本人",
+          "当事人",
+          "丢人",
+          "法人",
+          "风土人情",
+          "夫人",
+          "迷人",
+          "人道",
+          "人格",
+          "人工",
+          "人家",
+          "人间",
+          "人士",
+          "人为",
+          "人性",
+          "人质"
+        ],
+        "unknown": [
+          "不是中国人"
+        ]
+      }
+    },
+    "pinyin_tones": "jia1 ren2",
+    "function": "noun",
+    "hsk_level": -1
+  },
+  "有": {
+    "hanzi": "有",
+    "pinyin": "yǒu",
+    "literal": "",
+    "english": "to have / there is / there are / to exist / to be",
+    "char_matches": {
+      "有": {
+        "hsk1": [
+          "没有"
+        ],
+        "hsk3": [
+          "有名",
+          "只有"
+        ],
+        "hsk4": [
+          "所有",
+          "有趣"
+        ],
+        "hsk5": [
+          "有利"
+        ],
+        "hsk6": [
+          "固有",
+          "津津有味",
+          "岂有此理",
+          "拥有",
+          "有条不紊"
+        ]
+      }
+    },
+    "pinyin_tones": "you3",
+    "function": "verb",
+    "hsk_level": 1
+  },
+  "钱": {
+    "hanzi": "钱",
+    "pinyin": "qián",
+    "literal": "",
+    "english": "coin / money / unit of weight, one tenth of a tael 兩|两[liang3] / surname Qian",
+    "char_matches": {
+      "钱": {
+        "hsk4": [
+          "零钱"
+        ],
+        "hsk6": [
+          "本钱",
+          "压岁钱"
+        ]
+      }
+    },
+    "pinyin_tones": "qian2",
+    "function": "noun",
+    "hsk_level": 1
+  },
+  "多少": {
+    "hanzi": "多少",
+    "pinyin": "duō shǎo",
+    "literal": "",
+    "english": "number / amount / somewhat / how much? / how many? / (phone number, student ID etc) what number?",
+    "char_matches": {
+      "多": {
+        "hsk1": [
+          "多"
+        ],
+        "hsk3": [
+          "多么"
+        ],
+        "hsk4": [
+          "差不多",
+          "许多"
+        ],
+        "hsk5": [
+          "多亏",
+          "多余"
+        ],
+        "hsk6": [
+          "多元化",
+          "见多识广"
+        ],
+        "unknown": [
+          "多大"
+        ]
+      },
+      "少": {
+        "hsk1": [
+          "少"
+        ],
+        "hsk4": [
+          "减少",
+          "缺少",
+          "至少"
+        ],
+        "hsk5": [
+          "青少年"
+        ]
+      }
+    },
+    "pinyin_tones": "duo1 shao3",
+    "function": "number",
+    "hsk_level": 1
+  },
+  "几岁": {
+    "hanzi": "几岁",
+    "pinyin": "jǐ suì",
+    "literal": "",
+    "english": "how old are you? (familiar, or to a child)",
+    "char_matches": {
+      "几": {
+        "hsk1": [
+          "几"
+        ],
+        "hsk3": [
+          "几乎"
+        ]
+      },
+      "岁": {
+        "hsk1": [
+          "岁"
+        ],
+        "hsk6": [
+          "岁月",
+          "压岁钱"
+        ]
+      }
+    },
+    "pinyin_tones": "ji3 sui4",
+    "function": "number",
+    "hsk_level": -1
+  },
+  "几": {
+    "hanzi": "几",
+    "pinyin": "jǐ",
+    "literal": "",
+    "english": "small table / almost / how much / how many / several / a few",
+    "char_matches": {
+      "几": {
+        "hsk3": [
+          "几乎"
+        ],
+        "unknown": [
+          "几岁"
+        ]
+      }
+    },
+    "pinyin_tones": "ji3",
+    "function": "number",
+    "hsk_level": 1
+  },
+  "多大": {
+    "hanzi": "多大",
+    "pinyin": "duō dà",
+    "literal": "",
+    "english": "how old? / how big? / how much? / so big / that much",
+    "char_matches": {
+      "多": {
+        "hsk1": [
+          "多",
+          "多少"
+        ],
+        "hsk3": [
+          "多么"
+        ],
+        "hsk4": [
+          "差不多",
+          "许多"
+        ],
+        "hsk5": [
+          "多亏",
+          "多余"
+        ],
+        "hsk6": [
+          "多元化",
+          "见多识广"
+        ]
+      },
+      "大": {
+        "hsk1": [
+          "大"
+        ],
+        "unknown": [
+          "大洋洲",
+          "加拿大",
+          "大学",
+          "澳大利亚"
+        ],
+        "hsk2": [
+          "大家"
+        ],
+        "hsk4": [
+          "大概",
+          "大使馆",
+          "大约",
+          "大夫"
+        ],
+        "hsk5": [
+          "大方",
+          "大厦",
+          "大象",
+          "大型",
+          "广大",
+          "巨大",
+          "扩大",
+          "伟大",
+          "重大"
+        ],
+        "hsk6": [
+          "博大精深",
+          "大不了",
+          "大臣",
+          "大伙儿",
+          "大肆",
+          "大体",
+          "大意",
+          "大致",
+          "放大",
+          "恍然大悟",
+          "庞大"
+        ]
+      }
+    },
+    "pinyin_tones": "duo1 da4",
+    "function": [
+      "number",
+      "adjective"
+    ],
+    "hsk_level": [
+      1,
+      1
+    ]
+  },
+  "大概": {
+    "hanzi": "大概",
+    "pinyin": "dà gài",
+    "literal": "",
+    "english": "roughly / probably / rough / approximate / about / general idea",
+    "char_matches": {
+      "大": {
+        "hsk1": [
+          "大"
+        ],
+        "unknown": [
+          "大洋洲",
+          "加拿大",
+          "多大",
+          "大学",
+          "澳大利亚"
+        ],
+        "hsk2": [
+          "大家"
+        ],
+        "hsk4": [
+          "大使馆",
+          "大约",
+          "大夫"
+        ],
+        "hsk5": [
+          "大方",
+          "大厦",
+          "大象",
+          "大型",
+          "广大",
+          "巨大",
+          "扩大",
+          "伟大",
+          "重大"
+        ],
+        "hsk6": [
+          "博大精深",
+          "大不了",
+          "大臣",
+          "大伙儿",
+          "大肆",
+          "大体",
+          "大意",
+          "大致",
+          "放大",
+          "恍然大悟",
+          "庞大"
+        ]
+      },
+      "概": {
+        "hsk5": [
+          "概括",
+          "概念"
+        ],
+        "hsk6": [
+          "气概"
+        ]
+      }
+    },
+    "pinyin_tones": "da4 gai4",
+    "function": "adverb",
+    "hsk_level": 4
+  },
+  "地方": {
+    "hanzi": "地方",
+    "pinyin": "dì fāng",
+    "literal": "",
+    "english": "region / regional (away from the central administration) / local / area / place / space / room / territory",
+    "char_matches": {
+      "地": {
+        "hsk3": [
+          "地",
+          "地铁",
+          "地图"
+        ],
+        "hsk4": [
+          "地点",
+          "地球",
+          "地址"
+        ],
+        "hsk5": [
+          "当地",
+          "地道",
+          "地理",
+          "地区",
+          "地毯",
+          "地位",
+          "地震",
+          "陆地",
+          "土地"
+        ],
+        "hsk6": [
+          "地步",
+          "地势",
+          "地质",
+          "耕地",
+          "基地",
+          "盆地",
+          "阵地",
+          "殖民地"
+        ]
+      },
+      "方": {
+        "hsk3": [
+          "北方",
+          "方便"
+        ],
+        "hsk4": [
+          "方法",
+          "方面",
+          "方向"
+        ],
+        "hsk5": [
+          "大方",
+          "对方",
+          "方",
+          "方案",
+          "方式",
+          "平方",
+          "双方"
+        ],
+        "hsk6": [
+          "比方",
+          "方位",
+          "方言",
+          "方圆",
+          "方针",
+          "官方",
+          "立方",
+          "千方百计",
+          "想方设法"
+        ],
+        "unknown": [
+          "东方学院"
+        ]
+      }
+    },
+    "pinyin_tones": "di4 fang1",
+    "function": "noun",
+    "hsk_level": 3
+  }
 }

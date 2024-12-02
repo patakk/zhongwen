@@ -51,7 +51,23 @@ function confirmDarkmode(){
         console.log(e)
     }
     try{
-        // initStats();
+        //select plottersand rerender
+        const plotterElement = document.getElementById('flashcard_plotter');
+        // Get specific plotter by index
+        // go throough children elements and click them
+        plotterElement.childNodes.forEach(child => {
+            child.click();
+        });
+
+        // plotterElement.plotters.forEach(hanziplotter => {
+        //     console.log("hanziplotter.plotter.getContext()");
+        //     console.log(hanziplotter.plotter);
+        //     console.log(hanziplotter.plotter.getContext());
+            
+        //     let context = hanziplotter.plotter.getContext();
+        //     context.ctx.canvas.classList.add('plotter');
+        //     animateStrokes(context);
+        // });
     }
     catch(e){
         console.log(e)
@@ -69,7 +85,7 @@ document.getElementById('darkmode-toggle').addEventListener('click', function() 
 
 function setDarkmode() {
     confirmDarkmode();
-    fetch(`./setdarkmode?darkmode=${isDarkMode}`, {
+    fetch(`./api/setdarkmode?darkmode=${isDarkMode}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -88,7 +104,7 @@ function setDarkmode() {
 
 
 function getDarkmode(func=null) {
-    fetch('./getdarkmode')
+    fetch('./api/getdarkmode')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');

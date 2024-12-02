@@ -28,7 +28,7 @@
 })();
 
 function recordView(character) {
-    fetch('./record_view', {
+    fetch('./api/record_view', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -175,7 +175,7 @@ function toggleGridList(){
     confirmDarkmode();
 }
 
-
+let prefetchedPlotters = null;
 let charCounter = 0;
 function createGrid(characters, useAllDecks){
     const grid = document.getElementById('character-grid');
@@ -207,6 +207,10 @@ function createGrid(characters, useAllDecks){
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('query', charData.character);
             history.pushState({}, '', newUrl);
+        });
+        gridItem.addEventListener('mouseenter', () => {
+            prefetchedPlotters = createPlotters(charData);
+            console.log(prefetchedPlotters);
         });
         grid.appendChild(gridItem);
         charCounter++;
@@ -370,6 +374,22 @@ function showFlashcard(character) {
                 hsklvl = 6;
             }
 
+            let chars = character.split('');
+            if(prefetchedPlotters){
+                let isOkay = true;
+                prefetchedPlotters.forEach((plotter, idx) => {
+                    if(plotter.char !== chars[idx]){
+                        isOkay = false;
+                    }
+                });
+                if(isOkay)
+                    data.plotters = prefetchedPlotters;
+                else
+                    data.plotters = createPlotters(data);
+            }
+            else{
+                data.plotters = createPlotters(data);
+            }
             // overlay.style.backgroundColor = overlaycolors[hsklvl];
             let overlay = document.getElementById('flashcard_overlay');
             let currentColor = getColorByTime(overlaycolors);
@@ -396,6 +416,7 @@ function showFlashcard(character) {
 }
 
 function showAfterLoad(data){
+    data.plotters = createPlotters(data);
     renderCardData(data);
     displayCard(true, true);
 }
@@ -507,7 +528,7 @@ function isMobileOrTablet() {
 
 function changeDeck(deck) {
     currentDeck = deck;
-    // fetch(`./change_deck?deck=${deck}`, {
+    // fetch(`./api/?deck=${deck}`, {
     //     method: 'POST',
     //     headers: {
     //         'Content-Type': 'application/json',
@@ -541,7 +562,7 @@ function changeDeck(deck) {
 // }
 
 function getDeck() {
-    fetch('./get_deck')
+    fetch('./api/get_deck')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -594,7 +615,7 @@ function playHanziAudio() {
 }
 
 function loadAllData(){
-    fetch('./get_characters_pinyinenglish')
+    fetch('./api/get_characters_pinyinenglish')
     .then(response => response.json())
     .then(data => {
         currentData = data;
@@ -630,6 +651,27 @@ document.addEventListener('keyup', function(event) {
 
 document.addEventListener('DOMContentLoaded', function() {
     
+    const characterDiv = document.getElementById('flashcard_character');
+    const plotterDiv = document.getElementById('flashcard_plotter');
+
+    let togglefont = () => {
+        currentToggleFont = (currentToggleFont + 1) % 4;
+        if(currentToggleFont === 0){
+            changeFont("Noto Sans Mono");
+        }
+        else if(currentToggleFont === 1){
+            changeFont("Noto Serif SC");
+        }
+        else if(currentToggleFont === 2){
+            changeFont("Kaiti");
+        }
+        else if(currentToggleFont === 3){
+            changeFont("Render");
+        }
+    }
+    // characterDiv.addEventListener('click', togglefont);
+    // plotterDiv.addEventListener('click', togglefont);
+
     if (inputdeck) {
         currentDeck = inputdeck;
     }
@@ -677,39 +719,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-
+let currentToggleFont = 0;
 
 function changeFont(font) {
-
+    const characterDiv = document.getElementById('flashcard_character');
+    const plotterDiv = document.getElementById('flashcard_plotter');
+    console.log("calling change font")
+    if(font === 'Render'){
+        characterDiv.style.display = 'none';
+        plotterDiv.style.display = 'block';
+        currentToggleFont = 3;
+        return;
+    }
+    else{
+        let fontMapKeys = Object.keys(fontMap);
+        currentToggleFont = fontMapKeys.indexOf(font);
+        console.log(currentToggleFont);
+        characterDiv.style.display = 'block';
+        // plotterDiv.style.display = 'none';
+    }
     const fontInfo = fontMap[font];
+    console.log(fontInfo)
     
     if (fontInfo) {
+        currentFont = font;
+        adjustFlashCardChars();
         
-        document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", sans-serif`;
         document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;
-        
-        // Set font size for grid items
         const gridItems = grid.querySelectorAll('.char');
         gridItems.forEach(item => {
             item.style.fontSize = `${fontInfo.size}px`;
         });
-        
-        // const flashcardCharacter = document.querySelector('.flashcard_character');
-        // flashcardCharacter.style.fontFamily = `"${fontInfo.family}", sans-serif`;
-
         updateFontFamily(fontInfo.family);
-        
-        // Also set font size for the character in the flashcard overlay
-        // if (flashcardCharacter) {
-        //     flashcardCharacter.style.fontSize = `${fontInfo.size * 2}px`; // Larger size for the flashcard
-        // }
-        
-        currentFont = font;
         console.log('selected font', currentFont);
     }
 
-
-    fetch(`./change_font?font=${font}`, {
+    fetch(`./api/change_font?font=${font}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -727,7 +772,7 @@ function changeFont(font) {
 }
 
 function getFont() {
-    fetch('./get_font', {
+    fetch('./api/get_font', {
             method: 'GET',
             headers: {
                 'Cache-Control': 'no-cache',
@@ -748,17 +793,51 @@ function getFont() {
             updateFontFamily(currentFont);
 
             // document.getElementById('font-select').value = currentFont;
+            let cc = document.getElementById('flashcard_character')
             if(currentFont === 'Noto Serif SC'){
-                document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", serif`;
+                if(cc)
+                    cc.style.fontFamily = `"${currentFont}", serif`;
                 document.querySelector('.grid').style.fontFamily = `"${currentFont}", serif`;
             } else{
-                document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", sans-serif`;
+                if(cc)
+                    cc.style.fontFamily = `"${currentFont}", sans-serif`;
                 document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;
             }
+
+            try{
+                adjustFlashCardChars();
+            }
+            catch(e){}
+
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
+}
+
+function adjustFlashCardChars(){
+    try{
+        let cc = document.getElementById('flashcard_character');
+        cc.style.fontFamily = `"${currentFont}", sans-serif`;
+        if(isMobileOrTablet()){
+            if(currentFont === 'Kaiti'){
+                cc.style.fontSize = .23*7 + "em";
+            }
+            else{
+                cc.style.fontSize = .23*6 + "em";
+            }
+        }
+        else {
+            if(currentFont === 'Kaiti'){
+                cc.style.fontSize = .23*11.5 + "em";
+            }
+            else{
+                cc.style.fontSize = .23*9 + "em";
+            }
+        }
+    }
+    catch(e){
+    }
 }
 
 function handleOrientationChange() {

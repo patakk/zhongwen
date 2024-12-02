@@ -305,6 +305,19 @@ function createHanziWriters(characters) {
             showHintAfterMisses: 2,
             highlightOnComplete: true,
             highlightCompleteColor: '#77FFAA',
+            charDataLoader: function(char) {
+                return fetch(`/static/strokes_data/${char}.json`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        console.error('Error loading character data:', error);
+                        return null;
+                    });
+            }
         });
         let strokesdata = [];
         // let trueStrokeData = [];
@@ -387,7 +400,7 @@ function createHanziWriters(characters) {
 }
 
 function saveData(data) {
-    fetch('./save_stroke_data', {
+    fetch('./api/save_stroke_data', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -406,7 +419,7 @@ function saveData(data) {
 }
 
 function loadStrokeData() {
-    fetch(`./get_all_stroke_data`)
+    fetch(`./api/get_all_stroke_data`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -605,7 +618,7 @@ window.addEventListener('resize', () => {
 });
 
 function get_characters_for_practice(func=null) {
-    fetch(`./get_characters_for_practice?deck=${currentDeck}`)
+    fetch(`./api/get_characters_for_practice?deck=${currentDeck}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -625,7 +638,7 @@ function get_characters_for_practice(func=null) {
 
 
 function changeDeck(deck, func=null) {
-    fetch(`./change_deck?deck=${deck}`, {
+    fetch(`./api/change_deck?deck=${deck}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

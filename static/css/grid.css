@@ -139,6 +139,14 @@ body {
     text-align: center;
 }
 
+.list-pinyin {
+    font-family: 'Noto Sans Mono', monospace;
+}
+
+.list-english {
+    font-family: 'Noto Sans Mono', monospace;
+}
+
 .grid-item:hover .char {
     display: none;
 }

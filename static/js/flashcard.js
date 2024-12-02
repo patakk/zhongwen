@@ -1,7 +1,7 @@
 
 let currentWriters = [];
 function getCharactersPinyinEnglish(characters=null, func=null) {
-    const url = './get_characters_pinyinenglish';
+    const url = './api/get_characters_pinyinenglish';
     
     // Convert Set to Array if it's a Set
     const charactersArray = characters instanceof Set ? Array.from(characters) : characters;
@@ -45,6 +45,8 @@ function displayCharMatches(charMatches) {
     wordsContainer.className = 'words-container';
 
     // Flatten the structure and get all unique words
+    console.log("charMatches");
+    console.log(charMatches);
     const allWords = new Set();
     for (const char in charMatches) {
         for (const hskLevel in charMatches[char]) {
@@ -70,6 +72,7 @@ function displayCharMatches(charMatches) {
                 hoverBox.style.display = 'block';
                 hoverBox.style.left = `${event.pageX + 10}px`;
                 hoverBox.style.top = `${event.pageY + 10}px`;
+                
             }
 
             function hideTooltip() {
@@ -81,6 +84,7 @@ function displayCharMatches(charMatches) {
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('query', word);
                 history.pushState({}, '', newUrl);
+                hoverBox.style.display = 'none';
             };
 
             
@@ -128,7 +132,9 @@ function renderCardData(data) {
     }
 
     const characterElement = document.getElementById('flashcard_character');
-    characterElement.innerHTML = ''; // Clear existing content
+    if(characterElement)
+        characterElement.innerHTML = ''; // Clear existing content
+
 
     const chars = data.character.split('');
     const pinyin = data.pinyin;
@@ -151,6 +157,7 @@ function renderCardData(data) {
         }
     }
     let pinyin_split_list = pinyin_split.split("_");
+    let pparts = [];
     chars.forEach((char, index) => {
         const span = document.createElement('span');
         span.textContent = char;
@@ -158,7 +165,7 @@ function renderCardData(data) {
         span.className = 'clickable-char';
 
         let pinyin_part = pinyin_split_list[index];
-
+        pparts.push(pinyin_part);
         span.dataset.pinyin = pinyin_part;
         if(isMobileOrTablet()){
             span.addEventListener('click', function(e) {
@@ -170,8 +177,15 @@ function renderCardData(data) {
         }
         span.style.transition = 'text-shadow 0.05s';
         span.style.textShadow = 'none'; 
-        characterElement.appendChild(span);
+        if(characterElement)
+            characterElement.appendChild(span);
     });
+
+    const plotterElement = document.getElementById('flashcard_plotter');
+    if(plotterElement){
+        plotterElement.innerHTML = '';
+        renderPlotters(data.plotters, pparts);
+    }
 
     document.getElementById('flashcard_pinyin').textContent = data.pinyin;
     document.getElementById('flashcard_pinyin').dataset.characters = data.character;
@@ -281,7 +295,20 @@ function renderCardData(data) {
                 drawingColor: strokeColor,
                 strokeAnimationSpeed: 1,
                 delayBetweenStrokes: 220,
-                radicalColor: radicalColor
+                radicalColor: radicalColor,
+                charDataLoader: function(char) {
+                    return fetch(`/static/strokes_data/${char}.json`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .catch(error => {
+                            console.error('Error loading character data:', error);
+                            return null;
+                        });
+                }
             });
 
             strokeWrapper.addEventListener('click', function() {

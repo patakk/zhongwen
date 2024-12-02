@@ -150,7 +150,7 @@ let openAiApiKey; // Global variable to store the API key
 let chatHistory = []; // Array to store chat history
 
 function getApiKey() {
-    return fetch(`./get_api_key`)
+    return fetch(`./api/get_api_key`)
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');

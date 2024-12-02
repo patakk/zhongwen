@@ -226,7 +226,7 @@ function changeFont(font) {
     if (pathParts.includes('zhongwen')) {
         basePath = '/zhongwen';
     }
-    const url = `${origin}${basePath}/change_font?font=${font}`;
+    const url = `${origin}${basePath}/api/change_font?font=${font}`;
     currentFont = font;
     document.querySelectorAll('.hanzi-row').forEach(row => {
         row.style.fontFamily = `"${font}"`;
@@ -257,7 +257,7 @@ function getFont() {
     if (pathParts.includes('zhongwen')) {
         basePath = '/zhongwen';
     }
-    const url = `${origin}${basePath}/get_font`;
+    const url = `${origin}${basePath}/api/get_font`;
 
     fetch(url, {
             method: 'GET',

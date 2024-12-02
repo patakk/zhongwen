@@ -38,6 +38,8 @@ function randomizeTextColor(element){
     element.style.textShadow = `0 0 20px ${colors[randomNumbers[1]]}, 0 0 30px ${colors[randomNumbers[1]]}, 0 0 40px ${colors[randomNumbers[2]]}, 0 0 80px ${colors[randomNumbers[1]]}, 0 0 120px ${colors[randomNumbers[2]]}`;
 }
 
+
+
 function toneTextColor(element) {
     let colors = ['#58d38f', '#ffd91c', '#9f5dc1', '#ff421c', '#b1cbff']; // Corresponds to tones 1, 2, 3, 4, and neutral
 
@@ -230,7 +232,7 @@ let tmout = null;
 
 
 function recordAnswer(isCorrect, func=null) {
-    fetch(`./record_answer?character=${encodeURIComponent(currentCharacter)}&correct=${isCorrect}`)
+    fetch(`./api/record_answer?character=${encodeURIComponent(currentCharacter)}&correct=${isCorrect}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -587,11 +589,69 @@ function showCustomPrompt(message) {
     });
 }
 
+
+
+function adjustFlashCardChars(){
+    try{
+        let cc = document.getElementById('flashcard_character');
+        if(isMobileOrTablet()){
+            if(currentFont === 'Kaiti'){
+                cc.style.fontSize = .23*7 + "em";
+            }
+            else{
+                cc.style.fontSize = .23*6 + "em";
+            }
+        }
+        else {
+            if(currentFont === 'Kaiti'){
+                cc.style.fontSize = .23*11.5 + "em";
+            }
+            else{
+                cc.style.fontSize = .23*9 + "em";
+            }
+        }
+    }
+    catch(e){
+    }
+}
+
 function getNextCard(func=null) {
     if (prefetchedCard && !(prefetchedCard.message && prefetchedCard.message.length > 0)) {
         console.log('Using prefetched card:', prefetchedCard);
         showingAnswer = false;
         currentCharacter = prefetchedCard.character;
+        // prefetchedCard.plotters.forEach((plotter) => {
+        //     plotter.draw();
+        // });
+        
+        const chars = prefetchedCard.character.split('');
+        const pinyin = prefetchedCard.pinyin;
+
+        let pinyin_split = "";
+        const toneMarks = ['ā', 'ē', 'ī', 'ō', 'ū', 'ǖ', 'á', 'é', 'í', 'ó', 'ú', 'ǘ', 'ǎ', 'ě', 'ǐ', 'ǒ', 'ǔ', 'ǚ', 'à', 'è', 'ì', 'ò', 'ù', 'ǜ'];
+        for (let i = 0; i < pinyin.length; i++) {
+            let flag = false;
+            for (let j = 0; j < toneMarks.length; j++) {
+                if (pinyin[i] === toneMarks[j]) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                pinyin_split += pinyin[i];
+            }
+            else {
+                pinyin_split += pinyin[i] + "_";
+            }
+        }
+        let pinyin_split_list = pinyin_split.split("_");
+        let pparts = [];
+
+        chars.forEach((char, index) => {
+            let pinyin_part = pinyin_split_list[index];
+            pparts.push(pinyin_part);
+        });
+        renderPlotters(prefetchedCard.plotters, pparts)
         if(prefetchedCard.message && prefetchedCard.message.length > 0){
             // let promptMessage = "";
             // if(prefetchedCard.message === "message_1"){
@@ -621,6 +681,7 @@ function getNextCard(func=null) {
         console.log('Fetching new card');
         fetchCard()
             .then(data => {
+                data.plotters = createPlotters(data);
                 showingAnswer = false;
                 currentCharacter = data.character;
                 if(data.message && data.message.length > 0){
@@ -661,6 +722,8 @@ function prefetchNextCard() {
     fetchCard()
         .then(data => {
             prefetchedCard = data;
+            prefetchedCard.plotters = createPlotters(data);
+            console.log(prefetchedCard.plotters)
             console.log('Prefetched next card:', data.character);
         })
         .catch(error => {
@@ -733,7 +796,7 @@ window.addEventListener('resize', handleOrientationChange);
 function playHanziAudio() {
     const pinyinElement = document.getElementById('flashcard_pinyin');
     const encodedHanzi = encodeURIComponent(pinyinElement.dataset.characters);
-    const audio = new Audio(`./get_audio?chars=${encodedHanzi}`);
+    const audio = new Audio(`./api/get_audio?chars=${encodedHanzi}`);
     
     audio.play().catch(error => {
         console.error('Error playing audio:', error);
@@ -776,6 +839,7 @@ document.addEventListener('DOMContentLoaded', function() {
     changeDeck(currentDeck);
     getNextCard();
     getFont();
+    adjustFlashCardChars();
     handleOrientationChange(); // Call this on initial load
     // setupBackgroundCanvas();
     // renderBorder();
@@ -834,7 +898,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // function changeDeck(deck, func=getNextCard) {
-//     fetch(`./change_deck?deck=${deck}`, {
+//     fetch(`./api/change_deck?deck=${deck}`, {
 //         method: 'POST',
 //         headers: {
 //             'Content-Type': 'application/json',

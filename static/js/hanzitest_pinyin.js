@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function changeDeck(deck, func=null) {
-    fetch(`./change_deck?deck=${deck}`, {
+    fetch(`./api/change_deck?deck=${deck}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

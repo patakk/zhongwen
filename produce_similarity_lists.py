@@ -4,20 +4,9 @@ import json
 import jieba
 import jieba.posseg as pseg
 from pypinyin import pinyin, lazy_pinyin, Style
+import tqdm
 
 FILES = [
-    #'data/shas_class_cards.json',
-    #'data/hsk1_cards.json',
-    #'data/hsk2_cards.json',
-    #'data/hsk3_cards.json',
-    #'data/hsk4_cards.json',
-    #'data/hsk5_cards.json',
-    #'data/hsk6_cards.json',
-    #'data/mini_deck.json',
-    'data/review_deck.json',
-]
-
-files = [
     'data/shas_class_cards.json',
     'data/hsk1_cards.json',
     'data/hsk2_cards.json',
@@ -29,14 +18,27 @@ files = [
     'data/review_deck.json',
 ]
 
-shas = json.load(open(files[0]))
-hsk1 = json.load(open(files[1]))
-hsk2 = json.load(open(files[2]))
-hsk3 = json.load(open(files[3]))
-hsk4 = json.load(open(files[4]))
-hsk5 = json.load(open(files[5]))
-hsk6 = json.load(open(files[6]))
-review = json.load(open(files[7]))
+allfiles = [
+    'data/shas_class_cards.json',
+    'data/hsk1_cards.json',
+    'data/hsk2_cards.json',
+    'data/hsk3_cards.json',
+    'data/hsk4_cards.json',
+    'data/hsk5_cards.json',
+    'data/hsk6_cards.json',
+    'data/mini_deck.json',
+    'data/review_deck.json',
+]
+
+shas = json.load(open(allfiles[0]))
+hsk1 = json.load(open(allfiles[1]))
+hsk2 = json.load(open(allfiles[2]))
+hsk3 = json.load(open(allfiles[3]))
+hsk4 = json.load(open(allfiles[4]))
+hsk5 = json.load(open(allfiles[5]))
+hsk6 = json.load(open(allfiles[6]))
+mini = json.load(open(allfiles[7]))
+review = json.load(open(allfiles[8]))
 
 HSK_FILES = [file for file in FILES if 'hsk' in file]
 
@@ -61,13 +63,14 @@ pos_map = {
     'n': 'noun', 'nr': 'proper noun', 'ns': 'place noun', 'nt': 'temporal noun', 'nz': 'other noun', 'v': 'verb', 'a': 'adjective', 'ad': 'adverb', 'an': 'prenoun', 'ag': 'adjective-adverb', 'al': 'adjective-numeral', 'b': 'other', 'c': 'complement', 'd': 'adverb', 'e': 'exclamation', 'f': 'surname', 'g': 'morpheme', 'h': 'prefix', 'i': 'idiom', 'j': 'abbreviation', 'k': 'suffix', 'l': 'temporary word', 'm': 'number', 'ng': 'gender noun', 'nx': 'kernel noun', 'o': 'onomatopoeia', 'p': 'preposition', 'q': 'classifier', 'r': 'pronoun', 'u': 'auxiliary', 'v': 'verb', 'vd': 'verb-auxiliary', 'vg': 'verb-object', 'vn': 'pronoun-verb', 'w': 'punctuation', 'x': 'non-lexeme', 'y': 'language-particle', 'z': 'state-particle'
 }
 
-def add_hsk_and_tones(files):
+def calculate_matches(files):
     all_words = {}
     file_data = {}
     hsk_data = {}
+    all_matches = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
     # First pass: Load all data and collect HSK words
-    for file in files:
+    for file in allfiles:
         data = load_json_file(file)
         file_data[file] = data
         all_words.update(data)
@@ -76,22 +79,31 @@ def add_hsk_and_tones(files):
             level = file.split('_')[0].split('/')[-1]
             hsk_data[level] = data
 
-    # Second pass: Recalculate char_matches for each word and add pinyin_tones
+    # Calculate ALL matches first
+    for word in tqdm.tqdm(all_words, ncols=50):
+        for char in word:
+            for other_word in all_words:
+                if char in other_word and other_word != word:
+                    level = determine_hsk_level(other_word, hsk_data)
+                    all_matches[word][char][level].append(other_word)
+
+    # Now update each file with its portion of the matches
     for file in files:
         data = file_data[file]
-        for word, word_data in data.items():
-            char_matches = defaultdict(lambda: defaultdict(list))
-            for char in word:
-                for other_word in all_words:
-                    if char in other_word and other_word != word:
-                        level = determine_hsk_level(other_word, hsk_data)
-                        char_matches[char][level].append(other_word)
-            
-            # Update char_matches for this word
-            word_data['char_matches'] = {
-                char: dict(levels) for char, levels in char_matches.items()
+        for word in data:
+            data[word]['char_matches'] = {
+                char: dict(levels) for char, levels in all_matches[word].items()
             }
-            
+        
+        # Save the updated data back to the file
+        save_json_file(file, data)
+        print(f"Updated matches in {file}")
+
+
+def add_pinyin_tones(files):
+    for file in files:
+        data = load_json_file(file)
+        for word, word_data in data.items():
             # Add pinyin_tones field
             pin = ' '.join(lazy_pinyin(word))
         
@@ -114,12 +126,12 @@ def add_hsk_and_tones(files):
                     if char == ' ' and original_pinyin[idxo] != ' ':
                         processed += '-'
                     else:
-                            processed += original_pinyin[idxo]
-                            idxo += 1
-
+                        processed += original_pinyin[idxo]
+                        idxo += 1
 
             word_data['pinyin_tones'] = processed.strip()
 
+            # Remove old fields if they exist
             if 'pinyin_tones_1' in word_data:
                 del word_data['pinyin_tones_1']
             if 'pinyin_tones_2' in word_data:
@@ -127,9 +139,7 @@ def add_hsk_and_tones(files):
                 
         # Save the updated data back to the file
         save_json_file(file, data)
-        print(f"Updated {file}")
-
-    print("All files have been processed and updated.")
+        print(f"Updated pinyin tones in {file}")
 
 def add_functions(files):
     for file in files:
@@ -187,5 +197,4 @@ def add_functions(files):
     print("All files have been processed and updated.")
 
 # Run the process
-add_hsk_and_tones(FILES)
-add_functions(FILES)
+calculate_matches(FILES)

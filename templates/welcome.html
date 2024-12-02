@@ -66,20 +66,22 @@
             background-color: black;
             color: white;
         }
+        
         a {
-            color: rgb(255, 255, 255);
+            color: rgb(15, 15, 15);
             text-decoration: none;
-            background-color: #ff3c00;
-            padding: 2px 4px;
+            background-color: #d4d4d4;
+            padding: 1px 2px;
         }
+
         a:hover {
             background-color: #ff0000;
-            color: #050505;
+            color: #f7f7f7;
         }
         
         .flashcard-guide {
             background-color: #f9f9f9;
-            border: 2px solid #000000;
+            border: 2px solid #7c7c7c;
             padding: 10px;
             width: 80%;
             margin: 20px auto;
@@ -139,7 +141,6 @@
             }
 
         }
-
         .flashcard-toggle {
             cursor: pointer;
             color: #0066cc;
@@ -169,17 +170,28 @@
         }
 
         a.darkmode {
-            color: rgb(255, 255, 255);
-            background-color: #b82b00;
-        }
-        a.darkmode:hover {
-            background-color: #b82b00;
-            color: #050505;
+            color: rgb(212, 212, 212);
+            background-color: #2e2e2e;
         }
 
+        a.darkmode:hover {
+            background-color: #ff0000;
+            color: #f3f3f3;
+        }
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
+
+    <style>
+
+        .btn {
+            border: 2px dashed black;
+        }
+
+        .btn.darkmode {
+            border: 2px dashed white;
+        }
+    </style>
 </head>
 <body>
     <div class="hamburger" id="hamburgerMenu">
@@ -208,14 +220,19 @@
                 </ul>
             </li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
-            <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
             <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
             <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
         </ul>
     </div>
     <div class="container">
-        <h1>Welcome {{ session['username'] }}!</h1>
+        {% if session['username'] != 'tempuser' %}
+            <h1>Welcome {{ session['username'] }}!</h1>
+        {% else %}
+            <h1>Welcome!</h1>
+        {% endif %}
         <p>here's a quick guide to get you started:</p>
         <ul>
             <li>
@@ -233,7 +250,7 @@
                     </div>
                 </div>
             </li>
-            <li>
+            <!-- <li>
                 <a href="{{ url_for('search') }}">Search</a> - find words (english/hanzi/pinyin supported)
                 <div class="flashcard-guide">
                     <div>
@@ -247,16 +264,23 @@
                         </ul>
                     </div>
                 </div>
-            </li>
+            </li> -->
             <li>
-                <a href="{{ url_for('flashcards') }}">Flashcards</a> - test and learn characters using spaced repetition
+                <a href="{{ url_for('flashcards') }}">Flashcards</a> - learn characters using spaced repetition (login required)
                 <div class="flashcard-guide">
                     <div id="pc-guide">
                         <ul>
-                            <li>Press <strong>Space</strong> to reveal the answer.</li>
-                            <li>Hold <strong>Space</strong> to mark as correct.</li>
-                            <li>Hold <strong>X</strong> to mark as incorrect.</li>
-                            <li>Or, click and hold right side of the flashcard for correct, left side for incorrect.</li>
+                            <li>Using keys</li>
+                            <ul>
+                                <li>Press any key to reveal the answer.</li>
+                                <li>Press <strong>Space</strong> again to mark as correct.</li>
+                                <li>Press <strong>X</strong> to mark as incorrect.</li>
+                            </ul>
+                            <li>Using cursor</li>
+                            <ul>
+                                <li>Click once to reveal the answer</li>
+                                <li>Click and hold right side of the flashcard for correct, left side for incorrect.</li>
+                            </ul>
                         </ul>
                     </div>
                     <div id="mobile-guide">
@@ -269,16 +293,12 @@
                 </div>
             </li>
             
-            <li>
+            <!-- <li>
                 <a href="{{ url_for('lists') }}">Example Lists</a> - learn grammar and characters in context
-                <!-- <div class="flashcard-guide">
-                    <div>
-                        <ul>
-                            <li>Clicking on the title toggles between grid and list view.</li>
-                            <li>The following pinyin formats are supported:</li>
-                        </ul>
-                    </div>
-                </div> -->
+            </li> -->
+            
+            <li>
+                <a href="{{ url_for('hanzipractice') }}">Practice 汉字</a> - practice writing characters
             </li>
         </ul>
         <div class="btn-container">

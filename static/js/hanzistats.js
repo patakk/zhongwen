@@ -9,7 +9,7 @@ function shuffleArray(array) {
 }
 
 function saveData(data) {
-    fetch('./save_stroke_data', {
+    fetch('./api/save_stroke_data', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ async function loadAllCharacterAnimations() {
         const img = document.createElement('img');
         img.alt = `Animation for ${character}`;
         
-        const response = await fetch(`/character_animation/${character}`);
+        const response = await fetch(`/api/character_animation/${character}`);
         if (response.ok) {
             img.src = URL.createObjectURL(await response.blob());
             charDiv.appendChild(img);
@@ -164,13 +164,13 @@ async function loadAllCharacterAnimations() {
     }
 }
 
-function createInvisibleHanziWriter(character, func) {
+function createInvisibleHanziWriter(char, func) {
     const offScreenDiv = document.createElement('div');
     offScreenDiv.style.position = 'absolute';
     offScreenDiv.style.left = '-9999px';
     offScreenDiv.style.top = '-9999px';
     document.body.appendChild(offScreenDiv);
-    var writer2 = HanziWriter.create(offScreenDiv, character, {
+    var writer2 = HanziWriter.create(offScreenDiv, char, {
         width: 100,
         height: 100,
         onLoadCharDataSuccess: (data) => {
@@ -185,6 +185,19 @@ function createInvisibleHanziWriter(character, func) {
         },
         onLoadCharDataError: function(reason) {
           console.log('Oh No! Something went wrong :(');
+        },
+        charDataLoader: function(char) {
+            return fetch(`/static/strokes_data/${char}.json`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error('Error loading character data:', error);
+                    return null;
+                });
         }
     });
     document.body.removeChild(offScreenDiv);

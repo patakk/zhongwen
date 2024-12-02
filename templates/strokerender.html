@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plotter.js') }}"></script>
     <style id="dynamic-styles"></style>
     </style>
     <style>
@@ -35,358 +36,35 @@
             background-color: #dfdfdf; /* Optional: adds a light gray background */
         }
         canvas {
-            display: block; /* Removes any extra space below the canvas */
+            display: block;
         }
     </style>
 </head>
 <body>
-    <canvas id="myCanvas"></canvas>
     <script>
-        
-        const cwidth = 266;
-        const cheight = cwidth;
-        let renderContext;
-        let animationInterval;
 
-        function evenOutPoints(line, maxLength = 100) {
-            let newLine = [];
-            for (let i = 0; i < line.length - 1; i++) {
-                let p1 = line[i];
-                let p2 = line[i + 1];
-                newLine.push(p1);
-                let dx = p2.x - p1.x;
-                let dy = p2.y - p1.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance > maxLength) {
-                    let segments = Math.ceil(distance / maxLength);
-                    for (let j = 1; j < segments; j++) {
-                        let t = j / segments;
-                        newLine.push({
-                            x: p1.x + dx * t,
-                            y: p1.y + dy * t
-                        });
-                    }
-                }
-            }
-            newLine.push(line[line.length - 1]);
-            let needsMoreDivision = newLine.some((p, i) => 
-                i < newLine.length - 1 && 
-                Math.hypot(newLine[i+1].x - p.x, newLine[i+1].y - p.y) > maxLength
-            );
-            return needsMoreDivision ? evenOutPoints(newLine, maxLength) : newLine;
-        }
-
-        function removeShortSegments(line, minLength = 5) {
-            if (line.length < 3) return line; // Keep lines with 2 or fewer points unchanged
-
-            let newLine = [line[0]]; // Always keep the first point
-
-            for (let i = 1; i < line.length - 1; i++) {
-                let p1 = newLine[newLine.length - 1];
-                let p2 = line[i];
-                let p3 = line[i + 1];
-
-                let d1 = Math.hypot(p2.x - p1.x, p2.y - p1.y);
-                let d2 = Math.hypot(p3.x - p2.x, p3.y - p2.y);
-
-                // Keep the point if either adjacent segment is long enough
-                if (d1 >= minLength || d2 >= minLength) {
-                    newLine.push(p2);
-                }
-            }
-
-            newLine.push(line[line.length - 1]); // Always keep the last point
-
-            return newLine;
-        }
-
-        function addJitter(context, scaleLow=80, frqLow=0.0011) {
-            let {ctx, strokes, paths, cwidth, cheight, offsetX, offsetY, sscale} = context;
-            let time = Date.now() * 20.51; // Slower time progression
-
-            const jitteredStrokes = strokes.map((stroke, idx) => {
-                return stroke.map((point, idx) => {
-                    let factor = .1+idx / stroke.length;
-                    // Low-frequency noise
-                    let lowNoiseX = factor * scaleLow * (2 * noise(frqLow * point.x, frqLow * point.y, 821.31 + time + idx*12.3) - 1);
-                    let lowNoiseY = factor * scaleLow * (2 * noise(frqLow * point.x, frqLow * point.y, 912.31 + time + idx*12.3) - 1);
-                    // lowNoiseX = factor * scaleLow * (2 * noise(idx*.1, idx*.1+23, 821.31 + time*frqLow + idx*12.3) - 1);
-                    // lowNoiseY = .6*factor * scaleLow * (2 * noise(idx*.1, idx*.1+23, 912.31 + time*frqLow + idx*12.3) - 1);
-
-                    return {
-                        x: point.x + lowNoiseX,
-                        y: point.y + lowNoiseY,
-                    };
-                });
-            });
-
-            return {...context, strokes: jitteredStrokes};
-        }
-
-        let starttime = Date.now();
-        function drawStrokes(context){
-            let {ctx, strokes, paths, cwidth, cheight, offsetX, offsetY, sscale} = context;
-            strokes.forEach(stroke => {
-                ctx.beginPath();
-                ctx.moveTo((stroke[0].x + offsetX) * sscale, cheight - (stroke[0].y + offsetY) * sscale);
-                
-                for(let k = 0; k < stroke.length*fac - 1; k++){
-                    let p0 = k > 0 ? stroke[k - 1] : stroke[k];
-                    let p1 = stroke[k];
-                    let p2 = stroke[k + 1];
-                    let p3 = k < stroke.length - 2 ? stroke[k + 2] : p2;
-                    
-                    let cx1 = p1.x + (p2.x - p0.x) / 6;
-                    let cy1 = p1.y + (p2.y - p0.y) / 6;
-                    let cx2 = p2.x - (p3.x - p1.x) / 6;
-                    let cy2 = p2.y - (p3.y - p1.y) / 6;
-                    
-                    cx1 = (cx1 + offsetX) * sscale;
-                    cy1 = cheight - (cy1 + offsetY) * sscale;
-                    cx2 = (cx2 + offsetX) * sscale;
-                    cy2 = cheight - (cy2 + offsetY) * sscale;
-                    let x = (p2.x + offsetX) * sscale;
-                    let y = cheight - (p2.y + offsetY) * sscale;
-                    
-                    ctx.bezierCurveTo(cx1, cy1, cx2, cy2, x, y);
-                }
-                
-                ctx.stroke();
-            });
-        }
-
-        function drawPoints(context){
-            let {ctx, strokes, paths, cwidth, cheight, offsetX, offsetY, sscale} = context;
-            strokes.forEach(stroke => {
-                stroke.forEach(point => {
-                    const x = (point.x + offsetX) * sscale;
-                    const y = cheight - (point.y + offsetY) * sscale;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
-                    ctx.fill();
-                });
-            });
-        }
-
-        function drawPaths(context){
-            let {ctx, strokes, paths, cwidth, cheight, offsetX, offsetY, sscale} = context;
-            paths.forEach(d => {
-                ctx.beginPath();
-                let commands = d.match(/[A-Z][^A-Z]*/g);
-                let currentX = 0, currentY = 0;
-
-                commands.forEach(cmd => {
-                    let type = cmd[0];
-                    let args = cmd.slice(1).trim().split(/[\s,]+/).map(parseFloat);
-
-                    switch(type) {
-                        case 'M':
-                            currentX = (args[0] + offsetX) * sscale;
-                            currentY = cheight - (args[1] + offsetY) * sscale;
-                            ctx.moveTo(currentX, currentY);
-                            break;
-                        case 'L':
-                            currentX = (args[0] + offsetX) * sscale;
-                            currentY = cheight - (args[1] + offsetY) * sscale;
-                            ctx.lineTo(currentX, currentY);
-                            break;
-                        case 'Q':
-                            ctx.quadraticCurveTo(
-                                (args[0] + offsetX) * sscale, cheight - (args[1] + offsetY) * sscale,
-                                (args[2] + offsetX) * sscale, cheight - (args[3] + offsetY) * sscale
-                            );
-                            currentX = (args[2] + offsetX) * sscale;
-                            currentY = cheight - (args[3] + offsetY) * sscale;
-                            break;
-                        case 'C':
-                            ctx.bezierCurveTo(
-                                (args[0] + offsetX) * sscale, cheight - (args[1] + offsetY) * sscale,
-                                (args[2] + offsetX) * sscale, cheight - (args[3] + offsetY) * sscale,
-                                (args[4] + offsetX) * sscale, cheight - (args[5] + offsetY) * sscale
-                            );
-                            currentX = (args[4] + offsetX) * sscale;
-                            currentY = cheight - (args[5] + offsetY) * sscale;
-                            break;
-                    }
-                });
-                ctx.closePath();
-                ctx.stroke();
-            });
-        }
-
-        function fix(context){
-            let {ctx, strokes, paths, cwidth, cheight, offsetX, offsetY, sscale} = context;
-            let nstrokes = strokes.map(stroke => {
-                stroke = removeShortSegments(stroke, 30);
-                stroke = evenOutPoints(stroke, 150);
-                return stroke;
-            });
-            return {...context, strokes: nstrokes};
-        }
-
-        function power(p, g) {
-            if (p < 0.5)
-                return 0.5 * Math.pow(2*p, g);
-            else
-                return 1 - 0.5 * Math.pow(2*(1 - p), g);
-        } 
-
-        let frames = 0;
-        let maxframes = 460;
-        function jitterAndRender(context){
-            let {ctx, strokes, paths, cwidth, cheight, offsetX, offsetY, sscale} = context;
-
-            ctx.fillStyle = '#eee0';
-            ctx.fillRect(0, 0, cwidth, cheight);
-
-            ctx.strokeStyle = '#0003';
-            let red1 = 127 + Math.random() * 127;
-            let blue2 = 127 + Math.random() * 127;
-            if(Math.random() < .7){
-                red1 = blue2 = 0;
-            }
-            if(Math.random() > .95){
-                red1 = 222;
-            }
-            let color1 = `rgba(${red1}, 0, 0, .2)`;
-            let color2 = `rgba(0, 0, ${blue2}, .2)`;
-            ctx.strokeStyle = Math.random() > 0.5 ? color1 : color2;
-            
-            ctx.lineWidth = cwidth/(50+10*power(noise(Date.now()*0.041, 0, 0), 3));
-            ctx.lineWidth = cwidth/22;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            
-            fac = Math.min(1., (Date.now() - starttime) / 4322);
-            ctx.lineWidth = cwidth/(220-190*fac);
-            let ncontext;
-            if(fac > 0.996){
-                //ctx.lineWidth = cwidth/500;
-                //ncontext = addJitter(context, 180, 0.0011);
-            }
-            else{
-            }
-            ncontext = addJitter(context, 80, 0.0011);
-
-            drawStrokes(ncontext);
-            // ncontext = addJitter(ncontext, 30, 0.000021);
-            // drawStrokes(ncontext);
-
-            ctx.fillStyle = '#f00';
-            // drawPoints(context);
-
-            // ctx.strokeStyle = '#0f0';
-            // ctx.lineWidth = 2;
-            
-            context = fix(context)
-            frames++;
-
-            if(frames < maxframes){
-                animationInterval = setTimeout(() => {
-                jitterAndRender(context)
-                // ctx.fillStyle = '#f00';
-                // drawPoints(context);
-
-                // ctx.strokeStyle = '#0f0';
-                // ctx.lineWidth = 2;
-                // drawPaths(renderContext);
-            }, 1000/135);
-            }
-            else{
-                ctx.strokeStyle = '#0f0';
-                ctx.lineWidth = 2;
-                // drawPaths(renderContext);
-            }
-        }
-
-        function createInvisibleHanziWriter(character, func) {
-            const offScreenDiv = document.createElement('div');
-            offScreenDiv.style.position = 'absolute';
-            offScreenDiv.style.left = '-9999px';
-            offScreenDiv.style.top = '-9999px';
-            document.body.appendChild(offScreenDiv);
-            var writer = HanziWriter.create(offScreenDiv, character, {
-                width: 100,
-                height: 100,
-                onLoadCharDataSuccess: (data) => {
-                    try{
-                        setTimeout(() => {
-                            func(writer._character.strokes);
-                        }, 1000);
-                    }
-                    catch(err){
-                    }
-                },
-                onLoadCharDataError: function(reason) {
-                    console.log('Oh No! Something went wrong :(');
-                }
-            });
-            document.body.removeChild(offScreenDiv);
-            return writer;
-        }
-
-        function drawCanvas(strokes, paths) {
-
-            const canvas = document.getElementById('myCanvas');
-            canvas.width = cwidth;
-            canvas.height = cheight;
-            canvas.style.width = cwidth + 'px';
-            canvas.style.height = cheight + 'px';
-            const ctx = canvas.getContext('2d');
-
-            strokes = strokes.map(stroke => {
-                stroke = removeShortSegments(stroke, 30);
-                stroke = evenOutPoints(stroke, 150);
-                return stroke;
-            });
-
-            // Find the bounding box of all points
-            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            strokes.forEach(stroke => {
-                stroke.forEach(point => {
-                    minX = Math.min(minX, point.x);
-                    minY = Math.min(minY, point.y);
-                    maxX = Math.max(maxX, point.x);
-                    maxY = Math.max(maxY, point.y);
-                });
-            });
-
-            const offsetX = (1000 - (maxX - minX)) / 2 - minX;
-            const offsetY = (1000 - (maxY - minY)) / 2 - minY;
-
-            const sscale = cwidth / 1000;
-
-            renderContext = {ctx, strokes, paths, cwidth, cheight, offsetX, offsetY, sscale};
-
-            // renderContext = addJitter(renderContext, 30, 0.000021);
-            jitterAndRender(renderContext);
-        }
 
         const chars = "我是他的朋友"
         document.addEventListener('DOMContentLoaded', () => {
             
             let char = chars[Math.floor(Math.random() * chars.length)];
-            char = "我";
-            let writer = createInvisibleHanziWriter(char, (data) => {
-                let strokes = data.map(stroke => stroke.points);
-                let paths = data.map(stroke => stroke.path);
-                drawCanvas(strokes, paths);
-            });
+            let myplotter = new HanziPlotter("我").draw();
+            let myplotter2 = new HanziPlotter("是").draw();
         });
 
-        document.addEventListener('click', () => {
-            frames = 0;
-            starttime = Date.now();
-            let char = chars[Math.floor(Math.random() * chars.length)];
-            let writer = createInvisibleHanziWriter(char, (data) => {
-                let strokes = data.map(stroke => stroke.points);
-                let paths = data.map(stroke => stroke.path);
-                if(animationInterval){
-                    clearTimeout(animationInterval);
-                }
-                drawCanvas(strokes, paths);
-            });
-        });
+        // document.addEventListener('click', () => {
+        //     frames = 0;
+        //     starttime = Date.now();
+        //     let char = chars[Math.floor(Math.random() * chars.length)];
+        //     let writer = createInvisibleHanziWriter(char, (data) => {
+        //         let strokes = data.map(stroke => stroke.points);
+        //         let paths = data.map(stroke => stroke.path);
+        //         if(animationInterval){
+        //             clearTimeout(animationInterval);
+        //         }
+        //         drawCanvas(strokes, paths);
+        //     });
+        // });
     </script>
 </body>
 </html>

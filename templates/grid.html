@@ -23,8 +23,25 @@
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <script src="{{ url_for('static', filename='js/plotter.js') }}"></script>
     <style id="dynamic-styles">
         
+    </style>
+    <style>
+        @font-face {
+            font-family: 'Kaiti';
+            src: url("{{ url_for('static', filename='fonts/Kaiti.ttf') }}") format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'Kaiti', sans-serif;
+        }
+
+        #flashcard_character, #flashcard_plotter {
+            font-family: 'Kaiti', sans-serif;
+        }
     </style>
 </head>
 <body>
@@ -56,14 +73,17 @@
                 </ul>
             </li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
-            <li><a href="{{ url_for('puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
+            <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
-            <li><a href="{{ url_for('welcome') }}">Guide</a></li>
+            <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
             <li class="has-submenu">
                 <span>Fonts</span>
                 <ul class="submenu">
                     <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
+                    <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
+                    <!-- <li><a href="#" class="font-change" data-font="Render">Render</a></li> -->
                 </ul>
             </li>
             <!-- <li class="has-submenu">
@@ -89,7 +109,9 @@
 
     <div id="flashcard_overlay">
         <div id="flashcard_container">
+            <div id="flashcard_plotter"></div>
             <div id="flashcard_character"></div>
+            <!-- <div id="flashcard_plotter" style="display: none;"></div> -->
             <div id="flashcard_pinyin"></div>
             <div id="flashcard_function"></div>
             <div id="flashcard_english"></div>
@@ -111,9 +133,29 @@
 
         let inputdeck = {{ deck | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
+        const username = {{ username | tojson | safe }};
     </script>
     <script>
-        const username = {{ username | tojson | safe }};
+
+        // document.addEventListener('DOMContentLoaded', function() {
+        // const characterDiv = document.getElementById('flashcard_character');
+        // const plotterDiv = document.getElementById('flashcard_plotter');
+        // const container = document.getElementById('flashcard_container');
+
+        // // Initially show the character div and hide the plotter div
+        // characterDiv.style.display = 'block';
+        // plotterDiv.style.display = 'none';
+
+        // container.addEventListener('click', function() {
+        //     if (characterDiv.style.display === 'block') {
+        //         characterDiv.style.display = 'none';
+        //         plotterDiv.style.display = 'block';
+        //     } else {
+        //         characterDiv.style.display = 'block';
+        //         plotterDiv.style.display = 'none';
+        //     }
+        // });
+    // });
     </script>
     <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>
     <!-- <script src="{{ url_for('static', filename='js/border.js') }}"></script> -->

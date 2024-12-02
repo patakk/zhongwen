@@ -1,0 +1,119 @@
+import json
+import random
+
+from flask import Blueprint, jsonify, render_template, session
+
+from backend.decorators import session_required, timing_decorator
+from backend.flashcard_app import get_flashcard_app
+
+flashcard_app = get_flashcard_app()
+
+puzzles_bp = Blueprint("puzzles", __name__, url_prefix="/puzzles")
+
+
+def get_common_context():
+    return {
+        "darkmode": session["darkmode"],
+        "username": session["username"],
+        "decks": flashcard_app.decks,
+        "deck": session["deck"],
+    }
+
+
+@puzzles_bp.route("/")
+@session_required
+@timing_decorator
+def puzzles():
+    characters = dict(flashcard_app.cards[session["deck"]].items())
+    context = get_common_context()
+    context["characters"] = characters
+    return render_template("puzzles.html", **context)
+
+
+def hanzitest_pinyin():
+    characters = dict(flashcard_app.cards[session["deck"]].items())
+    return render_template(
+        "puzzles/hanzitest_pinyin.html",
+        darkmode=session["darkmode"],
+        username=session["username"],
+        characters=characters,
+        decks=flashcard_app.decks,
+        deck=session["deck"],
+    )
+
+
+@puzzles_bp.route("/hanzitest_pinyin")
+@session_required
+@timing_decorator
+def hanzitest_pinyin():
+    characters = dict(flashcard_app.cards[session["deck"]].items())
+    context = get_common_context()
+    context["characters"] = characters
+    return render_template("puzzles/hanzitest_pinyin.html", **context)
+
+
+@puzzles_bp.route("/hanzitest_draw")
+@session_required
+@timing_decorator
+def hanzitest_draw():
+    deck = session["deck"]
+    characters_data = [
+        {
+            "character": char,
+            "pinyin": data["pinyin"],
+            "english": data["english"],
+        }
+        for char, data in flashcard_app.cards[deck].items()
+    ]
+    context = get_common_context()
+    context["characters"] = characters_data
+    return render_template("puzzles/hanzitest_draw.html", **context)
+
+
+@puzzles_bp.route("/get_characters_for_practice", methods=["GET"])
+@session_required
+@timing_decorator
+def get_characters_for_practice():
+    deck = session["deck"]
+    characters_data = [
+        {
+            "character": char,
+            "pinyin": data["pinyin"],
+            "english": data["english"],
+        }
+        for char, data in flashcard_app.cards[deck].items()
+    ]
+    return jsonify({"characters": characters_data})
+
+
+@puzzles_bp.route("/hanzitest_choices")
+@session_required
+@timing_decorator
+def hanzitest_choices():
+    characters = dict(flashcard_app.cards[session["deck"]].items())
+    context = get_common_context()
+    context["characters"] = characters
+    return render_template("puzzles/hanzitest_choices.html", **context)
+
+
+@puzzles_bp.route("/hanzitest_fillin")
+@session_required
+@timing_decorator
+def hanzitest_fillin():
+    if "fillin" not in session:
+        session["fillin"] = json.load(
+            open("data/fillin_puzzles.json", "r", encoding="utf-8")
+        )
+    klist = session["fillin"]["contextClues"]
+    random.shuffle(klist)
+    fillin = {k: session["fillin"]["contextClues"][k] for k in range(10)}
+    characters = dict(flashcard_app.cards[session["deck"]].items())
+
+    context = get_common_context()
+    context.update(
+        {
+            "fillin": fillin,
+            "characters": characters,
+        }
+    )
+    return render_template("puzzles/hanzitest_fillin.html", **context)
