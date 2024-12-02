@@ -33,7 +33,7 @@ def hard_session_required(func):
     def wrapper(*args, **kwargs):
         logger.info(f"Session data: {session}")
         if "deck" not in session:
-            session["deck"] = "minideck"
+            session["deck"] = "hsk1"
         if "font" not in session:
             session["font"] = "Noto Sans Mono"
         logger.info(f"Username in session: {session.get('username', 'Not set')}")
@@ -49,7 +49,7 @@ def session_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if "deck" not in session:
-            session["deck"] = "minideck"
+            session["deck"] = "hsk1"
         if "font" not in session:
             session["font"] = "Noto Sans Mono"
         if "darkmode" not in session:

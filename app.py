@@ -301,7 +301,7 @@ def grid():
     character = request.args.get('query')
     querydeck = request.args.get('deck')
     if not querydeck:
-        querydeck = 'minideck'
+        querydeck = 'hsk1'
     logger.info(f"Query deck: {querydeck}")
     if not character:
         characters = list(flashcard_app.cards.get(querydeck, {}).keys())
