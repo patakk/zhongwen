@@ -446,7 +446,7 @@ function renderCardData(data) {
     personalNotesLabel.textContent = "My notes ";
     personalNotesLabel.id = 'personalNotesLabel';
     personalNotesLabel.class = 'notes-label';
-    
+
     document.getElementById('flashcard_description').prepend(personalNotesLabel);
     document.getElementById('flashcard_description').prepend(otherNotesContainer);
 
@@ -468,12 +468,21 @@ function renderCardData(data) {
         notesParagraph.style.display = notesParagraph.style.display === 'none' ? 'block' : 'none';
         otherNotesContainer.style.display = notesParagraph.style.display;
         publicNotesLabel.style.display = notesParagraph.style.display;
+        if(publicNotesLabel.style.display === 'none' || publicNotesLabel.classList.contains('collapsed')){
+            otherNotesContainer.style.display = 'none';
+        }
+        else if(!publicNotesLabel.classList.contains('collapsed')){
+            otherNotesContainer.style.display = 'block';
+        }
         checkboxContainer.style.display = notesParagraph.style.display;
+        personalNotesLabel.style.display = notesParagraph.style.display;
         if(notesParagraph.style.display === 'none'){
             notesLabel.classList.add('collapsed');
+            // publicNotesLabel.classList.add('collapsed');
         }
         else{
             notesLabel.classList.remove('collapsed');
+            // publicNotesLabel.classList.remove('collapsed');
         }
     });
     
@@ -498,10 +507,16 @@ function renderCardData(data) {
         }
     });
 
+    if(isemptyOtherNotes){
+        publicNotesLabel.classList.add('collapsed');
+        otherNotesContainer.style.display = 'none';
+    }
+
     if(isemptyinitNotes && isemptyOtherNotes){
         otherNotesContainer.style.display = 'none';
         notesParagraph.style.display = 'none';
         publicNotesLabel.style.display = 'none';
+        personalNotesLabel.style.display = 'none';
         notesLabel.classList.add('collapsed')
     }
     if(isemptyinitDescription){
