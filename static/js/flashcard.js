@@ -341,28 +341,49 @@ function renderCardData(data) {
     publicLabel.id = 'publicLabel';
 
     publicCheckbox.addEventListener('change', function() {
-        fetch('./api/storeNotesVisibility', {
+
+        rawMarkdown = notesParagraph.innerHTML;
+        if (rawMarkdown.endsWith('<br>')) {
+            rawMarkdown = rawMarkdown.slice(0, -4);
+        }
+        
+        fetch('./api/storeNotes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                is_public: this.checked,
-                character: data.character
+                notes: rawMarkdown,
+                word: data.character,
+                is_public: publicCheckbox.checked
             })
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
+        .then(response => response.json())
+        .then(data => console.log('Success:', data))
+        .catch((error) => console.error('Error:', error));
+
+        // fetch('./api/storeNotesVisibility', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //         is_public: this.checked,
+        //         character: data.character
+        //     })
+        // })
+        // .then(response => {
+        //     if (!response.ok) {
+        //         throw new Error('Network response was not ok');
+        //     }
+        //     return response.json();
+        // })
+        // .then(data => {
+        //     console.log('Success:', data);
+        // })
+        // .catch((error) => {
+        //     console.error('Error:', error);
+        // });
     });
     checkboxContainer.appendChild(publicCheckbox);
     checkboxContainer.appendChild(publicLabel);
