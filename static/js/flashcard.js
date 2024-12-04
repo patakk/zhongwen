@@ -403,7 +403,8 @@ function renderCardData(data) {
             },
             body: JSON.stringify({
                 notes: rawMarkdown,
-                word: data.character
+                word: data.character,
+                is_public: publicCheckbox.checked
             })
         })
         .then(response => response.json())
