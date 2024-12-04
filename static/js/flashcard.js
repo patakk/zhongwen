@@ -465,9 +465,9 @@ function renderCardData(data) {
     document.getElementById('flashcard_description').prepend(notesLabel);
 
     notesLabel.addEventListener('click', () => {
-        notesParagraph.style.display = notesParagraph.style.display === 'none' ? 'block' : 'none';
+        notesParagraph.style.display = notesParagraph.style.display === 'none' && username !== "tempuser" ? 'block' : 'none';
         otherNotesContainer.style.display = notesParagraph.style.display;
-        publicNotesLabel.style.display = notesParagraph.style.display;
+        publicNotesLabel.style.display = publicNotesLabel.style.display === 'none' ? 'block' : 'none';
         if(publicNotesLabel.style.display === 'none' || publicNotesLabel.classList.contains('collapsed')){
             otherNotesContainer.style.display = 'none';
         }
@@ -476,7 +476,7 @@ function renderCardData(data) {
         }
         checkboxContainer.style.display = notesParagraph.style.display;
         personalNotesLabel.style.display = notesParagraph.style.display;
-        if(notesParagraph.style.display === 'none'){
+        if(notesParagraph.style.display === 'none' && otherNotesContainer.style.display === 'none'){
             notesLabel.classList.add('collapsed');
             // publicNotesLabel.classList.add('collapsed');
         }
@@ -510,6 +510,11 @@ function renderCardData(data) {
     if(isemptyOtherNotes){
         publicNotesLabel.classList.add('collapsed');
         otherNotesContainer.style.display = 'none';
+    }
+
+    if(username === "tempuser"){
+        personalNotesLabel.style.display = 'none';
+        notesParagraph.style.display = 'none';
     }
 
     if(isemptyinitNotes && isemptyOtherNotes){
