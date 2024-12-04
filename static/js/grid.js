@@ -50,6 +50,14 @@ document.addEventListener('keydown', function(event) {
         }
     }
 
+    if(cardVisible){
+        if(event.key === 'Escape'){
+            hideCard();
+            return;
+        }
+        return;
+    }
+
     if(event.key === 'Escape') {
         drawBothLayouts(currentData);
         typedDisplay.style.display = 'none';
@@ -210,7 +218,6 @@ function createGrid(characters, useAllDecks){
         });
         gridItem.addEventListener('mouseenter', () => {
             prefetchedPlotters = createPlotters(charData);
-            console.log(prefetchedPlotters);
         });
         grid.appendChild(gridItem);
         charCounter++;
@@ -314,8 +321,6 @@ function getColorByTime(colors) {
         let colorIndex = Math.floor(totalMinutes / (cycleDuration / colors.length));
         let nextColorIndex = (colorIndex + 1) % colors.length;
         
-        console.log(colorIndex)
-        console.log(nextColorIndex)
         let interpolationFactor = (totalMinutes % (cycleDuration / colors.length)) / (cycleDuration / colors.length);
         
         let color1 = hexToRgb(colors[colorIndex]);
@@ -326,11 +331,9 @@ function getColorByTime(colors) {
         let b = Math.round(color1.b + (color2.b - color1.b) * interpolationFactor);
         let a = 0.7;
         
-        console.log(`Color cycle active. Using colors ${colorIndex} and ${nextColorIndex}`);
         return `rgba(${r}, ${g}, ${b}, ${a})`;
     } else {
         let lastColor = hexToRgb(colors[colors.length - 1]);
-        console.log(`Outside color cycle. Using last color.`);
         return `rgba(${lastColor.r}, ${lastColor.g}, ${lastColor.b}, 0.7)`;
     }
 }
@@ -398,6 +401,7 @@ function showFlashcard(character) {
             // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
             renderCardData(data);
             displayCard(true, true);
+            cardVisible = true;
             try{
                 if(!canvasrendered || true){
                     renderBorder();
@@ -419,6 +423,7 @@ function showAfterLoad(data){
     data.plotters = createPlotters(data);
     renderCardData(data);
     displayCard(true, true);
+    cardVisible = true;
 }
 
 
@@ -578,28 +583,29 @@ function getDeck() {
         });
 }
 
+window.addEventListener('popstate', function(event) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('query');
+    
+    if (query) {
+        showFlashcard(query);
+        scrollToTop(document.getElementById('flashcard_container'), null);
+    }
+});
 
+let cardVisible = false;
+function hideCard() {
+    // overlay.style.display = 'none';
+    cardVisible = false;
+    scrollToTop(document.getElementById('flashcard_container'), () => {overlay.style.display = 'none';});
+        
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.delete('query');
+    history.pushState({}, '', newUrl);
+}
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
-        // overlay.style.display = 'none';
-        
-        scrollToTop(document.getElementById('flashcard_container'), () => {overlay.style.display = 'none';});
-
-            try{
-                bordercanvas.style.display = 'none';
-            }
-            catch(e){
-                
-            }
-
-        // document.getElementById('font-select').style.top = '45px';
-        // document.getElementById('font-select').style.marginTop = '15px';
-        // document.getElementById('deck-select').style.display = 'block';
-        
-        // Remove the character parameter from the URL
-        const newUrl = new URL(window.location);
-        newUrl.searchParams.delete('query');
-        history.pushState({}, '', newUrl);
+        hideCard();
     }
 });
 

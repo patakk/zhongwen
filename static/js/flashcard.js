@@ -8,8 +8,6 @@ function getCharactersPinyinEnglish(characters=null, func=null) {
     
     const payload = { characters: charactersArray };
     
-    console.log("Sending payload:", payload);  // Debug log
-
     const options = {
         method: 'POST',
         headers: {
@@ -26,7 +24,6 @@ function getCharactersPinyinEnglish(characters=null, func=null) {
             return response.json();
         })
         .then(data => {
-            console.log("Received data:", data);
             if(func){
                 func(data);
             }
@@ -45,8 +42,6 @@ function displayCharMatches(charMatches) {
     wordsContainer.className = 'words-container';
 
     // Flatten the structure and get all unique words
-    console.log("charMatches");
-    console.log(charMatches);
     const allWords = new Set();
     for (const char in charMatches) {
         for (const hskLevel in charMatches[char]) {
@@ -228,7 +223,293 @@ function renderCardData(data) {
     } else {
         document.getElementById('flashcard_english').innerHTML = data.english;
     }
-    document.getElementById('flashcard_description').innerHTML = data.html;
+    // let ai_content = data.html;
+    // const aiTempDiv = document.createElement('div');
+    // aiTempDiv.innerHTML = ai_content;
+    // const hanziRegex = /[\u4e00-\u9fa5]/g;
+    // function processTextNode(textNode) {
+    //     const text = textNode.nodeValue;
+    //     if (hanziRegex.test(text)) {
+    //         const span = document.createElement('span');
+    //         span.innerHTML = text.replace(hanziRegex, (hanziWord) => {
+    //             const wordSpan = `<span class="clickable-hanzi-word" style="cursor: pointer;">${hanziWord}</span>`;
+    //             return `${wordSpan}`;
+    //         });
+    //         textNode.parentNode.replaceChild(span, textNode);
+    //     }
+    // }
+    // function processNode(node) {
+    //     if (node.nodeType === Node.TEXT_NODE) {
+    //         processTextNode(node);
+    //     } else {
+    //         Array.from(node.childNodes).forEach(processNode);
+    //     }
+    // }
+    // processNode(aiTempDiv);
+    // document.getElementById('flashcard_description').innerHTML = aiTempDiv.innerHTML;
+    // document.getElementById('flashcard_description').querySelectorAll('.clickable-hanzi-word, .clickable-hanzi-char').forEach(element => {
+    //     element.addEventListener('click', function() {
+    //         console.log("click");
+    //         const word = this.textContent;
+            
+    //         if (window.location.pathname.includes('/flashcards')) {
+    //             window.open(`./grid?query=${word}`, '_blank');
+    //         } else {
+    //             showFlashcard(word);
+    //             scrollToTop(document.getElementById('flashcard_container'), null);
+    //             const newUrl = new URL(window.location);
+    //             newUrl.searchParams.set('query', word);
+    //             history.pushState({}, '', newUrl);
+    //         }
+    //     });
+    // });
+    // document.getElementById('flashcard_description').innerHTML = aiTempDiv.innerHTML;
+    let ai_content = data.html;
+
+    // Create the container structure
+    const descriptionContainer = document.createElement('div');
+    descriptionContainer.id = 'descriptionContainer';
+
+    // Create and add the Notes label
+    const descriptionLabel = document.createElement('p');
+    descriptionLabel.textContent = "LLM description ";
+    descriptionLabel.id = 'descriptionLabel';
+    descriptionLabel.class = 'notes-label';
+    descriptionContainer.appendChild(descriptionLabel);
+
+    // Create and add the AI content in an editable paragraph
+    const descriptionParagraph = document.createElement('p');
+    descriptionParagraph.innerHTML = ai_content;
+    descriptionParagraph.id = 'descriptionParagraph';
+    // descriptionParagraph.setAttribute('contenteditable', 'true');
+    // descriptionParagraph.style.display = 'none';  // Initially hidden
+    descriptionContainer.appendChild(descriptionParagraph);
+
+    // Add click handler to the label
+
+    // Replace the existing content
+    document.getElementById('flashcard_description').innerHTML = '';
+    document.getElementById('flashcard_description').appendChild(descriptionContainer);
+
+    const notesParagraph = document.createElement('p');
+    // Initially render the markdown
+    let rendered = marked.parse(data.user_notes || '');
+    rendered = rendered.replace(/>\n\n</g, '>\n<'); // Remove whitespace between tags
+    notesParagraph.innerHTML = data.user_notes || '';
+    notesParagraph.id = 'notesParagraph';
+
+    let rawMarkdown = data.user_notes || ''; // Store the raw markdown
+
+    let isemptyinitNotes = false;
+    if (rawMarkdown.trim() === '') {
+        notesParagraph.classList.add('empty');
+        notesParagraph.innerHTML = 'Click to add a note...';
+        rawMarkdown = 'Click to add a note...';
+        isemptyinitNotes = true;
+    }
+
+    let isemptyOtherNotes = false;
+    if(data.other_user_notes.length === 0){
+        isemptyOtherNotes = true;
+    }
+
+    let isemptyinitDescription = false;
+    if (ai_content.trim() === '') {
+        isemptyinitDescription = true;
+    }
+
+    document.getElementById('flashcard_description').prepend(notesParagraph);
+    notesParagraph.setAttribute('contenteditable', 'true');
+
+    // add checkbox in top right corner with lable "public"
+    // add checkbox in top right corner with label "public"
+    const checkboxContainer = document.createElement('div');
+    checkboxContainer.style.float = 'right';
+    // top right corner
+    checkboxContainer.style.top = '0';
+    checkboxContainer.style.right = '0';
+    checkboxContainer.id = 'checkboxContainer';
+
+    const publicCheckbox = document.createElement('input');
+    publicCheckbox.type = 'checkbox';
+    publicCheckbox.id = 'publicCheckbox';
+    publicCheckbox.checked = data.are_notes_public;
+
+    const publicLabel = document.createElement('label');
+    publicLabel.htmlFor = 'publicCheckbox';
+    publicLabel.textContent = 'make public';
+    publicLabel.id = 'publicLabel';
+
+    publicCheckbox.addEventListener('change', function() {
+        fetch('./api/storeNotesVisibility', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                is_public: this.checked,
+                character: data.character
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+    checkboxContainer.appendChild(publicCheckbox);
+    checkboxContainer.appendChild(publicLabel);
+    document.getElementById('flashcard_description').prepend(checkboxContainer);
+
+
+    marked.setOptions({
+        breaks: true,
+        gfm: true,
+    });
+
+    notesParagraph.addEventListener('focus', function() {
+        if (this.classList.contains('empty')) {
+            this.classList.remove('empty');
+            rawMarkdown = '';
+            this.innerHTML = '';
+        } else {
+            this.innerHTML = rawMarkdown;
+        }
+    });
+    notesParagraph.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+        document.execCommand('insertText', false, text);
+    });
+    notesParagraph.addEventListener('blur', function() {
+        rawMarkdown = this.innerHTML;
+        this.classList.remove('empty');
+
+        if (rawMarkdown.endsWith('<br>')) {
+            rawMarkdown = rawMarkdown.slice(0, -4);
+        }
+        
+        fetch('./api/storeNotes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                notes: rawMarkdown,
+                word: data.character
+            })
+        })
+        .then(response => response.json())
+        .then(data => console.log('Success:', data))
+        .catch((error) => console.error('Error:', error));
+    
+        if (this.textContent.trim() === '') {
+            this.classList.add('empty');
+            this.innerHTML = 'Click to add a note...';
+            rawMarkdown = 'Click to add a note...';
+        }
+    });
+    // Initially hide the paragraph;
+
+
+    // Create and add the Notes label
+
+    let otherUserNotes = data.other_user_notes;
+    let otherNotesContainer = document.createElement('div');
+    if(otherUserNotes){
+        otherUserNotes.forEach((note) => {
+            const noteContainer = document.createElement('div');
+            noteContainer.classList.add('note-container');
+            
+            const noteParagraph = document.createElement('p');
+            noteParagraph.innerHTML = note.notes;
+            noteParagraph.classList.add('other-user-notes');
+            
+            const username = document.createElement('span');
+            username.textContent = note.username;
+            username.classList.add('note-username');
+            
+            noteContainer.appendChild(noteParagraph);
+            noteContainer.appendChild(username);
+            otherNotesContainer.appendChild(noteContainer);
+        });
+    }
+    
+    const personalNotesLabel = document.createElement('p');
+    personalNotesLabel.textContent = "My notes ";
+    personalNotesLabel.id = 'personalNotesLabel';
+    personalNotesLabel.class = 'notes-label';
+    
+    document.getElementById('flashcard_description').prepend(personalNotesLabel);
+    document.getElementById('flashcard_description').prepend(otherNotesContainer);
+
+    const notesLabel = document.createElement('p');
+    notesLabel.textContent = "Notes ";
+    notesLabel.id = 'notesLabel';
+    notesLabel.class = 'notes-label';
+    
+    const publicNotesLabel = document.createElement('p');
+    publicNotesLabel.textContent = "Public notes ";
+    publicNotesLabel.id = 'publicNotesLabel';
+    publicNotesLabel.class = 'notes-label';
+
+
+    document.getElementById('flashcard_description').prepend(publicNotesLabel);
+    document.getElementById('flashcard_description').prepend(notesLabel);
+
+    notesLabel.addEventListener('click', () => {
+        notesParagraph.style.display = notesParagraph.style.display === 'none' ? 'block' : 'none';
+        otherNotesContainer.style.display = notesParagraph.style.display;
+        publicNotesLabel.style.display = notesParagraph.style.display;
+        checkboxContainer.style.display = notesParagraph.style.display;
+        if(notesParagraph.style.display === 'none'){
+            notesLabel.classList.add('collapsed');
+        }
+        else{
+            notesLabel.classList.remove('collapsed');
+        }
+    });
+    
+    publicNotesLabel.addEventListener('click', () => {
+        otherNotesContainer.style.display = otherNotesContainer.style.display === 'none' ? 'block' : 'none';
+        if(otherNotesContainer.style.display === 'none'){
+            publicNotesLabel.classList.add('collapsed');
+        }
+        else{
+            publicNotesLabel.classList.remove('collapsed');
+        }
+    });
+    // notesLabel.classList.add('collapsed');
+
+    descriptionLabel.addEventListener('click', () => {
+        descriptionParagraph.style.display = descriptionParagraph.style.display === 'none' ? 'block' : 'none';
+        if (descriptionParagraph.style.display === 'none') {
+            descriptionLabel.classList.add('collapsed');
+        }
+        else {
+            descriptionLabel.classList.remove('collapsed');
+        }
+    });
+
+    if(isemptyinitNotes && isemptyOtherNotes){
+        otherNotesContainer.style.display = 'none';
+        notesParagraph.style.display = 'none';
+        publicNotesLabel.style.display = 'none';
+        notesLabel.classList.add('collapsed')
+    }
+    if(isemptyinitDescription){
+        descriptionParagraph.style.display = 'none';
+        descriptionLabel.classList.add('collapsed');
+    }
+    checkboxContainer.style.display = notesParagraph.style.display;
+
     document.getElementById('flashcard_function').textContent = "(" + data.function + ")";
     document.getElementById('flashcard_practice').textContent = data.character.length <= 3 ? "practice" : "";
     

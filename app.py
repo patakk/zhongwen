@@ -26,6 +26,9 @@ from backend.db.ops import db_get_all_character_strokes
 from backend.db.ops import db_get_stroke_entries
 from backend.db.ops import db_user_exists
 from backend.db.ops import db_create_user
+from backend.db.ops import db_get_user_note
+from backend.db.ops import db_get_all_public_notes
+from backend.db.ops import db_get_all_stroke_data
 
 def create_app():
     init_flashcard_app()
@@ -60,12 +63,10 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
 
-
 @app.before_request
 def make_session_permanent():
     session.permanent = True
     app.logger.info(f"Session at start of request: {session}")
-
 
 
 @app.route('/get_card_data')
@@ -170,10 +171,13 @@ def packed_data(character):
                 "html": '',
                 "hsk_level": '',
                 "function": '',
+                "user_notes": '',
                 "char_matches": '',
                 "deck": session['deck']
             }
     # session['deck'] = foundDeck
+    user_notes, are_notes_public = db_get_user_note(session['username'], character)
+    other_user_notes = db_get_all_public_notes(character, exclude_username=session.get('username'))
     return {
         "character": character,
         "deck": foundDeck,
@@ -181,6 +185,9 @@ def packed_data(character):
         "english": data.get('english', ''),
         "hsk_level": data.get('hsk_level', ''),
         "function": data.get('function', ''),
+        "user_notes": user_notes,
+        "are_notes_public": are_notes_public,
+        "other_user_notes": other_user_notes,
         "char_matches": data.get('char_matches', ''),
         "html": data.get('examples', ''),
     }
@@ -555,19 +562,18 @@ def search():
     
     return render_template('search.html', darkmode=session['darkmode'], decks=flashcard_app.decks, username=session['username'])
 
-from backend.db.ops import get_all_stroke_data_
 @app.route('/hanzi_strokes_history')
 @session_required
 # @hard_session_required
 def hanzi_strokes_history():
-    strokes_per_character = get_all_stroke_data_(session['username'])
+    strokes_per_character = db_get_all_stroke_data(session['username'])
     return render_template('hanzistats.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks, strokes_per_character=strokes_per_character)
 
 @app.route('/hanzi_strokes_charlist')
 @session_required
 # @hard_session_required
 def hanzi_strokes_charlist():
-    strokes_per_character = get_all_stroke_data_(session['username'])
+    strokes_per_character = db_get_all_stroke_data(session['username'])
     return jsonify(list(strokes_per_character.keys()))
     
 @app.route('/strokerender')

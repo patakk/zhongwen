@@ -15,6 +15,7 @@ generate_descriptions.py
 static/css/hanzipractice_backup.js
 static/js/hanzipractice_backup.js
 templates/hanzipractice_backup.html
+alter_db.py
 
 fire
 
@@ -25,6 +26,7 @@ chinese_audio_clips/
 audio_files2/
 data/crawled.json
 data/*_bkp.json
+data/anthropic_2.json
 
 *.txt
 

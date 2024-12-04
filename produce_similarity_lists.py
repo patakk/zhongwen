@@ -7,15 +7,16 @@ from pypinyin import pinyin, lazy_pinyin, Style
 import tqdm
 
 FILES = [
-    'data/shas_class_cards.json',
-    'data/hsk1_cards.json',
-    'data/hsk2_cards.json',
-    'data/hsk3_cards.json',
-    'data/hsk4_cards.json',
-    'data/hsk5_cards.json',
-    'data/hsk6_cards.json',
-    'data/mini_deck.json',
-    'data/review_deck.json',
+    # 'data/shas_class_cards.json',
+    # 'data/hsk1_cards.json',
+    # 'data/hsk2_cards.json',
+    # 'data/hsk3_cards.json',
+    # 'data/hsk4_cards.json',
+    # 'data/hsk5_cards.json',
+    # 'data/hsk6_cards.json',
+    # 'data/mini_deck.json',
+    # 'data/review_deck.json',
+    'data/top140_cards.json',
 ]
 
 allfiles = [
@@ -28,6 +29,7 @@ allfiles = [
     'data/hsk6_cards.json',
     'data/mini_deck.json',
     'data/review_deck.json',
+    'data/top140_cards.json',
 ]
 
 shas = json.load(open(allfiles[0]))
@@ -39,6 +41,7 @@ hsk5 = json.load(open(allfiles[5]))
 hsk6 = json.load(open(allfiles[6]))
 mini = json.load(open(allfiles[7]))
 review = json.load(open(allfiles[8]))
+top140 = json.load(open(allfiles[9]))
 
 HSK_FILES = [file for file in FILES if 'hsk' in file]
 
@@ -198,3 +201,4 @@ def add_functions(files):
 
 # Run the process
 calculate_matches(FILES)
+add_functions(FILES)

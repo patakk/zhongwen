@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
     <style>
         * {
@@ -329,6 +330,14 @@
                     <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
                     <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <span>Decks</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
+                    {% endfor %}
                 </ul>
             </li>
             <li><span id="darkmode-toggle" >Toggle darkmode</span></li>

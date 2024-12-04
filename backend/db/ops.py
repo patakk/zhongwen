@@ -5,7 +5,7 @@ from urllib.parse import unquote
 from sqlalchemy.exc import SQLAlchemyError
 
 from backend.db.extensions import db
-from backend.db.models import StrokeData, UserProgress
+from backend.db.models import StrokeData, UserProgress, Card, UserNotes
 
 logger = logging.getLogger(__name__)
 
@@ -14,21 +14,7 @@ def getshortdate():
     return datetime.now(timezone.utc).strftime("%Y%m%d")
 
 
-"""
-db_create_user args:
-    username
-    base_new_cards_limit
-    new_cards_limit
-    new_cards_limit_last_updated
-    daily_new_cards
-    last_new_cards_date
-    presented_new_cards
-    progress
-"""
-
-
-def get_all_stroke_data_(username):
-
+def db_get_all_stroke_data(username):
     characters = db_get_all_character_strokes(username)
 
     result = {}
@@ -107,6 +93,85 @@ def db_init_app(app):
     db.init_app(app)
     with app.app_context():
         db.create_all()
+
+
+def db_get_all_public_notes(character, exclude_username):
+    card = Card.query.filter_by(character=character).first()
+    if not card:
+        print(f"Card not found for character '{character}'")
+        return []
+    
+    print(f"Card found for character '{character}'")
+    public_notes = UserNotes.query.filter(
+        UserNotes.card_id == card.id,
+        UserNotes.is_public == True,
+        UserNotes.username != exclude_username 
+    ).all()
+    
+    return [
+        {
+            'username': note.username,
+            'notes': note.notes
+        }
+        for note in public_notes
+    ]
+
+
+
+def db_get_user_note(username, character):
+    card = Card.query.filter_by(character=character).first()
+    if not card:
+        return None, None
+    
+    user_note = UserNotes.query.filter_by(
+        username=username,
+        card_id=card.id
+    ).first()
+    
+    if user_note:
+        return user_note.notes, user_note.is_public
+    return None, None
+
+    
+def db_update_or_create_note(username, word, notes, is_public=False):
+    card = Card.query.filter_by(character=word).first()
+    if not card:
+        card = Card(character=word)
+        try:
+            db.session.add(card)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return False, f"Error creating card: {str(e)}"
+
+    user_note = UserNotes.query.filter_by(
+        username=username, 
+        card_id=card.id
+    ).first()
+    
+    try:
+        if notes.strip() == '':
+            if user_note:
+                db.session.delete(user_note)
+        else:
+            if user_note:
+                user_note.notes = notes
+                user_note.is_public = is_public
+            else:
+                user_note = UserNotes(
+                    username=username,
+                    card_id=card.id,
+                    notes=notes,
+                    is_public=is_public
+                )
+                db.session.add(user_note)
+        
+        db.session.commit()
+        return True, None
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Error saving note: {str(e)}"
+
 
 
 def save_user_progress(username, progress_data):

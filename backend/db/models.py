@@ -16,20 +16,29 @@ class Deck(db.Model):
 
     def __repr__(self):
         return f"<Deck {self.name}>"
+    
+
+class UserNotes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), db.ForeignKey('user_progress.username'), nullable=False)
+    card_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=False)
+    notes = db.Column(db.String(200))
+    is_public = db.Column(db.Boolean, default=False)
+    __table_args__ = (db.UniqueConstraint('username', 'card_id'),)
 
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     character = db.Column(db.String(10), unique=True, nullable=False)
-    pinyin = db.Column(db.String(50), nullable=False)
-    english = db.Column(db.String(100), nullable=False)
-    traditional = db.Column(db.String(10))
-    function = db.Column(db.String(50))
-    hsk_level = db.Column(db.Integer, nullable=False)
-    char_matches = db.Column(db.String)
-    pinyin_tones = db.Column(db.String(50))
+    # pinyin = db.Column(db.String(50))
+    # english = db.Column(db.String(100))
+    # traditional = db.Column(db.String(10))
+    # function = db.Column(db.String(50))
+    # hsk_level = db.Column(db.Integer)
+    # char_matches = db.Column(db.String)
+    # pinyin_tones = db.Column(db.String(50))
     decks = db.relationship("Deck", secondary=deck_cards, back_populates="cards")
-
+    
     def __repr__(self):
         return f"<Card {self.character}>"
 

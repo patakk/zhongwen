@@ -9,7 +9,9 @@ from flask import Blueprint, jsonify, request, send_file, session
 from backend.db.ops import db_add_stroke_data
 from backend.decorators import session_required, timing_decorator
 from backend.flashcard_app import get_flashcard_app
-from backend.db.ops import get_all_stroke_data_
+from backend.db.ops import db_update_or_create_note
+from backend.db.models import Card, UserNotes
+from backend.db.extensions import db
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,57 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 with open("data/audio_mappings.json", "r", encoding="utf-8") as f:
     audio_mappings = json.load(f)
+
+@api_bp.route('/storeNotesVisibility', methods=['POST'])
+@session_required
+def store_notes_visibility():
+    try:
+        data = request.get_json()
+        if not data or 'character' not in data or 'is_public' not in data:
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        character = data['character']
+        is_public = data['is_public']
+        username = session.get('username')
+
+        card = Card.query.filter_by(character=character).first()
+        if not card:
+            return jsonify({'success': True, 'message': 'Character not found'})
+
+        user_note = UserNotes.query.filter_by(
+            username=username,
+            card_id=card.id
+        ).first()
+
+        if not user_note:
+            return jsonify({'success': True, 'message': 'Note not found'})
+
+        user_note.is_public = is_public
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Visibility updated successfully'})
+    #except Exception as e:
+    except:
+        db.session.rollback()
+        #return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'error'}), 500
+
+
+@api_bp.route('/storeNotes', methods=['POST'])
+@session_required
+def store_notes():
+    data = request.get_json()
+    success, error = db_update_or_create_note(
+        username=session.get('username'),
+        word=data.get('word'),
+        notes=data.get('notes'),
+        is_public=data.get('is_public', False)
+    )
+    print(data, success)
+    if not success:
+        print(f"Error storing notes: {error}")
+        return jsonify({"status": "error", "message": error}), 404
+    return jsonify({"status": "success"})
 
 
 @api_bp.route("/get_characters")
