@@ -639,6 +639,15 @@ and (max-device-width: 1024px) {
     background-color: transparent;
 }
 
+
+img[src$=".jpg"]:broken,
+img[src$=".jpeg"]:broken,
+img[src$=".png"]:broken,
+img[src$=".gif"]:broken,
+img[src$=".webp"]:broken {
+    display: none;
+}
+
 .other-user-notes > div.darkmode {
     background-color: transparent;
 }
