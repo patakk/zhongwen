@@ -153,11 +153,11 @@ function wrapImageUrls(inputString) {
     
     // if (inputString.trim().match(/^https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp)$/i)) {
     if (inputString.trim().match(/^https?:\/\/[^\s<>"]+?$/i)) {
-        return `<img src="${inputString.trim()}" alt="${inputString.trim()}" />`;
+        return `<img class="notes-image" src="${inputString.trim()}" alt="${inputString.trim()}" />`;
     }
     
     let outputString = inputString.replace(imageRegex, (match, url) => {
-        return match.replace(url, `<img src="${url.trim()}" alt="${url.trim()}" />`);
+        return match.replace(url, `<img class="notes-image" src="${url.trim()}" alt="${url.trim()}" />`);
     });
     return outputString;
 }
