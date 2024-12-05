@@ -2591,16 +2591,6 @@
         "function": "number",
         "hsk_level": 1
     },
-    "四届": {
-        "hanzi": "四届",
-        "pinyin": "sì jiè",
-        "literal": "",
-        "english": "",
-        "char_matches": {},
-        "pinyin_tones": "si4 jie4",
-        "function": "number",
-        "hsk_level": -1
-    },
     "抽": {
         "hanzi": "抽",
         "pinyin": "chōu",
@@ -2743,6 +2733,92 @@
         "char_matches": {},
         "pinyin_tones": "ku3",
         "function": "adjective",
+        "hsk_level": 4
+    },
+    "干": {
+        "hanzi": "干",
+        "pinyin": "gàn",
+        "literal": "",
+        "english": "old variant of 乾|干[gan1] / dry / clean / in vain / dried food / foster / adoptive / to ignore / variant of 乾|干[gan1] / to concern / to interfere / shield / stem / tree trunk / main part of sth / to manage / to work / to do / capable / cadre / to kill (slang) / to fuck (vulgar) / surname Gan",
+        "char_matches": {},
+        "pinyin_tones": "gan4",
+        "function": "verb",
+        "hsk_level": 4
+    },
+    "感冒": {
+        "hanzi": "感冒",
+        "pinyin": "gǎn mào",
+        "literal": "",
+        "english": "to catch cold / (common) cold / (coll.) to be interested in (often used in the negative) / (Tw) to detest / can't stand",
+        "char_matches": {},
+        "pinyin_tones": "gan3 mao4",
+        "function": "verb",
+        "hsk_level": 3
+    },
+    "感": {
+        "hanzi": "感",
+        "pinyin": "gǎn",
+        "literal": "",
+        "english": "to feel / to move / to touch / to affect / feeling / emotion / (suffix) sense of ~",
+        "char_matches": {},
+        "pinyin_tones": "gan3",
+        "function": "verb",
+        "hsk_level": -1
+    },
+    "要": {
+        "hanzi": "要",
+        "pinyin": "yào",
+        "literal": "",
+        "english": "to demand / to request / to coerce / important / vital / to want / to ask for / will / going to (as future auxiliary) / may / must / (used in a comparison) must be / probably / if",
+        "char_matches": {},
+        "pinyin_tones": "yao4",
+        "function": "verb",
+        "hsk_level": 2
+    },
+    "听一下": {
+        "hanzi": "听一下",
+        "pinyin": "tīng yī xià",
+        "literal": "",
+        "english": "",
+        "char_matches": {},
+        "pinyin_tones": "ting1 yi1 xia4",
+        "function": [
+            "verb",
+            "number"
+        ],
+        "hsk_level": [
+            1,
+            2
+        ]
+    },
+    "厕所": {
+        "hanzi": "厕所",
+        "pinyin": "cè suǒ",
+        "literal": "",
+        "english": "toilet / lavatory",
+        "char_matches": {},
+        "pinyin_tones": "ce4 suo3",
+        "function": "noun",
+        "hsk_level": 4
+    },
+    "歌": {
+        "hanzi": "歌",
+        "pinyin": "gē",
+        "literal": "",
+        "english": "song / to sing / variant of 歌[ge1]",
+        "char_matches": {},
+        "pinyin_tones": "ge1",
+        "function": "noun",
+        "hsk_level": -1
+    },
+    "行": {
+        "hanzi": "行",
+        "pinyin": "xíng",
+        "literal": "",
+        "english": "row / line / commercial firm / line of business / profession / to rank (first, second etc) among one's siblings (by age) / (in data tables) row / (Tw) column / to walk / to go / to travel / a visit / temporary / makeshift / current / in circulation / to do / to perform / capable / competent / effective / all right / OK! / will do / behavior / conduct / Taiwan pr. [xing4] for the behavior-conduct sense",
+        "char_matches": {},
+        "pinyin_tones": "xing2",
+        "function": "unknown",
         "hsk_level": 4
     }
 }
