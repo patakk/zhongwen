@@ -25,10 +25,6 @@ with open("data/audio_mappings.json", "r", encoding="utf-8") as f:
 @api_bp.route('/storeNotesVisibility', methods=['POST'])
 @session_required
 def store_notes_visibility():
-    print("storeNotesVisibility")
-    print("storeNotesVisibility")
-    print("storeNotesVisibility")
-    print("storeNotesVisibility")
     try:
         data = request.get_json()
         if not data or 'character' not in data or 'is_public' not in data:
@@ -37,8 +33,6 @@ def store_notes_visibility():
         character = data['character']
         is_public = data['is_public']
         username = session.get('username')
-        print("is_public")
-        print(is_public)
 
         card = Card.query.filter_by(character=character).first()
         if not card:
@@ -73,7 +67,6 @@ def store_notes():
         notes=data.get('notes'),
         is_public=data.get('is_public', False)
     )
-    print(data, success)
     if not success:
         print(f"Error storing notes: {error}")
         return jsonify({"status": "error", "message": error}), 404

@@ -98,10 +98,8 @@ def db_init_app(app):
 def db_get_all_public_notes(character, exclude_username):
     card = Card.query.filter_by(character=character).first()
     if not card:
-        print(f"Card not found for character '{character}'")
         return []
     
-    print(f"Card found for character '{character}'")
     public_notes = UserNotes.query.filter(
         UserNotes.card_id == card.id,
         UserNotes.is_public == True,

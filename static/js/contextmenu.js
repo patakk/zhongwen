@@ -393,8 +393,8 @@ function addMenuListeners() {
             // For desktop, keep the existing positioning logic
             let left = e.pageX;
             let top = e.pageY;
-            let chatboxWidth = 400;
-            let chatboxHeight = 300;
+            let chatboxWidth = 800;
+            let chatboxHeight = 500;
             const windowWidth = window.innerWidth;
             const windowHeight = window.innerHeight;
     

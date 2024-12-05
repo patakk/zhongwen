@@ -147,6 +147,20 @@ function adjustFlashCardChars(){
 }
 
 
+function wrapImageUrls(inputString) {
+    const imageRegex = /(?:^|\s)(https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp))(?:\s|$|<)/gi;
+    
+    if (inputString.trim().match(/^https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp)$/i)) {
+        let outputString = `<img class="notes-image" src="${inputString.trim()}"/>`
+        return outputString;
+    }
+    
+    let outputString = inputString.replace(imageRegex, (match, url) => {
+        return match.replace(url, `<img class="notes-image" src="${url.trim()}" />`);
+    });
+    return outputString;
+}
+
 function renderCardData(data) {
     const container = document.getElementById('flashcard_container');
     if(container.style.display === 'none' || !container.style.display){
@@ -155,7 +169,7 @@ function renderCardData(data) {
 
     const characterElement = document.getElementById('flashcard_character');
     if(characterElement)
-        characterElement.innerHTML = ''; // Clear existing content
+        characterElement.innerHTML = '';
 
 
     const chars = data.character.split('');
@@ -295,7 +309,8 @@ function renderCardData(data) {
     // Initially render the markdown
     let rendered = marked.parse(data.user_notes || '');
     rendered = rendered.replace(/>\n\n</g, '>\n<'); // Remove whitespace between tags
-    notesParagraph.innerHTML = data.user_notes || '';
+    rendered = wrapImageUrls(rendered);
+    notesParagraph.innerHTML =  wrapImageUrls(data.user_notes || '');
     notesParagraph.id = 'notesParagraph';
 
     let rawMarkdown = data.user_notes || ''; // Store the raw markdown
@@ -346,6 +361,9 @@ function renderCardData(data) {
         if (rawMarkdown.endsWith('<br>')) {
             rawMarkdown = rawMarkdown.slice(0, -4);
         }
+        // rawMarkdown = rawMarkdown.replace(/<div>/g, '');
+        // rawMarkdown = rawMarkdown.replace(/<\/div>/g, '');
+        rawMarkdown = wrapImageUrls(rawMarkdown);
         
         fetch('./api/storeNotes', {
             method: 'POST',
@@ -417,6 +435,15 @@ function renderCardData(data) {
             rawMarkdown = rawMarkdown.slice(0, -4);
         }
         
+        // rawMarkdown = rawMarkdown.replace(/<div>/g, '');
+        // rawMarkdown = rawMarkdown.replace(/<\/div>/g, '');
+
+        rawMarkdown = wrapImageUrls(rawMarkdown);
+        // this.innerHTML = marked.parse(rawMarkdown);
+        console.log("kaj");
+        console.log(rawMarkdown);
+        
+        this.innerHTML = rawMarkdown;
         fetch('./api/storeNotes', {
             method: 'POST',
             headers: {
@@ -432,7 +459,7 @@ function renderCardData(data) {
         .then(data => console.log('Success:', data))
         .catch((error) => console.error('Error:', error));
     
-        if (this.textContent.trim() === '') {
+        if (this.innerHTML.trim() === '') {
             this.classList.add('empty');
             this.innerHTML = 'Click to add a note...';
             rawMarkdown = 'Click to add a note...';
@@ -444,6 +471,7 @@ function renderCardData(data) {
     // Create and add the Notes label
 
     let otherUserNotes = data.other_user_notes;
+    
     let otherNotesContainer = document.createElement('div');
     if(otherUserNotes){
         otherUserNotes.forEach((note) => {

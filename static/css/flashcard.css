@@ -639,6 +639,19 @@ and (max-device-width: 1024px) {
     background-color: transparent;
 }
 
+.other-user-notes > div.darkmode {
+    background-color: transparent;
+}
+/* div.darkmode  > div.darkmode {
+    background-color: transparent;
+} */
+
+.other-user-notes .notes-image, #notesParagraph .notes-image {
+    max-height: 200px;
+    margin: 0;
+    padding: 0;
+}
+
 
 .note-username {
     position: absolute;
