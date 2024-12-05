@@ -148,9 +148,11 @@ function adjustFlashCardChars(){
 
 
 function wrapImageUrls(inputString) {
-    const imageRegex = /(?:^|\s)(https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp))(?:\s|$|<)/gi;
+    // const imageRegex = /(?:^|\s)(https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp))(?:\s|$|<)/gi;
+    const imageRegex = /(?:^|\s)(https?:\/\/[^\s<>"]+?)(?:\s|$|<)/gi;
     
-    if (inputString.trim().match(/^https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp)$/i)) {
+    // if (inputString.trim().match(/^https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp)$/i)) {
+    if (inputString.trim().match(/^https?:\/\/[^\s<>"]+?$/i)) {
         let outputString = `<img class="notes-image" src="${inputString.trim()}"/>`
         return outputString;
     }
