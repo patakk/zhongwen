@@ -285,7 +285,7 @@
             thicknessSlider.addEventListener('input', function() {
                 thicknessValue.textContent = this.value + 'pt';
             });
-            thicknessSlider.addEventListener('change', function() {
+            thicknessSlider.addEventListener('input', function() {
                 if(plottersElem.classList.contains('empty')){
                     return;
                 }
