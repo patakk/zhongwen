@@ -55,10 +55,11 @@ function confirmDarkmode(){
         const plotterElement = document.getElementById('flashcard_plotter');
         // Get specific plotter by index
         // go throough children elements and click them
-        plotterElement.childNodes.forEach(child => {
-            child.click();
-        });
-
+        if(plotterElement){
+            plotterElement.childNodes.forEach(child => {
+                child.click();
+            });
+        }
         // plotterElement.plotters.forEach(hanziplotter => {
         //     console.log("hanziplotter.plotter.getContext()");
         //     console.log(hanziplotter.plotter);

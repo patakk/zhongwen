@@ -332,6 +332,12 @@ def hanzipractice():
         })
     return render_template('hanzipractice.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=flashcard_app.decks, deck=session['deck'])
 
+@app.route('/convert')
+@session_required
+@timing_decorator
+def convert():
+    return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks, deck=session['deck'])
+
 from flask import Response
 with open('data/examples.json', 'r', encoding='utf-8') as f:
     parsed_data = json.load(f)

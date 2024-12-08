@@ -147,6 +147,44 @@ function adjustFlashCardChars(){
 }
 
 
+function createPlotters(data){
+    const chars = data.character.split('');
+    const plotters = [];
+    let size = 255;
+    if(chars.length == 2){
+        size = 222;
+    }
+    else if(chars.length > 2){
+        size = 166;
+    }
+    chars.forEach((char, index) => {
+        const plotter = new HanziPlotter({char, size, animateOnClick: true});
+        plotters.push({plotter: plotter, char: char});
+    });
+    return plotters;
+}
+
+function renderPlotters(plotters, pinyinparts=null){
+    const plotterElement = document.getElementById('flashcard_plotter');
+    plotterElement.innerHTML = '';
+    if(plotterElement && plotters){
+        // Store plotters as a property of the container element
+        plotterElement.plotters = plotters;
+        
+        plotters.forEach((plotterinfo, index) => {
+            let plotter = plotterinfo.plotter;
+            let color = getToneColor(pinyinparts[index]);
+            plotter.draw(color);
+            plotter.canvas.dataset.plotterIndex = index;
+            plotterElement.appendChild(plotter.canvas);
+        });
+    }
+    else{
+        console.error('No plotter element found');
+    }
+}
+    
+
 function wrapImageUrls(inputString) {
     // const imageRegex = /(?:^|\s)(https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp))(?:\s|$|<)/gi;
     const imageRegex = /(?:^|\s)(https?:\/\/[^\s<>"]+?)(?:\s|$|<)/gi;
