@@ -129,7 +129,7 @@ function drawCanvas(context) {
 
 function animateStrokes(context) {
     let startTime = Date.now();
-    let baseSpeed = 3;
+    let baseSpeed = context.baseSpeed || 2;
     let strokeIndex = 0;
     let progress = 0;
 
@@ -155,7 +155,10 @@ function animateStrokes(context) {
         let strokeDuration = (strokeLength / totalLength) * (totalLength / baseSpeed);
         
         progress = Math.min(1, elapsedTime / strokeDuration);
+        context.ctx.save();
+        context.ctx.fillStyle = "transparent";
         context.ctx.clearRect(0, 0, context.ctx.canvas.width, context.ctx.canvas.height);
+        context.ctx.restore();
 
         drawStrokes(context, {progress, strokeIndex});
 
@@ -358,7 +361,7 @@ function renderPlotData(plotterElement, data){
 
 
 class HanziPlotter {
-    constructor({char, size=256, animateOnClick=false}) {
+    constructor({char, size=256, animateOnClick=false, baseSpeed=2, speedSlider=null}) {
         // if(isMobileOrTablet()){
         //     size = 122;
         // }
@@ -391,13 +394,14 @@ class HanziPlotter {
         this.canvas.classList.add('plotter');
         this.ctx = this.canvas.getContext('2d');
         this.animateOnClick = animateOnClick;
-        this.prepare();
+        this.baseSpeed = baseSpeed;
+        this.prepare(speedSlider);
     }
 
-    async prepare(color=null) {
+    async prepare(speedSlider=null) {
         await this.readyPromise;
 
-        this.context = {ctx: this.ctx, strokes: this.strokes, paths: this.paths, cwidth: this.cwidth, cheight: this.cheight, frames: this.frames, maxframes: this.maxframes, starttime: this.starttime, color: null, plotter: this, plotterAnimationInterval: null, seed: Math.random()};
+        this.context = {ctx: this.ctx, strokes: this.strokes, paths: this.paths, cwidth: this.cwidth, cheight: this.cheight, frames: this.frames, maxframes: this.maxframes, starttime: this.starttime, color: null, plotter: this, plotterAnimationInterval: null, seed: Math.random(), baseSpeed: this.baseSpeed};
 
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
         this.context.strokes.forEach(stroke => {
@@ -416,19 +420,25 @@ class HanziPlotter {
 
         let plotter_ctx = this.context;
         if(this.animateOnClick){
-            this.canvas.addEventListener('click', ()=>{this.animate(plotter_ctx);});
+            this.canvas.addEventListener('click', ()=>{this.animate(plotter_ctx, speedSlider);});
         }
     }
 
-    async animate(plotter_ctx) {
+    async animate(plotter_ctx, speedSlider=null) {
         await this.readyPromise;
         cancelAnimationFrame(plotter_ctx.plotterAnimationInterval);
         plotter_ctx.seed = Math.random();
+        if(speedSlider){
+            this.context.baseSpeed = speedSlider.value;
+        }
         animateStrokes(plotter_ctx);
     }
 
-    async draw(color=null){
+    async draw(speed=null){
         await this.readyPromise;
+        if(speed){
+            this.context.baseSpeed = speed;
+        }
         drawCanvas(this.context);
     }
 

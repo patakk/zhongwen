@@ -52,7 +52,7 @@
             width: 30vw;
             height: 30vh;
             padding: 10px;
-            font-size: 1.1em;
+            font-size: 1.5em;
             resize: none;
             display: block;
             border: 2px solid #161616;
@@ -68,6 +68,16 @@
             font-size: 1.1em;
             resize: none;
             display: block;
+            background: #eee;
+        }
+
+        #plotters.darkmode {
+            background: #343434;
+            color: rgb(206, 206, 206);
+        }
+
+        #plotters.empty {
+            background: transparent;
         }
 
         @media screen and (max-width: 600px) {
@@ -109,6 +119,60 @@
             transition: background-color 0s;
             color: rgb(31, 31, 31);
         }
+
+        .slider-container {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #speedSlider {
+            -webkit-appearance: none;
+            width: 200px;
+            background: transparent;
+        }
+
+        #speedSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            border: none;
+            height: 16px;
+            width: 16px;
+            background: black;
+            margin-top: -6px;
+            cursor: pointer;
+        }
+
+
+        #speedSlider.darkmode::-webkit-slider-thumb {
+            background: rgb(124, 124, 124);
+        }
+
+        #speedSlider::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #ddd;
+            border: none;
+        }
+
+        #speedSlider.darkmode::-webkit-slider-runnable-track {
+            background: #464646;
+        }
+
+        #speedSlider:focus {
+            outline: none;
+        }
+
+        canvas.darkmode {
+            background-color: transparent;
+        }
+
+        span.darkmode {
+            background-color: transparent;
+        }
+
+
     </style>
 </head>
 
@@ -127,8 +191,12 @@
         <!-- <label for="hanziInput">Hanzi Input</label> -->
         <textarea id="hanziInput"></textarea>
         <div class="button" id="submitButton">Submit</div>
+        <div class="slider-container">
+            <input type="range" id="speedSlider" min="0.5" max="4" step="0.1" value="1">
+            <span id="speedValue">1x</span>
+        </div>
     </div>
-    <div id="plotters">
+    <div id="plotters" class="empty">
 
     </div>
     <script>
@@ -144,8 +212,20 @@
             return char === "。" || char === "，" || char === "、" || char === "；" || char === "：";
         }
 
+        document.addEventListener("DOMContentLoaded", function() {
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+
+            speedSlider.addEventListener('input', function() {
+                speedValue.textContent = this.value + 'x';
+            });
+        });
+
         button.addEventListener('click', function() {
             button.classList.add('clicked');
+            const plottersElem = document.getElementById('plotters');
+            plottersElem.classList.remove('empty');
+
             let characters = input.value.split('');
             const plotterElement = document.getElementById('plotters');
             plotterElement.innerHTML = '';
@@ -160,7 +240,7 @@
             characters.forEach(char => {
                 if(isHanzi(char) && !isPunctuation(char)){
                     try{
-                        const plotter = new HanziPlotter({char, size: size, animateOnClick: true});
+                        const plotter = new HanziPlotter({char, size: size, animateOnClick: true, speedSlider: document.getElementById('speedSlider')});
                         plotters.push({plotter: plotter, char: char});
                     }
                     catch(e){
@@ -185,7 +265,7 @@
                     let plotter = plotterinfo.plotter;
                     if(plotter){
                         plotter.ctx.lineWidth = 2;
-                        plotter.draw();
+                        plotter.draw(document.getElementById('speedSlider').value);
                         plotter.canvas.dataset.plotterIndex = index;
                         plotterElement.appendChild(plotter.canvas);
                     }
@@ -208,25 +288,6 @@
                 button.classList.remove('clicked');
             }, 400);
         });
-        
-        function renderPlotters(plotters, pinyinparts=null){
-            plotterElement.innerHTML = '';
-            if(plotterElement && plotters){
-                // Store plotters as a property of the container element
-                plotterElement.plotters = plotters;
-                
-                plotters.forEach((plotterinfo, index) => {
-                    let plotter = plotterinfo.plotter;
-                    let color = getToneColor(pinyinparts[index]);
-                    plotter.draw();
-                    plotter.canvas.dataset.plotterIndex = index;
-                    plotterElement.appendChild(plotter.canvas);
-                });
-            }
-            else{
-                console.error('No plotter element found');
-            }
-        }
             
     </script>
 
