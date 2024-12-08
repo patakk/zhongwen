@@ -258,7 +258,6 @@
                 console.log('Mobile or tablet detected');
                 size = 48;
             }
-            console.log(isMobileOrTablet());
             characters.forEach(char => {
                 if(isHanzi(char) && !isPunctuation(char)){
                     try{
@@ -270,7 +269,7 @@
                 }
                 else{
                     plotters.push({plotter: null, char: char});
-                    if(isPunctuation(char)){
+                    if(isPunctuation(char) || char === '\n'){
                         plotters.push({plotter: null, char: '<br>'});
                     }
                 }
