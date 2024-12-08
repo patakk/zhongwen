@@ -60,6 +60,14 @@ function confirmDarkmode(){
                 child.click();
             });
         }
+        const plottersElement = document.getElementById('plotters');
+        // Get specific plotter by index
+        // go throough children elements and click them
+        if(plottersElement){
+            plottersElement.childNodes.forEach(child => {
+                child.click();
+            });
+        }
         // plotterElement.plotters.forEach(hanziplotter => {
         //     console.log("hanziplotter.plotter.getContext()");
         //     console.log(hanziplotter.plotter);

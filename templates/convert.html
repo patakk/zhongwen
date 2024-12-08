@@ -55,11 +55,15 @@
             font-size: 1.1em;
             resize: none;
             display: block;
+            border: 2px solid #161616;
+        }
+
+        textarea.darkmode {
+            border: 2px solid #c2c2c2;
         }
 
         #plotters {
-            width: 40vw;
-            height: 30vh;
+            width: 60vw;
             padding: 10px;
             font-size: 1.1em;
             resize: none;
@@ -79,8 +83,8 @@
 
         .button {
             padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
+            background-color: #c2c2c2;
+            color: rgb(20, 20, 20);
             cursor: pointer;
             transition: background-color 0.3s;
             border-radius: 0;
@@ -90,14 +94,20 @@
             width: fit-content; 
         }
 
+        .button.darkmode{
+            background-color: #343434;
+            color: rgb(206, 206, 206);
+        }
+
 
         .button:active {
-            background-color: #45a049;
+            background-color: #a0b3a1;
         }
 
         .button.clicked {
-            background-color: #c2e76a;
+            background-color: #ffe341;
             transition: background-color 0s;
+            color: rgb(31, 31, 31);
         }
     </style>
 </head>
@@ -127,27 +137,28 @@
         let plotters = [];
 
         function isHanzi(char) {
-            return /[\u4e00-\u9fff\u3400-\u4dbf\u20000-\u2a6df\u2a700-\u2b73f\u2b740-\u2b81f\u2b820-\u2ceaf]/.test(char);
+            return /[\u4e00-\u9fff]/.test(char);
+        }
+
+        function isPunctuation(char) {
+            return char === "。" || char === "，" || char === "、" || char === "；" || char === "：";
         }
 
         button.addEventListener('click', function() {
             button.classList.add('clicked');
             let characters = input.value.split('');
-
             const plotterElement = document.getElementById('plotters');
             plotterElement.innerHTML = '';
+            plotters = [];
 
             let size = 124;
             if(isMobileOrTablet()){
                 console.log('Mobile or tablet detected');
                 size = 48;
             }
-                console.log(isMobileOrTablet());
+            console.log(isMobileOrTablet());
             characters.forEach(char => {
-                if(char === "。" || char === "，" || char === "、" || char === "；" || char === "："){
-                    plotters.push({plotter: null, char: char});
-                }
-                else if(isHanzi(char)){
+                if(isHanzi(char) && !isPunctuation(char)){
                     try{
                         const plotter = new HanziPlotter({char, size: size, animateOnClick: true});
                         plotters.push({plotter: plotter, char: char});
@@ -155,9 +166,17 @@
                     catch(e){
                     }
                 }
-        });
+                else{
+                    plotters.push({plotter: null, char: char});
+                    if(isPunctuation(char)){
+                        plotters.push({plotter: null, char: '<br>'});
+                    }
+                }
+            });
+
             
             if(plotterElement && plotters){
+                plotterElement.innerHTML = '';
                 // Store plotters as a property of the container element
                 // plotterElement.plotters = plotters;
                 plotterElement.plotters = plotters;
@@ -165,12 +184,21 @@
                 plotters.forEach((plotterinfo, index) => {
                     let plotter = plotterinfo.plotter;
                     if(plotter){
+                        plotter.ctx.lineWidth = 2;
                         plotter.draw();
                         plotter.canvas.dataset.plotterIndex = index;
                         plotterElement.appendChild(plotter.canvas);
                     }
                     else{
-                        plotterElement.appendChild(document.createElement('br'));
+                        let latin = document.createElement('span');
+                        latin.innerHTML = plotterinfo.char;
+                        if(isMobileOrTablet()){
+                            latin.style.fontSize = '2.5em';
+                        }
+                        else{
+                            latin.style.fontSize = '6em';
+                        }
+                        plotterElement.appendChild(latin);
                     }
                 });
             }

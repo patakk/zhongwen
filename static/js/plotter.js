@@ -416,9 +416,7 @@ class HanziPlotter {
 
         let plotter_ctx = this.context;
         if(this.animateOnClick){
-            console.log("animation ininsinfnia")
-            this.canvas.addEventListener('click', ()=>{
-                console.log("clicked ");this.animate(plotter_ctx);});
+            this.canvas.addEventListener('click', ()=>{this.animate(plotter_ctx);});
         }
     }
 
