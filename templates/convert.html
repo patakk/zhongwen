@@ -202,7 +202,9 @@
     <script>
         const button = document.getElementById('submitButton');
         const input = document.getElementById('hanziInput');
+        const plottersElem = document.getElementById('plotters');
         let plotters = [];
+        let isMouseDown = false;
 
         function isHanzi(char) {
             return /[\u4e00-\u9fff]/.test(char);
@@ -219,11 +221,31 @@
             speedSlider.addEventListener('input', function() {
                 speedValue.textContent = this.value + 'x';
             });
+
+            plottersElem.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+            });
+        });
+
+        document.addEventListener("mousedown", function() {
+            isMouseDown = true;
+        });
+
+        document.addEventListener("mouseup", function() {
+            isMouseDown = false;
+        });
+
+        document.addEventListener("mousemove", function(e) {
+            if(isMouseDown){
+                const plotterIndex = e.target.dataset.plotterIndex;
+                if(plotterIndex !== undefined){
+                    plotters[plotterIndex].plotter.canvas.click();
+                }
+            }
         });
 
         button.addEventListener('click', function() {
             button.classList.add('clicked');
-            const plottersElem = document.getElementById('plotters');
             plottersElem.classList.remove('empty');
 
             let characters = input.value.split('');
