@@ -23,7 +23,7 @@ function confirmDarkmode(){
                 });
             });
         }
-        if(isDarkMode){
+        if(isDarkMode && currentWriters){
             //changeAllSvgStrokeColors('#F7A5');7e779155
             changeAllSvgStrokeColors('#7e779155');
             currentWriters.forEach(writer => {
@@ -34,7 +34,7 @@ function confirmDarkmode(){
                 writer.updateColor('drawingColor', '#ccc');
             });
         }
-        else{
+        else if (currentWriters){
             //changeAllSvgStrokeColors('#A005');
             changeAllSvgStrokeColors('#aea5c955');
             currentWriters.forEach(writer => {
@@ -48,28 +48,14 @@ function confirmDarkmode(){
 
     }
     catch(e){
-        console.log(e)
+        //console.log(e)
     }
     try{
-        //select plottersand rerender
-        const plotterElement = document.getElementById('flashcard_plotter');
-        // Get specific plotter by index
-        // go throough children elements and click them
-        if(plotterElement){
-            plotterElement.plotters.forEach(child => {
-                // child.click();
+        plotters.forEach(child => {
+            if(child.plotter){
                 child.plotter.draw();
-            });
-        }
-        const plottersElement = document.getElementById('plotters');
-        // Get specific plotter by index
-        // go throough children elements and click them
-        if(plottersElement){
-            plottersElement.plotters.forEach(child => {
-                // child.click();
-                child.plotter.draw();
-            });
-        }
+            }
+        });
         // plotterElement.plotters.forEach(hanziplotter => {
         //     console.log("hanziplotter.plotter.getContext()");
         //     console.log(hanziplotter.plotter);
@@ -81,7 +67,7 @@ function confirmDarkmode(){
         // });
     }
     catch(e){
-        console.log(e)
+        //console.log(e)
     }
 }
 

@@ -420,7 +420,6 @@ class HanziPlotter {
                     let spoints = evenOutPoints(stroke.points, 22);
                     return spoints;
                 });
-                console.log("Strokes loaded");
                 resolve();
             });
         });

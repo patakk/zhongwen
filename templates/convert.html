@@ -392,8 +392,8 @@
             
             if(plotterElement && plotters){
                 plotterElement.innerHTML = '';
-                plotterElement.plotters = plotters;
-                
+                plotterElement.dataset.plotters = plotters;
+
                 plotters.forEach((plotterinfo, index) => {
                     let plotter = plotterinfo.plotter;
                     if(plotter){
