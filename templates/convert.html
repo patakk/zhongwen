@@ -288,6 +288,9 @@
             backgroundCheckbox2 = document.getElementById('backgroundCheckbox2');
             
             input.value = convertedText || '';
+            if(convertedText){
+                redrawPlotters();
+            }
 
             speedSlider.addEventListener('input', function() {
                 speedValue.textContent = this.value + 'x';
