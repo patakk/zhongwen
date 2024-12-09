@@ -336,7 +336,17 @@ def hanzipractice():
 @session_required
 @timing_decorator
 def convert():
-    return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=session.get('convertedText', ''), decks=flashcard_app.decks, deck=session['deck'])
+
+
+@app.route('/storeConvertedText', methods=['POST'])
+@session_required
+def store_converted_text():
+    data = request.get_json()
+    text = data.get('text', '')
+    session['convertedText'] = text
+    return jsonify({"status": "success", "message": "Text stored in session"})
+
 
 from flask import Response
 with open('data/examples.json', 'r', encoding='utf-8') as f:

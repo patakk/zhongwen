@@ -58,7 +58,7 @@ function drawBg(ctx, dbg1, dbg2){
             ctx.strokeStyle = `rgba(${111},${111},${222}, .5)`;
         }
         else{
-            ctx.strokeStyle = `rgba(${222},${11},${66}, .5)`;
+            ctx.strokeStyle = `rgba(${222},${11},${66}, .3)`;
         }
         ctx.beginPath();
         ctx.moveTo(ctx.canvas.width/3, 0);
@@ -143,7 +143,9 @@ function drawStrokes(context, progressData={progress: 1, strokeIndex: Infinity})
     // drawLines();
     
     // context.ctx.lineCap = 'round';
-    
+    // context.ctx.lineCap = 'round';
+    context.ctx.lineJoin = 'round';
+
     context.offsetX += 0.1 * context.cwidth*1.3*0;
     context.offsetY -= 0.071 * context.cwidth*1.3*0;
     context.ctx.strokeStyle = `rgba(${11},${11},${11})`;
