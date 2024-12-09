@@ -16,7 +16,6 @@ class Deck(db.Model):
 
     def __repr__(self):
         return f"<Deck {self.name}>"
-    
 
 class UserNotes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,6 +24,13 @@ class UserNotes(db.Model):
     notes = db.Column(db.String(200))
     is_public = db.Column(db.Boolean, default=False)
     __table_args__ = (db.UniqueConstraint('username', 'card_id'),)
+
+
+class UserString(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), db.ForeignKey('user_progress.username'), nullable=False, unique=True)
+    content = db.Column(db.String(1000))
+    last_updated = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
 
 class Card(db.Model):

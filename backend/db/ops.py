@@ -5,7 +5,7 @@ from urllib.parse import unquote
 from sqlalchemy.exc import SQLAlchemyError
 
 from backend.db.extensions import db
-from backend.db.models import StrokeData, UserProgress, Card, UserNotes
+from backend.db.models import StrokeData, UserProgress, UserString, Card, UserNotes
 
 logger = logging.getLogger(__name__)
 
@@ -229,3 +229,31 @@ def store_user_value(username, key, value):
     except SQLAlchemyError as e:
         db.session.rollback()
         return False, f"Database error: {str(e)}"
+
+def db_store_user_string(username, content):
+    try:
+        user_prog = UserProgress.query.filter_by(username=username).first()
+        if not user_prog:
+            return False, f"User '{username}' not found in UserProgress"
+        user_string = UserString.query.filter_by(username=username).first()
+        if user_string:
+            user_string.content = content
+        else:
+            user_string = UserString(username=username, content=content)
+            db.session.add(user_string)
+        db.session.commit()
+        return True, "String updated successfully"
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return False, f"Database error: {str(e)}"
+
+def db_get_user_string(username):
+    try:
+        user_string = UserString.query.filter_by(username=username).first()
+        if user_string:
+            return user_string.content
+        else:
+            return ""
+    except SQLAlchemyError as e:
+        return f"Database error: {str(e)}"

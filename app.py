@@ -29,6 +29,8 @@ from backend.db.ops import db_create_user
 from backend.db.ops import db_get_user_note
 from backend.db.ops import db_get_all_public_notes
 from backend.db.ops import db_get_all_stroke_data
+from backend.db.ops import db_store_user_string
+from backend.db.ops import db_get_user_string
 
 def create_app():
     init_flashcard_app()
@@ -336,16 +338,15 @@ def hanzipractice():
 @session_required
 @timing_decorator
 def convert():
-    return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=session.get('convertedText', ''), decks=flashcard_app.decks, deck=session['deck'])
-
+    return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=flashcard_app.decks, deck=session['deck'])
 
 @app.route('/storeConvertedText', methods=['POST'])
 @session_required
 def store_converted_text():
     data = request.get_json()
     text = data.get('text', '')
-    session['convertedText'] = text
-    return jsonify({"status": "success", "message": "Text stored in session"})
+    success, message = db_store_user_string(session['username'], text)
+    return jsonify({"status": "success" if success else "error", "message": message})
 
 
 from flask import Response
