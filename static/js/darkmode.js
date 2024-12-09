@@ -56,16 +56,18 @@ function confirmDarkmode(){
         // Get specific plotter by index
         // go throough children elements and click them
         if(plotterElement){
-            plotterElement.childNodes.forEach(child => {
-                child.click();
+            plotterElement.plotters.forEach(child => {
+                // child.click();
+                child.plotter.draw();
             });
         }
         const plottersElement = document.getElementById('plotters');
         // Get specific plotter by index
         // go throough children elements and click them
         if(plottersElement){
-            plottersElement.childNodes.forEach(child => {
-                child.click();
+            plottersElement.plotters.forEach(child => {
+                // child.click();
+                child.plotter.draw();
             });
         }
         // plotterElement.plotters.forEach(hanziplotter => {

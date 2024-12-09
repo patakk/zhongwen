@@ -174,7 +174,7 @@ function renderPlotters(plotters, pinyinparts=null){
         plotters.forEach((plotterinfo, index) => {
             let plotter = plotterinfo.plotter;
             let color = getToneColor(pinyinparts[index]);
-            plotter.draw(color);
+            plotter.draw();
             plotter.canvas.dataset.plotterIndex = index;
             plotterElement.appendChild(plotter.canvas);
         });

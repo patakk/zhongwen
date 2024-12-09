@@ -17,6 +17,7 @@ function showFlashcard(character) {
             // bordercanvas.style.display = 'block';
             renderCardData(data);
             displayCard(true, true);
+            confirmDarkmode();
             // if(!canvasrendered){
             //     renderBorder();
             //     canvasrendered = true;

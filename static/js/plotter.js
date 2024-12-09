@@ -1,4 +1,85 @@
 
+function drawBg(ctx, dbg1, dbg2){
+    if(!dbg1 && !dbg2){
+        return;
+    }
+    ctx.save();
+    ctx.lineWidth = 1;
+    if(isDarkMode){
+        ctx.strokeStyle = `rgba(${222},${222},${222}, .5)`;
+    }
+    else{
+        ctx.strokeStyle = `rgba(${33},${33},${33}, .5)`;
+    }
+    ctx.strokeRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    if(dbg1){
+        ctx.save();
+        ctx.setLineDash([6, 4]);
+        if(isDarkMode){
+            ctx.strokeStyle = `rgba(${222},${222},${222}, .25)`;
+        }
+        else{
+            ctx.strokeStyle = `rgba(${33},${33},${33}, .5)`;
+        }
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(ctx.canvas.width, ctx.canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(ctx.canvas.width, 0);
+        ctx.lineTo(0, ctx.canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(ctx.canvas.width/2, 0);
+        ctx.lineTo(ctx.canvas.width/2, ctx.canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, ctx.canvas.height/2);
+        ctx.lineTo(ctx.canvas.width, ctx.canvas.height/2);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+
+    // ctx.beginPath();
+    // ctx.moveTo(ctx.canvas.width/2, 0);
+    // ctx.lineTo(ctx.canvas.width/2, ctx.canvas.height);
+    // ctx.stroke();
+    // ctx.beginPath();
+    // ctx.moveTo(0, ctx.canvas.height/2);
+    // ctx.lineTo(ctx.canvas.width, ctx.canvas.height/2);
+    // ctx.stroke();
+    
+
+    if(dbg2){
+
+        if(isDarkMode){
+            ctx.strokeStyle = `rgba(${111},${111},${222}, .5)`;
+        }
+        else{
+            ctx.strokeStyle = `rgba(${222},${11},${66}, .5)`;
+        }
+        ctx.beginPath();
+        ctx.moveTo(ctx.canvas.width/3, 0);
+        ctx.lineTo(ctx.canvas.width/3, ctx.canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(ctx.canvas.width*2/3, 0);
+        ctx.lineTo(ctx.canvas.width*2/3, ctx.canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, ctx.canvas.height/3);
+        ctx.lineTo(ctx.canvas.width, ctx.canvas.height/3);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, ctx.canvas.height*2/3);
+        ctx.lineTo(ctx.canvas.width, ctx.canvas.height*2/3);
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
 function drawStrokes(context, progressData={progress: 1, strokeIndex: Infinity}){
     let {progress, strokeIndex} = progressData;
 
@@ -10,10 +91,6 @@ function drawStrokes(context, progressData={progress: 1, strokeIndex: Infinity})
 
     function drawLines(shorter){
         
-        context.ctx.save();
-        context.ctx.fillStyle = "transparent";
-        context.ctx.clearRect(0, 0, context.ctx.canvas.width, context.ctx.canvas.height);
-        context.ctx.restore();
         for (let i = 0; i <= strokeIndex; i++) {
             let stroke = context.strokes[i];
 
@@ -96,6 +173,11 @@ function drawStrokes(context, progressData={progress: 1, strokeIndex: Infinity})
         context.ctx.strokeStyle = `rgba(${222},${222},${222})`;
     }
 
+    context.ctx.save();
+    context.ctx.fillStyle = "transparent";
+    context.ctx.clearRect(0, 0, context.ctx.canvas.width, context.ctx.canvas.height);
+    context.ctx.restore();
+    drawBg(context.ctx, context.drawBackground, context.drawBackground2);
     drawLines();
 
     for(let k = 0; k < lw0/2; k++){
@@ -130,56 +212,6 @@ function drawCanvas(context) {
     
     context = fix(context)
     context.plotter.frames++;
-}
-
-function animateStrokes(context) {
-    let startTime = Date.now();
-    let baseSpeed = context.baseSpeed || 2;
-    let strokeIndex = 0;
-    let progress = 0;
-
-    let totalLength = context.strokes.reduce((sum, stroke) => {
-        return sum + calculateStrokeLength(stroke);
-    }, 0);
-
-    function calculateStrokeLength(stroke) {
-        let length = 0;
-        for (let i = 1; i < stroke.length; i++) {
-            let dx = stroke[i].x - stroke[i-1].x;
-            let dy = stroke[i].y - stroke[i-1].y;
-            length += Math.sqrt(dx*dx + dy*dy);
-        }
-        return length;
-    }
-
-    function animate() {
-        let currentTime = Date.now();
-        let elapsedTime = currentTime - startTime;
-        let currentStroke = context.strokes[strokeIndex];
-        let strokeLength = calculateStrokeLength(currentStroke);
-        let strokeDuration = (strokeLength / totalLength) * (totalLength / baseSpeed);
-        
-        progress = Math.min(1, elapsedTime / strokeDuration);
-        context.ctx.save();
-        context.ctx.fillStyle = "transparent";
-        context.ctx.clearRect(0, 0, context.ctx.canvas.width, context.ctx.canvas.height);
-        context.ctx.restore();
-
-        drawStrokes(context, {progress, strokeIndex});
-
-        if (progress >= 1) {
-            strokeIndex++;
-            if (strokeIndex < context.strokes.length) {
-                startTime = currentTime;
-                progress = 0;
-                context.plotterAnimationInterval = requestAnimationFrame(animate);
-            }
-        } else if (strokeIndex < context.strokes.length) {
-            context.plotterAnimationInterval = requestAnimationFrame(animate);
-        }
-    }
-
-    animate();
 }
 
 
@@ -366,7 +398,7 @@ function renderPlotData(plotterElement, data){
 
 
 class HanziPlotter {
-    constructor({char, size=256, animateOnClick=false, baseSpeed=2, speedSlider=null, baseThickness=66}) {
+    constructor({char, size=256, animateOnClick=false, baseSpeed=2, speedSlider=null, baseThickness=66, drawBackground=false, drawBackground2=false}) {
         // if(isMobileOrTablet()){
         //     size = 122;
         // }
@@ -401,13 +433,15 @@ class HanziPlotter {
         this.animateOnClick = animateOnClick;
         this.baseSpeed = baseSpeed;
         this.baseThickness = baseThickness;
+        this.drawBackground = drawBackground;
+        this.drawBackground2 = drawBackground2;
         this.prepare(speedSlider);
     }
 
     async prepare(speedSlider=null) {
         await this.readyPromise;
 
-        this.context = {ctx: this.ctx, strokes: this.strokes, paths: this.paths, cwidth: this.cwidth, cheight: this.cheight, frames: this.frames, maxframes: this.maxframes, starttime: this.starttime, color: null, plotter: this, plotterAnimationInterval: null, seed: Math.random(), baseSpeed: this.baseSpeed, baseThickness: this.baseThickness};
+        this.context = {ctx: this.ctx, strokes: this.strokes, paths: this.paths, cwidth: this.cwidth, cheight: this.cheight, frames: this.frames, maxframes: this.maxframes, starttime: this.starttime, color: null, plotter: this, plotterAnimationInterval: null, seed: Math.random(), baseSpeed: this.baseSpeed, baseThickness: this.baseThickness, drawBackground: this.drawBackground, drawBackground2: this.drawBackground2};
 
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
         this.context.strokes.forEach(stroke => {
@@ -426,7 +460,7 @@ class HanziPlotter {
 
         let plotter_ctx = this.context;
         if(this.animateOnClick){
-            this.canvas.addEventListener('click', ()=>{console.log(plotter_ctx.baseThickness); this.animate(plotter_ctx, speedSlider);});
+            this.canvas.addEventListener('click', ()=>{this.animate(plotter_ctx, speedSlider);});
         }
     }
 
@@ -437,14 +471,63 @@ class HanziPlotter {
         if(speedSlider){
             this.context.baseSpeed = speedSlider.value;
         }
-        animateStrokes(plotter_ctx);
+        this.animateStrokes(plotter_ctx);
     }
 
-    async draw(speed=null){
-        await this.readyPromise;
-        if(speed){
-            this.context.baseSpeed = speed;
+    
+    animateStrokes(context) {
+        let startTime = Date.now();
+        let baseSpeed = context.baseSpeed || 2;
+        let strokeIndex = 0;
+        let progress = 0;
+
+        let totalLength = context.strokes.reduce((sum, stroke) => {
+            return sum + calculateStrokeLength(stroke);
+        }, 0);
+
+
+        function calculateStrokeLength(stroke) {
+            let length = 0;
+            for (let i = 1; i < stroke.length; i++) {
+                let dx = stroke[i].x - stroke[i-1].x;
+                let dy = stroke[i].y - stroke[i-1].y;
+                length += Math.sqrt(dx*dx + dy*dy);
+            }
+            return length;
         }
+
+        function animate() {
+            let currentTime = Date.now();
+            let elapsedTime = currentTime - startTime;
+            let currentStroke = context.strokes[strokeIndex];
+            let strokeLength = calculateStrokeLength(currentStroke);
+            let strokeDuration = (strokeLength / totalLength) * (totalLength / baseSpeed);
+            
+            progress = Math.min(1, elapsedTime / strokeDuration);
+            context.ctx.save();
+            context.ctx.fillStyle = "transparent";
+            context.ctx.clearRect(0, 0, context.ctx.canvas.width, context.ctx.canvas.height);
+            context.ctx.restore();
+            drawStrokes(context, {progress, strokeIndex});
+
+            if (progress >= 1) {
+                strokeIndex++;
+                if (strokeIndex < context.strokes.length) {
+                    startTime = currentTime;
+                    progress = 0;
+                    context.plotterAnimationInterval = requestAnimationFrame(animate);
+                }
+            } else if (strokeIndex < context.strokes.length) {
+                context.plotterAnimationInterval = requestAnimationFrame(animate);
+            }
+        }
+
+        animate();
+    }
+
+
+    async draw(){
+        await this.readyPromise;
         drawCanvas(this.context);
     }
 

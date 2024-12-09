@@ -330,7 +330,6 @@ document.getElementById('flashcard_container').addEventListener('mouseup', funct
         // }
     }
     
-    console.log("mouse up");
     indicator.style.borderColor = neutralColor;
     isHolding = false;
 }, false);
@@ -643,7 +642,6 @@ function getNextCard(func=null) {
         else{
             renderCardData(prefetchedCard);
             displayCard(false, false);
-            console.log('ooovo')
         }
         if (func) {
             func();

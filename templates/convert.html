@@ -244,6 +244,11 @@
             <input type="range" id="thicknessSlider" min="1" max="10" step="0.1" value="4">
             <span id="thicknessValue">4pt</span>
         </div>
+        <div class="slider-container">
+            <span>Draw background:</span>
+            <input type="checkbox" id="backgroundCheckbox">
+            <input type="checkbox" id="backgroundCheckbox2">
+        </div>
     </div>
     <div id="plotters" class="empty">
 
@@ -271,12 +276,17 @@
         let speedValue;
         let thicknessSlider;
         let thicknessValue;
+        let backgroundCheckbox;
+        let backgroundCheckbox2;
 
         document.addEventListener("DOMContentLoaded", function() {
             speedSlider = document.getElementById('speedSlider');
             speedValue = document.getElementById('speedValue');
             thicknessSlider = document.getElementById('thicknessSlider');
             thicknessValue = document.getElementById('thicknessValue');
+            backgroundCheckbox = document.getElementById('backgroundCheckbox');
+            backgroundCheckbox2 = document.getElementById('backgroundCheckbox2');
+            
 
             speedSlider.addEventListener('input', function() {
                 speedValue.textContent = this.value + 'x';
@@ -286,6 +296,20 @@
                 thicknessValue.textContent = this.value + 'pt';
             });
             thicknessSlider.addEventListener('input', function() {
+                if(plottersElem.classList.contains('empty')){
+                    return;
+                }
+                redrawPlotters();
+            });
+
+            backgroundCheckbox.addEventListener('input', function() {
+                if(plottersElem.classList.contains('empty')){
+                    return;
+                }
+                redrawPlotters();
+            });
+
+            backgroundCheckbox2.addEventListener('input', function() {
                 if(plottersElem.classList.contains('empty')){
                     return;
                 }
@@ -334,10 +358,12 @@
                         if(plotterByChar[char+String(index)]){
                             const cachedPlotter = plotterByChar[char+String(index)];
                             cachedPlotter.context.baseThickness = remap(thicknessSlider.value, 1, 10, 16, 120);
+                            cachedPlotter.context.drawBackground = backgroundCheckbox.checked;
+                            cachedPlotter.context.drawBackground2 = backgroundCheckbox2.checked;
                             plotters.push({plotter: cachedPlotter, char: char});
                         }
                         else{
-                            const plotter = new HanziPlotter({char, size: size, animateOnClick: true, speedSlider: document.getElementById('speedSlider'), baseThickness: remap(thicknessSlider.value, 1, 10, 16, 120)});
+                            const plotter = new HanziPlotter({char, size: size, animateOnClick: true, speedSlider: document.getElementById('speedSlider'), baseThickness: remap(thicknessSlider.value, 1, 10, 16, 120), drawBackground: backgroundCheckbox.checked, drawBackground2: backgroundCheckbox2.checked});
                             plotters.push({plotter: plotter, char: char});
                             plotterByChar[char+String(index)] = plotter;
                         }
@@ -363,8 +389,7 @@
                 plotters.forEach((plotterinfo, index) => {
                     let plotter = plotterinfo.plotter;
                     if(plotter){
-                        plotter.ctx.lineWidth = 2;
-                        plotter.draw(document.getElementById('speedSlider').value);
+                        plotter.draw();
                         plotter.canvas.dataset.plotterIndex = index;
                         plotterElement.appendChild(plotter.canvas);
                     }
