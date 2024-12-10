@@ -340,6 +340,12 @@ def hanzipractice():
 def convert():
     return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=flashcard_app.decks, deck=session['deck'])
 
+@app.route('/convert2')
+@session_required
+@timing_decorator
+def convert2():
+    return render_template('convert2.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=flashcard_app.decks, deck=session['deck'])
+
 @app.route('/storeConvertedText', methods=['POST'])
 @session_required
 def store_converted_text():

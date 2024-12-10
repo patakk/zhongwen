@@ -144,21 +144,66 @@ function drawStrokes(context, progressData={progress: 1, strokeIndex: Infinity})
     
     // context.ctx.lineCap = 'round';
     // context.ctx.lineCap = 'round';
-    context.ctx.lineJoin = 'round';
+    // context.ctx.lineJoin = 'round';
 
-    context.offsetX += 0.1 * context.cwidth*1.3*0;
-    context.offsetY -= 0.071 * context.cwidth*1.3*0;
-    context.ctx.strokeStyle = `rgba(${11},${11},${11})`;
-    context.ctx.lineWidth = 25;
-    // drawLines();
-    context.offsetX = oldOffsetX;
-    context.offsetY = oldOffsetY;
+    // context.offsetX += 0.1 * context.cwidth*1.3*0;
+    // context.offsetY -= 0.071 * context.cwidth*1.3*0;
+    // context.ctx.strokeStyle = `rgba(${11},${11},${11})`;
+    // context.ctx.lineWidth = 25;
+    // // drawLines();
+    // context.offsetX = oldOffsetX;
+    // context.offsetY = oldOffsetY;
 
     // context.ctx.lineWidth = 15;
     // context.ctx.strokeStyle = `rgba(${233},${1},${1})`;
     // context.ctx.strokeStyle = `rgba(${55},${55},${55})`;
     // drawLines();
 
+    // let lw0 = context.baseThickness || 68;
+    // if(isMobileOrTablet()){
+    //     lw0 = lw0*1;
+    // }
+    // let lw = lw0*context.sscale;
+
+    // context.ctx.strokeStyle = `rgba(${233},${1},${1})`;
+    // context.ctx.strokeStyle = `rgba(${255},${22},${22})`;
+    // context.ctx.strokeStyle = `rgba(${11},${11},${11})`;
+
+    // context.ctx.lineWidth = lw;
+
+    // if(isDarkMode){
+    //     context.ctx.strokeStyle = `rgba(${222},${222},${222})`;
+    // }
+
+    // context.ctx.save();
+    // context.ctx.fillStyle = "transparent";
+    // context.ctx.clearRect(0, 0, context.ctx.canvas.width, context.ctx.canvas.height);
+    // context.ctx.restore();
+    // drawBg(context.ctx, context.drawBackground, context.drawBackground2);
+    drawLines();
+
+    // for(let k = 0; k < lw0/2; k++){
+    //     context.ctx.lineWidth = 1.4*power(noise(1534+k+context.seed*11, 133), 3);
+    //     context.ctx.lineWidth = .6;
+        
+    //     let oldOffsetX = context.offsetX;
+    //     let oldOffsetY = context.offsetY;
+    //     context.offsetX += lw0*.57*(2*power(noise(1534+k+context.seed*11, 33),3)-1);
+    //     context.offsetY += lw0*.57*(2*power(noise(231+k+context.seed*11, 43),3)-1);
+    //     let br = 0 + power(noise(5542+k+context.seed*11, 3),53) * 4;
+    //     if(isDarkMode){
+    //         br = 240 + power(noise(8643+k+context.seed*11, 3),73) * 15;
+    //     }
+    //     context.ctx.strokeStyle = `rgba(${br},${br},${br})`;
+    //     // set multiplymode
+    //     // drawLines(shorter=true);
+    //     // drawPoints(context);
+    //     context.offsetX = oldOffsetX;
+    //     context.offsetY = oldOffsetY;
+    // }
+}
+
+function prepBg(context){
     let lw0 = context.baseThickness || 68;
     if(isMobileOrTablet()){
         lw0 = lw0*1;
@@ -180,35 +225,15 @@ function drawStrokes(context, progressData={progress: 1, strokeIndex: Infinity})
     context.ctx.clearRect(0, 0, context.ctx.canvas.width, context.ctx.canvas.height);
     context.ctx.restore();
     drawBg(context.ctx, context.drawBackground, context.drawBackground2);
-    drawLines();
 
-    for(let k = 0; k < lw0/2; k++){
-        context.ctx.lineWidth = 1.4*power(noise(1534+k+context.seed*11, 133), 3);
-        context.ctx.lineWidth = .6;
-        
-        let oldOffsetX = context.offsetX;
-        let oldOffsetY = context.offsetY;
-        context.offsetX += lw0*.57*(2*power(noise(1534+k+context.seed*11, 33),3)-1);
-        context.offsetY += lw0*.57*(2*power(noise(231+k+context.seed*11, 43),3)-1);
-        let br = 0 + power(noise(5542+k+context.seed*11, 3),53) * 4;
-        if(isDarkMode){
-            br = 240 + power(noise(8643+k+context.seed*11, 3),73) * 15;
-        }
-        context.ctx.strokeStyle = `rgba(${br},${br},${br})`;
-        // set multiplymode
-        // drawLines(shorter=true);
-        // drawPoints(context);
-        context.offsetX = oldOffsetX;
-        context.offsetY = oldOffsetY;
-    }
 }
 
 function drawCanvas(context) {
 
     // Find the bounding box of all points
 
+    prepBg(context);
     drawStrokes(context);
-
     
     let flashcard_plotter = document.getElementById('flashcard_plotter');
     
@@ -460,8 +485,9 @@ class HanziPlotter {
         this.context.offsetY -= 0.035 * this.context.cheight;
 
         let plotter_ctx = this.context;
+        let theplotter = this;
         if(this.animateOnClick){
-            this.canvas.addEventListener('click', ()=>{this.animate(plotter_ctx, speedSlider);});
+            this.canvas.addEventListener('click', ()=>{console.log(plotter_ctx); this.animate(theplotter.getContext(), speedSlider);});
         }
     }
 
@@ -505,10 +531,11 @@ class HanziPlotter {
             let strokeDuration = (strokeLength / totalLength) * (totalLength / baseSpeed);
             
             progress = Math.min(1, elapsedTime / strokeDuration);
-            context.ctx.save();
-            context.ctx.fillStyle = "transparent";
-            context.ctx.clearRect(0, 0, context.ctx.canvas.width, context.ctx.canvas.height);
-            context.ctx.restore();
+            // context.ctx.save();
+            // context.ctx.fillStyle = "transparent";
+            // context.ctx.clearRect(0, 0, context.ctx.canvas.width, context.ctx.canvas.height);
+            // context.ctx.restore();
+            prepBg(context);
             drawStrokes(context, {progress, strokeIndex});
 
             if (progress >= 1) {
@@ -526,10 +553,23 @@ class HanziPlotter {
         animate();
     }
 
-
-    async draw(){
+    async draw(overrideThickess=null, noiseAmp=null) {
         await this.readyPromise;
+        this.context = addJitter(this.context, noiseAmp, 0.0011);
         drawCanvas(this.context);
+    }
+
+    async ddraw(overrideThickess=null, noiseAmp=null) {
+        await this.readyPromise;
+        
+        drawStrokes(this.context);
+        
+        this.context = fix(this.context)
+        this.context.plotter.frames++;
+        
+        this.context.baseThickness = 22;
+         this.context = addJitter(this.context, 66, 0.0011);
+         drawStrokes(this.context);
     }
 
     getContext(color=null) {
