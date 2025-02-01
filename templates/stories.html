@@ -108,7 +108,7 @@
       
         #plottersWrapper {
             flex: 2.3;
-            min-width: 60vw;
+            min-width: 100px;
             padding: auto;
             font-size: 1.1em;
             resize: none;
@@ -161,13 +161,23 @@
             background: transparent;
         }
 
-        @media screen and (max-width: 600px) {
+        @media screen and (max-width: 768px) {
             textarea {
                 width: 90vw;
             }
 
-            #plotters {
-                width: 90vw;
+            
+            #translationBox {
+                width: 24vw;
+                padding: 20px;
+                margin: 0px;
+                font-size: 1.1em;
+                resize: none;
+                position: absolute;
+                right: 40px;
+                background: #f8f8f8;
+                /* transform: translateX(90%); */
+                color: rgb(32, 32, 32);
             }
 
         }
@@ -415,6 +425,25 @@
             height: 15px;
             border: 0;
             border-radius: 50%;
+        }
+
+        
+        @media (max-width: 768px) {
+            .option-container:has(#dimsSlider),
+            .option-container:has(#paddingSlider) {
+                display: none;
+            }
+
+            #plottersContainer {
+                width: 100%;
+                margin: 0px;
+            }
+
+            #plotters {
+                width: 100%;
+                padding: 10px;
+                margin: 20px;
+            }
         }
     </style>
 </head>
@@ -1132,13 +1161,17 @@
                     story = getStory(optionValue, redrawPlotters);
                 }
 
-                document.getElementById('plotters').style.width = dimsSlider.value + '%';
-                dimsSlider.addEventListener('input', function () {
-                    dimsValue.textContent = this.value;
-                    document.getElementById('plotters').style.width = this.value + '%';
-                });
+                
+                if(!isMobileOrTablet()){
+                    document.getElementById('plotters').style.width = dimsSlider.value + '%';
+                    dimsSlider.addEventListener('input', function () {
+                        dimsValue.textContent = this.value;
+                        document.getElementById('plotters').style.width = this.value + '%';
+                    });
 
-                document.getElementById('plotters').style.padding = paddingSlider.value + 'px';
+                    document.getElementById('plotters').style.padding = paddingSlider.value + 'px';
+                }
+
                 paddingSlider.addEventListener('input', function () {
                     paddingValue.textContent = this.value;
                     document.getElementById('plotters').style.padding = this.value + 'px';
@@ -1438,8 +1471,8 @@
                 lineType = 'miter'; 
                 lineType = 'round'; 
                 if (isMobileOrTablet()) {
-                    console.log('Mobile or tablet detected');
-                    size = 48;
+                    // console.log('Mobile or tablet detected');
+                    // size = 48;
                 }
                 characters.forEach((char, index) => {
                     let strokes = undefined;
