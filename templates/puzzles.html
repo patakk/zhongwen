@@ -148,6 +148,7 @@
     </div>
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
+            
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
             <li><a href="{{ url_for('home') }}">Home</a></li>
             <li class="has-submenu">
@@ -166,11 +167,20 @@
                         {% endfor %}
                 </ul>
             </li>
+            <!-- <li class="has-submenu">
+                <span>Fonts</span>
+                <ul class="submenu">
+                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
+                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
+                    <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
+                </ul>
+            </li> -->
             <li class="has-submenu">
                 <span>Stuff</span>
                 <ul class="submenu">
                     <li><a href="{{ url_for('search') }}">Search</a></li>
                     <li><a href="{{ url_for('convert') }}">Convert to strokes</a></li>
+                    <li><a href="{{ url_for('stories') }}">Stories</a></li>
                     <!-- <li><a href="{{ url_for('lists') }}">Example Lists</a></li> -->
                     <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
                     <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>

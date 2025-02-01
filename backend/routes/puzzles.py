@@ -8,6 +8,9 @@ from backend.flashcard_app import get_flashcard_app
 
 flashcard_app = get_flashcard_app()
 
+from backend.common import DECKS_INFO
+from backend.common import CARDDECKS
+
 puzzles_bp = Blueprint("puzzles", __name__, url_prefix="/puzzles")
 
 
@@ -15,7 +18,7 @@ def get_common_context():
     return {
         "darkmode": session["darkmode"],
         "username": session["username"],
-        "decks": flashcard_app.decks,
+        "decks": CARDDECKS,
         "deck": session["deck"],
     }
 
@@ -24,7 +27,7 @@ def get_common_context():
 @session_required
 @timing_decorator
 def puzzles():
-    characters = dict(flashcard_app.cards[session["deck"]].items())
+    characters = dict(CARDDECKS[session["deck"]].items())
     context = get_common_context()
     context["characters"] = characters
     return render_template("puzzles.html", **context)

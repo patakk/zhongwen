@@ -5,6 +5,8 @@ let pinyinRevealed = false;
 let messageTimeout = null;
 let body = null;
 let indicator = null;
+let currentFlashcardPlotters = [];
+let nextFlashcardPlotters = [];
 
 function generatePseudoRandomNumbers(hanziChar) {
     const charCode = hanziChar.charCodeAt(0);
@@ -625,6 +627,7 @@ function getNextCard(func=null) {
             let pinyin_part = pinyin_split_list[index];
             pparts.push(pinyin_part);
         });
+        currentFlashcardPlotters = prefetchedCard.plotters;
         renderPlotters(prefetchedCard.plotters, pparts)
         if(prefetchedCard.message && prefetchedCard.message.length > 0){
             // let promptMessage = "";
@@ -655,6 +658,7 @@ function getNextCard(func=null) {
         fetchCard()
             .then(data => {
                 data.plotters = createPlotters(data);
+                currentFlashcardPlotters = data.plotters;
                 showingAnswer = false;
                 currentCharacter = data.character;
                 if(data.message && data.message.length > 0){

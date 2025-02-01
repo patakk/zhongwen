@@ -12,46 +12,70 @@ import time
 import os
 import io
 from flask import request, jsonify
-
-from backend.flashcard_app import init_flashcard_app
-from backend.flashcard_app import get_flashcard_app
+import glob
+import requests
 from backend.decorators import session_required
 from backend.decorators import hard_session_required
 from backend.decorators import timing_decorator
 from backend.db.ops import getshortdate
-from backend.db.ops import load_user_progress
-from backend.db.ops import load_user_value
+from backend.db.ops import db_load_user_progress
+from backend.db.ops import db_load_user_value
 from backend.db.ops import db_init_app
-from backend.db.ops import db_get_all_character_strokes
-from backend.db.ops import db_get_stroke_entries
 from backend.db.ops import db_user_exists
+from backend.db.ops import db_authenticate_user
 from backend.db.ops import db_create_user
 from backend.db.ops import db_get_user_note
 from backend.db.ops import db_get_all_public_notes
 from backend.db.ops import db_get_all_stroke_data
 from backend.db.ops import db_store_user_string
 from backend.db.ops import db_get_user_string
+from backend.common import DECKS_INFO
+from backend.common import CARDDECKS
+from backend.common import get_card_examples
+from backend.common import flashcard_app
 
-def create_app():
-    init_flashcard_app()
-    app = Flask(__name__)
-    app.secret_key = os.urandom(24)
-    app.permanent_session_lifetime = timedelta(hours=32)
-    app.config['SESSION_COOKIE_SECURE'] = True  # for HTTPS
-    app.config['SESSION_COOKIE_HTTPONLY'] = True
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'flashcards.db')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db_init_app(app)
-    return app
+from flask import flash
 
-app = create_app()
-flashcard_app = get_flashcard_app()
-application = app
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+import json
+import os
+from datetime import timedelta
+from flask import Flask
 
 from backend.routes.api import api_bp
 from backend.routes.puzzles import puzzles_bp
+
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_wtf.csrf import CSRFProtect
+
+FLASK_CONFIG = {
+    'SECRET_KEY': "zhongwen-hen-youyisi",
+    'SESSION_TYPE': 'filesystem',
+    'SESSION_PERMANENT': True,
+    'SESSION_COOKIE_SECURE': True,
+    'SESSION_COOKIE_HTTPONLY': True,
+    'SESSION_COOKIE_SAMESITE': 'Lax',
+    'PERMANENT_SESSION_LIFETIME': timedelta(days=30),
+    'SQLALCHEMY_TRACK_MODIFICATIONS': False
+}
+
+def create_app():
+    app = Flask(__name__)
+    app.config.update(FLASK_CONFIG)
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(BASE_DIR, "flashcards.db")}'
+    db_init_app(app)
+    return app
+app = create_app()
+application = app
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"]
+)
+
 app.register_blueprint(api_bp)
 app.register_blueprint(puzzles_bp)
 
@@ -59,16 +83,15 @@ log_file = 'zhongwen.log'
 if os.path.exists('/home/patakk/logs'):
     log_file = '/home/patakk/logs/zhongwen.log'
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     filename=log_file)
 logger = logging.getLogger(__name__)
 logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
 
-@app.before_request
-def make_session_permanent():
-    session.permanent = True
-    app.logger.info(f"Session at start of request: {session}")
+
+stroke_jsons = glob.glob('static/strokes_data/*.json')
+stroke_chars = set([os.path.basename(j).split('.')[0] for j in stroke_jsons])
 
 
 @app.route('/get_card_data')
@@ -80,27 +103,39 @@ def get_card_data():
         message, character = flashcard_app.select_card(session['username'], session['deck'])
     return  jsonify({'message': message, **packed_data(character)})
 
+@app.before_request
+def before_request():
+    if request.path.startswith('/static/'):
+        return
+
+from pypinyin import pinyin, Style
+
+def get_pinyin(hanzi):
+    result = pinyin(hanzi, style=Style.TONE)
+    return result[0][0]
+
 @app.route('/get_simple_char_data')
 @session_required
 def get_simple_char_data():
     character = request.args.get('character')
     
     data = {}
-    if character in flashcard_app.cards[session['deck']]:
-        data = flashcard_app.get_card_examples(session['deck'], character)
+    if character in CARDDECKS[session['deck']]:
+        data = get_card_examples(session['deck'], character)
     else: # look into all decks
-        for deck_name in flashcard_app.cards:
-            if character in flashcard_app.cards[deck_name]:
-                data = flashcard_app.get_card_examples(deck_name, character)
+        for deck_name in CARDDECKS:
+            if character in CARDDECKS[deck_name]:
+                data = get_card_examples(deck_name, character)
                 break
     # session['deck'] = foundDeck
     cdata = {
         "character": character,
-        "pinyin": data.get('pinyin', ''),
+        "pinyin": data.get('pinyin', get_pinyin(character)),
         "english": data.get('english', ''),
     }
     
     return  jsonify({'message': 'success', **cdata})
+
 
 from collections import defaultdict
 
@@ -113,9 +148,9 @@ def user_progress():
     if not username or not deck:
         return "User or deck not specified", 400
 
-    deck_cards = flashcard_app.cards[deck]
+    deck_cards = CARDDECKS[deck]
 
-    uprogress = load_user_progress(username)
+    uprogress = db_load_user_progress(username)
 
     logger.info(f"User progress for {username} in deck {deck}")
 
@@ -152,17 +187,17 @@ def user_progress():
     learningcards = len([card for card in progress_stats if card['box'] < 6])
 
     # print(session[session['username']]["base_new_cards_limit"])
-    return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), deck=deck, deckname=flashcard_app.decks[deck]['name'], progress_stats=progress_stats, decks=flashcard_app.decks, maxnumcards=load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
+    return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), deck=deck, deckname=DECKS_INFO[deck]['name'], progress_stats=progress_stats, decks=DECKS_INFO, maxnumcards=db_load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
 
 
 def packed_data(character):
     foundDeck = session['deck']
-    if character in flashcard_app.cards[session['deck']]:
-        data = flashcard_app.get_card_examples(session['deck'], character)
-    else: # look into all decks
-        for deck_name in flashcard_app.cards:
-            if character in flashcard_app.cards[deck_name]:
-                data = flashcard_app.get_card_examples(deck_name, character)
+    if character in CARDDECKS[session['deck']]:
+        data = get_card_examples(session['deck'], character)
+    else: 
+        for deck_name in CARDDECKS:
+            if character in CARDDECKS[deck_name]:
+                data = get_card_examples(deck_name, character)
                 foundDeck = deck_name
                 break
         else:
@@ -177,7 +212,6 @@ def packed_data(character):
                 "char_matches": '',
                 "deck": session['deck']
             }
-    # session['deck'] = foundDeck
     user_notes, are_notes_public = db_get_user_note(session['username'], character)
     other_user_notes = db_get_all_public_notes(character, exclude_username=session.get('username'))
     return {
@@ -219,10 +253,10 @@ def log():
 @app.route('/hanziviz')
 def hanziviz():
     characters = {}
-    for key in flashcard_app.decks:
+    for key in CARDDECKS:
         if 'hsk' in key:
-            for character in flashcard_app.cards[key]:
-                characters[character] = flashcard_app.cards[key][character]
+            for character in CARDDECKS[key]:
+                characters[character] = CARDDECKS[key][character]
     return render_template('hanziviz.html', darkmode=session['darkmode'], characters=characters)
 
 
@@ -230,7 +264,7 @@ def hanziviz():
 @session_required
 def check_session():
     sess = dict(session)
-    sess = {**sess, **load_user_progress(session['username'])}
+    sess = {**sess, **db_load_user_progress(session['username'])}
     return Response(
         json.dumps(sess, ensure_ascii=False, indent=4),
         mimetype='application/json'
@@ -240,57 +274,124 @@ def check_session():
 def get_crunch():
     return send_file('data/crunch.mp3', mimetype='audio/mpeg')
 
+def validate_password(password):
+    if len(password) < 6:  # Increased from 6 to 8
+        return False, "Password must be at least 8 characters"
+    # if not any(c.isupper() for c in password):
+    #     return False, "Password must contain an uppercase letter"
+    # if not any(c.isdigit() for c in password):
+    #     return False, "Password must contain a number"
+    return True, ""
+
+
 @app.route('/login', methods=['GET', 'POST'])
 @timing_decorator
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        session['username'] = username
-        session['current_card'] = None
+        username = request.form.get('username', '').strip()  # Added strip()
+        password = request.form.get('password', '')
+        action = request.form.get('action')
         
-        user_exists = db_user_exists(username)
-        if not user_exists:
-            # Create a new user with default values
-            logger.info(f"Creating new user: {username}")
-            db_create_user(
-                username=username,
-                base_new_cards_limit=20,  # Default value
-                new_cards_limit=20,  # Default value
-                new_cards_limit_last_updated=getshortdate(),
-                daily_new_cards={},
-                last_new_cards_date={},
-                presented_new_cards={},
-                progress={}
-            )
-            return redirect(url_for('welcome'))
+        settings = {
+            'darkmode': session.get('darkmode', False),
+            'deck': session.get('deck', 'hsk1'),
+            'font': session.get('font', 'Noto Sans Mono')
+        }
+        
+        # Registration
+        if action == 'Register':
+            if db_user_exists(username):
+                flash('Username unavailable', 'error')  # Generic error message
+                logger.warning(f"Registration attempt with existing username: {username}")
+                return redirect(url_for('login'))
+                
+            is_valid, msg = validate_password(password)
+            if not is_valid:
+                flash(msg, 'error')
+                return redirect(url_for('login'))
+                
+            try:
+                user = db_create_user(
+                    username=username,
+                    password=password,
+                    base_new_cards_limit=20,
+                    new_cards_limit=20,
+                    new_cards_limit_last_updated=getshortdate(),
+                    daily_new_cards={},
+                    last_new_cards_date={},
+                    presented_new_cards={},
+                    progress={}
+                )
+                
+                session.clear()
+                session.permanent = True
+                session.update(settings)
+                session['user_id'] = user.id
+                session['username'] = username
+                session['current_card'] = None
+                session['authenticated'] = True
+                
+                logger.info(f"New user registered successfully: {username}")
+                flash('Account created successfully!', 'success')
+                return redirect(url_for('welcome'))
+                
+            except Exception as e:
+                flash('Error creating account', 'error')
+                logger.error(f"Error creating user: {str(e)}")
+                return redirect(url_for('login'))
+        
+        # Login
         else:
-            logger.info(f"User {username} logged in")
-            return redirect(url_for('home'))
+            try:
+                user, error = db_authenticate_user(username, password)
+                if error:
+                    flash('Invalid username or password', 'error')  # Generic error
+                    logger.warning(f"Failed login attempt for username: {username}")
+                    return redirect(url_for('login'))
+                
+                session.clear()
+                session.permanent = True
+                session.update(settings)
+                session['user_id'] = user.id
+                session['username'] = username
+                session['current_card'] = None
+                session['authenticated'] = True
+                
+                logger.info(f"Successful login for user: {username}")
+                return redirect(url_for('home'))
+                
+            except Exception as e:
+                flash('An error occurred', 'error')
+                logger.error(f"Login error: {str(e)}")
+                return redirect(url_for('login'))
+            
     return render_template('login.html')
+
 
 @app.route('/logout')
 def logout():
-   session.pop('username', None)
+   session.clear()  # This clears everything in the session, including flash messages
    return redirect(url_for('login'))
+
 
 @app.route('/')
 @session_required
 @timing_decorator
 def home():
-    return render_template('home.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks)
+    return render_template('home.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO)
 
 # New route for the welcome page
 @app.route('/welcome')
 @session_required
 @timing_decorator
 def welcome():
-    return render_template('welcome.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks)
+    return render_template('welcome.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO)
 
 @app.route('/pageinfo')
 @session_required
 @timing_decorator
 def pageinfo():
-    return render_template('pageinfo.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks)
+    return render_template('pageinfo.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO)
 
 @app.route('/flashcards', methods=['GET'])
 @hard_session_required
@@ -301,7 +402,7 @@ def flashcards():
         querydeck = session.get('deck', 'shas')
     session['deck'] = querydeck
     logger.info(f"Query deck: {querydeck}")
-    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks, deck=querydeck)
+    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO, deck=querydeck)
 
 @app.route('/grid', methods=['GET'])
 @session_required
@@ -313,12 +414,12 @@ def grid():
         querydeck = 'hsk1'
     logger.info(f"Query deck: {querydeck}")
     if not character:
-        characters = list(flashcard_app.cards.get(querydeck, {}).keys())
+        characters = list(CARDDECKS.get(querydeck, {}).keys())
         logger.info(f"Initial characters: {len(characters)}")  # Debug print
-        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=None, decks=flashcard_app.decks, deck=querydeck)
+        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=None, decks=DECKS_INFO, deck=querydeck)
     pc = packed_data(character)
-    characters = list(flashcard_app.cards[pc['deck']].keys())
-    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=pc, decks=flashcard_app.decks, deck=querydeck)
+    characters = list(CARDDECKS[pc['deck']].keys())
+    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=pc, decks=DECKS_INFO, deck=querydeck)
 
 @app.route('/hanzipractice')
 @session_required
@@ -326,34 +427,185 @@ def grid():
 def hanzipractice():
     deck = session['deck']
     characters_data = []
-    for char, data in flashcard_app.cards[deck].items():
+    for char, data in CARDDECKS[deck].items():
         characters_data.append({
             "character": char,
             "pinyin": data['pinyin'],
             "english": data['english'],
         })
-    return render_template('hanzipractice.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('hanzipractice.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=DECKS_INFO, deck=session['deck'])
 
-@app.route('/convert')
-@session_required
-@timing_decorator
-def convert():
-    return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=flashcard_app.decks, deck=session['deck'])
+# @app.route('/convert')
+# @session_required
+# @timing_decorator
+# def convert():
+#     return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, deck=session['deck'])
 
 @app.route('/convert2')
 @session_required
 @timing_decorator
 def convert2():
-    return render_template('convert2.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=flashcard_app.decks, deck=session['deck'])
+    return render_template('convert2.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, deck=session['deck'])
+
+@app.route('/convert3')
+@session_required
+@timing_decorator
+def convert3():
+    convertedText = db_get_user_string(session['username'])
+    chars = set(''.join(convertedText.split()))
+    chars = chars.intersection(stroke_chars)
+    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
+    
+    lines = convertedText.split('\n')
+    translations = get_translations(lines)
+
+    return render_template('convert3.html', darkmode=session['darkmode'], username=session['username'], convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, deck=session['deck'], transPerLine=translations)
+
+@app.route('/convert')
+@session_required
+@timing_decorator
+def convert():
+    convertedText = db_get_user_string(session['username'])
+    chars = set(''.join(convertedText.split()))
+    chars = chars.intersection(stroke_chars)
+    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
+    
+    lines = convertedText.split('\n')
+    translations = get_translations(lines)
+
+    return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, deck=session['deck'], transPerLine=translations)
+
+
+
+
+@app.route('/stories')
+@session_required
+@timing_decorator
+def stories():
+    first_story = stories_data[stories_list[0]['uri']]
+    chars = set(''.join(first_story['hanzi']))
+    chars = chars.intersection(stroke_chars)
+    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
+    return render_template('stories.html', darkmode=session['darkmode'], story=first_story, stories=stories_list, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, deck=session['deck'])
+
+@app.route('/get_story/<int:index>')
+@session_required
+@timing_decorator
+def get_story(index):
+    if 1 <= index <= len(stories_list):
+        story = stories_data[stories_list[index-1]['uri']]
+        chars = set(''.join(story['hanzi']))
+        chars = chars.intersection(stroke_chars)
+        char_data = {char: {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
+        return jsonify({
+            'story': story,
+            'char_data': char_data
+        })
+    else:
+        return jsonify({'error': 'Story index out of range'}), 404
+
+
+
+def get_charset(text):
+    charset = [c for c in text if c not in ' \n']
+    charset = set(''.join(text.split()))
+    charset = charset.intersection(stroke_chars)
+    return charset
+
+new_translations_path = 'data/new_translations.json'
+cached_translations = {}
+if os.path.exists(new_translations_path):
+    cached_translations = json.load(open(new_translations_path, 'r'))
+
+def get_translations(lines):
+    ai_input = []
+    ai_translations = []
+    for line in lines:
+        if line.strip() == '':
+            pass
+            ai_translations.append('')
+        elif line in cached_translations:
+            ai_translations.append(cached_translations[line])
+        else:
+            ai_translations.append('<translation>')
+            ai_input.append(line)
+    if len(ai_input) == 0:
+        return ai_translations
+    prompt = '''
+        you are a chinese knowledge genius translator, and you behave like a software the takes as input an array of strings, and outputs the complete translations, but each in one line. Your output must under all circumsatnces always simply be these translated lines, nothing else. No comments or anything. Here's the aray, you simply output the lines which I will parse (output raw text in each line): ''' + str(ai_input) 
+    api_key = os.environ.get("OPENAI_API")
+    if not api_key:
+        api_key = os.environ.get("OPENAI_API_KEY_ZHONG_WEN")
+        if not api_key:
+            file_path = "/home/patakk/.zhongwen-openai-apikey"
+            try:
+                with open(file_path, "r") as file:
+                    api_key = file.read().strip()
+            except Exception as e:
+                print(f"Error reading OpenAI API key file: {e}")
+
+    print('using api key:', api_key)
+    url = "https://api.openai.com/v1/chat/completions"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+    data = {
+        "model": "gpt-4o-mini",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.5
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    data = response.json()['choices'][0]['message']['content']
+    translations_wos = data.split('\n')
+    translations = []
+
+    for i, line in enumerate(lines):
+        ai_translation = ai_translations[i]
+        if ai_translation == '<translation>':
+            tw = translations_wos.pop(0)
+            if tw not in cached_translations:
+                cached_translations[line] = tw
+            translations.append(tw)
+        else:
+            translations.append(ai_translation)
+    
+    with open(new_translations_path, 'w') as f:
+        f.write(json.dumps(cached_translations, ensure_ascii=False, indent=4))
+    
+    # for i, line in enumerate(lines):
+    #     if line.strip() == '':
+    #         translations.append('')
+    #     else:
+    #         tw = translations_wos[tidx]
+    #         if tw not in cached_translations:
+    #             cached_translations[line] = tw
+    #         translations.append(tw)
+    #         tidx += 1
+
+    assert len(translations) == len(lines)
+    return translations
+    
 
 @app.route('/storeConvertedText', methods=['POST'])
 @session_required
 def store_converted_text():
     data = request.get_json()
     text = data.get('text', '')
-    success, message = db_store_user_string(session['username'], text)
-    return jsonify({"status": "success" if success else "error", "message": message})
+    
+    lines = text.split('\n')
+    translations = get_translations(lines)
+    # transPerLine = {l: t for l, t in zip(lines, translations)}
 
+    old_string = db_get_user_string(session['username'])
+    old_charset = get_charset(old_string)
+    new_charset = get_charset(text)
+    needed_chars = new_charset - old_charset
+    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in needed_chars}
+    
+    success, message = db_store_user_string(session['username'], text)
+    return jsonify({"status": "success" if success else "error", 'message': message, 'dataPerCharacter': char_data, 'transPerLine': translations})
 
 from flask import Response
 with open('data/examples.json', 'r', encoding='utf-8') as f:
@@ -389,14 +641,14 @@ def examples():
 @timing_decorator
 def lists():
     uri = request.args.get('uri')
-    return render_template('lists.html', darkmode=session['darkmode'], categories=example_lists, initial_uri=uri, decks=flashcard_app.decks, username=session['username'])
+    return render_template('lists.html', darkmode=session['darkmode'], categories=example_lists, initial_uri=uri, decks=DECKS_INFO, username=session['username'])
 
 @app.route('/kongzi')
 @session_required
 @timing_decorator
 def kongzi():
     uri = request.args.get('uri')
-    return render_template('kongzi.html',  decks=flashcard_app.decks, username=session['username'])
+    return render_template('kongzi.html',  decks=DECKS_INFO, username=session['username'])
 
 
 
@@ -412,15 +664,19 @@ def examples_category(category, subcategory):
     return render_template('examples_category.html', category=category, subcategory=subcategory, translations=translations)
 
 
-with open('data/stories.json', 'r', encoding='utf-8') as f:
+with open('data/new_stories.json', 'r', encoding='utf-8') as f:
     stories_data = json.load(f)
-@app.route('/stories')
-@app.route('/stories/<uri>')
-@session_required
-@timing_decorator
-def stories(uri=None):
-    stories_list = [{'title': stories_data[u]['english'][0], 'uri': u} for u in stories_data]
-    return render_template('stories.html', stories=stories_list, initial_uri=uri)
+
+
+stories_list = [{'title': stories_data[u]['english'][0], 'uri': u} for u in stories_data]
+
+
+# @app.route('/stories')
+# @app.route('/stories/<uri>')
+# @session_required
+# @timing_decorator
+# def stories(uri=None):
+#     return render_template('stories.html', stories=stories_list, initial_uri=uri)
 
 
 @app.route('/get_lists_data/<uri>')
@@ -486,8 +742,8 @@ def search():
         query = query.strip().lower()
         results = []
         
-        for deck in flashcard_app.decks:
-            for hanzi, card in flashcard_app.cards[deck].items():
+        for deck in CARDDECKS:
+            for hanzi, card in CARDDECKS[deck].items():
                 if query in hanzi.lower():
                     results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
                 elif query.replace(' ', '').isalnum():  # Allow spaces and numbers in query
@@ -557,8 +813,8 @@ def search():
         
         if not sorted_results:  # If no results found, perform fuzzy search
             fuzzy_results = []
-            for deck in flashcard_app.decks:
-                for hanzi, card in flashcard_app.cards[deck].items():
+            for deck in CARDDECKS:
+                for hanzi, card in CARDDECKS[deck].items():
                     if 'pinyin' in card:
                         accented_query = convert_numerical_tones(query)
                         accented_card_pinyin = convert_numerical_tones(card['pinyin'].lower())
@@ -581,16 +837,16 @@ def search():
                                convert_numerical_tones(result['pinyin']) if result['match_type'] == 'fuzzy_pinyin' else result['english'])
             )
 
-        return render_template('search.html', results=sorted_results, darkmode=session['darkmode'], query=query, decks=flashcard_app.decks, username=session['username'])
+        return render_template('search.html', results=sorted_results, darkmode=session['darkmode'], query=query, decks=DECKS_INFO, username=session['username'])
     
-    return render_template('search.html', darkmode=session['darkmode'], decks=flashcard_app.decks, username=session['username'])
+    return render_template('search.html', darkmode=session['darkmode'], decks=DECKS_INFO, username=session['username'])
 
 @app.route('/hanzi_strokes_history')
 @session_required
 # @hard_session_required
 def hanzi_strokes_history():
     strokes_per_character = db_get_all_stroke_data(session['username'])
-    return render_template('hanzistats.html', darkmode=session['darkmode'], username=session['username'], decks=flashcard_app.decks, strokes_per_character=strokes_per_character)
+    return render_template('hanzistats.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO, strokes_per_character=strokes_per_character)
 
 @app.route('/hanzi_strokes_charlist')
 @session_required
@@ -615,7 +871,7 @@ def strokerender():
 #     # Get user strokes
 #     user_strokes = get_user_strokes(session['username'])
     
-#     return render_template('book1.html', images=images, user_strokes=user_strokes, username=session['username'], decks=flashcard_app.decks)
+#     return render_template('book1.html', images=images, user_strokes=user_strokes, username=session['username'], decks=DECKS_INFO)
 
 # @app.route('/save_stroke', methods=['POST'])
 # @session_required
@@ -654,4 +910,4 @@ def strokerender():
 #         json.dump(stroke, f)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5115, debug=True)
+    app.run(host='0.0.0.0', port=5117, debug=True)

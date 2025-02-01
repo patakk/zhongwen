@@ -107,11 +107,16 @@
     position: absolute;
     left: -202px;
     top: 0;
-    background-color: white;
+    background-color: var(--background-color);
     border: 2px solid black;
     width: 200px;
     box-sizing: border-box;
 }
+
+.submenu.inactive {
+    display: none;
+}
+
 
 .submenu.darkmode {
     border: 1px solid white;

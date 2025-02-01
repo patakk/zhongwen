@@ -2820,5 +2820,155 @@
         "pinyin_tones": "xing2",
         "function": "unknown",
         "hsk_level": 4
+    },
+    "比较": {
+        "hanzi": "比较",
+        "pinyin": "bǐ jiào",
+        "literal": "",
+        "english": "to compare / to contrast / comparatively / relatively / quite / comparison",
+        "char_matches": {},
+        "pinyin_tones": "bi3 jiao4",
+        "function": "adverb",
+        "hsk_level": 3
+    },
+    "张": {
+        "hanzi": "张",
+        "pinyin": "zhāng",
+        "literal": "",
+        "english": "to open up / to spread / sheet of paper / classifier for flat objects, sheet / classifier for votes / surname Zhang",
+        "char_matches": {},
+        "pinyin_tones": "zhang1",
+        "function": "classifier",
+        "hsk_level": 3
+    },
+    "一下": {
+        "hanzi": "一下",
+        "pinyin": "yī xià",
+        "literal": "",
+        "english": "(used after a verb) give it a go / to do (sth for a bit to give it a try) / one time / once / in a while / all of a sudden / all at once",
+        "char_matches": {},
+        "pinyin_tones": "yi1 xia4",
+        "function": "number",
+        "hsk_level": 2
+    },
+    "支": {
+        "hanzi": "支",
+        "pinyin": "zhī",
+        "literal": "",
+        "english": "to support / to sustain / to erect / to raise / branch / division / to draw money / classifier for rods such as pens and guns, for army divisions and for songs or compositions / surname Zhi",
+        "char_matches": {},
+        "pinyin_tones": "zhi1",
+        "function": "noun",
+        "hsk_level": 5
+    },
+    "本": {
+        "hanzi": "本",
+        "pinyin": "běn",
+        "literal": "",
+        "english": "root / stem / origin / source / this / the current / original / inherent / originally / classifier for books, periodicals, files etc",
+        "char_matches": {},
+        "pinyin_tones": "ben3",
+        "function": "pronoun",
+        "hsk_level": 1
+    },
+    "历史": {
+        "hanzi": "历史",
+        "pinyin": "lì shǐ",
+        "literal": "",
+        "english": "history",
+        "char_matches": {},
+        "pinyin_tones": "li4 shi3",
+        "function": "noun",
+        "hsk_level": 3
+    },
+    "书": {
+        "hanzi": "书",
+        "pinyin": "shū",
+        "literal": "",
+        "english": "abbr. for 書經|书经[Shu1 jing1] / book / letter / document / to write",
+        "char_matches": {},
+        "pinyin_tones": "shu1",
+        "function": "noun",
+        "hsk_level": 1
+    },
+    "本子": {
+        "hanzi": "本子",
+        "pinyin": "běn zi",
+        "literal": "",
+        "english": "book / notebook / Japanese-style self-published comic (esp. an erotic one), aka \"dōjinshi\" / edition",
+        "char_matches": {},
+        "pinyin_tones": "ben3 zi",
+        "function": "noun",
+        "hsk_level": -1
+    },
+    "请问": {
+        "hanzi": "请问",
+        "pinyin": "qǐng wèn",
+        "literal": "",
+        "english": "Excuse me, may I ask...?",
+        "char_matches": {},
+        "pinyin_tones": "qing3 wen4",
+        "function": "verb",
+        "hsk_level": -1
+    },
+    "问": {
+        "hanzi": "问",
+        "pinyin": "wèn",
+        "literal": "",
+        "english": "to ask",
+        "char_matches": {},
+        "pinyin_tones": "wen4",
+        "function": "noun",
+        "hsk_level": 2
+    },
+    "词典": {
+        "hanzi": "词典",
+        "pinyin": "cí diǎn",
+        "literal": "",
+        "english": "dictionary / also written 辭典|辞典[ci2 dian3]",
+        "char_matches": {},
+        "pinyin_tones": "ci2 dian3",
+        "function": "noun",
+        "hsk_level": 3
+    },
+    "用": {
+        "hanzi": "用",
+        "pinyin": "yòng",
+        "literal": "",
+        "english": "to use / to employ / to have to / to eat or drink / expense or outlay / usefulness / hence / therefore",
+        "char_matches": {},
+        "pinyin_tones": "yong4",
+        "function": "preposition",
+        "hsk_level": 3
+    },
+    "有用": {
+        "hanzi": "有用",
+        "pinyin": "yǒu yòng",
+        "literal": "",
+        "english": "useful",
+        "char_matches": {},
+        "pinyin_tones": "you3 yong4",
+        "function": "verb",
+        "hsk_level": -1
+    },
+    "谁": {
+        "hanzi": "谁",
+        "pinyin": "shuí",
+        "literal": "",
+        "english": "who / also pr. [shui2]",
+        "char_matches": {},
+        "pinyin_tones": "shui2",
+        "function": "pronoun",
+        "hsk_level": 1
+    },
+    "经济": {
+        "hanzi": "经济",
+        "pinyin": "jīng jì",
+        "literal": "",
+        "english": "economy / economic",
+        "char_matches": {},
+        "pinyin_tones": "jing1 ji4",
+        "function": "noun",
+        "hsk_level": 4
     }
 }

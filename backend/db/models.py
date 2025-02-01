@@ -1,4 +1,5 @@
 from sqlalchemy.dialects.sqlite import JSON
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from backend.db.extensions import db
 
@@ -8,6 +9,13 @@ deck_cards = db.Table(
     db.Column("card_id", db.Integer, db.ForeignKey("card.id"), primary_key=True),
 )
 
+class Card(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    character = db.Column(db.String(10), unique=True, nullable=False)
+    decks = db.relationship("Deck", secondary=deck_cards, back_populates="cards")
+    
+    def __repr__(self):
+        return f"<Card {self.character}>"
 
 class Deck(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -17,41 +25,54 @@ class Deck(db.Model):
     def __repr__(self):
         return f"<Deck {self.name}>"
 
-class UserNotes(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), db.ForeignKey('user_progress.username'), nullable=False)
-    card_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=False)
-    notes = db.Column(db.String(200))
-    is_public = db.Column(db.Boolean, default=False)
-    __table_args__ = (db.UniqueConstraint('username', 'card_id'),)
-
-
-class UserString(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), db.ForeignKey('user_progress.username'), nullable=False, unique=True)
-    content = db.Column(db.String(1000))
-    last_updated = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
-
-
-class Card(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    character = db.Column(db.String(10), unique=True, nullable=False)
-    # pinyin = db.Column(db.String(50))
-    # english = db.Column(db.String(100))
-    # traditional = db.Column(db.String(10))
-    # function = db.Column(db.String(50))
-    # hsk_level = db.Column(db.Integer)
-    # char_matches = db.Column(db.String)
-    # pinyin_tones = db.Column(db.String(50))
-    decks = db.relationship("Deck", secondary=deck_cards, back_populates="cards")
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
     
-    def __repr__(self):
-        return f"<Card {self.character}>"
+    # Relationships
+    progress = db.relationship("UserProgress", backref="user", uselist=False)
+    notes = db.relationship("UserNotes", backref="user", lazy=True)
+    user_string = db.relationship("UserString", backref="user", uselist=False)
+    stroke_entries = db.relationship("StrokeData", backref="user_ref", lazy=True)  # Changed backref name
 
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+class StrokeData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    character = db.Column(db.String(10), nullable=False)
+    strokes = db.Column(JSON, nullable=False)
+    positioner = db.Column(JSON, nullable=False)
+    mistakes = db.Column(db.Integer, nullable=False)
+    stroke_count = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f"<StrokeData {self.user_ref.username} - {self.character}>"  # Updated to use user_ref
+
+    @classmethod
+    def from_dict(cls, data):
+        user = User.query.filter_by(username=data['username']).first()
+        if not user:
+            raise ValueError(f"User not found: {data['username']}")
+        
+        return cls(
+            user_id=user.id,
+            character=data['character'],
+            strokes=data['strokes'],
+            positioner=data['positioner'],
+            mistakes=data['mistakes'],
+            stroke_count=data['strokeCount'],
+        )
 
 class UserProgress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     base_new_cards_limit = db.Column(db.Integer, nullable=False)
     new_cards_limit = db.Column(db.Integer, nullable=False)
     new_cards_limit_last_updated = db.Column(db.String(32), nullable=False)
@@ -72,9 +93,18 @@ class UserProgress(db.Model):
         }
 
     @classmethod
-    def from_dict(cls, username, data):
+    def from_dict(cls, user, data):
+        """
+        Create a UserProgress instance from a dictionary.
+        
+        Args:
+            user: Can be either a User instance or user_id
+            data: Dictionary containing progress data
+        """
+        user_id = user.id if isinstance(user, User) else user
+        
         return cls(
-            username=username,
+            user_id=user_id,
             base_new_cards_limit=data["base_new_cards_limit"],
             new_cards_limit=data["new_cards_limit"],
             new_cards_limit_last_updated=data["new_cards_limit_last_updated"],
@@ -85,30 +115,18 @@ class UserProgress(db.Model):
         )
 
 
-class StrokeData(db.Model):
+class UserNotes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(
-        db.String(80), db.ForeignKey("user_progress.username"), nullable=False
-    )
-    character = db.Column(db.String(10), nullable=False)
-    strokes = db.Column(JSON, nullable=False)
-    positioner = db.Column(JSON, nullable=False)
-    mistakes = db.Column(db.Integer, nullable=False)
-    stroke_count = db.Column(db.Integer, nullable=False)
-    timestamp = db.Column(
-        db.DateTime, nullable=False, default=db.func.current_timestamp()
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    card_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=False)
+    notes = db.Column(db.String(200))
+    is_public = db.Column(db.Boolean, default=False)
+    __table_args__ = (db.UniqueConstraint('user_id', 'card_id'),)
 
-    def __repr__(self):
-        return f"<StrokeData {self.username} - {self.character}>"
+class UserString(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.String(1000))
+    last_updated = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
-    @classmethod
-    def from_dict(cls, data):
-        return cls(
-            username=data["username"],
-            character=data["character"],
-            strokes=data["strokes"],
-            positioner=data["positioner"],
-            mistakes=data["mistakes"],
-            stroke_count=data["strokeCount"],
-        )
+

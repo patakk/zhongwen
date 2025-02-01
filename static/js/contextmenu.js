@@ -367,9 +367,16 @@ function addMenuListeners() {
         window.open(`https://www.google.com/search?q=${encodeURIComponent(selectedText)}`, '_blank');
     });
 
-    document.getElementById('search-here').addEventListener('click', function() {
-        window.open(`./search?query=${encodeURIComponent(selectedText)}`, '_blank');
+    
+    document.getElementById('search-here').addEventListener('click', function(e) {
+        if(selectedText){
+            window.open(`./search?query=${encodeURIComponent(selectedText)}`, '_blank');
+        }
+        else{
+            console.log(e)
+        }
     });
+    
 
     // document.getElementById('sub-option-1').addEventListener('click', function() {
     //     console.log('Sub option 1 clicked');
@@ -422,8 +429,13 @@ function addMenuListeners() {
 
 
     function handleContextMenu(e) {
+        let canvasChar = null;
+        if(e.target.dataset.character){
+            canvasChar = e.target.dataset.character;
+        }
+
         e.preventDefault();
-        showContextMenu(e.clientX, e.clientY);
+        showContextMenu(e.clientX, e.clientY, canvasChar);
     }
 
     let touchStartX, touchStartY;
@@ -479,8 +491,8 @@ function addMenuListeners() {
 
 
 
-    function showContextMenu(clientX, clientY) {
-        selectedText = window.getSelection().toString().trim();
+    function showContextMenu(clientX, clientY, canvasChar=null) {
+        selectedText = canvasChar || window.getSelection().toString().trim();
         if (selectedText && isMobileOrTablet() || !isMobileOrTablet()) {
             const menu = document.getElementById('custom-context-menu');
             if (menu) {
@@ -531,6 +543,7 @@ function addMenuListeners() {
     document.addEventListener('click', function(event) {
         const chatbox = document.getElementById('chatbox');
         const menu = document.getElementById('custom-context-menu');
+
         if (chatbox && !menu.contains(event.target) && !chatbox.contains(event.target)) {
             chatbox.style.display = 'none';
             chatOpened = false;

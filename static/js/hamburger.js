@@ -116,26 +116,35 @@ function getDeck_c() {
             currentDeck = data.deck;
             // document.getElementById('deck-select').value = currentDeck;
             // For deck changes
-            document.querySelectorAll('.deck-option').forEach(function(deckOption) {
-                deckOption.addEventListener('click', function(e) {
-                    currentDeck = this.getAttribute('data-deck');
+            document.querySelectorAll('.deck-option-parent').forEach(function(element) {
+                element.addEventListener('click', function(e) {
+                    // Get the deck-option element, whether it was clicked directly or via parent
+                    const deckOption = element.classList.contains('deck-option') 
+                        ? element 
+                        : element.querySelector('.deck-option');
+            
+                    if (deckOption) {
+                        currentDeck = deckOption.getAttribute('data-deck');
+            
+                        // Change deck
+                        changeDeck(currentDeck);
+            
+                        let submenu = document.getElementById('deckSubmenu');
+                        submenu.classList.remove('active');
+                        // Update highlighting
+                        document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
+                        deckOption.classList.add('selected-option');
+                        console.log('Deck changed to', currentDeck);
+                        
+                        const newUrl = new URL(window.location);
+                        newUrl.searchParams.set('deck', currentDeck);
+                        history.pushState({}, '', newUrl);
 
-                    // Change deck
-                    changeDeck(currentDeck);
-
-                    // Update highlighting
-                    document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
-                    this.classList.add('selected-option');
-                    console.log('Deck changed to', currentDeck);
-                    
-                    const newUrl = new URL(window.location);
-                    newUrl.searchParams.set('deck', currentDeck);
-                    history.pushState({}, '', newUrl);
-
-                    // Close dropdown
-                    document.getElementById('dropdownMenu').style.display = 'none';
-                    var menu = document.getElementById('dropdownMenu');
-                    menu.style.display = 'none';
+                        // classList.remove('active');
+            
+                        // Close dropdown
+                        document.getElementById('dropdownMenu').style.display = 'none';
+                    }
                 });
             });
             // font
@@ -199,7 +208,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if(username === 'tempuser'){
         try{
-            console.log('tempuser');
             let logoutbutton = document.getElementById('logoutButton');
             logoutbutton.style.display = 'none';
         }
@@ -220,18 +228,17 @@ document.addEventListener('DOMContentLoaded', function() {
         dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
     });
 
-    submenus.forEach(function(submenu) {
-        submenu.addEventListener('click', function(e) {
-            e.stopPropagation();
+    // submenus.forEach(function(submenu) {
+    //     submenu.addEventListener('click', function(e) {
+    //         e.stopPropagation();
             
-            submenus.forEach(function(otherSubmenu) {
-                if (otherSubmenu !== submenu) {
-                    otherSubmenu.classList.remove('active');
-                }
-            });
-
-        });
-    });
+    //         submenus.forEach(function(otherSubmenu) {
+    //             if (otherSubmenu !== submenu) {
+    //                 otherSubmenu.classList.remove('active');
+    //             }
+    //         });
+    //     });
+    // });
 
     fontChangers.forEach(function(fontChanger) {
         fontChanger.addEventListener('click', function(e) {
@@ -249,23 +256,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    document.addEventListener('click', function(e) {
-        if (!dropdownMenu.contains(e.target) && e.target !== hamburger) {
-            dropdownMenu.style.display = 'none';
-            submenus.forEach(function(submenu) {
-                submenu.classList.remove('active');
-            });
-        }
-    });
+    // document.addEventListener('click', function(e) {
+    //     if (!dropdownMenu.contains(e.target) && e.target !== hamburger) {
+    //         dropdownMenu.style.display = 'none';
+    //         submenus.forEach(function(submenu) {
+    //             submenu.classList.remove('active');
+    //         });
+    //     }
+    // });
 
-    document.querySelectorAll('.dropdown-menu a').forEach(function(option) {
-        option.addEventListener('click', function() {
-            submenus.forEach(function(submenu) {
-                submenu.classList.remove('active');
-            });
-            document.getElementById('dropdownMenu').style.display = 'none';
-        });
-    });
+    // document.querySelectorAll('.dropdown-menu a').forEach(function(option) {
+    //     option.addEventListener('click', function() {
+    //         submenus.forEach(function(submenu) {
+    //             submenu.classList.remove('active');
+    //         });
+    //         document.getElementById('dropdownMenu').style.display = 'none';
+    //     });
+    // });
 
 
     document.querySelectorAll('.color-change').forEach(option => {

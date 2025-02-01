@@ -1,0 +1,28 @@
+:root {
+    --font: "Noto Sans Mono", monospace;
+    --background-color: #ffffff;
+    --dimmer-background-color: #f5f5f5;
+    --dimmer-border-color: #d0d0d0;
+    --dimmer-border-style: dashed;
+    --dimmer-border-width: 2px;
+    --dimmer-border: var(--dimmer-border-width) var(--dimmer-border-style) var(--dimmer-border-color);
+    --text-color: #0e0e0e;
+    --dimmer-text-color: #505050;
+    --accent-color: rgb(255, 66, 28);
+    --griditem-background-color: var(--background-color);
+}
+
+.darkmode {
+    --dimmer-border-color: #414141;
+    --background-color: #111111;
+    --dimmer-background-color: #1d1d1d;
+    --text-color: #e6e6e6;
+    --dimmer-text-color: #888888;
+    --griditem-background-color: var(--background-color);
+}
+
+body {
+    font-family: var(--font);
+    background-color: var(--background-color);
+    color: var(--text-color);
+}

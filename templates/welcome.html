@@ -202,6 +202,7 @@
     </div>
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
+            
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
             <li><a href="{{ url_for('home') }}">Home</a></li>
             <li class="has-submenu">
@@ -220,12 +221,20 @@
                         {% endfor %}
                 </ul>
             </li>
-            
+            <!-- <li class="has-submenu">
+                <span>Fonts</span>
+                <ul class="submenu">
+                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
+                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
+                    <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
+                </ul>
+            </li> -->
             <li class="has-submenu">
                 <span>Stuff</span>
                 <ul class="submenu">
                     <li><a href="{{ url_for('search') }}">Search</a></li>
                     <li><a href="{{ url_for('convert') }}">Convert to strokes</a></li>
+                    <li><a href="{{ url_for('stories') }}">Stories</a></li>
                     <!-- <li><a href="{{ url_for('lists') }}">Example Lists</a></li> -->
                     <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
                     <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
@@ -248,14 +257,21 @@
                 <a href="{{ url_for('grid') }}">Hanzi Grid</a> - preview characters and their descriptions
                 <div class="flashcard-guide">
                     <div>
-                        <ul>
-                            <li>Clicking on the title toggles between grid and list view.</li>
-                            <li>If you start typing, what you type will be searched, and filtered results will be shown</li>
+                        <div class="pc-guide">
                             <ul>
-                                <li>Both pinyin and english queries are supported.</li>
-                                <li>Press <strong>Space</strong> to clear the filter.</li>
+                                <li>Clicking on the title toggles between grid and list view.</li>
+                                <li>If you start typing, what you type will be searched, and filtered results will be shown</li>
+                                <ul>
+                                    <li>Both pinyin and english queries are supported.</li>
+                                    <li>Press <strong>Space</strong> to clear the filter.</li>
+                                </ul>
                             </ul>
-                        </ul>
+                        </div>
+                        <div class="mobile-guide">
+                            <ul>
+                                <li>Tapping on the title toggles between grid and list view.</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </li>
@@ -277,7 +293,7 @@
             <li>
                 <a href="{{ url_for('flashcards') }}">Flashcards</a> - learn characters using spaced repetition (login required)
                 <div class="flashcard-guide">
-                    <div id="pc-guide">
+                    <div class="pc-guide">
                         <ul>
                             <li>Using keys</li>
                             <ul>
@@ -292,7 +308,7 @@
                             </ul>
                         </ul>
                     </div>
-                    <div id="mobile-guide">
+                    <div class="mobile-guide">
                         <ul>
                             <li><strong>Tap</strong> to reveal the answer.</li>
                             <li>Swipe <strong>right</strong> to mark as correct.</li>
@@ -340,18 +356,36 @@
             return false;
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        function reset(){
             const guide = document.querySelector('.flashcard-guide');
-            const pcGuide = document.getElementById('pc-guide');
-            const mobileGuide = document.getElementById('mobile-guide');
+            const pcGuides = document.querySelectorAll('.pc-guide');
+            const mobileGuides = document.querySelectorAll('.mobile-guide');
 
-            // Show/hide appropriate guide based on device
-            if (isIPhone() || isiPad()) {
-                pcGuide.style.display = 'none';
-            } else {
-                mobileGuide.style.display = 'none';
-            }
+            pcGuides.forEach(pcGuide => {
+                if (isIPhone() || isiPad()) {
+                    pcGuide.style.display = 'none';
+                } else {
+                    pcGuide.style.display = 'block';
+                }
+            });
+
+            mobileGuides.forEach(mobileGuide => {
+                if (isIPhone() || isiPad()) {
+                    mobileGuide.style.display = 'block';
+                } else {
+                    mobileGuide.style.display = 'none';
+                }
+            });
+
             guide.style.display = 'block';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            reset();
+        });
+
+        window.addEventListener('resize', function() {
+            reset();
         });
     </script>
 </body>

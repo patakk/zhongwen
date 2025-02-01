@@ -115,6 +115,7 @@
     margin-top: 30px;
     overflow-y: visible;
     user-select: text;
+    background: transparent;
 }
 
 /* Remove the max-height and overflow-y from #flashcard_description */
@@ -157,7 +158,7 @@ p::selection {
     padding: 42px;
     box-sizing: border-box;
     overflow-x: hidden;
-    transition: transform 0.2s, background-color 0.7s;
+    transition: transform 0.2s, background-color 0.1s;
     z-index: 1032;
     font-family: "Noto Sans Mono", monospace;
     font-weight: 400;
@@ -298,9 +299,9 @@ and (max-device-width: 1024px) {
 
 @media only screen and (min-aspect-ratio: 0.8) {
     #flashcard_container {
-        max-width: 69vh;
+        /* max-width: 69vh; */
         /* Add a max-width */
-        width: 69vh;
+        /* width: 69vh; */
     }
 }
 
@@ -329,8 +330,8 @@ and (max-device-width: 1024px) {
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
     #flashcard_container {
-        max-width: 95%;
-        width: 69vh;
+        /* max-width: 95%;
+        width: 69vh; */
     }
 
     .clickable-char {
@@ -512,6 +513,7 @@ and (max-device-width: 1024px) {
 #descriptionParagraph {
     /* background-color: #fafafa; */
     padding: 8px;
+    background: transparent;
 }
 
 

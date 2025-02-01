@@ -15,6 +15,7 @@ function showFlashcard(character) {
         })
         .then(data => {
             // bordercanvas.style.display = 'block';
+            data.plotters = createPlotters(data);
             renderCardData(data);
             displayCard(true, true);
             confirmDarkmode();
@@ -123,7 +124,7 @@ overlay.addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', function() {
     // document.getElementById('font-select').style.display = 'none';
     getFont();
-    setupBackgroundCanvas();
+    // setupBackgroundCanvas();
 
     const pinyinElement = document.getElementById('flashcard_pinyin');
     pinyinElement.addEventListener('click', function() {

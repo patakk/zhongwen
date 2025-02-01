@@ -1,5 +1,11 @@
 
 function confirmDarkmode(){
+    if(isDarkMode){
+        document.body.classList.add('darkmode');
+    }
+    else{
+        document.body.classList.remove('darkmode');
+    }
     document.querySelectorAll('*').forEach(element => {
         if(isDarkMode){
             if(!element.classList.contains('darkmode')){
@@ -50,6 +56,58 @@ function confirmDarkmode(){
     catch(e){
         //console.log(e)
     }
+
+    try{
+        let bg = document.getElementById('plottersWrapper');
+        // set bg to random paste color
+        bg.style.backgroundColor = `hsl(${Math.random() * 360}, 8%, 87%)`;
+        if(isDarkMode){
+            bg.style.backgroundColor = `hsl(${Math.random() * 360}, 8%, 17%)`;
+        }
+    }
+    catch(e){
+    }
+
+    try{
+        currentGridPlotters.forEach(child => {
+            let colors = ["#151511aa", "#151511aa", "#151511aa"];
+            if(isDarkMode){
+                colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
+            }
+            child.plotter.setColors(colors);
+            child.plotter.draw();
+        });
+    }
+    catch(e){
+    }
+
+
+    try{
+        currentFlashcardPlotters.forEach(child => {
+            let colors = ["#151511aa", "#151511aa", "#151511aa"];
+            if(isDarkMode){
+                colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
+            }
+            child.plotter.setColors(colors);
+            child.plotter.draw();
+        });
+    }
+    catch(e){
+    }
+
+    try{
+        nextFlashcardPlotters.forEach(child => {
+            let colors = ["#151511aa", "#151511aa", "#151511aa"];
+            if(isDarkMode){
+                colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
+            }
+            child.plotter.setColors(colors);
+            child.plotter.draw();
+        });
+    }
+    catch(e){
+    }
+
     try{
         plotters.forEach(child => {
             if(child.plotter){

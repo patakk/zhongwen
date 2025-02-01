@@ -1,0 +1,101 @@
+{
+    "forest_adventure": {
+        "name": "森林冒险",
+        "description": "A short story about a forest adventure",
+        "hanzi": [
+            "小明想去森林。",
+            "森林很大，有很多树。",
+            "夏天，森林很热。冬天，森林很冷。",
+            "小明问：\"为什么森林这么有意思？\"",
+            "妈妈说：\"因为森林有很多可爱的动物。\"",
+            "小明说：\"我想看看！\""
+        ],
+        "pinyin": [
+            "Xiǎo Míng xiǎng qù sēnlín.",
+            "Sēnlín hěn dà, yǒu hěn duō shù.",
+            "Xiàtiān, sēnlín hěn rè. Dōngtiān, sēnlín hěn lěng.",
+            "Xiǎo Míng wèn: \"Wèishéme sēnlín zhème yǒu yìsi?\"",
+            "Māma shuō: \"Yīnwèi sēnlín yǒu hěn duō kě'ài de dòngwù.\"",
+            "Xiǎo Míng shuō: \"Wǒ xiǎng kànkan!\""
+        ],
+        "english": [
+            "Xiao Ming wants to go to the forest.",
+            "The forest is very big and has many trees.",
+            "In summer, the forest is hot. In winter, the forest is cold.",
+            "Xiao Ming asks, \"Why is the forest so interesting?\"",
+            "Mom says, \"Because the forest has many cute animals.\"",
+            "Xiao Ming says, \"I want to see them!\""
+        ]
+    },
+    "ice_cream_shop": {
+        "name": "冰淇淋店",
+        "description": "A story about an ice cream shop",
+        "hanzi": [
+            "小李的家人有一个冰淇淋店。",
+            "这个冰淇淋店在东南方。",
+            "冰淇淋很便宜，也很好吃。",
+            "老板说：\"欢迎来我的店！\"",
+            "一个客人问：\"一个冰淇淋多少钱？\"",
+            "小李说：\"十块钱。\"",
+            "客人说：\"太贵了！\"",
+            "小李说：\"对不起，可是我们的冰淇淋很好吃。\""
+        ],
+        "pinyin": [
+            "Xiǎo Lǐ de jiārén yǒu yī gè bīngqílín diàn.",
+            "Zhè gè bīngqílín diàn zài dōngnán fāng.",
+            "Bīngqílín hěn piányi, yě hěn hào chī.",
+            "Lǎobǎn shuō: \"Huānyíng lái wǒ de diàn!\"",
+            "Yī gè kèrén wèn: \"Yī gè bīngqílín duōshao qián?\"",
+            "Xiǎo Lǐ shuō: \"Shí kuài qián.\"",
+            "Kèrén shuō: \"Tài guì le!\"",
+            "Xiǎo Lǐ shuō: \"Duìbuqǐ, kěshì wǒmen de bīngqílín hěn hào chī.\""
+        ],
+        "english": [
+            "Xiao Li's family has an ice cream shop.",
+            "This ice cream shop is in the southeast.",
+            "The ice cream is cheap and delicious.",
+            "The boss says, \"Welcome to my shop!\"",
+            "A customer asks, \"How much is one ice cream?\"",
+            "Xiao Li says, \"Ten yuan.\"",
+            "The customer says, \"That's too expensive!\"",
+            "Xiao Li says, \"I'm sorry, but our ice cream is very delicious.\""
+        ]
+    },
+    "world_map": {
+        "name": "世界地图",
+        "description": "A story about learning from a world map",
+        "hanzi": [
+            "小红有一个世界地图。",
+            "她想学习地图上的地方。",
+            "妈妈问：\"你为什么对地图有兴趣？\"",
+            "小红说：\"因为世界很大，我想看看。\"",
+            "妈妈说：\"地图上有很多国家。\"",
+            "小红问：\"中国在哪里？\"",
+            "妈妈说：\"在东方。\"",
+            "小红说：\"我想去中国！\"",
+            "妈妈笑着说：\"当然可以，我们一起去。\""
+        ],
+        "pinyin": [
+            "Xiǎo Hóng yǒu yī gè shìjiè dìtú.",
+            "Tā xiǎng xuéxí dìtú shàng de dìfāng.",
+            "Māma wèn: \"Nǐ wèishéme duì dìtú yǒu xìngqù?\"",
+            "Xiǎo Hóng shuō: \"Yīnwèi shìjiè hěn dà, wǒ xiǎng kànkan.\"",
+            "Māma shuō: \"Dìtú shàng yǒu hěn duō guójiā.\"",
+            "Xiǎo Hóng wèn: \"Zhōngguó zài nǎlǐ?\"",
+            "Māma shuō: \"Zài dōngfāng.\"",
+            "Xiǎo Hóng shuō: \"Wǒ xiǎng qù Zhōngguó!\"",
+            "Māma xiàozhe shuō: \"Dāngrán kěyǐ, wǒmen yīqǐ qù.\""
+        ],
+        "english": [
+            "Xiao Hong has a world map.",
+            "She wants to learn about the places on the map.",
+            "Mom asks, \"Why are you interested in the map?\"",
+            "Xiao Hong says, \"Because the world is big, I want to see it.\"",
+            "Mom says, \"There are many countries on the map.\"",
+            "Xiao Hong asks, \"Where is China?\"",
+            "Mom says, \"In the east.\"",
+            "Xiao Hong says, \"I want to go to China!\"",
+            "Mom smiles and says, \"Of course, we can go together.\""
+        ]
+    }
+}

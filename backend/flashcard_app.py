@@ -7,17 +7,17 @@ from datetime import date, datetime, timedelta, timezone
 
 from flask import session
 
-from backend.db.ops import (getshortdate, load_user_progress, load_user_value,
-                            save_user_progress, store_user_value)
+from backend.db.ops import (getshortdate, db_load_user_progress, db_load_user_value,
+                            db_save_user_progress, db_store_user_value)
 
 logger = logging.getLogger(__name__)
 
 _flashcard_app = None
 
 
-def init_flashcard_app():
+def init_flashcard_app(cards, anthropic_data):
     global _flashcard_app
-    _flashcard_app = FlashcardApp()
+    _flashcard_app = FlashcardApp(cards, anthropic_data)
 
 
 def get_flashcard_app():
@@ -25,10 +25,9 @@ def get_flashcard_app():
 
 
 class FlashcardApp:
-    def __init__(self):
-
+    def __init__(self, cards, anthropic_data):
         self.NUM_BOXES = 6
-        self.REVIEW_INTERVALS = [0, 1, 3, 7, 14, 30]  # days for each box
+        self.REVIEW_INTERVALS = [0, 1, 3, 7, 14, 30]
         self.DIFFICULTY_CAP = 3.0
         self.STREAK_FACTOR = 20
         self.BASE_NEW_CARDS_LIMIT = 5
@@ -36,24 +35,8 @@ class FlashcardApp:
         self.daily_new_cards = {}
         self.last_new_cards_date = {}
         self.presented_new_cards = {}
-        self.decks = {
-            "minideck": {"file": "data/mini_deck.json", "name": "Minideck"},
-            "shas": {"file": "data/shas_class_cards.json", "name": "ShaSha's Class"},
-            "top140": {"file": "data/top140_cards.json", "name": "Top 140"},
-            "hsk1": {"file": "data/hsk1_cards.json", "name": "HSK 1"},
-            "hsk2": {"file": "data/hsk2_cards.json", "name": "HSK 2"},
-            "hsk3": {"file": "data/hsk3_cards.json", "name": "HSK 3"},
-            "hsk4": {"file": "data/hsk4_cards.json", "name": "HSK 4"},
-            "hsk5": {"file": "data/hsk5_cards.json", "name": "HSK 5"},
-            "hsk6": {"file": "data/hsk6_cards.json", "name": "HSK 6"},
-            "review": {"file": "data/review_deck.json", "name": "ReviewDeck"},
-        }
-        self.current_deck = "shas"
-        self.cards = {}
-        for deck in self.decks:
-            self.cards[deck] = self.load_cards(deck)
-        with open("data/anthropic.json", "r", encoding="utf-8") as f:
-            self.anthropic_cards = json.load(f)
+        self.cards = cards
+        self.anthropic_data = anthropic_data
 
         if not os.path.exists("user_progress"):
             os.makedirs("user_progress")
@@ -68,67 +51,11 @@ class FlashcardApp:
     def set_deck(self, deck):
         self.current_deck = deck
 
-    def load_user_progress(self, file_path):
-        if file_path and os.path.exists(file_path):
-            with open(file_path, "r", encoding="utf-8") as f:
-                try:
-                    loaded_user_prog = json.load(f)
-                    if getshortdate() != loaded_user_prog.get(
-                        "new_cards_limit_last_updated"
-                    ):
-                        loaded_user_prog["new_cards_limit"] = loaded_user_prog[
-                            "base_new_cards_limit"
-                        ]
-                        loaded_user_prog["new_cards_limit_last_updated"] = (
-                            getshortdate()
-                        )
-                    return loaded_user_prog
-                except:
-                    time.sleep(0.1)
-                    loaded_user_prog = json.load(f)
-                    if getshortdate() != loaded_user_prog.get(
-                        "new_cards_limit_last_updated"
-                    ):
-                        loaded_user_prog["new_cards_limit"] = loaded_user_prog[
-                            "base_new_cards_limit"
-                        ]
-                        loaded_user_prog["new_cards_limit_last_updated"] = (
-                            getshortdate()
-                        )
-                    return loaded_user_prog
-        return loaded_user_prog
-
-    def save_user_progress(self, username, progress):
-        file_path = os.path.join("user_progress", f"{username}.json")
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(progress, f, ensure_ascii=False, indent=2)
-
-    def get_card_examples(self, deck, character):
-        base_data = self.cards[deck].get(character, {})
-        if not base_data:
-            for deck_name in self.cards:
-                if deck_name != deck and character in self.cards[deck_name]:
-                    base_data = self.cards[deck_name][character]
-                    break
-        anthropic_data = self.anthropic_cards.get(character, {})
-        return {**base_data, **anthropic_data}
-
-    def get_char_from_deck(self, deck, character):
-        base_data = self.cards[deck].get(character, {})
-        if not base_data:
-            logger.info(f"Character {character} not found in deck {deck}")
-            for deck_name in self.cards:
-                if deck_name != deck and character in self.cards[deck_name]:
-                    base_data = self.cards[deck_name][character]
-                    logger.info(base_data)
-                    break
-        return base_data
-
     def select_random_card(self, deck):
         return random.choice(list(self.cards[deck].keys()))
 
     def record_answer(self, username, character, correct):
-        uprogress = load_user_progress(username)
+        uprogress = db_load_user_progress(username)
         if character not in uprogress["progress"]:
             uprogress["progress"][character] = {
                 "answers": [],
@@ -188,7 +115,7 @@ class FlashcardApp:
             )
         uprogress["progress"][character] = char_progress
 
-        save_user_progress(username, uprogress)
+        db_save_user_progress(username, uprogress)
 
     def calculate_difficulty(self, char_progress):
         base_difficulty = 1 + max(0, char_progress["num_incorrect"] - 2) / 10
@@ -210,7 +137,7 @@ class FlashcardApp:
         current_time = datetime.now(timezone.utc)
         all_deck_cards = set(self.cards[deck].keys())
 
-        uprogress = load_user_progress(username)
+        uprogress = db_load_user_progress(username)
         for character in all_deck_cards:
             character_progress = uprogress["progress"].get(character, {})
             next_review_str = character_progress.get("next_review")
@@ -234,10 +161,10 @@ class FlashcardApp:
     def get_new_cards(self, username, deck, force_new_cards=False):
         today = date.today()
         user_deck_key = (username, deck)
-        uprogress = load_user_progress(username)
+        uprogress = db_load_user_progress(username)
         if (
-            deck not in load_user_value(username, "daily_new_cards")
-            or load_user_value(username, "last_new_cards_date").get(deck)
+            deck not in db_load_user_value(username, "daily_new_cards")
+            or db_load_user_value(username, "last_new_cards_date").get(deck)
             != today.isoformat()
             or force_new_cards
         ):
@@ -265,7 +192,7 @@ class FlashcardApp:
             uprogress["last_new_cards_date"][deck] = today.isoformat()
             if not force_new_cards:
                 uprogress["presented_new_cards"][deck] = []
-            save_user_progress(username, uprogress)
+            db_save_user_progress(username, uprogress)
 
         remaining_new_cards = [
             card
@@ -278,17 +205,17 @@ class FlashcardApp:
         if username == "tempuser":
             return "", random.choice(list(self.cards[deck].keys()))
 
-        new_cards_limit = load_user_value(username, "new_cards_limit")
-        # base_new_cards_limit = load_user_value(username, 'base_new_cards_limit')
+        new_cards_limit = db_load_user_value(username, "new_cards_limit")
+        # base_new_cards_limit = db_load_user_value(username, 'base_new_cards_limit')
         new_cards_limit_last_updated = (
-            load_user_value(username, "new_cards_limit_last_updated") or getshortdate()
+            db_load_user_value(username, "new_cards_limit_last_updated") or getshortdate()
         )
 
         message = ""
 
         due_cards = self.get_due_cards(username, deck)
         new_cards = self.get_new_cards(username, deck)[:new_cards_limit]
-        presented_new_cards = load_user_value(username, "presented_new_cards") or {}
+        presented_new_cards = db_load_user_value(username, "presented_new_cards") or {}
 
         card_to_return = None
         attempts = 0
@@ -353,17 +280,17 @@ class FlashcardApp:
         if attempts == max_attempts:
             logger.info(f"Warning: Max attempts reached when selecting card")
 
-        daily_new_cards = load_user_value(username, "daily_new_cards") or {}
-        presented_new_cards = load_user_value(username, "presented_new_cards") or {}
+        daily_new_cards = db_load_user_value(username, "daily_new_cards") or {}
+        presented_new_cards = db_load_user_value(username, "presented_new_cards") or {}
         if card_to_return in daily_new_cards.get(deck, []):
             if deck not in presented_new_cards:
                 presented_new_cards[deck] = []
             if card_to_return not in presented_new_cards[deck]:
                 presented_new_cards[deck].append(card_to_return)
 
-        store_user_value(username, "presented_new_cards", presented_new_cards)
-        store_user_value(username, "new_cards_limit", new_cards_limit)
-        store_user_value(
+        db_store_user_value(username, "presented_new_cards", presented_new_cards)
+        db_store_user_value(username, "new_cards_limit", new_cards_limit)
+        db_store_user_value(
             username, "new_cards_limit_last_updated", new_cards_limit_last_updated
         )
 

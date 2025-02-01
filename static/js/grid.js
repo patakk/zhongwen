@@ -4,6 +4,8 @@ const flashcardContent = document.getElementById('flashcard_container');
 const messageElement = document.getElementById('message');
 
 let isAnswerVisible = false;
+let currentGridPlotters = [];
+
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -163,6 +165,7 @@ document.addEventListener('keydown', function(event) {
 
 
 function toggleGridList(){
+    console.log('toggling grid list');
     if(showList){
         showList = false;
         document.getElementById('grid-cont').style.display = 'block';
@@ -400,6 +403,7 @@ function showFlashcard(character) {
             // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
             // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
             renderCardData(data);
+            currentGridPlotters = data.plotters;
             displayCard(true, true);
             cardVisible = true;
             try{
@@ -422,6 +426,7 @@ function showFlashcard(character) {
 function showAfterLoad(data){
     data.plotters = createPlotters(data);
     renderCardData(data);
+    currentGridPlotters = data.plotters;
     displayCard(true, true);
     cardVisible = true;
 }
@@ -660,6 +665,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const characterDiv = document.getElementById('flashcard_character');
     const plotterDiv = document.getElementById('flashcard_plotter');
 
+    const deckMenu = document.getElementById('deckMenu');
+    deckMenu.addEventListener('click', function(event) {
+        if(!event.target.closest('#deckSubmenu')){
+            let submenu = document.getElementById('deckSubmenu');
+            submenu.classList.add('active')
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('#deckMenu')) {
+            let submenu = document.getElementById('deckSubmenu');
+            submenu.classList.remove('active');
+        }
+    });
+
+    // const deckOptions = document.querySelectorAll('.deck-option');
+    // deckOptions.forEach(option => {
+    //     option.addEventListener('click', function(event) {
+    //         let submenu = document.getElementById('deckSubmenu');
+    //         submenu.classList.remove('active');
+    //     });
+    // });
+
     let togglefont = () => {
         currentToggleFont = (currentToggleFont + 1) % 4;
         if(currentToggleFont === 0){
@@ -688,7 +716,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
 
     try{
-        setupBackgroundCanvas();
+        // setupBackgroundCanvas();
 
     }
     catch(e){
@@ -703,6 +731,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const title = document.getElementById('title');
     title.addEventListener('click', function() {
+
         toggleGridList();
     });
     

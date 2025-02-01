@@ -150,15 +150,34 @@ function adjustFlashCardChars(){
 function createPlotters(data){
     const chars = data.character.split('');
     const plotters = [];
-    let size = 255;
+    let lineType = 'round'; 
+    lineType = 'miter'; 
+    let size = 355;
     if(chars.length == 2){
-        size = 222;
+        size = 355;
     }
-    else if(chars.length > 2){
-        size = 166;
+    if(chars.length == 3){
+        size = 300;
+    }
+    else if(chars.length > 3){
+        size = 250;
+    }
+    let colors = ["#151511aa", "#151511aa", "#151511aa"];
+    if(isDarkMode){
+        colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
     }
     chars.forEach((char, index) => {
-        const plotter = new HanziPlotter({char, size, animateOnClick: true});
+        const plotter = new HanziPlotter({
+            character: char,
+            dimension: size,
+            speed: .04,
+            lineThickness: 7*size/200,
+            jitterAmp: 0,
+            colors: colors,
+            lineType: lineType,
+            showDiagonals: false,
+            showGrid: false,
+        });
         plotters.push({plotter: plotter, char: char});
     });
     return plotters;
@@ -174,6 +193,13 @@ function renderPlotters(plotters, pinyinparts=null){
         plotters.forEach((plotterinfo, index) => {
             let plotter = plotterinfo.plotter;
             let color = getToneColor(pinyinparts[index]);
+
+            
+            let colors = ["#151511aa", "#151511aa", "#151511aa"];
+            if(isDarkMode){
+                colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
+            }
+            plotter.setColors(colors);
             plotter.draw();
             plotter.canvas.dataset.plotterIndex = index;
             plotterElement.appendChild(plotter.canvas);
@@ -665,7 +691,7 @@ function renderCardData(data) {
     }
 
 
-    if (chars.length < 4) {
+    if (chars.length < 4 && false) {
         const strokesContainer = document.createElement('div');
         strokesContainer.id = 'flashcard_strokes_container';
         document.getElementById('flashcard_description').appendChild(strokesContainer);

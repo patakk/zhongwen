@@ -26,9 +26,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap"
         rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Character Grid</title>
+    <title>Stories</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <!-- <script src="{{ url_for('static', filename='js/perlin.js') }}"></script> -->
@@ -58,20 +59,13 @@
         }
 
         textarea {
-            width: 100%;
+            width: 30vw;
             height: 30vh;
             padding: 10px;
             font-size: 1.5em;
-            box-sizing: border-box;
             resize: none;
             display: block;
             border: 2px solid #161616;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        textarea::-webkit-scrollbar {
-            display: none;
         }
 
         textarea.darkmode {
@@ -80,78 +74,75 @@
 
 
         textarea.darkmode::selection {
-            background-color: #c7c7c7;
+            background-color: #dab0db;
             color: #242424;
         }
 
-        #mainContainer {
+        .main-container {
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
-            width: 90%;
             padding-top: 3%;
             gap: 20px; 
-            height: 75vh;
         }
 
-        #plottersContainer {
-            flex: 3.3;
-            min-width: 400px; 
-            width: 100%;
-            max-width: 100%;
-            font-size: 1.1em;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;  
-            background: transparent;
-            background: #a0b3a180;
-            position: relative;
-            overflow-y: auto; 
-            height: 75vh;
-            padding: 20px 0;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        #plottersContainer::-webkit-scrollbar {
-            display: none;
-        }
-
-        #controlsContainer {
+        .input-container {
             flex: 1;
             background: #f8f8f8;
             padding: 20px;
-            min-width: 300px; 
+            min-width: min(500px, 90vw);
         }
 
-        #controlsContainer.darkmode {
+        .input-container.darkmode {
             background: #202020;
         }
 
+        #stories-option {
+            background: #eecce552;
+            padding: 20px;
+        }
 
-        #plotters {
-            padding: 120px;
-            margin: 40px 0px;
+        #stories-option.darkmode {
+            background: #eecce522;
+        }
+      
+        #plottersWrapper {
+            flex: 2.3;
+            min-width: 60vw;
+            padding: auto;
             font-size: 1.1em;
             resize: none;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            background: #a0b3a180;
+            position: relative;
+        }
+
+        #plotters {
+            width: 40%;
+            padding: 120px;
+            margin: 40px 0px;
+            font-size: 1.1em;
+            box-sizing: border-box;
+            resize: none;
+            display: block;
             background: #eee;
             position: relative;
         }
 
 
         #translationBox {
-            width: 11vw;
+            width: 14vw;
             padding: 20px;
             margin: 0px;
-            font-size: 1.4em;
+            font-size: 1.7em;
             resize: none;
             position: absolute;
-            right: 0px;
+            right: 40px;
             background: #f8f8f8;
             /* transform: translateX(90%); */
-            transform: translateY(-190%);
             color: rgb(32, 32, 32);
         }
 
@@ -168,6 +159,17 @@
 
         #plotters.empty {
             background: transparent;
+        }
+
+        @media screen and (max-width: 600px) {
+            textarea {
+                width: 90vw;
+            }
+
+            #plotters {
+                width: 90vw;
+            }
+
         }
 
         .button {
@@ -189,23 +191,14 @@
         }
 
 
-        .button:active:not(.empty) {
+        .button:active {
             background-color: #a0b3a1;
         }
 
-        .button.clicked:not(.empty) {
+        .button.clicked {
             background-color: #ffe341;
             transition: background-color 0s;
             color: rgb(31, 31, 31);
-        }
-
-        .button.empty {
-            color: rgba(20, 20, 20, .4);
-            cursor: default;
-        }
-
-        .button.darkmode.empty {
-            color: rgba(206, 206, 206, .4);
         }
 
         .option-container {
@@ -318,7 +311,15 @@
             min-width: 130px;
         }
 
-        #colorPalette {
+        #storyList {
+            width: 100%;
+        }
+
+        #storyList {
+            z-index: 101;
+        }
+
+        .custom-select {
             padding: 5px;
             border-radius: 0;
             font-family: 'Noto Sans Mono', monospace;
@@ -327,17 +328,17 @@
             -moz-border-radius: 0;
         }
 
-        #colorPalette.darkmode {
+        .custom-select.darkmode {
             border: 2px solid #666666;
         }   
 
-        #colorPalette:focus {
+        .custom-select:focus {
             outline: none;
             box-shadow: none;
             border-color: inherit;
         }
 
-        #colorPalette option {
+        .custom-select option {
             border-radius: 0;
             opacity: 0.7;
             -webkit-border-radius: 0;
@@ -350,8 +351,19 @@
             z-index: 100;
         }
 
-        .selected-option {
-            border: 0;
+        .custom-select {
+            /* border: 0; */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .custom-select::after {
+            content: '\2BC8';
+        }
+
+        .custom-select.open::after {
+            content: '\25BC';
         }
 
         .options {
@@ -392,6 +404,12 @@
             border: 0;
         }
 
+        .story-option {
+            display: flex;
+            gap: 4px;
+            border: 0;
+        }
+
         .color-square {
             width: 15px;
             height: 15px;
@@ -408,19 +426,24 @@
 
     <body>
         {% endif %}
-        <h1 id="title">Converter</h1>
+        <h1 id="title">Stories</h1>
         <div class="hamburger" id="hamburgerMenu" style="font-size:22px">
             <span></span>
             <span></span>
             <span></span>
         </div>
-        <div id="mainContainer">
-            <div id="controlsContainer">
-                <!-- <label for="hanziInput">Hanzi Input</label> -->
-                <textarea id="hanziInput"></textarea>
-                <div id="hanziCount"></div>
-                <div class="button" id="submitButton">Submit</div>
-                <div class="button" id="downloadButton">Download SVG</div>
+        <div class="main-container">
+            <div class="input-container">
+                
+                <div class="option-container" id="stories-option">
+                    <span class="optionLabel">Stories:</span>
+                    <div class="custom-select" id="storyList">
+                        <div class="selected-option" id="selectedStory">
+                        </div>
+                        <div class="options" id="storyOptions">
+                        </div>
+                    </div>
+                </div>
                 <div class="option-container">
                     <span class="optionLabel">Area dims:</span>
                     <span id="dimsValue">60</span>
@@ -463,50 +486,50 @@
                 <div class="option-container">
                     <span class="optionLabel">Color palette:</span>
                     <div class="custom-select" id="colorPalette">
-                        <div class="selected-option">
+                        <div class="selected-option" id="selectedPalette">
                             <div class="color-pair">
                                 <div class="color-square" style="background-color: rgb(48, 48, 48);"></div>
                                 <div class="color-square" style="background-color: rgb(48, 48, 48);"></div>
                                 <div class="color-square" style="background-color: rgb(48, 48, 48);"></div>
                             </div>
                         </div>
-                        <div class="options">
-                            <div class="option" data-value="1">
+                        <div class="options" id="colorOptions">
+                            <div class="option iscolor" data-value="1">
                                 <div class="color-pair">
                                     <div class="color-square" style="background-color: rgb(212, 39, 39);"></div>
                                     <div class="color-square" style="background-color: rgb(97, 216, 97);"></div>
                                     <div class="color-square" style="background-color: rgb(165, 120, 158);"></div>
                                 </div>
                             </div>
-                            <div class="option" data-value="2"> 
+                            <div class="option iscolor" data-value="2"> 
                                 <div class="color-pair">
                                     <div class="color-square" style="background-color: rgb(228, 236, 110);"></div>
                                     <div class="color-square" style="background-color: rgb(107, 221, 103);"></div>
                                     <div class="color-square" style="background-color: rgb(236, 124, 72);"></div>
                                 </div>
                             </div>
-                            <div class="option" data-value="3">
+                            <div class="option iscolor" data-value="3">
                                 <div class="color-pair">
                                     <div class="color-square" style="background-color: rgb(255, 79, 79);"></div>
                                     <div class="color-square" style="background-color: rgb(48, 48, 48);"></div>
                                     <div class="color-square" style="background-color: rgb(170, 125, 184);"></div>
                                 </div>
                             </div>
-                            <div class="option" data-value="4">
+                            <div class="option iscolor" data-value="4">
                                 <div class="color-pair">
                                     <div class="color-square" style="background-color: rgb(48, 48, 48);"></div>
                                     <div class="color-square" style="background-color: rgb(48, 48, 48);"></div>
                                     <div class="color-square" style="background-color: rgb(48, 48, 48);"></div>
                                 </div>
                             </div>
-                            <div class="option" data-value="5">
+                            <div class="option iscolor" data-value="5">
                                 <div class="color-pair">
                                     <div class="color-square" style="background-color: rgb(222, 222, 222);"></div>
                                     <div class="color-square" style="background-color: rgb(222, 222, 222);"></div>
                                     <div class="color-square" style="background-color: rgb(222, 222, 222);"></div>
                                 </div>
                             </div>
-                            <div class="option" data-value="6">
+                            <div class="option iscolor" data-value="6">
                                 <div class="color-pair">
                                     <div class="color-square" style="background-color: rgb(255, 0, 0);"></div>
                                     <div class="color-square" style="background-color: rgb(44, 44, 44);"></div>
@@ -516,9 +539,9 @@
                         </div>
                     </div>
                 </div>
-                
             </div>
-            <div id="plottersContainer" class="empty">
+
+            <div id="plottersWrapper" class="empty">
                 <div id="plotters" class="empty"></div>
             </div>
         </div>
@@ -528,9 +551,9 @@
             let inputdeck = {{ deck | tojson | safe }};
             let isDarkMode = {{ darkmode | tojson | safe }};
             const username = {{ username | tojson | safe }};
-            let convertedText = {{ convertedText | tojson | safe }};
             let dataPerCharacter = {{ dataPerCharacter | tojson | safe }};
-            let transPerLine = {{ transPerLine | tojson | safe }};
+            let story = {{ story | tojson | safe }};
+            let stories = {{ stories | tojson | safe }};
         </script>
 
         <script>
@@ -550,16 +573,42 @@
             init();
             */
 
-            let button = document.getElementById('submitButton');
-            let downloadButton = document.getElementById('downloadButton');
             let input = document.getElementById('hanziInput');
             let plottersElem = document.getElementById('plotters');
             let plotters = [];
             let isMouseDown = false;
-            let selectedValue = 4;
+            let selectedDropdownValue = [4, 1];
 
             function isHanzi(char) {
                 return /[\u4e00-\u9fff]/.test(char);
+            }
+            
+            function populateStoryOptions() {
+                const selectedStory = document.getElementById('selectedStory');
+                const optionsContainer = document.getElementById('storyOptions');
+
+                // Populate the selected option (default to the first story)
+                selectedStory.innerHTML = `
+                    <div class="story-option">
+                        ${stories[0].title}
+                    </div>
+                `;
+
+                // Clear existing options
+                optionsContainer.innerHTML = '';
+
+                // Populate the options
+                stories.forEach((story, index) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option isstory';
+                    optionDiv.setAttribute('data-value', index + 1);
+                    optionDiv.innerHTML = `
+                        <div class="story-option">
+                            ${story.title}
+                        </div>
+                    `;
+                    optionsContainer.appendChild(optionDiv);
+                });
             }
 
             async function getPinyinEnglishFor(character) {
@@ -610,15 +659,13 @@
 
             function addHoverBehaviorToWrapper(wrapper, lineIndex) {
                 let translationBox = document.getElementById('translationBox');
-                let canvaswrapper = document.getElementById('plottersContainer');
-
-                let scrollOffset = plottersContainer.scrollTop;
+                let canvaswrapper = document.getElementById('plottersWrapper');
 
                 wrapper.addEventListener('mouseenter', function (event) {
-                    translationBox.textContent = transPerLine[lineIndex];
+                    translationBox.textContent = story.english[lineIndex];
                     translationBox.classList.remove('hidden');
                     let canvaswrapperposy = canvaswrapper.getBoundingClientRect().top;
-                    let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + scrollOffset;
+                    let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
                     translationBox.style.top = wrapperposy + 'px';
 
                     document.querySelectorAll('.pinyinLabel.line_' + lineIndex).forEach((el) => {
@@ -627,9 +674,8 @@
                 });
 
                 wrapper.addEventListener('mousemove', function (event) {
-                    let scrollOffset = plottersContainer.scrollTop;
                     let canvaswrapperposy = canvaswrapper.getBoundingClientRect().top;
-                    let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + scrollOffset;
+                    let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
                     translationBox.style.top = wrapperposy + 'px';
                 });
 
@@ -978,6 +1024,27 @@
                     bubbleobj.draggablearea.parentNode.removeChild(bubbleobj.draggablearea);
                 }, 200);  // Delay of 1000 milliseconds
             }
+
+            function getStory(index, func=null) {
+                fetch(`./get_story/${index}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data)
+                        story = data.story;
+                        dataPerCharacter = data.char_data;
+                        if(func) {
+                            func();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error.message);
+                    });
+            }
             
             document.addEventListener("DOMContentLoaded", function () {
                 dimsSlider = document.getElementById('dimsSlider');
@@ -998,56 +1065,72 @@
                 backgroundCheckbox2 = document.getElementById('backgroundCheckbox2');
                 pinyinCheckbox = document.getElementById('pinyinCheckbox');
 
-                plottersContainer = document.getElementById('plottersContainer');
+                plottersWrapper = document.getElementById('plottersWrapper');
                 plottersElem = document.getElementById('plotters');
 
                 const randomHue = Math.random() * 360;
-                plottersContainer.style.backgroundColor = isDarkMode 
+                plottersWrapper.style.backgroundColor = isDarkMode 
                     ? `hsl(${randomHue}, 8%, 17%)`
                     : `hsl(${randomHue}, 8%, 87%)`;
-                plottersContainer.style.backgroundColor = "transparent"; 
 
-                input.value = convertedText || '';
-                
-            
                 noiseValue.textContent = noiseSlider.value;
                 pinyinCheckbox.checked = showAllPinyin;
+                populateStoryOptions();
+                // redrawPlotters();
+                // updateCount();
 
-                if (convertedText) {
-                    redrawPlotters();
-                }
-                updateCount();
+                let dropdowns = [
+                    {
+                        elem: document.getElementById('colorPalette'),
+                        childquery: '.color-pair',
+                        childquery2: '.iscolor',
+                        selected: document.getElementById('selectedPalette'),
+                    },
+                    {
+                        elem: document.getElementById('storyList'),
+                        childquery: '.story-option',
+                        childquery2: '.isstory',
+                        selected: document.getElementById('selectedStory'),
+                    }
+                ]
 
-                if(plotters.length == 0){
-                    downloadButton.classList.add('empty');
-                    // button.classList.add('empty');
-                }
-                else{
-                    downloadButton.classList.remove('empty');
-                    // button.classList.remove('empty');
-                }
-                document.querySelector('.custom-select').addEventListener('click', function(event) {
-                    event.stopPropagation();
-                    this.classList.toggle('open');
-                });
+                dropdowns.forEach((drop, idx) => {
 
-                // Handle option selection
-                document.querySelectorAll('.option').forEach(option => {
-                    option.addEventListener('click', function() {
-                        const value = parseInt(this.dataset.value);
-                        selectedValue = value;
-                        const colorPair = this.querySelector('.color-pair').cloneNode(true);
-                        document.querySelector('.selected-option').innerHTML = '';
-                        document.querySelector('.selected-option').appendChild(colorPair);
-                        redrawPlotters();
+                    drop.elem.addEventListener('click', function(event) {
+                        event.stopPropagation();
+                        drop.elem.classList.toggle('open');
+                    });
+                    document.querySelectorAll(drop.childquery2).forEach(option => {
+                        option.addEventListener('click', function() {
+                            const value = parseInt(option.dataset.value);
+                            selectedDropdownValue[idx] = value;
+                            const row = option.querySelector(drop.childquery).cloneNode(true);
+                            drop.selected.innerHTML = '';
+                            drop.selected.appendChild(row);
+                            if(drop.elem.id == 'storyList') {
+                                story = getStory(value, redrawPlotters);
+                            }
+                            else{
+                                redrawPlotters();
+                            }
+                        });
+                    });
+                    document.addEventListener('click', function() {
+                        drop.elem.classList.remove('open');
                     });
                 });
 
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function() {
-                    document.querySelector('.custom-select').classList.remove('open');
-                });
-
+                const dropdownIndex = 1;
+                const optionValue = 1;
+                const option = document.querySelector(`${dropdowns[dropdownIndex].childquery2}[data-value="${optionValue}"]`);
+                if (option) {
+                    selectedDropdownValue[dropdownIndex] = optionValue;
+                    const row = option.querySelector(dropdowns[dropdownIndex].childquery).cloneNode(true);
+                    dropdowns[dropdownIndex].selected.innerHTML = '';
+                    dropdowns[dropdownIndex].selected.appendChild(row);
+                    dropdowns[dropdownIndex].elem.classList.remove('open');
+                    story = getStory(optionValue, redrawPlotters);
+                }
 
                 document.getElementById('plotters').style.width = dimsSlider.value + '%';
                 dimsSlider.addEventListener('input', function () {
@@ -1056,37 +1139,19 @@
                 });
 
                 document.getElementById('plotters').style.padding = paddingSlider.value + 'px';
-                document.getElementById('plotters').style.width = 'calc(' + dimsSlider.value + '% - ' + (2 * paddingSlider.value) + 'px)';
                 paddingSlider.addEventListener('input', function () {
                     paddingValue.textContent = this.value;
                     document.getElementById('plotters').style.padding = this.value + 'px';
-                    document.getElementById('plotters').style.width = 'calc(' + dimsSlider.value + '% - ' + (2 * this.value) + 'px)';
-                    
-                    const containerWidth = document.getElementById('plotters').parentElement.offsetWidth;
-                    const paddingAsPercentage = (this.value * 2 / containerWidth) * 100;
-                    console.log("ssasfafasfs")
-                    console.log(containerWidth)
-                    console.log(paddingAsPercentage)
-                    console.log(dimsSlider.value)
-                    console.log(Math.max(0, dimsSlider.value - paddingAsPercentage))
-                    dimsSlider.value = Math.max(0, dimsSlider.value + paddingAsPercentage);
-                    dimsValue.textContent = dimsSlider.value;
                 });
 
                 speedSlider.addEventListener('change', function() {
                     speedValue.textContent = this.value + 'x';
                     redrawPlotters();
                 });
-                speedSlider.addEventListener('input', function() {
-                    speedValue.textContent = this.value + 'x';
-                });
 
                 sizeSlider.addEventListener('change', function() {
                     sizeValue.textContent = this.value;
                     redrawPlotters();
-                });
-                sizeSlider.addEventListener('input', function() {
-                    sizeValue.textContent = this.value;
                 });
 
                 thicknessSlider.addEventListener('change', function() {
@@ -1096,18 +1161,11 @@
                     }
                 });
 
-                thicknessSlider.addEventListener('input', function() {
-                    thicknessValue.textContent = this.value + 'pt';
-                });
-
                 noiseSlider.addEventListener('change', function() {
                     noiseValue.textContent = this.value;
                     if (!plottersElem.classList.contains('empty')) {
                         redrawPlotters();
                     }
-                });
-                noiseSlider.addEventListener('input', function() {
-                    noiseValue.textContent = this.value;
                 });
 
                 backgroundCheckbox.addEventListener('input', function() {
@@ -1157,19 +1215,6 @@
                 }
             });
 
-            input.addEventListener('input', function () {
-                updateCount();
-                
-                if(plotters.length == 0){
-                    downloadButton.classList.add('empty');
-                    // button.classList.add('empty');
-                }
-                else{
-                    downloadButton.classList.remove('empty');
-                    // button.classList.remove('empty');
-                }
-            });
-            
             function fetchStream(prompt, bubble) {
                 console.log(prompt);
                 fetch("/api/openaiexplain", {  // Changed to your backend endpoint
@@ -1250,7 +1295,10 @@
                 let translationBox = document.createElement('div');
                 translationBox.setAttribute('id', 'translationBox');
                 translationBox.classList.add('hidden');
-                plotterElement.appendChild(translationBox);
+                //plotterElement.appendChild(translationBox);
+                // let plottersWrapper = document.getElementById('plottersWrapper');
+                // plottersWrapper.appendChild(translationBox);
+                document.body.appendChild(translationBox);
 
                 let currentLineIndex = null;
                 let currentWrapper = null;
@@ -1341,10 +1389,11 @@
 
 
             function redrawPlotters() {
-                let currentLines = input.value.split('\n');
+                let joinedLines = story.hanzi.join('\n');
+                let currentLines = story.hanzi;
                 let numLines = currentLines.length;
                 let lineIndex = 0;
-                let characters = input.value.split('');
+                let characters = joinedLines.split('');
                 const plotterElement = document.getElementById('plotters');
                 plotterElement.innerHTML = '';
                 plotters = [];
@@ -1364,7 +1413,7 @@
                     bbb1 = '#4449';
                     bbb3 = '#aaac';
                 }
-                switch (selectedValue) {
+                switch (selectedDropdownValue[0]) {
                     case 1:
                         colors = ['#f00a','#0f0a','#f6f6',];
                         break;
@@ -1433,16 +1482,6 @@
                     renderPlottersToDOM(plotterElement, plotters, showAllPinyin, colors, size, dataPerCharacter, currentLines);
                 }
 
-
-                if(plotters.length == 0){
-                    downloadButton.classList.add('empty');
-                    // button.classList.add('empty');
-                }
-                else{
-                    downloadButton.classList.remove('empty');
-                    // button.classList.remove('empty');
-                }
-
             }
 
             function throttle(func, limit) {
@@ -1462,100 +1501,11 @@
                 let hanziCount = document.getElementById('hanziCount');
                 hanziCount.textContent = input.value.length + ' characters';
             }
-
-            const store = throttle(function () {
-                updateCount();
-                fetch('/storeConvertedText', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        text: input.value
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        // extend datapercharacter with new data
-                        dataPerCharacter = { ...dataPerCharacter, ...data.dataPerCharacter };
-                        transPerLine = data.transPerLine;
-                        redrawPlotters();
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                    });
-            }, 1000); // 1000ms = 1 second
-
-            button.addEventListener('click', () => {
-                if(button.classList.contains('empty')){
-                    return;
-                }
-                button.classList.add('clicked');
-                store();
-
-                setTimeout(() => {
-                    button.classList.remove('clicked');
-                }, 400);
-            });
-
-            downloadButton.addEventListener('click', () => {
-                if(downloadButton.classList.contains('empty')){
-                    return;
-                }
-                downloadButton.classList.add('clicked');
-                const svg = combinePlottersToSVG();
-                const blob = new Blob([svg], {type: 'image/svg+xml'});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'combined_strokes.svg';
-                a.click();
-                URL.revokeObjectURL(url);
-                setTimeout(() => {
-                    downloadButton.classList.remove('clicked');
-                }, 400);
-            });
-
-            function combinePlottersToSVG() {
-                const plottersElement = document.getElementById('plotters');
-                const parentElement = plottersElement.getBoundingClientRect();
-                const parentWidth = parentElement.width;
-                const parentHeight = parentElement.height;
-
-                let svgContent = '';
-
-                plotters.forEach(plotterdata => {
-                    const plotter = plotterdata.plotter;
-                    if(plotter){
-                        const canvas = plotter.canvas;
-                        const rect = canvas.getBoundingClientRect();
-                        const offsetX = rect.left - parentElement.left;
-                        const offsetY = rect.top - parentElement.top;
-
-                        let pstrokes = plotter.strokes;
-                        if(plotter.jitteredStrokes)
-                            pstrokes = plotter.jitteredStrokes;
-                        pstrokes.forEach(stroke => {
-                            let pathD = '';
-                            stroke.forEach((point, index) => {
-                                const x = (point.x / 1000 * canvas.width / 2) + offsetX;
-                                const y = (point.y / 1000 * canvas.height / 2) + offsetY;
-                                pathD += (index === 0 ? 'M' : 'L') + `${x},${y}`;
-                            });
-                            svgContent += `<path d="${pathD}" stroke="black" fill="none"/>`;
-                        });
-                    }
-                });
-
-                return `<svg width="${parentWidth}" height="${parentHeight}" viewBox="0 0 ${parentWidth} ${parentHeight}">
-                    ${svgContent}
-                </svg>`;
-            }
+            
         </script>
 
         <div class="dropdown-menu" id="dropdownMenu">
             <ul>
-                
                 <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li class="has-submenu">
@@ -1570,8 +1520,8 @@
                     <span>Flashcards</span>
                     <ul class="submenu">
                         {% for key, deck in decks.items() %}
-                            <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
+                            <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                            {% endfor %}
                     </ul>
                 </li>
                 <!-- <li class="has-submenu">

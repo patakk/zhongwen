@@ -301,8 +301,9 @@
         <span></span>
     </div>
     <div class="dropdown-menu" id="dropdownMenu">
-    <ul>
-    <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+        <ul>
+            
+            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
             <li><a href="{{ url_for('home') }}">Home</a></li>
             <li class="has-submenu">
                 <span>Hanzi Grid</span>
@@ -320,27 +321,20 @@
                         {% endfor %}
                 </ul>
             </li>
-            <li class="has-submenu">
+            <!-- <li class="has-submenu">
                 <span>Fonts</span>
                 <ul class="submenu">
                     <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
                     <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
                     <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
                 </ul>
-            </li>
-            <li class="has-submenu">
-                <span>Decks</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </li>
+            </li> -->
             <li class="has-submenu">
                 <span>Stuff</span>
                 <ul class="submenu">
                     <li><a href="{{ url_for('search') }}">Search</a></li>
                     <li><a href="{{ url_for('convert') }}">Convert to strokes</a></li>
+                    <li><a href="{{ url_for('stories') }}">Stories</a></li>
                     <!-- <li><a href="{{ url_for('lists') }}">Example Lists</a></li> -->
                     <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
                     <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
@@ -360,7 +354,7 @@
             <button type="submit" id="saveButton">Save</button>
         </form>
     </div> -->
-    <script src="{{ url_for('static', filename='js/plotter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script>
     <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>
 
     <script>
@@ -463,7 +457,8 @@
         const maxnumcard = {{ maxnumcards | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
         // const saveButton = document.getElementById('saveButton');
-        
+        let currentGridPlotters = [];
+        let showAllPinyin = false;
         // saveButton.textContent = 'Save';
         // saveButton.style.color = 'black';
         // if(saveButton.classList.contains('darkmode')) {
@@ -769,6 +764,8 @@
             .then(data => {
                 // bordercanvas.style.display = 'block';
                 data.plotters = createPlotters(data);
+                currentGridPlotters = data.plotters;
+
                 renderCardData(data);
                 displayCard(true, true);
                 // recordView(character);

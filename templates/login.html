@@ -53,7 +53,8 @@
             flex-direction: column;
             align-items: center;
         }
-        input[type="text"] {
+        input[type="text"],
+        input[type="password"] {
             width: 250px;
             max-width: 90%;
             padding: 10px;
@@ -78,6 +79,18 @@
             background-color: black;
             color: white;
         }
+        input[type="text"]:focus {
+            outline: none;
+            border: 2px solid #7100bd; 
+            border-radius: 0px;
+            outline: none;
+        }
+        input[type="password"]:focus {
+            outline: none;
+            border: 2px solid #7100bd; 
+            border-radius: 0px;
+            outline: none;
+        }
         ::selection {
             background-color: black;
             color: white;
@@ -95,12 +108,6 @@
             h1 {
                 font-size: 2em;
             }
-            input[type="text"] {
-                width: 200px;
-            }
-            input[type="submit"] {
-                width: 80px;
-            }
         }
     </style>
 </head>
@@ -109,9 +116,24 @@
 <body>
     <div class="login-container">
         <h1>Login</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         <form method="POST">
-            <input type="text" name="username" placeholder="Enter your username" required>
-            <input type="submit" value="Login">
+            <input type="text" name="username" placeholder="username" required>
+            <input type="password" name="password" placeholder="password" required>
+            <div class="button-group">
+                <input type="submit" name="action" value="Login">
+                <input type="submit" name="action" value="Register">
+            </div>
         </form>
     </div>
 
@@ -127,7 +149,45 @@
 
         let inputfield = document.querySelector('input[type="text"]');
         inputfield.focus();
-
     </script>
+
+    <style>
+        .flash-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 0px;
+            text-align: center;
+        }
+
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+        }
+
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #66bb6a;
+        }
+
+        /* .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .button-group input[type="submit"] {
+            flex: 1;
+        } */
+
+        /* If you need to maintain the same width as before for the inputs */
+        /* input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            margin-bottom: 10px;
+        } */
+    </style>
 </body>
+
 </html>

@@ -13,9 +13,11 @@ from backend.db.ops import db_update_or_create_note
 from backend.db.models import Card, UserNotes
 from backend.db.extensions import db
 
-logger = logging.getLogger(__name__)
+from backend.common import CARDDECKS
+from backend.common import get_char_from_deck
+from backend.common import flashcard_app
 
-flashcard_app = get_flashcard_app()
+logger = logging.getLogger(__name__)
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -73,11 +75,11 @@ def store_notes():
     return jsonify({"status": "success"})
 
 
-@api_bp.route("/get_characters")
-@session_required
-def get_characters():
-    characters = list(flashcard_app.load_cards(session["deck"]).keys())
-    return jsonify({"characters": characters})
+# @api_bp.route("/get_characters")
+# @session_required
+# def get_characters():
+#     characters = list(flashcard_app.load_cards(session["deck"]).keys())
+#     return jsonify({"characters": characters})
 
 
 @api_bp.route("/get_characters_with_pinyin")
@@ -85,7 +87,7 @@ def get_characters():
 def get_characters_with_pinyin():
     deck = session["deck"]
     characters_data = []
-    for char, data in flashcard_app.cards[deck].items():
+    for char, data in CARDDECKS[deck].items():
         characters_data.append({"character": char, "pinyin": data["pinyin"]})
     return jsonify({"characters": characters_data})
 
@@ -108,9 +110,9 @@ def get_characters_pinyinenglish():
         # If specific characters are provided
         characters = sorted(characters)
         for character in characters:
-            for deck in flashcard_app.cards:
-                if character in flashcard_app.cards[deck] and character not in inserted:
-                    data = flashcard_app.get_char_from_deck(deck, character)
+            for deck in CARDDECKS:
+                if character in CARDDECKS[deck] and character not in inserted:
+                    data = get_char_from_deck(deck, character)
                     all_data.append(
                         {
                             "character": character,
@@ -124,9 +126,9 @@ def get_characters_pinyinenglish():
                     break  # Stop searching once we find the character in a deck
     else:
         # If no specific characters are provided or it's a GET request, get all characters
-        for deck in flashcard_app.cards:
-            for character in flashcard_app.cards[deck]:
-                data = flashcard_app.get_char_from_deck(deck, character)
+        for deck in CARDDECKS:
+            for character in CARDDECKS[deck]:
+                data = get_char_from_deck(deck, character)
                 all_data.append(
                     {
                         "character": character,
@@ -216,6 +218,46 @@ def get_api_key():
     else:
         return jsonify({"error": "API key not found"}), 404
 
+from flask import Flask, request, Response, stream_with_context
+import requests
+
+@api_bp.route('/openaiexplain', methods=['POST'])
+def chat():
+    if not request.is_json:
+        return {"error": "Request must be JSON"}, 400
+
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        api_key = os.environ.get("OPENAI_API_KEY_ZHONG_WEN")
+        if not api_key:
+            file_path = "/home/patakk/.zhongwen-openai-apikey"
+            try:
+                with open(file_path, "r") as file:
+                    api_key = file.read().strip()
+            except Exception as e:
+                print(f"Error reading OpenAI API key file: {e}")
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    def generate():
+        response = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers=headers,
+            json=request.json,
+            stream=True
+        )
+
+        for chunk in response.iter_lines():
+            if chunk:
+                yield chunk.decode('utf-8') + '\n'
+
+    return Response(
+        stream_with_context(generate()),
+        content_type='text/event-stream'
+    )
 
 @api_bp.route("/get_audio", methods=["POST", "GET"])
 def get_audio():
@@ -253,9 +295,9 @@ def get_audio():
     return send_file(buffer, mimetype="audio/mpeg")
 
 
-@api_bp.route("/debug")
-def debug():
-    return jsonify({"debug": flashcard_app.debug})
+# @api_bp.route("/debug")
+# def debug():
+#     return jsonify({"debug": flashcard_app.debug})
 
 
 @api_bp.route("/save_stroke_data", methods=["POST"])
@@ -348,7 +390,7 @@ def get_characters_for_practice():
             "pinyin": data["pinyin"],
             "english": data["english"],
         }
-        for char, data in flashcard_app.cards[deck].items()
+        for char, data in CARDDECKS[deck].items()
     ]
     return jsonify({"characters": characters_data})
 
