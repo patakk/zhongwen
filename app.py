@@ -301,7 +301,7 @@ def login():
         # Registration
         if action == 'Register':
             if db_user_exists(username):
-                flash('Username unavailable', 'error')  # Generic error message
+                flash('Username unavailable', 'error')
                 logger.warning(f"Registration attempt with existing username: {username}")
                 return redirect(url_for('login'))
                 

@@ -5,3 +5,4 @@ Flask-WTF
 python-dateutil
 pypinyin
 Pillow
+requests
