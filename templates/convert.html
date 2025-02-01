@@ -883,7 +883,6 @@
                     close.style.opacity = '1.0';
                     drag.style.opacity = '1.0';
                     bubbleobj.overdragged = true;
-                    console.log('overdragged');
                 });
 
                 draggableArea.addEventListener('mouseout', function(event) {
@@ -1086,11 +1085,6 @@
                     
                     const containerWidth = document.getElementById('plotters').parentElement.offsetWidth;
                     const paddingAsPercentage = (this.value * 2 / containerWidth) * 100;
-                    console.log("ssasfafasfs")
-                    console.log(containerWidth)
-                    console.log(paddingAsPercentage)
-                    console.log(dimsSlider.value)
-                    console.log(Math.max(0, dimsSlider.value - paddingAsPercentage))
                     dimsSlider.value = Math.max(0, dimsSlider.value + paddingAsPercentage);
                     dimsValue.textContent = dimsSlider.value;
                 });
@@ -1193,7 +1187,6 @@
             });
             
             function fetchStream(prompt, bubble) {
-                console.log(prompt);
                 fetch("/api/openaiexplain", {  // Changed to your backend endpoint
                     method: 'POST',
                     headers: {
@@ -1216,7 +1209,6 @@
 
                     return reader.read().then(function processText({ done, value }) {
                         if (done) {
-                            // console.log('sending last chunk');
                             // chrome.tabs.sendMessage(tabId, {
                             //     type: "sendTranslationEnd"
                             // });
@@ -1239,7 +1231,6 @@
                                                 data.choices.forEach(choice => {
                                                     if (choice.delta && choice.delta.content) {
                                                         if (isFirstChunk) {
-                                                            // console.log('sending first chunk')
                                                             bubble.bubbletext.innerHTML = choice.delta.content;
                                                             isFirstChunk = false;  // Update the flag after sending the first message
                                                         } else {
@@ -1411,8 +1402,7 @@
                 lineType = 'miter'; 
                 lineType = 'round'; 
                 if (isMobileOrTablet()) {
-                    console.log('Mobile or tablet detected');
-                    size = 48;
+                    // size = 48;
                 }
                 characters.forEach((char, index) => {
                     let strokes = undefined;
