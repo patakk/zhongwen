@@ -398,6 +398,23 @@
             border: 0;
             border-radius: 50%;
         }
+
+        @media (max-width: 768px) {
+            .option-container:has(#dimsSlider),
+            .option-container:has(#paddingSlider) {
+                display: none;
+            }
+
+            #plottersContainer {
+                width: 100%;
+                height: 100%;
+            }
+
+            #plotters {
+                width: 100%;
+                height: 100%;
+            }
+        }
     </style>
 </head>
 
@@ -421,12 +438,12 @@
                 <div id="hanziCount"></div>
                 <div class="button" id="submitButton">Submit</div>
                 <div class="button" id="downloadButton">Download SVG</div>
-                <div class="option-container">
+                <div class="option-container" id="dimsSliderElement">
                     <span class="optionLabel">Area dims:</span>
                     <span id="dimsValue">60</span>
                     <input type="range" class="myslider" id="dimsSlider" min="20" max="100" step="1" value="60">
                 </div>
-                <div class="option-container">
+                <div class="option-container" id="paddingSliderElement">
                     <span class="optionLabel">Padding:</span>
                     <span id="paddingValue">120</span>
                     <input type="range" class="myslider" id="paddingSlider" min="50" max="400" step="1" value="120">
@@ -1057,6 +1074,11 @@
 
                 document.getElementById('plotters').style.padding = paddingSlider.value + 'px';
                 document.getElementById('plotters').style.width = 'calc(' + dimsSlider.value + '% - ' + (2 * paddingSlider.value) + 'px)';
+
+                if(isMobileOrTablet()){
+                    document.getElementById('plotters').style.padding = '10px';
+                    document.getElementById('plotters').style.width = 'calc(' + 100 + '% - ' + (2 * 10) + 'px)';
+                }
                 paddingSlider.addEventListener('input', function () {
                     paddingValue.textContent = this.value;
                     document.getElementById('plotters').style.padding = this.value + 'px';
