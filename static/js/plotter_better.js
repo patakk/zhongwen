@@ -522,19 +522,19 @@ class HanziPlotter {
         }
 
         this.jitteredStrokes = this.applyJitter(this.originalStrokes, this.jitterAmp);
-        if(this.colors[1]){
-            this.ctx.strokeStyle = this.colors[1];
+        if(this.colors[0]){
+            this.ctx.strokeStyle = this.colors[0];
             this.ctx.lineWidth = this.lineThickness;
             this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
         }
         strokes = this.jitteredStrokes;
     
         strokes = this.applyJitter(this.originalStrokes, this.jitterAmp+111);
-        if(this.colors[2]){
-            this.ctx.strokeStyle = this.colors[2];
-            this.ctx.lineWidth = Math.max(0.5, this.lineThickness/1);
+        // if(this.colors[2]){
+            // this.ctx.strokeStyle = this.colors[2];
+            // this.ctx.lineWidth = Math.max(0.5, this.lineThickness/1);
             // this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
-        }
+        // }
     
         // for(let i = 0; i < 10; i++){
         //     strokes = this.applyJitter(this.originalStrokes, this.jitterAmp-111/2+111*i/9*(.8+.4*power(noise(i*.1, this.seed), 4)));
@@ -549,18 +549,18 @@ class HanziPlotter {
         if(isDarkMode){
             // this.ctx.strokeStyle = '#fff7';
         }
-        if(this.colors[0] == null && this.colors[2] == null){
-            this.ctx.lineWidth = this.lineThickness/3;
-            this.ctx.strokeStyle = this.colors[1];
-            this.ctx.strokeStyle = "#fff5";
-            if(parseInt(this.colors[1][2]) < 9){
-                this.ctx.strokeStyle = "#333a";
-                if(isDarkMode){
-                    this.ctx.strokeStyle = "#5555";
-                }
-            }
+        // if(this.colors[0] == null && this.colors[2] == null){
+        //     this.ctx.lineWidth = this.lineThickness/3;
+        //     this.ctx.strokeStyle = this.colors[1];
+        //     this.ctx.strokeStyle = "#fff5";
+        //     if(parseInt(this.colors[1][2]) < 9){
+        //         this.ctx.strokeStyle = "#333a";
+        //         if(isDarkMode){
+        //             this.ctx.strokeStyle = "#5555";
+        //         }
+        //     }
             // this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
-        }
+        // }
     }
     
     getStrokeLength(stroke) {
