@@ -1707,10 +1707,6 @@
                             canvasContainer.addEventListener('click', function() {
                                 let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence. If the char is not in the sentence, dont mention that fact, pretend its there.';
 
-                                // check if visible
-                                if(pinyinElement.classList.contains('hidden')){
-                                    return;
-                                }
                                 if(lineIndex !== currentHoveredLine){
                                     return;
                                 }
