@@ -883,8 +883,10 @@
 
                     if(isMobileOrTablet()){
                         // position on top in the middle
-                        translationBox.style.left = 0;
-                        translationBox.style.top = 0;
+                        translationBox.style.position = 'fixed';
+                        translationBox.style.left = "50%";
+                        translationBox.style.top = "5%";
+                        translationBox.style.transform = "translateX(-50%)";
                     }
                 });
 
