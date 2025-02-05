@@ -863,7 +863,7 @@
                     if(translationBox.textContent.length === 0){
                         return;
                     }
-                    // translationBox.classList.remove('hidden');
+                    translationBox.classList.remove('hidden');
                     // let canvaswrapperposy = canvaswrapper.getBoundingClientRect().top;
                     // let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
                     // translationBox.style.top = wrapperposy + 'px';
@@ -881,9 +881,12 @@
                     //     translationBox.style.left = 0;
                     // }
 
-                        translationBox.style.position = 'absolute !important';
-                        translationBox.style.left = "0";
-                        translationBox.style.top = window.scrollY + 20 + 'px';
+                    if(isMobileOrTablet()){
+                        translationBox.style.position = 'fixed !important';
+                        translationBox.style.left = "50% !important";
+                        translationBox.style.top = "5% !important";
+                        translationBox.style.transform = "translateX(-50%) !important";
+                    }
                 });
 
                 wrapper.addEventListener('mousemove', function (event) {
@@ -903,9 +906,12 @@
                     //     translationBox.style.left = 0;
                     // }
 
-                        translationBox.style.position = 'absolute !important';
-                        translationBox.style.left = "0";
-                        translationBox.style.top = window.scrollY + 20 + 'px';
+                    if(isMobileOrTablet()){
+                        translationBox.style.position = 'fixed !important';
+                        translationBox.style.left = "50% !important";
+                        translationBox.style.top = "5% !important";
+                        translationBox.style.transform = "translateX(-50%) !important";
+                    }
                 });
 
                 wrapper.addEventListener('mouseleave', function () {
