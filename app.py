@@ -73,7 +73,7 @@ application = app
 limiter = Limiter(
     key_func=get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"]
+    default_limits=["11200 per day", "1150 per hour"]
 )
 
 app.register_blueprint(api_bp)

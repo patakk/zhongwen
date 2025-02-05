@@ -517,8 +517,8 @@ class HanziPlotter {
         if(this.colors[0]){
             this.ctx.strokeStyle = this.colors[0];
             this.ctx.lineWidth = this.lineThickness*2;
-            strokes = this.applyJitter(this.originalStrokes, this.jitterAmp+135);
-            this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
+            // strokes = this.applyJitter(this.originalStrokes, this.jitterAmp+135);
+            // this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
         }
 
         this.jitteredStrokes = this.applyJitter(this.originalStrokes, this.jitterAmp);
@@ -533,7 +533,7 @@ class HanziPlotter {
         if(this.colors[2]){
             this.ctx.strokeStyle = this.colors[2];
             this.ctx.lineWidth = Math.max(0.5, this.lineThickness/1);
-            this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
+            // this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
         }
     
         // for(let i = 0; i < 10; i++){

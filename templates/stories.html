@@ -28,7 +28,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stories</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
@@ -47,6 +46,19 @@
 
         body {
             font-family: 'Kaiti', sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+        
+        h1 {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        #title {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 3em;
+            margin-bottom: 10px;
         }
 
         #flashcard_character,
@@ -80,20 +92,23 @@
 
         .main-container {
             display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
             padding-top: 3%;
-            gap: 20px; 
+            width: 100%;
+            position: relative;
         }
 
-        .input-container {
-            flex: 1;
+        #input-container {
+            flex: 0 0 20%;
+            align-self: flex-start;
             background: #f8f8f8;
             padding: 20px;
             min-width: min(500px, 90vw);
+            max-width: 20%;
         }
 
-        .input-container.darkmode {
+        #input-container.darkmode {
             background: #202020;
         }
 
@@ -106,32 +121,41 @@
             background: #eecce522;
         }
       
+        
         #plottersWrapper {
-            flex: 2.3;
-            min-width: 100px;
-            padding: auto;
-            font-size: 1.1em;
-            resize: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: transparent;
-            background: #a0b3a180;
-            position: relative;
+            width: 40%;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         #plotters {
-            width: 40%;
-            padding: 120px;
-            margin: 40px 0px;
+            width: calc(100%-80px);
+            padding: 60px;
+            margin: 40px 40px;
             font-size: 1.1em;
-            box-sizing: border-box;
             resize: none;
             display: block;
             background: #eee;
             position: relative;
+            box-sizing: content;
         }
 
+        @media (max-width: 1366px) {
+            .main-container {
+                flex-direction: column;
+                align-items: center;
+            }   
+
+            #input-container,
+            #plottersWrapper {
+                flex: 0 0 90%;
+                padding: 20px;
+                width: 90%;
+                max-width: 90%;
+                min-width: unset;
+                align-self: center;
+            }
+        }
 
         #translationBox {
             width: 14vw;
@@ -168,7 +192,7 @@
 
             
             #translationBox {
-                width: 24vw;
+                width: 50%;
                 padding: 20px;
                 margin: 0px;
                 font-size: 1.1em;
@@ -266,7 +290,7 @@
         }
 
         .latin {
-            opacity: 0.65;
+            /* opacity: 0.65; */
         }
 
         span.darkmode {
@@ -336,6 +360,7 @@
             border: 2px solid #4646465d;
             -webkit-border-radius: 0;
             -moz-border-radius: 0;
+            z-index: 10;
         }
 
         .custom-select.darkmode {
@@ -370,10 +395,14 @@
 
         .custom-select::after {
             content: '\2BC8';
+            width: 1em;
+            max-width: 1em;
         }
 
         .custom-select.open::after {
             content: '\25BC';
+            width: 1em;
+            max-width: 1em;
         }
 
         .options {
@@ -427,13 +456,22 @@
             border-radius: 50%;
         }
 
+        #fontList {
+            z-index: 1110;
+        }
+
+
+        .chinese-text {
+            font-family: "Noto Sans Mono", monospace;
+            font-family: "Noto Serif SC", serif;
+        }
         
         @media (max-width: 768px) {
             .option-container:has(#dimsSlider),
             .option-container:has(#paddingSlider) {
                 display: none;
             }
-
+/* 
             #plottersContainer {
                 width: 100%;
                 margin: 0px;
@@ -443,7 +481,7 @@
                 width: 100%;
                 padding: 10px;
                 margin: 20px;
-            }
+            } */
         }
     </style>
 </head>
@@ -462,7 +500,7 @@
             <span></span>
         </div>
         <div class="main-container">
-            <div class="input-container">
+            <div id="input-container">
                 
                 <div class="option-container" id="stories-option">
                     <span class="optionLabel">Stories:</span>
@@ -473,7 +511,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="option-container">
+                <!-- <div class="option-container">
                     <span class="optionLabel">Area dims:</span>
                     <span id="dimsValue">60</span>
                     <input type="range" class="myslider" id="dimsSlider" min="20" max="100" step="1" value="60">
@@ -482,11 +520,11 @@
                     <span class="optionLabel">Padding:</span>
                     <span id="paddingValue">120</span>
                     <input type="range" class="myslider" id="paddingSlider" min="50" max="400" step="1" value="120">
-                </div>
+                </div> -->
                 <div class="option-container">
                     <span class="optionLabel">Character size:</span>
-                    <span id="sizeValue">40</span>
-                    <input type="range" class="myslider" id="sizeSlider" min="20" max="200" step="10" value="40">
+                    <span id="sizeValue">50</span>
+                    <input type="range" class="myslider" id="sizeSlider" min="30" max="100" step="2" value="50">
                 </div>
                 <div class="option-container">
                     <span class="optionLabel">Anim speed:</span>
@@ -504,6 +542,10 @@
                     <input type="range" class="myslider" id="noiseSlider" min="0" max="10" step="0.1" value="0">
                 </div>
                 <div class="option-container">
+                    <span class="optionLabel">Natural:</span>
+                    <input type="checkbox" id="naturalCheckbox">
+                </div>
+                <div class="option-container">
                     <span class="optionLabel">Background:</span>
                     <input type="checkbox" id="backgroundCheckbox">
                     <input type="checkbox" id="backgroundCheckbox2">
@@ -512,6 +554,36 @@
                     <span class="optionLabel">Show pinyin:</span>
                     <input type="checkbox" id="pinyinCheckbox">
                 </div>
+                
+                <div class="option-container" id="fonts-option">
+                    <span class="optionLabel">Fonts:</span>
+                    <div class="custom-select" id="fontList">
+                        <div class="selected-option" id="selectedFont">
+                            <div class="font-choice">
+                                Noto Sans
+                            </div>
+                        </div>
+                        <div class="options" id="fontOptions">
+                            <div class="option isfont" data-value="1">
+                                <div class="font-choice">
+                                    Kaiti
+                                </div>
+                            </div>
+                            <div class="option isfont" data-value="2">
+                                <div class="font-choice">
+                                    Noto Serif SC
+                                </div>
+                            </div>
+                            <div class="option isfont" data-value="3">
+                                <div class="font-choice">
+                                    Noto Sans
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
                 <div class="option-container">
                     <span class="optionLabel">Color palette:</span>
                     <div class="custom-select" id="colorPalette">
@@ -607,6 +679,7 @@
             let plotters = [];
             let isMouseDown = false;
             let selectedDropdownValue = [4, 1];
+            let renderFont = 'Noto Serif SC';
 
             function isHanzi(char) {
                 return /[\u4e00-\u9fff]/.test(char);
@@ -661,10 +734,10 @@
                 return low2 + (value - low1) * (high2 - low2) / (high1 - low1);
             }
 
-            let dimsSlider;
-            let dimsValue;
-            let paddingSlider;
-            let paddingValue;
+            // let dimsSlider;
+            // let dimsValue;
+            // let paddingSlider;
+            // let paddingValue;
             let sizeSlider;
             let speedSlider;
             let speedValue;
@@ -675,6 +748,7 @@
             let backgroundCheckbox;
             let backgroundCheckbox2;
             let pinyinCheckbox;
+            let naturalCheckbox;
 
 
             let rmouseX = 0;
@@ -697,6 +771,19 @@
                     let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
                     translationBox.style.top = wrapperposy + 'px';
 
+                    translationBox.style.position = 'absolute';
+                    let verticalscrolly = window.scrollY;
+                    let translationboxwidth = translationBox.offsetWidth;
+                    translationBox.style.left = event.clientX + 20 + 'px';
+                    translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
+                    // check if out of bounds
+                    if (event.clientX + translationboxwidth > window.innerWidth) {
+                        translationBox.style.left = event.clientX - translationboxwidth + 'px';
+                    }
+                    if(event.clientX - translationboxwidth < 0){
+                        translationBox.style.left = 0;
+                    }
+
                     document.querySelectorAll('.pinyinLabel.line_' + lineIndex).forEach((el) => {
                         el.classList.remove('hidden');
                     });
@@ -706,6 +793,18 @@
                     let canvaswrapperposy = canvaswrapper.getBoundingClientRect().top;
                     let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
                     translationBox.style.top = wrapperposy + 'px';
+
+                    translationBox.style.position = 'absolute';
+                    translationBox.style.left = event.clientX + 20 + 'px';
+                    translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
+                    let translationboxwidth = translationBox.offsetWidth;
+                    // check if out of bounds
+                    if (event.clientX + translationboxwidth > window.innerWidth) {
+                        translationBox.style.left = event.clientX - translationboxwidth + 'px';
+                    }
+                    if(event.clientX - translationboxwidth < 0){
+                        translationBox.style.left = 0;
+                    }
                 });
 
                 wrapper.addEventListener('mouseleave', function () {
@@ -932,7 +1031,7 @@
                     bubbleobj.dragged = true;
                     offsetX = (event.clientX + window.scrollX - parseInt(bubble.style.left, 10));
                     offsetY = (event.clientY + window.scrollY - parseInt(bubble.style.top, 10));
-                    event.preventDefault(); // Prevent text selection
+                    // event.preventDefault(); // Prevent text selection
                 });
                 
                 draggableArea.addEventListener('mouseover', function(event) {
@@ -1076,15 +1175,15 @@
             }
             
             document.addEventListener("DOMContentLoaded", function () {
-                dimsSlider = document.getElementById('dimsSlider');
-                paddingSlider = document.getElementById('paddingSlider');
+                // dimsSlider = document.getElementById('dimsSlider');
+                // paddingSlider = document.getElementById('paddingSlider');
                 speedSlider = document.getElementById('speedSlider');
                 sizeSlider = document.getElementById('sizeSlider');
                 thicknessSlider = document.getElementById('thicknessSlider');
                 noiseSlider = document.getElementById('noiseSlider');
 
-                dimsValue = document.getElementById('dimsValue');
-                paddingValue = document.getElementById('paddingValue');
+                // dimsValue = document.getElementById('dimsValue');
+                // paddingValue = document.getElementById('paddingValue');
                 speedValue = document.getElementById('speedValue');
                 sizeValue = document.getElementById('sizeValue');
                 thicknessValue = document.getElementById('thicknessValue');
@@ -1093,6 +1192,7 @@
                 backgroundCheckbox = document.getElementById('backgroundCheckbox');
                 backgroundCheckbox2 = document.getElementById('backgroundCheckbox2');
                 pinyinCheckbox = document.getElementById('pinyinCheckbox');
+                naturalCheckbox = document.getElementById('naturalCheckbox');
 
                 plottersWrapper = document.getElementById('plottersWrapper');
                 plottersElem = document.getElementById('plotters');
@@ -1120,6 +1220,12 @@
                         childquery: '.story-option',
                         childquery2: '.isstory',
                         selected: document.getElementById('selectedStory'),
+                    },
+                    {
+                        elem: document.getElementById('fontList'),
+                        childquery: '.font-choice',
+                        childquery2: '.isfont',
+                        selected: document.getElementById('selectedFont'),
                     }
                 ]
 
@@ -1138,6 +1244,11 @@
                             drop.selected.appendChild(row);
                             if(drop.elem.id == 'storyList') {
                                 story = getStory(value, redrawPlotters);
+                            }
+                            else if(drop.elem.id == 'fontList') {
+                                let fonts = ['Kaiti', 'Noto Serif SC', 'Noto Sans'];
+                                renderFont = fonts[value - 1];
+                                redrawPlotters();
                             }
                             else{
                                 redrawPlotters();
@@ -1163,19 +1274,19 @@
 
                 
                 if(!isMobileOrTablet()){
-                    document.getElementById('plotters').style.width = dimsSlider.value + '%';
-                    dimsSlider.addEventListener('input', function () {
-                        dimsValue.textContent = this.value;
-                        document.getElementById('plotters').style.width = this.value + '%';
-                    });
+                    // document.getElementById('plotters').style.width = dimsSlider.value + '%';
+                    // dimsSlider.addEventListener('input', function () {
+                    //     dimsValue.textContent = this.value;
+                    //     document.getElementById('plotters').style.width = this.value + '%';
+                    // });
 
-                    document.getElementById('plotters').style.padding = paddingSlider.value + 'px';
+                    // document.getElementById('plotters').style.padding = paddingSlider.value + 'px';
                 }
 
-                paddingSlider.addEventListener('input', function () {
-                    paddingValue.textContent = this.value;
-                    document.getElementById('plotters').style.padding = this.value + 'px';
-                });
+                // paddingSlider.addEventListener('input', function () {
+                //     paddingValue.textContent = this.value;
+                //     document.getElementById('plotters').style.padding = this.value + 'px';
+                // });
 
                 speedSlider.addEventListener('change', function() {
                     speedValue.textContent = this.value + 'x';
@@ -1213,13 +1324,19 @@
                     }
                 });
 
+                naturalCheckbox.addEventListener('change', function() {
+                    if (!plottersElem.classList.contains('empty')) {
+                        redrawPlotters();
+                    }
+                });
+
                 pinyinCheckbox.addEventListener('change', function() {
                     showAllPinyin = this.checked;
                     applyPinyinVisibility();
                 });
 
                 plottersElem.addEventListener('mousedown', function(e) {
-                    e.preventDefault();
+                    // e.preventDefault();
                 });
             });
 
@@ -1250,7 +1367,7 @@
 
             function fetchStream(prompt, bubble) {
                 console.log(prompt);
-                fetch("/api/openaiexplain", {  // Changed to your backend endpoint
+                fetch("/api/openaiexplain", { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1335,6 +1452,7 @@
 
                 let currentLineIndex = null;
                 let currentWrapper = null;
+                let useTextRendering = !naturalCheckbox.checked;
 
                 plotters.forEach((plotterinfo, index) => {
                     let plotter = plotterinfo.plotter;
@@ -1355,54 +1473,97 @@
 
                     if (plotter) {
                         let char = plotterinfo.char;
-                        let canvasContainer = document.createElement('div');
-                        let pinyinElement = document.createElement('div');
+                        if (useTextRendering) { 
+                            
+                            let charContainer = document.createElement('div');
+                            charContainer.style.display = 'inline-block';
+                            charContainer.style.textAlign = 'center';
+                            charContainer.classList.add('plotterContainer');
 
-                        plotter.draw();
-                        plotter.canvas.dataset.plotterIndex = index;
-                        
-                        canvasContainer.style.position = 'relative';
-                        canvasContainer.style.display = 'inline-block';
-                        canvasContainer.classList.add('plotterContainer');
-                        
-                        pinyinElement.style.textAlign = 'center';
-                        pinyinElement.style.height = '20px';
-                        if (!showAllPinyin) {
-                            pinyinElement.classList.add('hidden');
-                        }
-                        pinyinElement.classList.add('pinyinLabel');
-                        pinyinElement.classList.add('line_' + lineIndex);
-                        pinyinElement.addEventListener('click', function() {
-                            let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence. If the char is not in the sentence, dont mention that fact, pretend its there.';
-
-                            makeAIBubble(prompt);
-
-                        });
-
-                        canvasContainer.appendChild(pinyinElement);
-                        canvasContainer.appendChild(plotter.getCanvas());
-
-
-                        canvasContainer.classList.add('line_' + lineIndex);
-
-                        currentWrapper.appendChild(canvasContainer);
-
-                        if (char in dataPerCharacter) {
-                            let strokes = dataPerCharacter[char].strokes.medians.map(stroke => {
-                                stroke.map(point => {
-                                    point.x = point[0];
-                                    point.y = point[1];
-                                });
-                                let spoints = evenOutPoints(stroke, 22);
-                                return spoints;
-                            });
-                            let pinyinAndEnglish = { pinyin: dataPerCharacter[char].pinyin, english: null };
-                            if (pinyinAndEnglish && pinyinAndEnglish.pinyin) {
-                                pinyinElement.textContent = pinyinAndEnglish.pinyin;
+                            let pinyinElement = document.createElement('div');
+                            pinyinElement.classList.add('pinyinLabel');
+                            pinyinElement.classList.add('line_' + lineIndex);
+                            pinyinElement.style.fontSize = (size / 150) + 'em'; // Adjust this ratio as needed
+                            pinyinElement.style.height = '20px';
+                            pinyinElement.style.userSelect = 'none';
+                            if (!showAllPinyin) {
+                                pinyinElement.classList.add('hidden');
                             }
+                            pinyinElement.addEventListener('click', function() {
+                                let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
+                                makeAIBubble(prompt);
+                            });
+
+                            let charSpan = document.createElement('span');
+                            charSpan.classList.add('chinese-text');
+                            charSpan.style.fontFamily = renderFont;
+                            charSpan.textContent = char;
+                            charSpan.style.fontSize = size / 50 + 'em';
+                            charSpan.style.color = colors[1];
+
+                            charContainer.appendChild(pinyinElement);
+                            charContainer.appendChild(charSpan);
+                            currentWrapper.appendChild(charContainer);
+
+                            if (char in dataPerCharacter) {
+                                if (dataPerCharacter[char].pinyin) {
+                                    pinyinElement.textContent = dataPerCharacter[char].pinyin;
+                                }
+                            } 
                         } else {
-                            let readyPromise = loadStrokeData();
-                            plotter.loadPinyinEnglish();
+                            let canvasContainer = document.createElement('div');
+                            let pinyinElement = document.createElement('div');
+
+                            plotter.draw();
+                            plotter.canvas.dataset.plotterIndex = index;
+                            
+                            canvasContainer.style.position = 'relative';
+                            canvasContainer.style.display = 'inline-block';
+                            canvasContainer.classList.add('plotterContainer');
+                            
+                            pinyinElement.style.textAlign = 'center';
+                            pinyinElement.style.height = '20px';
+                            if (!showAllPinyin) {
+                                pinyinElement.classList.add('hidden');
+                            }
+                            pinyinElement.classList.add('pinyinLabel');
+                            pinyinElement.classList.add('line_' + lineIndex);
+                            pinyinElement.addEventListener('click', function() {
+                                let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence. If the char is not in the sentence, dont mention that fact, pretend its there.';
+
+                                // check if visible
+                                if(pinyinElement.classList.contains('hidden')){
+                                    return;
+                                }
+                                makeAIBubble(prompt);
+
+                            });
+
+                            canvasContainer.appendChild(pinyinElement);
+                            canvasContainer.appendChild(plotter.getCanvas());
+
+
+                            canvasContainer.classList.add('line_' + lineIndex);
+
+                            currentWrapper.appendChild(canvasContainer);
+
+                            if (char in dataPerCharacter) {
+                                let strokes = dataPerCharacter[char].strokes.medians.map(stroke => {
+                                    stroke.map(point => {
+                                        point.x = point[0];
+                                        point.y = point[1];
+                                    });
+                                    let spoints = evenOutPoints(stroke, 22);
+                                    return spoints;
+                                });
+                                let pinyinAndEnglish = { pinyin: dataPerCharacter[char].pinyin, english: null };
+                                if (pinyinAndEnglish && pinyinAndEnglish.pinyin) {
+                                    pinyinElement.textContent = pinyinAndEnglish.pinyin;
+                                }
+                            } else {
+                                let readyPromise = loadStrokeData();
+                                plotter.loadPinyinEnglish();
+                            }
                         }
                     } else {
                         let latin = document.createElement('span');
@@ -1410,10 +1571,13 @@
                         latin.innerHTML = plotterinfo.char;
                         
                         latin.style.color = colors[1];
+                        let rs = 50;
+                        if(useTextRendering)
+                            rs = 50;
                         if (isMobileOrTablet()) {
-                            latin.style.fontSize = size/50 + 'em';
+                            latin.style.fontSize = size/rs + 'em';
                         } else {
-                            latin.style.fontSize = size/50 + 'em';
+                            latin.style.fontSize = size/rs + 'em';
                         }
                         currentWrapper.appendChild(latin);
                     }
@@ -1590,7 +1754,7 @@
             }
         </script>
         <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
+        <!-- <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script> -->
         <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     </body>
 
