@@ -1,7 +1,7 @@
 {
     "forest_adventure": {
         "name": "森林冒险",
-        "description": "A short story about a forest adventure",
+        "description": "A forest adventure",
         "hanzi": [
             "小明想去森林。",
             "森林很大，有很多树。",
@@ -29,7 +29,7 @@
     },
     "ice_cream_shop": {
         "name": "冰淇淋店",
-        "description": "A story about an ice cream shop",
+        "description": "An ice cream shop",
         "hanzi": [
             "小李的家人有一个冰淇淋店。",
             "这个冰淇淋店在东南方。",
@@ -63,7 +63,7 @@
     },
     "world_map": {
         "name": "世界地图",
-        "description": "A story about learning from a world map",
+        "description": "Learning from a world map",
         "hanzi": [
             "小红有一个世界地图。",
             "她想学习地图上的地方。",
@@ -100,7 +100,7 @@
     },
     "library": {
         "name": "图书馆",
-        "description": "A story about a library and a curious student",
+        "description": "A curious student in a library",
         "hanzi": [
             "小明喜欢去图书馆。",
             "图书馆有很多书。",
@@ -154,7 +154,7 @@
         ]
     },
     "library2": {
-        "name": "另一个图书馆",
+        "name": "另一个图书馆"  ,
         "description": "Another story about a library",
         "hanzi": [
             "小明喜欢去图书馆。",
@@ -189,7 +189,7 @@
     },
     "bus_stop": {
         "name": "公共汽车站",
-        "description": "A story about a bus stop",
+        "description": "Bus stop",
         "hanzi": [
             "小张每天坐公共汽车去学校。",
             "今天，他到了公共汽车站，看见很多人。",
