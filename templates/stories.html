@@ -880,6 +880,13 @@
                     if(event.clientX - translationboxwidth < 0){
                         translationBox.style.left = 0;
                     }
+
+                    if(isMobileOrTablet()){
+                        // position on top in the middle
+                        translationBox.style.left = '50%';
+                        translationBox.style.top = '5%';
+                        translationBox.style.transform = 'translate(-50%, -50%)';
+                    }
                 });
 
                 wrapper.addEventListener('mousemove', function (event) {
