@@ -863,23 +863,23 @@
                     if(translationBox.textContent.length === 0){
                         return;
                     }
-                    translationBox.classList.remove('hidden');
-                    let canvaswrapperposy = canvaswrapper.getBoundingClientRect().top;
-                    let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
-                    translationBox.style.top = wrapperposy + 'px';
+                    // translationBox.classList.remove('hidden');
+                    // let canvaswrapperposy = canvaswrapper.getBoundingClientRect().top;
+                    // let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
+                    // translationBox.style.top = wrapperposy + 'px';
 
-                    translationBox.style.position = 'absolute';
-                    let verticalscrolly = window.scrollY;
-                    let translationboxwidth = translationBox.offsetWidth;
-                    translationBox.style.left = event.clientX + 20 + 'px';
-                    translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
-                    // check if out of bounds
-                    if (event.clientX + translationboxwidth > window.innerWidth) {
-                        translationBox.style.left = event.clientX - translationboxwidth + 'px';
-                    }
-                    if(event.clientX - translationboxwidth < 0){
-                        translationBox.style.left = 0;
-                    }
+                    // translationBox.style.position = 'absolute';
+                    // let verticalscrolly = window.scrollY;
+                    // let translationboxwidth = translationBox.offsetWidth;
+                    // translationBox.style.left = event.clientX + 20 + 'px';
+                    // translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
+                    // // check if out of bounds
+                    // if (event.clientX + translationboxwidth > window.innerWidth) {
+                    //     translationBox.style.left = event.clientX - translationboxwidth + 'px';
+                    // }
+                    // if(event.clientX - translationboxwidth < 0){
+                    //     translationBox.style.left = 0;
+                    // }
 
                     if(isMobileOrTablet()){
                         translationBox.style.position = 'fixed !important';
@@ -892,19 +892,19 @@
                 wrapper.addEventListener('mousemove', function (event) {
                     let canvaswrapperposy = canvaswrapper.getBoundingClientRect().top;
                     let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
-                    translationBox.style.top = wrapperposy + 'px';
+                    // translationBox.style.top = wrapperposy + 'px';
 
-                    translationBox.style.position = 'absolute';
-                    translationBox.style.left = event.clientX + 20 + 'px';
-                    translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
-                    let translationboxwidth = translationBox.offsetWidth;
-                    // check if out of bounds
-                    if (event.clientX + translationboxwidth > window.innerWidth) {
-                        translationBox.style.left = event.clientX - translationboxwidth + 'px';
-                    }
-                    if(event.clientX - translationboxwidth < 0){
-                        translationBox.style.left = 0;
-                    }
+                    // translationBox.style.position = 'absolute';
+                    // translationBox.style.left = event.clientX + 20 + 'px';
+                    // translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
+                    // let translationboxwidth = translationBox.offsetWidth;
+                    // // check if out of bounds
+                    // if (event.clientX + translationboxwidth > window.innerWidth) {
+                    //     translationBox.style.left = event.clientX - translationboxwidth + 'px';
+                    // }
+                    // if(event.clientX - translationboxwidth < 0){
+                    //     translationBox.style.left = 0;
+                    // }
 
                     if(isMobileOrTablet()){
                         translationBox.style.position = 'fixed !important';
