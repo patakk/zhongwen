@@ -882,13 +882,10 @@
                     }
 
                     if(isMobileOrTablet()){
-                        let titleelem = document.getElementById('title');
-                        titleelem.style.color = "#f00";
-                        // position on top in the middle
-                        translationBox.style.position = 'fixed';
-                        translationBox.style.left = "50%";
-                        translationBox.style.top = "5%";
-                        translationBox.style.transform = "translateX(-50%)";
+                        translationBox.style.position = 'fixed !important';
+                        translationBox.style.left = "50% !important";
+                        translationBox.style.top = "5% !important";
+                        translationBox.style.transform = "translateX(-50%) !important";
                     }
                 });
 
