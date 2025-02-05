@@ -870,7 +870,7 @@
 
                     // translationBox.style.position = 'absolute';
                     // let verticalscrolly = window.scrollY;
-                    // let translationboxwidth = translationBox.offsetWidth;
+                    let translationboxwidth = translationBox.offsetWidth;
                     // translationBox.style.left = event.clientX + 20 + 'px';
                     // translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
                     // // check if out of bounds
@@ -882,10 +882,10 @@
                     // }
 
                     if(isMobileOrTablet()){
-                        translationBox.style.position = 'absolute !important';
-                        translationBox.style.left = "50% !important";
-                        translationBox.style.top = "5% !important";
-                        translationBox.style.transform = "translateX(-50%) !important";
+                        translationBox.style.position = 'absolute';
+                        translationBox.style.left = 0;
+                        translationBox.style.top = 0;
+                        // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
                     }
                 });
 
@@ -897,7 +897,7 @@
                     // translationBox.style.position = 'absolute';
                     // translationBox.style.left = event.clientX + 20 + 'px';
                     // translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
-                    // let translationboxwidth = translationBox.offsetWidth;
+                    let translationboxwidth = translationBox.offsetWidth;
                     // // check if out of bounds
                     // if (event.clientX + translationboxwidth > window.innerWidth) {
                     //     translationBox.style.left = event.clientX - translationboxwidth + 'px';
@@ -907,10 +907,10 @@
                     // }
 
                     if(isMobileOrTablet()){
-                        translationBox.style.position = 'absolute !important';
-                        translationBox.style.left = "50% !important";
-                        translationBox.style.top = "5% !important";
-                        translationBox.style.transform = "translateX(-50%) !important";
+                        translationBox.style.position = 'absolute';
+                        translationBox.style.left = 0;
+                        translationBox.style.top = 0;
+                        // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
                     }
                 });
 
