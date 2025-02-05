@@ -319,7 +319,7 @@ class HanziPlotter {
         showGrid = false,
     }) {
         this.character = character;
-        
+        this.strokes_ = strokes;
         if (strokes) {
             this.processStrokes(strokes);
             this.loadPromise = Promise.resolve();

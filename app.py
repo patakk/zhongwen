@@ -483,7 +483,7 @@ def convert():
 @timing_decorator
 def stories():
     first_story = stories_data[stories_list[0]['uri']]
-    chars = set(''.join(first_story['hanzi']))
+    chars = set(''.join(first_story['hanzi']) + first_story['name'])
     chars = chars.intersection(stroke_chars)
     char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
     return render_template('stories.html', darkmode=session['darkmode'], story=first_story, stories=stories_list, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, deck=session['deck'])
@@ -494,7 +494,7 @@ def stories():
 def get_story(index):
     if 1 <= index <= len(stories_list):
         story = stories_data[stories_list[index-1]['uri']]
-        chars = set(''.join(story['hanzi']))
+        chars = set(''.join(story['hanzi']) + story['name'])
         chars = chars.intersection(stroke_chars)
         char_data = {char: {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
         return jsonify({
@@ -668,7 +668,7 @@ with open('data/new_stories.json', 'r', encoding='utf-8') as f:
     stories_data = json.load(f)
 
 
-stories_list = [{'title': stories_data[u]['english'][0], 'uri': u} for u in stories_data]
+stories_list = [{'title': stories_data[u]['description'], 'uri': u} for u in stories_data]
 
 
 # @app.route('/stories')

@@ -350,7 +350,7 @@
         }
 
         #storyList {
-            z-index: 101;
+            z-index: 11101;
         }
 
         .custom-select {
@@ -464,6 +464,12 @@
         .chinese-text {
             font-family: "Noto Sans Mono", monospace;
             font-family: "Noto Serif SC", serif;
+        }
+
+        .story-title {
+            text-align: center;
+            color: #fa1111;
+
         }
         
         @media (max-width: 768px) {
@@ -766,6 +772,14 @@
 
                 wrapper.addEventListener('mouseenter', function (event) {
                     translationBox.textContent = story.english[lineIndex];
+
+                    document.querySelectorAll('.pinyinLabel.line_' + lineIndex).forEach((el) => {
+                        el.classList.remove('hidden');
+                    });
+
+                    if(translationBox.textContent.length === 0){
+                        return;
+                    }
                     translationBox.classList.remove('hidden');
                     let canvaswrapperposy = canvaswrapper.getBoundingClientRect().top;
                     let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
@@ -783,10 +797,6 @@
                     if(event.clientX - translationboxwidth < 0){
                         translationBox.style.left = 0;
                     }
-
-                    document.querySelectorAll('.pinyinLabel.line_' + lineIndex).forEach((el) => {
-                        el.classList.remove('hidden');
-                    });
                 });
 
                 wrapper.addEventListener('mousemove', function (event) {
@@ -1199,11 +1209,11 @@
 
                 const randomHue = Math.random() * 360;
                 plottersWrapper.style.backgroundColor = isDarkMode 
-                    ? `hsl(${randomHue}, 8%, 17%)`
-                    : `hsl(${randomHue}, 8%, 87%)`;
+                    ? `hsl(${122}, 8%, 17%)`
+                    : `hsl(${122}, 8%, 87%)`;
 
                 noiseValue.textContent = noiseSlider.value;
-                pinyinCheckbox.checked = showAllPinyin;
+                pinyinCheckbox.checked = showAllPinyin;title
                 populateStoryOptions();
                 // redrawPlotters();
                 // updateCount();
@@ -1438,8 +1448,10 @@
             }
 
 
-            function renderPlottersToDOM(plotterElement, plotters, showAllPinyin, colors, size, dataPerCharacter, currentLines) {
+            function renderPlottersToDOM(plotterElement, plotters, showAllPinyin, colors, size, dataPerCharacter, currentLines, storyTitleElem) {
                 plotterElement.innerHTML = '';
+                
+                
                 plotterElement.dataset.plotters = plotters;
 
                 let translationBox = document.createElement('div');
@@ -1454,6 +1466,23 @@
                 let currentWrapper = null;
                 let useTextRendering = !naturalCheckbox.checked;
 
+                if (useTextRendering) { 
+                    storyTitleElem.style.fontSize = size / 40 + 'em';
+                    // plotterElement.appendChild(storyTitleElem);
+                }
+                else{
+                    storyTitleElem.style.fontSize = size / 35 + 'em';
+                    let text = storyTitleElem.textContent;
+                    storyTitleElem.innerHTML = "";
+                    // create plotters for each char in title
+                    let refplot = plotters[0];
+                    let numLines = currentLines.length;
+                    for (let i = 0; i < text.length; i++) {
+                        let char = text[i];
+                        
+                    }
+                }
+
                 plotters.forEach((plotterinfo, index) => {
                     let plotter = plotterinfo.plotter;
                     let lineIndex = plotterinfo.lineIndex;
@@ -1463,6 +1492,9 @@
                         currentWrapper.className = 'line-wrapper';
                         if(isDarkMode){
                             currentWrapper.classList.add('darkmode');
+                        }
+                        if(lineIndex === -1){
+                            currentWrapper.style.textAlign = 'center';
                         }
                         currentWrapper.dataset.lineIndex = lineIndex;
                         plotterElement.appendChild(currentWrapper);
@@ -1501,6 +1533,11 @@
                             charSpan.style.fontSize = size / 50 + 'em';
                             charSpan.style.color = colors[1];
 
+                            if(lineIndex === -1){
+                                charSpan.style.fontSize = size / 40 + 'em';
+                                charSpan.style.color = "#f00";
+                            }
+
                             charContainer.appendChild(pinyinElement);
                             charContainer.appendChild(charSpan);
                             currentWrapper.appendChild(charContainer);
@@ -1522,6 +1559,7 @@
                             canvasContainer.classList.add('plotterContainer');
                             
                             pinyinElement.style.textAlign = 'center';
+                            pinyinElement.style.userSelect = 'none';
                             pinyinElement.style.height = '20px';
                             if (!showAllPinyin) {
                                 pinyinElement.classList.add('hidden');
@@ -1541,7 +1579,6 @@
 
                             canvasContainer.appendChild(pinyinElement);
                             canvasContainer.appendChild(plotter.getCanvas());
-
 
                             canvasContainer.classList.add('line_' + lineIndex);
 
@@ -1579,6 +1616,7 @@
                         } else {
                             latin.style.fontSize = size/rs + 'em';
                         }
+                        latin.style.userSelect = 'none';
                         currentWrapper.appendChild(latin);
                     }
                 });
@@ -1586,16 +1624,27 @@
 
 
             function redrawPlotters() {
+                let titleHanzi = story.name + "\n";
+                //prepend title to story.hanzi
                 let joinedLines = story.hanzi.join('\n');
                 let currentLines = story.hanzi;
                 let numLines = currentLines.length;
-                let lineIndex = 0;
-                let characters = joinedLines.split('');
+                let lineIndex = -1;
+                let titlelength = titleHanzi.length;
+                let characters = titleHanzi.split('').concat(joinedLines.split(''));
+
                 const plotterElement = document.getElementById('plotters');
                 plotterElement.innerHTML = '';
                 plotters = [];
-
+                
                 let size = parseFloat(sizeSlider.value)*2;
+
+                let storyTitleElem = document.createElement('div');
+                storyTitleElem.classList.add('story-title');
+                storyTitleElem.style.fontFamily = renderFont;
+                storyTitleElem.style.fontSize = size / 40 + 'em';
+                storyTitleElem.textContent = titleHanzi;
+
                 let speed = parseFloat(speedSlider.value/70);
                 let lineThickness = parseFloat(thicknessSlider.value*size/200);
                 let jitterAmp = parseFloat(noiseSlider.value*30);
@@ -1646,14 +1695,18 @@
                         }
                     }
                     if (isHanzi(char) && !isPunctuation(char)) {
+                        let usedcolors = [...colors];
+                        if(lineIndex === -1){
+                            usedcolors = ["#f00","#f00","#f00"]
+                        }
                         const plotter = new HanziPlotter({
                             character: char,
                             strokes: strokes,
-                            dimension: size,
+                            dimension: size * (1 + .2*(lineIndex===-1)),
                             speed: speed,
                             lineThickness: lineThickness,
                             jitterAmp: jitterAmp,
-                            colors: colors,
+                            colors: usedcolors,
                             lineType: lineType,
                             showDiagonals: backgroundCheckbox.checked,
                             showGrid: backgroundCheckbox2.checked,
@@ -1676,7 +1729,7 @@
                 }
 
                 if (plotterElement && plotters) {
-                    renderPlottersToDOM(plotterElement, plotters, showAllPinyin, colors, size, dataPerCharacter, currentLines);
+                    renderPlottersToDOM(plotterElement, plotters, showAllPinyin, colors, size, dataPerCharacter, currentLines, storyTitleElem);
                 }
 
             }
