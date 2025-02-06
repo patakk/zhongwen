@@ -1742,6 +1742,9 @@
 
                                 if (isMobileOrTablet()) {
                                     // event.preventDefault();
+                                    setTimeout(() => {
+                                        event.preventDefault();
+                                    }, 200);
                                     timer = setTimeout(() => {
                                         handleInteraction();
                                     }, touchDuration);
