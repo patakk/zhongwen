@@ -914,6 +914,32 @@
                     }
                 });
 
+                // finger drag event
+                wrapper.addEventListener('touchmove', function (event) {
+                    // let canvaswrapperposy = canvaswrapper.getBoundingClientRect().top;
+                    // let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
+                    // translationBox.style.top = wrapperposy + 'px';
+
+                    translationBox.style.position = 'absolute';
+                    translationBox.style.left = event.clientX + 20 + 'px';
+                    translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
+                    let translationboxwidth = translationBox.offsetWidth;
+                    // check if out of bounds
+                    if (event.clientX + translationboxwidth > window.innerWidth) {
+                        translationBox.style.left = event.clientX - translationboxwidth + 'px';
+                    }
+                    if(event.clientX - translationboxwidth < 0){
+                        translationBox.style.left = 0;
+                    }
+
+                    if(isMobileOrTablet()){
+                        translationBox.style.position = 'absolute';
+                        translationBox.style.left = 20 + 'px';
+                        translationBox.style.top = window.scrollY + 20 + 'px';
+                        // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
+                    }
+                });
+
                 wrapper.addEventListener('mouseleave', function () {
                     translationBox.classList.add('hidden');
                     currentHoveredLine = -1;
