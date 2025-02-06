@@ -471,7 +471,7 @@
         }
 
         #fontList {
-            z-index: 1110;
+            z-index: 111;
         }
 
 
@@ -1588,6 +1588,9 @@
                 let translationBox = document.createElement('div');
                 translationBox.setAttribute('id', 'translationBox');
                 translationBox.classList.add('hidden');
+                if(isDarkMode){
+                    translationBox.classList.add('darkmode');
+                }
                 //plotterElement.appendChild(translationBox);
                 // let plottersWrapper = document.getElementById('plottersWrapper');
                 // plottersWrapper.appendChild(translationBox);
