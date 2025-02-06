@@ -123,6 +123,7 @@
         
         #plottersWrapper {
             width: 40%;
+            padding: 20px;
             overflow-x: hidden;
             overflow-y: auto;
         }
@@ -130,7 +131,7 @@
         #plotters {
             width: calc(100%-80px);
             padding: 60px;
-            margin: 40px 40px;
+            margin: 0px 0px;
             font-size: 1.1em;
             resize: none;
             display: block;
@@ -194,7 +195,6 @@
                 width: 90vw;
             }
 
-            
             #translationBox {
                 width: 50%;
                 padding: 20px;
@@ -835,15 +835,6 @@
             let fullOutputTranslation = '';
             let showAllPinyin = false;
 
-            let titleColors = [
-                "hsl(0, 100%, 50%)",
-                "hsl(30, 100%, 50%)",
-                "hsl(60, 100%, 50%)",
-                "hsl(90, 100%, 50%)",
-                "hsl(120, 100%, 50%)",
-            ]
-            let titleColor = '#880000';
-            titleColor = '#ff5100';
             let currentHoveredLine = -1;
 
             function addHoverBehaviorToWrapper(wrapper, lineIndex) {
@@ -914,31 +905,6 @@
                     }
                 });
 
-                // finger drag event
-                wrapper.addEventListener('touchmove', function (event) {
-                    // let canvaswrapperposy = canvaswrapper.getBoundingClientRect().top;
-                    // let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
-                    // translationBox.style.top = wrapperposy + 'px';
-
-                    translationBox.style.position = 'absolute';
-                    translationBox.style.left = event.clientX + 20 + 'px';
-                    translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
-                    let translationboxwidth = translationBox.offsetWidth;
-                    // check if out of bounds
-                    if (event.clientX + translationboxwidth > window.innerWidth) {
-                        translationBox.style.left = event.clientX - translationboxwidth + 'px';
-                    }
-                    if(event.clientX - translationboxwidth < 0){
-                        translationBox.style.left = 0;
-                    }
-
-                    if(isMobileOrTablet()){
-                        translationBox.style.position = 'absolute';
-                        translationBox.style.left = 20 + 'px';
-                        translationBox.style.top = window.scrollY + 20 + 'px';
-                        // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
-                    }
-                });
 
                 wrapper.addEventListener('mouseleave', function () {
                     translationBox.classList.add('hidden');
