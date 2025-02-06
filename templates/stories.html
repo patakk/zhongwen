@@ -1793,7 +1793,7 @@
                             pinyinElement.classList.add('pinyinLabel');
                             pinyinElement.classList.add('pinyinLabelColor');
                             pinyinElement.classList.add('line_' + lineIndex);
-                            canvasContainer.addEventListener('click', function() {
+                            pinyinElement.addEventListener('click', function() {
                                 let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence. If the char is not in the sentence, dont mention that fact, pretend its there.';
 
                                 if(lineIndex !== currentHoveredLine){
