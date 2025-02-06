@@ -1177,10 +1177,10 @@
                 applyInitialPos(bubble);
                 if(activeBubbles.length > 0) {
                     let bubbleobj = activeBubbles[activeBubbles.length - 1];
-                    let bubble = bubbleobj.bubble;
+                    activeBubbles.forEach(bubbleobj => {
+                        let bubble = bubbleobj.bubble;
 
-                    const documentClickHandler = function(event) {
-                        if (!bubble.contains(event.target)) {
+                        const documentClickHandler = function(event) {
                             if(hasOpenBubbles){
                                 removeBubbleFromDOM(bubbleobj);
                                 activeBubbles = activeBubbles.filter(b => b !== bubbleobj);
@@ -1188,10 +1188,15 @@
                                 document.body.removeEventListener('click', documentClickHandler);
                                 hasOpenBubbles = false;
                             }
-                        }
-                    };
-                    document.body.addEventListener('click', documentClickHandler);
-                    bubbleobj.documentClickHandler = documentClickHandler;
+                        };
+                        document.body.addEventListener('click', documentClickHandler);
+                        // this only detect slick inside body html, but not outside
+
+                        
+                    
+                        bubbleobj.documentClickHandler = documentClickHandler;
+                    });
+                    
 
 
                     // applyInitialStyles(bubble);
@@ -1471,12 +1476,7 @@
                     sizeValue.textContent = 40;
                 }
 
-                
-                document.addEventListener('click', function() {
-                    activeBubbles.forEach(bubble => {
-                        removeBubbleFromDOM(bubble);
-                    });
-                });
+            
 
                 backgroundCheckbox = document.getElementById('backgroundCheckbox');
                 backgroundCheckbox2 = document.getElementById('backgroundCheckbox2');
@@ -1587,7 +1587,6 @@
             });
 
             function fetchStream(prompt, bubble) {
-                console.log(prompt);
                 fetch("/api/openaiexplain", { 
                     method: 'POST',
                     headers: {
@@ -1763,11 +1762,12 @@
                                         clearTimeout(timer);
                                     }, { once: true });
                                 } else {
+                                    
                                     handleInteraction();
                                 }
 
                                 function handleInteraction() {
-                                    if (lineIndex !== currentHoveredLine && !isMobileOrTablet()) {
+                                    if (lineIndex !== currentHoveredLine && isMobileOrTablet()) {
                                         return;
                                     }
                                     let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
@@ -1941,7 +1941,7 @@
                             strokes: strokes,
                             dimension: size * (1 + .2*(lineIndex===-1)),
                             speed: speed,
-                            lineThickness: lineThickness,
+                            lineThickness: lineThickness * (1 + 1*(lineIndex===-1)),
                             jitterAmp: jitterAmp,
                             colors: usedcolors,
                             lineType: lineType,
