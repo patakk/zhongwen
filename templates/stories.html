@@ -889,7 +889,8 @@
                 let canvaswrapper = document.getElementById('plottersWrapper');
 
                 wrapper.addEventListener('mouseenter', function (event) {
-
+                    if(isMobileOrTablet())
+                        return;
                     translationBox.textContent = story.english[lineIndex];
                     setTimeout(() => {
                         currentHoveredLine = lineIndex;
@@ -903,6 +904,37 @@
                         return;
                     }
                     translationBox.classList.remove('hidden');
+                    if(isMobileOrTablet()){
+                        translationBox.style.position = 'absolute';
+                        translationBox.style.left = 20 + 'px';
+                        translationBox.style.top = window.scrollY + 20 + 'px';
+                    }
+                    else{
+                        translationBox.style.position = 'absolute';
+                        translationBox.style.left = '50%';
+                        translationBox.style.bottom = -window.scrollY + 20 + 'px';
+                    }
+                });
+
+                wrapper.addEventListener('click', function (event) {
+                    if(!isMobileOrTablet())
+                        return;
+                    wrapper.classList.toggle('desktop');
+                    translationBox.classList.toggle('hidden');
+
+                    translationBox.textContent = story.english[lineIndex];
+                    setTimeout(() => {
+                        currentHoveredLine = lineIndex;
+                    }, 1110);
+
+                    document.querySelectorAll('.pinyinLabel.line_' + lineIndex).forEach((el) => {
+                        el.classList.toggle('hidden');
+                    });
+
+                    if(translationBox.textContent.length === 0){
+                        return;
+                    }
+                    // translationBox.classList.remove('hidden');
                     if(isMobileOrTablet()){
                         translationBox.style.position = 'absolute';
                         translationBox.style.left = 20 + 'px';
@@ -947,6 +979,7 @@
                 });
 
                 wrapper.addEventListener('mouseleave', function () {
+                    wrapper.classList.remove('desktop');
                     translationBox.classList.add('hidden');
                     currentHoveredLine = -1;
                     if (!showAllPinyin) {
