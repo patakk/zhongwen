@@ -141,7 +141,7 @@
         }
 
         #translationBox {
-            width: 14vw;
+            width: 24vw;
             padding: 20px;
             margin: 0px;
             font-size: 1.7em;
@@ -391,7 +391,6 @@
         .line-wrapper:hover {
             background: #e0e0e0;
         }
-
 
         .line-wrapper.darkmode:hover {
             background: #2b2b2b;
@@ -907,24 +906,29 @@
                     // let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
                     // translationBox.style.top = wrapperposy + 'px';
 
-                    translationBox.style.position = 'absolute';
-                    let verticalscrolly = window.scrollY;
-                    let translationboxwidth = translationBox.offsetWidth;
-                    translationBox.style.left = event.clientX + 20 + 'px';
-                    translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
-                    // check if out of bounds
-                    if (event.clientX + translationboxwidth > window.innerWidth) {
-                        translationBox.style.left = event.clientX - translationboxwidth + 'px';
-                    }
-                    if(event.clientX - translationboxwidth < 0){
-                        translationBox.style.left = 0;
-                    }
+                    // translationBox.style.position = 'absolute';
+                    // let verticalscrolly = window.scrollY;
+                    // let translationboxwidth = translationBox.offsetWidth;
+                    // translationBox.style.left = event.clientX + 20 + 'px';
+                    // translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
+                    // // check if out of bounds
+                    // if (event.clientX + translationboxwidth > window.innerWidth) {
+                    //     translationBox.style.left = event.clientX - translationboxwidth + 'px';
+                    // }
+                    // if(event.clientX - translationboxwidth < 0){
+                    //     translationBox.style.left = 0;
+                    // }
 
                     if(isMobileOrTablet()){
                         translationBox.style.position = 'absolute';
                         translationBox.style.left = 20 + 'px';
                         translationBox.style.top = window.scrollY + 20 + 'px';
                         // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
+                    }
+                    else{
+                        translationBox.style.position = 'absolute';
+                        translationBox.style.left = '50%';
+                        translationBox.style.bottom = -window.scrollY + 20 + 'px';
                     }
                 });
 
@@ -933,17 +937,17 @@
                     // let wrapperposy = wrapper.getBoundingClientRect().top - canvaswrapperposy + 222;
                     // translationBox.style.top = wrapperposy + 'px';
 
-                    translationBox.style.position = 'absolute';
-                    translationBox.style.left = event.clientX + 20 + 'px';
-                    translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
-                    let translationboxwidth = translationBox.offsetWidth;
-                    // check if out of bounds
-                    if (event.clientX + translationboxwidth > window.innerWidth) {
-                        translationBox.style.left = event.clientX - translationboxwidth + 'px';
-                    }
-                    if(event.clientX - translationboxwidth < 0){
-                        translationBox.style.left = 0;
-                    }
+                    // translationBox.style.position = 'absolute';
+                    // translationBox.style.left = event.clientX + 20 + 'px';
+                    // translationBox.style.top = window.scrollY + event.clientY + 20 + 'px';
+                    // let translationboxwidth = translationBox.offsetWidth;
+                    // // check if out of bounds
+                    // if (event.clientX + translationboxwidth > window.innerWidth) {
+                    //     translationBox.style.left = event.clientX - translationboxwidth + 'px';
+                    // }
+                    // if(event.clientX - translationboxwidth < 0){
+                    //     translationBox.style.left = 0;
+                    // }
 
                     if(isMobileOrTablet()){
                         translationBox.style.position = 'absolute';
@@ -951,8 +955,29 @@
                         translationBox.style.top = window.scrollY + 20 + 'px';
                         // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
                     }
+                    else{
+                        translationBox.style.position = 'absolute';
+                        translationBox.style.left = '50%';
+                        translationBox.style.transform = 'translateX(-50%)';
+                        translationBox.style.bottom = -window.scrollY + 20 + 'px';
+                    }
                 });
 
+                // on scroll event
+                window.addEventListener('scroll', function () {
+                    if(isMobileOrTablet()){
+                        translationBox.style.position = 'absolute';
+                        translationBox.style.left = 20 + 'px';
+                        translationBox.style.top = window.scrollY + 20 + 'px';
+                        // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
+                    }
+                    else{
+                        translationBox.style.position = 'absolute';
+                        translationBox.style.left = '50%';
+                        translationBox.style.transform = 'translateX(-50%)';
+                        translationBox.style.bottom = -window.scrollY + 20 + 'px';
+                    }
+                });
 
                 wrapper.addEventListener('mouseleave', function () {
                     translationBox.classList.add('hidden');
