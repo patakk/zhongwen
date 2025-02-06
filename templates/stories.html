@@ -1742,10 +1742,9 @@
 
                                 if (isMobileOrTablet()) {
                                     // event.preventDefault();
-                                    setTimeout(() => {
-                                        event.preventDefault();
-                                    }, 200);
                                     timer = setTimeout(() => {
+                                        // deselect all text
+                                        window.getSelection().removeAllRanges();
                                         handleInteraction();
                                     }, touchDuration);
 
