@@ -903,7 +903,8 @@
                     if(translationBox.textContent.length === 0){
                         return;
                     }
-                    translationBox.classList.remove('hidden');
+                    wrapper.classList.add('desktop');
+                    translationBox.classList.add('hidden');
                     if(isMobileOrTablet()){
                         translationBox.style.position = 'absolute';
                         translationBox.style.left = 20 + 'px';
@@ -1735,14 +1736,31 @@
                             charSpan.style.fontSize = size / 50 + 'em';
                             charSpan.style.color = colors[0];
 
-                            charSpan.addEventListener('click', function() {
-                                let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
-                                
-                                if(lineIndex !== currentHoveredLine){
-                                    return;
+                            charSpan.addEventListener(isMobileOrTablet() ? 'touchstart' : 'click', function(event) {
+                                let timer;
+                                let touchDuration = 500; // Duration for long hold in milliseconds
+
+                                if (isMobileOrTablet()) {
+                                    event.preventDefault(); // Prevent default touch behavior
+                                    timer = setTimeout(() => {
+                                        handleInteraction();
+                                    }, touchDuration);
+
+                                    charSpan.addEventListener('touchend', () => {
+                                        clearTimeout(timer);
+                                    }, { once: true });
+                                } else {
+                                    handleInteraction();
                                 }
-                                makeAIBubble(prompt);
-                                translationBox.classList.add('hidden');
+
+                                function handleInteraction() {
+                                    if (lineIndex !== currentHoveredLine) {
+                                        return;
+                                    }
+                                    let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
+                                    makeAIBubble(prompt);
+                                    translationBox.classList.add('hidden');
+                                }
                             });
 
                             if(!isMobileOrTablet()){
