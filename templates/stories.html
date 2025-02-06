@@ -1135,6 +1135,7 @@
                 //     line = line.split('." ').join('."<br>');
                 //     return line;
                 // });
+                window.getSelection().removeAllRanges();
 
                 // create a text container
                 let bubbletext = document.createElement('div');
@@ -1148,6 +1149,7 @@
 
                 setTimeout(() => {
                     hasOpenBubbles = true;
+                    window.getSelection().removeAllRanges();
                 }, 1000);
 
                 let bubble = new Bubble(bubblediv)
@@ -1744,7 +1746,6 @@
                                     // event.preventDefault();
                                     timer = setTimeout(() => {
                                         // deselect all text
-                                        window.getSelection().removeAllRanges();
                                         handleInteraction();
                                     }, touchDuration);
 
