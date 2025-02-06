@@ -1471,6 +1471,13 @@
                     sizeValue.textContent = 40;
                 }
 
+                
+                document.addEventListener('click', function() {
+                    activeBubbles.forEach(bubble => {
+                        removeBubbleFromDOM(bubble);
+                    });
+                });
+
                 backgroundCheckbox = document.getElementById('backgroundCheckbox');
                 backgroundCheckbox2 = document.getElementById('backgroundCheckbox2');
                 pinyinCheckbox = document.getElementById('pinyinCheckbox');
