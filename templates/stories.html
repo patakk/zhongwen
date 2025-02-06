@@ -1738,10 +1738,10 @@
 
                             charSpan.addEventListener(isMobileOrTablet() ? 'touchstart' : 'click', function(event) {
                                 let timer;
-                                let touchDuration = 500; // Duration for long hold in milliseconds
+                                let touchDuration = 500; 
 
                                 if (isMobileOrTablet()) {
-                                    event.preventDefault(); // Prevent default touch behavior
+                                    event.preventDefault();
                                     timer = setTimeout(() => {
                                         handleInteraction();
                                     }, touchDuration);
@@ -1754,7 +1754,7 @@
                                 }
 
                                 function handleInteraction() {
-                                    if (lineIndex !== currentHoveredLine) {
+                                    if (lineIndex !== currentHoveredLine && !isMobileOrTablet() || isMobileOrTablet()) {
                                         return;
                                     }
                                     let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
