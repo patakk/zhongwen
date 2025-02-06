@@ -1102,7 +1102,10 @@
 
             function makeAIBubble(prompt){
                 // removeBubbleFromDOM();
-
+                // remove all bubbles
+                activeBubbles.forEach(bubble => {
+                    removeBubbleFromDOM(bubble);
+                });
                 let style = null;
                 if(!initializeStyle) {
                     style = document.createElement('style');
