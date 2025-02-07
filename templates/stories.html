@@ -1509,6 +1509,21 @@
                 }
 
             }
+
+
+            // on 'tab' press toggle visibiliy of id=input-container
+            document.addEventListener('keydown', function(event) {
+                let elem = document.getElementById('input-container');
+                if (event.keyCode === 9) {
+                    event.preventDefault();
+                    if(elem.style.display === 'none'){
+                        elem.style.display = 'block';
+                    }
+                    else{
+                        elem.style.display = 'none';
+                    }
+                }
+            });
             
             document.addEventListener("DOMContentLoaded", function () {
                 // dimsSlider = document.getElementById('dimsSlider');
@@ -1851,7 +1866,7 @@
                     } else {
                         let latin = document.createElement('span');
                         latin.classList.add('latin');
-                        latin.innerHTML = plotterinfo.char;
+                        latin.innerHTML = plotterinfo.char.replace("'", "\"");
                         
                         latin.style.color = colors[0];
                         let rs = 50;
