@@ -496,11 +496,24 @@ def get_story(index):
         story = stories_data[stories_list[index-1]['uri']]
         chars = set(''.join(story['hanzi']) + story['name'])
         chars = chars.intersection(stroke_chars)
-        char_data = {char: {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
+        char_data = {char: {'pinyin': get_pinyin(char)} for char in chars}
         return jsonify({
             'story': story,
             'char_data': char_data
         })
+    else:
+        return jsonify({'error': 'Story index out of range'}), 404
+
+@app.route('/get_story_strokes/<int:index>')
+@session_required
+@timing_decorator
+def get_story_strokes(index):
+    if 1 <= index <= len(stories_list):
+        story = stories_data[stories_list[index-1]['uri']]
+        chars = set(''.join(story['hanzi']) + story['name'])
+        chars = chars.intersection(stroke_chars)
+        stroke_data = {char: json.load(open(f'static/strokes_data/{char}.json', 'r')) for char in chars}
+        return jsonify(stroke_data)
     else:
         return jsonify({'error': 'Story index out of range'}), 404
 
@@ -664,11 +677,20 @@ def examples_category(category, subcategory):
     return render_template('examples_category.html', category=category, subcategory=subcategory, translations=translations)
 
 
-with open('data/new_stories.json', 'r', encoding='utf-8') as f:
+with open('data/xiao_mei_story.json', 'r', encoding='utf-8') as f:
     stories_data = json.load(f)
 
 
-stories_list = [{'title': stories_data[u]['description'], 'uri': u} for u in stories_data]
+#stories_list = [{'title': stories_data[u]['description'], 'uri': u} for u in stories_data]
+
+def extract_sort_key(uri):
+    parts = uri.split('_', 1)
+    return int(parts[0]) if parts[0].isdigit() else float('inf')
+
+stories_list = sorted(
+    [{'title': stories_data[u]['description'], 'uri': u} for u in stories_data],
+    key=lambda x: extract_sort_key(x['uri'])
+)
 
 
 # @app.route('/stories')

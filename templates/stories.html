@@ -48,7 +48,17 @@
             font-family: 'Kaiti', sans-serif;
             padding: 0;
             margin: 0;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+
+        body::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+        }
+
         
         h1 {
             text-align: center;
@@ -366,6 +376,7 @@
         }
 
         .pinyinLabel {
+            opacity: 0.74;
             font-family: 'Noto Sans Mono', monospace;
             font-size: 0.6em;
         }
@@ -607,42 +618,10 @@
                     <span id="paddingValue">120</span>
                     <input type="range" class="myslider" id="paddingSlider" min="50" max="400" step="1" value="120">
                 </div> -->
-                <div class="option-container">
-                    <span class="optionLabel">Character size:</span>
-                    <span id="sizeValue">50</span>
-                    <input type="range" class="myslider" id="sizeSlider" min="30" max="100" step="2" value="50">
-                </div>
-                <div class="option-container">
-                    <span class="optionLabel">Anim speed:</span>
-                    <span id="speedValue">2x</span>
-                    <input type="range" class="myslider" id="speedSlider" min="0.5" max="4" step="0.1" value="2">
-                </div>
-                <div class="option-container">
-                    <span class="optionLabel">Stroke width:</span>
-                    <span id="thicknessValue">10pt</span>
-                    <input type="range" class="myslider" id="thicknessSlider" min="1" max="20" step="0.1" value="10">
-                </div>
-                <div class="option-container">
-                    <span class="optionLabel">Stroke noise:</span>
-                    <span id="noiseValue">0</span>
-                    <input type="range" class="myslider" id="noiseSlider" min="0" max="10" step="0.1" value="0">
-                </div>
-                <div class="option-container">
-                    <span class="optionLabel">Natural:</span>
-                    <input type="checkbox" id="naturalCheckbox">
-                </div>
-                <div class="option-container">
-                    <span class="optionLabel">Background:</span>
-                    <input type="checkbox" id="backgroundCheckbox">
-                    <input type="checkbox" id="backgroundCheckbox2">
-                </div>
-                <div class="option-container">
-                    <span class="optionLabel">Show pinyin:</span>
-                    <input type="checkbox" id="pinyinCheckbox">
-                </div>
+
                 
                 <div class="option-container" id="fonts-option">
-                    <span class="optionLabel">Fonts:</span>
+                    <span class="optionLabel">Font:</span>
                     <div class="custom-select" id="fontList">
                         <div class="selected-option" id="selectedFont">
                             <div class="font-choice">
@@ -668,6 +647,40 @@
 
                         </div>
                     </div>
+                </div>
+
+
+                <div class="option-container">
+                    <span class="optionLabel">Character size:</span>
+                    <span id="sizeValue">50</span>
+                    <input type="range" class="myslider" id="sizeSlider" min="30" max="100" step="2" value="50">
+                </div>
+                
+                <div class="option-container">
+                    <span class="optionLabel">Show pinyin:</span>
+                    <input type="checkbox" id="pinyinCheckbox">
+                </div>
+                
+                <div class="option-container">
+                    <span class="optionLabel">Natural:</span>
+                    <input type="checkbox" id="naturalCheckbox">
+                </div>
+                
+
+                <div class="option-container stroke-options">
+                    <span class="optionLabel">Stroke width:</span>
+                    <span id="thicknessValue">10pt</span>
+                    <input type="range" class="myslider" id="thicknessSlider" min="1" max="20" step="0.1" value="10">
+                </div>
+                <div class="option-container stroke-options">
+                    <span class="optionLabel">Stroke noise:</span>
+                    <span id="noiseValue">0</span>
+                    <input type="range" class="myslider" id="noiseSlider" min="0" max="10" step="0.1" value="0">
+                </div>
+                <div class="option-container stroke-options">
+                    <span class="optionLabel">Background:</span>
+                    <input type="checkbox" id="backgroundCheckbox">
+                    <input type="checkbox" id="backgroundCheckbox2">
                 </div>
 
             </div>
@@ -696,6 +709,7 @@
                 colorCanvas.width = okhslImage.width;
                 colorCanvas.height = okhslImage.height;
                 colorCtx.drawImage(okhslImage, 0, 0);
+                redrawText();
             };
 
             function sampleOKHSL(hue, sat, value, alpha=1) {
@@ -861,8 +875,6 @@
             // let paddingSlider;
             // let paddingValue;
             let sizeSlider;
-            let speedSlider;
-            let speedValue;
             let thicknessSlider;
             let thicknessValue;
             let noiseSlider;
@@ -904,7 +916,7 @@
                         return;
                     }
                     wrapper.classList.add('desktop');
-                    translationBox.classList.add('hidden');
+                    translationBox.classList.toggle('hidden');
                     if(isMobileOrTablet()){
                         translationBox.style.position = 'absolute';
                         translationBox.style.left = 20 + 'px';
@@ -1023,24 +1035,18 @@
                 close.style.zIndex = '333';
                 close.style.opacity = '0.0';
                 close.style.transition = 'opacity 0.3s ease';
-                close.addEventListener('click', function() {
-                    removeBubbleFromDOM(bubbleobj);
-                    activeBubbles = activeBubbles.filter(b => b !== bubbleobj);
-                    bubbleobj.removed = true;
-                });
 
                 bubble.appendChild(close);
                 bubbleobj.closebutton = close;
 
                 const documentClickHandler = function(event) {
                     if (!bubble.contains(event.target)) {
-                        if(hasOpenBubbles){
-                            removeBubbleFromDOM(bubbleobj);
-                            activeBubbles = activeBubbles.filter(b => b !== bubbleobj);
-                            bubbleobj.removed = true;
-                            document.body.removeEventListener('click', documentClickHandler);
-                            hasOpenBubbles = false;
-                        }
+                        console.log("afsasfa")
+                        removeBubbleFromDOM(bubbleobj);
+                        activeBubbles = activeBubbles.filter(b => b !== bubbleobj);
+                        bubbleobj.removed = true;
+                        document.body.removeEventListener('click', documentClickHandler);
+                        hasOpenBubbles = false;
                     }
                 };
                 document.body.addEventListener('click', documentClickHandler);
@@ -1076,7 +1082,7 @@
             }
 
             let initializeStyle = false;
-            let activeBubbles = [];
+            let activeBubble = null;
             let hasOpenBubbles = false;
             
             class Bubble {
@@ -1089,6 +1095,7 @@
                     this.timeoutId = null;
                     this.fadeId = null;
                     this.mouseover = false;
+                    this.removed = false;
                 }
 
                 setPos(x, y) {
@@ -1103,9 +1110,9 @@
             function makeAIBubble(prompt){
                 // removeBubbleFromDOM();
                 // remove all bubbles
-                activeBubbles.forEach(bubble => {
-                    removeBubbleFromDOM(bubble);
-                });
+                if(activeBubble){
+                    removeBubbleFromDOM(activeBubble);
+                }
                 let style = null;
                 if(!initializeStyle) {
                     style = document.createElement('style');
@@ -1150,14 +1157,19 @@
                 bubblediv.appendChild(bubbletext);
                 document.body.appendChild(bubblediv);
 
-                setTimeout(() => {
+                if(isMobileOrTablet()){
+                    setTimeout(() => {
+                        hasOpenBubbles = true;
+                        window.getSelection().removeAllRanges();
+                    }, 1000);
+                }
+                else{
                     hasOpenBubbles = true;
-                    window.getSelection().removeAllRanges();
-                }, 1000);
+                }
 
-                let bubble = new Bubble(bubblediv)
-                bubble.bubbletext = bubbletext;
-                activeBubbles.push(bubble);
+                let bubbleobj = new Bubble(bubblediv);
+                activeBubble = bubbleobj;
+                bubbleobj.bubbletext = bubbletext;
                 
                 bubblediv.style.position = 'absolute';
                 bubblediv.style.padding = '18px 24px';
@@ -1174,37 +1186,26 @@
                 bubbletext.style.cssText = 'scrollbar-width: none; max-height: 600px; max-width: 500px; overflow-y: scroll; padding: 6px 0px;';
                 // bubbletext.style.overflowY = bubbletext.scrollHeight > bubbletext.clientHeight ? 'scroll' : 'hidden';
 
-                applyInitialPos(bubble);
-                if(activeBubbles.length > 0) {
-                    let bubbleobj = activeBubbles[activeBubbles.length - 1];
-                    activeBubbles.forEach(bubbleobj => {
-                        let bubble = bubbleobj.bubble;
+                applyInitialPos(bubbleobj);
+                
 
-                        const documentClickHandler = function(event) {
-                            if(hasOpenBubbles){
-                                removeBubbleFromDOM(bubbleobj);
-                                activeBubbles = activeBubbles.filter(b => b !== bubbleobj);
-                                bubbleobj.removed = true;
-                                document.body.removeEventListener('click', documentClickHandler);
-                                hasOpenBubbles = false;
-                            }
-                        };
-                        document.body.addEventListener('click', documentClickHandler);
-                        // this only detect slick inside body html, but not outside
-
-                        
-                    
-                        bubbleobj.documentClickHandler = documentClickHandler;
-                    });
+                const documentClickHandler = function(event) {
+                    if (!bubblediv.contains(event.target)) {
+                        if(!bubbleobj.removed){
+                            removeBubbleFromDOM(bubbleobj);
+                            bubbleobj.removed = true;
+                            document.body.removeEventListener('click', documentClickHandler);
+                            hasOpenBubbles = false;
+                        }
+                    }
+                };
+                setInterval(() => {
+                    document.body.addEventListener('click', documentClickHandler);
+                    bubbleobj.documentClickHandler = documentClickHandler;
+                }, 1010);
                     
 
-
-                    // applyInitialStyles(bubble);
-                    // addBubbleInteractions(bubble);
-                    // checkMouseOver(bubble);
-                }
-
-                fetchStream(prompt, bubble);
+                fetchStream(prompt, bubbleobj);
 
                 // setTimeout(() => {
                 //     let bubble = activeBubbles[activeBubbles.length - 1];
@@ -1279,7 +1280,7 @@
                 
                 document.addEventListener('mouseup', function() {
                     bubbleobj.dragged = false;
-                    checkMouseOver(bubbleobj);
+                    // checkMouseOver(bubbleobj);
                 });
 
 
@@ -1288,7 +1289,7 @@
                     let y = event.clientY + window.scrollY;
                     mouseX = x;
                     mouseY = y;
-                    checkMouseOver(bubbleobj);
+                    // checkMouseOver(bubbleobj);
                 });
             }
 
@@ -1365,7 +1366,12 @@
 
                 // Set a timeout to remove the elements from the DOM after the animation
                 setTimeout(() => {
-                    bubbleobj.bubble.parentNode.removeChild(bubbleobj.bubble);
+                    if(bubbleobj.bubble.parentNode){
+                        bubbleobj.bubble.parentNode.removeChild(bubbleobj.bubble);
+                    }
+                    else{
+                        console.log("???")
+                    }
                     // bubbleobj.closebutton.parentNode.removeChild(bubbleobj.closebutton);
                     // bubbleobj.draggablearea.parentNode.removeChild(bubbleobj.draggablearea);
                 }, 200);  // Delay of 1000 milliseconds
@@ -1380,15 +1386,41 @@
                         return response.json();
                     })
                     .then(data => {
-                        console.log(data)
+                        console.log("1/2 Story data received.");
                         story = data.story;
                         dataPerCharacter = data.char_data;
                         if(func) {
                             func();
                         }
+                        // Optionally, you can call getStoryStrokes here if you want to start loading stroke data immediately
+                        getStoryStrokes(index);
                     })
                     .catch(error => {
                         console.error('There was a problem with the fetch operation:', error.message);
+                    });
+            }
+
+            function getStoryStrokes(index, func=null) {
+                fetch(`./get_story_strokes/${index}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(strokeData => {
+                        for (let char in strokeData) {
+                            if (dataPerCharacter.hasOwnProperty(char)) {
+                                dataPerCharacter[char].strokes = strokeData[char];
+                            }
+                        }
+                        if(func) {
+                            func();
+                        }
+                        // You can call a function here to update the UI with stroke data if needed
+                    })
+                    .catch(error => {
+                        console.error('There was a problem fetching stroke data:', error.message);
                     });
             }
 
@@ -1424,13 +1456,16 @@
                             drop.selected.innerHTML = '';
                             drop.selected.appendChild(row);
                             if(drop.elem.id == 'storyList') {
-                                story = getStory(value, redrawPlotters);
+                                story = getStory(value, redrawText);
                                 selectedStoryIndex = value;
                             }
                             else if(drop.elem.id == 'fontList') {
                                 renderFont = fontList[value - 1];
                                 naturalCheckbox.checked = false;
-                                redrawPlotters();
+                                document.querySelectorAll('.stroke-options').forEach((el) => {
+                                    el.style.display = 'none';
+                                });
+                                redrawText();
                             }
                             else{
                                 redrawPlotters();
@@ -1451,7 +1486,6 @@
                     dropdowns[dropdownIndex].selected.innerHTML = '';
                     dropdowns[dropdownIndex].selected.appendChild(row);
                     dropdowns[dropdownIndex].elem.classList.remove('open');
-                    story = getStory(optionValue, redrawPlotters);
                 }
 
             }
@@ -1459,14 +1493,17 @@
             document.addEventListener("DOMContentLoaded", function () {
                 // dimsSlider = document.getElementById('dimsSlider');
                 // paddingSlider = document.getElementById('paddingSlider');
-                speedSlider = document.getElementById('speedSlider');
+                
+                document.querySelectorAll('.stroke-options').forEach((el) => {
+                    el.style.display = 'none';
+                });
+
                 sizeSlider = document.getElementById('sizeSlider');
                 thicknessSlider = document.getElementById('thicknessSlider');
                 noiseSlider = document.getElementById('noiseSlider');
 
                 // dimsValue = document.getElementById('dimsValue');
                 // paddingValue = document.getElementById('paddingValue');
-                speedValue = document.getElementById('speedValue');
                 sizeValue = document.getElementById('sizeValue');
                 thicknessValue = document.getElementById('thicknessValue');
                 noiseValue = document.getElementById('noiseValue');
@@ -1494,6 +1531,10 @@
                 // updateCount();
                 setupDropdowns();
                 
+                story = getStory(1, redrawText);
+
+
+
                 if(!isMobileOrTablet()){
                     // document.getElementById('plotters').style.width = dimsSlider.value + '%';
                     // dimsSlider.addEventListener('input', function () {
@@ -1508,11 +1549,6 @@
                 //     paddingValue.textContent = this.value;
                 //     document.getElementById('plotters').style.padding = this.value + 'px';
                 // });
-
-                speedSlider.addEventListener('change', function() {
-                    speedValue.textContent = this.value + 'x';
-                    redrawPlotters();
-                });
 
                 sizeSlider.addEventListener('change', function() {
                     sizeValue.textContent = this.value;
@@ -1548,6 +1584,16 @@
                 naturalCheckbox.addEventListener('change', function() {
                     if (!plottersElem.classList.contains('empty')) {
                         redrawPlotters();
+                    }
+                    if(!this.checked){
+                        document.querySelectorAll('.stroke-options').forEach((el) => {
+                            el.style.display = 'none';
+                        });
+                    }
+                    else{
+                        document.querySelectorAll('.stroke-options').forEach((el) => {
+                            el.style.display = 'flex';
+                        });
                     }
                 });
 
@@ -1657,10 +1703,152 @@
                 .catch(err => console.error('Error:', err));
             }
 
+            function renderTextToDom(plotterElement, plotters, showAllPinyin, colors, size, dataPerCharacter, currentLines, storyTitleElem) {
+                plotterElement.innerHTML = '';
+                
+                plotterElement.dataset.plotters = plotters;
+
+                let translationBox = document.createElement('div');
+                translationBox.setAttribute('id', 'translationBox');
+                translationBox.classList.add('hidden');
+                if(isDarkMode){
+                    translationBox.classList.add('darkmode');
+                }
+                //plotterElement.appendChild(translationBox);
+                // let plottersWrapper = document.getElementById('plottersWrapper');
+                // plottersWrapper.appendChild(translationBox);
+                document.body.appendChild(translationBox);
+
+                let currentLineIndex = null;    
+                let currentWrapper = null;
+
+                storyTitleElem.style.fontSize = size / 40 + 'em';
+
+                plotters.forEach((plotterinfo, index) => {
+                    let plotter = plotterinfo.plotter;
+                    let lineIndex = plotterinfo.lineIndex;
+                    let char = plotterinfo.char;
+
+                    let isTitle = lineIndex === -1;
+
+                    if (lineIndex !== currentLineIndex) {
+                        currentWrapper = document.createElement('div');
+                        currentWrapper.className = 'line-wrapper';
+                        if(!isMobileOrTablet()){
+                            currentWrapper.classList.add('desktop');
+                        }
+                        if(isDarkMode){
+                            currentWrapper.classList.add('darkmode');
+                        }
+                        if(isTitle){
+                            currentWrapper.style.textAlign = 'center';
+                        }
+                        currentWrapper.dataset.lineIndex = lineIndex;
+                        plotterElement.appendChild(currentWrapper);
+                        currentLineIndex = lineIndex;
+                        addHoverBehaviorToWrapper(currentWrapper, lineIndex);
+                    }
+                    if (isHanzi(char) && !isPunctuation(char)) {
+                        let charContainer = document.createElement('div');
+                        charContainer.style.display = 'inline-block';
+                        charContainer.style.textAlign = 'center';
+                        charContainer.classList.add('plotterContainer');
+
+                        let pinyinElement = document.createElement('div');
+                        pinyinElement.classList.add('pinyinLabel');
+                        pinyinElement.classList.add('line_' + lineIndex);
+                        pinyinElement.style.fontSize = (size / 150) + 'em'; // Adjust this ratio as needed
+                        pinyinElement.style.height = '20px';
+                        pinyinElement.style.userSelect = 'none';
+                        if (!showAllPinyin) {
+                            pinyinElement.classList.add('hidden');
+                        }
+
+                        let charSpan = document.createElement('span');
+                        charSpan.classList.add('chinese-text');
+                        charSpan.style.fontFamily = renderFont;
+                        charSpan.textContent = char;
+                        charSpan.style.fontSize = size / 50 + 'em';
+                        charSpan.style.color = colors[0];
+
+                        charSpan.addEventListener(isMobileOrTablet() ? 'touchstart' : 'click', function(event) {
+                            let timer;
+                            let touchDuration = 1500; 
+
+                            if (isMobileOrTablet()) {
+                                // event.preventDefault();
+                                timer = setTimeout(() => {
+                                    // deselect all text
+                                    handleInteraction();
+                                }, touchDuration);
+
+                                charSpan.addEventListener('touchend', () => {
+                                    clearTimeout(timer);
+                                }, { once: true });
+                            } else {
+                                
+                                handleInteraction();
+                            }
+
+                            function handleInteraction() {
+                                if (lineIndex !== currentHoveredLine && isMobileOrTablet()) {
+                                    return;
+                                }
+                                let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
+                                makeAIBubble(prompt);
+                                translationBox.classList.add('hidden');
+                            }
+                        });
+
+                        if(!isMobileOrTablet()){
+                            charSpan.classList.add('chinese-text-desktop')
+                        }
+                        if(isDarkMode){
+                            charSpan.classList.add('darkmode')
+                        }
+
+                        if(isTitle){
+                            charSpan.style.fontSize = size / 30 + 'em';
+                            charSpan.style.color = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.4, 0.7, 1.);
+                            let shadowcolor = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.5, 0.75, 0.15);
+                            charSpan.style.textShadow = `0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}`;
+                            if(isDarkMode){
+                                charSpan.style.color = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.4, 0.7, 1.);
+                                let shadowcolor = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.5, 0.75, 0.15);
+                                charSpan.style.textShadow = `0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}`;
+                            }
+                        }
+
+                        charContainer.appendChild(pinyinElement);
+                        charContainer.appendChild(charSpan);
+                        currentWrapper.appendChild(charContainer);
+
+                        if (char in dataPerCharacter) {
+                            if (dataPerCharacter[char].pinyin) {
+                                pinyinElement.textContent = dataPerCharacter[char].pinyin;
+                            }
+                        } 
+                    } else {
+                        let latin = document.createElement('span');
+                        latin.classList.add('latin');
+                        latin.innerHTML = plotterinfo.char;
+                        
+                        latin.style.color = colors[0];
+                        let rs = 50;
+                        if (isMobileOrTablet()) {
+                            latin.style.fontSize = size/rs + 'em';
+                        } else {
+                            latin.style.fontSize = size/rs + 'em';
+                        }
+                        latin.style.userSelect = 'none';
+                        currentWrapper.appendChild(latin);
+                    }
+                });
+            }
+
 
             function renderPlottersToDOM(plotterElement, plotters, showAllPinyin, colors, size, dataPerCharacter, currentLines, storyTitleElem) {
                 plotterElement.innerHTML = '';
-                
                 
                 plotterElement.dataset.plotters = plotters;
 
@@ -1824,7 +2012,8 @@
                             pinyinElement.classList.add('pinyinLabel');
                             pinyinElement.classList.add('pinyinLabelColor');
                             pinyinElement.classList.add('line_' + lineIndex);
-                            pinyinElement.addEventListener('click', function() {
+                            
+                            canvasContainer.addEventListener('click', function() {
                                 let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence. If the char is not in the sentence, dont mention that fact, pretend its there.';
 
                                 if(lineIndex !== currentHoveredLine){
@@ -1881,6 +2070,59 @@
                 });
             }
 
+            function redrawText(){
+                let titleHanzi = story.name + "\n";
+                //prepend title to story.hanzi
+                let joinedLines = story.hanzi.join('\n');
+                let currentLines = story.hanzi;
+                let numLines = currentLines.length;
+                let lineIndex = -1;
+                let titlelength = titleHanzi.length;
+                let characters = titleHanzi.split('').concat(joinedLines.split(''));
+
+                const plotterElement = document.getElementById('plotters');
+                plotterElement.innerHTML = '';
+                plotters = [];
+                
+                let size = parseFloat(sizeSlider.value)*2;
+
+                let storyTitleElem = document.createElement('div');
+                storyTitleElem.classList.add('story-title');
+                storyTitleElem.style.fontFamily = renderFont;
+                storyTitleElem.style.fontSize = size / 40 + 'em';
+                storyTitleElem.textContent = titleHanzi;
+
+                colors = ['#111'];
+                if(isDarkMode){
+                    colors = ['#ddd'];
+                }
+                
+                let lineType = 'round'; 
+                lineType = 'round'; 
+                lineType = 'miter'; 
+                if (isMobileOrTablet()) {
+                    // console.log('Mobile or tablet detected');
+                    // size = 48;
+                }
+                characters.forEach((char, index) => {
+                    plotters.push({ plotter: null, char: char, lineIndex: lineIndex });
+                    if (char === '\n') {
+                        plotters.push({ plotter: null, char: '<br>', lineIndex: lineIndex });
+                        lineIndex++;
+                    }
+                });
+                if (plotters.length > 0) {
+                    plottersElem.classList.remove('empty');
+                }
+                else {
+                    plottersElem.classList.add('empty');
+                }
+
+                if (plotterElement && plotters) {
+                    renderTextToDom(plotterElement, plotters, showAllPinyin, colors, size, dataPerCharacter, currentLines, storyTitleElem);
+                }
+
+            }
 
             function redrawPlotters() {
                 let titleHanzi = story.name + "\n";
@@ -1904,7 +2146,7 @@
                 storyTitleElem.style.fontSize = size / 40 + 'em';
                 storyTitleElem.textContent = titleHanzi;
 
-                let speed = parseFloat(speedSlider.value/70);
+                let speed = .03;
                 let lineThickness = parseFloat(thicknessSlider.value*size/200);
                 let jitterAmp = parseFloat(noiseSlider.value*30);
                 colors = ['#111'];
@@ -1947,6 +2189,7 @@
                             lineType: lineType,
                             showDiagonals: backgroundCheckbox.checked,
                             showGrid: backgroundCheckbox2.checked,
+                            clickAnimation: false,
                         });
                         plotters.push({ plotter: plotter, char: char, lineIndex: lineIndex });
                     }

@@ -317,6 +317,7 @@ class HanziPlotter {
         lineType = 'miter',
         showDiagonals = false,
         showGrid = false,
+        clickAnimation = true,
     }) {
         this.character = character;
         this.strokes_ = strokes;
@@ -351,7 +352,10 @@ class HanziPlotter {
         this.animationFrame = null;
 
         // Bind methods
-        this.canvas.addEventListener('click', () => this.startAnimation());
+        this.clickAnimation = clickAnimation;
+        if(this.clickAnimation){
+            this.canvas.addEventListener('click', () => this.startAnimation());
+        }
     }
 
     processStrokes(strokes) {
