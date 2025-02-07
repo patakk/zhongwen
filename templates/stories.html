@@ -49,7 +49,6 @@
             padding: 0;
             margin: 0;
             overflow-y: scroll;
-            scrollbar-width: none;
             -ms-overflow-style: none;
         }
 
@@ -106,6 +105,7 @@
             padding-top: 3%;
             width: 100%;
             position: relative;
+            padding-bottom: 2em;
         }
 
         #input-container {
@@ -1107,7 +1107,7 @@
                 }
             }
 
-            function makeAIBubble(prompt){
+            function makeAIBubble(prompt, symbol=null){
                 // removeBubbleFromDOM();
                 // remove all bubbles
                 if(activeBubble){
@@ -1117,16 +1117,21 @@
                 if(!initializeStyle) {
                     style = document.createElement('style');
                     style.textContent = `
+                        .translation-bubble {
+                            display: flex;
+                            justify-content: center;
+                            align-items: flex-start;
+                            flex-direction: column;
+                        }
                         .translation-bubble, .translation-bubble * {
-                            user-select: text; /* Allows text to be selected inside the bubble */
-                            color: rgba(10,10,10,1.0); /* Ensure text color is consistent */
-                            display: inline-block; /* Treat inline elements like block elements */
-                            white-space: nowrap; /* Prevents the collapse of whitespace */
-                            text-wrap: balance; /* Balance text wrapping */
+                            user-select: text; 
+                            color: rgba(10,10,10,1.0);
+                            white-space: nowrap; 
+                            text-wrap: balance;
                         }
                         .translation-bubble::selection, .translation-bubble *::selection {
-                            background: #FFD700; /* Gold background for the bubble */
-                            color: #000; /* Black text for the bubble */
+                            background: #FFD700;
+                            color: #000;
                         }
                     `;
                     document.head.appendChild(style);
@@ -1154,7 +1159,22 @@
                 // bubbletext.innerHTML = prompt;
 
                 // bubblediv.innerHTML = request.translatedText;
+                // button with lable "open in grid"
+                let openInGridButton = document.createElement('button');
+                openInGridButton.textContent = 'SEARCH';
+                // stlye the button, soft shadow, no border, 2px thick border, roboto font, 0.7 em
+                openInGridButton.style.cssText = 'padding: 6px 12px; background-color: #fff6; color: #000; cursor: pointer; border: none; border-radius: 4px; font: 0.7em Roboto, sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.3);';
+                openInGridButton.addEventListener('click', function() {
+                    window.open(`/search?query=${symbol}`, '_blank', 'noopener,noreferrer');
+                    
+                    if(activeBubble){
+                        removeBubbleFromDOM(activeBubble);
+                    }
+                });
+
+
                 bubblediv.appendChild(bubbletext);
+                bubblediv.appendChild(openInGridButton);
                 document.body.appendChild(bubblediv);
 
                 if(isMobileOrTablet()){
@@ -1183,7 +1203,7 @@
                 bubblediv.style.fontSize = '16px';
                 bubblediv.style.font = 'Roboto, sans-serif';
 
-                bubbletext.style.cssText = 'scrollbar-width: none; max-height: 600px; max-width: 500px; overflow-y: scroll; padding: 6px 0px;';
+                bubbletext.style.cssText = 'scrollbar-width: none; max-height: 600px; max-width: 500px; overflow-y: scroll; padding: 6px 0px; box-sizing: border-box;';
                 // bubbletext.style.overflowY = bubbletext.scrollHeight > bubbletext.clientHeight ? 'scroll' : 'hidden';
 
                 applyInitialPos(bubbleobj);
@@ -1202,7 +1222,7 @@
                 setInterval(() => {
                     document.body.addEventListener('click', documentClickHandler);
                     bubbleobj.documentClickHandler = documentClickHandler;
-                }, 1010);
+                }, 110);
                     
 
                 fetchStream(prompt, bubbleobj);
@@ -1795,7 +1815,7 @@
                                     return;
                                 }
                                 let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
-                                makeAIBubble(prompt);
+                                makeAIBubble(prompt, char);
                                 translationBox.classList.add('hidden');
                             }
                         });
@@ -1959,7 +1979,7 @@
                                         return;
                                     }
                                     let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
-                                    makeAIBubble(prompt);
+                                    makeAIBubble(prompt, char);
                                     translationBox.classList.add('hidden');
                                 }
                             });
@@ -2019,7 +2039,7 @@
                                 if(lineIndex !== currentHoveredLine){
                                     return;
                                 }
-                                makeAIBubble(prompt);
+                                makeAIBubble(prompt, char);
                                 translationBox.classList.add('hidden');
 
                             });

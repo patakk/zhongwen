@@ -171,7 +171,7 @@ function createPlotters(data){
             character: char,
             dimension: size,
             speed: .04,
-            lineThickness: 7*size/200,
+            lineThickness: 11*size/200,
             jitterAmp: 0,
             colors: colors,
             lineType: lineType,

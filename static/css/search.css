@@ -2,6 +2,12 @@
     background-color: rgb(255, 66, 28);
 }
 
+
+.darkmode {
+    color: rgb(236, 236, 236);
+    /* border-color: rgb(100, 100, 100); */
+}
+
 #font-select {
     position: fixed;
     top: 15px;
@@ -243,6 +249,7 @@ and (orientation: landscape) {
 
 input[type="text"].darkmode {
     border-color: rgb(128, 128, 128);
+    background-color: rgb(34, 34, 34);
 }
 input[type="submit"].darkmode {
     border-color: rgb(128, 128, 128);
