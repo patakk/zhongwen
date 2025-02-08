@@ -79,6 +79,7 @@ class UserProgress(db.Model):
     daily_new_cards = db.Column(JSON, nullable=False)
     last_new_cards_date = db.Column(JSON, nullable=False)
     presented_new_cards = db.Column(JSON, nullable=False)
+    learning_cards = db.Column(JSON, nullable=False)
     progress = db.Column(JSON, nullable=False)
 
     def to_dict(self):
@@ -89,6 +90,7 @@ class UserProgress(db.Model):
             "new_cards_limit": self.new_cards_limit,
             "new_cards_limit_last_updated": self.new_cards_limit_last_updated,
             "presented_new_cards": self.presented_new_cards,
+            "learning_cards": self.learning_cards,
             "progress": self.progress,
         }
 
@@ -111,6 +113,7 @@ class UserProgress(db.Model):
             daily_new_cards=data["daily_new_cards"],
             last_new_cards_date=data["last_new_cards_date"],
             presented_new_cards=data["presented_new_cards"],
+            learning_cards=data["learning_cards"],
             progress=data["progress"],
         )
 

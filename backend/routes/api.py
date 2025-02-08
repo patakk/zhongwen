@@ -10,6 +10,7 @@ from backend.db.ops import db_add_stroke_data
 from backend.decorators import session_required, timing_decorator
 from backend.flashcard_app import get_flashcard_app
 from backend.db.ops import db_update_or_create_note
+
 from backend.db.models import Card, UserNotes
 from backend.db.extensions import db
 
@@ -23,6 +24,20 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 with open("data/audio_mappings.json", "r", encoding="utf-8") as f:
     audio_mappings = json.load(f)
+
+
+# rout for calling flashcard_app.add_word_to_learning(username, word)
+@api_bp.route("/add_word_to_learning", methods=["POST"])
+@session_required
+def add_word_to_learning():
+    data = request.get_json()
+    if not data or "word" not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+    word = data["word"]
+    username = session.get("username")
+    flashcard_app.add_word_to_learning(username, word)
+    return jsonify({"status": "success"})
+
 
 @api_bp.route('/storeNotesVisibility', methods=['POST'])
 @session_required

@@ -389,7 +389,12 @@ function renderCardData(data) {
     }
 
     let isemptyOtherNotes = false;
-    if(data.other_user_notes.length === 0){
+    try{
+        if(data.other_user_notes.length === 0){
+            isemptyOtherNotes = true;
+        }
+    }
+    catch(e){
         isemptyOtherNotes = true;
     }
 

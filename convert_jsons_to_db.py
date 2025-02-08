@@ -20,6 +20,7 @@ class UserProgress(db.Model):
     daily_new_cards = db.Column(JSON, nullable=False)
     last_new_cards_date = db.Column(JSON, nullable=False)
     presented_new_cards = db.Column(JSON, nullable=False)
+    learning_cards = db.Column(JSON, nullable=False)
     progress = db.Column(JSON, nullable=False)
 
 # Function to migrate JSON files to database
@@ -53,6 +54,7 @@ def migrate_json_to_db(delete_files=False):
                 user_prog.daily_new_cards = data.get('daily_new_cards', {})
                 user_prog.last_new_cards_date = data.get('last_new_cards_date', {})
                 user_prog.presented_new_cards = data.get('presented_new_cards', {})
+                user_prog.learning_cards = data.get('learning_cards', {})
                 user_prog.progress = data.get('progress', {})
                 
                 db.session.add(user_prog)

@@ -46,9 +46,9 @@ from flask import Flask
 from backend.routes.api import api_bp
 from backend.routes.puzzles import puzzles_bp
 
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from flask_wtf.csrf import CSRFProtect
+# from flask_limiter import Limiter
+# from flask_limiter.util import get_remote_address
+# from flask_wtf.csrf import CSRFProtect
 
 FLASK_CONFIG = {
     'SECRET_KEY': "zhongwen-hen-youyisi",
@@ -61,6 +61,7 @@ FLASK_CONFIG = {
     'SQLALCHEMY_TRACK_MODIFICATIONS': False
 }
 
+
 def create_app():
     app = Flask(__name__)
     app.config.update(FLASK_CONFIG)
@@ -70,11 +71,11 @@ def create_app():
 app = create_app()
 application = app
 
-limiter = Limiter(
-    key_func=get_remote_address,
-    app=app,
-    default_limits=["11200 per day", "1150 per hour"]
-)
+# limiter = Limiter(
+#     key_func=get_remote_address,
+#     app=app,
+#     default_limits=["11200 per day", "1150 per hour"]
+# )
 
 app.register_blueprint(api_bp)
 app.register_blueprint(puzzles_bp)
@@ -100,7 +101,7 @@ def get_card_data():
     character = request.args.get('character')
     message = ''
     if not character:
-        message, character = flashcard_app.select_card(session['username'], session['deck'])
+        message, character = flashcard_app.select_card(session['username'], 'learning_deck')
     return  jsonify({'message': message, **packed_data(character)})
 
 @app.before_request
@@ -320,6 +321,7 @@ def login():
                     daily_new_cards={},
                     last_new_cards_date={},
                     presented_new_cards={},
+                    learning_cards={},
                     progress={}
                 )
                 
@@ -482,35 +484,44 @@ def convert():
 @session_required
 @timing_decorator
 def stories():
-    first_story = stories_data[stories_list[0]['uri']]
-    chars = set(''.join(first_story['hanzi']) + first_story['name'])
+    first_story = all_stories[stories_names[0]]
+    first_chapter = first_story['chapters_data'][first_story['chapters_list'][0]['uri']]
+    chars = set(''.join([''.join(ls) for ls in first_chapter['hanzi']]) + ''.join(first_chapter['name']))
     chars = chars.intersection(stroke_chars)
     char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
-    return render_template('stories.html', darkmode=session['darkmode'], story=first_story, stories=stories_list, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, deck=session['deck'])
+    all_chapters = [[chapter['title'] for chapter in all_stories[story_name]['chapters_list']] for story_name in stories_names]
+    return render_template('stories.html', darkmode=session['darkmode'], chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, deck=session['deck'])
 
-@app.route('/get_story/<int:index>')
+@app.route('/get_story/<int:story_index>/<int:chapter_index>')
 @session_required
 @timing_decorator
-def get_story(index):
-    if 1 <= index <= len(stories_list):
-        story = stories_data[stories_list[index-1]['uri']]
-        chars = set(''.join(story['hanzi']) + story['name'])
+def get_story(story_index, chapter_index):
+    selected_story = all_stories[stories_names[story_index-1]]
+    chapter_list = selected_story['chapters_list']
+    chapter_data = selected_story['chapters_data']
+    if 1 <= chapter_index <= len(chapter_list):
+        chapter = chapter_data[chapter_list[chapter_index-1]['uri']]
+        chars = set(''.join([''.join(ls) for ls in chapter['hanzi']]) + ''.join(chapter['name']))
         chars = chars.intersection(stroke_chars)
         char_data = {char: {'pinyin': get_pinyin(char)} for char in chars}
         return jsonify({
-            'story': story,
+            'chapter': chapter,
             'char_data': char_data
         })
     else:
         return jsonify({'error': 'Story index out of range'}), 404
 
-@app.route('/get_story_strokes/<int:index>')
+
+@app.route('/get_story_strokes/<int:story_index>/<int:chapter_index>')
 @session_required
 @timing_decorator
-def get_story_strokes(index):
-    if 1 <= index <= len(stories_list):
-        story = stories_data[stories_list[index-1]['uri']]
-        chars = set(''.join(story['hanzi']) + story['name'])
+def get_story_strokes(story_index, chapter_index):
+    selected_story = all_stories[stories_names[story_index-1]]
+    chapter_list = selected_story['chapters_list']
+    chapter_data = selected_story['chapters_data']
+    if 1 <= chapter_index <= len(chapter_list):
+        chapter = chapter_data[chapter_list[chapter_index-1]['uri']]
+        chars = set(''.join([''.join(ls) for ls in chapter['hanzi']]) + ''.join(chapter['name']))
         chars = chars.intersection(stroke_chars)
         stroke_data = {char: json.load(open(f'static/strokes_data/{char}.json', 'r')) for char in chars}
         return jsonify(stroke_data)
@@ -557,7 +568,6 @@ def get_translations(lines):
             except Exception as e:
                 print(f"Error reading OpenAI API key file: {e}")
 
-    print('using api key:', api_key)
     url = "https://api.openai.com/v1/chat/completions"
     headers = {
         "Content-Type": "application/json",
@@ -676,21 +686,47 @@ def examples_category(category, subcategory):
     translations = parsed_data[category][subcategory]
     return render_template('examples_category.html', category=category, subcategory=subcategory, translations=translations)
 
+# story_files = glob.glob('data/stories/*.json')
 
-with open('data/xiao_mei_story.json', 'r', encoding='utf-8') as f:
-    stories_data = json.load(f)
+# with open('data/xiao_mei_story.json', 'r', encoding='utf-8') as f:
+#     stories_data = json.load(f)
+
+# def extract_sort_key(uri):
+#     parts = uri.split('_', 1)
+#     return int(parts[0]) if parts[0].isdigit() else float('inf')
+
+# stories_list = sorted(
+#     [{'title': stories_data[u]['description'], 'uri': u} for u in stories_data],
+#     key=lambda x: extract_sort_key(x['uri'])
+# )
 
 
-#stories_list = [{'title': stories_data[u]['description'], 'uri': u} for u in stories_data]
+'''
+'''
 
 def extract_sort_key(uri):
     parts = uri.split('_', 1)
     return int(parts[0]) if parts[0].isdigit() else float('inf')
 
-stories_list = sorted(
-    [{'title': stories_data[u]['description'], 'uri': u} for u in stories_data],
-    key=lambda x: extract_sort_key(x['uri'])
-)
+story_files = glob.glob('data/stories/*.json')
+all_stories = {}
+
+for story_file in story_files:
+    with open(story_file, 'r', encoding='utf-8') as f:
+        story_opened = json.load(f)
+    chapters_data = story_opened["chapters"]
+    story_name = story_opened["name"]
+    
+    chapters_list = sorted(
+        [{'title': chapters_data[u]['description'], 'uri': u} for u in chapters_data],
+        key=lambda x: extract_sort_key(x['uri'])
+    )
+    
+    all_stories[story_name] = {
+        'chapters_list': chapters_list,
+        'chapters_data': chapters_data
+    }
+stories_names = list(all_stories.keys())
 
 
 # @app.route('/stories')
@@ -763,9 +799,35 @@ def search():
         query = request.args.get('query') or request.form.get('query') or ''
         query = query.strip().lower()
         results = []
-        
-        for deck in CARDDECKS:
-            for hanzi, card in CARDDECKS[deck].items():
+
+        # If query contains multiple Chinese characters, search separately
+        if all('\u4e00' <= ch <= '\u9fff' for ch in query) and len(query) > 1:
+            individual_results = []
+            for char in query:
+                char_results = []
+                for deck in CARDDECKS:
+                    for hanzi, card in CARDDECKS[deck].items():
+                        if char in hanzi:
+                            char_results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
+                individual_results.append(char_results)
+
+            # Flatten and concatenate results while preserving order
+            results = [item for sublist in individual_results for item in sublist]
+
+        else:  # Original single-word search logic
+            for deck in CARDDECKS:
+                for hanzi, card in CARDDECKS[deck].items():
+                    if query in hanzi:
+                        results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
+                    elif query.replace(' ', '').isalnum():
+                        if 'pinyin' in card:
+                            pinyin_query = remove_tones(convert_numerical_tones(query))
+                            card_pinyin = remove_tones(card['pinyin'].lower())
+                            if pinyin_query in card_pinyin:
+                                results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
+                        if 'english' in card and query in card['english'].lower():
+                            results.append({'hanzi': hanzi, **card, 'match_type': 'english'})
+
                 if query in hanzi.lower():
                     results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
                 elif query.replace(' ', '').isalnum():  # Allow spaces and numbers in query

@@ -21,6 +21,7 @@ class UserProgress(db.Model):
     daily_new_cards = db.Column(db.JSON, nullable=False)
     last_new_cards_date = db.Column(db.JSON, nullable=False)
     presented_new_cards = db.Column(db.JSON, nullable=False)
+    learning_cards = db.Column(db.JSON, nullable=False)
     progress = db.Column(db.JSON, nullable=False)
 
 def print_all_user_progress():
@@ -44,6 +45,8 @@ def print_all_user_progress():
             print(json.dumps(user.last_new_cards_date, indent=2, ensure_ascii=False))
             print("\nPresented New Cards:")
             print(json.dumps(user.presented_new_cards, indent=2, ensure_ascii=False))
+            print("\nLearning Cards:")
+            print(json.dumps(user.learning_cards, indent=2, ensure_ascii=False))
             print("\nProgress:")
             print(json.dumps(user.progress, indent=2, ensure_ascii=False))
             print("\n" + "="*50)

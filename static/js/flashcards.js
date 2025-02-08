@@ -688,7 +688,8 @@ function getNextCard(func=null) {
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
-            document.getElementById('flashcard_character').textContent = 'Error loading card';
+            document.getElementById('flashcard_character').textContent = 'Learning deck is empty, read stories and add new cards to start learning.';
+            document.getElementById('flashcard_pinyin').style.display = 'none';
         });
     }
     document.getElementById('flashcard_container').scrollTop = 0;

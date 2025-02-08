@@ -36,23 +36,24 @@ class FlashcardApp:
         self.last_new_cards_date = {}
         self.presented_new_cards = {}
         self.cards = cards
+        self.learning_cards = {}
         self.anthropic_data = anthropic_data
 
         if not os.path.exists("user_progress"):
             os.makedirs("user_progress")
 
-    def load_cards(self, deck):
-        filename = self.decks[deck]["file"]
-        if filename.endswith(".json"):
-            with open(filename, "r", encoding="utf-8") as f:
-                return json.load(f)
-        return {}
-
     def set_deck(self, deck):
         self.current_deck = deck
 
+    def add_word_to_learning(self, username, word):
+        current_learning = db_load_user_value(username, "learning_cards") or {}
+        if word not in current_learning:
+            current_learning[word] = word
+            db_store_user_value(username, "learning_cards", current_learning)
+        self.learning_cards = current_learning
+
     def select_random_card(self, deck):
-        return random.choice(list(self.cards[deck].keys()))
+        return random.choice(list(self.learning_cards.keys()))
 
     def record_answer(self, username, character, correct):
         uprogress = db_load_user_progress(username)
@@ -135,9 +136,10 @@ class FlashcardApp:
     def get_due_cards(self, username, deck, count=10000):
         due_cards = []
         current_time = datetime.now(timezone.utc)
-        all_deck_cards = set(self.cards[deck].keys())
+        all_deck_cards = set(self.learning_cards.keys())
 
         uprogress = db_load_user_progress(username)
+        print(uprogress)
         for character in all_deck_cards:
             character_progress = uprogress["progress"].get(character, {})
             next_review_str = character_progress.get("next_review")
@@ -162,15 +164,18 @@ class FlashcardApp:
         today = date.today()
         user_deck_key = (username, deck)
         uprogress = db_load_user_progress(username)
+        dd = db_load_user_value(username, "daily_new_cards") or []
+        dd2 = db_load_user_value(username, "last_new_cards_date") or {}
+        dd2 = dd2 or []
         if (
-            deck not in db_load_user_value(username, "daily_new_cards")
-            or db_load_user_value(username, "last_new_cards_date").get(deck)
+            deck not in dd
+            or dd2
             != today.isoformat()
             or force_new_cards
         ):
 
             logger.info(f"Generating new cards for user {username} in deck {deck}")
-            all_deck_cards = set(self.cards[deck].keys())
+            all_deck_cards = set(self.learning_cards.keys())
 
             new_cards = [
                 character
@@ -203,7 +208,7 @@ class FlashcardApp:
 
     def select_card(self, username, deck):
         if username == "tempuser":
-            return "", random.choice(list(self.cards[deck].keys()))
+            return "", random.choice(list(self.learning_cards.keys()))
 
         new_cards_limit = db_load_user_value(username, "new_cards_limit")
         # base_new_cards_limit = db_load_user_value(username, 'base_new_cards_limit')
@@ -267,7 +272,7 @@ class FlashcardApp:
                     logger.info("Selecting from due cards only")
                     card_to_return = random.choice(due_cards)
                 else:
-                    card_to_return = random.choice(list(self.cards[deck].keys()))
+                    card_to_return = random.choice(list(self.learning_cards.keys()))
                 message = ""
 
             if (
@@ -282,6 +287,7 @@ class FlashcardApp:
 
         daily_new_cards = db_load_user_value(username, "daily_new_cards") or {}
         presented_new_cards = db_load_user_value(username, "presented_new_cards") or {}
+        learning_cards = db_load_user_value(username, "learning_cards") or []
         if card_to_return in daily_new_cards.get(deck, []):
             if deck not in presented_new_cards:
                 presented_new_cards[deck] = []
@@ -298,5 +304,7 @@ class FlashcardApp:
         logger.info(f"Due cards: {due_cards}")
         logger.info(f"Selected card: {card_to_return}")
         logger.info(f"presented_new_cards: {presented_new_cards}")
+        logger.info(f"learning_cards: {learning_cards}")
+        
         session["current_card"] = card_to_return
         return message, card_to_return

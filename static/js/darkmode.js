@@ -109,7 +109,10 @@ function confirmDarkmode(){
     }
 
     try {
-        redrawPlotters();
+        if(naturalCheckbox.checked)
+            redrawPlotters();
+        else
+            redrawText();
     }
     catch(e){
 

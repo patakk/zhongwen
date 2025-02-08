@@ -47,6 +47,7 @@ def db_create_user(
     daily_new_cards,
     last_new_cards_date,
     presented_new_cards,
+    learning_cards,
     progress,
 ):
     user = User(username=username)
@@ -62,6 +63,7 @@ def db_create_user(
         daily_new_cards=daily_new_cards,
         last_new_cards_date=last_new_cards_date,
         presented_new_cards=presented_new_cards,
+        learning_cards=learning_cards,
         progress=progress,
     )
     db.session.add(user_progress)

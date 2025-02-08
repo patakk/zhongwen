@@ -17,6 +17,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
@@ -37,15 +39,15 @@
 
     </style>
     <style>
-        @font-face {
+        /* @font-face {
             font-family: 'Kaiti';
             src: url("{{ url_for('static', filename='fonts/Kaiti.ttf') }}") format('truetype');
             font-weight: normal;
             font-style: normal;
-        }
+        } */
 
         body {
-            font-family: 'Kaiti', sans-serif;
+            font-family: 'Noto Sans Mono', monospace;
             padding: 0;
             margin: 0;
             overflow-y: scroll;
@@ -71,7 +73,7 @@
 
         #flashcard_character,
         #flashcard_plotter {
-            font-family: 'Kaiti', sans-serif;
+            font-family: 'Noto Sans Mono', monospace;
         }
 
         label {
@@ -121,12 +123,12 @@
             background: #202020;
         }
 
-        #stories-option {
+        #stories-option, #chapters-option {
             background: #eecce552;
             padding: 20px;
         }
 
-        #stories-option.darkmode {
+        #stories-option.darkmode, #chapters-option.darkmode {
             background: #eecce522;
         }
       
@@ -297,6 +299,75 @@
             color: rgb(31, 31, 31);
         }
 
+        .bubble-button {
+            padding: 6px 12px;
+            background-color: #fff6;
+            color: #000;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font: 0.7em Roboto, sans-serif;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .bubble-button.darkmode {
+            background-color: #818181a0;
+            color: #ffffffb1;
+        }
+
+        .ai-bubble-button {
+            padding: 6px 0px;
+            background-color: rgba(255, 255, 255, 0);
+            color: #0000005a !important;
+            border: none;
+            font: 1em Roboto, sans-serif;
+            margin-top: 10px;
+            /* font-style: italic; */
+        }
+
+        .ai-bubble-button.darkmode {
+            background-color: #81818100;
+            color: #ffffff4e !important;
+        }
+
+        .bubble-div {
+            position: absolute;
+            padding: 18px 24px;
+            background-color: rgba(255, 255, 255, 0.75);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            z-index: 3666;
+            color: rgba(9, 9, 9, 1.0);
+            font-size: 16px;
+            font-family: Roboto, sans-serif;
+            max-height: 600px;
+            max-width: 500px;
+            flex-wrap: wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .bubble-div.darkmode {
+            background-color: rgba(107, 107, 107, 0.578);
+            color: rgba(255, 255, 255, 0.675);
+        }
+
+        .bubble-text {
+            scrollbar-width: none;
+            overflow-y: scroll;
+            padding: 6px 0;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .bubble-text.darkmode {
+            color: rgba(255, 255, 255, 0.603);
+        }
+
         .option-container {
             margin: 10px 0;
             display: flex;
@@ -417,6 +488,14 @@
         }
 
         #storyList {
+            z-index: 23;
+        }
+
+         #chapterList {
+            width: 100%;
+        }
+
+         #chapterList {
             z-index: 22;
         }
 
@@ -524,7 +603,7 @@
         }
 
         #fontList {
-            z-index: 21;
+            z-index: 19;
         }
 
 
@@ -546,6 +625,32 @@
             text-align: center;
             color: #fa1111;
 
+        }
+
+        
+        .translation-bubble {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+        .translation-bubble, .translation-bubble * {
+            user-select: text; 
+            color: rgba(10,10,10,1.0);
+        }
+        .translation-bubble::selection, .translation-bubble *::selection {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .italic-text {
+            font-style: italic;
+            color: #0000005a;
+        }
+
+        .italic-text.darkmode {
+            color: #ffffff4e;
         }
 
         @keyframes glitch {
@@ -580,6 +685,20 @@
                 margin: 20px;
             } */
         }
+
+        .separator {
+            width: 100%;
+            height: 2px;
+            background-color: #ccc;
+            margin: 20px 0;
+        }
+
+        .separator.darkmode {
+            width: 100%;
+            height: 2px;
+            background-color: #353535;
+            margin: 20px 0;
+        }
     </style>
 </head>
 
@@ -607,6 +726,19 @@
                         <div class="options" id="storyOptions">
                         </div>
                     </div>
+                </div>
+                
+                <div class="option-container" id="chapters-option">
+                    <span class="optionLabel">Chapters:</span>
+                    <div class="custom-select" id="chapterList">
+                        <div class="selected-option" id="selectedChapter">
+                        </div>
+                        <div class="options" id="chapterOptions">
+                        </div>
+                    </div>
+                </div>
+                <div class="separator">
+
                 </div>
                 <!-- <div class="option-container">
                     <span class="optionLabel">Area dims:</span>
@@ -636,12 +768,22 @@
                             </div>
                             <div class="option isfont" data-value="2">
                                 <div class="font-choice">
-                                    Kaiti
+                                    Noto Sans
                                 </div>
                             </div>
                             <div class="option isfont" data-value="3">
                                 <div class="font-choice">
-                                    Noto Sans
+                                    Ma Shan Zheng
+                                </div>
+                            </div>
+                            <div class="option isfont" data-value="4">
+                                <div class="font-choice">
+                                    Long Cang
+                                </div>
+                            </div>
+                            <div class="option isfont" data-value="5">
+                                <div class="font-choice">
+                                    Zhi Mang Xing
                                 </div>
                             </div>
 
@@ -696,8 +838,14 @@
             let isDarkMode = {{ darkmode | tojson | safe }};
             const username = {{ username | tojson | safe }};
             let dataPerCharacter = {{ dataPerCharacter | tojson | safe }};
-            let story = {{ story | tojson | safe }};
+            let chapter = {{ chapter | tojson | safe }};
+            let chapters = {{ chapters | tojson | safe }};
             let stories = {{ stories | tojson | safe }};
+
+
+            console.log("stories", stories);
+            console.log("chapters", chapters);
+
             // load image from static/images/okhsl.webp
             let okhslImage = new Image();
             okhslImage.src = "{{ url_for('static', filename='images/okhsl.webp') }}";
@@ -705,12 +853,15 @@
             let colorCanvas = document.createElement('canvas');
             let colorCtx = colorCanvas.getContext('2d');
 
-            okhslImage.onload = function() {
-                colorCanvas.width = okhslImage.width;
-                colorCanvas.height = okhslImage.height;
-                colorCtx.drawImage(okhslImage, 0, 0);
-                redrawText();
-            };
+            function waitForImage(img) {
+                return new Promise(resolve => {
+                    if (img.complete) {
+                        resolve();
+                    } else {
+                        img.onload = resolve;
+                    }
+                });
+            }
 
             function sampleOKHSL(hue, sat, value, alpha=1) {
                 hue = Math.max(0, Math.min(1, hue%1));
@@ -765,7 +916,8 @@
             let isMouseDown = false;
             let selectedDropdownValue = [1, 1];
             let renderFont = 'Noto Serif SC';
-            let selectedStoryIndex = 0;
+            let selectedStoryIndex = 1;
+            let selectedChapterIndex = 1;
             
             let colorList = [
                 '#000',
@@ -778,7 +930,7 @@
                 '#000',
             ];
 
-            const fontList = ['Noto Serif SC', 'Kaiti', 'Noto Sans'];
+            const fontList = ['Noto Serif SC', 'Noto Sans', 'Ma Shan Zheng', 'Long Cang', 'Zhi Mang Xing'];
 
 
             function isHanzi(char) {
@@ -792,7 +944,7 @@
                 // Populate the selected option (default to the first story)
                 selectedStory.innerHTML = `
                     <div class="story-option">
-                        ${stories[selectedStoryIndex].title}
+                        ${stories[selectedStoryIndex-1]}
                     </div>
                 `;
 
@@ -806,7 +958,34 @@
                     optionDiv.setAttribute('data-value', index + 1);
                     optionDiv.innerHTML = `
                         <div class="story-option">
-                            ${story.title}
+                            ${stories[index]}
+                        </div>
+                    `;
+                    optionsContainer.appendChild(optionDiv);
+                });
+            }
+
+            function populateChapterOptions() {
+                const selectedChapter = document.getElementById('selectedChapter');
+                const optionsContainer = document.getElementById('chapterOptions');
+
+                selectedChapter.innerHTML = `
+                    <div class="chapter-option">
+                        ${chapters[selectedStoryIndex-1][selectedChapterIndex-1]}
+                    </div>
+                `;
+
+                // Clear existing options
+                optionsContainer.innerHTML = '';
+
+                // Populate the options
+                chapters[selectedStoryIndex-1].forEach((chapter, index) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option ischapter';
+                    optionDiv.setAttribute('data-value', index + 1);
+                    optionDiv.innerHTML = `
+                        <div class="chapter-option">
+                            ${chapter}
                         </div>
                     `;
                     optionsContainer.appendChild(optionDiv);
@@ -903,7 +1082,10 @@
                 wrapper.addEventListener('mouseenter', function (event) {
                     if(isMobileOrTablet())
                         return;
-                    translationBox.textContent = story.english[lineIndex];
+                    translationBox.textContent = chapter.english[lineIndex];
+                    if(lineIndex == -1){
+                        translationBox.textContent = chapter.description;
+                    }
                     setTimeout(() => {
                         currentHoveredLine = lineIndex;
                     }, 1110);
@@ -935,7 +1117,10 @@
                     wrapper.classList.toggle('desktop');
                     translationBox.classList.toggle('hidden');
 
-                    translationBox.textContent = story.english[lineIndex];
+                    translationBox.textContent = chapter.english[lineIndex];
+                    if(lineIndex == -1){
+                        translationBox.textContent = chapter.description;
+                    }
                     setTimeout(() => {
                         currentHoveredLine = lineIndex;
                     }, 1110);
@@ -1114,29 +1299,6 @@
                     removeBubbleFromDOM(activeBubble);
                 }
                 let style = null;
-                if(!initializeStyle) {
-                    style = document.createElement('style');
-                    style.textContent = `
-                        .translation-bubble {
-                            display: flex;
-                            justify-content: center;
-                            align-items: flex-start;
-                            flex-direction: column;
-                        }
-                        .translation-bubble, .translation-bubble * {
-                            user-select: text; 
-                            color: rgba(10,10,10,1.0);
-                            white-space: nowrap; 
-                            text-wrap: balance;
-                        }
-                        .translation-bubble::selection, .translation-bubble *::selection {
-                            background: #FFD700;
-                            color: #000;
-                        }
-                    `;
-                    document.head.appendChild(style);
-                    initializeStyle = true;
-                }
 
                 let bubblediv = document.createElement('div');
                 bubblediv.setAttribute('id', 'translation-bubble');
@@ -1155,27 +1317,73 @@
                 // create a text container
                 let bubbletext = document.createElement('div');
                 bubbletext.className = 'translation-bubble-text';
-                bubbletext.innerHTML = "<span style='font-style: italic; font-size: 0.8em;'>thinking...</span> ";
+                bubbletext.innerHTML = "<span class='translation-bubble-text italic-text'>thinking...</span>";
+                if(isDarkMode){
+                    bubbletext.innerHTML = "<span class='italic-text darkmode'>thinking...</span>";
+                }
+                // bubbletext.style.display = 'none';
                 // bubbletext.innerHTML = prompt;
 
                 // bubblediv.innerHTML = request.translatedText;
                 // button with lable "open in grid"
                 let openInGridButton = document.createElement('button');
-                openInGridButton.textContent = 'SEARCH';
-                // stlye the button, soft shadow, no border, 2px thick border, roboto font, 0.7 em
-                openInGridButton.style.cssText = 'padding: 6px 12px; background-color: #fff6; color: #000; cursor: pointer; border: none; border-radius: 4px; font: 0.7em Roboto, sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.3);';
+                openInGridButton.textContent = 'Explore in other words';
+                openInGridButton.classList.add('bubble-button');
                 openInGridButton.addEventListener('click', function() {
                     window.open(`/search?query=${symbol}`, '_blank', 'noopener,noreferrer');
-                    
                     if(activeBubble){
                         removeBubbleFromDOM(activeBubble);
                     }
                 });
+                
+                let addToLearningButton = document.createElement('button');
+                addToLearningButton.textContent = 'Add to learning';
+                addToLearningButton.classList.add('bubble-button');
+                addToLearningButton.addEventListener('click', function() {
+                    fetch("/api/add_word_to_learning", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ word: symbol })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data); // Handle response, e.g., show success message
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                    });
+
+                    if (activeBubble) {
+                        removeBubbleFromDOM(activeBubble);
+                    }
+                });
+                
+                let aiDescriptionButton = document.createElement('div');
+                // bubbletext.innerHTML = "<span class='translation-bubble-text italic-text'>thinking...</span>";
+
+                aiDescriptionButton.innerHTML = '<span class="italic-text">' + llm_model_name + '</span> description';
+                aiDescriptionButton.classList.add('ai-bubble-button');
+                if(isDarkMode){
+                    aiDescriptionButton.innerHTML = '<span class="italic-text darkmode">' + llm_model_name + '</span> description';
+                }
+                aiDescriptionButton.addEventListener('click', function() {
+                    // if(bubbletext.style.display === 'none'){
+                    //     bubbletext.style.display = 'flex';
+                    // }
+                    // else{
+                    //     bubbletext.style.display = 'none';
+                    // }
+                });
 
 
+                bubblediv.appendChild(aiDescriptionButton);
                 bubblediv.appendChild(bubbletext);
                 bubblediv.appendChild(openInGridButton);
+                bubblediv.appendChild(addToLearningButton);
                 document.body.appendChild(bubblediv);
+                
 
                 if(isMobileOrTablet()){
                     setTimeout(() => {
@@ -1190,20 +1398,17 @@
                 let bubbleobj = new Bubble(bubblediv);
                 activeBubble = bubbleobj;
                 bubbleobj.bubbletext = bubbletext;
-                
-                bubblediv.style.position = 'absolute';
-                bubblediv.style.padding = '18px 24px';
-                bubblediv.style.backgroundColor = 'rgba(255,255,255, 0.75)';
-                bubblediv.style.border = 'none';
-                bubblediv.style.borderRadius = '10px';
-                bubblediv.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
-                bubblediv.style.backdropFilter = 'blur(5px)';
-                bubblediv.style.zIndex = '3666';
-                bubblediv.style.color = 'rgba(9,9,9,1.0)';
-                bubblediv.style.fontSize = '16px';
-                bubblediv.style.font = 'Roboto, sans-serif';
 
-                bubbletext.style.cssText = 'scrollbar-width: none; max-height: 600px; max-width: 500px; overflow-y: scroll; padding: 6px 0px; box-sizing: border-box;';
+                bubblediv.classList.add('bubble-div');
+                bubbletext.classList.add('bubble-text');
+                if(isDarkMode){
+                    bubblediv.classList.add('darkmode');
+                    bubbletext.classList.add('darkmode');
+                    aiDescriptionButton.classList.add('darkmode');
+                    openInGridButton.classList.add('darkmode');
+                    addToLearningButton.classList.add('darkmode');
+                }
+                
                 // bubbletext.style.overflowY = bubbletext.scrollHeight > bubbletext.clientHeight ? 'scroll' : 'hidden';
 
                 applyInitialPos(bubbleobj);
@@ -1397,8 +1602,11 @@
                 }, 200);  // Delay of 1000 milliseconds
             }
 
-            function getStory(index, func=null) {
-                fetch(`./get_story/${index}`)
+            function getStory(selectedStoryIndex, selectedChapterIndex, func=null) {
+                if(activeBubble){
+                    removeBubbleFromDOM(activeBubble);
+                }
+                fetch(`./get_story/${selectedStoryIndex}/${selectedChapterIndex}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
@@ -1406,22 +1614,21 @@
                         return response.json();
                     })
                     .then(data => {
-                        console.log("1/2 Story data received.");
-                        story = data.story;
+                        chapter = data.chapter;
                         dataPerCharacter = data.char_data;
                         if(func) {
                             func();
                         }
                         // Optionally, you can call getStoryStrokes here if you want to start loading stroke data immediately
-                        getStoryStrokes(index);
+                        getStoryStrokes(selectedStoryIndex, selectedChapterIndex);
                     })
                     .catch(error => {
                         console.error('There was a problem with the fetch operation:', error.message);
                     });
             }
 
-            function getStoryStrokes(index, func=null) {
-                fetch(`./get_story_strokes/${index}`)
+            function getStoryStrokes(selectedStoryIndex, selectedChapterIndex, func=null) {
+                fetch(`./get_story_strokes/${selectedStoryIndex}/${selectedChapterIndex}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
@@ -1444,8 +1651,8 @@
                     });
             }
 
+            let removeDropdownListeners = null;
             function setupDropdowns() {
-                
                 let dropdowns = [
                     {
                         elem: document.getElementById('storyList'),
@@ -1454,61 +1661,85 @@
                         selected: document.getElementById('selectedStory'),
                     },
                     {
+                        elem: document.getElementById('chapterList'),
+                        childquery: '.chapter-option',
+                        childquery2: '.ischapter',
+                        selected: document.getElementById('selectedChapter'),
+                    },
+                    {
                         elem: document.getElementById('fontList'),
                         childquery: '.font-choice',
                         childquery2: '.isfont',
                         selected: document.getElementById('selectedFont'),
                     }
-                ]
+                ];
+
+                let eventListeners = [];
 
                 dropdowns.forEach((drop, idx) => {
-
-                    drop.elem.addEventListener('click', function(event) {
+                    const toggleDropdownListener = function(event) {
                         event.stopPropagation();
                         drop.elem.classList.toggle('open');
-                    });
-                    let optionsElemens = document.querySelectorAll(drop.childquery2);
-                    optionsElemens.forEach(option => {
-                        option.addEventListener('click', function() {
+                    };
+                    drop.elem.addEventListener('click', toggleDropdownListener);
+                    eventListeners.push({ elem: drop.elem, type: 'click', listener: toggleDropdownListener });
+
+                    let optionsElements = document.querySelectorAll(drop.childquery2);
+                    optionsElements.forEach(option => {
+                        const optionClickListener = function() {
                             const value = parseInt(option.dataset.value);
                             selectedDropdownValue[idx] = value;
                             const row = option.querySelector(drop.childquery).cloneNode(true);
                             drop.selected.innerHTML = '';
                             drop.selected.appendChild(row);
-                            if(drop.elem.id == 'storyList') {
-                                story = getStory(value, redrawText);
+                            if (drop.elem.id == 'chapterList') {
+                                selectedChapterIndex = value;
+                                chapter = getStory(selectedStoryIndex, selectedChapterIndex, redrawText);
+                                populateChapterOptions();
+                                removeDropdownListeners();
+                                setupDropdowns();
+                            } else if (drop.elem.id == 'storyList') {
                                 selectedStoryIndex = value;
-                            }
-                            else if(drop.elem.id == 'fontList') {
+                                selectedChapterIndex = 1;
+                                chapter = getStory(selectedStoryIndex, selectedChapterIndex, redrawText);
+                                populateChapterOptions();
+                                removeDropdownListeners();
+                                setupDropdowns();
+                            } else if (drop.elem.id == 'fontList') {
                                 renderFont = fontList[value - 1];
                                 naturalCheckbox.checked = false;
                                 document.querySelectorAll('.stroke-options').forEach((el) => {
                                     el.style.display = 'none';
                                 });
                                 redrawText();
-                            }
-                            else{
+                            } else {
                                 redrawPlotters();
                             }
-                        });
+                        };
+                        option.addEventListener('click', optionClickListener);
+                        eventListeners.push({ elem: option, type: 'click', listener: optionClickListener });
                     });
-                    document.addEventListener('click', function() {
+
+                    // Document click event to close dropdown
+                    const closeDropdownListener = function() {
                         drop.elem.classList.remove('open');
-                    });
+                    };
+                    document.addEventListener('click', closeDropdownListener);
+                    eventListeners.push({ elem: document, type: 'click', listener: closeDropdownListener });
                 });
 
-                const dropdownIndex = 1;
-                const optionValue = 1;
-                const option = document.querySelector(`${dropdowns[dropdownIndex].childquery2}[data-value="${optionValue}"]`);
-                if (option) {
-                    selectedDropdownValue[dropdownIndex] = optionValue;
-                    const row = option.querySelector(dropdowns[dropdownIndex].childquery).cloneNode(true);
-                    dropdowns[dropdownIndex].selected.innerHTML = '';
-                    dropdowns[dropdownIndex].selected.appendChild(row);
-                    dropdowns[dropdownIndex].elem.classList.remove('open');
+                // Return the function to remove all listeners
+                function removeDropdownListeners_() {
+                    eventListeners.forEach(event => {
+                        event.elem.removeEventListener(event.type, event.listener);
+                    });
+                    eventListeners = []; // Reset the list after removing all listeners
                 }
 
+                // Return the remove function for external use
+                removeDropdownListeners = removeDropdownListeners_;
             }
+
 
 
             // on 'tab' press toggle visibiliy of id=input-container
@@ -1525,9 +1756,18 @@
                 }
             });
             
-            document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", async function () {
                 // dimsSlider = document.getElementById('dimsSlider');
                 // paddingSlider = document.getElementById('paddingSlider');
+                
+                await Promise.all([
+                    waitForImage(okhslImage),
+                ]);
+
+
+                colorCanvas.width = okhslImage.width;
+                colorCanvas.height = okhslImage.height;
+                colorCtx.drawImage(okhslImage, 0, 0);
                 
                 document.querySelectorAll('.stroke-options').forEach((el) => {
                     el.style.display = 'none';
@@ -1561,33 +1801,28 @@
                 noiseValue.textContent = noiseSlider.value;
                 pinyinCheckbox.checked = showAllPinyin;
                 populateStoryOptions();
+                populateChapterOptions();
                 // populateColorOptions();
                 // redrawPlotters();
                 // updateCount();
                 setupDropdowns();
                 
-                story = getStory(1, redrawText);
+                chapter = getStory(1, 1, redrawText);
 
 
-
-                if(!isMobileOrTablet()){
-                    // document.getElementById('plotters').style.width = dimsSlider.value + '%';
-                    // dimsSlider.addEventListener('input', function () {
-                    //     dimsValue.textContent = this.value;
-                    //     document.getElementById('plotters').style.width = this.value + '%';
-                    // });
-
-                    // document.getElementById('plotters').style.padding = paddingSlider.value + 'px';
-                }
-
-                // paddingSlider.addEventListener('input', function () {
-                //     paddingValue.textContent = this.value;
-                //     document.getElementById('plotters').style.padding = this.value + 'px';
-                // });
 
                 sizeSlider.addEventListener('change', function() {
                     sizeValue.textContent = this.value;
-                    redrawPlotters();
+                    if(naturalCheckbox.checked){
+                        redrawPlotters();
+                    }
+                });
+
+                sizeSlider.addEventListener('input', function() {
+                    sizeValue.textContent = this.value;
+                    if(!naturalCheckbox.checked){
+                        redrawText();
+                    }
                 });
 
                 thicknessSlider.addEventListener('change', function() {
@@ -1667,6 +1902,7 @@
                 }
             });
 
+            const llm_model_name = "gpt-4o";
             function fetchStream(prompt, bubble) {
                 fetch("/api/openaiexplain", { 
                     method: 'POST',
@@ -1674,7 +1910,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        model: "gpt-4o",
+                        model: llm_model_name,
                         messages: [
                             {"role": "system", "content": "I am a genius Chinese language instructor."},
                             {"role": "user", "content": prompt}
@@ -1829,7 +2065,7 @@
                                 if (lineIndex !== currentHoveredLine && isMobileOrTablet()) {
                                     return;
                                 }
-                                let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
+                                let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, give me pinyin, and don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
                                 makeAIBubble(prompt, char);
                                 translationBox.classList.add('hidden');
                             }
@@ -1844,12 +2080,12 @@
 
                         if(isTitle){
                             charSpan.style.fontSize = size / 30 + 'em';
-                            charSpan.style.color = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.4, 0.7, 1.);
-                            let shadowcolor = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.5, 0.75, 0.15);
+                            charSpan.style.color = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.4, 0.7, 1.);
+                            let shadowcolor = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.5, 0.75, 0.15);
                             charSpan.style.textShadow = `0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}`;
                             if(isDarkMode){
-                                charSpan.style.color = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.4, 0.7, 1.);
-                                let shadowcolor = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.5, 0.75, 0.15);
+                                charSpan.style.color = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.4, 0.7, 1.);
+                                let shadowcolor = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.5, 0.75, 0.15);
                                 charSpan.style.textShadow = `0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}`;
                             }
                         }
@@ -1858,11 +2094,16 @@
                         charContainer.appendChild(charSpan);
                         currentWrapper.appendChild(charContainer);
 
-                        if (char in dataPerCharacter) {
-                            if (dataPerCharacter[char].pinyin) {
-                                pinyinElement.textContent = dataPerCharacter[char].pinyin;
+                        let charlist = char.split('');
+                        let resultcontent = '';
+                        charlist.forEach((char) => {
+                            if (char in dataPerCharacter) {
+                                if (dataPerCharacter[char].pinyin) {
+                                    resultcontent += dataPerCharacter[char].pinyin + ' ';
+                                }
                             }
-                        } 
+                        });
+                        pinyinElement.textContent = resultcontent;
                     } else {
                         let latin = document.createElement('span');
                         latin.classList.add('latin');
@@ -2008,12 +2249,12 @@
 
                             if(isTitle){
                                 charSpan.style.fontSize = size / 30 + 'em';
-                                charSpan.style.color = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.4, 0.7, 1.);
-                                let shadowcolor = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.5, 0.75, 0.15);
+                                charSpan.style.color = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.4, 0.7, 1.);
+                                let shadowcolor = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.5, 0.75, 0.15);
                                 charSpan.style.textShadow = `0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}`;
                                 if(isDarkMode){
-                                    charSpan.style.color = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.4, 0.7, 1.);
-                                    let shadowcolor = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.5, 0.75, 0.15);
+                                    charSpan.style.color = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.4, 0.7, 1.);
+                                    let shadowcolor = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.5, 0.75, 0.15);
                                     charSpan.style.textShadow = `0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}`;
                                 }
                             }
@@ -2045,7 +2286,7 @@
                                 pinyinElement.classList.add('hidden');
                             }
                             pinyinElement.classList.add('pinyinLabel');
-                            pinyinElement.classList.add('pinyinLabelColor');
+                            // pinyinElement.classList.add('pinyinLabelColor');
                             pinyinElement.classList.add('line_' + lineIndex);
                             
                             canvasContainer.addEventListener('click', function() {
@@ -2064,7 +2305,8 @@
                             canvasContainer.appendChild(plotter.getCanvas());
 
                             canvasContainer.classList.add('line_' + lineIndex);
-
+                            canvasContainer.classList.add('chinese-text-desktop');
+                            
                             currentWrapper.appendChild(canvasContainer);
 
                             if (char in dataPerCharacter) {
@@ -2081,7 +2323,7 @@
                                     pinyinElement.textContent = pinyinAndEnglish.pinyin;
                                 }
                             } else {
-                                let readyPromise = loadStrokeData();
+                                //let readyPromise = loadStrokeData();
                                 plotter.loadPinyinEnglish();
                             }
                         }
@@ -2106,14 +2348,22 @@
             }
 
             function redrawText(){
-                let titleHanzi = story.name + "\n";
-                //prepend title to story.hanzi
-                let joinedLines = story.hanzi.join('\n');
-                let currentLines = story.hanzi;
+                let titleHanzi = chapter.name.concat(['\n']);
+                //prepend title to chapter.hanzi
+                
+                let currentLines = chapter.hanzi;
+                let words = [];
+                currentLines.forEach(line => {
+                    words = words.concat(line);
+                    words = words.concat(['\n']);
+                });
+                currentLines = currentLines.map(line => line.join(''));
+                let joinedLines = currentLines.join('\n');
                 let numLines = currentLines.length;
                 let lineIndex = -1;
                 let titlelength = titleHanzi.length;
-                let characters = titleHanzi.split('').concat(joinedLines.split(''));
+                let characters = titleHanzi.concat(joinedLines.split(''));
+                words = titleHanzi.concat(words);
 
                 const plotterElement = document.getElementById('plotters');
                 plotterElement.innerHTML = '';
@@ -2139,7 +2389,7 @@
                     // console.log('Mobile or tablet detected');
                     // size = 48;
                 }
-                characters.forEach((char, index) => {
+                words.forEach((char, index) => {
                     plotters.push({ plotter: null, char: char, lineIndex: lineIndex });
                     if (char === '\n') {
                         plotters.push({ plotter: null, char: '<br>', lineIndex: lineIndex });
@@ -2160,14 +2410,15 @@
             }
 
             function redrawPlotters() {
-                let titleHanzi = story.name + "\n";
-                //prepend title to story.hanzi
-                let joinedLines = story.hanzi.join('\n');
-                let currentLines = story.hanzi;
+                let titleHanzi = chapter.name.concat(['\n']);
+                //prepend title to chapter.hanzi
+                let currentLines = chapter.hanzi;
+                currentLines = currentLines.map(line => line.join(''));
+                let joinedLines = currentLines.join('\n');
                 let numLines = currentLines.length;
                 let lineIndex = -1;
                 let titlelength = titleHanzi.length;
-                let characters = titleHanzi.split('').concat(joinedLines.split(''));
+                let characters = titleHanzi.concat(joinedLines.split(''));
 
                 const plotterElement = document.getElementById('plotters');
                 plotterElement.innerHTML = '';
@@ -2206,9 +2457,9 @@
                     if (isHanzi(char) && !isPunctuation(char)) {
                         let usedcolors = [...colors];
                         if(lineIndex === -1){
-                            let tt = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.4, 0.7, 1.);
+                            let tt = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.4, 0.7, 1.);
                             if(isDarkMode){
-                                let tt = sampleOKHSL((selectedStoryIndex-1)/stories.length, 0.4, 0.7, 1.);
+                                let tt = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.4, 0.7, 1.);
                             }
                             
                             usedcolors = [tt,tt,tt]

@@ -8,15 +8,12 @@ DATA_DIR = os.path.join(BASE_DIR, 'data')
 
 DECKS_INFO = {
     "minideck": {"file": "mini_deck.json", "name": "Minideck"},
-    "shas": {"file": "shas_class_cards.json", "name": "ShaSha's Class"},
-    "top140": {"file": "top140_cards.json", "name": "Top 140"},
     "hsk1": {"file": "hsk1_cards.json", "name": "HSK 1"},
     "hsk2": {"file": "hsk2_cards.json", "name": "HSK 2"},
     "hsk3": {"file": "hsk3_cards.json", "name": "HSK 3"},
     "hsk4": {"file": "hsk4_cards.json", "name": "HSK 4"},
     "hsk5": {"file": "hsk5_cards.json", "name": "HSK 5"},
     "hsk6": {"file": "hsk6_cards.json", "name": "HSK 6"},
-    "review": {"file": "review_deck.json", "name": "ReviewDeck"},
 }
 
 def _load_json_file(filepath):
@@ -36,7 +33,7 @@ def _load_cards(deck_name):
 CARDDECKS = {deck: _load_cards(deck) for deck in DECKS_INFO}
 ANTHROPIC_DATA = _load_json_file(os.path.join(DATA_DIR, "anthropic.json"))
 
-init_flashcard_app(CARDDECKS, ANTHROPIC_DATA)
+init_flashcard_app({}, ANTHROPIC_DATA)
 flashcard_app = get_flashcard_app()
 
 def get_card_examples(deck, character):
