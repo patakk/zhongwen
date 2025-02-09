@@ -223,6 +223,32 @@ function populateGrid() {
         hanziDiv.classList.add("hanzi");
         hanziDiv.textContent = hanzi;
 
+        // tapping on hanzidiv creates a popup with .english, clicking anywhere else destroys it
+        hanziDiv.addEventListener('click', function(e) {
+            const popup = document.createElement('div');
+            popup.className = 'pinyin-popup';
+            popup.textContent = characters[hanzi].english;
+            
+            document.body.appendChild(popup);
+        
+            popup.style.left = `${e.clientX}px`;
+            popup.style.top = `${e.clientY}px`;
+        
+            popup.addEventListener('click', function() {
+                popup.remove();
+            });
+
+            setInterval(() => {
+                document.addEventListener('click', function(e) {
+                    if (e.target !== popup) {
+                        popup.remove();
+                    }
+                });
+            }, 100);
+        });
+        
+
+
         const input = document.createElement("input");
         input.classList.add("pinyin-input");
         input.type = "text";

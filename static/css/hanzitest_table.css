@@ -340,13 +340,30 @@ h1 {
     padding: 5px;
     align-items: center;
     background-color: #f9f9f9;
-    border-radius: 5px;
     width: 100%;
 }
 
 .grid-item.darkmode {
     background-color: #272727;
     border-color: #626262;
+}
+
+.pinyin-popup {
+    position: absolute;
+    background: rgba(220, 220, 220, 0.8);
+    color: rgb(54, 54, 54);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 1em;
+    white-space: nowrap;
+    pointer-events: auto;
+    z-index: 1000;
+    transform: translate(5px, 5px);
+}
+
+.pinyin-popup.darkmode {
+    background: rgba(54, 54, 54, 0.8);
+    color: rgb(220, 220, 220);
 }
 
 
@@ -356,6 +373,7 @@ h1 {
     font-size: 1.4em;
     margin: 5px;
     white-space: nowrap;
+    cursor: pointer;
 }
 .pinyin-input {
     flex: 3;
