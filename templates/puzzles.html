@@ -211,9 +211,11 @@
         <h1 class="toggle-title" data-cn="谜题" data-en="Puzzles">Puzzles</h1>
         <div class="link-container">
             <!-- <a href="{{ url_for('puzzles.hanzitest_fillin') }}">fill in</a> -->
-            <a href="{{ url_for('puzzles.hanzitest_pinyin') }}" class="puzzle-link">input pinyin for a given hanzi</a>
-            <a href="{{ url_for('puzzles.hanzitest_choices') }}" class="puzzle-link">choose pinyin for a given hanzi</a>
-            <a href="{{ url_for('puzzles.hanzitest_draw') }}" class="puzzle-link">write hanzi for a given word</a>
+            <a href="{{ url_for('puzzles.hanzitest_pinyin') }}" class="puzzle-link">📝 Pinyin Input</a>
+            <a href="{{ url_for('puzzles.hanzitest_table') }}" class="puzzle-link">📋 Pinyin Table</a>
+            <a href="{{ url_for('puzzles.hanzitest_choices') }}" class="puzzle-link">✅ Pinyin Choice</a>
+            <a href="{{ url_for('puzzles.hanzitest_draw') }}" class="puzzle-link">✍️ Write Hanzi</a>
+            
             <!-- <a href="{{ url_for('hanzipractice') }}">practice hanzi</a> -->
         </div>
     </div>
