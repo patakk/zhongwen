@@ -57,6 +57,16 @@ def hanzitest_pinyin():
     return render_template("puzzles/hanzitest_pinyin.html", **context)
 
 
+@puzzles_bp.route("/hanzitest_table")
+@session_required
+@timing_decorator
+def hanzitest_table():
+    characters = dict(CARDDECKS[session["deck"]].items())
+    context = get_common_context()
+    context["characters"] = characters
+    return render_template("puzzles/hanzitest_table.html", **context)
+
+
 @puzzles_bp.route("/hanzitest_draw")
 @session_required
 @timing_decorator
