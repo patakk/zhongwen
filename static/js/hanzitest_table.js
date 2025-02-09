@@ -6,13 +6,14 @@ const resultsDiv = document.getElementById('results');
 const scoreSpan = document.getElementById('score');
 const accuracySpan = document.getElementById('accuracy');
 const restartBtn = document.getElementById('restart-btn');
+const revealBtn = document.getElementById('reveal-btn');
 
 let currentIndex = 0;
 let correctAnswers = 0;
 let shuffledCharacters = [];
 let userAnswers = [];
 const answerTableBody = document.getElementById('answer-table-body');
-const NUM_QUESTIONS = 3; // Change this to set the number of questions
+const NUM_QUESTIONS = 3*2*4; // Change this to set the number of questions
 
 
 const deckNameElement = document.getElementById('deck-name');
@@ -194,13 +195,17 @@ textInput.addEventListener('input', (e) => {
     // find first input with incorrect answer
 });
 
-restartBtn.addEventListener('click', setupCharacters);
+restartBtn.addEventListener('click', init);
+revealBtn.addEventListener('click', revealAnswers);
 
 let allinputs = [];
 let inputsbyhanzi = {};
 let allhanzi = [];
 
 function populateGrid() {
+    allinputs = [];
+    inputsbyhanzi = {};
+    allhanzi = [];
     const grid = document.getElementById("puzzle-grid");
     grid.innerHTML = "";
     
@@ -434,6 +439,18 @@ function populateGrid() {
 
         let tableinput = inputsbyhanzi[curentHanzi];
         tableinput.classList.add("editing");
+    });
+}
+
+function revealAnswers(){
+    console.log(characters)
+    allinputs.forEach(input => {
+        if(input.dataset.correct === 'false'){
+            input.value = characters[input.dataset.hanzi].pinyin;
+            input.classList.add('pinyin-revealed');
+        }
+        restartBtn.classList.remove("hidden");
+        // input.dispatchEvent(new Event('input'));
     });
 }
 

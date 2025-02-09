@@ -43,7 +43,7 @@ body::-webkit-scrollbar {
     margin-bottom: 10px;
 }
 
-#submit-btn, #restart-btn {
+#submit-btn, #restart-btn, #reveal-btn {
     padding: 10px 20px;
     font-size: 16px;
     background-color: white;
@@ -52,9 +52,17 @@ body::-webkit-scrollbar {
     cursor: pointer;
 }
 
-#restart-btn {
+#restart-btn, #reveal-btn {
     margin-top: 10px;
 }
+
+
+#restart-btn.darkmode, #reveal-btn.darkmode {
+    background-color: rgb(14, 14, 14);
+    color: rgb(236, 236, 236);
+    border: 2px solid rgb(199, 199, 199);
+}
+
 
 #progress {
     margin-top: 20px;
@@ -205,13 +213,6 @@ body::-webkit-scrollbar {
 
 .incorrect-row.darkmode {
     background-color: #886467;
-}
-
-
-#restart-btn.darkmode {
-    background-color: rgb(14, 14, 14);
-    color: rgb(236, 236, 236);
-    border: 2px solid rgb(199, 199, 199);
 }
 
 
@@ -388,7 +389,15 @@ h1 {
 }
 
 .pinyin-correct.darkmode  {
-    background-color: #3fa356;
+    background-color: #6dd585;
+    color: #222;
+}
+.pinyin-revealed {
+    background-color: #dbd4ed;
+}
+
+.pinyin-revealed.darkmode  {
+    background-color: #d56dab;
     color: #222;
 }
 
