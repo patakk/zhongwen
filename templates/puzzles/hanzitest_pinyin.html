@@ -27,7 +27,10 @@
 </head>
 <body>
     <h1 id="title">Test your Hanzi 🧠</h1>
-    <h2 id="deck-name"></h2>
+    <div class="custom-dropdown">
+        <h2 id="deck-name">Current Deck: <span id="selected-deck">Select a deck</span></h2>
+        <div id="deck-options" class="options-container"></div>
+    </div>
 
     <div class="hamburger" id="hamburgerMenu">
         <span></span>
@@ -39,24 +42,8 @@
         <ul>
             <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
             <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li class="has-submenu">
-                <span>Hanzi Grid</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <span>Flashcards</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
+            <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
             <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
-            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
             <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
@@ -92,12 +79,13 @@
     </div>
 
     <script>
-        const characters = {{ characters | tojson | safe }};
+        let characters = {{ characters | tojson | safe }};
         const inputdecks = {{ decks | tojson | safe }};
-        const inputdeck = {{ deck | tojson | safe }};
+        let inputdeck = {{ deck | tojson | safe }};
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
   
+        const decksinfos = {{ decksinfos | tojson | safe }};
 
         function isIPhone(){
             const ua = navigator.userAgent;

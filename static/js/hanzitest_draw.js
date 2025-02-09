@@ -23,8 +23,61 @@ let numFinished = 0;
 let totalAnswered = 0;
 const deckNameElement = document.getElementById('deck-name');
 const answerTableBody = document.getElementById('answer-table-body');
-let NUM_QUESTIONS = 5;
+let NUM_QUESTIONS = 10;
 let currentWriters = [];
+
+
+const selectedDeckElement = document.getElementById('selected-deck');
+const dropdownToggle = document.getElementById('dropdown-toggle');
+const deckOptionsElement = document.getElementById('deck-options');
+
+function populateDropdown() {
+    selectDeck(inputdeck);
+    Object.keys(inputdecks).forEach(deckName => {
+      const option = document.createElement('div');
+      option.className = 'option';
+      option.textContent = decksinfos[deckName].name;
+      option.onclick = () => selectDeck(deckName);
+      deckOptionsElement.appendChild(option);
+    });
+}
+  
+  function selectDeck(deckName) {
+    inputdeck = deckName;
+    selectedDeckElement.textContent = decksinfos[deckName].name;
+    deckOptionsElement.style.display = 'none';
+    loadNewDeck(deckName, startTest);
+  }
+  
+function loadNewDeck(deckName, callback) {
+    fetch(`/api/load_deck_chars?deck=${deckName}`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        characters = data;
+        NUM_QUESTIONS = Math.max(5, characters.length);
+        callback();
+    })
+    .catch(error => {
+        console.error('There was a problem loading the deck:', error);
+    });
+}
+
+  deckNameElement.onclick = () => {
+    deckOptionsElement.style.display = deckOptionsElement.style.display === 'none' ? 'block' : 'none';
+  };
+  
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.custom-dropdown')) {
+      deckOptionsElement.style.display = 'none';
+    }
+  });
+
+
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -34,6 +87,9 @@ function shuffleArray(array) {
 }
 
 function startTest() {
+    
+    
+    shuffledCharacters = Object.keys(characters);
     shuffledWords = [...characters];
     shuffleArray(shuffledWords);
 
@@ -55,7 +111,6 @@ function startTest() {
     showNextWord();
     resultsDiv.style.display = 'none';
     document.getElementById('test-container').style.display = 'block';
-    deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[inputdeck].name}</span>)`;
 }
 
 function showNextWord() {
@@ -362,8 +417,6 @@ function confetti(congrats=null) {
     }
 }
 
-let isDarkMode = false;
-
 document.addEventListener('keydown', (event) => {
     if (event.key === 'c') {
         confetti();
@@ -445,9 +498,8 @@ function showResults() {
 
 document.addEventListener('DOMContentLoaded', () => {
     getDarkmode();
-    deckNameElement.textContent = `(current Deck: ${inputdecks[inputdeck].name})`;
     NUM_QUESTIONS = Math.max(5, characters.length);
-    startTest();
+    populateDropdown();
 });
 
 window.addEventListener('resize', () => {

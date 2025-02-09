@@ -150,7 +150,7 @@ document.getElementById('darkmode-toggle').addEventListener('click', function() 
 
 function setDarkmode() {
     confirmDarkmode();
-    fetch(`./api/setdarkmode?darkmode=${isDarkMode}`, {
+    fetch(`/api/setdarkmode?darkmode=${isDarkMode}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ function setDarkmode() {
 
 
 function getDarkmode(func=null) {
-    fetch('./api/getdarkmode')
+    fetch('/api/getdarkmode')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');

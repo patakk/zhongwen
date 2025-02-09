@@ -56,6 +56,11 @@ body {
     margin-bottom: 20px;
 }
 
+
+#deck-name.darkmode {
+    color: #f0f0f0
+}
+
 #answer-table-container {
     width: 100%;
     max-width: 500px; /* Set maximum width for non-mobile */
@@ -69,7 +74,12 @@ body {
 
 #answer-table td {
     padding: 8px;
-    border: 2px solid #000000;
+    border: 2px solid #1f1f1f;
+}
+
+#answer-table.darkmode td {
+    padding: 8px;
+    border: 2px solid #d4d4d4;
 }
 
 .correct-row {
@@ -105,6 +115,10 @@ body {
         width: 0;
         height: 0;
     }
+}
+
+#title.darkmode {
+    color: rgb(236, 236, 236);
 }
 
 @media screen and (max-width: 768px) {
@@ -194,7 +208,8 @@ body {
 
 #pinyin-input.darkmode {
     border-color: rgb(233, 233, 233, 0.6);
-    color: rgb(14, 14, 14);
+    background-color: rgb(14, 14, 14);
+    color: rgb(210, 210, 210);
 }
 
 #character-display {
@@ -202,8 +217,96 @@ body {
 }
 
 
+.darkmode {
+    color: rgb(236, 236, 236);
+    border-color: rgb(100, 100, 100);
+}
+
+#character-display.darkmode {
+    color: #f0f0f0;
+}
 
 h1 {
     font-family: "Helvetica", serif;
     font-size: 60px;
+}
+
+
+
+.custom-dropdown {
+    position: relative;
+    width: 300px;
+    font-family: Arial, sans-serif;
+    margin-bottom: 20px;
+}
+
+#deck-name {
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+#selected-deck {
+    font-weight: bold;
+    background-color: #dcdcdc;
+    padding: 3px 11px;
+}
+
+#selected-deck.darkmode {
+    font-weight: bold;
+    background-color: #353535;
+}
+
+.options-container {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 2px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+}
+
+.options-container::-webkit-scrollbar { 
+  width: 0;
+  height: 0;
+}
+
+.option {
+    padding: 10px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+}
+
+.option:hover {
+    background-color: #f0f0f0;
+}
+
+#title.darkmode{
+    color: #f0f0f0;
+}
+
+.options-container.darkmode {
+    background-color: #303030;
+    border: 2px solid #939393;
+    color: #f0f0f0;
+}
+
+
+
+.darkmode {
+    color: rgb(236, 236, 236);
+    border-color: rgb(206, 206, 206);
+}
+
+#answer-table.darkmode {
+    border: 2px solid #b6b6b6;
+}
+
+#answer-table td.darkmode {
+    border: 2px solid #b6b6b6;
 }

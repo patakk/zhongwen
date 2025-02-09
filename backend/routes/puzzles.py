@@ -19,8 +19,10 @@ def get_common_context():
         "darkmode": session["darkmode"],
         "username": session["username"],
         "decks": CARDDECKS,
-        "deck": session["deck"],
+        "decksinfos": DECKS_INFO,
+        "deck": "hsk1",
     }
+
 
 
 @puzzles_bp.route("/")
@@ -34,7 +36,7 @@ def puzzles():
 
 
 # def hanzitest_pinyin():
-#     characters = dict(flashcard_app.cards[session["deck"]].items())
+#     characters = dict(CARDDECKS[session["deck"]].items())
 #     return render_template(
 #         "puzzles/hanzitest_pinyin.html",
 #         darkmode=session["darkmode"],
@@ -49,7 +51,7 @@ def puzzles():
 @session_required
 @timing_decorator
 def hanzitest_pinyin():
-    characters = dict(flashcard_app.cards[session["deck"]].items())
+    characters = dict(CARDDECKS[session["deck"]].items())
     context = get_common_context()
     context["characters"] = characters
     return render_template("puzzles/hanzitest_pinyin.html", **context)
@@ -59,16 +61,16 @@ def hanzitest_pinyin():
 @session_required
 @timing_decorator
 def hanzitest_draw():
-    deck = session["deck"]
+    context = get_common_context()
+    deck = context["deck"]
     characters_data = [
         {
             "character": char,
             "pinyin": data["pinyin"],
             "english": data["english"],
         }
-        for char, data in flashcard_app.cards[deck].items()
+        for char, data in CARDDECKS[deck].items()
     ]
-    context = get_common_context()
     context["characters"] = characters_data
     return render_template("puzzles/hanzitest_draw.html", **context)
 
@@ -77,8 +79,8 @@ def hanzitest_draw():
 @session_required
 @timing_decorator
 def hanzitest_choices():
-    characters = dict(flashcard_app.cards[session["deck"]].items())
     context = get_common_context()
+    characters = dict(CARDDECKS[context["deck"]].items())
     context["characters"] = characters
     return render_template("puzzles/hanzitest_choices.html", **context)
 
@@ -94,7 +96,7 @@ def hanzitest_fillin():
     klist = session["fillin"]["contextClues"]
     random.shuffle(klist)
     fillin = {k: session["fillin"]["contextClues"][k] for k in range(10)}
-    characters = dict(flashcard_app.cards[session["deck"]].items())
+    characters = dict(CARDDECKS[session["deck"]].items())
 
     context = get_common_context()
     context.update(

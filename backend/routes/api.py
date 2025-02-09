@@ -39,6 +39,21 @@ def add_word_to_learning():
     return jsonify({"status": "success"})
 
 
+@api_bp.route("/load_deck_chars")
+@session_required
+def load_deck():
+    deck = request.args.get("deck")
+    characters_data = [
+        {
+            "character": char,
+            "pinyin": data["pinyin"],
+            "english": data["english"],
+        }
+        for char, data in CARDDECKS[deck].items()
+    ]
+    return jsonify(characters_data)
+
+
 @api_bp.route('/storeNotesVisibility', methods=['POST'])
 @session_required
 def store_notes_visibility():
@@ -192,7 +207,8 @@ def getdarkmode():
 @session_required
 @timing_decorator
 def get_font():
-    response = jsonify({"font": session["font"]})
+    response = jsonify({"font": session.get("font", "Noto Sans SC")})
+    print(f"Current font: {session.get('font', 'Noto Sans SC')}")
     return response
 
 
@@ -208,6 +224,7 @@ def change_deck():
 @timing_decorator
 def get_deck():
     logger.info(f"Current deck: {session['deck']}")
+    print(f"Current deck: {session['deck']}")
     return jsonify({"deck": session["deck"]})
 
 @api_bp.route("/get_api_key", methods=["GET"])

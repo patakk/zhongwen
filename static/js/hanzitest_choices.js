@@ -10,10 +10,48 @@ let currentIndex = 0;
 let correctAnswers = 0;
 let shuffledCharacters = [];
 let userAnswers = [];
-const deckNameElement = document.getElementById('deck-name');
 const answerTableBody = document.getElementById('answer-table-body');
 const NUM_QUESTIONS = 10;
 const NUM_OPTIONS = 16;
+
+
+
+
+const deckNameElement = document.getElementById('deck-name');
+const selectedDeckElement = document.getElementById('selected-deck');
+const dropdownToggle = document.getElementById('dropdown-toggle');
+const deckOptionsElement = document.getElementById('deck-options');
+
+function populateDropdown() {
+    selectDeck(inputdeck);
+    Object.keys(inputdecks).forEach(deckName => {
+      const option = document.createElement('div');
+      option.className = 'option';
+      option.textContent = decksinfos[deckName].name;
+      option.onclick = () => selectDeck(deckName);
+      deckOptionsElement.appendChild(option);
+    });
+}
+  
+  function selectDeck(deckName) {
+    inputdeck = deckName;
+    selectedDeckElement.textContent = decksinfos[deckName].name;
+    deckOptionsElement.style.display = 'none';
+    startTest();
+  }
+  
+  deckNameElement.onclick = () => {
+    deckOptionsElement.style.display = deckOptionsElement.style.display === 'none' ? 'block' : 'none';
+  };
+  
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.custom-dropdown')) {
+      deckOptionsElement.style.display = 'none';
+    }
+  });
+
+
+
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -23,6 +61,7 @@ function shuffleArray(array) {
 }
 
 function startTest() {
+    characters = inputdecks[inputdeck];
     shuffledCharacters = Object.keys(characters);
     shuffleArray(shuffledCharacters);
     currentIndex = 0;
@@ -31,7 +70,7 @@ function startTest() {
     showNextCharacter();
     resultsDiv.style.display = 'none';
     document.getElementById('test-container').style.display = 'block';
-    deckNameElement.textContent = `Current Deck: ${inputdecks[inputdeck].name}`;
+    // deckNameElement.textContent = `Current Deck: ${inputdeck}`;
 }
 
 function showNextCharacter() {
@@ -117,8 +156,9 @@ function showResults() {
 restartBtn.addEventListener('click', startTest);
 
 document.addEventListener('DOMContentLoaded', () => {
-    deckNameElement.textContent = `Current Deck: ${inputdeck}`;
-    startTest();
+    // deckNameElement.textContent = `Current Deck: ${inputdeck}`;
+
+    populateDropdown();
 });
 
 function changeDeck(deck) {

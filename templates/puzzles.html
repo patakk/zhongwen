@@ -119,6 +119,10 @@
             font-weight: 600;
         }
 
+        .toggle-title.darkmode {
+            color: rgb(226, 226, 226);
+        }
+
         /* Ensure consistent width */
         .toggle-title::before {
             content: attr(data-cn);
@@ -136,6 +140,16 @@
 
         .darkmode {
             border-color: rgb(128, 128, 128);
+        }
+
+        .puzzle-link.darkmode {
+            color: rgb(226, 226, 226);
+            background-color: rgb(26, 26, 26);
+        }
+
+        .puzzle-link.darkmode:hover {
+            color: rgb(226, 208, 208);
+            background-color: rgb(55, 55, 55);
         }
 
     </style>
@@ -197,9 +211,9 @@
         <h1 class="toggle-title" data-cn="谜题" data-en="Puzzles">Puzzles</h1>
         <div class="link-container">
             <!-- <a href="{{ url_for('puzzles.hanzitest_fillin') }}">fill in</a> -->
-            <a href="{{ url_for('puzzles.hanzitest_pinyin') }}">guess pinyin (input)</a>
-            <a href="{{ url_for('puzzles.hanzitest_choices') }}">guess pinyin (choices)</a>
-            <a href="{{ url_for('puzzles.hanzitest_draw') }}">test hanzi</a>
+            <a href="{{ url_for('puzzles.hanzitest_pinyin') }}" class="puzzle-link">input pinyin for a given hanzi</a>
+            <a href="{{ url_for('puzzles.hanzitest_choices') }}" class="puzzle-link">choose pinyin for a given hanzi</a>
+            <a href="{{ url_for('puzzles.hanzitest_draw') }}" class="puzzle-link">write hanzi for a given word</a>
             <!-- <a href="{{ url_for('hanzipractice') }}">practice hanzi</a> -->
         </div>
     </div>
