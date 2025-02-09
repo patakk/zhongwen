@@ -96,7 +96,6 @@ function convertToNumberedPinyin(pinyin) {
     }).join(' ');
 }
 
-
 function simplifyPinyin(pinyin, removeAccents = true) {
     if (/[1-4]/.test(pinyin)) {
         // If it contains numbers, convert to accented pinyin
@@ -107,7 +106,7 @@ function simplifyPinyin(pinyin, removeAccents = true) {
             .replace(/o([1-4])/g, match => 'ōóǒò'[parseInt(match[1]) - 1])
             .replace(/u([1-4])/g, match => 'ūúǔù'[parseInt(match[1]) - 1])
             .replace(/v([1-4])/g, match => 'ǖǘǚǜ'[parseInt(match[1]) - 1])
-            .replace(/\s+/g, '');
+            .replace(/['\s]+/g, ''); // Remove spaces and apostrophes
     } else if (removeAccents) {
         // If it doesn't contain numbers and we want to remove accents
         return pinyin
@@ -118,10 +117,10 @@ function simplifyPinyin(pinyin, removeAccents = true) {
             .replace(/[ōóǒò]/g, 'o')
             .replace(/[ūúǔù]/g, 'u')
             .replace(/[ǖǘǚǜü]/g, 'v')
-            .replace(/\s+/g, '');
+            .replace(/['\s]+/g, ''); // Remove spaces and apostrophes
     } else {
         // If it doesn't contain numbers and we want to keep accents
-        return pinyin.toLowerCase().replace(/\s+/g, '');
+        return pinyin.toLowerCase().replace(/['\s]+/g, '');
     }
 }
 
@@ -356,7 +355,7 @@ function populateGrid() {
                         inputsbyhanzi[curentHanzi].classList.add("editing");
                         
                         textInput.value = "";
-                        textInput.focus();
+                        inputsbyhanzi[curentHanzi].focus();
                     }
                 }
                 else{
@@ -368,7 +367,7 @@ function populateGrid() {
                     inputsbyhanzi[curentHanzi].classList.add("editing");
                     
                     textInput.value = "";
-                    textInput.focus();
+                    inputsbyhanzi[curentHanzi].focus();
                 }
             }
             else{
@@ -448,6 +447,7 @@ function revealAnswers(){
         if(input.dataset.correct === 'false'){
             input.value = characters[input.dataset.hanzi].pinyin;
             input.classList.add('pinyin-revealed');
+            input.disabled = true;
         }
         restartBtn.classList.remove("hidden");
         // input.dispatchEvent(new Event('input'));
