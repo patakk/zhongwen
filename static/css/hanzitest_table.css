@@ -439,6 +439,10 @@ h1 {
     background-color: #e4e4e4;
 }
 
+.pinyin-input:disabled{
+    opacity: 1.;
+}
+
 .pinyin-input.editing.darkmode {
     background-color: #ffc400;
     background-color: #525252;
