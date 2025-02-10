@@ -12,8 +12,8 @@ let correctAnswers = 0;
 let shuffledCharacters = [];
 let userAnswers = [];
 const answerTableBody = document.getElementById('answer-table-body');
-const NUM_QUESTIONS = 5;
-const NUM_OPTIONS = 4;
+const NUM_QUESTIONS = 16;
+const NUM_OPTIONS = 16;
 
 
 
@@ -135,7 +135,7 @@ function showSkippedQuestions() {
     let character = shuffledCharacters[currentIndex];
     characterDisplay.textContent = characters[character].english.replace(/;/g, ',');
     generatePinyinOptions(character);
-    progressDiv.textContent = `Skipped Question: ${skippedQuestions.length} remaining`;
+    progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledCharacters.length)}`;
 }
 
 restartBtn.addEventListener('click', startTest);
