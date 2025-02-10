@@ -590,6 +590,9 @@ function selectDeck(deckName) {
 }
 
 let fscale = 1.3;
+if(isMobileOrTablet()){
+    fscale = 1.0;
+}
 const fontMap = {
     "Noto Serif SC": 1.4*fscale + "em",
     "Noto Sans": 1.4*fscale + "em",
