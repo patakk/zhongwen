@@ -350,7 +350,7 @@ function populateGrid() {
                 // defocus
                 e.target.blur();
                 e.target.disabled = true;
-                // playTwang();
+                playTwang();
 
                 let flag = false;
                 let firstIncorrectInput = null;
