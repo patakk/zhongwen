@@ -439,10 +439,6 @@ h1 {
     background-color: #e4e4e4;
 }
 
-.pinyin-input:disabled{
-    opacity: 1.;
-}
-
 .pinyin-input.editing.darkmode {
     background-color: #ffc400;
     background-color: #525252;
@@ -457,6 +453,15 @@ h1 {
     background-color: rgb(0, 255, 60);
     color: #222;
 }
+
+.pinyin-correct.darkmode:disabled  {
+    opacity: 1.0;
+}
+
+.pinyin-correct:disabled  {
+    opacity: 1.0;
+}
+
 .pinyin-revealed {
     background-color: #dbd4ed;
 }
