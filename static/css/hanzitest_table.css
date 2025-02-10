@@ -480,6 +480,12 @@ h1 {
     background-color: #413b46;
     color: #d7d7d7;
 }
+
+.pinyin-revealed.darkmode:disabled  {
+    background-color: #413b46;
+    color: #d7d7d7;
+    opacity: 1.0;
+}
 /* 
 .pinyin-correct:focus {
     background-color: #d4edda;
