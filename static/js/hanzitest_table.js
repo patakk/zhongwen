@@ -13,7 +13,7 @@ let correctAnswers = 0;
 let shuffledCharacters = [];
 let userAnswers = [];
 const answerTableBody = document.getElementById('answer-table-body');
-const NUM_QUESTIONS = 3*2*4*0+3; // Change this to set the number of questions
+const NUM_QUESTIONS = 3*2*4; // Change this to set the number of questions
 
 
 const deckNameElement = document.getElementById('deck-name');
