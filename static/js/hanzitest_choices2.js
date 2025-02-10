@@ -97,7 +97,7 @@ function showNextCharacter() {
 
 function checkAnswer(selectedPinyin) {
     let character = shuffledCharacters[currentIndex];
-    const correctPinyin = characters[character].pinyin;
+    const correctPinyin = character;
     const isCorrect = selectedPinyin === correctPinyin;
 
     userAnswers[currentIndex] = {
@@ -120,7 +120,6 @@ function checkAnswer(selectedPinyin) {
     showNextCharacter();
 }
 
-
 function skipQuestion() {
     if (!skippedQuestions.includes(currentIndex)) {
         skippedQuestions.push(currentIndex);
@@ -142,12 +141,13 @@ restartBtn.addEventListener('click', startTest);
 skipBtn.addEventListener('click', skipQuestion);
 
 function generatePinyinOptions(character) {
-    const correctPinyin = shuffledCharacters[currentIndex];
-    let options = [characters[correctPinyin].pinyin];
+    const correctPinyin = character;
+    let options = [correctPinyin];
 
+    // Generate incorrect options
     while (options.length < NUM_OPTIONS) {
         const randomChar = shuffledCharacters[Math.floor(Math.random() * shuffledCharacters.length)];
-        const randomPinyin = characters[randomChar].pinyin;
+        const randomPinyin = randomChar;
         if (!options.includes(randomPinyin)) {
             options.push(randomPinyin);
         }

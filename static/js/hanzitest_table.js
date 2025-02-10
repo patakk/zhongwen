@@ -53,6 +53,17 @@ function shuffleArray(array) {
     }
 }
 
+function playSong(){
+
+    let i = 0;
+    let interval = setInterval(() => {
+        playTwang();
+        i++;
+        if(i >= NUM_QUESTIONS){
+            clearInterval(interval);
+        }
+    }, 400);
+}
 
 
 function setupCharacters() {
@@ -405,6 +416,8 @@ function populateGrid() {
                         revealBtn.classList.add("hidden");
                         restartBtn.innerText = "Restart Test 📝";
                         startConfetti();
+                        // playSong();
+                        playTwang();
                     }
                     else{
                         characterDisplay.textContent = firstIncorrectInput.dataset.hanzi;

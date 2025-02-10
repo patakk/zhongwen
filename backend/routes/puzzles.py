@@ -95,6 +95,16 @@ def hanzitest_choices():
     return render_template("puzzles/hanzitest_choices.html", **context)
 
 
+@puzzles_bp.route("/hanzitest_choices2")
+@session_required
+@timing_decorator
+def hanzitest_choices2():
+    context = get_common_context()
+    characters = dict(CARDDECKS[context["deck"]].items())
+    context["characters"] = characters
+    return render_template("puzzles/hanzitest_choices2.html", **context)
+
+
 @puzzles_bp.route("/hanzitest_fillin")
 @session_required
 @timing_decorator
