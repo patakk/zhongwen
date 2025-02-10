@@ -450,7 +450,7 @@ h1 {
 }
 
 .pinyin-correct.darkmode  {
-    background-color: #78ff97;
+    background-color: rgb(255, 0, 0);
     color: #222;
 }
 .pinyin-revealed {
