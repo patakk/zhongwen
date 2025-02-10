@@ -238,8 +238,10 @@ function populateGrid() {
             
             document.body.appendChild(popup);
         
-            popup.style.left = `${e.clientX}px`;
-            popup.style.top = `${e.clientY}px`;
+            let x = e.clientX;
+            let y = e.clientY + window.scrollY;
+            popup.style.left = `${x}px`;
+            popup.style.top = `${y}px`;
         
             popup.addEventListener('click', function() {
                 popup.remove();

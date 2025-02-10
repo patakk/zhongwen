@@ -396,8 +396,8 @@ h1 {
     padding: 5px 10px;
     border-radius: 5px;
     font-size: 1em;
-    white-space: nowrap;
     pointer-events: auto;
+    max-width: 50%;
     z-index: 1000;
     transform: translate(5px, 5px);
 }
