@@ -165,10 +165,10 @@ function checkAnswer(selectedPinyin) {
     
     if (isCorrect) {
         correctAnswers++;
-        fastConfetti(lastmousex, lastmousey + window.scrollY, '✅');
+        fastConfetti(lastmousex, lastmousey + window.scrollY-40, '✅');
     }
     else{
-        fastConfetti(lastmousex, lastmousey + window.scrollY, '❌');
+        fastConfetti(lastmousex, lastmousey + window.scrollY-40, '❌');
     }
 
 
