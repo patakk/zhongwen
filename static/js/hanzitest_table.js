@@ -201,6 +201,13 @@ let allinputs = [];
 let inputsbyhanzi = {};
 let allhanzi = [];
 
+function vibrateElement(element) {
+    element.classList.add("vibrate");
+    setTimeout(() => {
+      element.classList.remove("vibrate");
+    }, 300); // Match duration of animation
+  }
+
 function populateGrid() {
     allinputs = [];
     inputsbyhanzi = {};
@@ -247,7 +254,6 @@ function populateGrid() {
             }, 100);
         });
         
-
 
         const input = document.createElement("input");
         input.classList.add("pinyin-input");
@@ -303,12 +309,14 @@ function populateGrid() {
                 else{
                     characterDisplay.textContent = firstIncorrectInput.dataset.hanzi;
                     inputsbyhanzi[curentHanzi].classList.remove("editing");
+                    inputsbyhanzi[curentHanzi].parentNode.classList.remove("editing");
                     curentHanzi = firstIncorrectInput.dataset.hanzi;
                 }
                 //first next incorrect input
                 
                 
                 inputsbyhanzi[curentHanzi].classList.add("editing");
+                inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
                 
                 textInput.value = "";
                 textInput.focus();
@@ -332,7 +340,10 @@ function populateGrid() {
                 let y = e.target.getBoundingClientRect().top + e.target.getBoundingClientRect().height/2;
                 fastConfetti(x, y, pinyin);
                 e.target.classList.add('pinyin-correct');
+                e.target.parentNode.classList.add('grid-item-correct');
                 e.target.dataset.correct = true;
+
+                vibrateElement(e.target.parentNode);
                 // defocus
                 e.target.blur();
                 e.target.disabled = true;
@@ -369,6 +380,7 @@ function populateGrid() {
                         textInput.value = "";
                         finished = true;
                         inputsbyhanzi[curentHanzi].classList.remove("editing");
+                        inputsbyhanzi[curentHanzi].parentNode.classList.remove("editing");
                         restartBtn.classList.remove("hidden");
                         startConfetti();
                     }
@@ -379,6 +391,7 @@ function populateGrid() {
                         //first next incorrect input
                         
                         inputsbyhanzi[curentHanzi].classList.add("editing");
+                        inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
                         
                         textInput.value = "";
                         inputsbyhanzi[curentHanzi].focus();
@@ -391,6 +404,7 @@ function populateGrid() {
                     //first next incorrect input
                     
                     inputsbyhanzi[curentHanzi].classList.add("editing");
+                    inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
                     
                     textInput.value = "";
                     inputsbyhanzi[curentHanzi].focus();
@@ -404,7 +418,9 @@ function populateGrid() {
 
         input.addEventListener('focus', function(e) {
             inputsbyhanzi[curentHanzi].classList.remove("editing");
+            inputsbyhanzi[curentHanzi].parentNode.classList.remove("editing");
             input.classList.add("editing");
+            input.parentNode.classList.add("editing");
             curentHanzi = e.target.dataset.hanzi;
 
             characterDisplay.textContent = e.target.dataset.hanzi;
@@ -412,7 +428,8 @@ function populateGrid() {
 
         // callback for losing focus
         input.addEventListener('blur', function(e) {
-            e.target.classList.remove('editing');
+            e.target.classList.remove("editing");
+            e.target.parentNode.classList.remove("editing");
             
 
             const userInput = e.target.dataset.userInput;
@@ -457,6 +474,7 @@ function populateGrid() {
         if(!finished)
             tableinput.value = "";
         tableinput.classList.remove("editing");
+        tableinput.parentNode.classList.remove("editing");
         textInput.value = "";
     });
 
@@ -464,6 +482,7 @@ function populateGrid() {
 
         let tableinput = inputsbyhanzi[curentHanzi];
         tableinput.classList.add("editing");
+        tableinput.parentNode.classList.add("editing");
     });
 }
 
@@ -514,6 +533,7 @@ function init(){
     curentHanzi = firstIncorrectInput.dataset.hanzi;
 
     inputsbyhanzi[curentHanzi].classList.add("editing");
+    inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
 
     setTimeout(() => textInput.focus(), 333);
 }

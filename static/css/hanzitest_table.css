@@ -328,7 +328,7 @@ h1 {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     row-gap: 10px;
     column-gap: 30px;
     margin: auto;
@@ -336,17 +336,57 @@ h1 {
 
 .grid-item {
     display: flex;
-    border: 2px solid black;
+    border: 2px solid rgb(0, 0, 0);
     padding: 5px;
     align-items: center;
-    background-color: #f9f9f9;
+    background-color: #f6f6f600;
     width: 100%;
+    transition: border-radius 0.25s;
+    border-radius: 0px;
+    /* box-shadow: 0 0 8px 2px #efefefc1; */
 }
 
-.grid-item.darkmode {
-    background-color: #272727;
-    border-color: #626262;
+.grid-item.editing {
+    border-radius: 0px;
+    box-shadow: 0 0 8px 2px #ffc40081;
+    /* border: 2px solid rgb(195, 0, 0); */
+    /* transform: scale(1.04); */
 }
+
+.grid-item.darkmode.editing {
+    /* border: 2px solid rgb(195, 0, 0); */
+    box-shadow: 0 0 8px 2px #ffd75454;
+}
+
+
+.grid-item.darkmode {
+    background-color: #27272700;
+    border-color: #303030;
+    /* box-shadow: 0 0 5px 1px #585858c1; */
+}
+.grid-item.darkmode.grid-item-correct {
+    box-shadow: 0 0 10px 5px #6dd58585;
+}
+.grid-item.grid-item-correct {
+    box-shadow: 0 0 10px 5px #69ff8c85;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    10% { transform: translate(-2px, -2px) scale(1.02); }
+    20% { transform: translate(2px, 2px) scale(0.98); }
+    30% { transform: translate(-2px, 2px) scale(1.02); }
+    40% { transform: translate(2px, -2px) scale(0.98); }
+    50% { transform: translate(-1px, 1px) scale(1.01); }
+    60% { transform: translate(1px, -1px) scale(0.99); }
+    70% { transform: translate(-1px, -1px) scale(1.01); }
+    80% { transform: translate(1px, 1px) scale(0.99); }
+    90% { transform: translate(-1px, 1px) scale(1.01); }
+  }
+  
+  .vibrate {
+    animation: shake .14s ease-in-out;
+  }
 
 .pinyin-popup {
     position: absolute;
@@ -382,7 +422,7 @@ h1 {
     text-align: center;
     font-size: 18px;
     outline: none;
-    background-color: #fff;
+    background-color: #f2f2f2;
     height: 30px;
     width: 100%;
 }
@@ -390,20 +430,22 @@ h1 {
     /* background-color: #ffda37; */
 }
 .pinyin-input.darkmode {
-    background-color: #7e7e7e;
+    background-color: #333333;
 }
 
 .pinyin-input.editing {
     background-color: #ffda37;
+    background-color: #e4e4e4;
 }
 
 .pinyin-input.editing.darkmode {
-    background-color: #ffd753;
-    color: #222;
+    background-color: #ffc400;
+    background-color: #525252;
+    color: #b6b6b6;
 }
 
 .pinyin-correct {
-    background-color: #d4edda;
+    background-color: #b2f5c1;
 }
 
 .pinyin-correct.darkmode  {
