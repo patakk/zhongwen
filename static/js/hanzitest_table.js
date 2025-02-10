@@ -337,6 +337,7 @@ function populateGrid() {
             const simplifiedCorrectPinyin = simplifyPinyin(pinyin, !hasNumbers);
             const isCorrect = userAnswer === simplifiedCorrectPinyin;
             // console.log('Correct:', simplifiedCorrectPinyin, 'User:', userAnswer, 'Result:', isCorrect);
+            // correct answer
             if (isCorrect) {
                 
                 let x = e.target.getBoundingClientRect().left + e.target.getBoundingClientRect().width/2;
@@ -345,6 +346,8 @@ function populateGrid() {
                 e.target.classList.add('pinyin-correct');
                 e.target.parentNode.classList.add('grid-item-correct');
                 e.target.dataset.correct = true;
+
+                e.target.value = inputdecks[inputdeck][hanzi].pinyin;
 
                 vibrateElement(e.target.parentNode);
                 // defocus
@@ -386,6 +389,7 @@ function populateGrid() {
                         inputsbyhanzi[curentHanzi].classList.remove("editing");
                         inputsbyhanzi[curentHanzi].parentNode.classList.remove("editing");
                         restartBtn.classList.remove("hidden");
+                        revealBtn.classList.add("hidden");
                         startConfetti();
                     }
                     else{
@@ -491,7 +495,7 @@ function populateGrid() {
 }
 
 function revealAnswers(){
-    console.log(characters)
+    revealBtn.classList.add("hidden");
     allinputs.forEach(input => {
         if(input.dataset.correct === 'false'){
             input.value = characters[input.dataset.hanzi].pinyin;
@@ -555,7 +559,7 @@ function selectDeck(deckName) {
 function init(){
     let inputfield = document.getElementById('text-input');
     inputfield.focus();
-    
+    revealBtn.classList.remove("hidden");
     selectDeck(inputdeck);
     setupCharacters();
 
