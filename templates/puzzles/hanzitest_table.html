@@ -94,6 +94,16 @@
         let isDarkMode = {{ darkmode | tojson | safe }};
 
         const decksinfos = {{ decksinfos | tojson | safe }};
+        const quiz_q = {{ quiz_q | tojson | safe }};
+        let inputdecksflattend = {};
+        let decks = Object.keys(inputdecks);
+        decks.forEach(deck => {
+            let chars = Object.keys(inputdecks[deck]);
+            chars.forEach(char => {
+                inputdecksflattend[char] = inputdecks[deck][char];
+            });
+        });
+        
 
         function isIPhone(){
             const ua = navigator.userAgent;

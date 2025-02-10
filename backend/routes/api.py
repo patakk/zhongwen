@@ -212,7 +212,7 @@ def getdarkmode():
 @timing_decorator
 def get_font():
     response = jsonify({"font": session.get("font", "Noto Sans SC")})
-    print(f"Current font: {session.get('font', 'Noto Sans SC')}")
+    logger.info(f"Current font: {session.get('font', 'Noto Sans SC')}")
     return response
 
 
@@ -228,7 +228,6 @@ def change_deck():
 @timing_decorator
 def get_deck():
     logger.info(f"Current deck: {session['deck']}")
-    print(f"Current deck: {session['deck']}")
     return jsonify({"deck": session["deck"]})
 
 @api_bp.route("/get_api_key", methods=["GET"])

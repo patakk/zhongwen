@@ -67,12 +67,17 @@ function playSong(){
 
 
 function setupCharacters() {
-    shuffledCharacters = Object.keys(inputdecks[inputdeck]);
+    tcharacters = {}
+    quiz_q[inputdeck].forEach((item, index) => {
+        tcharacters[item] = inputdecksflattend[item];
+    });
+
+    shuffledCharacters = Object.keys(tcharacters);
     shuffleArray(shuffledCharacters);
     shuffledCharacters = shuffledCharacters.slice(0, NUM_QUESTIONS);
 
     characters = shuffledCharacters.reduce((obj, key) => {
-        obj[key] = inputdecks[inputdeck][key];
+        obj[key] = inputdecksflattend[key];
         return obj;
     }, {});
 
@@ -240,7 +245,7 @@ function populateGrid() {
     grid.innerHTML = "";
     
     // let characters = shuffledCharacters.reduce((obj, key) => {
-    //     obj[key] = inputdecks[inputdeck][key];
+    //     obj[key] = inputdecksflattend[key];
     //     return obj;
     // }, {});
 
@@ -371,7 +376,7 @@ function populateGrid() {
                 e.target.parentNode.classList.add('grid-item-correct');
                 e.target.dataset.correct = true;
 
-                e.target.value = inputdecks[inputdeck][hanzi].pinyin;
+                e.target.value = inputdecksflattend[hanzi].pinyin;
 
                 vibrateElement(e.target.parentNode);
                 // defocus
@@ -578,7 +583,7 @@ function playTwang() {
 
 function selectDeck(deckName) {
     inputdeck = deckName;
-    selectedDeckElement.textContent = decksinfos[deckName].name;
+    selectedDeckElement.textContent = deckName;
     deckOptionsElement.style.display = 'none';
     restartBtn.classList.add("hidden");
 
@@ -613,15 +618,14 @@ function init(){
     let inputfield = document.getElementById('text-input');
     inputfield.focus();
     revealBtn.classList.remove("hidden");
-    selectDeck(inputdeck);
     setupCharacters();
 
     deckOptionsElement.innerHTML = '';
-    Object.keys(inputdecks).forEach(deckName => {
+    Object.keys(quiz_q).forEach(deckName => {
       const option = document.createElement('div');
       option.className = 'option';
-      option.textContent = decksinfos[deckName].name;
-      option.onclick = () => {inputdeck = deckName; init();};
+      option.textContent = deckName;
+      option.onclick = () => {selectDeck(deckName); init();};
       deckOptionsElement.appendChild(option);
     });
 
@@ -654,6 +658,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playTwang();
         startConfetti();
     };
+    selectDeck(Object.keys(quiz_q)[0]);
     init();
 });
 

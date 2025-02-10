@@ -82,11 +82,20 @@
     <script>
         let characters = {{ characters | tojson | safe }};
         const inputdecks = {{ decks | tojson | safe }};
+        inputdecksflattend = {};
+        let decks = Object.keys(inputdecks);
+        decks.forEach(deck => {
+            let chars = Object.keys(inputdecks[deck]);
+            chars.forEach(char => {
+                inputdecksflattend[char] = inputdecks[deck][char];
+            });
+        });
         let inputdeck = {{ deck | tojson | safe }};
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
         const decksinfos = {{ decksinfos | tojson | safe }};
-
+        const quiz_q = {{ quiz_q | tojson | safe }};
+        
         function isIPhone(){
             const ua = navigator.userAgent;
             if (ua.includes('iPhone')) {

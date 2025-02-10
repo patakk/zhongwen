@@ -24,11 +24,11 @@ const dropdownToggle = document.getElementById('dropdown-toggle');
 const deckOptionsElement = document.getElementById('deck-options');
 
 function populateDropdown() {
-    selectDeck(inputdeck);
-    Object.keys(inputdecks).forEach(deckName => {
+    selectDeck(Object.keys(quiz_q)[0]);
+    Object.keys(quiz_q).forEach(deckName => {
       const option = document.createElement('div');
       option.className = 'option';
-      option.textContent = decksinfos[deckName].name;
+      option.textContent = deckName;
       option.onclick = () => selectDeck(deckName);
       deckOptionsElement.appendChild(option);
     });
@@ -36,7 +36,7 @@ function populateDropdown() {
   
   function selectDeck(deckName) {
     inputdeck = deckName;
-    selectedDeckElement.textContent = decksinfos[deckName].name;
+    selectedDeckElement.textContent = deckName;
     deckOptionsElement.style.display = 'none';
     startTest();
   }
@@ -63,8 +63,12 @@ function shuffleArray(array) {
 let skippedQuestions = [];
 
 function startTest() {
-    characters = inputdecks[inputdeck];
+    characters = {}
+    quiz_q[inputdeck].forEach((item, index) => {
+        characters[item] = inputdecksflattend[item];
+    });
     shuffledCharacters = Object.keys(characters);
+    console.log(characters)
     shuffleArray(shuffledCharacters);
     currentIndex = 0;
     correctAnswers = 0;
@@ -143,7 +147,7 @@ restartBtn.addEventListener('click', startTest);
 skipBtn.addEventListener('click', skipQuestion);
 
 function generatePinyinOptions(character) {
-    const correctPinyin = character;
+    const correctPinyin = shuffledCharacters[currentIndex];
     let options = [correctPinyin];
 
     // Generate incorrect options

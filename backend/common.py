@@ -8,6 +8,7 @@ DATA_DIR = os.path.join(BASE_DIR, 'data')
 
 DECKS_INFO = {
     "minideck": {"file": "mini_deck.json", "name": "Minideck"},
+    "quizdeck": {"file": "quiz_deck.json", "name": "Quizdeck"},
     "hsk1": {"file": "hsk1_cards.json", "name": "HSK 1"},
     "hsk2": {"file": "hsk2_cards.json", "name": "HSK 2"},
     "hsk3": {"file": "hsk3_cards.json", "name": "HSK 3"},
