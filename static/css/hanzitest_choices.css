@@ -256,8 +256,9 @@ h1 {
     right: 0;
     background-color: white;
     border: 2px solid #ccc;
-    max-height: 200px;
+    max-height: 400px;
     overflow-y: auto;
+    font-size: 1em;
     z-index: 1000;
     scrollbar-width: none; 
     -ms-overflow-style: none; 

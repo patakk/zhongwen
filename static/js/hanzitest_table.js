@@ -586,7 +586,7 @@ function selectDeck(deckName) {
     selectedDeckElement.textContent = deckName;
     deckOptionsElement.style.display = 'none';
     restartBtn.classList.add("hidden");
-
+    init();
 }
 
 let fscale = 1.3;
@@ -611,7 +611,27 @@ function selectFont(fontName) {
     );
 }
 
+function populateDropdown() {
+    const hskKeys = [];
+    const nonHskKeys = [];
 
+    Object.keys(quiz_q).forEach(deckName => {
+        if (deckName.includes("HSK")) {
+            hskKeys.push(deckName);
+        } else {
+            nonHskKeys.push(deckName);
+        }
+    });
+    const sortedKeys = [...nonHskKeys, ...hskKeys];
+    selectDeck(nonHskKeys[0]);
+    sortedKeys.forEach(deckName => {
+        const option = document.createElement('div');
+        option.className = 'option';
+        option.textContent = deckName;
+        option.onclick = () => selectDeck(deckName);
+        deckOptionsElement.appendChild(option);
+    });
+}
 
 
 function init(){
@@ -620,14 +640,6 @@ function init(){
     revealBtn.classList.remove("hidden");
     setupCharacters();
 
-    deckOptionsElement.innerHTML = '';
-    Object.keys(quiz_q).forEach(deckName => {
-      const option = document.createElement('div');
-      option.className = 'option';
-      option.textContent = deckName;
-      option.onclick = () => {selectDeck(deckName); init();};
-      deckOptionsElement.appendChild(option);
-    });
 
     fontOptionsElement.innerHTML = '';
     Object.keys(fontList).forEach(fontName => {
@@ -658,8 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playTwang();
         startConfetti();
     };
-    selectDeck(Object.keys(quiz_q)[0]);
-    init();
+    populateDropdown();
 });
 
 

@@ -311,7 +311,8 @@ h1 {
     right: 0;
     background-color: white;
     border: 2px solid #ccc;
-    max-height: 200px;
+    max-height: 400px;
+    font-size: 1em;
     overflow-y: auto;
     z-index: 1000;
     scrollbar-width: none; 
@@ -326,7 +327,6 @@ h1 {
 .option {
     padding: 5px;
     cursor: pointer;
-    font-family: 'Roboto', sans-serif;
 }
 
 .option:hover {

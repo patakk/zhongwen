@@ -20,14 +20,26 @@ const selectedDeckElement = document.getElementById('selected-deck');
 const dropdownToggle = document.getElementById('dropdown-toggle');
 const deckOptionsElement = document.getElementById('deck-options');
 
+
 function populateDropdown() {
-    selectDeck(Object.keys(quiz_q)[0]);
+    const hskKeys = [];
+    const nonHskKeys = [];
+
     Object.keys(quiz_q).forEach(deckName => {
-      const option = document.createElement('div');
-      option.className = 'option';
-      option.textContent = deckName;
-      option.onclick = () => selectDeck(deckName);
-      deckOptionsElement.appendChild(option);
+        if (deckName.includes("HSK")) {
+            hskKeys.push(deckName);
+        } else {
+            nonHskKeys.push(deckName);
+        }
+    });
+    const sortedKeys = [...nonHskKeys, ...hskKeys];
+    selectDeck(nonHskKeys[0]);
+    sortedKeys.forEach(deckName => {
+        const option = document.createElement('div');
+        option.className = 'option';
+        option.textContent = deckName;
+        option.onclick = () => selectDeck(deckName);
+        deckOptionsElement.appendChild(option);
     });
 }
   
