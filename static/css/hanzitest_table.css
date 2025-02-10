@@ -258,10 +258,14 @@ h1 {
     margin-bottom: 20px;
 }
 
+.deck-dropdown{
+    margin-top: 30px;
+
+}
+
 
 #deck-name, #font-name {
     text-align: center;
-    margin-bottom: 20px;
     font-family: "Helvetica", serif;
     font-family: 'Noto Sans Mono', monospace;
     cursor: pointer;
