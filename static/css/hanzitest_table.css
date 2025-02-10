@@ -365,6 +365,12 @@ h1 {
     border-color: #303030;
     /* box-shadow: 0 0 5px 1px #585858c1; */
 }
+
+
+.grid-item.disabled {
+    opacity: 1;
+    /* box-shadow: 0 0 5px 1px #585858c1; */
+}
 /* .grid-item.darkmode.grid-item-correct {
     box-shadow: 0 0 10px 5px #6dd58585;
 }
