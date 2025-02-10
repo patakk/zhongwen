@@ -481,6 +481,12 @@ h1 {
     color: #d7d7d7;
 }
 
+.pinyin-revealed:disabled  {
+    background-color: #e3e0ec;
+    color: #222;
+    opacity: 1.0;
+}
+
 .pinyin-revealed.darkmode:disabled  {
     background-color: #413b46;
     color: #d7d7d793;
