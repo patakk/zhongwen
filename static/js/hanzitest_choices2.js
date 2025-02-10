@@ -111,6 +111,44 @@ function showNextCharacter() {
     confirmDarkmode();
 }
 
+function fastConfetti(x, y, hanzi) {
+    const container = document.getElementById('confetti-container');
+    const emojis = [hanzi];
+    let confettiCount = 10;
+    if(window.innerWidth < window.innerHeight){
+        confettiCount = 7;
+    }
+
+    for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+            const emoji = document.createElement('div');
+            if(i%2 == 0){
+                emoji.className = 'confetti-rev';
+            }
+            else{
+                emoji.className = 'confetti';
+            }
+            emoji.style.left = x + 30*(-1 + 2*Math.random()) + 'px';
+            emoji.style.top = y + 40 + 2*(-1 + 2*Math.random()) + 'px';
+            const duration = (Math.random() * 3 + 2);
+            emoji.style.animationDuration = duration + 's';
+            if(window.innerWidth < window.innerHeight){
+                emoji.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            }
+            else{
+                emoji.style.fontSize = (Math.random() * 20 + 16) + 'px';
+            }
+            emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            container.appendChild(emoji);
+
+            // Remove the emoji after it has completed its animation
+            setTimeout(() => {
+                emoji.remove();
+            }, duration * 1000);
+        }, i * 22);
+    }
+}
 function checkAnswer(selectedPinyin) {
     let character = shuffledCharacters[currentIndex];
     const correctPinyin = character;
@@ -124,9 +162,15 @@ function checkAnswer(selectedPinyin) {
         english: characters[character].english.replace(/;/g, ',')
     };
 
+    
     if (isCorrect) {
         correctAnswers++;
+        fastConfetti(lastmousex, lastmousey + window.scrollY, '✅');
     }
+    else{
+        fastConfetti(lastmousex, lastmousey + window.scrollY, '❌');
+    }
+
 
     if(skippedQuestions.includes(currentIndex)) {
         skippedQuestions = skippedQuestions.filter(question => question !== currentIndex);
@@ -158,6 +202,8 @@ function showSkippedQuestions() {
 restartBtn.addEventListener('click', startTest);
 skipBtn.addEventListener('click', skipQuestion);
 
+let lastmousex;
+let lastmousey;
 function generatePinyinOptions(character) {
     const correctPinyin = shuffledCharacters[currentIndex];
     let options = [correctPinyin];
@@ -178,7 +224,11 @@ function generatePinyinOptions(character) {
         const button = document.createElement('div');
         button.className = 'pinyin-option';
         button.textContent = option;
-        button.addEventListener('click', () => checkAnswer(option));
+        button.addEventListener('click', (event) => {
+            lastmousex = event.clientX;
+            lastmousey = event.clientY;
+            checkAnswer(option);
+        });
         pinyinOptions.appendChild(button);
     });
 }

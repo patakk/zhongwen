@@ -77,12 +77,18 @@
         </div>
         <button id="restart-btn">Restart Test</button>
     </div>
+    <div id="confetti-container"></div>
     <button id="skip-btn">Skip</button>
 
     <script>
         let characters = {{ characters | tojson | safe }};
         const inputdecks = {{ decks | tojson | safe }};
-        inputdecksflattend = {};
+        let inputdeck = {{ deck | tojson | safe }};
+        const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
+        const decksinfos = {{ decksinfos | tojson | safe }};
+        const quiz_q = {{ quiz_q | tojson | safe }};
+        let inputdecksflattend = {};
         let decks = Object.keys(inputdecks);
         decks.forEach(deck => {
             let chars = Object.keys(inputdecks[deck]);
@@ -90,11 +96,6 @@
                 inputdecksflattend[char] = inputdecks[deck][char];
             });
         });
-        let inputdeck = {{ deck | tojson | safe }};
-        const username = {{ username | tojson | safe }};
-        let isDarkMode = {{ darkmode | tojson | safe }};
-        const decksinfos = {{ decksinfos | tojson | safe }};
-        const quiz_q = {{ quiz_q | tojson | safe }};
         
         function isIPhone(){
             const ua = navigator.userAgent;
