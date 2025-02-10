@@ -17,20 +17,33 @@ const NUM_QUESTIONS = 3*2*4; // Change this to set the number of questions
 
 
 const deckNameElement = document.getElementById('deck-name');
+const fontNameElement = document.getElementById('font-name');
 const selectedDeckElement = document.getElementById('selected-deck');
+const selectedFontElement = document.getElementById('selected-font');
 const dropdownToggle = document.getElementById('dropdown-toggle');
 const deckOptionsElement = document.getElementById('deck-options');
+const fontOptionsElement = document.getElementById('font-options');
 
   
-  deckNameElement.onclick = () => {
-    deckOptionsElement.style.display = deckOptionsElement.style.display === 'none' ? 'block' : 'none';
-  };
-  
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('.custom-dropdown')) {
-      deckOptionsElement.style.display = 'none';
-    }
-  });
+deckNameElement.onclick = () => {
+deckOptionsElement.style.display = deckOptionsElement.style.display === 'none' ? 'block' : 'none';
+};
+
+document.addEventListener('click', (event) => {
+if (!event.target.closest('.deck-dropdown')) {
+    deckOptionsElement.style.display = 'none';
+}
+});
+
+fontNameElement.onclick = () => {
+fontOptionsElement.style.display = fontOptionsElement.style.display === 'none' ? 'block' : 'none';
+};
+
+document.addEventListener('click', (event) => {
+if (!event.target.closest('.font-dropdown')) {
+    fontOptionsElement.style.display = 'none';
+}
+});
 
 
 function shuffleArray(array) {
@@ -556,11 +569,28 @@ function selectDeck(deckName) {
 
 }
 
+const fontList = ['Noto Serif SC', 'Noto Sans', 'Ma Shan Zheng', 'Long Cang', 'Zhi Mang Xing'];
+
+
+function selectFont(fontName) {
+    selectedFontElement.textContent = fontName;
+    fontOptionsElement.style.display = 'none';
+
+    document.querySelectorAll('.hanzi').forEach(hanzi => {
+        hanzi.style.fontFamily = fontName;
+    }
+    );
+}
+
+
+
+
 function init(){
     let inputfield = document.getElementById('text-input');
     inputfield.focus();
     revealBtn.classList.remove("hidden");
     selectDeck(inputdeck);
+    selectFont(fontList[0]);
     setupCharacters();
 
     deckOptionsElement.innerHTML = '';
@@ -571,6 +601,16 @@ function init(){
       option.onclick = () => {inputdeck = deckName; init();};
       deckOptionsElement.appendChild(option);
     });
+
+    fontOptionsElement.innerHTML = '';
+    Object.keys(fontList).forEach(fontName => {
+        const option = document.createElement('div');
+        option.className = 'option';
+        option.textContent = fontList[fontName];
+        option.onclick = () => {selectFont(fontList[fontName]);};
+        fontOptionsElement.appendChild(option);
+        }
+    );
 
     populateGrid();
             

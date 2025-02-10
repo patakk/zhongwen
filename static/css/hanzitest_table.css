@@ -165,6 +165,11 @@ body::-webkit-scrollbar {
         font-size: 16px;
         margin-bottom: 10px;
     }
+    
+    #font-name {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
 
     #answer-table-container {
         max-height: 70vh;
@@ -254,7 +259,7 @@ h1 {
 }
 
 
-#deck-name {
+#deck-name, #font-name {
     text-align: center;
     margin-bottom: 20px;
     font-family: "Helvetica", serif;
@@ -264,7 +269,7 @@ h1 {
 }
 
 
-#deck-name.darkmode {
+#deck-name.darkmode, #font-name.darkmode {
     color: #f0f0f0
 }
 
@@ -272,11 +277,24 @@ h1 {
     font-weight: bold;
     background-color: #dcdcdc;
     padding: 3px 11px;
-    font-family: 'Noto Sans Mono', monospace;
     font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
 }
 
 #selected-deck.darkmode {
+    font-weight: bold;
+    background-color: #353535;
+}
+
+#selected-font {
+    font-weight: bold;
+    background-color: #dcdcdc;
+    padding: 3px 11px;
+    font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
+}
+
+#selected-font.darkmode {
     font-weight: bold;
     background-color: #353535;
 }
