@@ -310,7 +310,7 @@ h1 {
     left: 0;
     right: 0;
     background-color: white;
-    border: 2px solid #ccc;
+    border: none;
     max-height: 400px;
     font-size: 1em;
     overflow-y: auto;
@@ -325,7 +325,7 @@ h1 {
 }
 
 .option {
-    padding: 5px;
+    padding: 10px;
     cursor: pointer;
 }
 
@@ -341,6 +341,7 @@ h1 {
     background-color: #303030;
     border: 2px solid #939393;
     color: #f0f0f0;
+    border: none;
 }
 
 

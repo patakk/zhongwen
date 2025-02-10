@@ -369,6 +369,7 @@ h1 {
 #deck-name {
     cursor: pointer;
     margin-bottom: 0;
+font-family: 'Noto Sans Mono', monospace;
 }
 
 #selected-deck {
@@ -389,8 +390,9 @@ h1 {
     left: 0;
     right: 0;
     background-color: white;
-    border: 2px solid #ccc;
-    max-height: 200px;
+    border: none;
+    max-height: 400px;
+    font-size: 1em;
     overflow-y: auto;
     z-index: 1000;
     scrollbar-width: none; 
@@ -420,6 +422,7 @@ h1 {
     background-color: #303030;
     border: 2px solid #939393;
     color: #f0f0f0;
+    border: none;
 }
 
 
