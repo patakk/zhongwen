@@ -328,10 +328,11 @@ h1 {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     row-gap: 10px;
     column-gap: 30px;
     margin: auto;
+    justify-items: center;
 }
 
 .grid-item {
@@ -449,7 +450,7 @@ h1 {
 }
 
 .pinyin-correct.darkmode  {
-    background-color: #7eff9c;
+    background-color: #6dd585;
     color: #222;
 }
 .pinyin-revealed {
