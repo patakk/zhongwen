@@ -60,7 +60,7 @@ body::-webkit-scrollbar {
 }
 
 #restart-btn, #reveal-btn {
-    margin-top: 10px;
+    margin-top: 40px;
 }
 
 
@@ -522,7 +522,7 @@ h1 {
 
 .pinyin-revealed.darkmode:disabled  {
     background-color: #413b46;
-    color: #d7d7d793;
+    color: #dadadae4;
     opacity: 1.0;
 }
 /* 
