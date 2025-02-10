@@ -407,7 +407,7 @@ font-family: 'Noto Sans Mono', monospace;
 .option {
     padding: 10px;
     cursor: pointer;
-    font-family: 'Roboto', sans-serif;
+    font-family: "Noto Sans Mono", monospace;
 }
 
 .option:hover {
