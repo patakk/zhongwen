@@ -30,6 +30,7 @@ body::-webkit-scrollbar {
     font-size: 72px;
     height: 100px;
     margin-bottom: 20px;
+    display: none;
 }
 
 .hidden {
@@ -41,6 +42,7 @@ body::-webkit-scrollbar {
     padding: 10px;
     font-size: 16px;
     margin-bottom: 10px;
+    display: none;
 }
 
 #submit-btn, #restart-btn, #reveal-btn {
@@ -337,7 +339,7 @@ h1 {
 
 .grid-item {
     display: flex;
-    border: 2px solid rgb(0, 0, 0);
+    border: 2px dashed rgba(0, 0, 0, 0.33);
     padding: 5px;
     align-items: center;
     background-color: #f6f6f600;
@@ -349,14 +351,14 @@ h1 {
 
 .grid-item.editing {
     border-radius: 0px;
-    box-shadow: 0 0 8px 2px #ffc40081;
+    /* box-shadow: 0 0 8px 2px #ffc40081; */
     /* border: 2px solid rgb(195, 0, 0); */
     /* transform: scale(1.04); */
 }
 
 .grid-item.darkmode.editing {
     /* border: 2px solid rgb(195, 0, 0); */
-    box-shadow: 0 0 8px 2px #ffc739b0;
+    /* box-shadow: 0 0 8px 2px #c59cffd6; */
 }
 
 
@@ -366,10 +368,14 @@ h1 {
     /* box-shadow: 0 0 5px 1px #585858c1; */
 }
 .grid-item.darkmode.grid-item-correct {
-    box-shadow: 0 0 10px 5px #6dd58585;
+    /* box-shadow: 0 0 10px 5px #83ffa085; */
+    box-shadow: 0 0 10px 5px #878787;
+    border: 2px solid rgb(153, 153, 153);
 }
 .grid-item.grid-item-correct {
-    box-shadow: 0 0 10px 5px #69ff8c85;
+    /* box-shadow: 0 0 10px 5px #4cff76; */
+    box-shadow: 0 0 10px 5px #d1d1d1;
+    border: 2px solid rgb(0, 0, 0);
 }
 
 @keyframes shake {
@@ -446,29 +452,33 @@ h1 {
 }
 
 .pinyin-correct {
-    background-color: #c4f8d0;
+    /* background-color: #c4f8d0; */
+    /* background-color: #c4f8d0; */
 }
 
 .pinyin-correct.darkmode  {
-    background-color: rgb(114, 240, 143);
-    color: #222;
+    /* background-color: rgb(114, 240, 143); */
+    color: #d3d3d3;
 }
 
 .pinyin-correct.darkmode:disabled  {
     opacity: 1.0;
+    color: #d3d3d3;
 }
 
 .pinyin-correct:disabled  {
     opacity: 1.0;
+    color: #222;
 }
 
 .pinyin-revealed {
-    background-color: #dbd4ed;
+    background-color: #e3e0ec;
+    color: #222;
 }
 
 .pinyin-revealed.darkmode  {
-    background-color: #d56dab;
-    color: #222;
+    background-color: #413b46;
+    color: #d7d7d7;
 }
 /* 
 .pinyin-correct:focus {

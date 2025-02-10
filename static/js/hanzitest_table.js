@@ -320,8 +320,9 @@ function populateGrid() {
                 inputsbyhanzi[curentHanzi].classList.add("editing");
                 inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
                 
-                textInput.value = "";
-                textInput.focus();
+                // textInput.value = "";
+                // textInput.focus();
+                inputsbyhanzi[curentHanzi].focus();
                 return;
             }
             const userInput = e.target.value.trim();
@@ -349,7 +350,8 @@ function populateGrid() {
                 // defocus
                 e.target.blur();
                 e.target.disabled = true;
-                
+                playTwang();
+
                 let flag = false;
                 let firstIncorrectInput = null;
                 for(let i = 0; i < allhanzi.length; i++){
@@ -504,6 +506,44 @@ function revealAnswers(){
 let curentHanzi = null;
 let finished = false;
 
+let audioContext;
+let twangBuffer;
+let lastPlayedFrequency = null;
+
+async function fetchTwang() {
+    const response = await fetch("/api/get_twang");
+    const arrayBuffer = await response.arrayBuffer();
+    
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    twangBuffer = await audioContext.decodeAudioData(arrayBuffer);
+}
+
+const pentatonicScale = [261.63, 293.66, 329.63, 392.00, 440.00]; // C4, D4, E4, G4, A4
+
+function getRandomFrequency() {
+    let availableFrequencies = pentatonicScale.filter(freq => freq !== lastPlayedFrequency);
+    const randomIndex = Math.floor(Math.random() * availableFrequencies.length);
+    return availableFrequencies[randomIndex];
+}
+
+function playTwang() {
+    if (!twangBuffer) {
+        console.error("Twang audio not loaded yet.");
+        return;
+    }
+
+    const source = audioContext.createBufferSource();
+    source.buffer = twangBuffer;
+
+    const randomFreq = getRandomFrequency();
+    lastPlayedFrequency = randomFreq;
+    const originalFreq = 440;
+    source.playbackRate.value = randomFreq / originalFreq;
+
+    source.connect(audioContext.destination);
+    source.start(0);
+}
+
 function selectDeck(deckName) {
     inputdeck = deckName;
     selectedDeckElement.textContent = decksinfos[deckName].name;
@@ -537,10 +577,11 @@ function init(){
     inputsbyhanzi[curentHanzi].classList.add("editing");
     inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
 
-    setTimeout(() => textInput.focus(), 333);
+    setTimeout(() => inputsbyhanzi[curentHanzi].focus(), 333);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    fetchTwang();
     init();
 });
 

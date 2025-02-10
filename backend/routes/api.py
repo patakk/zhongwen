@@ -121,6 +121,10 @@ def get_characters_with_pinyin():
         characters_data.append({"character": char, "pinyin": data["pinyin"]})
     return jsonify({"characters": characters_data})
 
+@api_bp.route("/get_twang")
+def get_twang():
+    return send_file("./data/twang.mp3", mimetype="audio/mpeg")
+
 
 @api_bp.route("/get_characters_pinyinenglish", methods=["GET", "POST"])
 @session_required
