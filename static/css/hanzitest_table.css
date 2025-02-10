@@ -1,9 +1,14 @@
 * {
+    font-family: 'Zhi Mang Xing';
+    font-family: 'Ma Shan Zheng';
+    font-family: 'Long Cang';
+    font-family: 'Noto Serif SC', serif;
     font-family: 'Noto Sans Mono', monospace;
 }
 
+/* const fontList = ['Noto Serif SC', 'Noto Sans', 'Ma Shan Zheng', 'Long Cang', 'Zhi Mang Xing']; */
+
 body {
-    font-family: 'Noto Sans Mono', monospace;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -76,15 +81,6 @@ body::-webkit-scrollbar {
     margin-top: 20px;
 }
 
-#deck-name {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-
-#deck-name.darkmode {
-    color: #f0f0f0
-}
 
 #answer-table-container {
     width: 100%;
@@ -257,15 +253,27 @@ h1 {
     margin-bottom: 20px;
 }
 
+
 #deck-name {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
     cursor: pointer;
     margin-bottom: 0;
+}
+
+
+#deck-name.darkmode {
+    color: #f0f0f0
 }
 
 #selected-deck {
     font-weight: bold;
     background-color: #dcdcdc;
     padding: 3px 11px;
+    font-family: 'Noto Sans Mono', monospace;
+    font-family: "Helvetica", serif;
 }
 
 #selected-deck.darkmode {
@@ -294,7 +302,7 @@ h1 {
 }
 
 .option {
-    padding: 10px;
+    padding: 5px;
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
 }
@@ -421,7 +429,9 @@ h1 {
     margin: 5px;
     white-space: nowrap;
     cursor: pointer;
+    font-family: 'Noto Serif SC', serif;
 }
+
 .pinyin-input {
     flex: 3;
     border: none;
