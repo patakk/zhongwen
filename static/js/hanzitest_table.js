@@ -626,6 +626,10 @@ function init(){
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchTwang();
+    document.getElementById('brain').onclick = () => {
+        playTwang();
+        startConfetti();
+    };
     init();
 });
 
