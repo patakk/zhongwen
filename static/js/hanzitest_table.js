@@ -13,7 +13,7 @@ let correctAnswers = 0;
 let shuffledCharacters = [];
 let userAnswers = [];
 const answerTableBody = document.getElementById('answer-table-body');
-const NUM_QUESTIONS = 3*2*4; // Change this to set the number of questions
+const NUM_QUESTIONS = 3*2*4*0+3; // Change this to set the number of questions
 
 
 const deckNameElement = document.getElementById('deck-name');
@@ -403,6 +403,7 @@ function populateGrid() {
                         inputsbyhanzi[curentHanzi].parentNode.classList.remove("editing");
                         restartBtn.classList.remove("hidden");
                         revealBtn.classList.add("hidden");
+                        restartBtn.innerText = "Restart Test 📝";
                         startConfetti();
                     }
                     else{
@@ -509,6 +510,7 @@ function populateGrid() {
 
 function revealAnswers(){
     revealBtn.classList.add("hidden");
+    restartBtn.innerText = "Restart Test 💩";
     allinputs.forEach(input => {
         if(input.dataset.correct === 'false'){
             input.value = characters[input.dataset.hanzi].pinyin;
@@ -569,7 +571,15 @@ function selectDeck(deckName) {
 
 }
 
-const fontList = ['Noto Serif SC', 'Noto Sans', 'Ma Shan Zheng', 'Long Cang', 'Zhi Mang Xing'];
+let fscale = 1.3;
+const fontMap = {
+    "Noto Serif SC": 1.4*fscale + "em",
+    "Noto Sans": 1.4*fscale + "em",
+    "Ma Shan Zheng": 1.6*fscale + "em",
+    "Long Cang": 1.7*fscale + "em",
+    "Zhi Mang Xing": 1.8*fscale + "em"
+};
+const fontList = Object.keys(fontMap);
 
 
 function selectFont(fontName) {
@@ -578,6 +588,7 @@ function selectFont(fontName) {
 
     document.querySelectorAll('.hanzi').forEach(hanzi => {
         hanzi.style.fontFamily = fontName;
+        hanzi.style.fontSize = fontMap[fontName];
     }
     );
 }
@@ -590,7 +601,6 @@ function init(){
     inputfield.focus();
     revealBtn.classList.remove("hidden");
     selectDeck(inputdeck);
-    selectFont(fontList[0]);
     setupCharacters();
 
     deckOptionsElement.innerHTML = '';
@@ -622,6 +632,7 @@ function init(){
     inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
 
     setTimeout(() => inputsbyhanzi[curentHanzi].focus(), 333);
+    selectFont(fontList[0]);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
