@@ -340,7 +340,7 @@ h1 {
     border: 2px solid rgb(0, 0, 0);
     padding: 5px;
     align-items: center;
-    background: transparent;
+    background-color: #f6f6f600;
     width: 100%;
     transition: border-radius 0.25s;
     border-radius: 0px;
@@ -361,22 +361,16 @@ h1 {
 
 
 .grid-item.darkmode {
-    background: transparent;
+    background-color: #27272700;
     border-color: #303030;
     /* box-shadow: 0 0 5px 1px #585858c1; */
 }
-
-
-.grid-item.disabled {
-    opacity: 1;
-    /* box-shadow: 0 0 5px 1px #585858c1; */
-}
-/* .grid-item.darkmode.grid-item-correct {
+.grid-item.darkmode.grid-item-correct {
     box-shadow: 0 0 10px 5px #6dd58585;
 }
 .grid-item.grid-item-correct {
     box-shadow: 0 0 10px 5px #69ff8c85;
-} */
+}
 
 @keyframes shake {
     0%, 100% { transform: translate(0, 0) scale(1); }
@@ -456,7 +450,7 @@ h1 {
 }
 
 .pinyin-correct.darkmode  {
-    background-color: rgb(255, 0, 0);
+    background-color: rgb(0, 255, 60);
     color: #222;
 }
 .pinyin-revealed {

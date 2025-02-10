@@ -348,7 +348,7 @@ function populateGrid() {
                 vibrateElement(e.target.parentNode);
                 // defocus
                 e.target.blur();
-                e.target.disabled = true;
+                // e.target.disabled = true;
                 
                 let flag = false;
                 let firstIncorrectInput = null;
@@ -494,7 +494,7 @@ function revealAnswers(){
         if(input.dataset.correct === 'false'){
             input.value = characters[input.dataset.hanzi].pinyin;
             input.classList.add('pinyin-revealed');
-            input.disabled = true;
+            // input.disabled = true;
         }
         restartBtn.classList.remove("hidden");
         // input.dispatchEvent(new Event('input'));
