@@ -56,7 +56,7 @@ from backend.routes.puzzles import puzzles_bp
 # from flask_wtf.csrf import CSRFProtect
 
 FLASK_CONFIG = {
-    'SECRET_KEY': "zhongwen-hen-youyisi",
+    'SECRET_KEY': "zhongwen-hen-you-yi-si",
     'SESSION_TYPE': 'filesystem',
     'SESSION_PERMANENT': True,
     'SESSION_COOKIE_SECURE': True,
@@ -866,7 +866,6 @@ def search_results():
     results = []
     if query:
         results = get_search_results(query)
-    print(results)
     return jsonify({'results': results, 'query': query})
     
 
