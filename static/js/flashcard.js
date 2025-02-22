@@ -1041,7 +1041,7 @@ function renderCardData(data) {
     document.getElementById('flashcard_practice').href = `./hanzipractice?character=${encodeURIComponent(data.character)}`;
     // displayCharMatches(data.char_matches);
     document.getElementById('flashcard_addcard').textContent = "+";
-    if(data.is_learning){
+    if(data.is_learnin || username === "tempuser"){
         document.getElementById('flashcard_addcard').style.display = 'none';
     }
     else{
