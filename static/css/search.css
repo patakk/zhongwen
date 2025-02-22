@@ -64,7 +64,7 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
 }
-.search-container {
+#search-container {
     width: 50%;
     border: var(--dimmer-border);
     padding: 20px;
@@ -79,9 +79,9 @@ body {
     box-sizing: border-box; /* Add this line */
 }
 
-.search-container.has-results {
+#search-container.has-results {
 }
-.search-container::-webkit-scrollbar { /* WebKit */
+#search-container::-webkit-scrollbar { /* WebKit */
     width: 0;
     height: 0;
 }
@@ -105,7 +105,7 @@ input[type="text"] {
     padding: 10px;
     margin-bottom: 20px;
     border: 2px solid black;
-    font-size: 16px;
+    font-size: 1em;
     font-family: inherit;
 }
 input[type="submit"] {
@@ -197,10 +197,10 @@ input[type="submit"]:hover {
 }
 
 @media (max-width: 768px) {
-    .search-container.has-results {
+    #search-container.has-results { 
     }
    
-    .search-container {
+    #search-container {
         margin: 0;
         padding: 0;
         width: 90%;
@@ -300,4 +300,27 @@ input[type="submit"].darkmode {
 }
 input[type="submit"].darkmode:hover {
     border-color: rgb(128, 128, 128);
+}
+
+
+
+@media screen and (min-width: 845px) and (max-width: 1024px) {
+    #search-container {
+
+        margin: 0;
+        padding: 0;
+        width: 90%;
+        height: 100%;
+        border: none;
+    }
+}
+
+@media screen and (min-height: 845px) and (max-height: 1024px)  and (orientation:landscape) {
+    #search-container {
+    }
+}
+
+@media (min-width: 1424px) and (max-width: 1624px) {
+    #search-container {
+    }
 }

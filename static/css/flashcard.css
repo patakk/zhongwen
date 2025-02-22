@@ -601,7 +601,6 @@ and (max-device-width: 1024px) {
     background: transparent;
 }
 
-
 #descriptionContainer li::marker {
     content: "-" !important;
     background: lightgray;
@@ -971,3 +970,16 @@ input[type="checkbox"].darkmode:checked::after {
     width: 0;
     height: 0;
 } */
+
+
+
+@keyframes fallAndRotate {
+    to {
+        transform: translateY(100px) rotate(30deg);
+        opacity: 0;
+    }
+}
+
+.fall-out {
+    animation: fallAndRotate 0.35s ease-in forwards;
+}

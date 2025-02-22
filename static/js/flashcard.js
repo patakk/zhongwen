@@ -1047,6 +1047,57 @@ function renderCardData(data) {
     document.getElementById('flashcard_addcard').onclick = function(){
         // print current character
         addWordToLearning(data.character);
+        let rect = document.getElementById('flashcard_addcard').getBoundingClientRect();
+        // print the exact location of the document.getElementById('flashcard_addcard') on the screen 
+        let x = rect.left;
+        let y = rect.top;
+        let width = rect.width;
+        let height = rect.height;
+        let middlex = x + width/2;
+        let middley = y + height/2;
+
+        const element = document.getElementById('flashcard_addcard');
+        element.classList.add('fall-out');
+        setTimeout(() => {
+            element.style.display = 'none';
+            element.classList.remove('fall-out');
+        }, 350);
+
+        // let smallcanvas = document.createElement('canvas');
+        // smallcanvas.width = 200;
+        // smallcanvas.height = 400;
+        // smallcanvas.style.width = 100 + "px";
+        // smallcanvas.style.height = 200 + "px";
+        // smallcanvas.style.display = 'block';
+        // smallcanvas.style.left = middlex + "px";
+        // smallcanvas.style.top = middley + "px";
+        // smallcanvas.style.position = 'absolute';
+        // smallcanvas.style.zIndex = 2222;
+        // smallcanvas.style.transform = 'translate(-50%, -50%)';
+
+        // // draw an expanding circle and then remove after 1 second
+        // let ctx = smallcanvas.getContext('2d');
+        // let yy = 0;
+        // let maxradius = Math.max(width, height);
+        // let radius = maxradius;
+        // let opacity = 1.;
+        // let interval = setInterval(() => {
+        //     ctx.clearRect(0, 0, smallcanvas.width, smallcanvas.height);
+        //     ctx.beginPath();
+        //     // ctx.arc(100, 200 + yy, radius, 0, 2 * Math.PI);
+        //     ctx.fillStyle = `rgba(255, 0, 0, ${opacity})`;
+        //     // ctx.fill();
+        //     ctx.fillRect(100-radius*2/2, 200+yy, radius*2, radius*2);
+        //     radius -= 5;
+        //     opacity -= 0.1;
+        //     yy += 10;
+        //     if(radius < 0){
+        //         clearInterval(interval);
+        //         document.body.removeChild(smallcanvas);
+        //     }
+        // }
+        // , 50);
+        // document.body.appendChild(smallcanvas);
     };
 
     try{

@@ -31,7 +31,7 @@
     {% include 'menu.html' %}
 
     
-    <div class="search-container{% if results %} has-results{% endif %}">
+    <div id="search-container" class="{% if results %} has-results{% endif %}">
         <h1 id="title">Search</h1>
         <form id="searchForm" onsubmit="handleSearch(event)">
             <input type="text" name="query" id="searchQuery">
@@ -72,7 +72,6 @@
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
     <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
 
     <script>
