@@ -7,4 +7,5 @@ pypinyin
 Pillow
 requests
 regex
+jieba
 git+ssh://git@github.com/patakk/hanzipy.git
