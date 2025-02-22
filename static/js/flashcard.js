@@ -202,7 +202,10 @@ function createPlotters(data){
             size = 172;
         }
         else if(chars.length > 3){
-            size = 250;
+            size = 172;
+        }
+        else if(chars.length > 5){
+            size = 122;
         }
     }
     let colors = ["#151511aa", "#151511aa", "#151511aa"];
