@@ -6,4 +6,5 @@ python-dateutil
 pypinyin
 Pillow
 requests
+regex
 git+ssh://git@github.com/patakk/hanzipy.git
