@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 _flashcard_app = None
 
 
-def init_flashcard_app(cards, anthropic_data):
+def init_flashcard_app(cards):
     global _flashcard_app
-    _flashcard_app = FlashcardApp(cards, anthropic_data)
+    _flashcard_app = FlashcardApp(cards)
 
 
 def get_flashcard_app():
@@ -25,42 +25,44 @@ def get_flashcard_app():
 
 
 class FlashcardApp:
-    def __init__(self, cards, anthropic_data):
+    def __init__(self, cards):
         self.NUM_BOXES = 6
         self.REVIEW_INTERVALS = [0, 1, 3, 7, 14, 30]
         self.DIFFICULTY_CAP = 3.0
         self.STREAK_FACTOR = 20
         self.BASE_NEW_CARDS_LIMIT = 5
 
-        self.daily_new_cards = {}
-        self.last_new_cards_date = {}
-        self.presented_new_cards = {}
+        self.daily_new_cards = []
+        self.last_new_cards_date = []
+        self.presented_new_cards = []
         self.cards = cards
-        self.learning_cards = {}
-        self.anthropic_data = anthropic_data
-
-        if not os.path.exists("user_progress"):
-            os.makedirs("user_progress")
-
-    def set_deck(self, deck):
-        self.current_deck = deck
 
     def add_word_to_learning(self, username, word):
-        current_learning = db_load_user_value(username, "learning_cards") or {}
+        current_learning = db_load_user_value(username, "learning_cards") or []
         if word not in current_learning:
-            current_learning[word] = word
+            current_learning.append(word)
             db_store_user_value(username, "learning_cards", current_learning)
-        self.learning_cards = current_learning
 
-    def select_random_card(self, deck):
-        return random.choice(list(self.learning_cards.keys()))
+    def remove_word_from_learning(self, username, word):
+        daily_new_cards = db_load_user_value(username, "daily_new_cards") or []
+        if word in daily_new_cards:
+            daily_new_cards.remove(word)
+            db_store_user_value(username, "daily_new_cards", daily_new_cards)
+        current_learning = db_load_user_value(username, "learning_cards") or []
+        if word in current_learning:
+            current_learning.remove(word)
+            db_store_user_value(username, "learning_cards", current_learning)
+        presented_new_cards = db_load_user_value(username, "presented_new_cards") or []
+        if word in presented_new_cards:
+            presented_new_cards.remove(word)
+            db_store_user_value(username, "presented_new_cards", presented_new_cards)
+            
 
     def record_answer(self, username, character, correct):
         uprogress = db_load_user_progress(username)
         if character not in uprogress["progress"]:
             uprogress["progress"][character] = {
                 "answers": [],
-                "decks": [],
                 "box": 1,
                 "streak": 0,
                 "num_incorrect": 0,
@@ -101,9 +103,6 @@ class FlashcardApp:
             char_progress["num_incorrect"] += 1
             char_progress["streak"] = 0
 
-        if session["deck"] not in char_progress["decks"]:
-            char_progress["decks"].append(session["deck"])
-
         char_progress["views"] += 1
         char_progress["difficulty"] = self.calculate_difficulty(char_progress)
         if not is_ahead_of_schedule:
@@ -133,14 +132,14 @@ class FlashcardApp:
             datetime.now(timezone.utc) + timedelta(days=base_interval / difficulty)
         ).isoformat()
 
-    def get_due_cards(self, username, deck, count=10000):
+    def get_due_cards(self, username, count=10000):
         due_cards = []
         current_time = datetime.now(timezone.utc)
-        all_deck_cards = set(self.learning_cards.keys())
 
         uprogress = db_load_user_progress(username)
         print(uprogress)
-        for character in all_deck_cards:
+        learning_cards = db_load_user_value(username, "learning_cards") or []
+        for character in learning_cards:
             character_progress = uprogress["progress"].get(character, {})
             next_review_str = character_progress.get("next_review")
             if next_review_str:
@@ -160,26 +159,22 @@ class FlashcardApp:
 
         return due_cards
 
-    def get_new_cards(self, username, deck, force_new_cards=False):
+    def get_new_cards(self, username, force_new_cards=False):
         today = date.today()
-        user_deck_key = (username, deck)
         uprogress = db_load_user_progress(username)
-        dd = db_load_user_value(username, "daily_new_cards") or []
-        dd2 = db_load_user_value(username, "last_new_cards_date") or {}
-        dd2 = dd2 or []
+        last_new_cards_date = db_load_user_value(username, "last_new_cards_date") or []
+        learning_cards = db_load_user_value(username, "learning_cards") or []
         if (
-            deck not in dd
-            or dd2
+            last_new_cards_date
             != today.isoformat()
             or force_new_cards
         ):
 
-            logger.info(f"Generating new cards for user {username} in deck {deck}")
-            all_deck_cards = set(self.learning_cards.keys())
+            logger.info(f"Generating new cards for user {username}")
 
             new_cards = [
                 character
-                for character in all_deck_cards
+                for character in learning_cards
                 if character not in uprogress["progress"]
             ]
 
@@ -188,28 +183,28 @@ class FlashcardApp:
 
             new_cards = sorted(new_cards)
             rng.shuffle(new_cards)
-            uprogress["daily_new_cards"][deck] = new_cards[
+            uprogress["daily_new_cards"] = new_cards[
                 : uprogress["new_cards_limit"]
             ]
             if force_new_cards:
                 logger.info("Forced new cards")
-                logger.info(uprogress["daily_new_cards"][deck])
-            uprogress["last_new_cards_date"][deck] = today.isoformat()
+                logger.info(uprogress["daily_new_cards"])
+            uprogress["last_new_cards_date"] = today.isoformat()
             if not force_new_cards:
-                uprogress["presented_new_cards"][deck] = []
+                uprogress["presented_new_cards"] = []
             db_save_user_progress(username, uprogress)
 
         remaining_new_cards = [
             card
-            for card in uprogress["daily_new_cards"].get(deck, [])
-            if card not in uprogress["presented_new_cards"].get(deck, [])
+            for card in uprogress["daily_new_cards"]
+            if card not in uprogress["presented_new_cards"]
         ]
         return remaining_new_cards
 
-    def select_card(self, username, deck):
+    def select_card(self, username):
+        learning_cards = db_load_user_value(username, "learning_cards") or []
         if username == "tempuser":
-            return "", random.choice(list(self.learning_cards.keys()))
-
+            return "", random.choice(learning_cards)
         new_cards_limit = db_load_user_value(username, "new_cards_limit")
         # base_new_cards_limit = db_load_user_value(username, 'base_new_cards_limit')
         new_cards_limit_last_updated = (
@@ -218,8 +213,8 @@ class FlashcardApp:
 
         message = ""
 
-        due_cards = self.get_due_cards(username, deck)
-        new_cards = self.get_new_cards(username, deck)[:new_cards_limit]
+        due_cards = self.get_due_cards(username)
+        new_cards = self.get_new_cards(username)[:new_cards_limit]
         presented_new_cards = db_load_user_value(username, "presented_new_cards") or {}
 
         card_to_return = None
@@ -252,7 +247,7 @@ class FlashcardApp:
                 # if len(due_cards) <= min(5, new_cards_limit):
                 #     logger.info('too few due cards, adding new cards')
                 #     logger.info(new_cards)
-                #     new_cards = self.get_new_cards(username, deck, force_new_cards=True)
+                #     new_cards = self.get_new_cards(username, force_new_cards=True)
                 #     logger.info(new_cards)
             elif has_new_cards:
                 logger.info("Selecting from new cards only")
@@ -262,17 +257,18 @@ class FlashcardApp:
                 logger.info(
                     "No due or new cards (or only 1 due card),  adding new cards"
                 )
-                new_cards = self.get_new_cards(username, deck, force_new_cards=True)
+                new_cards = self.get_new_cards(username, force_new_cards=True)
                 logger.info(new_cards)
                 if len(new_cards) > 0:
                     card_to_return = random.choice(new_cards)
-                elif len(presented_new_cards.get(deck, [])) > 0:
-                    card_to_return = random.choice(presented_new_cards[deck])
+                elif len(presented_new_cards) > 0:
+                    card_to_return = random.choice(presented_new_cards)
                 elif has_due_cards and len(due_cards) > 0:
                     logger.info("Selecting from due cards only")
                     card_to_return = random.choice(due_cards)
                 else:
-                    card_to_return = random.choice(list(self.learning_cards.keys()))
+                    if learning_cards:
+                        card_to_return = random.choice(learning_cards)
                 message = ""
 
             if (
@@ -285,14 +281,12 @@ class FlashcardApp:
         if attempts == max_attempts:
             logger.info(f"Warning: Max attempts reached when selecting card")
 
-        daily_new_cards = db_load_user_value(username, "daily_new_cards") or {}
-        presented_new_cards = db_load_user_value(username, "presented_new_cards") or {}
+        daily_new_cards = db_load_user_value(username, "daily_new_cards") or []
+        presented_new_cards = db_load_user_value(username, "presented_new_cards") or []
         learning_cards = db_load_user_value(username, "learning_cards") or []
-        if card_to_return in daily_new_cards.get(deck, []):
-            if deck not in presented_new_cards:
-                presented_new_cards[deck] = []
-            if card_to_return not in presented_new_cards[deck]:
-                presented_new_cards[deck].append(card_to_return)
+        if card_to_return in daily_new_cards:
+            if card_to_return not in presented_new_cards:
+                presented_new_cards.append(card_to_return)
 
         db_store_user_value(username, "presented_new_cards", presented_new_cards)
         db_store_user_value(username, "new_cards_limit", new_cards_limit)

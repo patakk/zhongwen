@@ -68,6 +68,7 @@ def db_create_user(
     )
     db.session.add(user_progress)
     db.session.commit()
+    print(user_progress.to_dict())
     return user
 
 

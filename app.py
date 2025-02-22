@@ -8,6 +8,7 @@ from urllib.parse import unquote
 import logging
 import random
 import json
+import regex
 import time
 import os
 import io
@@ -31,9 +32,13 @@ from backend.db.ops import db_store_user_string
 from backend.db.ops import db_get_user_string
 from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
-from backend.common import get_card_examples
 from backend.common import flashcard_app
 
+
+from backend.common import get_pinyin
+from backend.common import character_simple_info
+from backend.common import character_info
+from backend.common import dictionary
 from flask import flash
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -95,44 +100,40 @@ stroke_jsons = glob.glob('static/strokes_data/*.json')
 stroke_chars = set([os.path.basename(j).split('.')[0] for j in stroke_jsons])
 
 
+def word_info(word):
+    infos = {}
+    for char in word:
+        infos[char] = character_info(char)
+    return infos
+
 @app.route('/get_card_data')
 @session_required
 def get_card_data():
     character = request.args.get('character')
     message = ''
     if not character:
-        message, character = flashcard_app.select_card(session['username'], 'learning_deck')
-    return  jsonify({'message': message, **packed_data(character)})
+        message, character = flashcard_app.select_card(session['username'])
+    if not character:
+        return jsonify({'message': 'No cards available', 'raw_info': None})
+    raw_info = word_info(character)
+    return  jsonify({'message': message, **packed_data(character), 'raw_info': raw_info})
 
 @app.before_request
 def before_request():
     if request.path.startswith('/static/'):
         return
 
-from pypinyin import pinyin, Style
-
-def get_pinyin(hanzi):
-    result = pinyin(hanzi, style=Style.TONE)
-    return result[0][0]
-
 @app.route('/get_simple_char_data')
 @session_required
 def get_simple_char_data():
     character = request.args.get('character')
     
-    data = {}
-    if character in CARDDECKS[session['deck']]:
-        data = get_card_examples(session['deck'], character)
-    else: # look into all decks
-        for deck_name in CARDDECKS:
-            if character in CARDDECKS[deck_name]:
-                data = get_card_examples(deck_name, character)
-                break
-    # session['deck'] = foundDeck
+    char_info = character_simple_info(character)
+
     cdata = {
         "character": character,
-        "pinyin": data.get('pinyin', get_pinyin(character)),
-        "english": data.get('english', ''),
+        "pinyin": char_info['pinyin'],
+        "english": char_info['english'],
     }
     
     return  jsonify({'message': 'success', **cdata})
@@ -144,89 +145,74 @@ from collections import defaultdict
 @hard_session_required
 def user_progress():
     username = request.args.get('user', session.get('username'))
-    deck = request.args.get('deck', session.get('deck'))
 
-    if not username or not deck:
+    if not username:
         return "User or deck not specified", 400
-
-    deck_cards = CARDDECKS[deck]
 
     uprogress = db_load_user_progress(username)
 
-    logger.info(f"User progress for {username} in deck {deck}")
+    logger.info(f"User progress for {username}")
+
+    # pcards = list(uprogress['progress'].keys())
+    lcards = uprogress['learning_cards']
+    # pncards = uprogress['presented_new_cards']
+    # dncards = uprogress['daily_new_cards']
+    acards = set(lcards)
 
     progress_stats = []
-    for character in deck_cards:
+    for character in acards:
         char_progress = uprogress['progress'].get(character, {})
-        if char_progress and deck in char_progress.get('decks', []):
-            correct_answers = char_progress['answers'].count('correct')
-            total_answers = len(char_progress['answers'])
-            accuracy = (correct_answers / total_answers * 100) if total_answers > 0 else 0
-
-            stats = {
-                'character': character,
-                'meaning': deck_cards[character].get('english', 'N/A'),
-                'pinyin': deck_cards[character].get('pinyin', 'N/A'),
-                'box': char_progress.get('box', 1),
-                'views': char_progress.get('views', 0),
-                'streak': char_progress.get('streak', 0),
-                'difficulty': char_progress.get('difficulty', 1),
-                'accuracy': round(accuracy, 2),
-                'num_incorrect': char_progress.get('num_incorrect', 1),
-                'next_review': char_progress.get('next_review', 'N/A'),
-                'is_due': char_progress.get('next_review') and datetime.fromisoformat(char_progress['next_review']).replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc),
-            }
-            progress_stats.append(stats)
+        correct_answers = char_progress.get('answers', []).count('correct')
+        total_answers = len(char_progress.get('answers', []))
+        accuracy = (correct_answers / total_answers * 100) if total_answers > 0 else 0
+        simple_char_info = character_simple_info(character)
+        stats = {
+            'character': character,
+            'meaning': simple_char_info.get('english', 'N/A'),
+            'pinyin': simple_char_info.get('pinyin', 'N/A'),
+            'box': char_progress.get('box', 0),
+            'views': char_progress.get('views', 0),
+            'streak': char_progress.get('streak', 0),
+            'difficulty': char_progress.get('difficulty', None),
+            'accuracy': round(accuracy, 2),
+            'num_incorrect': char_progress.get('num_incorrect', 0),
+            'next_review': char_progress.get('next_review', None),
+            'is_due': char_progress.get('next_review') and datetime.fromisoformat(char_progress['next_review']).replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc),
+        }
+        progress_stats.append(stats)
 
     # Sort by box (descending) and then by accuracy (descending)
     #progress_stats.sort(key=lambda x: (-x['box'], -x['accuracy']))
-    progress_stats.sort(key=lambda x: x['next_review'])
+    progress_stats.sort(key=lambda x: x['next_review'] if x['next_review'] else "a")
 
-    numcards = len(deck_cards)
+    numcards = len(progress_stats)
     duecards = len([card for card in progress_stats if card['is_due']])
     learnedcards = len([card for card in progress_stats if card['box'] == 6])
     learningcards = len([card for card in progress_stats if card['box'] < 6])
 
     # print(session[session['username']]["base_new_cards_limit"])
-    return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), deck=deck, deckname=DECKS_INFO[deck]['name'], progress_stats=progress_stats, decks=DECKS_INFO, maxnumcards=db_load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
+    return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), progress_stats=progress_stats, decks=DECKS_INFO, maxnumcards=db_load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
 
 
 def packed_data(character):
-    foundDeck = session['deck']
-    if character in CARDDECKS[session['deck']]:
-        data = get_card_examples(session['deck'], character)
-    else: 
-        for deck_name in CARDDECKS:
-            if character in CARDDECKS[deck_name]:
-                data = get_card_examples(deck_name, character)
-                foundDeck = deck_name
-                break
-        else:
-            return {
-                "character": character,
-                "pinyin": '',
-                "english": '',
-                "html": '',
-                "hsk_level": '',
-                "function": '',
-                "user_notes": '',
-                "char_matches": '',
-                "deck": session['deck']
-            }
-    user_notes, are_notes_public = db_get_user_note(session['username'], character)
-    other_user_notes = db_get_all_public_notes(character, exclude_username=session.get('username'))
+    username = session.get('username')
+    user_notes, are_notes_public = db_get_user_note(username, character)
+    other_user_notes = db_get_all_public_notes(character, exclude_username=username)
+    simple_info = character_simple_info(character)
+    learning_cards = db_load_user_value(username, "learning_cards") or []
+    is_learning = character in learning_cards
     return {
         "character": character,
-        "deck": foundDeck,
-        "pinyin": data.get('pinyin', ''),
-        "english": data.get('english', ''),
-        "hsk_level": data.get('hsk_level', ''),
-        "function": data.get('function', ''),
+        "pinyin": simple_info['pinyin'],
+        "english": simple_info['english'],
+        "hsk_level": simple_info['hsk_level'],
+        "function": simple_info['function'],
         "user_notes": user_notes,
+        "is_learning": is_learning,
         "are_notes_public": are_notes_public,
         "other_user_notes": other_user_notes,
-        "char_matches": data.get('char_matches', ''),
-        "html": data.get('examples', ''),
+        "char_matches": "",
+        "html": "IMPLEMENT ME", #data.get('examples', ''),
     }
 
 @app.route('/version')
@@ -318,9 +304,9 @@ def login():
                     base_new_cards_limit=20,
                     new_cards_limit=20,
                     new_cards_limit_last_updated=getshortdate(),
-                    daily_new_cards={},
-                    last_new_cards_date={},
-                    presented_new_cards={},
+                    daily_new_cards=[],
+                    last_new_cards_date=[],
+                    presented_new_cards=[],
                     learning_cards={},
                     progress={}
                 )
@@ -399,12 +385,7 @@ def pageinfo():
 @hard_session_required
 @timing_decorator
 def flashcards():
-    querydeck = request.args.get('deck')
-    if not querydeck:
-        querydeck = session.get('deck', 'shas')
-    session['deck'] = querydeck
-    logger.info(f"Query deck: {querydeck}")
-    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO, deck=querydeck)
+    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO)
 
 @app.route('/grid', methods=['GET'])
 @session_required
@@ -416,26 +397,47 @@ def grid():
         querydeck = 'hsk1'
     logger.info(f"Query deck: {querydeck}")
     if not character:
-        characters = list(CARDDECKS.get(querydeck, {}).keys())
+        characters = CARDDECKS.get(querydeck, {})["chars"]
         logger.info(f"Initial characters: {len(characters)}")  # Debug print
         return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=None, decks=DECKS_INFO, deck=querydeck)
     pc = packed_data(character)
-    characters = list(CARDDECKS[pc['deck']].keys())
+    pc['raw_info'] = word_info(character)
+    characters = CARDDECKS[querydeck]["chars"]
     return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=pc, decks=DECKS_INFO, deck=querydeck)
+
+from backend.routes.puzzles import get_common_context
+
+'''
+@puzzles_bp.route("/hanzitest_pinyin")
+@session_required
+@timing_decorator
+def hanzitest_pinyin():
+    characters = dict(CARDDECKS[session["deck"]].items())
+    context = get_common_context()
+    context["characters"] = characters
+    return render_template("puzzles/hanzitest_pinyin.html", **context)
+'''
 
 @app.route('/hanzipractice')
 @session_required
 @timing_decorator
 def hanzipractice():
-    deck = session['deck']
-    characters_data = []
-    for char, data in CARDDECKS[deck].items():
-        characters_data.append({
-            "character": char,
-            "pinyin": data['pinyin'],
-            "english": data['english'],
-        })
-    return render_template('hanzipractice.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=DECKS_INFO, deck=session['deck'])
+    # deck = session['deck']
+    # characters_data = []
+    # for char, data in CARDDECKS[deck].items():
+    #     characters_data.append({
+    #         "character": char,
+    #         "pinyin": data['pinyin'],
+    #         "english": data['english'],
+    #     })
+    #return render_template('hanzipractice.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=DECKS_INFO, deck=session['deck'])
+    #characters = {k: v for deck in CARDDECKS.values() for k, v in deck.items()}
+    characters = []
+    for deck in CARDDECKS:
+        characters += CARDDECKS[deck]["chars"]
+    context = get_common_context()
+    context["characters"] = characters
+    return render_template("hanzipractice.html", **context)
 
 # @app.route('/convert')
 # @session_required
@@ -709,6 +711,7 @@ def extract_sort_key(uri):
     return int(parts[0]) if parts[0].isdigit() else float('inf')
 
 story_files = glob.glob('data/stories/*.json')
+story_files = sorted(story_files)[::-1]
 all_stories = {}
 
 for story_file in story_files:
@@ -751,12 +754,12 @@ def remove_tones(pinyin):
 
 def convert_numerical_tones(pinyin):
     tone_marks = {
-        'a': ['ā', 'á', 'ǎ', 'à'],
-        'e': ['ē', 'é', 'ě', 'è'],
-        'i': ['ī', 'í', 'ǐ', 'ì'],
-        'o': ['ō', 'ó', 'ǒ', 'ò'],
-        'u': ['ū', 'ú', 'ǔ', 'ù'],
-        'ü': ['ǖ', 'ǘ', 'ǚ', 'ǜ']
+        'a': ['ā', 'á', 'ǎ', 'à', 'a'],
+        'e': ['ē', 'é', 'ě', 'è', 'e'],
+        'i': ['ī', 'í', 'ǐ', 'ì', 'i'],
+        'o': ['ō', 'ó', 'ǒ', 'ò', 'o'],
+        'u': ['ū', 'ú', 'ǔ', 'ù', 'u'],
+        'ü': ['ǖ', 'ǘ', 'ǚ', 'ǜ', 'ü']
     }
     
     def replace_tone(match):
@@ -791,10 +794,86 @@ from pypinyin import lazy_pinyin, Style
 def move_tone_number_to_end(pinyin):
     return ''.join([char for char in pinyin if char not in '1234']) + ''.join([char for char in pinyin if char in '1234'])
     
+def get_search_results(query):
+    query = query.strip().lower()
+    results = []
+
+    only_hanzi = all(regex.match(r'\p{Han}', char) for char in query if char.strip())
+    #only_latin = all(regex.match(r'\p{Latin}', char) for char in query if char.strip())
+    #only_latin_with_numbers = any(char.isdigit() for char in query) and all(regex.match(r'[\p{Latin}0-9]', char) for char in query if char.strip())
+
+    if only_hanzi:
+        definition = dictionary.definition_lookup(query)
+        for d in definition:
+            results.append({'hanzi': d['simplified'], 'pinyin': get_pinyin(d['simplified']), 'english': d['definition'], 'match_type': 'hanzi'})
+        exact_matches = []
+        other_matches = []
+        res = dictionary.get_examples(query)
+        for fr in res:
+            for r in res[fr]:
+                if r['simplified'] == query:
+                    exact_matches.append({'hanzi': r['simplified'], 'pinyin': get_pinyin(r['simplified']), 'english': r['definition'], 'match_type': 'hanzi'})
+                else:
+                    other_matches.append({'hanzi': r['simplified'], 'pinyin': get_pinyin(r['simplified']), 'english': r['definition'], 'match_type': 'hanzi'})
+        results = exact_matches + other_matches
+
+    else:
+        res = dictionary.search_by_pinyin(query)
+        for r in res:
+            dd = dictionary.definition_lookup(r)
+            for d in dd:
+                if d:
+                    results.append({'hanzi': r, 'pinyin': get_pinyin(d['simplified']), 'english': d['definition'], 'match_type': 'english'})
+        if len(results) == 0:
+            res = dictionary.search_by_english(query)
+            for r in res:
+                dd = dictionary.definition_lookup(r)
+                for d in dd:
+                    if d:
+                        results.append({'hanzi': r, 'pinyin': get_pinyin(d['simplified']), 'english': d['definition'], 'match_type': 'english'})
+            qwords = query.split(" ") 
+            if len(qwords) > 1:
+                fresults = []
+                for r in results:
+                    definition = r['english']
+                    if all(qw in definition for qw in qwords):
+                        if r not in fresults:
+                            fresults.append(r)
+                def order_key(r):
+                    definition = r['english']
+                    indices = [definition.find(qw) for qw in qwords]
+                    return [i if i != -1 else float('inf') for i in indices]  # Handle missing words
+                results = sorted(fresults, key=order_key)
+    return results
+
 @app.route('/search', methods=['GET', 'POST'])
 @timing_decorator
 @session_required
 def search():
+    query = request.args.get('query')
+    results = []
+    if query:
+        results = get_search_results(query)
+    return render_template('search.html', results=results, query=query, darkmode=session['darkmode'], decks=DECKS_INFO, username=session['username'])
+
+
+@app.route('/search_results', methods=['POST'])
+@timing_decorator
+@session_required
+def search_results():
+    data = request.json
+    query = data.get('query', '')
+    results = []
+    if query:
+        results = get_search_results(query)
+    print(results)
+    return jsonify({'results': results, 'query': query})
+    
+
+@app.route('/oldearch', methods=['GET', 'POST'])
+@timing_decorator
+@session_required
+def oldearch():
     if request.method == 'POST' or request.args.get('query'):
         query = request.args.get('query') or request.form.get('query') or ''
         query = query.strip().lower()
@@ -806,8 +885,9 @@ def search():
             for char in query:
                 char_results = []
                 for deck in CARDDECKS:
-                    for hanzi, card in CARDDECKS[deck].items():
+                    for hanzi in CARDDECKS[deck]["chars"]:
                         if char in hanzi:
+                            card = character_info(hanzi)
                             char_results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
                 individual_results.append(char_results)
 
@@ -816,7 +896,8 @@ def search():
 
         else:  # Original single-word search logic
             for deck in CARDDECKS:
-                for hanzi, card in CARDDECKS[deck].items():
+                for hanzi in CARDDECKS[deck]["chars"]:
+                    card = character_simple_info(hanzi)
                     if query in hanzi:
                         results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
                     elif query.replace(' ', '').isalnum():
@@ -827,28 +908,28 @@ def search():
                                 results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
                         if 'english' in card and query in card['english'].lower():
                             results.append({'hanzi': hanzi, **card, 'match_type': 'english'})
-
-                if query in hanzi.lower():
-                    results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
-                elif query.replace(' ', '').isalnum():  # Allow spaces and numbers in query
-                    if 'pinyin' in card:
-                        if '1' in query or '2' in query or '3' in query or '4' in query:
-                            numbered_query = move_tone_number_to_end(query)
-                            numbered_card_pinyin = lazy_pinyin(hanzi, style=Style.TONE3, neutral_tone_with_five=True)
-                            if numbered_query in numbered_card_pinyin:
-                                results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
+                    elif query in hanzi.lower():
+                        results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
+                    elif query.replace(' ', '').isalnum():  # Allow spaces and numbers in query
+                        print("asffa")
+                        if 'pinyin' in card:
+                            if '1' in query or '2' in query or '3' in query or '4' in query:
+                                numbered_query = move_tone_number_to_end(query)
+                                numbered_card_pinyin = lazy_pinyin(hanzi, style=Style.TONE3, neutral_tone_with_five=True)
+                                if numbered_query in numbered_card_pinyin:
+                                    results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
+                                else:
+                                    pinyin_query = ''.join(lazy_pinyin(query))
+                                    card_pinyin = ''.join(lazy_pinyin(card['pinyin'].lower()))
+                                    if pinyin_query in card_pinyin:
+                                        results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
                             else:
-                                pinyin_query = ''.join(lazy_pinyin(query))
-                                card_pinyin = ''.join(lazy_pinyin(card['pinyin'].lower()))
+                                pinyin_query = remove_tones(convert_numerical_tones(query))
+                                card_pinyin = remove_tones(card['pinyin'].lower()).lower()
                                 if pinyin_query in card_pinyin:
                                     results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
-                        else:
-                            pinyin_query = remove_tones(convert_numerical_tones(query))
-                            card_pinyin = remove_tones(card['pinyin'].lower()).lower()
-                            if pinyin_query in card_pinyin:
-                                results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
-                    if 'english' in card and query in card['english'].lower():
-                        results.append({'hanzi': hanzi, **card, 'match_type': 'english'})
+                        if 'english' in card and query in card['english'].lower():
+                            results.append({'hanzi': hanzi, **card, 'match_type': 'english'})
         
         # Remove duplicates
         unique_results = []

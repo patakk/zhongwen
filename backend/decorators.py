@@ -44,7 +44,7 @@ def hard_session_required(func):
 def session_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if "deck" not in session:
+        if "deck" not in session or session.get("deck") == "null":
             session["deck"] = "hsk1"
         if "font" not in session:
             session["font"] = "Noto Sans Mono"

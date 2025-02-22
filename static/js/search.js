@@ -86,24 +86,6 @@ document.addEventListener('keydown', function(event) {
 });
 
 
-function handleOrientationChange() {
-    const container = document.getElementById('flashcard_container');
-    if (window.matchMedia("(min-device-width: 768px) and (max-device-width: 1024px)").matches) {
-        if (window.orientation === 90 || window.orientation === -90) {
-            // Landscape
-            container.style.width = '90%';
-            container.style.height = '80vh';
-            container.style.maxHeight = '80vh';
-            container.style.marginBottom = '20px';
-        } else {
-            // Portrait
-            container.style.width = '90%';
-            container.style.height = '80%';
-            container.style.maxHeight = '';
-            container.style.marginBottom = '';
-        }
-    }
-}
 // document.getElementById('font-select').addEventListener('change', function(event) {
 //     currentFont = event.target.value;
 //     document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
@@ -133,6 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-window.addEventListener('resize', adjustHeight);
-window.addEventListener('orientationchange', adjustHeight);
-adjustHeight();
+// window.addEventListener('resize', adjustHeight);
+// window.addEventListener('orientationchange', adjustHeight);
+// adjustHeight();

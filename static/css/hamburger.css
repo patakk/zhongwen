@@ -82,7 +82,7 @@
     list-style: none;
 }
 
-.has-submenu > span {
+/* .has-submenu > span {
     background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
     background-repeat: no-repeat;
     background-position: right 5px top 50%;
@@ -100,7 +100,7 @@
 
 .has-submenu.darkmode > span:hover {
     background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
-}
+} */
 
 .submenu {
     display: none;
@@ -165,26 +165,6 @@
     color: #ffffff;
 }
 
-#logoutButton {
-    background-color: #cacaca;
-    color: rgb(0, 0, 0);
-    padding: 7px 15px;
-}
-
-#logoutButton:hover {
-    background-color: #ff0000;
-    color: rgb(255, 255, 255);
-}
-
-#logoutButton.darkmode {
-    background-color: #161616;
-    color: #ffffff;
-}
-
-#logoutButton.darkmode:hover {
-    background-color: #ff0000;
-    color: rgb(255, 255, 255);
-}
 
 .dropdown-menu.darkmode {
     background-color: #161616;
@@ -208,12 +188,17 @@
 }
 
 
-.hamburger.darkmode span {
+/* .hamburger.darkmode span {
     background-color: white;
-}
+} */
 
 .dropdown-menu.darkmode {
     border: 1px solid white;
+}
+
+
+.hamburger.darkmode span {
+    background-color: rgb(222,222,222);
 }
 
 /* .color-change {

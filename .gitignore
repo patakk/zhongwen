@@ -29,6 +29,16 @@ data/*_bkp.json
 data/anthropic_2.json
 data/new_translations.json
 
+hanzipy/
+processtrans.py
+story_info.json
+tempchapters/
+check_db.py
+create_story.py
+.indices_cache.json
+
+data/stories/clips
+
 *.txt
 
 __pycache__/

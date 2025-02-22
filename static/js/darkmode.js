@@ -70,9 +70,9 @@ function confirmDarkmode(){
 
     try{
         currentGridPlotters.forEach(child => {
-            let colors = ["#151511aa", "#151511aa", "#151511aa"];
+            let colors = ["#151511ee", "#151511aa", "#151511aa"];
             if(isDarkMode){
-                colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
+                colors = ["#e5ddedec", "#e5ddedaa", "#e5ddedaa"];
             }
             child.plotter.setColors(colors);
             child.plotter.draw();

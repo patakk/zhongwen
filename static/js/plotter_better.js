@@ -321,12 +321,6 @@ class HanziPlotter {
     }) {
         this.character = character;
         this.strokes_ = strokes;
-        if (strokes) {
-            this.processStrokes(strokes);
-            this.loadPromise = Promise.resolve();
-        } else {
-            this.loadPromise = this.loadStrokeData();
-        }
         this.dimension = dimension;
         this.speed = speed;
         this.seed = Math.random() * 1000;
@@ -334,9 +328,20 @@ class HanziPlotter {
         this.jitterAmp = jitterAmp;
         this.colors = colors;
         this.lineType = lineType;
+        this.clickAnimation = clickAnimation;
 
         this.showDiagonals = showDiagonals;
         this.showGrid = showGrid;
+        if (strokes) {
+            this.processStrokes(strokes);
+            this.loadPromise = Promise.resolve();
+        } else {
+            this.loadPromise = this.loadStrokeData();
+        }
+       
+    }
+
+    finishSetup(){
 
         // Create canvas
         this.canvas = document.createElement('canvas');
@@ -351,8 +356,9 @@ class HanziPlotter {
         this.animationProgress = 0;
         this.animationFrame = null;
 
+        this.originalStrokes = undefined;
+
         // Bind methods
-        this.clickAnimation = clickAnimation;
         if(this.clickAnimation){
             this.canvas.addEventListener('click', () => this.startAnimation());
         }
@@ -487,8 +493,22 @@ class HanziPlotter {
 
     async draw(progress = 1) {
         await this.loadPromise;
+        
+
+
+        if(this.originalStrokes === undefined){
+            let span = document.createElement('span');
+            span.textContent = this.character;
+            span.style.fontSize = '10em';
+            span.style.fontFamily = 'Noto Sans SC';
+            span.style.margin = '0.em';
+            span.style.display = 'inline-block';
+            this.canvas = span;
+            return;
+        }
         this.clear();
         
+
         drawBg(this.ctx, this.showDiagonals, this.showGrid);
         // Calculate total length of all strokes
         if (!this.totalLength) {
@@ -652,11 +672,14 @@ class HanziPlotter {
     
     async loadStrokeData() {
         try {
+            this.originalStrokes = undefined;
             const response = await fetch(`/static/strokes_data/${this.character}.json`);
             if (!response.ok) {
-                throw new Error('Network response was not ok for character:', this.character);  
+                console.log('Network response was not ok for character:', this.character);  
+                return;
             }
             const data = await response.json();
+            this.finishSetup();
             this.processStrokes(data.medians);
         } catch (error) {
             console.error('Error loading character data:', error);

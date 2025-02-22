@@ -1,3 +1,34 @@
+function getCharactersHoverInfo(characters=null, func=null) {
+    const url = './api/get_characters_simple_info';
+    
+    // Convert Set to Array if it's a Set
+    const charactersArray = characters instanceof Set ? Array.from(characters) : characters;
+    
+    const payload = { characters: charactersArray };
+    
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+    };
+
+    fetch(url, options)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if(func){
+                func(data);
+            }
+            // updateCharacterDisplay(data.characters);
+        })
+        .catch(error => console.error('Error:', error));
+}
 
 let currentWriters = [];
 function getCharactersPinyinEnglish(characters=null, func=null) {
@@ -58,8 +89,8 @@ function displayCharMatches(charMatches) {
             chardict[char.character] = char;
         }
         allWords.forEach(word => {
-            const wordLink = document.createElement('a');
             // wordLink.href = `./grid?query=${encodeURIComponent(word)}`;
+            const wordLink = document.createElement('a');
             const hoverBox = document.getElementById('pinyin-hover-box');
 
             function showTooltip(element, content, event) {
@@ -84,13 +115,14 @@ function displayCharMatches(charMatches) {
 
             
             wordLink.addEventListener('mouseover', function(e) {
-                const pinyin = chardict[word].pinyin;
+                const pinyin =  chardict[word].pinyin;
                 const english = chardict[word].english;
                 const hsklvl = chardict[word].hsk_level;
-                let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br><span style="font-size: 12px; font-style: italic;"> HSK ${hsklvl}</span>`;
+                let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
 
                 if(isDarkMode){
-                    tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span><br><span style="font-size: 12px; font-style: italic; color: #ffd91c;"> HSK ${hsklvl}</span>`;
+                    // tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span><br><span style="font-size: 12px; font-style: italic; color: #ffd91c;"> HSK ${hsklvl}</span>`;
+                    tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
                     hoverBox.style.backgroundColor = '#1a1a1a';
                 }
                 showTooltip(this, tooltipContent, e);
@@ -127,18 +159,18 @@ function adjustFlashCardChars(){
         let cc = document.getElementById('flashcard_character');
         if(isMobileOrTablet()){
             if(currentFont === 'Kaiti'){
-                cc.style.fontSize = .23*7 + "em";
+                cc.style.transform = 'scale(1)';
             }
             else{
-                cc.style.fontSize = .23*6 + "em";
+                cc.style.transform = 'scale(1)';
             }
         }
         else {
             if(currentFont === 'Kaiti'){
-                cc.style.fontSize = .23*11.5 + "em";
+                cc.style.transform = 'scale(1)';
             }
             else{
-                cc.style.fontSize = .23*9 + "em";
+                cc.style.transform = 'scale(1)';
             }
         }
     }
@@ -162,54 +194,107 @@ function createPlotters(data){
     else if(chars.length > 3){
         size = 250;
     }
+    if(isMobileOrTablet()){
+        if(chars.length == 2){
+            size = 255;
+        }
+        if(chars.length == 3){
+            size = 172;
+        }
+        else if(chars.length > 3){
+            size = 250;
+        }
+    }
     let colors = ["#151511aa", "#151511aa", "#151511aa"];
     if(isDarkMode){
         colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
     }
     chars.forEach((char, index) => {
-        const plotter = new HanziPlotter({
-            character: char,
-            dimension: size,
-            speed: .04,
-            lineThickness: 11*size/200,
-            jitterAmp: 0,
-            colors: colors,
-            lineType: lineType,
-            showDiagonals: false,
-            showGrid: false,
-        });
+        let plotter = null;
+        try{
+            plotter = new HanziPlotter({
+                character: char,
+                dimension: size,
+                speed: .04,
+                lineThickness: 11*size/200,
+                jitterAmp: 0,
+                colors: colors,
+                lineType: lineType,
+                showDiagonals: false,
+                showGrid: false,
+            });
+        }
+        catch(e){
+        }
+        // check if undefined strokes
         plotters.push({plotter: plotter, char: char});
     });
     return plotters;
 }
 
-function renderPlotters(plotters, pinyinparts=null){
+async function renderPlotters(plotters, pinyinparts=null){
     const plotterElement = document.getElementById('flashcard_plotter');
     plotterElement.innerHTML = '';
     if(plotterElement && plotters){
         // Store plotters as a property of the container element
         plotterElement.plotters = plotters;
         
-        plotters.forEach((plotterinfo, index) => {
-            let plotter = plotterinfo.plotter;
-            let color = getToneColor(pinyinparts[index]);
+        // get all internal loadPromise from plotters and await them
+        const loadPromises = plotters.map(plotterinfo => plotterinfo.plotter.loadPromise);
+        await Promise.all(loadPromises);
 
-            
-            let colors = ["#151511aa", "#151511aa", "#151511aa"];
+        plotters.forEach((plotterinfo, index) => {
+            const plotter = plotterinfo.plotter;
+            let colors = ["#151511ee", "#151511aa", "#151511aa"];
             if(isDarkMode){
-                colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
+                colors = ["#e5ddedec", "#e5ddedaa", "#e5ddedaa"];
             }
             plotter.setColors(colors);
-            plotter.draw();
-            plotter.canvas.dataset.plotterIndex = index;
-            plotterElement.appendChild(plotter.canvas);
+            try{
+                plotter.draw();
+                plotter.canvas.dataset.plotterIndex = index;
+                plotterElement.appendChild(plotter.canvas);
+            }
+            catch(e){
+                let span = document.createElement('span');
+                span.textContent = plotterinfo.char;
+                span.style.fontSize = '10em';
+                span.style.fontFamily = 'Noto Serif SC';
+                span.style.margin = '0.em';
+                span.style.display = 'inline-block';
+                plotterElement.appendChild(span);
+            }
         });
+        scrollToTop(document.getElementById('flashcard_container'));
     }
     else{
         console.error('No plotter element found');
     }
 }
     
+function toAccentedPinyin(input) {
+    const toneMap = {
+        '1': 'āēīōūǖ',
+        '2': 'áéíóúǘ',
+        '3': 'ǎěǐǒǔǚ',
+        '4': 'àèìòùǜ',
+        '5': 'aeiouü'
+    };
+
+    return input.split(' ').map(word => 
+        word.replace(/([a-z]+)([1-5])/i, (_, syllable, tone) => {
+            let vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
+            let index = syllable.split('').findIndex(c => vowels.includes(c));
+            if (syllable.includes('ou')) index = syllable.indexOf('o');
+            if (index !== -1) {
+                let charArray = syllable.split('');
+                charArray[index] = toneMap[tone][vowels.indexOf(charArray[index])];
+                return charArray.join('');
+            }
+            return syllable;
+        })
+    ).join(' ');
+}
 
 function wrapImageUrls(inputString) {
     // const imageRegex = /(?:^|\s)(https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp))(?:\s|$|<)/gi;
@@ -226,6 +311,24 @@ function wrapImageUrls(inputString) {
     return outputString;
 }
 
+
+function addWordToLearning(symbol){
+    fetch("./api/add_word_to_learning", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ word: symbol })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data); 
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+
 function renderCardData(data) {
     const container = document.getElementById('flashcard_container');
     if(container.style.display === 'none' || !container.style.display){
@@ -237,7 +340,10 @@ function renderCardData(data) {
         characterElement.innerHTML = '';
 
 
-    const chars = data.character.split('');
+    let chars = data.character.split('');
+    chars = chars.filter(char => char.match(/[\u4e00-\u9fa5]/));
+    let uniqueChars = [...new Set(chars)];
+    chars = uniqueChars;
     const pinyin = data.pinyin;
 
     let pinyin_split = "";
@@ -288,6 +394,8 @@ function renderCardData(data) {
         renderPlotters(data.plotters, pparts);
     }
 
+    let craw_info = data.raw_info;
+    //document.getElementById('flashcard_pinyin').textContent = toAccentedPinyin(data.pinyin);
     document.getElementById('flashcard_pinyin').textContent = data.pinyin;
     document.getElementById('flashcard_pinyin').dataset.characters = data.character;
     if(data.english.constructor === Array){
@@ -302,67 +410,330 @@ function renderCardData(data) {
     } else {
         document.getElementById('flashcard_english').innerHTML = data.english;
     }
-    // let ai_content = data.html;
-    // const aiTempDiv = document.createElement('div');
-    // aiTempDiv.innerHTML = ai_content;
-    // const hanziRegex = /[\u4e00-\u9fa5]/g;
-    // function processTextNode(textNode) {
-    //     const text = textNode.nodeValue;
-    //     if (hanziRegex.test(text)) {
-    //         const span = document.createElement('span');
-    //         span.innerHTML = text.replace(hanziRegex, (hanziWord) => {
-    //             const wordSpan = `<span class="clickable-hanzi-word" style="cursor: pointer;">${hanziWord}</span>`;
-    //             return `${wordSpan}`;
-    //         });
-    //         textNode.parentNode.replaceChild(span, textNode);
-    //     }
-    // }
-    // function processNode(node) {
-    //     if (node.nodeType === Node.TEXT_NODE) {
-    //         processTextNode(node);
-    //     } else {
-    //         Array.from(node.childNodes).forEach(processNode);
-    //     }
-    // }
-    // processNode(aiTempDiv);
-    // document.getElementById('flashcard_description').innerHTML = aiTempDiv.innerHTML;
-    // document.getElementById('flashcard_description').querySelectorAll('.clickable-hanzi-word, .clickable-hanzi-char').forEach(element => {
-    //     element.addEventListener('click', function() {
-    //         console.log("click");
-    //         const word = this.textContent;
-            
-    //         if (window.location.pathname.includes('/flashcards')) {
-    //             window.open(`./grid?query=${word}`, '_blank');
-    //         } else {
-    //             showFlashcard(word);
-    //             scrollToTop(document.getElementById('flashcard_container'), null);
-    //             const newUrl = new URL(window.location);
-    //             newUrl.searchParams.set('query', word);
-    //             history.pushState({}, '', newUrl);
-    //         }
-    //     });
-    // });
-    // document.getElementById('flashcard_description').innerHTML = aiTempDiv.innerHTML;
+   
     let ai_content = data.html;
 
-    // Create the container structure
+
     const descriptionContainer = document.createElement('div');
     descriptionContainer.id = 'descriptionContainer';
 
-    // Create and add the Notes label
+    const rawLabel = document.createElement('p');
+    rawLabel.textContent = "RAW description ";
+    rawLabel.id = 'rawLabel';
+    rawLabel.classList.add('notes-label');
+    // descriptionContainer.appendChild(rawLabel);
+
+    // Create tab navigation
+    const tabNav = document.createElement('div');
+    tabNav.classList.add('tab-nav');
+    descriptionContainer.appendChild(tabNav);
+
+    // Create content container
+    const tabContentContainer = document.createElement('div');
+    tabContentContainer.classList.add('tab-content-container');
+    descriptionContainer.appendChild(tabContentContainer);
+
+    // Populate tabs and content
+    chars.forEach((char, index) => {
+        let char_info = craw_info[char];
+        const english = char_info.english;
+        const pinyin = char_info.pinyin;
+        const frequency = char_info.frequency;
+        const rank = char_info.rank;
+        const graphical_components = char_info.graphical; // list of chars
+        const main_components = char_info.main_components; // list of chars
+        const radicals = char_info.radicals; // dict of radicals with meaning
+        const similars_per_component = char_info.similars; // dict of lists of similar chars per component
+        const appears_in = char_info.appears_in; // list of dicts
+        
+        // Create tab button
+        const tabButton = document.createElement('button');
+        tabButton.classList.add('tab-button');
+        tabButton.textContent = char;
+        tabButton.dataset.target = `tab-${index}`;
+        tabNav.appendChild(tabButton);
+
+        // Create content div
+        const entryDiv = document.createElement('div');
+        entryDiv.classList.add('tab-content');
+        entryDiv.id = `tab-${index}`;
+        const filteredRadicals = Object.entries(radicals)
+            .filter(([rad, meaning]) => meaning && meaning !== "No glyph available")
+            .map(([rad, meaning]) => `${rad} (${meaning})`)
+            .join(', ');
+
+            entryDiv.innerHTML = `
+            <div class="rawDefEntry"><div class="rawDefLabel">Definition:</div> <div class="rawDefContent">${english}</div></div>
+            <div class="rawDefEntry"><div class="rawDefLabel">Pinyin:</div> <div class="rawDefContent">${pinyin}</div></div>
+            ${rank !== null ? `<div class="rawDefEntry"><div class="rawDefLabel">Frequency rank:</div> <div class="rawDefContent">${rank}</div></div>` : ''}
+            <div class="rawDefEntry"><div class="rawDefLabel">Graphical components:</div> <div class="rawDefContent">${graphical_components.join(', ')}</div></div>
+            ${filteredRadicals ? `<div class="rawDefEntry"><div class="rawDefLabel">Radicals:</div> <div class="rawDefContent">${filteredRadicals}</div></div>` : ''}
+        `;
+        //<div class="rawDefEntry"><div class="rawDefLabel">Main components:</div> <div class="rawDefContent">${main_components.join(', ')}</div></div>
+        
+    
+
+        // Similar Characters per Component
+        const similarsDiv = document.createElement('div');
+        similarsDiv.innerHTML = `<span class="rawDefLabel">Components of ${char} in other characters:</span>`;
+        similarsDiv.classList.add('rawDefEntry');
+
+        let allWords = new Set();
+        Object.values(similars_per_component).forEach(similar_chars => {
+            similar_chars.forEach(similar_char => allWords.add(similar_char));
+        }); 
+
+        getCharactersHoverInfo(allWords, (data) => {
+            let chardict = data;
+            Object.entries(similars_per_component).forEach(([component, similar_chars]) => {
+                const p = document.createElement('p');
+                let num_similars_per_component = similar_chars.length;
+                const linkss = document.createElement('div');
+                linkss.classList.add('scrollableHanzis'); // Fixed style assignment
+                const expandBtn = document.createElement('button');
+        
+                linkss.style.paddingLeft = '1em';
+                p.style.paddingLeft = '1em';
+                p.textContent = component;
+                similarsDiv.appendChild(p);
+        
+                similar_chars.forEach(similar_char => {
+                    const wordLink = document.createElement('a');
+                    const hoverBox = document.getElementById('pinyin-hover-box');
+        
+                    function showTooltip(element, content, event) {
+                        hoverBox.innerHTML = content;
+                        hoverBox.style.display = 'block';
+                        hoverBox.style.left = `${event.pageX + 10}px`;
+                        hoverBox.style.top = `${event.pageY + 10}px`;
+                    }
+        
+                    function hideTooltip() {
+                        hoverBox.style.display = 'none';
+                    }
+        
+                    wordLink.onclick = function () {
+                        showFlashcard(similar_char);
+                        const newUrl = new URL(window.location);
+                        newUrl.searchParams.set('query', similar_char);
+                        history.pushState({}, '', newUrl);
+                        hoverBox.style.display = 'none';
+                    };
+        
+                    wordLink.addEventListener('mouseover', function (e) {
+                        const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
+                        const english = chardict[similar_char].english;
+                        const hsklvl = "chardict[similar_char].hsk_level";
+                        let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
+        
+                        if (isDarkMode) {
+                            tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
+                        }
+                        showTooltip(this, tooltipContent, e);
+                    });
+        
+                    wordLink.addEventListener('mouseout', hideTooltip);
+                    wordLink.addEventListener('mousemove', function (e) {
+                        hoverBox.style.left = `${e.pageX + 10}px`;
+                        hoverBox.style.top = `${e.pageY + 10}px`;
+                    });
+        
+                    wordLink.textContent = similar_char;
+                    wordLink.className = 'word-link';
+                    if (isDarkMode) wordLink.classList.add('darkmode');
+                    linkss.appendChild(wordLink);
+                });
+        
+                // Expand button
+                similarsDiv.appendChild(linkss);
+                setTimeout(() => {
+                    if (num_similars_per_component > 74) {
+                        expandBtn.textContent = "...";
+                        expandBtn.className = "expand-button";
+                        expandBtn.onclick = function () {
+                            if (linkss.classList.contains("expanded")) {
+                                linkss.classList.remove("expanded");
+                                expandBtn.textContent = "...";
+                                expandBtn.style.fontWeight = "bold";
+                                expandBtn.style.backgroundColor = "var(--dimmer-background-color)";
+                            } else {
+                                linkss.classList.add("expanded");
+                                expandBtn.textContent = "collapse";
+                                expandBtn.style.fontWeight = "normal";
+                                expandBtn.style.backgroundColor = "var(--dimmer-background-color)";
+                            }
+                        };
+
+                        // Append the button after the corresponding 'linkss' element (not inside)
+                        //similarsDiv.appendChild(expandBtn);
+                        similarsDiv.insertBefore(expandBtn, linkss.nextSibling);
+                    }
+                }, 110);
+            });
+        });
+        
+
+        
+        // check appears_in length
+        const appearsInDiv = document.createElement('div');
+        if(appears_in.length !== 0){
+            appearsInDiv.innerHTML = `<span class="rawDefLabel">${char} in other words:</span>`;
+        }
+        //appearsInDiv.id = 'appearsInDiv' + index;
+        appearsInDiv.classList.add('appearsInDiv');
+        appearsInDiv.classList.add('rawDefEntry');
+
+        //get flashcard container's top left corner
+        // setTimeout(() => {
+        //     let flashcardContainer = document.getElementById('flashcard_container');
+        //     let flashcardContainerRect = flashcardContainer.getBoundingClientRect();
+        //     let flashcardContainerTop = flashcardContainerRect.top;
+        //     let flashcardContainerLeft = flashcardContainerRect.left;
+        //     let flashcardContainerWidth = flashcardContainerRect.width;
+        //     let flashcardContainerHeight = flashcardContainerRect.height;
+        //     let displayWidth = window.innerWidth;
+        //     let leftSpaceLeft = flashcardContainerLeft;
+        //     let rightSpaceLeft = displayWidth - flashcardContainerLeft - flashcardContainerWidth;
+        //     let ownWidth = leftSpaceLeft*0.8;
+        //     let padding = 1 + "em";
+        //     appearsInDiv.style.left = leftSpaceLeft - ownWidth + "px";
+        //     appearsInDiv.style.top = flashcardContainerTop + 20 + "px";
+        //     appearsInDiv.style.width = ownWidth + "px";
+        //     appearsInDiv.style.margin = 0 + "px";
+        //     appearsInDiv.style.padding = padding;
+        //     appearsInDiv.style.display = 'block';
+        //     appearsInDiv.style.height = flashcardContainerHeight - 20*2 + "px";
+        //     appearsInDiv.style.maxHeight = flashcardContainerHeight - 20*2 + "px";
+        // }, 100);
+        const linkss = document.createElement('p');
+        linkss.classList.add('scrollableHanzis');
+        linkss.classList.add('examplesDiv');
+        const expandBtn = document.createElement('button');
+        linkss.style.paddingLeft = '1em';
+        appears_in.forEach((entry) => {
+            let wordLink = document.createElement('a');
+            let similar_char = entry.simplified;
+            wordLink.classList.add('word-link-example');
+            // wordLink.classList.add('word-link-small');
+            // show hanzi and pinyin and enlgish
+            const pinyin = toAccentedPinyin(entry.pinyin);
+            const english = entry.english;
+            wordLink.innerHTML = `<span class="small_hanzi">${similar_char}</span> - <span class="small_english">${english}</span>`;
+
+            const hoverBox = document.getElementById('pinyin-hover-box');
+
+            function showTooltip(element, content, event) {
+                hoverBox.innerHTML = content;
+                hoverBox.style.display = 'block';
+                hoverBox.style.left = `${event.pageX + 10}px`;
+                hoverBox.style.top = `${event.pageY + 10}px`;
+                
+            }
+
+            function hideTooltip() {
+                hoverBox.style.display = 'none';
+            }
+            
+            wordLink.onclick = function() {
+                showFlashcard(similar_char); 
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('query', similar_char);
+                history.pushState({}, '', newUrl);
+                hoverBox.style.display = 'none';
+            };
+
+            wordLink.addEventListener('mouseover', function(e) {
+                const pinyin = toAccentedPinyin(entry.pinyin);
+                const english = entry.english;
+                const hsklvl = "chardict[similar_char].hsk_level";
+                //let tooltipContent = `<span><strong>${pinyin}</strong><br>${english}<br></span>`;
+                let tooltipContent = `<span><strong>${pinyin}</strong></span>`;
+
+                if(isDarkMode){
+                    //tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
+                    tooltipContent = `<span><strong>${pinyin}</strong></span>`;
+                    //hoverBox.style.backgroundColor = '#1a1a1a';
+                }
+                showTooltip(this, tooltipContent, e);
+            });
+            wordLink.addEventListener('mouseout', hideTooltip);
+            wordLink.addEventListener('mousemove', function(e) {
+                hoverBox.style.left = `${e.pageX + 10}px`;
+                hoverBox.style.top = `${e.pageY + 10}px`;
+            });
+
+            // wordLink.textContent = similar_char;
+            if(isDarkMode)
+                wordLink.classList.add('darkmode');
+
+            linkss.appendChild(wordLink);
+            
+            
+        });
+        appearsInDiv.appendChild(linkss);
+
+        setTimeout(() => {
+            if (appears_in.length > 7) {
+                expandBtn.textContent = "...";
+                expandBtn.className = "expand-button";
+                expandBtn.onclick = function () {
+                    if (linkss.classList.contains("expanded")) {
+                        linkss.classList.remove("expanded");
+                        expandBtn.textContent = "...";
+                        expandBtn.style.fontWeight = "bold";
+                        expandBtn.style.backgroundColor = "var(--dimmer-background-color)";
+                    } else {
+                        linkss.classList.add("expanded");
+                        expandBtn.textContent = "collapse";
+                        expandBtn.style.fontWeight = "normal";
+                        expandBtn.style.backgroundColor = "var(--dimmer-background-color)";
+                    }
+                };
+
+                // Append the button after the corresponding 'linkss' element (not inside)
+                appearsInDiv.insertBefore(expandBtn, linkss.nextSibling);
+                //entryDiv.appendChild(expandBtn);
+            }
+        }, 110);
+
+        //document.getElementById('flashcard_overlay').appendChild(appearsInDiv);
+        entryDiv.appendChild(appearsInDiv);
+        entryDiv.appendChild(similarsDiv);
+
+
+        tabContentContainer.appendChild(entryDiv);
+
+        // Show the first tab by default
+        if (index === 0) {
+            tabButton.classList.add('active');
+            entryDiv.classList.add('active');
+        }
+
+        // Tab click event
+        tabButton.addEventListener('click', () => {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            tabButton.classList.add('active');
+            entryDiv.classList.add('active');
+        });
+    });
+
     const descriptionLabel = document.createElement('p');
     descriptionLabel.textContent = "LLM description ";
     descriptionLabel.id = 'descriptionLabel';
     descriptionLabel.class = 'notes-label';
-    descriptionContainer.appendChild(descriptionLabel);
-
-    // Create and add the AI content in an editable paragraph
     const descriptionParagraph = document.createElement('p');
     descriptionParagraph.innerHTML = ai_content;
     descriptionParagraph.id = 'descriptionParagraph';
-    // descriptionParagraph.setAttribute('contenteditable', 'true');
-    // descriptionParagraph.style.display = 'none';  // Initially hidden
-    descriptionContainer.appendChild(descriptionParagraph);
+
+    if(ai_content.trim() === ''){
+
+    }
+    else{
+        descriptionContainer.appendChild(descriptionLabel);
+        descriptionContainer.appendChild(descriptionParagraph);
+    }
 
     // Add click handler to the label
 
@@ -510,8 +881,6 @@ function renderCardData(data) {
 
         rawMarkdown = wrapImageUrls(rawMarkdown);
         // this.innerHTML = marked.parse(rawMarkdown);
-        console.log("kaj");
-        console.log(rawMarkdown);
         
         this.innerHTML = rawMarkdown;
         fetch('./api/storeNotes', {
@@ -581,8 +950,8 @@ function renderCardData(data) {
     publicNotesLabel.class = 'notes-label';
 
 
-    document.getElementById('flashcard_description').prepend(publicNotesLabel);
-    document.getElementById('flashcard_description').prepend(notesLabel);
+    // document.getElementById('flashcard_description').prepend(publicNotesLabel);
+    // document.getElementById('flashcard_description').prepend(notesLabel);
 
     notesLabel.addEventListener('click', () => {
         notesParagraph.style.display = notesParagraph.style.display === 'none' && username !== "tempuser" ? 'block' : 'none';
@@ -615,7 +984,9 @@ function renderCardData(data) {
             publicNotesLabel.classList.remove('collapsed');
         }
     });
-    // notesLabel.classList.add('collapsed');
+    
+    descriptionLabel.classList.add('collapsed');
+    descriptionParagraph.style.display = 'none';
 
     descriptionLabel.addEventListener('click', () => {
         descriptionParagraph.style.display = descriptionParagraph.style.display === 'none' ? 'block' : 'none';
@@ -624,6 +995,16 @@ function renderCardData(data) {
         }
         else {
             descriptionLabel.classList.remove('collapsed');
+        }
+    });
+    rawLabel.addEventListener('click', () => {
+        tabNav.style.display = tabNav.style.display === 'none' ? 'block' : 'none';
+        tabContentContainer.style.display = tabContentContainer.style.display === 'none' ? 'block' : 'none';
+        if (tabNav.style.display === 'none') {
+            rawLabel.classList.add('collapsed');
+        }
+        else {
+            rawLabel.classList.remove('collapsed');
         }
     });
 
@@ -650,11 +1031,23 @@ function renderCardData(data) {
     }
     checkboxContainer.style.display = notesParagraph.style.display;
 
-    document.getElementById('flashcard_function').textContent = "(" + data.function + ")";
+    if(data.function)
+        document.getElementById('flashcard_function').textContent = "(" + data.function + ")";
     document.getElementById('flashcard_practice').textContent = data.character.length <= 3 ? "practice" : "";
     
     document.getElementById('flashcard_practice').href = `./hanzipractice?character=${encodeURIComponent(data.character)}`;
-    displayCharMatches(data.char_matches);
+    // displayCharMatches(data.char_matches);
+    document.getElementById('flashcard_addcard').textContent = "+";
+    if(data.is_learning){
+        document.getElementById('flashcard_addcard').style.display = 'none';
+    }
+    else{
+        document.getElementById('flashcard_addcard').style.display = 'block';
+    }
+    document.getElementById('flashcard_addcard').onclick = function(){
+        // print current character
+        addWordToLearning(data.character);
+    };
 
     try{
         // if(isDarkMode){
@@ -668,32 +1061,30 @@ function renderCardData(data) {
         console.log(e);
     }
 
-    if( data.hsk_level == -1){
-        document.getElementById('flashcard_hsk').textContent = "";
-    }
-    else{
-        // check if integer or list
-        if(data.hsk_level.constructor === Array){
-            // find maximum level
-            let max_level = 0;
-            for(let i = 0; i < data.hsk_level.length; i++){
-                if(data.hsk_level[i] > max_level){
-                    max_level = data.hsk_level[i];
-                }
-            }
-            if(max_level > 0){
-                document.getElementById('flashcard_hsk').textContent = `HSK ${max_level}`;
-            }
-            else{
-                document.getElementById('flashcard_hsk').textContent = "";
-            }
-        }
-        else{
-            if(Number.isInteger(data.hsk_level)){
-                document.getElementById('flashcard_hsk').textContent = `HSK ${data.hsk_level}`;
-            }
-        }
-    }
+    // if( data.hsk_level == -1){
+    //     document.getElementById('flashcard_addcard').textContent = "";
+    // }
+    // else{
+    //     if(data.hsk_level.constructor === Array){
+    //         let max_level = 0;
+    //         for(let i = 0; i < data.hsk_level.length; i++){
+    //             if(data.hsk_level[i] > max_level){
+    //                 max_level = data.hsk_level[i];
+    //             }
+    //         }
+    //         if(max_level > 0){
+    //             document.getElementById('flashcard_addcard').textContent = `HSK ${max_level}`;
+    //         }
+    //         else{
+    //             document.getElementById('flashcard_addcard').textContent = "";
+    //         }
+    //     }
+    //     else{
+    //         if(Number.isInteger(data.hsk_level)){
+    //             document.getElementById('flashcard_addcard').textContent = `HSK ${data.hsk_level}`;
+    //         }
+    //     }
+    // }
 
 
     if (chars.length < 4 && false) {
@@ -781,6 +1172,29 @@ function renderCardData(data) {
     }
 }
 
+function handleOrientationChange() {
+    const container = document.getElementById('flashcard_container');
+    if (window.matchMedia("(min-height: 846px) and (max-height: 1024px) and (orientation:landscape)").matches) {
+        container.style.width = '60%';
+        console.log("2asfasfasf")
+    }
+    else if (window.matchMedia("(min-width: 846px) and (max-width: 1024px)").matches) {
+        container.style.width = '90%';
+        container.style.height = '80%';
+        container.style.maxHeight = '';
+        container.style.marginBottom = '';
+    }
+    else if (window.matchMedia("(max-height: 846px) and (orientation:landscape)").matches) {
+        container.style.width = '60%';
+    }
+    else if (window.matchMedia("(max-width: 846px)").matches) {
+        container.style.width = '90%';
+    }
+}
+
+window.addEventListener('orientationchange', handleOrientationChange);
+window.addEventListener('resize', handleOrientationChange);
+handleOrientationChange();
 
 function scrollToTop(element, func=null) {
     setTimeout(() => {

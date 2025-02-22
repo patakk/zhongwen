@@ -10,6 +10,12 @@ const restartBtn = document.getElementById('restart-btn');
 const skipBtn = document.getElementById('skip-btn');
 const pinyinLabel = document.getElementById('pinyin-display');
 
+
+const deckNameElement = document.getElementById('deck-name');
+const selectedDeckElement = document.getElementById('selected-deck');
+const dropdownToggle = document.getElementById('dropdown-toggle');
+const deckOptionsElement = document.getElementById('deck-options');
+
 let currentIndex = 0;
 let currentCharacterData = null;
 let correctAnswers = 0;
@@ -21,7 +27,6 @@ let totalStrokeCount = 0;
 let totalMistakeCount = 0;
 let numFinished = 0;
 let totalAnswered = 0;
-const deckNameElement = document.getElementById('deck-name');
 const answerTableBody = document.getElementById('answer-table-body');
 let NUM_QUESTIONS = 5;
 let currentWriters = [];
@@ -36,12 +41,17 @@ function shuffleArray(array) {
     }
 }
 
-function startTest(charData) {
-    console.log(charData)
-    shuffledWords = [...characters];
-    shuffleArray(shuffledWords);
+deckNameElement.onclick = () => {
+    deckOptionsElement.style.display = deckOptionsElement.style.display === 'none' ? 'block' : 'none';
+};
+let shuffledCharacters = [];
 
-    shuffledWords = shuffledWords.filter(word => word.character.length <= 2);
+function startTest() {
+    // characters = inputdecks[inputdeck];
+    shuffledCharacters = Object.keys(characters);
+    shuffleArray(shuffledCharacters);
+
+    // shuffledCharacters = shuffledCharacters.filter(word => word.length <= 2);
     correctnessdict = {};
     currentIndex = 0;
     correctAnswers = 0;
@@ -56,39 +66,33 @@ function startTest(charData) {
     userAnswers = [];
     window.scrollTo(0, 0);
     window.scrollTo(0, 1);
-    showNextWord(charData);
+
+    // get from url
+    const urlParams = new URLSearchParams(window.location.search);
+    const character = urlParams.get('character');
+
+    showNextWord(character);
     document.getElementById('test-container').style.display = 'block';
     // deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[currentDeck].name}</span>)`;
 }
 
-function showNextWord(charData) {
+function showNextWord(character) {
     drawingArea.removeEventListener('click', handleAreaClick);
     
-    // currentWriters.forEach(writer => {
-    //     if(isDarkMode){
-    //         writer.updateColor('strokeColor', '#fff')
-    //         writer.updateColor('radicalColor', '#fff')
-    //     }
-    //     else{
-    //         writer.updateColor('strokeColor', '#000')
-    //         writer.updateColor('radicalColor', '#000')
-    //     }
-    // });
-    // remove event listenrrs from 
-            
     if(pinyinLabel.classList.contains('active')){
         pinyinLabel.classList.remove('active');
     }
     window.scrollTo(0, 0);
-    if(currentIndex >= shuffledWords.length){
-        shuffleArray(shuffledWords);
+
+    if(currentIndex >= shuffledCharacters.length){
+        shuffleArray(shuffledCharacters);
         currentIndex = 0;
     }
-    currentCharacterData = shuffledWords[currentIndex];
-    
-    if (charData) {
-        currentCharacterData = charData;
+    if(character){
+        currentIndex = shuffledCharacters.indexOf(character);
     }
+    currentCharacterData = characters[shuffledCharacters[currentIndex]];
+    currentCharacterData.character = shuffledCharacters[currentIndex];
 
     const newUrl = new URL(window.location);
     newUrl.searchParams.set('character', currentCharacterData.character);
@@ -113,7 +117,7 @@ function showNextWord(charData) {
     wordTotalStrokeCount = 0;
     currentEnglish = currentCharacterData.english;
     currentPinyin = currentCharacterData.pinyin;
-    createHanziWriters(currentCharacterData.character);
+    createHanziWriters(shuffledCharacters[currentIndex]);
     pinyinLabel.textContent = currentCharacterData.pinyin;
     confirmDarkmode();
     
@@ -209,9 +213,9 @@ skipBtn.addEventListener('click', () => {
     else{
         skipState = 0;
         // currentIndex++;
-        let nextIndex = Math.floor(Math.random() * shuffledWords.length);
-        while(nextIndex == currentIndex && shuffledWords.length > 1){
-            nextIndex = Math.floor(Math.random() * shuffledWords.length);
+        let nextIndex = Math.floor(Math.random() * shuffledCharacters.length);
+        while(nextIndex == currentIndex && shuffledCharacters.length > 1){
+            nextIndex = Math.floor(Math.random() * shuffledCharacters.length);
         }
         currentIndex = nextIndex;
         numFinished = 0;
@@ -484,8 +488,6 @@ function confetti(congrats=null) {
     }
 }
 
-let isDarkMode = false;
-
 document.addEventListener('keydown', (event) => {
     if (event.key === 'c') {
         confetti();
@@ -493,7 +495,10 @@ document.addEventListener('keydown', (event) => {
 });
 
 function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
-    const characterData = shuffledWords[currentIndex];
+    const characterData = characters[shuffledCharacters[currentIndex]];
+    characterData.character = shuffledCharacters[currentIndex];
+
+
     let isCorrect = false;
     console.log('**********************')
     console.log('Word mistake count:', wordTotalMistakeCount);
@@ -607,11 +612,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[currentDeck].name}</span>)`;
+    // deckNameElement.innerHTML = `(current Deck: <span style="font-weight: 500;">${inputdecks[currentDeck].name}</span>)`;
 
 
-    document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
-    document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
+    // document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
+    // document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
 
 });
 

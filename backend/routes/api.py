@@ -7,7 +7,9 @@ from urllib.parse import unquote
 from flask import Blueprint, jsonify, request, send_file, session
 
 from backend.db.ops import db_add_stroke_data
-from backend.decorators import session_required, timing_decorator
+from backend.decorators import session_required
+from backend.decorators import timing_decorator
+from backend.decorators import hard_session_required
 from backend.flashcard_app import get_flashcard_app
 from backend.db.ops import db_update_or_create_note
 
@@ -15,8 +17,10 @@ from backend.db.models import Card, UserNotes
 from backend.db.extensions import db
 
 from backend.common import CARDDECKS
-from backend.common import get_char_from_deck
+from backend.common import character_simple_info
 from backend.common import flashcard_app
+from backend.common import dictionary
+
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +40,21 @@ def add_word_to_learning():
     word = data["word"]
     username = session.get("username")
     flashcard_app.add_word_to_learning(username, word)
+    print(f"Word added to learning: {word}")
+    return jsonify({"status": "success"})
+
+@api_bp.route("/remove_word_from_learning", methods=["POST"])
+@session_required
+def remove_word_from_learning():
+    data = request.get_json()
+    print(data)
+    if not data or "word" not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+    word = data["word"]
+    username = session.get("username")
+    print(username, word)
+    flashcard_app.remove_word_from_learning(username, word)
+    print(f"Word removed from learning: {word}")
     return jsonify({"status": "success"})
 
 
@@ -126,6 +145,42 @@ def get_twang():
     return send_file("./data/twang.mp3", mimetype="audio/mpeg")
 
 
+@api_bp.route("/get_story_audio_clip")
+def get_story_audio_clip():
+    name = request.args.get("name")
+    file_path = "data/stories/clips/" + name + ".mp3"
+    if not os.path.exists(file_path):
+        return "File not found", 404
+    return send_file(file_path, mimetype="audio/mpeg")
+
+
+
+@api_bp.route("/get_characters_simple_info", methods=["GET", "POST"])
+@session_required
+def get_characters_simple_info():
+    all_data = []
+    characters = None
+
+    if request.method == "POST":
+        data = request.get_json()
+        characters = data.get("characters") if data else None
+
+    # print("Request method:", request.method)
+    # print("Received characters:", characters)
+
+    inserted = []
+    characters = sorted(characters)
+    cinfos = {}
+    for char in characters:
+        try:
+            cinfo = dictionary.definition_lookup(char)[0]
+        except:
+            cinfo = {"english": "-", "pinyin": "-"}
+        cinfos[char] = cinfo
+    return jsonify(cinfos)
+
+
+
 @api_bp.route("/get_characters_pinyinenglish", methods=["GET", "POST"])
 @session_required
 def get_characters_pinyinenglish():
@@ -145,8 +200,8 @@ def get_characters_pinyinenglish():
         characters = sorted(characters)
         for character in characters:
             for deck in CARDDECKS:
-                if character in CARDDECKS[deck] and character not in inserted:
-                    data = get_char_from_deck(deck, character)
+                if character in CARDDECKS[deck]["chars"] and character not in inserted:
+                    data = character_simple_info(character)
                     all_data.append(
                         {
                             "character": character,
@@ -161,8 +216,8 @@ def get_characters_pinyinenglish():
     else:
         # If no specific characters are provided or it's a GET request, get all characters
         for deck in CARDDECKS:
-            for character in CARDDECKS[deck]:
-                data = get_char_from_deck(deck, character)
+            for character in CARDDECKS[deck]["chars"]:
+                data = character_simple_info(character)
                 all_data.append(
                     {
                         "character": character,
@@ -336,7 +391,7 @@ def get_audio():
 
 
 @api_bp.route("/save_stroke_data", methods=["POST"])
-@session_required
+@hard_session_required
 def save_stroke_data():
     data = request.json
     character: str = data.get("character")
@@ -425,7 +480,8 @@ def get_characters_for_practice():
             "pinyin": data["pinyin"],
             "english": data["english"],
         }
-        for char, data in CARDDECKS[deck].items()
+        for char in CARDDECKS[deck]["chars"]
+        if (data := character_simple_info(char))
     ]
     return jsonify({"characters": characters_data})
 

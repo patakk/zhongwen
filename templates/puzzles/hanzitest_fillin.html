@@ -17,10 +17,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🧠</title>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hanzitest_fillin.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
     <style id="dynamic-styles">
         
     </style>
@@ -29,43 +29,8 @@
     <h1 id="title">Fill-in Test 🧠</h1>
     <h2 id="deck-name"></h2>
 
-    <div class="hamburger" id="hamburgerMenu">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-    
-    
-    <div class="dropdown-menu" id="dropdownMenu">
-        <ul>
-            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li class="has-submenu">
-                <span>Hanzi Grid</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <span>Flashcards</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
-            <li><a href="{{ url_for('grid') }}">Hanzi Grid</a></li>
-            <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
-            <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
-            <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
-            <li><a href="{{ url_for('search') }}">Search</a></li>
-            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
-            <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
-            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
-        </ul>
-    </div>
+    {% include 'menu.html' %}
+
 
     <div id="test-container">
         <div id="example-display">

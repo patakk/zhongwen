@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Progress - {{ username }} - {{ deckname }}</title>
+    <title>User Progress - {{ username }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
@@ -20,12 +20,11 @@
             font-family: 'Noto Sans Mono', monospace;
             margin: 0;
             padding: 20px;
-            background-color: #ffffff;
-            color: #000000;
+            background-color: var(--background-color);
+            color: var(--text-color);
             overflow-y: auto;
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none;  /* Internet Explorer 10+ */
-            font-weight: 600;
         }
         body::-webkit-scrollbar {
             display: none;
@@ -46,13 +45,14 @@
             width: 90%;
             max-width: 1200px;
             margin: 0 auto;
-            background-color: #ffffff;
+            background-color: var(--background-color);
+            color: var(--text-color);
             padding: 2rem;
-            border: 2px dashed #000000;
+            border: 2px dashed var(--border-color);
         }
         h1 {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: #333333;
+            color: var(--text-color);
             font-size: 34px;
             margin-top: 0px;
         }
@@ -74,7 +74,7 @@
         th {
             font-family: 'Noto Sans Mono', monospace;
             font-weight: bold;
-            background-color: #f2f2f2;
+            background-color: var(--lifted-background-color);
         }
         .character {
             font-size: 22px;
@@ -231,24 +231,24 @@
             min-width: 70px;
         }
 
-        #saveButton.darkmode {
+        /* #saveButton.darkmode {
             color: #e9e9e9;
             border-color: #646464;
             background-color: #ff5c16;
             background-color: #0e0e0e;
-        }
-        #pinyin-hover-box.darkmode {
+        } */
+        /* #pinyin-hover-box.darkmode {
             color: #c8c8c8;
             background-color: #0d0d0d;
             border: 1px solid #2f2f2f;
             box-shadow: 0 2px 5px #ffffff33;
-        }
+        } */
 
-        .deck-highlight.darkmode {
+        /* .deck-highlight.darkmode {
             background-color: rgb(255, 92, 22);
             color: #000000;
             border-color: #646464;
-        }
+        } */
         #maxNewCards {
             /* font-family: 'Courier Prime', monospace; */
             border-color: #646464;
@@ -257,9 +257,9 @@
        
         #pinyin-hover-box {
             position: absolute;
-            background-color: #fafafa;
-            border: 1px solid #dedede;
-            color: rgb(22,22,22);
+            background-color: var(--dimmer-background-color);
+            border: none;
+            color: var(--dimmer-text-color);
             padding: 10px;
             border-radius: 4px;
             box-shadow: 0 2px 5px #00000033;
@@ -280,10 +280,13 @@
             z-index: 1000;
         }
 
+        .remove-card {
+            cursor: pointer;
+        }
 
     </style>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
 </head>
 {% if darkmode %}
@@ -291,60 +294,8 @@
 {% else %}
 <body>
 {% endif %}
-    {% if darkmode %}
-    <div class="hamburger darkmode" id="hamburgerMenu">
-    {% else %}
-    <div class="hamburger" id="hamburgerMenu">
-    {% endif %}
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-        <ul>
-            
-            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li class="has-submenu">
-                <span>Hanzi Grid</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <span>Flashcards</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
-            <!-- <li class="has-submenu">
-                <span>Fonts</span>
-                <ul class="submenu">
-                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
-                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
-                    <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
-                </ul>
-            </li> -->
-            <li class="has-submenu">
-                <span>Stuff</span>
-                <ul class="submenu">
-                    <li><a href="{{ url_for('search') }}">Search</a></li>
-                    <li><a href="{{ url_for('convert') }}">Convert to strokes</a></li>
-                    <li><a href="{{ url_for('stories') }}">Stories</a></li>
-                    <!-- <li><a href="{{ url_for('lists') }}">Example Lists</a></li> -->
-                    <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
-                    <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
-                    <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
-                </ul>
-            </li>
-            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
-            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
-        </ul>
-    </div>
+
+    {% include 'menu.html' %}
     
 
     <!-- <div class="settings-container">
@@ -360,78 +311,50 @@
     <script>
             
     </script>
-    {% if darkmode %}
-    <div class="container darkmode">
-    {% else %}
     <div class="container">
-    {% endif %}
-        {% if darkmode %}
-        <h1 class="darkmode">Progress in <span class="deck-highlight darkmode">{{ deckname }}</span> deck</h1>
-        {% else %}
-        <h1>Progress in <span class="deck-highlight">{{ deckname }}</span> deck</h1>
-        {% endif %}
+        <h1>Progress</h1>
         <p>Cards in deck: {{ numcards }}</p>
         <p>Due cards: {{ duecards }}</p>
         <p>Learning cards: {{ learningcards }}</p>
         <p>Learned cards: {{ learnedcards }}</p>
-        {% if darkmode %}
-        <table class="darkmode" >
-        {% else %}
         <table>
-            {% endif %}
         <tr>
         <table>
-        {% if darkmode %}
-                <th class="tooltip-header darkmode" data-tooltip="The Chinese character being learned">Character</th>
-                <th class="tooltip-header darkmode" data-tooltip="Current learning stage of the character (1-5)">Learned</th>
-                <th class="tooltip-header darkmode" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th>
-                <th class="tooltip-header darkmode" data-tooltip="Number of consecutive correct answers">Streak</th>
-                <th class="tooltip-header darkmode" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
-                <th class="tooltip-header darkmode" data-tooltip="Scheduled date and time for the next review">Next Review</th>
-                {% else %}
                 <th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th>
-                <th class="tooltip-header" data-tooltip="Current learning stage of the character (1-5)">Learned</th>
+                <th class="tooltip-header" data-tooltip="Current learning stage of the character (%)">Learned</th>
                 <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th>
                 <th class="tooltip-header" data-tooltip="Number of consecutive correct answers">Streak</th>
                 <th class="tooltip-header" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
                 <th class="tooltip-header" data-tooltip="Scheduled date and time for the next review">Next Review</th>
-                {% endif %}
             </tr>
                 {% for stat in progress_stats %}
-                    {% if darkmode %}
-                        {% if stat.is_due == 1 %}
-                        <tr data-isdue="1" class="darkmode">
-                        {% elif stat.box == 6 %}
-                        <tr class="darkmode">
-                        {% else %}
-                        <tr class="darkmode">    
-                        {% endif %}
+                    {% if stat.is_due == 1 %}
+                    <tr style="background-color: #ffefea;" data-isdue="1">
+                    {% elif stat.box == 6 %}
+                    <tr style="background-color: #eafff6;">
                     {% else %}
-                        {% if stat.is_due == 1 %}
-                        <tr style="background-color: #ffefea;" data-isdue="1">
-                        {% elif stat.box == 6 %}
-                        <tr style="background-color: #eafff6;">
-                        {% else %}
-                        <tr>    
-                        {% endif %}
+                    <tr>    
                     {% endif %}
 
                     <td style="text-align: left;" class="character" onclick="showFlashcard('{{ stat.character }}')">
-                        {% if darkmode %}
-                        <a class="darkmode">{{ stat.character }}</a>
-                        {% else %}
                         <a>{{ stat.character }}</a>
-                        {% endif %}
                     </td>
                     <td style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
-                    <td style="text-align: right;">{{ '{:.2f}'.format(stat.difficulty) }}</td>
+                    <td style="text-align: right;">
+                        {{ '{:.2f}'.format(stat.difficulty) if stat.difficulty is not none else '/' }}
+                    </td>
                     <td style="text-align: right;">{{ stat.streak }}</td>
                     <td style="text-align: right;">{{ stat.num_incorrect }}</td>
                         {% if stat.is_due == 1 %}
                         <td style="text-align: right;" class="next-review-date">DUE</td>
                         {% else %}
-                        <td style="text-align: right;" class="next-review-date">{{ stat.next_review }}</td>
+                            {% if stat.next_review is not none %}
+                                <td style="text-align: right;" class="next-review-date">{{ stat.next_review }}</td>
+                            {% else %}
+                                <td style="text-align: right;">/</td>
+                            {% endif %}
                         {% endif %}
+                    <td class="remove-card tooltip-header" style="text-align: center;" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >🗑</td>
                 </tr>
                 {% endfor %}
         </table>
@@ -447,7 +370,7 @@
             <div id="flashcard_english"></div>
             <div id="flashcard_description"></div>
             <div id="flashcard_char_matches"></div>
-            <div id="flashcard_hsk"></div>
+            <div id="flashcard_addcard"></div>
             <a href="#" id="flashcard_practice"></a>
         </div>
     </div>
@@ -626,9 +549,6 @@
             const dateCells = document.querySelectorAll('.next-review-date');
             const hoverBox = document.getElementById('pinyin-hover-box');
     
-            currentDeck = {{ deck | tojson | safe }};
-            const currentDeckOption = document.querySelector(`.deck-option[data-deck="${currentDeck}"]`);
-            if (currentDeckOption) currentDeckOption.classList.add('selected-option');
 
             function showTooltip(element, content, event) {
                 hoverBox.textContent = content;
@@ -655,6 +575,29 @@
                 header.addEventListener('mousemove', function(e) {
                     hoverBox.style.left = `${e.pageX + 10}px`;
                     hoverBox.style.top = `${e.pageY + 10}px`;
+                });
+            });
+
+            document.querySelectorAll('.remove-card').forEach(binIcon => {
+                binIcon.addEventListener('click', function() {
+                    const character = this.getAttribute('data-charater');
+                    fetch(`./api/remove_word_from_learning`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ word: character })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        console.log('Card removed successfully');
+                        this.parentElement.remove();
+                    })
+                    .catch(error => {
+                        console.error('There was a problem removing the card:', error);
+                    });
                 });
             });
     
@@ -709,11 +652,6 @@
                 currentToggleFont = fontMapKeys.indexOf(font);
                 characterDiv.style.display = 'block';
                 // plotterDiv.style.display = 'none';
-                if(font === 'Noto Serif SC'){
-                    document.getElementById('flashcard_character').style.fontFamily = `"${font}"`;
-                } else{
-                    document.getElementById('flashcard_character').style.fontFamily = `"${font}", sans-serif`;
-                }
             }
             if (fontInfo) {
                 currentFont = font;

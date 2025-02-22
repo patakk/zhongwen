@@ -88,16 +88,6 @@ function getFont() {
         .then(data => {
             currentFont = data.font;
             console.log('received font', currentFont);
-            try {
-                if(currentFont === 'Noto Serif SC'){
-                    document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", serif`;
-                } else{
-                    document.getElementById('flashcard_character').style.fontFamily = `"${currentFont}", sans-serif`;
-                }
-            }
-            catch (e) {
-                console.log(e);
-            }
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -143,23 +133,8 @@ function getDeck_c() {
                         // classList.remove('active');
             
                         // Close dropdown
-                        document.getElementById('dropdownMenu').style.display = 'none';
+                        // document.getElementById('dropdownMenu').style.display = 'none';
                     }
-                });
-            });
-            // font
-            document.querySelectorAll('.font-change').forEach(function(fontOption) {
-                fontOption.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const selectedFont = this.getAttribute('data-font');
-                    changeFont(selectedFont);
-                    // Update highlighting
-                    document.querySelectorAll('.font-change').forEach(opt => opt.classList.remove('selected-option'));
-                    this.classList.add('selected-option');
-
-                    // Close dropdown
-                    document.getElementById('dropdownMenu').style.display = 'none';
                 });
             });
 
@@ -202,6 +177,27 @@ document.addEventListener('DOMContentLoaded', function() {
     var fontChangers = document.querySelectorAll('.font-change');
     var deckChangers = document.querySelectorAll('.deck-change');
 
+    
+    document.querySelectorAll('.menu-change').forEach(function(fontOption) {
+        fontOption.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelectorAll('.menu-change').forEach(opt => opt.classList.remove('selected-option'));
+            document.getElementById('mainSubmenu').classList.remove('active');
+        });
+    });
+    
+    document.getElementById('mainMenu').addEventListener('click', function(event) {
+        if(!event.target.closest('#mainSubmenu')){
+            document.getElementById('mainSubmenu').classList.add('active');
+        }
+    });
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('#mainMenu')) {
+            document.getElementById('mainSubmenu').classList.remove('active');
+        }
+    });
+
     const urlParams = new URLSearchParams(window.location.search);
     const deck = urlParams.get('deck') || 'hsk1';
     currentDeck = deck;
@@ -218,15 +214,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     currentFont = getFont_c();
 
-    const loginMenuItem = document.getElementById('loginMenuItem');
     if (username && username !== 'tempuser') {
-        loginMenuItem.innerHTML = `<a href="./user_progress">你好 ${username}!</a>`;
+        const loginMenuItem = document.getElementById('loginMenuItem');
+        loginMenuItem.innerHTML = `<a class="deck-option" href="./user_progress">你好 ${username}!</a>`;
+        loginMenuItem.parentNode.prepend(loginMenuItem);
     }
 
-    hamburger.addEventListener('click', function(e) {
-        e.stopPropagation();
-        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-    });
+    // hamburger.addEventListener('click', function(e) {
+    //     e.stopPropagation();
+    //     dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+    // });
 
     // submenus.forEach(function(submenu) {
     //     submenu.addEventListener('click', function(e) {
@@ -240,21 +237,21 @@ document.addEventListener('DOMContentLoaded', function() {
     //     });
     // });
 
-    fontChangers.forEach(function(fontChanger) {
-        fontChanger.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            // changeFont(this.getAttribute('data-font'));
-        });
-    });
+    // fontChangers.forEach(function(fontChanger) {
+    //     fontChanger.addEventListener('click', function(e) {
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //         // changeFont(this.getAttribute('data-font'));
+    //     });
+    // });
 
-    deckChangers.forEach(function(deckChanger) {
-        deckChanger.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            changeDeck(this.getAttribute('data-deck'));
-        });
-    });
+    // deckChangers.forEach(function(deckChanger) {
+    //     deckChanger.addEventListener('click', function(e) {
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //         changeDeck(this.getAttribute('data-deck'));
+    //     });
+    // });
 
     // document.addEventListener('click', function(e) {
     //     if (!dropdownMenu.contains(e.target) && e.target !== hamburger) {
@@ -307,9 +304,31 @@ function toggleMenu() {
 
 window.onclick = function(event) {
     if (!event.target.matches('.hamburger') && !event.target.matches('.hamburger span')) {
-        var menu = document.getElementById('dropdownMenu');
-        if (menu.style.display === 'block') {
-            menu.style.display = 'none';
+        // var menu = document.getElementById('dropdownMenu');
+        // if (menu.style.display === 'block') {
+        //     menu.style.display = 'none';
+        // }
+    }
+}
+
+
+function handleOrientationChange() {
+    const container = document.getElementById('flashcard_container');
+    if (window.matchMedia("(min-device-width: 768px) and (max-device-width: 1024px)").matches) {
+        if (window.orientation === 90 || window.orientation === -90) {
+            // Landscape
+            container.style.width = '90%';
+            container.style.height = '80vh';
+            container.style.maxHeight = '80vh';
+            container.style.marginBottom = '20px';
+        } else {
+            // Portrait
+            container.style.width = '90%';
+            container.style.height = '80%';
+            container.style.maxHeight = '';
+            container.style.marginBottom = '';
         }
     }
 }
+
+handleOrientationChange();

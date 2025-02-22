@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Home - 中文</title>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 
     <style>
@@ -69,7 +70,7 @@
             flex-direction: column;
             align-items: center;
         }
-        a {
+        .mainlink {
             width: 200px;
             padding: 10px;
             margin: 10px 0;
@@ -81,7 +82,7 @@
             font-size: 16px;
             font-family: inherit;
         }
-        a:hover {
+        .mainlink:hover {
             background-color: rgb(14, 14, 14);
             color: rgb(255, 255, 255);
         }
@@ -140,73 +141,23 @@
         }
 
     </style>
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
 </head>
 <body>
-    <div class="hamburger" id="hamburgerMenu">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-        <ul>
-            
-            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li class="has-submenu">
-                <span>Hanzi Grid</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <span>Flashcards</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
-            <!-- <li class="has-submenu">
-                <span>Fonts</span>
-                <ul class="submenu">
-                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
-                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
-                    <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
-                </ul>
-            </li> -->
-            <li class="has-submenu">
-                <span>Stuff</span>
-                <ul class="submenu">
-                    <li><a href="{{ url_for('search') }}">Search</a></li>
-                    <li><a href="{{ url_for('convert') }}">Convert to strokes</a></li>
-                    <li><a href="{{ url_for('stories') }}">Stories</a></li>
-                    <!-- <li><a href="{{ url_for('lists') }}">Example Lists</a></li> -->
-                    <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
-                    <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
-                    <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
-                </ul>
-            </li>
-            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
-            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
-        </ul>
-    </div>
-
+    
+    {% include 'menu.html' %}
 
     <div class="home-container">
         <h1>中文</h1>
         <div class="link-container">
-            <a id="progressUrl" href="{{ url_for('user_progress') }}">my progress</a>
-            <a id="flashcardsUrlMain" href="{{ url_for('flashcards') }}">flashcards</a>
-            <a href="{{ url_for('grid') }}">grid</a>
-            <a href="{{ url_for('stories') }}">stories</a>
-            <a href="{{ url_for('convert') }}">convert to strokes</a>
-            <a href="{{ url_for('puzzles.puzzles') }}">puzzles</a></li>
-            <a href="{{ url_for('hanzipractice') }}">practice 汉字</a>
-            <a href="{{ url_for('search') }}">search</a>
-            <a href="{{ url_for('pageinfo') }}">info</a>
+            <a class="mainlink" id="progressUrl" href="{{ url_for('user_progress') }}">my progress</a>
+            <a class="mainlink" id="flashcardsUrlMain" href="{{ url_for('flashcards') }}">flashcards</a>
+            <a class="mainlink" href="{{ url_for('grid') }}">grid</a>
+            <a class="mainlink" href="{{ url_for('stories') }}">stories</a>
+            <a class="mainlink" href="{{ url_for('convert') }}">convert to strokes</a>
+            <a class="mainlink" href="{{ url_for('puzzles.puzzles') }}">puzzles</a></li>
+            <a class="mainlink" href="{{ url_for('hanzipractice') }}">practice 汉字</a>
+            <a class="mainlink" href="{{ url_for('search') }}">search</a>
+            <a class="mainlink" href="{{ url_for('pageinfo') }}">info</a>
         </div>
     </div>
 

@@ -246,7 +246,7 @@ function updateCounterTitle(){
         currentDeck = inputdeck;
         inputdeck = null;
     }
-    document.getElementById('title').textContent = `${inputdecks[currentDeck].name}`;  
+    document.getElementById('title').textContent = `${inputdecks[currentDeck]}`;  
     document.getElementById('title_word_count').textContent = `(${deckLength} words)`;  
 }
 
@@ -402,6 +402,7 @@ function showFlashcard(character) {
             // overlay.style.backgroundColor = currentColor;
             // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
             // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
+           
             renderCardData(data);
             currentGridPlotters = data.plotters;
             displayCard(true, true);
@@ -425,6 +426,8 @@ function showFlashcard(character) {
 
 function showAfterLoad(data){
     data.plotters = createPlotters(data);
+    console.log("data")
+    console.log(data)
     renderCardData(data);
     currentGridPlotters = data.plotters;
     displayCard(true, true);
@@ -560,6 +563,7 @@ function changeDeck(deck) {
     history.pushState({}, '', newUrl);
     drawBothLayouts(currentData);
     window.scrollTo(0, 0);
+    document.getElementById('deckSubmenu').classList.remove('active');
 }
 
 
@@ -625,6 +629,25 @@ function playHanziAudio() {
     });
 }
 
+
+
+function addWordToLearning(symbol){
+    fetch("./api/add_word_to_learning", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ word: symbol })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data); 
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+
 function loadAllData(){
     fetch('./api/get_characters_pinyinenglish')
     .then(response => response.json())
@@ -665,63 +688,77 @@ document.addEventListener('DOMContentLoaded', function() {
     const characterDiv = document.getElementById('flashcard_character');
     const plotterDiv = document.getElementById('flashcard_plotter');
 
-    const deckMenu = document.getElementById('deckMenu');
-    deckMenu.addEventListener('click', function(event) {
+    document.getElementById('deckMenu').addEventListener('click', function(event) {
         if(!event.target.closest('#deckSubmenu')){
-            let submenu = document.getElementById('deckSubmenu');
-            submenu.classList.add('active')
+            document.getElementById('deckSubmenu').classList.add('active')
+        }
+    });
+    
+    document.getElementById('fontMenu').addEventListener('click', function(event) {
+        if(!event.target.closest('#fontSubmenu')){
+            document.getElementById('fontSubmenu').classList.add('active')
         }
     });
 
     document.addEventListener('click', function(event) {
         if (!event.target.closest('#deckMenu')) {
-            let submenu = document.getElementById('deckSubmenu');
-            submenu.classList.remove('active');
+            document.getElementById('deckSubmenu').classList.remove('active');
+        }
+        if (!event.target.closest('#fontMenu')) {
+            document.getElementById('fontSubmenu').classList.remove('active');
         }
     });
 
-    // const deckOptions = document.querySelectorAll('.deck-option');
-    // deckOptions.forEach(option => {
-    //     option.addEventListener('click', function(event) {
-    //         let submenu = document.getElementById('deckSubmenu');
-    //         submenu.classList.remove('active');
-    //     });
-    // });
 
-    let togglefont = () => {
-        currentToggleFont = (currentToggleFont + 1) % 4;
-        if(currentToggleFont === 0){
-            changeFont("Noto Sans Mono");
-        }
-        else if(currentToggleFont === 1){
-            changeFont("Noto Serif SC");
-        }
-        else if(currentToggleFont === 2){
-            changeFont("Kaiti");
-        }
-        else if(currentToggleFont === 3){
-            changeFont("Render");
-        }
-    }
-    // characterDiv.addEventListener('click', togglefont);
-    // plotterDiv.addEventListener('click', togglefont);
 
     if (inputdeck) {
         currentDeck = inputdeck;
     }
 
+    confirmDarkmode();
     
     loadAllData();
     document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
     document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
 
-    try{
-        // setupBackgroundCanvas();
-
+    if(isMobileOrTablet()){
+        // document.getElementById('deckSubmenuName').innerText = "charset";
+        // document.getElementById('fontSubmenuName').innerText = "fonts";
     }
-    catch(e){
 
+    
+    if(username === 'tempuser'){
+        try{
+            let logoutbutton = document.getElementById('logoutButton');
+            logoutbutton.style.display = 'none';
+            logoutbutton.parentElement.style.display = 'none';
+        }
+        catch(e){
+            console.log(e);
+        }
     }
+
+    document.querySelectorAll('.deck-change').forEach(function(deckOption) {
+        deckOption.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const selectedDeck = this.dataset.deck;
+            changeDeck(selectedDeck);
+            document.querySelectorAll('.deck-change').forEach(opt => opt.classList.remove('selected-option'));
+            this.classList.add('selected-option');
+        });
+    });
+   
+    document.querySelectorAll('.font-change').forEach(function(fontOption) {
+        fontOption.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const selectedFont = this.dataset.font;
+            changeFont(selectedFont);
+            document.querySelectorAll('.font-change').forEach(opt => opt.classList.remove('selected-option'));
+            this.classList.add('selected-option');
+        });
+    });
 
 
     const pinyinElement = document.getElementById('flashcard_pinyin');
@@ -731,7 +768,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const title = document.getElementById('title');
     title.addEventListener('click', function() {
-
         toggleGridList();
     });
     
@@ -758,7 +794,6 @@ let currentToggleFont = 0;
 function changeFont(font) {
     const characterDiv = document.getElementById('flashcard_character');
     const plotterDiv = document.getElementById('flashcard_plotter');
-    console.log("calling change font")
     if(font === 'Render'){
         characterDiv.style.display = 'none';
         plotterDiv.style.display = 'block';
@@ -773,7 +808,6 @@ function changeFont(font) {
         // plotterDiv.style.display = 'none';
     }
     const fontInfo = fontMap[font];
-    console.log(fontInfo)
     
     if (fontInfo) {
         currentFont = font;
@@ -785,8 +819,9 @@ function changeFont(font) {
             item.style.fontSize = `${fontInfo.size}px`;
         });
         updateFontFamily(fontInfo.family);
-        console.log('selected font', currentFont);
     }
+
+    document.getElementById('fontSubmenu').classList.remove('active');
 
     fetch(`./api/change_font?font=${font}`, {
         method: 'POST',
@@ -827,16 +862,16 @@ function getFont() {
             updateFontFamily(currentFont);
 
             // document.getElementById('font-select').value = currentFont;
-            let cc = document.getElementById('flashcard_character')
-            if(currentFont === 'Noto Serif SC'){
-                if(cc)
-                    cc.style.fontFamily = `"${currentFont}", serif`;
-                document.querySelector('.grid').style.fontFamily = `"${currentFont}", serif`;
-            } else{
-                if(cc)
-                    cc.style.fontFamily = `"${currentFont}", sans-serif`;
-                document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;
-            }
+            // let cc = document.getElementById('flashcard_character')
+            // if(currentFont === 'Noto Serif SC'){
+            //     if(cc)
+            //         cc.style.fontFamily = `"${currentFont}", serif`;
+            //     document.querySelector('.grid').style.fontFamily = `"${currentFont}", serif`;
+            // } else{
+            //     if(cc)
+            //         cc.style.fontFamily = `"${currentFont}", sans-serif`;
+            //     document.querySelector('.grid').style.fontFamily = `"${currentFont}", sans-serif`;
+            // }
 
             try{
                 adjustFlashCardChars();
@@ -849,24 +884,25 @@ function getFont() {
         });
 }
 
+
+
 function adjustFlashCardChars(){
     try{
         let cc = document.getElementById('flashcard_character');
-        cc.style.fontFamily = `"${currentFont}", sans-serif`;
         if(isMobileOrTablet()){
             if(currentFont === 'Kaiti'){
-                cc.style.fontSize = .23*7 + "em";
+                cc.style.transform = 'scale(1)';
             }
             else{
-                cc.style.fontSize = .23*6 + "em";
+                cc.style.transform = 'scale(1)';
             }
         }
         else {
             if(currentFont === 'Kaiti'){
-                cc.style.fontSize = .23*11.5 + "em";
+                cc.style.transform = 'scale(1)';
             }
             else{
-                cc.style.fontSize = .23*9 + "em";
+                cc.style.transform = 'scale(1)';
             }
         }
     }
@@ -874,27 +910,7 @@ function adjustFlashCardChars(){
     }
 }
 
-function handleOrientationChange() {
-    const container = document.getElementById('flashcard_container');
-    if (window.matchMedia("(min-device-width: 768px) and (max-device-width: 1024px)").matches) {
-        if (window.orientation === 90 || window.orientation === -90) {
-            // Landscape
-            container.style.width = '90%';
-            container.style.height = '80vh';
-            container.style.maxHeight = '80vh';
-            container.style.marginBottom = '20px';
-        } else {
-            // Portrait
-            container.style.width = '90%';
-            container.style.height = '80%';
-            container.style.maxHeight = '';
-            container.style.marginBottom = '';
-        }
-    }
-}
 
-window.addEventListener('orientationchange', handleOrientationChange);
-window.addEventListener('resize', handleOrientationChange);
 
 const fontMap = {
     "Noto Sans Mono": { family: "Noto Sans Mono", size: 22 },

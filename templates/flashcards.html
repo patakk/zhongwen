@@ -16,11 +16,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>中文</title>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcards.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script>
 </head>
@@ -31,62 +31,9 @@
 {% endif %}
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
     <audio id="crunchSound" src="{{ url_for('get_crunch') }}" preload="auto"></audio>
-
-{% if darkmode %}
-<div class="hamburger darkmode" id="hamburgerMenu">
-{% else %}
-<div class="hamburger" id="hamburgerMenu">
-    {% endif %}
-<span></span>
-        <span></span>
-        <span></span>
-    </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-        <ul>
-            
-            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li class="has-submenu">
-                <span>Hanzi Grid</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <span>Flashcards</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </li>
-            <!-- <li class="has-submenu">
-                <span>Fonts</span>
-                <ul class="submenu">
-                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
-                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
-                    <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
-                </ul>
-            </li> -->
-            <li class="has-submenu">
-                <span>Stuff</span>
-                <ul class="submenu">
-                    <li><a href="{{ url_for('search') }}">Search</a></li>
-                    <li><a href="{{ url_for('convert') }}">Convert to strokes</a></li>
-                    <li><a href="{{ url_for('stories') }}">Stories</a></li>
-                    <!-- <li><a href="{{ url_for('lists') }}">Example Lists</a></li> -->
-                    <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
-                    <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
-                    <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
-                </ul>
-            </li>
-            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
-            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
-        </ul>
-    </div>
-
+    
+    {% include 'menu.html' %}
+    
     <div id="indicator"></div>
     {% if darkmode %}
     <div id="flashcard_container" class="darkmode">
@@ -100,7 +47,7 @@
         <div id="flashcard_english"></div>
         <div id="flashcard_description"></div>
         <div id="flashcard_char_matches"></div>
-        <div id="flashcard_hsk"></div>
+        <div id="flashcard_addcard"></div>
         <a href="" id="flashcard_practice"></a>
     </div>
     <div id="choicesContainer">
@@ -113,10 +60,8 @@
     <p id="message"></p>
     <script>
         const username = {{ username | tojson | safe }};
-        const inputdeck = {{ deck | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
     </script>
-    <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>
     <!-- <script src="{{ url_for('static', filename='js/border.js') }}"></script> -->
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>

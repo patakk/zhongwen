@@ -29,8 +29,8 @@
         rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stories</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"> -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <!-- <script src="{{ url_for('static', filename='js/perlin.js') }}"></script> -->
@@ -470,11 +470,11 @@
             background: transparent;
         }
 
-        .line-wrapper.desktop:hover {
+        .line-wrapper.desktop:hover, .line-wrapper.desktop.fakehover {
             background: #e0e0e0;
         }
 
-        .line-wrapper.desktop.darkmode:hover {
+        .line-wrapper.desktop.darkmode:hover, .line-wrapper.desktop.darkmode.fakehover {
             background: #2b2b2b;
         }
 
@@ -709,12 +709,11 @@
 
     <body>
         {% endif %}
+        
+        
+        {% include 'menu.html' %}
+
         <h1 id="title">Stories</h1>
-        <div class="hamburger" id="hamburgerMenu" style="font-size:22px">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
         <div class="main-container">
             <div id="input-container">
                 
@@ -1063,6 +1062,7 @@
             let pinyinCheckbox;
             let naturalCheckbox;
 
+            let currentLines = [];
 
             let rmouseX = 0;
             let rmouseY = 0;
@@ -1075,45 +1075,90 @@
 
             let currentHoveredLine = -1;
 
+            function unhighlightAllLines(){
+                document.querySelectorAll('.line-wrapper').forEach((el) => {
+                    document.querySelectorAll('.pinyinLabel').forEach((el) => {
+                        el.classList.add('hidden');
+                    });
+                    el.classList.remove('desktop');
+                    el.classList.remove('fakehover');
+                });
+                document.getElementById('translationBox').classList.add('hidden');
+            }
+
+            function highLightLine(lineIndex) {
+                let translationBox = document.getElementById('translationBox');
+                let canvaswrapper = document.getElementById('plottersWrapper');
+
+                translationBox.textContent = chapter.english[lineIndex];
+                if(lineIndex == -1){
+                    translationBox.textContent = chapter.description;
+                }
+                setTimeout(() => {
+                    currentHoveredLine = lineIndex;
+                }, 333);
+
+                // add hover event to the the .line-wrapper that has dataset.lineindex = lineIndex
+                document.querySelectorAll('.line-wrapper').forEach((el) => {
+                    if (el.dataset.lineIndex == lineIndex) {
+                        el.classList.add('desktop');
+                        el.classList.add('fakehover');
+
+
+                        document.querySelectorAll('.pinyinLabel').forEach((el) => {
+                            el.classList.add('hidden');
+                        });
+                        document.querySelectorAll('.pinyinLabel.line_' + lineIndex).forEach((el) => {
+                            el.classList.remove('hidden');
+                        });
+                    }
+                    else {
+                        el.classList.remove('desktop');
+                        el.classList.remove('fakehover');
+                    }
+                });
+
+                if(translationBox.textContent.length === 0){
+                    return;
+                }
+                translationBox.classList.remove('hidden');
+                if(isMobileOrTablet()){
+                    translationBox.style.position = 'absolute';
+                    translationBox.style.left = 20 + 'px';
+                    translationBox.style.top = window.scrollY + 20 + 'px';
+                }
+                else{
+                    translationBox.style.position = 'absolute';
+                    translationBox.style.left = '50%';
+                    translationBox.style.bottom = -window.scrollY + 20 + 'px';
+                }
+            }
+
             function addHoverBehaviorToWrapper(wrapper, lineIndex) {
+
                 let translationBox = document.getElementById('translationBox');
                 let canvaswrapper = document.getElementById('plottersWrapper');
 
                 wrapper.addEventListener('mouseenter', function (event) {
+
                     if(isMobileOrTablet())
                         return;
-                    translationBox.textContent = chapter.english[lineIndex];
-                    if(lineIndex == -1){
-                        translationBox.textContent = chapter.description;
-                    }
-                    setTimeout(() => {
-                        currentHoveredLine = lineIndex;
-                    }, 1110);
-
-                    document.querySelectorAll('.pinyinLabel.line_' + lineIndex).forEach((el) => {
-                        el.classList.remove('hidden');
-                    });
-
-                    if(translationBox.textContent.length === 0){
-                        return;
-                    }
                     wrapper.classList.add('desktop');
-                    translationBox.classList.toggle('hidden');
-                    if(isMobileOrTablet()){
-                        translationBox.style.position = 'absolute';
-                        translationBox.style.left = 20 + 'px';
-                        translationBox.style.top = window.scrollY + 20 + 'px';
-                    }
-                    else{
-                        translationBox.style.position = 'absolute';
-                        translationBox.style.left = '50%';
-                        translationBox.style.bottom = -window.scrollY + 20 + 'px';
-                    }
+                    
+                    highLightLine(lineIndex);
                 });
 
                 wrapper.addEventListener('click', function (event) {
-                    if(!isMobileOrTablet())
+                    
+                    if (chapter.clip_ids){
+                        playLineClip(chapter.clip_ids[lineIndex]);
+                    }
+                    if(!isMobileOrTablet()){
+                        // if has clip_ids property
                         return;
+                    }
+                    let translationBox = document.getElementById('translationBox');
+                    let canvaswrapper = document.getElementById('plottersWrapper');
                     wrapper.classList.toggle('desktop');
                     translationBox.classList.toggle('hidden');
 
@@ -1340,7 +1385,7 @@
                 addToLearningButton.textContent = 'Add to learning';
                 addToLearningButton.classList.add('bubble-button');
                 addToLearningButton.addEventListener('click', function() {
-                    fetch("/api/add_word_to_learning", {
+                    fetch("./api/add_word_to_learning", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -1349,7 +1394,7 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data); // Handle response, e.g., show success message
+                        console.log(data);
                     })
                     .catch(error => {
                         console.error("Error:", error);
@@ -1740,6 +1785,37 @@
                 removeDropdownListeners = removeDropdownListeners_;
             }
 
+            let stopRequested = false;
+
+            function playStory() {
+                stopRequested = false;
+                let numlines = currentLines.length;
+                
+                function playLine(idx) {
+                    if (stopRequested) {
+                        unhighlightAllLines();
+                        return;
+                    }
+                    
+                    console.log(idx);
+                    highLightLine(idx);
+                    playLineClip(chapter.clip_ids[idx], () => {
+                        if (idx < numlines - 1) {
+                            playLine(++idx);
+                        } else {
+                            unhighlightAllLines();
+                        }
+                    });
+                }
+                
+                playLine(0);
+            }
+
+            function stopStory() {
+                stopRequested = true;
+                unhighlightAllLines();
+            }
+
 
 
             // on 'tab' press toggle visibiliy of id=input-container
@@ -1753,6 +1829,9 @@
                     else{
                         elem.style.display = 'none';
                     }
+                }
+                if (event.key === 'w') {
+                    playStory();
                 }
             });
             
@@ -1995,6 +2074,8 @@
 
                 storyTitleElem.style.fontSize = size / 40 + 'em';
 
+                let storyPlaying = false;
+
                 plotters.forEach((plotterinfo, index) => {
                     let plotter = plotterinfo.plotter;
                     let lineIndex = plotterinfo.lineIndex;
@@ -2015,6 +2096,18 @@
                             currentWrapper.style.textAlign = 'center';
                         }
                         currentWrapper.dataset.lineIndex = lineIndex;
+                        if(isTitle){
+                            currentWrapper.onclick = () => {
+                                if(!storyPlaying){
+                                    playStory();
+                                    storyPlaying = true;
+                                }
+                                else{
+                                    storyPlaying = false;
+                                    stopStory();
+                                }
+                            }
+                        }
                         plotterElement.appendChild(currentWrapper);
                         currentLineIndex = lineIndex;
                         addHoverBehaviorToWrapper(currentWrapper, lineIndex);
@@ -2351,7 +2444,7 @@
                 let titleHanzi = chapter.name.concat(['\n']);
                 //prepend title to chapter.hanzi
                 
-                let currentLines = chapter.hanzi;
+                currentLines = chapter.hanzi;
                 let words = [];
                 currentLines.forEach(line => {
                     words = words.concat(line);
@@ -2517,53 +2610,22 @@
                 let hanziCount = document.getElementById('hanziCount');
                 hanziCount.textContent = input.value.length + ' characters';
             }
+
+            
+            function playLineClip(clipName, callback=null) {
+                console.log('Playing clip:', clipName);
+                const audio = new Audio(`./api/get_story_audio_clip?name=${clipName}`);
+                
+                audio.play();
+                audio.onended = function() {
+                    if (callback) {
+                        callback();
+                    }
+                };
+            }
             
         </script>
 
-        <div class="dropdown-menu" id="dropdownMenu">
-            <ul>
-                <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
-                <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li class="has-submenu">
-                    <span>Hanzi Grid</span>
-                    <ul class="submenu">
-                        {% for key, deck in decks.items() %}
-                            <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                            {% endfor %}
-                    </ul>
-                </li>
-                <li class="has-submenu">
-                    <span>Flashcards</span>
-                    <ul class="submenu">
-                        {% for key, deck in decks.items() %}
-                            <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                            {% endfor %}
-                    </ul>
-                </li>
-                <!-- <li class="has-submenu">
-                    <span>Fonts</span>
-                    <ul class="submenu">
-                        <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
-                        <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
-                        <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
-                    </ul>
-                </li> -->
-                <li class="has-submenu">
-                    <span>Stuff</span>
-                    <ul class="submenu">
-                        <li><a href="{{ url_for('search') }}">Search</a></li>
-                        <li><a href="{{ url_for('convert') }}">Convert to strokes</a></li>
-                        <li><a href="{{ url_for('stories') }}">Stories</a></li>
-                        <!-- <li><a href="{{ url_for('lists') }}">Example Lists</a></li> -->
-                        <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
-                        <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
-                        <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
-                    </ul>
-                </li>
-                <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
-                <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
-            </ul>
-        </div>
         
         <script>
 
@@ -2573,9 +2635,7 @@
                 return check || /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
             }
         </script>
-        <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
         <!-- <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script> -->
-        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     </body>
 
 </html>

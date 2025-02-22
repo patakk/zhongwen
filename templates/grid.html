@@ -20,10 +20,8 @@
     <title>Character Grid</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
+    <!-- <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}"> -->
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
     <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script>
@@ -41,52 +39,6 @@
     </style>
     
     <style>
-        #deckMenu {
-            top: 20px;
-            left: 20px;
-            padding: 5px;
-            position: fixed;
-            width: 220px;
-            box-sizing: border-box;
-            z-index: 100;
-        }
-
-        #deckMenu span {
-            display: inline-block;
-            width: 165px;
-            min-width: 165px;
-        }
-
-        #deckMenu:hover {
-            cursor: pointer;
-        }
-
-        .deckSubmenu {
-            display: none;
-            position: absolute;
-            left: -10px;
-            top: 0;
-            background-color: var(--background-color);
-            border: 2px solid black;
-            width: 200px;
-            box-sizing: border-box;
-        }
-
-        .deckSubmenu.active {
-            display: block;
-        }
-
-        .deckSubmenu li {
-            list-style-type: none;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .deckSubmenu li:hover {
-            background-color: var(--text-color);
-            color: var(--background-color);
-            cursor: pointer;
-        }
     </style>
 </head>
 
@@ -97,56 +49,24 @@
 {% endif %}
     <h1 id="title">Character Grid</h1>
     <h3 id="title_word_count"></h3>
-    <div class="hamburger" id="hamburgerMenu" style="font-size:22px">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
     <div class="has-submenu" id="deckMenu">
-        <span>Select charset</span>
-        <ul class="deckSubmenu" id="deckSubmenu">
+        <span class="submenuName" id="deckSubmenuName">sets</span>
+        <ul class="gridSubmenu" id="deckSubmenu">
             {% for key, deck in decks.items() %}
-                <li class="deck-option-parent"><a class="deck-option" data-deck="{{ key }}">{{ deck.name }}</a></li>
+                <li class="menu-option-parent"><a class="deck-option deck-change" data-deck="{{ key }}">{{ deck }}</a></li>
             {% endfor %}
         </ul>
     </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-        <ul>
-            
-            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <!-- <li class="has-submenu">
-                <span>Flashcards</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li> -->
-            <li><a href="{{ url_for('flashcards') }}">Flashcards</a></li>
-            <li class="has-submenu">
-                <span>Fonts</span>
-                <ul class="submenu">
-                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
-                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
-                    <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <span>Stuff</span>
-                <ul class="submenu">
-                    <li><a href="{{ url_for('search') }}">Search</a></li>
-                    <li><a href="{{ url_for('convert') }}">Convert to strokes</a></li>
-                    <li><a href="{{ url_for('stories') }}">Stories</a></li>
-                    <!-- <li><a href="{{ url_for('lists') }}">Example Lists</a></li> -->
-                    <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
-                    <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
-                    <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
-                </ul>
-            </li>
-            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
-            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
+    <div class="has-submenu" id="fontMenu">
+        <span class="submenuName" id="fontSubmenuName">fonts</span>
+        <ul class="gridSubmenu" id="fontSubmenu">
+            <li class="menu-option-parent"><a class="deck-option font-change" data-font="Noto Sans Mono">Noto Sans</a></li>
+            <li class="menu-option-parent"><a class="deck-option font-change" data-font="Noto Serif SC">Noto Serif</a></li>
+            <li class="menu-option-parent"><a class="deck-option font-change" data-font="Kaiti">Kaiti</a></li>
         </ul>
+    </div>
+        
+        {% include 'menu.html' %}
     </div>
     <div id="grid-cont" class="grid-container">
         <div class="grid" id="character-grid"></div>
@@ -165,7 +85,7 @@
             <div id="flashcard_description"></div>
             <!-- <div style="width: 95%; padding-bottom: 15px;">Related words:</div> -->
             <div id="flashcard_char_matches"></div>
-            <div id="flashcard_hsk"></div>
+            <div id="flashcard_addcard"></div>
             <a href="#" id="flashcard_practice"></a>
         </div>
     </div>
@@ -176,7 +96,7 @@
     <script>
         const characters = {{ characters | tojson | safe }};
         const characterdata = {{ character | tojson | safe }};
-        const inputdecks = {{ decks | tojson | safe }};        
+        const inputdecks = {{ decks | tojson | safe }};       
 
         let inputdeck = {{ deck | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
@@ -207,10 +127,10 @@
     <!-- <script src="{{ url_for('static', filename='js/perlin.js') }}"></script> -->
     <!-- <script src="{{ url_for('static', filename='js/border.js') }}"></script> -->
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     <!-- <script src="{{ url_for('static', filename='js/customback.js') }}"></script> -->
     <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/grid.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script> -->
 </body>
 </html>

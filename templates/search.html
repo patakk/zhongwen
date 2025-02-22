@@ -16,89 +16,33 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Search - 中文</title>
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script>
 </head>
+
+
+
 <body>
+   
+    {% include 'menu.html' %}
+
     
-    <div class="hamburger" id="hamburgerMenu">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-        <ul>
-            
-            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li class="has-submenu">
-                <span>Hanzi Grid</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <span>Flashcards</span>
-                <ul class="submenu">
-                    {% for key, deck in decks.items() %}
-                        <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
-                        {% endfor %}
-                </ul>
-            </li>
-            <!-- <li class="has-submenu">
-                <span>Fonts</span>
-                <ul class="submenu">
-                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
-                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
-                    <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
-                </ul>
-            </li> -->
-            <li class="has-submenu">
-                <span>Stuff</span>
-                <ul class="submenu">
-                    <li><a href="{{ url_for('search') }}">Search</a></li>
-                    <li><a href="{{ url_for('convert') }}">Convert to strokes</a></li>
-                    <li><a href="{{ url_for('stories') }}">Stories</a></li>
-                    <!-- <li><a href="{{ url_for('lists') }}">Example Lists</a></li> -->
-                    <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
-                    <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
-                    <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
-                </ul>
-            </li>
-            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
-            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
-        </ul>
-    </div>
     <div class="search-container{% if results %} has-results{% endif %}">
-        <h1>Search</h1>
-        <form action="{{ url_for('search') }}" method="get">
-            <input type="text" name="query" value="{{ query or '' }}">
+        <h1 id="title">Search</h1>
+        <form id="searchForm" onsubmit="handleSearch(event)">
+            <input type="text" name="query" id="searchQuery">
             <input id="srch-btn" type="submit" value="Search">
         </form>
         
-        <div class="results">
-            {% if results %}
-                {% for result in results %}
-                    <div class="result-item" onclick="showFlashcard('{{ result.hanzi }}')">
-                        <span class="result-index">{{ loop.index }}</span>
-                        <p><strong>Hanzi:</strong> {{ result.hanzi }}</p>
-                        <p><strong>Pinyin:</strong> {{ result.pinyin }}</p>
-                        <p><strong>English:</strong> {{ result.english }}</p>
-                        {% if result.traditional %}
-                            <p><strong>Traditional:</strong> {{ result.traditional }}</p>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% elif query %}
-                <p>No results found for "{{ query }}"</p>
-            {% endif %}
+        
+        <div id="results">
+           
         </div>
+        
     </div>
     
     <div id="flashcard_overlay">
@@ -112,7 +56,7 @@
             <div id="flashcard_description"></div>
             <!-- <div style="width: 95%; padding-bottom: 15px;">Related words:</div> -->
             <div id="flashcard_char_matches"></div>
-            <div id="flashcard_hsk"></div>
+            <div id="flashcard_addcard"></div>
             <a href="#" id="flashcard_practice"></a>
         </div>
     </div>
@@ -123,7 +67,6 @@
         let isDarkMode = {{ darkmode | tojson | safe }};
 
     </script>
-    <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>
     <!-- <script src="{{ url_for('static', filename='js/border.js') }}"></script> -->
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
@@ -133,7 +76,89 @@
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
 
     <script>
-        
+        async function handleSearch(event) {
+            event.preventDefault(); // Prevent regular form submission
+
+            
+            const query = document.getElementById('searchQuery').value;
+            
+            try {
+                const response = await fetch('./search_results', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                const resp = await response.json();
+                updateSearchResults(resp.results, resp.query);
+                // set url to include query
+                window.history.pushState({}, '', `?query=${query}`);
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+
+        function updateSearchResults(results, query) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+            if (results && results.length > 0) {
+                results.forEach((result, index) => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    resultItem.onclick = () => showFlashcard(result.hanzi);
+
+                    const indexSpan = document.createElement('span');
+                    indexSpan.className = 'result-index';
+                    indexSpan.textContent = index + 1;
+
+                    const hanziSection = document.createElement('div');
+                    hanziSection.className = 'hanzi-section';
+                    hanziSection.textContent = result.hanzi;
+
+                    const detailsSection = document.createElement('div');
+                    detailsSection.className = 'details-section';
+
+                    const pinyin = document.createElement('div');
+                    pinyin.className = 'res-pin';
+                    pinyin.textContent = result.pinyin;
+
+                    const english = document.createElement('div');
+                    english.className = 'res-eng';
+                    english.textContent = result.english;
+
+                    detailsSection.appendChild(pinyin);
+                    detailsSection.appendChild(english);
+
+                    if (result.traditional) {
+                        const traditional = document.createElement('div');
+                        traditional.textContent = `Traditional: ${result.traditional}`;
+                        detailsSection.appendChild(traditional);
+                    }
+
+                    resultItem.appendChild(indexSpan);
+                    resultItem.appendChild(hanziSection);
+                    resultItem.appendChild(detailsSection);
+                    resultsContainer.appendChild(resultItem);
+                });
+            } else if (query) {
+                const noResults = document.createElement('div');
+                noResults.textContent = `No results found for "${query}"`;
+                resultsContainer.appendChild(noResults);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const results = {{ results | tojson | safe }};
+            const query = {{ query | tojson | safe }};
+
+            document.getElementById('searchQuery').value = query;
+            updateSearchResults(results, query);
+        });
+
     </script>
         
 </body>

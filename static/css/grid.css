@@ -89,7 +89,7 @@ body {
 }
 
 .grid-item:hover {
-    --griditem-background-color: var(--dimmer-background-color);
+    background-color: var(--dimmer-background-color);
 }
 
 /* .grid-item.darkmode {
@@ -277,19 +277,18 @@ body {
     position: fixed;
     top: 15px;
     right: 15px;
-    font-size: 16px;
     font-family: 'Noto Sans Mono', monospace;
     font-weight: 400;
     width: 150px;
     background-color: white;
-    border: 3px solid black;
+    border: 3px solid rgb(32, 32, 32);
     border-radius: 0;
     padding: 5px;
     outline: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+    /* background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23000' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>"); */
     background-repeat: no-repeat;
     background-position: right 5px top 50%;
     background-size: 16px;
@@ -304,10 +303,22 @@ body {
     color: white;
 }
 
+.has-submenu:hover > span::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -2px;
+    width: 234px;
+    height: 100%;
+    background-color: rgba(255, 14, 14, 0);
+    z-index: 1;
+}
+
 h1 {
     text-align: center;
     cursor: pointer;
 }
+
 
 @media only screen 
 and (orientation: landscape) {
@@ -318,10 +329,11 @@ and (orientation: landscape) {
 }
 
 
-::selection {
+/* ::selection {
     background-color: #000;
     color: #fff;
-}
+} */
+
 #flashcard-link {
     position: fixed;
     top: 15px;
@@ -359,8 +371,23 @@ and (orientation: landscape) {
     z-index: 1;
 }
 
+.gridSubmenu {
+    z-index: 110;
+    padding: 0;
+}
+
+.submenuName {
+    z-index: -11;
+    background: var(--lifted-background-color);
+    padding: 3px 5px 3px 5px;
+    color: var(--text-color);
+}
+
+.submenuName.darkmode {
+}
+
 #flashcard_overlay {
-    z-index: 1000; /* Higher than grid-container, lower than overlay */
+    z-index: 444; /* Higher than grid-container, lower than overlay */
 }
 
 #font-select {
@@ -496,9 +523,16 @@ and (orientation: landscape) {
     /* border-left: 0;
     border-right: 0;
     border-top: 0; */
-    padding: 2px;
+    padding-right: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     display: flex;
     box-sizing: border-box;
+    border-left: none;
+    border-top: none;
+}
+
+.lgrid-item:nth-child(odd) {
 }
 
 .lgrid-item:hover {
@@ -743,3 +777,87 @@ and (orientation: landscape) {
         font-size: 14px;
     }
 }
+
+
+#deckMenu, #fontMenu {
+    top: 25px;
+    left: 25px;
+    position: fixed;
+    box-sizing: border-box;
+    z-index: 3;
+    text-align: center;
+}
+
+#deckMenu {
+    z-index: 130;
+}
+
+#fontMenu {
+    top: 60px;
+}
+
+#deckMenu span, #fontMenu span {
+    display: inline-block;
+    width: 55px;
+}
+
+
+
+
+#deckMenu:hover, #fontMenu:hover {
+    cursor: pointer;
+}
+
+#deckSubmenu, #fontSubmenu {
+    display: none;
+    position: absolute;
+    left: 0px;
+    top: 32px;
+    background-color: var(--background-color);
+    border: var(--simple-border);
+    box-sizing: border-box;
+}
+
+
+/* #fontSubmenu {
+    left: -10px;
+    top: 20;
+} */
+
+#deckSubmenu.active, #fontSubmenu.active {
+    display: block;
+}
+
+#deckSubmenu li, #fontSubmenu li {
+    list-style-type: none;
+    padding: 0px;
+    text-align: left;
+    width: 135px;
+    min-width: 135px;
+}
+
+@media (max-width: 768px) {
+    
+    .has-submenu > span {
+        background-image: none;
+    }
+
+    .has-submenu > span:hover {
+        background-image: none;
+    }
+
+    .has-submenu.darkmode > span {
+        background-image: none;
+    }
+
+    .has-submenu.darkmode > span:hover {
+        background-image: none;
+    }
+}
+
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+

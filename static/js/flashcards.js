@@ -129,7 +129,7 @@ document.addEventListener('keydown', function(event) {
     }
 
     const flashcard = document.getElementById('flashcard_container');
-    const flashcard_hsk = document.getElementById('flashcard_hsk');
+    const flashcard_addcard = document.getElementById('flashcard_addcard');
 
     keyIsDown = true;
 
@@ -149,7 +149,7 @@ document.addEventListener('keydown', function(event) {
         
         // flashcard.style.border = isCorrect ? correctBorderStyle : incorrectBorderStyle;
         // flashcard.style.padding = '22px';
-        // flashcard_hsk.style.padding = "4px";
+        // flashcard_addcard.style.padding = "4px";
         // flashcard.style.background = isCorrect ? correctBackgroundColor : incorrectBackgroundColor;
 
         
@@ -160,7 +160,7 @@ document.addEventListener('keydown', function(event) {
             // renderBorder();
             // flashcard.style.border = neutralBorderStyle;
             // flashcard.style.padding = neutralPadding;
-            // flashcard_hsk.style.padding = "22px";
+            // flashcard_addcard.style.padding = "22px";
             indicator.style.borderColor = neutralColor;
         }, 170); // Increased to 1 second for visibility
     }
@@ -246,7 +246,7 @@ function recordAnswer(isCorrect, func=null) {
 
 document.getElementById('flashcard_container').addEventListener('mousedown', function(event) {
     const flashcard = document.getElementById('flashcard_container');
-    const flashcard_hsk = document.getElementById('flashcard_hsk');
+    const flashcard_addcard = document.getElementById('flashcard_addcard');
     isHolding = true;
     clickStartTime = new Date().getTime();
 
@@ -285,7 +285,7 @@ document.getElementById('flashcard_container').addEventListener('mousedown', fun
         
         // flashcard.style.border = isCorrect ? correctBorderStyle : incorrectBorderStyle;
         // flashcard.style.padding = '22px';
-        // flashcard_hsk.style.padding = "4px";
+        // flashcard_addcard.style.padding = "4px";
         
         // flashcard.style.background = isCorrect ? correctBackgroundColor : incorrectBackgroundColor;
         indicator.style.borderColor = isCorrect ? correctBackgroundColor : incorrectBackgroundColor;
@@ -296,7 +296,7 @@ document.getElementById('flashcard_container').addEventListener('mousedown', fun
             // flashcard.style.border = neutralBorderStyle;
             // flashcard.style.padding = neutralPadding;
             indicator.style.borderColor = neutralColor;
-            // flashcard_hsk.style.padding = "22px";
+            // flashcard_addcard.style.padding = "22px";
         }, 300); // Increased to 1 second for visibility
 
         isHolding = false;
@@ -657,38 +657,33 @@ function getNextCard(func=null) {
         console.log('Fetching new card');
         fetchCard()
             .then(data => {
-                data.plotters = createPlotters(data);
-                currentFlashcardPlotters = data.plotters;
-                showingAnswer = false;
-                currentCharacter = data.character;
-                if(data.message && data.message.length > 0){
-                    getNextCard();
-                    // let promptMessage = "";
-                    // if(data.message === "message_1"){
-                    //     promptMessage = "You have only 1 due card and no new cards. <br> <span style=\"color:#000000;\">Do you want to add more new cards, or keep reviewing today's cards?</span>";
-                    // }
-                    // else if(data.message === "message_2"){
-                    //     promptMessage = "No more due cards. <br> <span style=\"color:#000000;\">Do you want to add more new cards, or keep reviewing today's cards?</span>";
-                    // }
-
-                    // if (promptMessage) {
-                    //     showCustomPrompt(promptMessage);
-                    // }
+                if(!data.raw_info){
+                    document.getElementById('flashcard_character').textContent = 'Your learning deck is empty. Add characters from the grid explorer, search results, or stories.';
+                    document.getElementById('flashcard_pinyin').style.display = 'none';
                 }
                 else{
-                    renderCardData(data);
-                    displayCard(false, false);
+                    data.plotters = createPlotters(data);
+                    currentFlashcardPlotters = data.plotters;
+                    showingAnswer = false;
+                    currentCharacter = data.character;
+                    if(data.message && data.message.length > 0){
+                        getNextCard();
+                    }
+                    else{
+                        renderCardData(data);
+                        displayCard(false, false);
+                    }
+                    if (func) {
+                        func();
+                    }
+                    prefetchNextCard();
                 }
-                if (func) {
-                    func();
-                }
-                prefetchNextCard();
                 // toggleInvertAllElements();
                 // toggleInvertAllElements();
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
-            document.getElementById('flashcard_character').textContent = 'Learning deck is empty, read stories and add new cards to start learning.';
+            document.getElementById('flashcard_character').textContent = 'Your learning deck is empty. Add characters from the grid explorer, search results, or stories.';
             document.getElementById('flashcard_pinyin').style.display = 'none';
         });
     }
@@ -863,16 +858,6 @@ document.addEventListener('DOMContentLoaded', function() {
     body = document.getElementById('body');
     indicator = document.getElementById('indicator');
     
-    // getDeck(getNextCard);
-    currentDeck = inputdeck;
-    
-    const newUrl = new URL(window.location);
-    newUrl.searchParams.set('deck', currentDeck);
-    history.pushState({}, '', newUrl);
-
-    document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
-    document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
-    changeDeck(currentDeck);
     getNextCard();
     getFont();
     adjustFlashCardChars();
@@ -903,60 +888,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     else {
     }
-
-    document.querySelectorAll('.deck-option').forEach(function(deckOption) {
-        deckOption.addEventListener('click', function(e) {
-            currentDeck = this.getAttribute('data-deck');
-
-            // Change deck
-            
-            const newUrl = new URL(window.location);
-            newUrl.searchParams.set('deck', currentDeck);
-            history.pushState({}, '', newUrl);
-
-            prefetchedCard = null;
-            changeDeck(currentDeck, getNextCard);
-            console.log("deck changed", currentDeck);
-
-            // Update highlighting
-            document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
-            this.classList.add('selected-option');
-
-            // Close dropdown
-            document.getElementById('dropdownMenu').style.display = 'none';
-            var menu = document.getElementById('dropdownMenu');
-            menu.style.display = 'none';
-        });
-    });
-
     
 });
 
-
-// function changeDeck(deck, func=getNextCard) {
-//     fetch(`./api/change_deck?deck=${deck}`, {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//         console.log('Deck changed successfully');
-//         prefetchedCard = null;
-//         getNextCard();
-//     })
-//     .catch(error => {
-//         console.error('There was a problem changing the deck:', error);
-//     });
-// }
-
-// document.getElementById('space-instruction').addEventListener('click', function(e) {
-//     e.stopPropagation();
-//     var elementBelow = document.elementFromPoint(e.clientX, e.clientY);
-//     if (elementBelow) {
-//         elementBelow.click();
-//     }
-// }, true);

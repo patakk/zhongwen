@@ -3,38 +3,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from backend.db.extensions import db
 
-deck_cards = db.Table(
-    "deck_cards",
-    db.Column("deck_id", db.Integer, db.ForeignKey("deck.id"), primary_key=True),
-    db.Column("card_id", db.Integer, db.ForeignKey("card.id"), primary_key=True),
-)
-
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     character = db.Column(db.String(10), unique=True, nullable=False)
-    decks = db.relationship("Deck", secondary=deck_cards, back_populates="cards")
-    
     def __repr__(self):
         return f"<Card {self.character}>"
-
-class Deck(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
-    cards = db.relationship("Card", secondary=deck_cards, back_populates="decks")
-
-    def __repr__(self):
-        return f"<Deck {self.name}>"
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-    
-    # Relationships
+
     progress = db.relationship("UserProgress", backref="user", uselist=False)
     notes = db.relationship("UserNotes", backref="user", lazy=True)
     user_string = db.relationship("UserString", backref="user", uselist=False)
-    stroke_entries = db.relationship("StrokeData", backref="user_ref", lazy=True)  # Changed backref name
+    stroke_entries = db.relationship("StrokeData", backref="user_ref", lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -53,7 +36,7 @@ class StrokeData(db.Model):
     timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
 
     def __repr__(self):
-        return f"<StrokeData {self.user_ref.username} - {self.character}>"  # Updated to use user_ref
+        return f"<StrokeData {self.user_ref.username} - {self.character}>" 
 
     @classmethod
     def from_dict(cls, data):

@@ -1,28 +1,201 @@
 :root {
     --font: "Noto Sans Mono", monospace;
     --background-color: #ffffff;
+    --lifted-background-color: #f1f1f1;
+    --simple-border: 2px solid #afafaf;
     --dimmer-background-color: #f5f5f5;
     --dimmer-border-color: #d0d0d0;
+    --dimmer-border-color-a: #d0d0d08f;
+    --dimmer-border-color-b: #aaaaaa8f;
     --dimmer-border-style: dashed;
-    --dimmer-border-width: 2px;
-    --dimmer-border: var(--dimmer-border-width) var(--dimmer-border-style) var(--dimmer-border-color);
+    --border-color: #000;
+    --dimmer-border: 2px dashed var(--dimmer-border-color);
+    --thin-border: 1px solid var(--dimmer-border-color-a);
+    --thin-border-2: 1px solid var(--dimmer-border-color-b);
     --text-color: #0e0e0e;
     --dimmer-text-color: #505050;
     --accent-color: rgb(255, 66, 28);
-    --griditem-background-color: var(--background-color);
+    --dim-accent-color: rgb(185, 72, 49);
+    --griditem-background-color: #fcfcfc;
+}
+
+::selection {
+    background-color: var(--accent-color);
+    color: rgb(0, 0, 0);
 }
 
 .darkmode {
+    --lifted-background-color: #222222;
+    --border-color: #494949;
+    --simple-border: 2px solid #444444;
     --dimmer-border-color: #414141;
-    --background-color: #111111;
+    --dimmer-border-color-a: rgba(65, 65, 65, 0.671);
+    --dimmer-border-color-b: rgba(65, 65, 65, 0.845);
+    --background-color: #111;
     --dimmer-background-color: #1d1d1d;
     --text-color: #e6e6e6;
     --dimmer-text-color: #888888;
-    --griditem-background-color: var(--background-color);
+    --griditem-background-color: #171717;
 }
 
 body {
     font-family: var(--font);
     background-color: var(--background-color);
     color: var(--text-color);
+}
+
+
+.darkmode {
+    /* color: rgb(236, 236, 236); */
+    /* border-color: rgb(100, 100, 100); */
+}
+
+p.darkmode {
+    background: transparent;
+}
+
+
+.clickable-char.darkmode {
+    color: rgb(233,233,233);
+}
+
+
+.correct-row {
+    background-color: #d4edda;
+}
+
+.correct-row.darkmode {
+    background-color: #7b8d7f;
+}
+
+.incorrect-row {
+    background-color: #f8d7da;
+}
+
+.incorrect-row.darkmode {
+    background-color: #886467;
+}
+
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+.deck-option {
+    display: block;
+    width: 100%;
+    font-size: 1em;
+    white-space: nowrap;
+    padding: 7px;
+}
+
+#logoutButton {
+}
+
+#logoutButton:hover {
+}
+
+#logoutButton.darkmode {
+}
+
+#logoutButton.darkmode:hover {
+}
+
+.menu-option-parent:hover {
+    background-color: var(--dimmer-background-color);
+}
+
+.menu-change {
+    display: inline-block;
+}
+
+.gridSubmenu {
+    z-index: 110;
+    padding: 0;
+    margin: 0;
+}
+
+.submenuName {
+    z-index: -11;
+    background: var(--lifted-background-color);
+    padding: 3px 5px 3px 5px;
+    color: var(--text-color);
+}
+
+.submenuName.darkmode {
+}
+
+#mainSubmenu {
+    display: none;
+    position: absolute;
+    top: 32px;
+    right: 0px;
+    left: auto;
+    background-color: var(--background-color);
+    border: var(--simple-border);
+    box-sizing: border-box;
+}
+
+
+#mainSubmenu.active {
+    display: block;
+}
+
+#mainMenu {
+    top: 25px;
+    left: 25px;
+    position: fixed;
+    box-sizing: border-box;
+    z-index: 3333;
+    text-align: center;
+    right: 25px;
+    left: auto;
+}
+#mainMenu span {
+    display: inline-block;
+    width: 55px;
+}
+#mainMenu:hover {
+    cursor: pointer;
+}
+#mainSubmenu li {
+    list-style-type: none;
+    padding: 0px;
+    text-align: left;
+    width: 135px;
+    min-width: 135px;
+}
+
+@media (max-width: 768px) {
+    .gridSubmenu li {
+        padding: 2px 5px 2px 5px;
+    }
+
+
+    .gridSubmenu {
+        width: auto;
+    }
+
+    .gridSubmenu span {
+        display: inline-block;
+        width: auto; 
+        min-width: auto;
+    }
+
+
+    #mainMenu {
+        width: auto;
+    }
+    
+    #mainMenu span {
+        display: inline-block;
+        width: auto; 
+        min-width: auto;
+    }
+    
+    .deck-option {
+        font-size: .9em;
+    }
 }
