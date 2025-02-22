@@ -8,6 +8,10 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
         rel="stylesheet">
+        
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    
     <style>
         * {
             box-sizing: border-box;
@@ -26,16 +30,16 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: white;
+            background-color: var(--background-color);
             font-size: 16px;
         }
 
         .container {
             width: 60%;
             max-width: 1200px;
-            background-color: white;
+            background-color: var(--background-color);
             padding: 2rem;
-            border: 2px dashed black;
+            border: 2px dashed var(--border-color);
             overflow-y: auto;
             max-height: 90vh;
             scrollbar-width: none;
@@ -52,7 +56,7 @@
         h1 {
             font-family: 'Noto Sans Mono', monospace;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: #333;
+            color: var(--text-color);
             font-size: 2em;
             margin-top: 0;
         }
@@ -95,8 +99,8 @@
         }
 
         .flashcard-guide {
-            background-color: #f9f9f9;
-            border: 2px solid #000000;
+            background-color: var(--dimmer-background-color);
+            border: 2px solid var(--border-color);
             padding: 10px;
             width: 80%;
             margin: 20px auto;
@@ -209,9 +213,6 @@
             margin: 0;
         }
     </style>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
-
     <style>
 
         .btn {
