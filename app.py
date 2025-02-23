@@ -835,7 +835,7 @@ def get_search_results(query):
             if len(qwords) > 1:
                 fresults = []
                 for r in results:
-                    definition = r['english']
+                    definition = r['english'].lower()
                     if all(qw in definition for qw in qwords):
                         if r not in fresults:
                             fresults.append(r)
