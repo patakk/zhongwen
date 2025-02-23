@@ -150,7 +150,6 @@ input[type="submit"]:hover {
     align-items: center;
     font-size: 1em; 
     min-width: 100%;
-    flex: 1 1 100%;
 }
 
 .hanzi-section {

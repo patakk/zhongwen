@@ -35,7 +35,7 @@ function showFlashcard(character) {
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
         overlay.style.display = 'none';
-        ccanvas.style.display = 'none';
+        // ccanvas.style.display = 'none';
     }
 });
 
