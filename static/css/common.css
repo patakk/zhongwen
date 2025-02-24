@@ -15,6 +15,7 @@
     --text-color: #0e0e0e;
     --dimmer-text-color: #505050;
     --accent-color: rgb(255, 66, 28);
+    --accent-word: rgb(229, 61, 0);
     --dim-accent-color: rgb(185, 72, 49);
     --griditem-background-color: #fcfcfc;
 }
@@ -26,6 +27,7 @@
 
 .darkmode {
     --lifted-background-color: #222222;
+    --accent-word: rgb(255, 191, 28);
     --border-color: #494949;
     --simple-border: 2px solid #444444;
     --dimmer-border-color: #414141;
@@ -148,7 +150,7 @@ a {
     left: 25px;
     position: fixed;
     box-sizing: border-box;
-    z-index: 3333;
+    z-index: 666;
     text-align: center;
     right: 25px;
     left: auto;

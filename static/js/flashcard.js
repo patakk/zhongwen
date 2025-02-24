@@ -314,6 +314,195 @@ function wrapImageUrls(inputString) {
     return outputString;
 }
 
+function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback parameter
+    let containerDiv = document.createElement('div');
+    let page = 0;
+    containerDiv.id = 'mainExamplesContainer';
+    
+    let toggleButton = document.createElement('div');
+    toggleButton.innerHTML = '<span style="text-decoration: underline;">expand</span> ⤵';
+    toggleButton.style.cursor = 'pointer';
+    toggleButton.style.opacity = '0.4';
+    toggleButton.style.textAlign = 'center';
+    toggleButton.style.fontSize = '0.8em';
+
+    // Create a container for the load buttons
+    let loadButtonsContainer = document.createElement('div');
+    loadButtonsContainer.style.display = 'none';  // Initially hidden
+    loadButtonsContainer.style.justifyContent = 'flex-end';  // Changed from space-between to flex-end
+    loadButtonsContainer.style.alignItems = 'center';
+    loadButtonsContainer.style.fontSize = '0.8em';
+
+    let loadLessButton = document.createElement('div');
+    loadLessButton.innerHTML = '⟵ <span style="text-decoration: underline;">Load previous</span>';
+    loadLessButton.style.cursor = 'pointer';
+    loadLessButton.style.opacity = '0.4';
+    loadLessButton.style.display = 'none';  // Initially hidden
+    loadLessButton.style.marginRight = 'auto';  // Add this to push it to the left when visible
+
+    let loadMoreButton = document.createElement('div');
+    loadMoreButton.id = 'loadMoreButton';
+    loadMoreButton.innerHTML = '<span style="text-decoration: underline;">Load more</span> ⟶';
+    loadMoreButton.style.cursor = 'pointer';
+    if(is_last){
+        loadMoreButton.style.display = 'none';
+    }
+    loadMoreButton.style.opacity = '0.4';
+    
+    let examplesDiv = document.createElement('div');
+    examplesDiv.id = 'mainExamples';
+    examplesDiv.style.display = 'none';
+    function populateExamples(exs){
+    examplesDiv.innerHTML = '';
+    exs.forEach((example, index) => {
+        let exampleD = document.createElement('div');
+        let mandarin = example.cmn;
+        let english = example.eng[0];
+        let pinyin = example.pinyin;
+
+        let mchars = mandarin.split("");
+        let pwords = pinyin.split(" ");
+        
+        let cmnDiv = document.createElement('div');
+        let mandarinHtml = "";
+        const hoverBox = document.getElementById('pinyin-hover-box');
+
+        mchars.forEach((char, index) => {
+            let spanElement = document.createElement('span');
+            spanElement.textContent = char;
+            spanElement.classList.add('clickable-example-char');
+            
+            if (character && character.includes(char)) {
+                spanElement.style.color = 'var(--accent-word)';
+            }
+            spanElement.style.cursor = 'pointer';
+        
+            function showTooltip(element, content, x, y) {
+                hoverBox.innerHTML = content;
+                hoverBox.style.display = 'block';
+                hoverBox.style.left = `${x + 10}px`;
+                hoverBox.style.top = `${y + 10}px`;
+            }
+        
+            function hideTooltip() {
+                hoverBox.style.display = 'none';
+            }
+        
+            // Mouse events
+            spanElement.addEventListener('mouseover', function(e) {
+                showTooltip(this, pwords[index] || '', e.pageX, e.pageY);
+            });
+            spanElement.addEventListener('click', function(e) {
+                showFlashcard(char); 
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('query', char);
+                history.pushState({}, '', newUrl);
+                hoverBox.style.display = 'none';
+
+            });
+            spanElement.addEventListener('mouseout', hideTooltip);
+            spanElement.addEventListener('mousemove', function(e) {
+                hoverBox.style.left = `${e.pageX + 10}px`;
+                hoverBox.style.top = `${e.pageY + 10}px`;
+            });
+        
+            // Touch events
+            spanElement.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                if (hoverBox.style.display === 'none') {
+                    showTooltip(this, pwords[index] || '', touch.pageX, touch.pageY);
+                } else {
+                    hideTooltip();
+                }
+            });
+            
+            cmnDiv.appendChild(spanElement);
+        });
+        
+        
+        let engDiv = document.createElement('div');
+        engDiv.style.opacity = '0.6';
+        engDiv.textContent = english;
+        
+        let pinDiv = document.createElement('div');
+        pinDiv.style.opacity = '0.8';
+        pinDiv.style.fontSize = '0.7em';
+        pinDiv.style.color = 'var(--dimmer-text-color)';
+        pinDiv.textContent = pinyin;
+        
+        exampleD.appendChild(cmnDiv);
+        exampleD.appendChild(engDiv);
+        exampleD.style.marginBottom = '1em';
+        examplesDiv.appendChild(exampleD);
+    });
+}
+
+    
+    populateExamples(examples);
+
+    
+    // Add click handlers for load buttons
+    loadMoreButton.addEventListener('click', async () => {
+        page++;
+        getExamplesPage(page, character, populateExamples);
+        loadLessButton.style.display = 'block'; 
+    });
+
+    loadLessButton.addEventListener('click', async () => {
+        if (page > 0) {
+            page--;
+            getExamplesPage(page, character, populateExamples);
+            if (page === 0) {
+                loadLessButton.style.display = 'none'; 
+            }
+        }
+    });
+
+    toggleButton.addEventListener('click', () => {
+        if (examplesDiv.style.display === 'none') {
+            examplesDiv.style.display = 'block';
+            loadButtonsContainer.style.display = 'flex';
+            toggleButton.style.textAlign = 'center';
+            toggleButton.innerHTML = '<span style="text-decoration: underline;">collapse</span> ⤴';
+        } else {
+            examplesDiv.style.display = 'none';
+            loadButtonsContainer.style.display = 'none';
+            toggleButton.innerHTML = '<span style="text-decoration: underline;">expand</span> ⤵';
+            toggleButton.style.cursor = 'pointer';
+            toggleButton.style.opacity = '0.4';
+            toggleButton.style.textAlign = 'center';
+        }
+    });
+
+    // Add buttons to the container
+    loadButtonsContainer.appendChild(loadLessButton);
+    loadButtonsContainer.appendChild(loadMoreButton);
+
+    containerDiv.appendChild(examplesDiv);
+    containerDiv.appendChild(toggleButton);
+    containerDiv.appendChild(loadButtonsContainer);
+    
+    return containerDiv;
+}
+
+const getExamplesPage = async (page, character, func) => {
+    try {
+        const response = await fetch('./api/get_examples_page', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ character: character, page: page })
+        });
+        const data = await response.json();
+        func(data.examples);
+        let loadMoreButton = document.getElementById('loadMoreButton');
+        loadMoreButton.style.display = data.is_last ? 'none' : 'block';
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
 
 function addWordToLearning(symbol){
     fetch("./api/add_word_to_learning", {
@@ -329,6 +518,47 @@ function addWordToLearning(symbol){
     })
     .catch(error => {
         console.error("Error:", error);
+    });
+}
+
+function setupCloseButton(){
+    let addcardDiv = document.getElementById('flashcard_close');
+    addcardDiv.classList.add("corner-buttons")
+    addcardDiv.textContent = "×";
+    addcardDiv.addEventListener('click', function(){
+        hideCard();
+    });
+    if(true){
+        document.getElementById('flashcard_close').style.display = 'block';
+    }
+}
+
+function setupAddToDeck(){
+    let addcardDiv = document.getElementById('flashcard_addcard');
+    addcardDiv.classList.add("corner-buttons")
+    addcardDiv.textContent = "+";
+    const hoverBox = document.getElementById('pinyin-hover-box');
+    
+    function showTooltip(element, content, event) {
+        hoverBox.innerHTML = content;
+        hoverBox.style.display = 'block';
+        hoverBox.style.left = `${event.pageX + 10}px`;
+        hoverBox.style.top = `${event.pageY + 10}px`;
+    }
+
+    function hideTooltip() {
+        hoverBox.style.display = 'none';
+    }
+
+    addcardDiv.addEventListener('mouseover', function (e) {
+        let tooltipContent = `add to learning deck`;
+        showTooltip(this, tooltipContent, e);
+    });
+
+    addcardDiv.addEventListener('mouseout', hideTooltip);
+    addcardDiv.addEventListener('mousemove', function (e) {
+        hoverBox.style.left = `${e.pageX + 10}px`;
+        hoverBox.style.top = `${e.pageY + 10}px`;
     });
 }
 
@@ -420,16 +650,29 @@ function renderCardData(data) {
     const descriptionContainer = document.createElement('div');
     descriptionContainer.id = 'descriptionContainer';
 
-    const rawLabel = document.createElement('p');
-    rawLabel.textContent = "RAW description ";
-    rawLabel.id = 'rawLabel';
-    rawLabel.classList.add('notes-label');
-    // descriptionContainer.appendChild(rawLabel);
+    const rawLabel = document.createElement('div');
+    rawLabel.textContent = "Character breakdown ⤵";
+    rawLabel.style.marginTop = '2em';
+    rawLabel.style.marginBottom = '1em';
+    rawLabel.style.opacity = '0.6';
+    const exLabel = document.createElement('div');
+    exLabel.textContent = "Examples ⤵";
+    exLabel.style.marginTop = '2em';
+    exLabel.style.marginBottom = '1em';
+    exLabel.style.opacity = '0.6';
+    const inidididn = document.createElement('div');
+    // inidididn.innerHTML = "↓"
+    // inidididn.style.fontSize = '1.5em';
+    // inidididn.style.paddingTop = '0.25em';
+    // inidididn.style.paddingBottom = '0.5em';
+    // inidididn.style.transform = 'scaleY(1.5)'; 
+    // descriptionContainer.appendChild(inidididn);
+    // rawLabel.id = 'rawLabel';
+    // rawLabel.classList.add('notes-label');
 
     // Create tab navigation
     const tabNav = document.createElement('div');
     tabNav.classList.add('tab-nav');
-    descriptionContainer.appendChild(tabNav);
 
     // Create content container
     const tabContentContainer = document.createElement('div');
@@ -575,8 +818,6 @@ function renderCardData(data) {
             });
         });
         
-
-        
         // check appears_in length
         const appearsInDiv = document.createElement('div');
         if(appears_in.length !== 0){
@@ -700,8 +941,8 @@ function renderCardData(data) {
         }, 110);
 
         //document.getElementById('flashcard_overlay').appendChild(appearsInDiv);
-        entryDiv.appendChild(appearsInDiv);
         entryDiv.appendChild(similarsDiv);
+        entryDiv.appendChild(appearsInDiv);
 
 
         tabContentContainer.appendChild(entryDiv);
@@ -739,9 +980,15 @@ function renderCardData(data) {
     }
 
     // Add click handler to the label
+    let mainExamplesDiv = getExamplesDiv(data.tatoeba, data.character, data.is_last);
+
 
     // Replace the existing content
     document.getElementById('flashcard_description').innerHTML = '';
+    document.getElementById('flashcard_description').appendChild(exLabel);
+    document.getElementById('flashcard_description').appendChild(mainExamplesDiv);
+    document.getElementById('flashcard_description').appendChild(rawLabel);
+    document.getElementById('flashcard_description').appendChild(tabNav);
     document.getElementById('flashcard_description').appendChild(descriptionContainer);
 
     const notesParagraph = document.createElement('p');
@@ -1000,16 +1247,16 @@ function renderCardData(data) {
             descriptionLabel.classList.remove('collapsed');
         }
     });
-    rawLabel.addEventListener('click', () => {
-        tabNav.style.display = tabNav.style.display === 'none' ? 'block' : 'none';
-        tabContentContainer.style.display = tabContentContainer.style.display === 'none' ? 'block' : 'none';
-        if (tabNav.style.display === 'none') {
-            rawLabel.classList.add('collapsed');
-        }
-        else {
-            rawLabel.classList.remove('collapsed');
-        }
-    });
+    // rawLabel.addEventListener('click', () => {
+    //     tabNav.style.display = tabNav.style.display === 'none' ? 'block' : 'none';
+    //     tabContentContainer.style.display = tabContentContainer.style.display === 'none' ? 'block' : 'none';
+    //     if (tabNav.style.display === 'none') {
+    //         rawLabel.classList.add('collapsed');
+    //     }
+    //     else {
+    //         rawLabel.classList.remove('collapsed');
+    //     }
+    // });
 
     if(isemptyOtherNotes){
         publicNotesLabel.classList.add('collapsed');
@@ -1036,12 +1283,12 @@ function renderCardData(data) {
 
     if(data.function)
         document.getElementById('flashcard_function').textContent = "(" + data.function + ")";
-    document.getElementById('flashcard_practice').textContent = data.character.length <= 3 ? "practice" : "";
-    
-    document.getElementById('flashcard_practice').href = `./hanzipractice?character=${encodeURIComponent(data.character)}`;
+    // document.getElementById('flashcard_practice').textContent = data.character.length <= 3 ? "practice" : "";
+    // document.getElementById('flashcard_practice').href = `./hanzipractice?character=${encodeURIComponent(data.character)}`;
     // displayCharMatches(data.char_matches);
-    document.getElementById('flashcard_addcard').textContent = "+";
-    if(data.is_learnin || username === "tempuser"){
+    setupAddToDeck();
+    // setupCloseButton();
+    if(data.is_learning || username === "tempuser"){
         document.getElementById('flashcard_addcard').style.display = 'none';
     }
     else{

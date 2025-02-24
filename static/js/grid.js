@@ -618,6 +618,11 @@ overlay.addEventListener('click', (e) => {
     }
 });
 
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        hideCard();
+    }
+});
 
 function playHanziAudio() {
     const pinyinElement = document.getElementById('flashcard_pinyin');

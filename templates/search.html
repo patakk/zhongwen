@@ -17,10 +17,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Search - 中文</title>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <!-- <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_expanded.css') }}"> -->
     <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script>
 </head>
 
@@ -45,21 +45,8 @@
         
     </div>
     
-    <div id="flashcard_overlay">
-        <div id="flashcard_container">
-            <div id="flashcard_plotter"></div>
-            <div id="flashcard_character"></div>
-            <!-- <div id="flashcard_plotter" style="display: none;"></div> -->
-            <div id="flashcard_pinyin"></div>
-            <div id="flashcard_function"></div>
-            <div id="flashcard_english"></div>
-            <div id="flashcard_description"></div>
-            <!-- <div style="width: 95%; padding-bottom: 15px;">Related words:</div> -->
-            <div id="flashcard_char_matches"></div>
-            <div id="flashcard_addcard"></div>
-            <a href="#" id="flashcard_practice"></a>
-        </div>
-    </div>
+    {% include 'flashcard.html' %}
+
     <p id="message"></p>
     <div id="pinyin-hover-box" style="display: none;"></div>
     <script>

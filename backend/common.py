@@ -34,6 +34,31 @@ pos_map = {
     'n': 'noun', 'nr': 'proper noun', 'ns': 'place noun', 'nt': 'temporal noun', 'nz': 'other noun', 'v': 'verb', 'a': 'adjective', 'ad': 'adverb', 'an': 'prenoun', 'ag': 'adjective-adverb', 'al': 'adjective-numeral', 'b': 'other', 'c': 'complement', 'd': 'adverb', 'e': 'exclamation', 'f': 'surname', 'g': 'morpheme', 'h': 'prefix', 'i': 'idiom', 'j': 'abbreviation', 'k': 'suffix', 'l': 'temporary word', 'm': 'number', 'ng': 'gender noun', 'nx': 'kernel noun', 'o': 'onomatopoeia', 'p': 'preposition', 'q': 'classifier', 'r': 'pronoun', 'u': 'auxiliary', 'v': 'verb', 'vd': 'verb-auxiliary', 'vg': 'verb-object', 'vn': 'pronoun-verb', 'w': 'punctuation', 'x': 'non-lexeme', 'y': 'language-particle', 'z': 'state-particle'
 }
 
+
+def get_character_page(character, page):
+    tatoebas = []
+    tids = TATOEBA_MAP.get(character, [])
+    if not tids:
+        return None
+    perpage = 5
+    is_last = False
+    aa = perpage*page
+    bb = aa + perpage
+    if aa < 0:
+        aa = 0
+        bb = perpage
+    if bb > len(TATOEBA_MAP.get(character)):
+        bb = len(TATOEBA_MAP.get(character))
+        aa = bb - perpage
+        is_last = True
+    if perpage > len(TATOEBA_MAP.get(character)):
+        aa = 0
+        bb = len(TATOEBA_MAP.get(character))
+        is_last = True
+    for tid in tids[aa:bb]:
+        tatoebas.append(TATOEBA_DATA[tid])
+    return tatoebas, is_last
+
 def character_simple_info(character):
     definition = ''
     hsk = 'IMPLEMENT ME (HSK)'
@@ -95,7 +120,7 @@ def character_info(char):
     for comp in main_components:
         similar = decomposer.get_characters_with_component(comp)
         if similar:
-            similars[comp] = similar
+            similars[comp] = similar[:]
 
     try:
         # exam = dictionary.get_examples(char)
@@ -112,6 +137,8 @@ def character_info(char):
             if e['simplified'] == char:
                 continue
             appears_in.append({'simplified': e['simplified'], 'pinyin': e['pinyin'], 'english': e['definition']})
+            # if len(appears_in) > 5:
+            #     break
 
     except:
         appears_in = []

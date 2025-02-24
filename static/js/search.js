@@ -39,6 +39,11 @@ overlay.addEventListener('click', (e) => {
     }
 });
 
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        overlay.style.display = 'none';
+    }
+});
 
 function isTouchDevice() {
     return (('ontouchstart' in window) ||

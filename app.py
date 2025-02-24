@@ -32,7 +32,10 @@ from backend.db.ops import db_store_user_string
 from backend.db.ops import db_get_user_string
 from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
+from backend.common import TATOEBA_MAP
+from backend.common import TATOEBA_DATA
 from backend.common import flashcard_app
+from backend.common import get_character_page
 
 
 from backend.common import get_pinyin
@@ -201,6 +204,9 @@ def packed_data(character):
     simple_info = character_simple_info(character)
     learning_cards = db_load_user_value(username, "learning_cards") or []
     is_learning = character in learning_cards
+
+    tatoebas, is_last = get_character_page(character, 0)
+
     return {
         "character": character,
         "pinyin": simple_info['pinyin'],
@@ -212,6 +218,8 @@ def packed_data(character):
         "are_notes_public": are_notes_public,
         "other_user_notes": other_user_notes,
         "char_matches": "",
+        "tatoeba": tatoebas,
+        "is_last": is_last,
         "html": "IMPLEMENT ME", #data.get('examples', ''),
     }
 

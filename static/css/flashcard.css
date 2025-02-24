@@ -78,16 +78,14 @@
     text-align: center;
 }
 
-#flashcard_function::selection,
-#flashcard_addcard::selection {
+
+.corner-buttons::selection {
     background-color: black;
     color: white;
 }
 
-#flashcard_addcard {
+.corner-buttons {
     position: absolute;
-    top: 0px;
-    right: 0px;
     text-align: center;
     font-size: 16px;
     cursor: pointer;
@@ -95,8 +93,19 @@
     box-sizing: content-box;
 }
 
+#flashcard_addcard {
+    top: 0;
+    left: 0;
+}
 
-#flashcard_addcard, #flashcard_practice {
+#flashcard_close {
+    position: sticky;
+    top: 100px;
+    right: 100px;
+}
+
+
+.corner-buttons {
     color: var(--text-color);
     background: var(--lifted-background-color);
     margin: 1em;
@@ -105,6 +114,9 @@
 
 
 #flashcard_addcard {
+    padding: .3em .7em .4em .7em;
+}
+#flashcard_close {
     padding: .3em .7em .4em .7em;
 }
 
@@ -476,6 +488,7 @@ and (max-device-width: 1024px) {
     position: absolute;
     background-color: var(--dimmer-background-color);
     border: 1px solid #ddd;
+    border: none;
     padding: 10px;
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -594,6 +607,7 @@ and (max-device-width: 1024px) {
 
 #descriptionContainer {
     border-bottom: 1px dashed #00000038;
+    /* background-color: var(--dimmer-background-color); */
 }
 #descriptionParagraph {
     /* background-color: #fafafa; */
@@ -994,4 +1008,30 @@ input[type="checkbox"].darkmode:checked::after {
 
 .fall-out {
     animation: fallAndRotate 0.35s ease-in forwards;
+}
+
+#mainExamplesContainer {
+    background-color: var(--dimmer-background-color);
+    padding: 1em;
+}
+
+#mainExamples {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}   
+
+
+#flashcard_close {
+    position: fixed;
+    top: 5%;
+    right: 20%;
+    transform: translate(0px, -0px);
+}
+
+.clickable-example-char {
+    margin: 0 .1em;
+}
+.clickable-example-char:hover {
+    background-color: var(--dimmer-border-color-a);
 }

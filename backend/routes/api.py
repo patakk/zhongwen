@@ -17,9 +17,12 @@ from backend.db.models import Card, UserNotes
 from backend.db.extensions import db
 
 from backend.common import CARDDECKS
+from backend.common import TATOEBA_MAP
+from backend.common import TATOEBA_DATA
 from backend.common import character_simple_info
 from backend.common import flashcard_app
 from backend.common import dictionary
+from backend.common import get_character_page
 
 
 logger = logging.getLogger(__name__)
@@ -29,8 +32,17 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 with open("data/audio_mappings.json", "r", encoding="utf-8") as f:
     audio_mappings = json.load(f)
 
+@api_bp.route("/get_examples_page", methods=["POST"])
+@session_required
+def get_examples_page():
+    data = request.get_json()
+    if not data or "page" not in data or "character" not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+    page = data["page"]
+    character = data["character"]
+    examples, is_last = get_character_page(character, page)
+    return jsonify({"examples": examples, "is_last": is_last})
 
-# rout for calling flashcard_app.add_word_to_learning(username, word)
 @api_bp.route("/add_word_to_learning", methods=["POST"])
 @session_required
 def add_word_to_learning():
@@ -52,7 +64,6 @@ def remove_word_from_learning():
         return jsonify({"error": "Missing required fields"}), 400
     word = data["word"]
     username = session.get("username")
-    print(username, word)
     flashcard_app.remove_word_from_learning(username, word)
     print(f"Word removed from learning: {word}")
     return jsonify({"status": "success"})
