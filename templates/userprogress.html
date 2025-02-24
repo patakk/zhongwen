@@ -329,9 +329,9 @@
             </tr>
                 {% for stat in progress_stats %}
                     {% if stat.is_due == 1 %}
-                    <tr style="background-color: #ffefea;" data-isdue="1">
+                    <tr style="background-color: var(--due-color)" data-isdue="1">
                     {% elif stat.box == 6 %}
-                    <tr style="background-color: #eafff6;">
+                    <tr style="background-color: var(--learned-color);">
                     {% else %}
                     <tr>    
                     {% endif %}
@@ -594,6 +594,7 @@
                         }
                         console.log('Card removed successfully');
                         this.parentElement.remove();
+                        // redue learning cards element 
                     })
                     .catch(error => {
                         console.error('There was a problem removing the card:', error);

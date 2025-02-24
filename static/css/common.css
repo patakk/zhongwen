@@ -18,6 +18,8 @@
     --accent-word: rgb(229, 61, 0);
     --dim-accent-color: rgb(185, 72, 49);
     --griditem-background-color: #fcfcfc;
+    --due-color: #f8d7da;
+    --learned-color: #d4edda;
 }
 
 ::selection {
@@ -27,6 +29,8 @@
 
 .darkmode {
     --lifted-background-color: #222222;
+    --due-color: #873131;
+    --learned-color: #3a8a43;
     --accent-word: rgb(255, 191, 28);
     --border-color: #494949;
     --simple-border: 2px solid #444444;
