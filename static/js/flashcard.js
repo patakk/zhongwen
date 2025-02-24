@@ -334,7 +334,7 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
     loadButtonsContainer.style.fontSize = '0.8em';
 
     let loadLessButton = document.createElement('div');
-    loadLessButton.innerHTML = '⟵ <span style="text-decoration: underline;">Load previous</span>';
+    loadLessButton.innerHTML = '⟵ <span style="text-decoration: underline;">previous page</span>';
     loadLessButton.style.cursor = 'pointer';
     loadLessButton.style.opacity = '0.4';
     loadLessButton.style.display = 'none';  // Initially hidden
@@ -342,7 +342,7 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
 
     let loadMoreButton = document.createElement('div');
     loadMoreButton.id = 'loadMoreButton';
-    loadMoreButton.innerHTML = '<span style="text-decoration: underline;">Load more</span> ⟶';
+    loadMoreButton.innerHTML = '<span style="text-decoration: underline;">next page</span> ⟶';
     loadMoreButton.style.cursor = 'pointer';
     if(is_last){
         loadMoreButton.style.display = 'none';
