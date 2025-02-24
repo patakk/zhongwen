@@ -980,13 +980,15 @@ function renderCardData(data) {
     }
 
     // Add click handler to the label
-    let mainExamplesDiv = getExamplesDiv(data.tatoeba, data.character, data.is_last);
 
 
     // Replace the existing content
     document.getElementById('flashcard_description').innerHTML = '';
     document.getElementById('flashcard_description').appendChild(exLabel);
-    document.getElementById('flashcard_description').appendChild(mainExamplesDiv);
+    if(data.tatoeba.length > 0){
+        let mainExamplesDiv = getExamplesDiv(data.tatoeba, data.character, data.is_last);
+        document.getElementById('flashcard_description').appendChild(mainExamplesDiv);
+    }
     document.getElementById('flashcard_description').appendChild(rawLabel);
     document.getElementById('flashcard_description').appendChild(tabNav);
     document.getElementById('flashcard_description').appendChild(descriptionContainer);

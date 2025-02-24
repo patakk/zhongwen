@@ -205,7 +205,12 @@ def packed_data(character):
     learning_cards = db_load_user_value(username, "learning_cards") or []
     is_learning = character in learning_cards
 
-    tatoebas, is_last = get_character_page(character, 0)
+
+    res = get_character_page(character, 0)
+    if res:
+        tatoebas, is_last = res
+    else:
+        tatoebas, is_last = [], False
 
     return {
         "character": character,
