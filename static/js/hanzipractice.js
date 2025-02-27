@@ -8,7 +8,7 @@ const accuracySpan = document.getElementById('accuracy');
 const strokeAccuracySpan = document.getElementById('stroke_accuracy');
 const restartBtn = document.getElementById('restart-btn');
 const skipBtn = document.getElementById('skip-btn');
-const endBtn = document.getElementById('end-btn');
+const resetBtn = document.getElementById('end-btn');
 const pinyinLabel = document.getElementById('pinyin-display');
 
 let currentIndex = 0;
@@ -231,8 +231,11 @@ pinyinLabel.addEventListener('click', () => {
     }
 });
 
-endBtn.addEventListener('click', () => {
+resetBtn.addEventListener('click', () => {
+    skipState = 0;
+    
     showWord();
+    skipBtn.textContent = 'Reveal';
 });
 
 skipBtn.addEventListener('click', () => {
