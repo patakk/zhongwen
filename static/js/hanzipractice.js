@@ -73,30 +73,32 @@ function populateDropdown() {
 //   }
 
 function resetWord(){
+    drawingArea.removeEventListener('click', handleAreaClick);
+    
+    if(pinyinLabel.classList.contains('active')){
+        pinyinLabel.classList.remove('active');
+    }
     window.scrollTo(0, 0);
-    englishDisplay.textContent = currentCharacterData.english;
+    if (currentIndex < shuffledWords.length) {
+        // progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledWords.length)}`;
+    } else {
+        currentIndex = 0;
+    }
+    let characterData = currentcharacters[shuffledWords[currentIndex]];
+    englishDisplay.textContent = characterData.english;
     wordTotalMistakeCount = 0;
     wordTotalStrokeCount = 0;
     
-    skipState = 0;
-    numFinished = 0;
-    
-    streakCount = 0;
-    streakCheckpoint = streakIncrement;
-
-    skipBtn.textContent = skipButtonLable1;
-    
-    currentWord = currentCharacterData.character;
-    currentEnglish = currentCharacterData.english;
-    currentPinyin = currentCharacterData.pinyin;
-    createHanziWriters(currentCharacterData.character);
-    pinyinLabel.textContent = currentCharacterData.pinyin;
+    currentWord = shuffledWords[currentIndex];
+    currentEnglish = characterData.english;
+    currentPinyin = characterData.pinyin;
+    createHanziWriters(shuffledWords[currentIndex]);
+    pinyinLabel.textContent = characterData.pinyin;
     confirmDarkmode();
     
-    drawingArea.removeEventListener('click', handleAreaClick);
-
     window.scrollTo(0, 1);
 }
+
 async function loadNewWords(func=null){
     fetch(`../api/get_random_characters`, {
         method: 'POST',
@@ -181,26 +183,14 @@ function startTest() {
     userAnswers = [];
     window.scrollTo(0, 0);
     window.scrollTo(0, 1);
-    showNextWord();
+    showWord();
     resultsDiv.style.display = 'none';
     document.getElementById('test-container').style.display = 'block';
 }
 
-function showNextWord() {
+function showWord() {
     drawingArea.removeEventListener('click', handleAreaClick);
     
-    // currentWriters.forEach(writer => {
-    //     if(isDarkMode){
-    //         writer.updateColor('strokeColor', '#fff')
-    //         writer.updateColor('radicalColor', '#fff')
-    //     }
-    //     else{
-    //         writer.updateColor('strokeColor', '#000')
-    //         writer.updateColor('radicalColor', '#000')
-    //     }
-    // });
-    // remove event listenrrs from 
-            
     if(pinyinLabel.classList.contains('active')){
         pinyinLabel.classList.remove('active');
     }
@@ -242,7 +232,7 @@ pinyinLabel.addEventListener('click', () => {
 });
 
 endBtn.addEventListener('click', () => {
-    resetWord();
+    showWord();
 });
 
 skipBtn.addEventListener('click', () => {
@@ -298,7 +288,7 @@ skipBtn.addEventListener('click', () => {
         streakCount = 0;
         streakCheckpoint = streakIncrement;
 
-        showNextWord();
+        showWord();
         skipBtn.textContent = 'Reveal';
     }
 });
@@ -529,7 +519,7 @@ function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
     }
     
     setTimeout(() => {
-        //showNextWord();
+        //showWord();
         //skipState = 1;
         //skipBtn.textContent = 'Next';
         
