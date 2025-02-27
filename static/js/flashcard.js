@@ -106,7 +106,7 @@ function displayCharMatches(charMatches) {
             }
             
             wordLink.onclick = function() {
-                showFlashcard(word); 
+                loadAndShow(word); 
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('query', word);
                 history.pushState({}, '', newUrl);
@@ -393,7 +393,7 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
                 showTooltip(this, pwords[index] || '', e.pageX, e.pageY);
             });
             spanElement.addEventListener('click', function(e) {
-                showFlashcard(char); 
+                loadAndShow(char); 
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('query', char);
                 history.pushState({}, '', newUrl);
@@ -531,6 +531,68 @@ function setupCloseButton(){
     if(true){
         document.getElementById('flashcard_close').style.display = 'block';
     }
+}
+
+let prefetchedPlotters = null;
+
+function loadAndShow(character) {
+    messageElement.textContent = 'Loading...';
+    fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            try{
+                bordercanvas.style.display = 'block';
+            }
+            catch(e){
+
+            }
+
+            let chars = character.split('');
+            // if(prefetchedPlotters){
+            //     let isOkay = true;
+            //     prefetchedPlotters.forEach((plotter, idx) => {
+            //         if(plotter.char !== chars[idx]){
+            //             isOkay = false;
+            //         }
+            //     });
+            //     if(isOkay)
+            //         data.plotters = prefetchedPlotters;
+            //     else
+            //         data.plotters = createPlotters(data);
+            // }
+            // else{
+                data.plotters = createPlotters(data);
+            // }
+            // overlay.style.backgroundColor = overlaycolors[hsklvl];
+            // overlay.style.backgroundColor = currentColor;
+            // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
+            // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
+           
+            renderCardData(data);
+            currentGridPlotters = data.plotters;
+            displayCard(true, true);
+            cardVisible = true;
+            try{
+                if(!canvasrendered || true){
+                    renderBorder();
+                    canvasrendered = true;
+                }
+            }
+            catch(e){
+
+            }
+            messageElement.textContent = '';
+            // recordView(character);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            messageElement.textContent = `Error: ${error.message}`;
+        });
 }
 
 function setupAddToDeck(){
@@ -758,7 +820,7 @@ function renderCardData(data) {
                     }
         
                     wordLink.onclick = function () {
-                        showFlashcard(similar_char);
+                        loadAndShow(similar_char);
                         const newUrl = new URL(window.location);
                         newUrl.searchParams.set('query', similar_char);
                         history.pushState({}, '', newUrl);
@@ -878,7 +940,7 @@ function renderCardData(data) {
             }
             
             wordLink.onclick = function() {
-                showFlashcard(similar_char); 
+                loadAndShow(similar_char); 
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('query', similar_char);
                 history.pushState({}, '', newUrl);

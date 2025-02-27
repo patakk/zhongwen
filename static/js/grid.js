@@ -186,7 +186,7 @@ function toggleGridList(){
     confirmDarkmode();
 }
 
-let prefetchedPlotters = null;
+// let prefetchedPlotters = null;
 let charCounter = 0;
 function createGrid(characters, useAllDecks){
     const grid = document.getElementById('character-grid');
@@ -391,21 +391,21 @@ function loadAndShow(character) {
             }
 
             let chars = character.split('');
-            if(prefetchedPlotters){
-                let isOkay = true;
-                prefetchedPlotters.forEach((plotter, idx) => {
-                    if(plotter.char !== chars[idx]){
-                        isOkay = false;
-                    }
-                });
-                if(isOkay)
-                    data.plotters = prefetchedPlotters;
-                else
-                    data.plotters = createPlotters(data);
-            }
-            else{
+            // if(prefetchedPlotters){
+            //     let isOkay = true;
+            //     prefetchedPlotters.forEach((plotter, idx) => {
+            //         if(plotter.char !== chars[idx]){
+            //             isOkay = false;
+            //         }
+            //     });
+            //     if(isOkay)
+            //         data.plotters = prefetchedPlotters;
+            //     else
+            //         data.plotters = createPlotters(data);
+            // }
+            // else{
                 data.plotters = createPlotters(data);
-            }
+            // }
             // overlay.style.backgroundColor = overlaycolors[hsklvl];
             let overlay = document.getElementById('flashcard_overlay');
             let currentColor = getColorByTime(overlaycolors);
@@ -462,21 +462,21 @@ function loadCard(character) {
             }
 
             let chars = character.split('');
-            if(prefetchedPlotters){
-                let isOkay = true;
-                prefetchedPlotters.forEach((plotter, idx) => {
-                    if(plotter.char !== chars[idx]){
-                        isOkay = false;
-                    }
-                });
-                if(isOkay)
-                    data.plotters = prefetchedPlotters;
-                else
-                    data.plotters = createPlotters(data);
-            }
-            else{
+            // if(prefetchedPlotters){
+            //     let isOkay = true;
+            //     prefetchedPlotters.forEach((plotter, idx) => {
+            //         if(plotter.char !== chars[idx]){
+            //             isOkay = false;
+            //         }
+            //     });
+            //     if(isOkay)
+            //         data.plotters = prefetchedPlotters;
+            //     else
+            //         data.plotters = createPlotters(data);
+            // }
+            // else{
                 data.plotters = createPlotters(data);
-            }
+            // }
             // overlay.style.backgroundColor = overlaycolors[hsklvl];
             let overlay = document.getElementById('flashcard_overlay');
             let currentColor = getColorByTime(overlaycolors);
