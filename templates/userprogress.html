@@ -42,8 +42,7 @@
             overflow-y: auto;
         }
         .container {
-            width: 90%;
-            max-width: 1200px;
+            width: 50%;
             margin: 0 auto;
             background-color: var(--background-color);
             color: var(--text-color);
@@ -53,14 +52,17 @@
         h1 {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             color: var(--text-color);
-            font-size: 34px;
-            margin-top: 0px;
+            font-size: 3em;
+            margin-top: 0;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 1em;
+            margin-bottom: 1em;
         }
+
+
         th, td {
             padding: 10px;
             text-align: left;
@@ -76,37 +78,37 @@
             font-weight: bold;
             background-color: var(--lifted-background-color);
         }
+        
+
+        table {
+            width: 100%;
+            max-width: 100%;
+            table-layout: fixed;
+            white-space: wrap;
+        }
+
+        td, th {
+            padding: 8px;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+        }
+
         .character {
-            font-size: 22px;
+            font-size: 1em;
             font-weight: 400;
             cursor: pointer;
+            text-overflow: none;
         }
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            .container {
-                width: 100%;
-                padding: 1rem;
-                overflow-x: auto;
-                scrollbar-width: none;  /* Firefox */
-                -ms-overflow-style: none;  /* Internet Explorer 10+ */
-            }
-            .container::-webkit-scrollbar {
-                display: none;  /* WebKit */
-            }
-            h1 {
-                font-size: 20px;
-            }
-            table {
-                font-size: 14px;
-            }
-            th, td {
-                padding: 5px;
-            }
-            .character {
-                font-size: 18px;
-            }
+        
+        .container {
+            overflow-x: auto;
+            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        }
+        .container::-webkit-scrollbar {
+            display: none;  /* WebKit */
         }
 
         .settings-container {
@@ -162,6 +164,54 @@
             outline: 2px solid #000000;
         }
 
+        .varvar {
+
+        }
+
+        td:nth-child(6), th:nth-child(6) {
+            width: 5%; 
+            max-width: 5%;
+        }
+
+        @media (max-width: 768px) {
+           
+            .varvar{
+                display: none;
+            }
+
+            .container {
+                width: 100%;
+            }
+
+            h1 {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                color: var(--text-color);
+                font-size: 2em;
+                margin-top: 0;
+            }
+
+            table {
+                font-size: 1rem;
+            }
+
+            .character {
+                font-size: 1rem;
+            }
+
+
+            td:first-child, th:first-child {
+                width: 50%; /* Character column */
+            }
+
+            td:nth-child(5), th:nth-child(5) {
+                width: 30%; /* Learned column */
+            }
+
+            td:nth-child(6), th:nth-child(6) {
+                width: 15%; /* Streak column */
+            }
+        }
+        
         @media (max-width: 768px) {
             .settings-container {
                 width: 100%;
@@ -220,6 +270,11 @@
             color: #ff0000;
             cursor: default;
         }
+        
+        .due-date.darkmode {
+            color: #ffc1c1;
+            cursor: default;
+        }
 
 
 
@@ -229,6 +284,10 @@
             background-color: #ffffff;
             width: 7%;
             min-width: 70px;
+        }
+
+        .tooltip-header {
+            white-space: wrap;
         }
 
         /* #saveButton.darkmode {
@@ -264,7 +323,7 @@
             border-radius: 4px;
             box-shadow: 0 2px 5px #00000033;
             z-index: 1000;
-            font-size: 14px;
+            font-size: .8em;
         }
 
         #flashcard_overlay {
@@ -282,7 +341,42 @@
 
         .remove-card {
             cursor: pointer;
+            max-width: 1em;
+            width: 1em;
+            text-align: center;
+            align-items: center;
         }
+
+        .trash-iconw {
+            display: block;
+            width: 1em;
+            height: 1em;
+            margin: auto;
+        }
+
+        .trash-iconb {
+            display: none;
+            width: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .trash-iconw.darkmode {
+            display: none;
+            width: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .trash-iconb.darkmode {
+            display: block;
+            width: 1em;
+            height: 1em;
+            margin: auto;
+        }
+
 
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
@@ -321,10 +415,10 @@
         <tr>
         <table>
                 <th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th>
-                <th class="tooltip-header" data-tooltip="Current learning stage of the character (%)">Learned</th>
-                <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th>
-                <th class="tooltip-header" data-tooltip="Number of consecutive correct answers">Streak</th>
-                <th class="tooltip-header" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
+                <th class="tooltip-header varvar" data-tooltip="Current learning stage of the character (%)">Learned</th>
+                <!-- <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th> -->
+                <th class="tooltip-header varvar" data-tooltip="Number of consecutive correct answers">Streak</th>
+                <th class="tooltip-header varvar" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
                 <th class="tooltip-header" data-tooltip="Scheduled date and time for the next review">Next Review</th>
             </tr>
                 {% for stat in progress_stats %}
@@ -339,12 +433,12 @@
                     <td style="text-align: left;" class="character" onclick="showFlashcard('{{ stat.character }}')">
                         <a>{{ stat.character }}</a>
                     </td>
-                    <td style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
-                    <td style="text-align: right;">
+                    <td class="varvar" style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
+                    <!-- <td style="text-align: right;">
                         {{ '{:.2f}'.format(stat.difficulty) if stat.difficulty is not none else '/' }}
-                    </td>
-                    <td style="text-align: right;">{{ stat.streak }}</td>
-                    <td style="text-align: right;">{{ stat.num_incorrect }}</td>
+                    </td> -->
+                    <td class="varvar"  style="text-align: right;">{{ stat.streak }}</td>
+                    <td class="varvar"  style="text-align: right;">{{ stat.num_incorrect }}</td>
                         {% if stat.is_due == 1 %}
                         <td style="text-align: right;" class="next-review-date">DUE</td>
                         {% else %}
@@ -354,7 +448,10 @@
                                 <td style="text-align: right;">/</td>
                             {% endif %}
                         {% endif %}
-                    <td class="remove-card tooltip-header" style="text-align: center;" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >🗑</td>
+                    <td class="remove-card tooltip-header" style="text-align: center; max-width: 1rem;" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >             
+                        <img src="/static/icons/trashw.png" alt="delete" class="trash-iconw">
+                        <img src="/static/icons/trashb.png" alt="delete" class="trash-iconb">
+                    </td>
                 </tr>
                 {% endfor %}
         </table>
@@ -565,10 +662,14 @@
             adjustFlashCardChars();
     
             tooltipHeaders.forEach(header => {
-                header.addEventListener('mouseover', function(e) {
+                header.addEventListener('mouseenter', function(e) {
                     const tooltip = this.getAttribute('data-tooltip');
                     showTooltip(this, tooltip, e);
                 });
+
+                setTimeout(() => {
+                    hideTooltip();
+                }, 400);
     
                 header.addEventListener('mouseout', hideTooltip);
     
@@ -660,7 +761,7 @@
                 
                 const gridItems = document.querySelectorAll('.character');
                 gridItems.forEach(item => {
-                    item.style.fontSize = `${fontInfo.size}px`;
+                    // item.style.fontSize = `${fontInfo.size}px`;
                     item.style.fontFamily = `"${currentFont}"`;
                 });
                 console.log('selected font', currentFont);

@@ -1035,3 +1035,56 @@ input[type="checkbox"].darkmode:checked::after {
 .clickable-example-char:hover {
     background-color: var(--dimmer-border-color-a);
 }
+
+
+.trash-iconw {
+    display: inline;
+    width: 1em;
+    height: 1em;
+}
+
+.trash-iconb {
+    display: none;
+    width: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.trash-iconw.darkmode {
+    display: none;
+    width: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.trash-iconb.darkmode {
+    display: inline;
+    width: 1em;
+    height: 1em;
+}
+
+.down-iconw {
+    background-image: url("/static/icons/arrowdnw.png");
+    width: 1em;
+    height: 1em;
+}
+
+.up-iconw {
+    background-image: url("/static/icons/arrowupw.png");
+    width: 1em;
+    height: 1em;
+}
+
+.down-iconb {
+    background-image: url("/static/icons/arrowdnb.png");
+    width: 1em;
+    height: 1em;
+}
+
+.up-iconb {
+    background-image: url("/static/icons/arrowupb.png");
+    width: 1em;
+    height: 1em;
+}

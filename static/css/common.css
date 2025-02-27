@@ -29,8 +29,8 @@
 
 .darkmode {
     --lifted-background-color: #222222;
-    --due-color: #873131;
-    --learned-color: #3a8a43;
+    --due-color: #4b3232;
+    --learned-color: #374b32;
     --accent-word: rgb(255, 191, 28);
     --border-color: #494949;
     --simple-border: 2px solid #444444;
