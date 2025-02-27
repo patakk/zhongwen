@@ -400,11 +400,15 @@ def grid():
     logger.info(f"Query deck: {querydeck}")
 
     username = session.get('username')
-    learning_cards = db_load_user_progress(username)['learning_cards']
+    print(username)
+    if username and username != 'tempuser':
+        learning_cards = db_load_user_progress(username)['learning_cards']
+    else:
+        learning_cards = []
     cc = {
         'custom': {
             'name': 'Custom deck',
-            'chars': get_chars_info(learning_cards, pinyin=True),
+            'chars': get_chars_info(learning_cards, pinyin=True) if learning_cards else {},
         },
         **CARDDECKS_W_PINYIN
     }

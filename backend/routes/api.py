@@ -487,7 +487,12 @@ def get_characters_for_practice():
 @timing_decorator
 def get_random_characters():
     username = session.get('username')
-    learning_cards = db_load_user_progress(username)['learning_cards']
+    
+    if username and username != 'tempuser':
+        learning_cards = db_load_user_progress(username)['learning_cards']
+    else:
+        learning_cards = []
+        
     cd = {
         'custom': {
             'name': 'Custom deck',
