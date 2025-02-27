@@ -242,7 +242,7 @@ pinyinLabel.addEventListener('click', () => {
 });
 
 endBtn.addEventListener('click', () => {
-    showResults();
+    resetWord();
 });
 
 skipBtn.addEventListener('click', () => {
