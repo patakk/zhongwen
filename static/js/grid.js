@@ -426,6 +426,7 @@ function loadAndShow(character) {
             catch(e){
 
             }
+            messageElement.textContent = '';
             // recordView(character);
         })
         .catch(error => {
@@ -488,6 +489,7 @@ function loadCard(character) {
             // displayCard(true, true);
             // cardVisible = true;
             loadedCard = data;
+            messageElement.textContent = "";
         })
         .catch(error => {
             console.error('Error:', error);
