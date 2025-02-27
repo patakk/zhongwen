@@ -103,13 +103,17 @@ html::-webkit-scrollbar {
 
 #answer-table-container {
     width: 100%;
-    max-width: 500px; /* Set maximum width for non-mobile */
+    max-width: 700px; /* Set maximum width for non-mobile */
     margin: 0 auto; /* Center the table container */
 }
 
 #answer-table {
     width: 100%;
     border-collapse: collapse;
+    word-wrap: break-word; 
+    overflow-wrap: break-word; 
+    border-collapse: collapse;
+    table-layout: fixed;
 }
 
 #answer-table td {
@@ -361,27 +365,40 @@ h1 {
 
 .custom-dropdown {
     position: relative;
-    width: 300px;
     font-family: Arial, sans-serif;
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-#deck-name {
+.deck-dropdown{
+    margin-top: 20px;
+
+}
+
+
+#deck-name, #font-name {
+    white-space: nowrap;
+    text-align: center;
+    font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
     cursor: pointer;
     margin-bottom: 0;
-font-family: 'Noto Sans Mono', monospace;
+    display: flex;
+    flex-direction: row;
 }
 
-#selected-deck {
-    font-weight: bold;
-    background-color: #dcdcdc;
+
+#deck-name.darkmode, #font-name.darkmode {
+    color: #f0f0f0
+}
+
+
+#deck-name-label, #font-name-label {
     padding: 3px 11px;
 }
 
-#selected-deck.darkmode {
-    font-weight: bold;
-    background-color: #353535;
-}
 
 .options-container {
     display: none;
@@ -438,4 +455,37 @@ font-family: 'Noto Sans Mono', monospace;
 
 #answer-table td.darkmode {
     border: 2px solid #b6b6b6;
+}
+
+
+#selected-deck {
+    font-weight: bold;
+    display: block;
+    width: 150px;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: #dcdcdc;
+    padding: 3px 11px;
+    font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
+}
+
+#selected-deck.darkmode {
+    font-weight: bold;
+    background-color: #353535;
+}
+
+#selected-font {
+    font-weight: bold;
+    background-color: #dcdcdc;
+    padding: 3px 11px;
+    font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
+}
+
+#selected-font.darkmode {
+    font-weight: bold;
+    background-color: #353535;
 }

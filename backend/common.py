@@ -1,4 +1,5 @@
 import json
+import random
 import os
 import jieba.posseg as pseg
 
@@ -27,6 +28,12 @@ TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_examples.json")))
 TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_example_ids_by_char.json")))
 DECKS_INFO = {key : CARDDECKS[key]["name"] for key in CARDDECKS}
 
+
+DECKNAMES = {
+    d : CARDDECKS[d]['name'] for d in CARDDECKS
+}
+DECKNAMES['custom'] = 'Custom deck'
+
 init_flashcard_app({})
 flashcard_app = get_flashcard_app()
 
@@ -34,8 +41,7 @@ pos_map = {
     'n': 'noun', 'nr': 'proper noun', 'ns': 'place noun', 'nt': 'temporal noun', 'nz': 'other noun', 'v': 'verb', 'a': 'adjective', 'ad': 'adverb', 'an': 'prenoun', 'ag': 'adjective-adverb', 'al': 'adjective-numeral', 'b': 'other', 'c': 'complement', 'd': 'adverb', 'e': 'exclamation', 'f': 'surname', 'g': 'morpheme', 'h': 'prefix', 'i': 'idiom', 'j': 'abbreviation', 'k': 'suffix', 'l': 'temporary word', 'm': 'number', 'ng': 'gender noun', 'nx': 'kernel noun', 'o': 'onomatopoeia', 'p': 'preposition', 'q': 'classifier', 'r': 'pronoun', 'u': 'auxiliary', 'v': 'verb', 'vd': 'verb-auxiliary', 'vg': 'verb-object', 'vn': 'pronoun-verb', 'w': 'punctuation', 'x': 'non-lexeme', 'y': 'language-particle', 'z': 'state-particle'
 }
 
-
-def get_character_page(character, page):
+def get_tatoeba_page(character, page):
     tatoebas = []
     tids = TATOEBA_MAP.get(character, [])
     if not tids:
@@ -59,37 +65,52 @@ def get_character_page(character, page):
         tatoebas.append(TATOEBA_DATA[tid])
     return tatoebas, is_last
 
-def character_simple_info(character):
-    definition = ''
-    hsk = 'IMPLEMENT ME (HSK)'
-
-    words = pseg.cut(character)
-    functions = []
-    for _, flag in words:
-        f = pos_map.get(flag, 'unknown')
-        functions.append(f)
-    function = 'IMPLEMENT ME (FUNCTION)'
-    if len(functions) == 1:
-        function = functions[0]
-    else:
-        function = functions
-
+def get_char_info(character, pinyin=False, english=False, function=False, full=False):
+    if full:
+        return char_full_info_(character)
+    info = {}
     try:
         dlup = dictionary.definition_lookup(character)
-        definition = ''
-        definition = dlup[0]['definition']
+        if pinyin:
+            info['pinyin'] = get_pinyin(character)
+            # info['pinyin'] = dlup[0]['pinyin']
+        if english:
+            info['english'] = dlup[0]['definition']
     except:
-        pass
-    return {
-        'english': definition,
-        'pinyin': get_pinyin(character),
-        'hsk_level': hsk,
-        'function': function,
-    }
+        info['pinyin'] = "N/A"
+        info['english'] = "N/A"
+    if function:
+        words = pseg.cut(character)
+        functions = []
+        for _, flag in words:
+            f = pos_map.get(flag, 'unknown')
+            functions.append(f)
+        function = 'IMPLEMENT ME (FUNCTION)'
+        if len(functions) == 1:
+            function = functions[0]
+        else:
+            function = functions
+        info['function'] = function
+    return info
+
+def get_chars_info(characters, pinyin=False, english=False, function=False):
+    return {c: get_char_info(c, pinyin, english, function) for c in characters}
+
+CARDDECKS_W_PINYIN = {
+    deck: {
+        "name": CARDDECKS[deck]["name"],
+        "chars": get_chars_info(CARDDECKS[deck]["chars"], pinyin=True)
+    } for deck in CARDDECKS if 'hsk' in deck
+}
+
+def get_random_chars_from_deck(deck, n, pinyin=False, english=False, function=False):
+    characters = CARDDECKS[deck]["chars"]
+    random.shuffle(characters)
+    characters = characters[:n]
+    return {c: get_char_info(c, pinyin, english, function) for c in characters}
 
 
-
-def character_info(char):
+def char_full_info_(char):
     definition = "-"
     try:
         definition = dictionary.definition_lookup(char)[0]['definition']
@@ -123,14 +144,6 @@ def character_info(char):
             similars[comp] = similar[:]
 
     try:
-        # exam = dictionary.get_examples(char)
-        # appears_in = []
-        # for fr in exam:
-        #     for e in exam[fr]:
-        #         if e['simplified'] == char:
-        #             continue
-        #         appears_in.append({'simplified': e['simplified'], 'pinyin': e['pinyin'], 'definition': e['definition']})
-
         exam = dictionary.dictionary_search(char)
         appears_in = []
         for e in exam:
@@ -142,6 +155,7 @@ def character_info(char):
 
     except:
         appears_in = []
+
     return {
         'english': definition,
         'frequency': frequency,

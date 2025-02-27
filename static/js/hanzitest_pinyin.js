@@ -21,13 +21,27 @@ const dropdownToggle = document.getElementById('dropdown-toggle');
 const deckOptionsElement = document.getElementById('deck-options');
 
 function populateDropdown() {
-    selectDeck(inputdeck);
-    Object.keys(inputdecks).forEach(deckName => {
-      const option = document.createElement('div');
-      option.className = 'option';
-      option.textContent = decksinfos[deckName].name;
-      option.onclick = () => selectDeck(deckName);
-      deckOptionsElement.appendChild(option);
+    const hskKeys = [];
+    const nonHskKeys = [];
+    const customKeys = [];
+
+    Object.keys(decknames).forEach(deck => {
+        if (deck.includes("hsk")) {
+            hskKeys.push(deck);
+        } else if (deck.includes("custom")) {
+            customKeys.push(deck);
+        } else {
+            nonHskKeys.push(deck);
+        }
+    });
+    const sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
+    selectDeck(hskKeys[0]);
+    sortedKeys.forEach(deck => {
+        const option = document.createElement('div');
+        option.className = 'option';
+        option.textContent = decknames[deck];
+        option.onclick = () => selectDeck(deck);
+        deckOptionsElement.appendChild(option);
     });
 }
   

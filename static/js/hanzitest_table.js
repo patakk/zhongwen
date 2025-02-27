@@ -67,43 +67,14 @@ function playSong(){
 
 
 function setupCharacters() {
-    tcharacters = {}
-    quiz_q[inputdeck].forEach((item, index) => {
-        tcharacters[item] = inputdecksflattend[item];
-    });
-
-    shuffledCharacters = Object.keys(tcharacters);
-    shuffleArray(shuffledCharacters);
-    shuffledCharacters = shuffledCharacters.slice(0, NUM_QUESTIONS);
-
-    characters = shuffledCharacters.reduce((obj, key) => {
-        obj[key] = inputdecksflattend[key];
-        return obj;
-    }, {});
-
-
     currentIndex = 0;
     correctAnswers = 0;
     userAnswers = [];
-    // showNextCharacter();
     resultsDiv.style.display = 'none';
     document.getElementById('test-container').style.display = 'block';
-    // deckNameElement.textContent = `Current Deck: ${decksinfos[inputdeck].name}`;
     confirmDarkmode();
 }
 
-function showNextCharacter() {
-    // if (currentIndex < Math.min(NUM_QUESTIONS, shuffledCharacters.length)) {
-    //     let character = shuffledCharacters[currentIndex];
-    //     characterDisplay.textContent = character;
-    //     textInput.value = '';
-    //     textInput.focus();
-    //     progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledCharacters.length)}`;
-    // } else {
-    //     showResults();
-    // }
-    confirmDarkmode();
-}
 
 function convertToNumberedPinyin(pinyin) {
     const toneMarks = {
@@ -125,19 +96,23 @@ function convertToNumberedPinyin(pinyin) {
     }).join(' ');
 }
 
-function simplifyPinyin(pinyin, removeAccents = true) {
-    if (/[1-4]/.test(pinyin)) {
+function simplifyPinyin(pinyin, removeAccents = true, removeNumbers = false) {
+    if (removeNumbers) {
+        return pinyin.toLowerCase().replace(/[1-5]/g, '');
+    }
+    if (/[1-5]/.test(pinyin)) {
         // If it contains numbers, convert to accented pinyin
         return pinyin.toLowerCase().trim()
-            .replace(/a([1-4])/g, match => 'āáǎà'[parseInt(match[1]) - 1])
-            .replace(/e([1-4])/g, match => 'ēéěè'[parseInt(match[1]) - 1])
-            .replace(/i([1-4])/g, match => 'īíǐì'[parseInt(match[1]) - 1])
-            .replace(/o([1-4])/g, match => 'ōóǒò'[parseInt(match[1]) - 1])
-            .replace(/u([1-4])/g, match => 'ūúǔù'[parseInt(match[1]) - 1])
-            .replace(/v([1-4])/g, match => 'ǖǘǚǜ'[parseInt(match[1]) - 1])
+            .replace(/a([1-5])/g, match => 'āáǎàa'[parseInt(match[1]) - 1])
+            .replace(/e([1-5])/g, match => 'ēéěèe'[parseInt(match[1]) - 1])
+            .replace(/i([1-5])/g, match => 'īíǐìi'[parseInt(match[1]) - 1])
+            .replace(/o([1-5])/g, match => 'ōóǒòo'[parseInt(match[1]) - 1])
+            .replace(/u([1-5])/g, match => 'ūúǔùu'[parseInt(match[1]) - 1])
+            .replace(/v([1-5])/g, match => 'ǖǘǚǜü'[parseInt(match[1]) - 1])
             .replace(/['\s]+/g, ''); // Remove spaces and apostrophes
     } else if (removeAccents) {
         // If it doesn't contain numbers and we want to remove accents
+        console.log("fasfaknasfaf")
         return pinyin
             .toLowerCase().trim()
             .replace(/[āáǎà]/g, 'a')
@@ -153,31 +128,6 @@ function simplifyPinyin(pinyin, removeAccents = true) {
     }
 }
 
-function checkAnswer() {
-    const userInput = textInput.value.trim();
-    const hasNumbers = /[1-4]/.test(userInput);
-    const userAnswer = simplifyPinyin(userInput);
-    let character = shuffledCharacters[currentIndex];
-    const correctPinyin = characters[character].pinyin;
-    const simplifiedCorrectPinyin = simplifyPinyin(correctPinyin, !hasNumbers);
-
-    const isCorrect = userAnswer === simplifiedCorrectPinyin;
-    console.log('Correct:', simplifiedCorrectPinyin, 'User:', userAnswer, 'Result:', isCorrect);
-
-    userAnswers.push({
-        character: character,
-        userAnswer: userInput,
-        correctAnswer: correctPinyin,
-        isCorrect: isCorrect
-    });
-
-    if (isCorrect) {
-        correctAnswers++;
-    }
-
-    currentIndex++;
-    showNextCharacter();
-}
 
 
 // Modify the showResults function
@@ -249,9 +199,9 @@ function populateGrid() {
     //     return obj;
     // }, {});
 
-    allhanzi = Object.keys(characters);
-
-    Object.keys(characters).forEach(hanzi => {
+    allhanzi = Object.keys(currentcharacters);
+    shuffleArray(allhanzi);
+    allhanzi.forEach(hanzi => {
         const gridItem = document.createElement("div");
         gridItem.classList.add("grid-item");
         
@@ -263,7 +213,7 @@ function populateGrid() {
         hanziDiv.addEventListener('click', function(e) {
             const popup = document.createElement('div');
             popup.className = 'pinyin-popup';
-            popup.textContent = characters[hanzi].english;
+            popup.textContent = currentcharacters[hanzi].english;
             
             document.body.appendChild(popup);
         
@@ -360,12 +310,13 @@ function populateGrid() {
             }
             e.target.dataset.userInput = userInput;
             const hanzi = e.target.dataset.hanzi;
-            const pinyin = characters[hanzi].pinyin;
-            const hasNumbers = /[1-4]/.test(userInput);
+            const pinyin = currentcharacters[hanzi].pinyin;
+            const hasNumbers = /[1-5]/.test(userInput);
             const userAnswer = simplifyPinyin(userInput);
-            const simplifiedCorrectPinyin = simplifyPinyin(pinyin, !hasNumbers);
+            const simplifiedCorrectPinyin = simplifyPinyin(pinyin, removeAccents=true);
             const isCorrect = userAnswer === simplifiedCorrectPinyin;
             // console.log('Correct:', simplifiedCorrectPinyin, 'User:', userAnswer, 'Result:', isCorrect);
+            console.log(userAnswer, simplifiedCorrectPinyin, isCorrect);
             // correct answer
             if (isCorrect) {
                 
@@ -375,6 +326,8 @@ function populateGrid() {
                 e.target.classList.add('pinyin-correct');
                 e.target.parentNode.classList.add('grid-item-correct');
                 e.target.dataset.correct = true;
+                // disable input
+                e.target.disabled = true;
 
                 e.target.value = inputdecksflattend[hanzi].pinyin;
 
@@ -480,10 +433,10 @@ function populateGrid() {
                 return;
             }
             const hanzi = e.target.dataset.hanzi;
-            const pinyin = characters[hanzi].pinyin;
-            const hasNumbers = /[1-4]/.test(userInput);
+            const pinyin = currentcharacters[hanzi].pinyin;
+            const hasNumbers = /[1-5]/.test(userInput);
             const userAnswer = simplifyPinyin(userInput);
-            const simplifiedCorrectPinyin = simplifyPinyin(pinyin, !hasNumbers);
+            const simplifiedCorrectPinyin = simplifyPinyin(pinyin, removeAccents=true);
             const isCorrect = userAnswer === simplifiedCorrectPinyin;
             if(isCorrect) {
             }
@@ -531,7 +484,7 @@ function revealAnswers(){
     restartBtn.innerText = "Restart Test 💩";
     allinputs.forEach(input => {
         if(input.dataset.correct === 'false'){
-            input.value = characters[input.dataset.hanzi].pinyin;
+            input.value = currentcharacters[input.dataset.hanzi].pinyin;
             input.classList.add('pinyin-revealed');
             input.disabled = true;
         }
@@ -581,12 +534,40 @@ function playTwang() {
     source.start(0);
 }
 
-function selectDeck(deckName) {
-    inputdeck = deckName;
-    selectedDeckElement.textContent = deckName;
+async function loadNewWords(func=null){
+    fetch(`../api/get_random_characters`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({deck: inputdeck, num: NUM_QUESTIONS}),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        currentcharacters = data;
+        console.log(currentcharacters)
+        if(func != null){
+            func();
+        }
+    })
+    .catch(error => {
+        console.error('There was a problem getting new words:', error);
+    });
+}
+
+function selectDeck(deck) {
+    inputdeck = deck;
+    selectedDeckElement.textContent = decknames[inputdeck];
     deckOptionsElement.style.display = 'none';
     restartBtn.classList.add("hidden");
-    init();
+
+    loadNewWords(showQuestions);
+
 }
 
 let fscale = 1.3;
@@ -617,32 +598,38 @@ function selectFont(fontName) {
 function populateDropdown() {
     const hskKeys = [];
     const nonHskKeys = [];
+    const customKeys = [];
 
-    Object.keys(quiz_q).forEach(deckName => {
-        if (deckName.includes("HSK")) {
-            hskKeys.push(deckName);
+    Object.keys(decknames).forEach(deck => {
+        if (deck.includes("hsk")) {
+            hskKeys.push(deck);
+        } else if (deck.includes("custom")) {
+            customKeys.push(deck);
         } else {
-            nonHskKeys.push(deckName);
+            nonHskKeys.push(deck);
         }
     });
-    const sortedKeys = [...nonHskKeys, ...hskKeys];
-    selectDeck(nonHskKeys[0]);
-    sortedKeys.forEach(deckName => {
+    const sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
+    selectDeck(hskKeys[0]);
+    sortedKeys.forEach(deck => {
         const option = document.createElement('div');
         option.className = 'option';
-        option.textContent = deckName;
-        option.onclick = () => selectDeck(deckName);
+        option.textContent = decknames[deck];
+        option.onclick = () => selectDeck(deck);
         deckOptionsElement.appendChild(option);
     });
 }
 
-
 function init(){
+    loadNewWords(showQuestions);
+}
+
+function showQuestions(){
     let inputfield = document.getElementById('text-input');
     inputfield.focus();
     revealBtn.classList.remove("hidden");
+    restartBtn.classList.add("hidden");
     setupCharacters();
-
 
     fontOptionsElement.innerHTML = '';
     Object.keys(fontList).forEach(fontName => {

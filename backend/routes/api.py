@@ -1,6 +1,7 @@
 import io
 import json
 import logging
+import random
 import os
 from urllib.parse import unquote
 
@@ -12,17 +13,17 @@ from backend.decorators import timing_decorator
 from backend.decorators import hard_session_required
 from backend.flashcard_app import get_flashcard_app
 from backend.db.ops import db_update_or_create_note
+from backend.db.ops import db_load_user_progress
 
 from backend.db.models import Card, UserNotes
 from backend.db.extensions import db
 
 from backend.common import CARDDECKS
-from backend.common import TATOEBA_MAP
-from backend.common import TATOEBA_DATA
-from backend.common import character_simple_info
 from backend.common import flashcard_app
 from backend.common import dictionary
-from backend.common import get_character_page
+from backend.common import get_tatoeba_page
+from backend.common import get_char_info
+from backend.common import get_chars_info
 
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,7 @@ def get_examples_page():
         return jsonify({"error": "Missing required fields"}), 400
     page = data["page"]
     character = data["character"]
-    examples, is_last = get_character_page(character, page)
+    examples, is_last = get_tatoeba_page(character, page)
     return jsonify({"examples": examples, "is_last": is_last})
 
 @api_bp.route("/add_word_to_learning", methods=["POST"])
@@ -176,9 +177,6 @@ def get_characters_simple_info():
         data = request.get_json()
         characters = data.get("characters") if data else None
 
-    # print("Request method:", request.method)
-    # print("Received characters:", characters)
-
     inserted = []
     characters = sorted(characters)
     cinfos = {}
@@ -186,60 +184,47 @@ def get_characters_simple_info():
         try:
             cinfo = dictionary.definition_lookup(char)[0]
         except:
-            cinfo = {"english": "-", "pinyin": "-"}
+            cinfo = {"definition": "-", "pinyin": "-"}
         cinfos[char] = cinfo
     return jsonify(cinfos)
 
-
+@api_bp.route("/get_deck_chars", methods=["GET", "POST"])
+@session_required
+def get_deck_chars():
+    jdata = request.get_json()
+    deck = jdata['deck']
+    characters = CARDDECKS[deck]['chars']
+    data = get_chars_info(CARDDECKS[deck]["chars"], pinyin=True)
+    return jsonify(data)
 
 @api_bp.route("/get_characters_pinyinenglish", methods=["GET", "POST"])
 @session_required
 def get_characters_pinyinenglish():
-    all_data = []
+    inserted = []
     characters = None
-
     if request.method == "POST":
         data = request.get_json()
         characters = data.get("characters") if data else None
 
-    # print("Request method:", request.method)
-    # print("Received characters:", characters)
-
-    inserted = []
     if characters and isinstance(characters, list) and len(characters) > 0:
-        # If specific characters are provided
         characters = sorted(characters)
-        for character in characters:
-            for deck in CARDDECKS:
-                if character in CARDDECKS[deck]["chars"] and character not in inserted:
-                    data = character_simple_info(character)
-                    all_data.append(
-                        {
-                            "character": character,
-                            "pinyin": data.get("pinyin", ""),
-                            "english": data.get("english", ""),
-                            "hsk_level": data.get("hsk_level", ""),
-                            "deck": deck,
-                        }
-                    )
-                    inserted.append(character)
-                    break  # Stop searching once we find the character in a deck
     else:
-        # If no specific characters are provided or it's a GET request, get all characters
+        characters = []
         for deck in CARDDECKS:
             for character in CARDDECKS[deck]["chars"]:
-                data = character_simple_info(character)
-                all_data.append(
-                    {
-                        "character": character,
-                        "pinyin": data.get("pinyin", ""),
-                        "english": data.get("english", ""),
-                        "hsk_level": data.get("hsk_level", ""),
-                        "deck": deck,
-                    }
-                )
+                characters.append(character)
+        characters = sorted(characters)
+    return jsonify({"characters": get_chars_info(characters, pinyin=True, english=True)})
 
-    return jsonify({"characters": all_data})
+@api_bp.route("/get_all_chars_pinyinenglish", methods=["GET", "POST"])
+@session_required
+def get_all_chars_pinyinenglish():
+    characters = {}
+    for deck in CARDDECKS:
+        print(deck)
+        for character in CARDDECKS[deck]["chars"]:
+            characters[deck] = get_chars_info(CARDDECKS[deck]["chars"], pinyin=True)
+    return jsonify(characters)
 
 
 @api_bp.route("/change_font", methods=["POST"])
@@ -492,9 +477,33 @@ def get_characters_for_practice():
             "english": data["english"],
         }
         for char in CARDDECKS[deck]["chars"]
-        if (data := character_simple_info(char))
+        if (data := get_char_info(char, pinyin=True, english=True))
     ]
     return jsonify({"characters": characters_data})
+
+
+@api_bp.route("/get_random_characters", methods=["POST"])
+@session_required
+@timing_decorator
+def get_random_characters():
+    username = session.get('username')
+    learning_cards = db_load_user_progress(username)['learning_cards']
+    cd = {
+        'custom': {
+            'name': 'Custom deck',
+            'chars': learning_cards,
+        },
+        **CARDDECKS
+    }
+
+    data = request.get_json()
+    deck = data.get("deck")
+    num = int(data.get("num", 24))
+    random_chars = cd[deck]['chars']
+    random.shuffle(random_chars)
+    random_chars = random_chars[:num]
+    characters_data = get_chars_info(random_chars, pinyin=True, english=True)
+    return jsonify(characters_data)
 
 
 

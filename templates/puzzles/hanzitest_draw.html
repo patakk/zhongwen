@@ -28,7 +28,7 @@
 <body>
     <h1 class="title">Test your Hanzi 🖌️</h1>
     <div class="custom-dropdown">
-        <div id="deck-name">Current Deck: <span id="selected-deck">Select a deck</span></div>
+        <div id="deck-name"><div id="deck-name-label">Current Deck:</div> <div id="selected-deck">Select a deck</div></div>
         <div id="deck-options" class="options-container"></div>
     </div>
 
@@ -68,10 +68,9 @@
 
     <script>
         
-        let characters = {{ characters | tojson | safe }};
-        const inputdecks = {{ decks | tojson | safe }};
-        const decksinfos = {{ decksinfos | tojson | safe }};
+        let currentcharacters = {};
         let inputdeck = {{ deck | tojson | safe }};
+        let decknames = {{ decknames | tojson | safe }};
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
 

@@ -11,8 +11,9 @@ let currentIndex = 0;
 let correctAnswers = 0;
 let shuffledCharacters = [];
 let userAnswers = [];
+let characters = {};
 const answerTableBody = document.getElementById('answer-table-body');
-const NUM_QUESTIONS = 16;
+const NUM_QUESTIONS = 10;
 const NUM_OPTIONS = 16;
 
 const deckNameElement = document.getElementById('deck-name');
@@ -20,34 +21,62 @@ const selectedDeckElement = document.getElementById('selected-deck');
 const dropdownToggle = document.getElementById('dropdown-toggle');
 const deckOptionsElement = document.getElementById('deck-options');
 
+async function loadNewWords(func=null){
+    fetch(`../api/get_random_characters`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({deck: inputdeck, num: 100}),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        currentcharacters = data;
+        if(func != null){
+            func();
+        }
+    })
+    .catch(error => {
+        console.error('There was a problem getting new words:', error);
+    });
+}
 
 function populateDropdown() {
     const hskKeys = [];
     const nonHskKeys = [];
+    const customKeys = [];
 
-    Object.keys(quiz_q).forEach(deckName => {
-        if (deckName.includes("HSK")) {
-            hskKeys.push(deckName);
+    Object.keys(decknames).forEach(deck => {
+        if (deck.includes("hsk")) {
+            hskKeys.push(deck);
+        } else if (deck.includes("custom")) {
+            customKeys.push(deck);
         } else {
-            nonHskKeys.push(deckName);
+            nonHskKeys.push(deck);
         }
     });
-    const sortedKeys = [...nonHskKeys, ...hskKeys];
+    const sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
     selectDeck(nonHskKeys[0]);
-    sortedKeys.forEach(deckName => {
+    sortedKeys.forEach(deck => {
         const option = document.createElement('div');
         option.className = 'option';
-        option.textContent = deckName;
-        option.onclick = () => selectDeck(deckName);
+        option.textContent = decknames[deck];
+        option.onclick = () => selectDeck(deck);
         deckOptionsElement.appendChild(option);
     });
 }
   
-  function selectDeck(deckName) {
-    inputdeck = deckName;
-    selectedDeckElement.textContent = deckName;
+  function selectDeck(deck) {
+    inputdeck = deck;
+    selectedDeckElement.textContent = decknames[deck];
     deckOptionsElement.style.display = 'none';
-    startTest();
+    
+    loadNewWords(startTest);
   }
   
   deckNameElement.onclick = () => {
@@ -71,16 +100,40 @@ function shuffleArray(array) {
 
 let skippedQuestions = [];
 
+async function getCharactersInfos(characters=null, func=null) {
+    const url = './api/get_characters_simple_info';
+    const charactersArray = characters instanceof Set ? Array.from(characters) : characters;
+    const payload = { characters: charactersArray };
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+    };
+
+    fetch(url, options)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            characters = data;
+            if(func){
+                func();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
 function startTest() {
-    characters = {}
-    quiz_q[inputdeck].forEach((item, index) => {
-        characters[item] = inputdecksflattend[item];
-    });
-    shuffledCharacters = Object.keys(characters);
+    shuffledCharacters = Object.keys(currentcharacters);
     shuffleArray(shuffledCharacters);
     currentIndex = 0;
     correctAnswers = 0;
-    userAnswers = new Array(Math.min(NUM_QUESTIONS, shuffledCharacters.length)).fill(null);
+    userAnswers = new Array(shuffledCharacters).fill(null);
     skippedQuestions = [];
     showNextCharacter();
     resultsDiv.style.display = 'none';
@@ -89,12 +142,12 @@ function startTest() {
 }
 
 function showNextCharacter() {
-    if (currentIndex < Math.min(NUM_QUESTIONS, shuffledCharacters.length)) {
-        if (userAnswers[currentIndex] === null) {
+    if (currentIndex < NUM_QUESTIONS) {
+        if (userAnswers[currentIndex] === undefined || currentIndex == 0) {
             let character = shuffledCharacters[currentIndex];
-            characterDisplay.textContent = characters[character].english.replace(/;/g, ',');
+            characterDisplay.textContent = currentcharacters[character].english.replace(/;/g, ',');
             generatePinyinOptions(character);
-            progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledCharacters.length)}`;
+            progressDiv.textContent = `Question ${currentIndex + 1} of ${NUM_QUESTIONS}`;
         } else {
             currentIndex++;
             showNextCharacter();
@@ -150,7 +203,7 @@ function fastConfetti(x, y, hanzi) {
 
 function checkAnswer(selectedPinyin) {
     let character = shuffledCharacters[currentIndex];
-    const correctPinyin = characters[character].pinyin;
+    const correctPinyin = currentcharacters[character].pinyin;
     const isCorrect = selectedPinyin === correctPinyin;
 
     userAnswers[currentIndex] = {
@@ -158,7 +211,7 @@ function checkAnswer(selectedPinyin) {
         userAnswer: selectedPinyin,
         correctAnswer: correctPinyin,
         isCorrect: isCorrect,
-        english: characters[character].english.replace(/;/g, ',')
+        english: currentcharacters[character].english.replace(/;/g, ',')
     };
 
     if (isCorrect) {
@@ -173,6 +226,9 @@ function checkAnswer(selectedPinyin) {
     if(skippedQuestions.includes(currentIndex)) {
         skippedQuestions = skippedQuestions.filter(question => question !== currentIndex);
     }
+
+    console.log(currentIndex)
+    console.log(userAnswers)
 
     currentIndex++;
     showNextCharacter();
@@ -191,9 +247,9 @@ function showSkippedQuestions() {
     console.log('Skipped Questions:', skippedQuestions);
     currentIndex = skippedQuestions[0];
     let character = shuffledCharacters[currentIndex];
-    characterDisplay.textContent = characters[character].english.replace(/;/g, ',');
+    characterDisplay.textContent = currentcharacters[character].english.replace(/;/g, ',');
     generatePinyinOptions(character);
-    progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledCharacters.length)}`;
+    progressDiv.textContent = `Question ${currentIndex + 1} of ${NUM_QUESTIONS}`;
 }
 
 restartBtn.addEventListener('click', startTest);
@@ -205,17 +261,17 @@ let lastmousey;
 
 function generatePinyinOptions(character) {
     const correctPinyin = shuffledCharacters[currentIndex];
-    let options = [characters[correctPinyin].pinyin];
-
+    let options = [currentcharacters[correctPinyin].pinyin];
     while (options.length < NUM_OPTIONS) {
         const randomChar = shuffledCharacters[Math.floor(Math.random() * shuffledCharacters.length)];
-        const randomPinyin = characters[randomChar].pinyin;
+        const randomPinyin = currentcharacters[randomChar].pinyin;
         if (!options.includes(randomPinyin)) {
             options.push(randomPinyin);
         }
     }
 
-    options.sort((a, b) => a.localeCompare(b));
+    // options.sort((a, b) => a.localeCompare(b));
+    shuffleArray(options);
 
     pinyinOptions.innerHTML = '';
     options.forEach(option => {
@@ -236,7 +292,7 @@ function showResults() {
     document.getElementById('test-container').style.display = 'none';
     skipBtn.style.display = 'none';
     resultsDiv.style.display = 'block';
-    const totalQuestions = Math.min(NUM_QUESTIONS, shuffledCharacters.length);
+    const totalQuestions = NUM_QUESTIONS;
     const score = (correctAnswers / totalQuestions) * 100;
     scoreSpan.textContent = `${correctAnswers} / ${totalQuestions}`;
     accuracySpan.textContent = `${score.toFixed(2)}%`;
@@ -255,6 +311,10 @@ function showResults() {
     confirmDarkmode();
 }
 
+function restart(){
+
+    characters = getCharactersInfos(shuffledCharacters, startTest);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // deckNameElement.textContent = `Current Deck: ${inputdeck}`;

@@ -627,7 +627,6 @@ function renderCardData(data) {
         renderPlotters(data.plotters, pparts);
     }
 
-    let craw_info = data.raw_info;
     //document.getElementById('flashcard_pinyin').textContent = toAccentedPinyin(data.pinyin);
     document.getElementById('flashcard_pinyin').textContent = data.pinyin;
     document.getElementById('flashcard_pinyin').dataset.characters = data.character;
@@ -681,7 +680,7 @@ function renderCardData(data) {
 
     // Populate tabs and content
     chars.forEach((char, index) => {
-        let char_info = craw_info[char];
+        let char_info = data.chars_breakdown[char];
         const english = char_info.english;
         const pinyin = char_info.pinyin;
         const frequency = char_info.frequency;
@@ -768,7 +767,7 @@ function renderCardData(data) {
         
                     wordLink.addEventListener('mouseover', function (e) {
                         const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
-                        const english = chardict[similar_char].english;
+                        const english = chardict[similar_char].definition;
                         const hsklvl = "chardict[similar_char].hsk_level";
                         let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
         
@@ -985,8 +984,9 @@ function renderCardData(data) {
     // Replace the existing content
     document.getElementById('flashcard_description').innerHTML = '';
     document.getElementById('flashcard_description').appendChild(exLabel);
-    if(data.tatoeba.length > 0){
-        let mainExamplesDiv = getExamplesDiv(data.tatoeba, data.character, data.is_last);
+    console.log(data);
+    if(data.examples.length > 0){
+        let mainExamplesDiv = getExamplesDiv(data.examples, data.character, data.is_last);
         document.getElementById('flashcard_description').appendChild(mainExamplesDiv);
     }
     document.getElementById('flashcard_description').appendChild(rawLabel);

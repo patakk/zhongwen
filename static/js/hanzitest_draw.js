@@ -32,23 +32,96 @@ const dropdownToggle = document.getElementById('dropdown-toggle');
 const deckOptionsElement = document.getElementById('deck-options');
 
 function populateDropdown() {
-    selectDeck(inputdeck);
-    Object.keys(inputdecks).forEach(deckName => {
-      const option = document.createElement('div');
-      option.className = 'option';
-      option.textContent = decksinfos[deckName].name;
-      option.onclick = () => selectDeck(deckName);
-      deckOptionsElement.appendChild(option);
+    const hskKeys = [];
+    const nonHskKeys = [];
+    const customKeys = [];
+
+    Object.keys(decknames).forEach(deck => {
+        if (deck.includes("hsk")) {
+            hskKeys.push(deck);
+        } else if (deck.includes("custom")) {
+            customKeys.push(deck);
+        } else {
+            nonHskKeys.push(deck);
+        }
+    });
+    const sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
+    selectDeck(hskKeys[0]);
+    sortedKeys.forEach(deck => {
+        const option = document.createElement('div');
+        option.className = 'option';
+        option.textContent = decknames[deck];
+        option.onclick = () => selectDeck(deck);
+        deckOptionsElement.appendChild(option);
     });
 }
   
-  function selectDeck(deckName) {
-    inputdeck = deckName;
-    selectedDeckElement.textContent = decksinfos[deckName].name;
+  function selectDeck(deck) {
+    inputdeck = deck;
+    selectedDeckElement.textContent = decknames[deck];
     deckOptionsElement.style.display = 'none';
-    loadNewDeck(deckName, startTest);
+    
+    loadNewWords(startTest);
   }
   
+//   function selectDeck(deckName) {
+//     inputdeck = deckName;
+//     selectedDeckElement.textContent = decknames[deckName];
+//     deckOptionsElement.style.display = 'none';
+//     loadNewDeck(deckName, startTest);
+//   }
+
+function resetWord(){
+    window.scrollTo(0, 0);
+    englishDisplay.textContent = currentCharacterData.english;
+    wordTotalMistakeCount = 0;
+    wordTotalStrokeCount = 0;
+    
+    skipState = 0;
+    numFinished = 0;
+    
+    streakCount = 0;
+    streakCheckpoint = streakIncrement;
+
+    skipBtn.textContent = skipButtonLable1;
+    
+    currentWord = currentCharacterData.character;
+    currentEnglish = currentCharacterData.english;
+    currentPinyin = currentCharacterData.pinyin;
+    createHanziWriters(currentCharacterData.character);
+    pinyinLabel.textContent = currentCharacterData.pinyin;
+    confirmDarkmode();
+    
+    drawingArea.removeEventListener('click', handleAreaClick);
+
+    window.scrollTo(0, 1);
+}
+async function loadNewWords(func=null){
+    fetch(`../api/get_random_characters`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({deck: inputdeck, num: 100}),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        currentcharacters = data;
+        if(func != null){
+            func();
+        }
+    })
+    .catch(error => {
+        console.error('There was a problem getting new words:', error);
+    });
+}  
+
+
 function loadNewDeck(deckName, callback) {
     fetch(`/api/load_deck_chars?deck=${deckName}`)
     .then(response => {
@@ -89,11 +162,10 @@ function shuffleArray(array) {
 function startTest() {
     
     
-    shuffledCharacters = Object.keys(characters);
-    shuffledWords = [...characters];
+    shuffledWords = Object.keys(currentcharacters);
     shuffleArray(shuffledWords);
 
-    shuffledWords = shuffledWords.filter(word => word.character.length <= 2);
+    shuffledWords = shuffledWords.filter(word => word.length <= 2);
 
     currentIndex = 0;
     correctAnswers = 0;
@@ -133,15 +205,15 @@ function showNextWord() {
     }
     window.scrollTo(0, 0);
     if (currentIndex < Math.min(NUM_QUESTIONS, shuffledWords.length)) {
-        let characterData = shuffledWords[currentIndex];
+        let characterData = currentcharacters[shuffledWords[currentIndex]];
         englishDisplay.textContent = characterData.english;
         wordTotalMistakeCount = 0;
         wordTotalStrokeCount = 0;
         
-        currentWord = characterData.character;
+        currentWord = shuffledWords[currentIndex];
         currentEnglish = characterData.english;
         currentPinyin = characterData.pinyin;
-        createHanziWriters(characterData.character);
+        createHanziWriters(shuffledWords[currentIndex]);
         pinyinLabel.textContent = characterData.pinyin;
         progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledWords.length)}`;
     } else {
@@ -424,7 +496,7 @@ document.addEventListener('keydown', (event) => {
 });
 
 function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
-    const characterData = shuffledWords[currentIndex];
+    const characterData = currentcharacters[shuffledWords[currentIndex]];
     let isCorrect = false;
     console.log('**********************')
     console.log('Word mistake count:', wordTotalMistakeCount);
@@ -441,7 +513,7 @@ function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
     userAnswers.push({
         english: characterData.english,
         pinyin: characterData.pinyin,
-        correctCharacter: characterData.character,
+        correctCharacter: shuffledWords[currentIndex],
         isCorrect: isCorrect
     });
     totalAnswered++;
@@ -471,7 +543,7 @@ function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
 function showResults() {
     document.getElementById('test-container').style.display = 'none';
     resultsDiv.style.display = 'block';
-    const totalQuestions = Math.min(NUM_QUESTIONS, shuffledWords.length);
+    const totalQuestions = NUM_QUESTIONS;
     const score = (correctAnswers / (totalAnswered)) * 100;
     scoreSpan.textContent = `${correctAnswers} / ${(totalAnswered)} (of ${totalQuestions})`;
     accuracySpan.textContent = `${score.toFixed(2)}%`;
@@ -498,7 +570,6 @@ function showResults() {
 
 document.addEventListener('DOMContentLoaded', () => {
     getDarkmode();
-    NUM_QUESTIONS = Math.max(5, characters.length);
     populateDropdown();
 });
 

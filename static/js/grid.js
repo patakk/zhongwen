@@ -98,7 +98,7 @@ document.addEventListener('keydown', function(event) {
             }
             else{
                 let filteredData = {};
-                filteredData.characters = currentData.characters.filter(char => {
+                filteredData = currentData.filter(char => {
                     const cleanedInput = cleanString(inputString);
                     const cleanedPinyin = cleanString(removeTones(char.pinyin));
                     const cleanedEnglish = cleanString(char.english);
@@ -107,7 +107,7 @@ document.addEventListener('keydown', function(event) {
                 });
 
                 // sort by piniyn
-                filteredData.characters.sort((a, b) => {
+                filteredData.sort((a, b) => {
                     const cleanedInput = cleanString(inputString);
                     const cleanedPinyinA = cleanString(removeTones(a.pinyin));
                     const cleanedPinyinB = cleanString(removeTones(b.pinyin));
@@ -199,10 +199,16 @@ function createGrid(characters, useAllDecks){
             currentDeck = 'shas'
         }
     }
-    characters.forEach(charData => {
-        if (charData.deck !== currentDeck && !useAllDecks) {
-            return;
-        }
+    let ichars = Object.keys(characters);
+    // if(useAllDecks){
+    //     ichars = [];
+    //     for (const [key, value] of Object.entries(characters)) {
+    //         ichars = ichars.concat(value);
+    //     }
+    // }
+    ichars.forEach(character => {
+        let charData = characters[character];
+        charData.character = character;
         const gridItem = document.createElement('div');
         gridItem.className = 'grid-item';
         gridItem.innerHTML = `
@@ -214,13 +220,20 @@ function createGrid(characters, useAllDecks){
             gridItem.classList.add('darkmode');
         }
         gridItem.addEventListener('click', () => {
-            showFlashcard(charData.character); 
+            // loadAndShow(charData.character); 
+            showLoaded();
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('query', charData.character);
             history.pushState({}, '', newUrl);
         });
+        let timeout;
         gridItem.addEventListener('mouseenter', () => {
-            prefetchedPlotters = createPlotters(charData);
+            timeout = setTimeout(() => {
+                loadCard(charData.character);
+            }, 200);
+        });
+        gridItem.addEventListener('mouseleave', () => {
+            clearTimeout(timeout);
         });
         grid.appendChild(gridItem);
         charCounter++;
@@ -246,7 +259,7 @@ function updateCounterTitle(){
         currentDeck = inputdeck;
         inputdeck = null;
     }
-    document.getElementById('title').textContent = `${inputdecks[currentDeck]}`;  
+    document.getElementById('title').textContent = `${inputdecks[currentDeck].name}`;  
     document.getElementById('title_word_count').textContent = `(${deckLength} words)`;  
 }
 
@@ -260,10 +273,12 @@ function createLists(characters, useAllDecks) {
 
     gridWrapper.innerHTML = ''; // Clear existing items
     let coco = 0;
-    characters.forEach((charData, idx) => {
-        if (charData.deck !== currentDeck && !useAllDecks) {
-            return;
-        }
+
+    
+    let ichars = Object.keys(characters);
+    ichars.forEach((character, idx) => {
+        let charData = characters[character];
+        charData.character = character;
         const gridItem = createListItem(charData, coco);
         gridItem.className = 'lgrid-item';
         gridWrapper.appendChild(gridItem);
@@ -293,7 +308,7 @@ function createListItem(charData, idx) {
         <span class="list-english">${charData.english}</span>
     `;
     item.addEventListener('click', () => {
-        showFlashcard(charData.character); 
+        loadAndShow(charData.character); 
         const newUrl = new URL(window.location);
         newUrl.searchParams.set('query', charData.character);
         history.pushState({}, '', newUrl);
@@ -358,7 +373,7 @@ overlaycolors.forEach((color, idx) => {
     overlaycolors[idx] = `#${color}`;
 });
 
-function showFlashcard(character) {
+function loadAndShow(character) {
     messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
         .then(response => {
@@ -373,11 +388,6 @@ function showFlashcard(character) {
             }
             catch(e){
 
-            }
-
-            hsklvl = data.hsk_level-1
-            if(hsklvl < 0 || hsklvl > 6){
-                hsklvl = 6;
             }
 
             let chars = character.split('');
@@ -424,6 +434,67 @@ function showFlashcard(character) {
         });
 }
 
+let loadedCard = null;
+
+function showLoaded(){
+    renderCardData(loadedCard);
+    currentGridPlotters = loadedCard.plotters;
+    displayCard(true, true);
+    cardVisible = true;
+}
+
+function loadCard(character) {
+    messageElement.textContent = 'Loading...';
+    fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            try{
+                bordercanvas.style.display = 'block';
+            }
+            catch(e){
+
+            }
+
+            let chars = character.split('');
+            if(prefetchedPlotters){
+                let isOkay = true;
+                prefetchedPlotters.forEach((plotter, idx) => {
+                    if(plotter.char !== chars[idx]){
+                        isOkay = false;
+                    }
+                });
+                if(isOkay)
+                    data.plotters = prefetchedPlotters;
+                else
+                    data.plotters = createPlotters(data);
+            }
+            else{
+                data.plotters = createPlotters(data);
+            }
+            // overlay.style.backgroundColor = overlaycolors[hsklvl];
+            let overlay = document.getElementById('flashcard_overlay');
+            let currentColor = getColorByTime(overlaycolors);
+            // overlay.style.backgroundColor = currentColor;
+            // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
+            // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
+           
+            // renderCardData(data);
+            // currentGridPlotters = data.plotters;
+            // displayCard(true, true);
+            // cardVisible = true;
+            loadedCard = data;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            messageElement.textContent = `Error: ${error.message}`;
+        });
+}
+
 function showAfterLoad(data){
     data.plotters = createPlotters(data);
     console.log("data")
@@ -436,8 +507,8 @@ function showAfterLoad(data){
 
 
 function drawBothLayouts(data, useAllDecks=false){    
-    createGrid(data.characters, useAllDecks);
-    createLists(data.characters, useAllDecks);
+    createGrid(data, useAllDecks);
+    createLists(data, useAllDecks);
 }
 
 let currentData = null;
@@ -541,6 +612,7 @@ function isMobileOrTablet() {
 
 function changeDeck(deck) {
     currentDeck = deck;
+    currentData = inputdecks[currentDeck].chars;
     // fetch(`./api/?deck=${deck}`, {
     //     method: 'POST',
     //     headers: {
@@ -575,29 +647,29 @@ function changeDeck(deck) {
 //     });
 // }
 
-function getDeck() {
-    fetch('./api/get_deck')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            currentDeck = data.deck;
-            drawBothLayouts(currentData);
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-}
+// function getDeck() {
+//     fetch('./api/get_deck')
+//         .then(response => {
+//             if (!response.ok) {
+//                 throw new Error('Network response was not ok');
+//             }
+//             return response.json();
+//         })
+//         .then(data => {
+//             currentDeck = data.deck;
+//             drawBothLayouts(currentData);
+//         })
+//         .catch(error => {
+//             console.error('There was a problem with the fetch operation:', error);
+//         });
+// }
 
 window.addEventListener('popstate', function(event) {
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('query');
     
     if (query) {
-        showFlashcard(query);
+        loadAndShow(query);
         scrollToTop(document.getElementById('flashcard_container'), null);
     }
 });
@@ -637,6 +709,7 @@ function playHanziAudio() {
 
 
 function addWordToLearning(symbol){
+    inputdecks['custom'].chars[symbol] = currentData[symbol];
     fetch("./api/add_word_to_learning", {
         method: "POST",
         headers: {
@@ -654,7 +727,13 @@ function addWordToLearning(symbol){
 }
 
 function loadAllData(){
-    fetch('./api/get_characters_pinyinenglish')
+    fetch('./api/get_deck_chars', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ deck: currentDeck })
+    })
     .then(response => response.json())
     .then(data => {
         currentData = data;
@@ -719,10 +798,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inputdeck) {
         currentDeck = inputdeck;
     }
-
+    currentData = inputdecks[currentDeck].chars;
     confirmDarkmode();
     
-    loadAllData();
+    drawBothLayouts(currentData);
     document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
     document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
 

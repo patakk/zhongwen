@@ -657,7 +657,7 @@ function getNextCard(func=null) {
         console.log('Fetching new card');
         fetchCard()
             .then(data => {
-                if(!data.raw_info){
+                if(!data){
                     document.getElementById('flashcard_character').textContent = 'Your learning deck is empty. Add characters from the grid explorer, search results, or stories.';
                     document.getElementById('flashcard_pinyin').style.display = 'none';
                 }

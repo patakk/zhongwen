@@ -19,7 +19,7 @@
     <title>Hanzi 🖌️</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/hanzipractice.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hanzitest_draw.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
     <style id="dynamic-styles"></style>
         
@@ -31,9 +31,8 @@
 <body>
 {% endif %}
     <h1 class="title">Practice Hanzi <a href="{{ url_for('hanzi_strokes_history') }}" style="text-decoration: none;">🖌️</a></h1>
-   
     <div class="custom-dropdown">
-        <h2 id="deck-name">Current Deck: <span id="selected-deck">Select a deck</span></h2>
+        <div id="deck-name"><div id="deck-name-label">Current Deck:</div> <div id="selected-deck">Select a deck</div></div>
         <div id="deck-options" class="options-container"></div>
     </div>
 
@@ -45,21 +44,39 @@
         <div id="pinyin-display"></div>
         <div id="drawing-area"></div>
         <div id="buttons">
-            <button id="restart-btn">Reset</button>
+            <button id="end-btn">Reset</button>
             <button id="skip-btn">Reveal</button>
         </div>
+        <div id="progress"></div>
     </div>
 
+    <div id="results" style="display: none;">
+        <h2>Test Results</h2>
+        <p>Score: <span id="score"></span></p>
+        <p>Accuracy: <span id="accuracy"></span></p>
+        <p>Stroke accuracy: <span id="stroke_accuracy"></span></p>
+        <div id="answer-table-container">
+            <table id="answer-table">
+                <tr style="font-weight: bold;">
+                    <td>Character</td>
+                    <td>Pinyin</td>
+                    <td>English</td>
+                </tr>
+                <tbody id="answer-table-body">
+                </tbody>
+            </table>
+        </div>
+        <button id="restart-btn">Restart Test</button>
+    </div>
     <div id="confetti-container"></div>
 
     <script>
-        let characters = {{ characters | tojson | safe }};
-        const inputdecks = {{ decks | tojson | safe }};
+        
+        let currentcharacters = {};
         let inputdeck = {{ deck | tojson | safe }};
+        let decknames = {{ decknames | tojson | safe }};
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
-        const decksinfos = {{ decksinfos | tojson | safe }};
-
 
 
         function isIPhone(){
@@ -79,6 +96,7 @@
         }
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hanzipractice.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
 </body>

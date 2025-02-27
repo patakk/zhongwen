@@ -32,15 +32,16 @@ from backend.db.ops import db_store_user_string
 from backend.db.ops import db_get_user_string
 from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
+from backend.common import CARDDECKS_W_PINYIN
 from backend.common import TATOEBA_MAP
 from backend.common import TATOEBA_DATA
 from backend.common import flashcard_app
-from backend.common import get_character_page
-
+from backend.common import get_tatoeba_page
+from backend.common import DECKNAMES
 
 from backend.common import get_pinyin
-from backend.common import character_simple_info
-from backend.common import character_info
+from backend.common import get_char_info
+from backend.common import get_chars_info
 from backend.common import dictionary
 from flask import flash
 
@@ -103,10 +104,10 @@ stroke_jsons = glob.glob('static/strokes_data/*.json')
 stroke_chars = set([os.path.basename(j).split('.')[0] for j in stroke_jsons])
 
 
-def word_info(word):
+def breakdown_chars(word):
     infos = {}
     for char in word:
-        infos[char] = character_info(char)
+        infos[char] = get_char_info(char, full=True)
     return infos
 
 @app.route('/get_card_data')
@@ -117,9 +118,9 @@ def get_card_data():
     if not character:
         message, character = flashcard_app.select_card(session['username'])
     if not character:
-        return jsonify({'message': 'No cards available', 'raw_info': None})
-    raw_info = word_info(character)
-    return  jsonify({'message': message, **packed_data(character), 'raw_info': raw_info})
+        return jsonify({'message': 'No cards available', 'chars_breakdown': None})
+    chars_breakdown = breakdown_chars(character)
+    return  jsonify({'message': message, **main_card_data(character), 'chars_breakdown': chars_breakdown})
 
 @app.before_request
 def before_request():
@@ -130,13 +131,9 @@ def before_request():
 @session_required
 def get_simple_char_data():
     character = request.args.get('character')
-    
-    char_info = character_simple_info(character)
-
     cdata = {
         "character": character,
-        "pinyin": char_info['pinyin'],
-        "english": char_info['english'],
+        **get_char_info(character, pinyin=True, english=True),
     }
     
     return  jsonify({'message': 'success', **cdata})
@@ -168,7 +165,7 @@ def user_progress():
         correct_answers = char_progress.get('answers', []).count('correct')
         total_answers = len(char_progress.get('answers', []))
         accuracy = (correct_answers / total_answers * 100) if total_answers > 0 else 0
-        simple_char_info = character_simple_info(character)
+        simple_char_info = get_char_info(character, pinyin=True, english=True)
         stats = {
             'character': character,
             'meaning': simple_char_info.get('english', 'N/A'),
@@ -197,33 +194,25 @@ def user_progress():
     return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), progress_stats=progress_stats, decks=DECKS_INFO, maxnumcards=db_load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
 
 
-def packed_data(character):
+def main_card_data(character):
     username = session.get('username')
-    user_notes, are_notes_public = db_get_user_note(username, character)
-    other_user_notes = db_get_all_public_notes(character, exclude_username=username)
-    simple_info = character_simple_info(character)
+    simple_info = get_char_info(character, pinyin=True, english=True, function=True)
     learning_cards = db_load_user_value(username, "learning_cards") or []
     is_learning = character in learning_cards
 
-
-    res = get_character_page(character, 0)
+    res = get_tatoeba_page(character, 0)
     if res:
-        tatoebas, is_last = res
+        examples, is_last = res
     else:
-        tatoebas, is_last = [], False
+        examples, is_last = [], False
 
     return {
         "character": character,
         "pinyin": simple_info['pinyin'],
         "english": simple_info['english'],
-        "hsk_level": simple_info['hsk_level'],
         "function": simple_info['function'],
-        "user_notes": user_notes,
         "is_learning": is_learning,
-        "are_notes_public": are_notes_public,
-        "other_user_notes": other_user_notes,
-        "char_matches": "",
-        "tatoeba": tatoebas,
+        "examples": examples,
         "is_last": is_last,
         "html": "IMPLEMENT ME", #data.get('examples', ''),
     }
@@ -409,14 +398,22 @@ def grid():
     if not querydeck:
         querydeck = 'hsk1'
     logger.info(f"Query deck: {querydeck}")
+
+    username = session.get('username')
+    learning_cards = db_load_user_progress(username)['learning_cards']
+    cc = {
+        'custom': {
+            'name': 'Custom deck',
+            'chars': get_chars_info(learning_cards, pinyin=True),
+        },
+        **CARDDECKS_W_PINYIN
+    }
+
     if not character:
-        characters = CARDDECKS.get(querydeck, {})["chars"]
-        logger.info(f"Initial characters: {len(characters)}")  # Debug print
-        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=None, decks=DECKS_INFO, deck=querydeck)
-    pc = packed_data(character)
-    pc['raw_info'] = word_info(character)
-    characters = CARDDECKS[querydeck]["chars"]
-    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], characters=characters, character=pc, decks=DECKS_INFO, deck=querydeck)
+        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, deck=querydeck)
+    main_data = main_card_data(character)
+    main_data['chars_breakdown'] = breakdown_chars(character)
+    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=main_data, decks=cc, deck=querydeck)
 
 from backend.routes.puzzles import get_common_context
 
@@ -445,11 +442,9 @@ def hanzipractice():
     #     })
     #return render_template('hanzipractice.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=DECKS_INFO, deck=session['deck'])
     #characters = {k: v for deck in CARDDECKS.values() for k, v in deck.items()}
-    characters = []
-    for deck in CARDDECKS:
-        characters += CARDDECKS[deck]["chars"]
+    
     context = get_common_context()
-    context["characters"] = characters
+    context["decknames"] = DECKNAMES
     return render_template("hanzipractice.html", **context)
 
 # @app.route('/convert')
@@ -881,143 +876,6 @@ def search_results():
         results = get_search_results(query)
     return jsonify({'results': results, 'query': query})
     
-
-@app.route('/oldearch', methods=['GET', 'POST'])
-@timing_decorator
-@session_required
-def oldearch():
-    if request.method == 'POST' or request.args.get('query'):
-        query = request.args.get('query') or request.form.get('query') or ''
-        query = query.strip().lower()
-        results = []
-
-        # If query contains multiple Chinese characters, search separately
-        if all('\u4e00' <= ch <= '\u9fff' for ch in query) and len(query) > 1:
-            individual_results = []
-            for char in query:
-                char_results = []
-                for deck in CARDDECKS:
-                    for hanzi in CARDDECKS[deck]["chars"]:
-                        if char in hanzi:
-                            card = character_info(hanzi)
-                            char_results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
-                individual_results.append(char_results)
-
-            # Flatten and concatenate results while preserving order
-            results = [item for sublist in individual_results for item in sublist]
-
-        else:  # Original single-word search logic
-            for deck in CARDDECKS:
-                for hanzi in CARDDECKS[deck]["chars"]:
-                    card = character_simple_info(hanzi)
-                    if query in hanzi:
-                        results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
-                    elif query.replace(' ', '').isalnum():
-                        if 'pinyin' in card:
-                            pinyin_query = remove_tones(convert_numerical_tones(query))
-                            card_pinyin = remove_tones(card['pinyin'].lower())
-                            if pinyin_query in card_pinyin:
-                                results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
-                        if 'english' in card and query in card['english'].lower():
-                            results.append({'hanzi': hanzi, **card, 'match_type': 'english'})
-                    elif query in hanzi.lower():
-                        results.append({'hanzi': hanzi, **card, 'match_type': 'hanzi'})
-                    elif query.replace(' ', '').isalnum():  # Allow spaces and numbers in query
-                        print("asffa")
-                        if 'pinyin' in card:
-                            if '1' in query or '2' in query or '3' in query or '4' in query:
-                                numbered_query = move_tone_number_to_end(query)
-                                numbered_card_pinyin = lazy_pinyin(hanzi, style=Style.TONE3, neutral_tone_with_five=True)
-                                if numbered_query in numbered_card_pinyin:
-                                    results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
-                                else:
-                                    pinyin_query = ''.join(lazy_pinyin(query))
-                                    card_pinyin = ''.join(lazy_pinyin(card['pinyin'].lower()))
-                                    if pinyin_query in card_pinyin:
-                                        results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
-                            else:
-                                pinyin_query = remove_tones(convert_numerical_tones(query))
-                                card_pinyin = remove_tones(card['pinyin'].lower()).lower()
-                                if pinyin_query in card_pinyin:
-                                    results.append({'hanzi': hanzi, **card, 'match_type': 'pinyin'})
-                        if 'english' in card and query in card['english'].lower():
-                            results.append({'hanzi': hanzi, **card, 'match_type': 'english'})
-        
-        # Remove duplicates
-        unique_results = []
-        seen_hanzi = set()
-        for result in results:
-            if result['hanzi'] not in seen_hanzi:
-                unique_results.append(result)
-                seen_hanzi.add(result['hanzi'])
-        
-        # Sort the results
-        def sort_key(result):
-            query_lower = query.lower()
-            if result['hanzi'] == query:
-                return (0, result['hanzi'])
-            elif query in result['hanzi']:
-                return (1, len(result['hanzi']), result['hanzi'])
-            elif result['match_type'] == 'pinyin':
-                pinyin = convert_numerical_tones(result['pinyin'].lower())
-                accented_query = convert_numerical_tones(query_lower)
-                
-                words = pinyin.split()
-                toneless_words = [remove_tones(word) for word in words]
-                toneless_query = remove_tones(accented_query)
-                
-                # Check for exact match (considering tones)
-                if accented_query in words:
-                    return (2, 0, len(words), pinyin)
-                # Check for exact match (ignoring tones)
-                elif toneless_query in toneless_words:
-                    return (2, 1, len(words), pinyin)
-                # Check if any word starts with the query (considering tones)
-                elif any(word.startswith(accented_query) for word in words):
-                    return (2, 2, len(words), pinyin)
-                # Check if any word starts with the query (ignoring tones)
-                elif any(word.startswith(toneless_query) for word in toneless_words):
-                    return (2, 3, len(words), pinyin)
-                # If query is found anywhere in pinyin
-                else:
-                    return (2, 4, len(words), pinyin)
-            else:  # english
-                english = result['english'].lower()
-                return (3, not english.startswith(query_lower), english)
-
-            
-        sorted_results = sorted(unique_results, key=sort_key)
-        
-        if not sorted_results:  # If no results found, perform fuzzy search
-            fuzzy_results = []
-            for deck in CARDDECKS:
-                for hanzi, card in CARDDECKS[deck].items():
-                    if 'pinyin' in card:
-                        accented_query = convert_numerical_tones(query)
-                        accented_card_pinyin = convert_numerical_tones(card['pinyin'].lower())
-                        if fuzzy_match(accented_query, accented_card_pinyin):
-                            fuzzy_results.append({'hanzi': hanzi, **card, 'match_type': 'fuzzy_pinyin'})
-                    elif 'english' in card and fuzzy_match(query, card['english']):
-                        fuzzy_results.append({'hanzi': hanzi, **card, 'match_type': 'fuzzy_english'})
-
-            # Remove duplicates
-            unique_fuzzy_results = []
-            seen_hanzi = set()
-            for result in fuzzy_results:
-                if result['hanzi'] not in seen_hanzi:
-                    unique_fuzzy_results.append(result)
-                    seen_hanzi.add(result['hanzi'])
-
-            # Sort fuzzy results
-            sorted_results = sorted(unique_fuzzy_results, key=lambda result: 
-                fuzzy_sort_key(convert_numerical_tones(query), 
-                               convert_numerical_tones(result['pinyin']) if result['match_type'] == 'fuzzy_pinyin' else result['english'])
-            )
-
-        return render_template('search.html', results=sorted_results, darkmode=session['darkmode'], query=query, decks=DECKS_INFO, username=session['username'])
-    
-    return render_template('search.html', darkmode=session['darkmode'], decks=DECKS_INFO, username=session['username'])
-
 @app.route('/hanzi_strokes_history')
 @session_required
 # @hard_session_required

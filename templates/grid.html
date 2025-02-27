@@ -55,7 +55,7 @@
         <span class="submenuName" id="deckSubmenuName">sets</span>
         <ul class="gridSubmenu" id="deckSubmenu">
             {% for key, deck in decks.items() %}
-                <li class="menu-option-parent"><a class="deck-option deck-change" data-deck="{{ key }}">{{ deck }}</a></li>
+                <li class="menu-option-parent"><a class="deck-option deck-change" data-deck="{{ key }}">{{ deck.name }}</a></li>
             {% endfor %}
         </ul>
     </div>
@@ -83,7 +83,6 @@
     <div id="pinyin-hover-box" style="display: none;"></div>
 
     <script>
-        const characters = {{ characters | tojson | safe }};
         const characterdata = {{ character | tojson | safe }};
         const inputdecks = {{ decks | tojson | safe }};       
 

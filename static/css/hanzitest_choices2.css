@@ -84,14 +84,28 @@ body {
     margin-top: 20px;
 }
 
-#deck-name {
+
+#deck-name, #font-name {
+    white-space: nowrap;
     text-align: center;
-    margin-bottom: 20px;
+    font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
+    cursor: pointer;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: row;
 }
 
-#deck-name.darkmode {
+
+#deck-name.darkmode, #font-name.darkmode {
     color: #f0f0f0
 }
+
+
+#deck-name-label, #font-name-label {
+    padding: 3px 11px;
+}
+
 
 #answer-table-container {
     width: 100%;
@@ -237,7 +251,6 @@ h1 {
 
 .custom-dropdown {
     position: relative;
-    width: 300px;
     font-family: Arial, sans-serif;
 }
 
@@ -246,16 +259,6 @@ h1 {
     margin-bottom: 0;
 }
 
-#selected-deck {
-    font-weight: bold;
-    background-color: #dcdcdc;
-    padding: 3px 11px;
-}
-
-#selected-deck.darkmode {
-    font-weight: bold;
-    background-color: #353535;
-}
 
 .options-container {
     display: none;
@@ -381,4 +384,38 @@ h1 {
         transform: translateY(105vh) rotate(-360deg);
         opacity: 0;
     }
+}
+
+
+
+#selected-deck {
+    font-weight: bold;
+    display: block;
+    width: 150px;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: #dcdcdc;
+    padding: 3px 11px;
+    font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
+}
+
+#selected-deck.darkmode {
+    font-weight: bold;
+    background-color: #353535;
+}
+
+#selected-font {
+    font-weight: bold;
+    background-color: #dcdcdc;
+    padding: 3px 11px;
+    font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
+}
+
+#selected-font.darkmode {
+    font-weight: bold;
+    background-color: #353535;
 }

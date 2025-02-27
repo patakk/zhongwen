@@ -27,8 +27,9 @@
 </head>
 <body>
     <h1 id="title">Test your Hanzi 🧾</h1>
-    <div class="custom-dropdown">
-        <div id="deck-name">Current Deck: <span id="selected-deck">Select a deck</span></div>
+    
+    <div class="custom-dropdown deck-dropdown">
+        <div id="deck-name"><div id="deck-name-label">Current Deck:</div> <div id="selected-deck">Select a deck</div></div>
         <div id="deck-options" class="options-container"></div>
     </div>
 
@@ -64,22 +65,13 @@
     <button id="skip-btn">Skip</button>
 
     <script>
-        let characters = {{ characters | tojson | safe }};
-        const inputdecks = {{ decks | tojson | safe }};
+        
+        let currentcharacters = {};
         let inputdeck = {{ deck | tojson | safe }};
+        let decknames = {{ decknames | tojson | safe }};
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
-        const decksinfos = {{ decksinfos | tojson | safe }};
-        const quiz_q = {{ quiz_q | tojson | safe }};
-        let inputdecksflattend = {};
-        let decks = Object.keys(inputdecks);
-        decks.forEach(deck => {
-            let chars = Object.keys(inputdecks[deck]);
-            chars.forEach(char => {
-                inputdecksflattend[char] = inputdecks[deck][char];
-            });
-        });
-        
+
         function isIPhone(){
             const ua = navigator.userAgent;
             if (ua.includes('iPhone')) {
