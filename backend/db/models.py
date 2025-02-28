@@ -2,6 +2,7 @@ from sqlalchemy.dialects.sqlite import JSON
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from backend.db.extensions import db
+import secrets
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -13,6 +14,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=True)
+    email_verified = db.Column(db.Boolean, default=False)
+    email_verification_token = db.Column(db.String(100), unique=True, nullable=True)
 
     progress = db.relationship("UserProgress", backref="user", uselist=False)
     notes = db.relationship("UserNotes", backref="user", lazy=True)
@@ -24,6 +28,12 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def generate_email_verification_token(self):
+        token = secrets.token_urlsafe(32)
+        self.email_verification_token = token
+        return token
+
 
 class StrokeData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,6 +62,7 @@ class StrokeData(db.Model):
             mistakes=data['mistakes'],
             stroke_count=data['strokeCount'],
         )
+
 
 class UserProgress(db.Model):
     id = db.Column(db.Integer, primary_key=True)

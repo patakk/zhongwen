@@ -188,6 +188,7 @@ function toggleGridList(){
 
 // let prefetchedPlotters = null;
 let charCounter = 0;
+let activeCharacter;
 function createGrid(characters, useAllDecks){
     const grid = document.getElementById('character-grid');
     grid.innerHTML = '';
@@ -228,6 +229,7 @@ function createGrid(characters, useAllDecks){
         });
         let timeout;
         gridItem.addEventListener('mouseenter', () => {
+            activeCharacter = charData.character;
             timeout = setTimeout(() => {
                 loadCard(charData.character);
             }, 200);
@@ -438,6 +440,10 @@ function loadAndShow(character) {
 let loadedCard = null;
 
 function showLoaded(){
+    if(!loadedCard || loadedCard.character !== activeCharacter){
+        loadAndShow(activeCharacter);
+        return;
+    }
     renderCardData(loadedCard);
     currentGridPlotters = loadedCard.plotters;
     displayCard(true, true);

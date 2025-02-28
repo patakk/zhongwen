@@ -41,7 +41,8 @@ class FlashcardApp:
         current_learning = db_load_user_value(username, "learning_cards") or []
         if word not in current_learning:
             current_learning.append(word)
-            db_store_user_value(username, "learning_cards", current_learning)
+            success, message = db_store_user_value(username, "learning_cards", current_learning)
+            print(message)
 
     def remove_word_from_learning(self, username, word):
         daily_new_cards = db_load_user_value(username, "daily_new_cards") or []

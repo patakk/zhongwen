@@ -1,8 +1,10 @@
 import logging
 from datetime import datetime, timezone
 from urllib.parse import unquote
-
+import copy
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm.attributes import flag_modified
+
 
 from backend.db.extensions import db
 from backend.db.models import StrokeData, User, UserProgress, UserString, Card, UserNotes
@@ -68,7 +70,7 @@ def db_create_user(
     )
     db.session.add(user_progress)
     db.session.commit()
-    print(user_progress.to_dict())
+    print(username, user_progress.to_dict())
     return user
 
 
@@ -202,31 +204,80 @@ def db_update_or_create_note(username, word, notes, is_public=False):
     except Exception as e:
         db.session.rollback()
         return False, f"Error saving note: {str(e)}"
-
+def db_store_user_value(username, key, value):
+    try:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return False, f"User '{username}' not found"
+            
+        # Get all current progress data
+        current_data = db_load_user_progress(username)
+        logger.info(f"Current data before update: {current_data}")
+        
+        if not current_data:
+            return False, f"No progress found for user '{username}'"
+        
+        # Update the specific key
+        current_data[key] = value
+        logger.info(f"Data after update, before save: {current_data}")
+        
+        # Save all progress data back
+        success, message = db_save_user_progress(username, current_data)
+        
+        # Verify immediate state after save
+        user_prog = user.progress
+        logger.info(f"Direct DB state after save: {user_prog.to_dict()}")
+        
+        # Load and verify
+        loaded = db_load_user_value(username, key)
+        logger.info(f"Loaded value after save: {loaded}")
+        
+        return success, message
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error in db_store_user_value: {str(e)}")
+        return False, f"Error: {str(e)}"
 
 def db_save_user_progress(username, progress_data):
+    logger.info(f"Attempting to save progress data: {progress_data}")
     user = User.query.filter_by(username=username).first()
     if not user:
         return False, f"User '{username}' not found"
         
     user_prog = user.progress
     if user_prog:
+        # Special handling for JSON fields
         for key, value in progress_data.items():
+            value = copy.deepcopy(value)
             setattr(user_prog, key, value)
+            flag_modified(user_prog, key)
     else:
         user_prog = UserProgress.from_dict(user, progress_data)
         db.session.add(user_prog)
-    db.session.commit()
-    return True, "Progress saved successfully"
+    
+    try:
+        db.session.commit()
+        # Verify the save immediately
+        db.session.refresh(user_prog)
+        logger.info(f"Progress saved and verified: {user_prog.to_dict()}")
+        return True, "Progress saved successfully"
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error saving progress: {str(e)}")
+        return False, str(e)
+
 
 def db_load_user_progress(username):
+    logger.info(f"Loading progress for user: {username}")
     user = User.query.filter_by(username=username).first()
     if not user or not user.progress:
-        return None
+        return {}
         
     user_prog = user.progress
     data = user_prog.to_dict()
-
+    logger.info(f"Loaded progress data: {data}")
+    
     if getshortdate() != data.get("new_cards_limit_last_updated"):
         data["new_cards_limit"] = data["base_new_cards_limit"]
         data["new_cards_limit_last_updated"] = getshortdate()
@@ -235,38 +286,11 @@ def db_load_user_progress(username):
         user_prog.new_cards_limit_last_updated = data["new_cards_limit_last_updated"]
         db.session.commit()
     
-    logger.info(f"User progress found for user '{username}'")
     return data
 
 def db_load_user_value(username, key):
-    user = User.query.filter_by(username=username).first()
-    if not user or not user.progress:
-        return None
-        
-    user_prog = user.progress
-    if hasattr(user_prog, key):
-        return getattr(user_prog, key)
-    return None
-
-def db_store_user_value(username, key, value):
-    try:
-        user = User.query.filter_by(username=username).first()
-        if not user:
-            return False, f"User '{username}' not found"
-            
-        user_prog = user.progress
-        if not user_prog:
-            return False, f"No progress found for user '{username}'"
-            
-        if hasattr(user_prog, key):
-            setattr(user_prog, key, value)
-            db.session.commit()
-            return True, "Value updated successfully"
-        else:
-            return False, f"Attribute '{key}' does not exist in UserProgress model"
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return False, f"Database error: {str(e)}"
+    data = db_load_user_progress(username)
+    return data.get(key)
 
 def db_store_user_string(username, content):
     try:

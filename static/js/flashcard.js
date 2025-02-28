@@ -320,7 +320,7 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
     containerDiv.id = 'mainExamplesContainer';
     
     let toggleButton = document.createElement('div');
-    toggleButton.innerHTML = '<span style="text-decoration: underline;">expand</span> ⤵';
+    toggleButton.innerHTML = '<span style="text-decoration: underline;">expand</span> ↓';
     toggleButton.style.cursor = 'pointer';
     toggleButton.style.opacity = '0.4';
     toggleButton.style.textAlign = 'center';
@@ -353,89 +353,83 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
     examplesDiv.id = 'mainExamples';
     examplesDiv.style.display = 'none';
     function populateExamples(exs){
-    examplesDiv.innerHTML = '';
-    exs.forEach((example, index) => {
-        let exampleD = document.createElement('div');
-        let mandarin = example.cmn;
-        let english = example.eng[0];
-        let pinyin = example.pinyin;
-
-        let mchars = mandarin.split("");
-        let pwords = pinyin.split(" ");
-        
-        let cmnDiv = document.createElement('div');
-        let mandarinHtml = "";
-        const hoverBox = document.getElementById('pinyin-hover-box');
-
-        mchars.forEach((char, index) => {
-            let spanElement = document.createElement('span');
-            spanElement.textContent = char;
-            spanElement.classList.add('clickable-example-char');
-            
-            if (character && character.includes(char)) {
-                spanElement.style.color = 'var(--accent-word)';
-            }
-            spanElement.style.cursor = 'pointer';
-        
-            function showTooltip(element, content, x, y) {
-                hoverBox.innerHTML = content;
-                hoverBox.style.display = 'block';
-                hoverBox.style.left = `${x + 10}px`;
-                hoverBox.style.top = `${y + 10}px`;
-            }
-        
-            function hideTooltip() {
-                hoverBox.style.display = 'none';
-            }
-        
-            // Mouse events
-            spanElement.addEventListener('mouseover', function(e) {
-                showTooltip(this, pwords[index] || '', e.pageX, e.pageY);
-            });
-            spanElement.addEventListener('click', function(e) {
-                loadAndShow(char); 
-                const newUrl = new URL(window.location);
-                newUrl.searchParams.set('query', char);
-                history.pushState({}, '', newUrl);
-                hoverBox.style.display = 'none';
-
-            });
-            spanElement.addEventListener('mouseout', hideTooltip);
-            spanElement.addEventListener('mousemove', function(e) {
-                hoverBox.style.left = `${e.pageX + 10}px`;
-                hoverBox.style.top = `${e.pageY + 10}px`;
-            });
-        
-            // Touch events
-            spanElement.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                const touch = e.touches[0];
-                if (hoverBox.style.display === 'none') {
-                    showTooltip(this, pwords[index] || '', touch.pageX, touch.pageY);
-                } else {
-                    hideTooltip();
+        examplesDiv.innerHTML = '';
+        exs.forEach((example, index) => {
+            let exampleD = document.createElement('div');
+            let mandarin = example.cmn;
+            let english = example.eng[0];
+            let pinyin = example.pinyin;
+    
+            let cmnDiv = document.createElement('div');
+            const hoverBox = document.getElementById('pinyin-hover-box');
+    
+            // Iterate through the array of word dictionaries
+            mandarin.forEach((wordDict, index) => {
+                let spanElement = document.createElement('span');
+                spanElement.textContent = wordDict.character;
+                spanElement.classList.add('clickable-example-char');
+                
+                if (character && character.includes(wordDict.character)) {
+                    spanElement.style.color = 'var(--accent-word)';
                 }
+                spanElement.style.cursor = 'pointer';
+            
+                function showTooltip(element, x, y) {
+                    // Use the pinyin from the dictionary
+                    hoverBox.innerHTML = `
+                        <div class="hover-pinyin">${wordDict.pinyin}</div>
+                        <div class="hover-english">${wordDict.english}</div>
+                    `;
+                    hoverBox.style.display = 'block';
+                    hoverBox.style.left = `${x + 10}px`;
+                    hoverBox.style.top = `${y + 10}px`;
+                    hoverBox.style.display = 'block';
+                    hoverBox.style.left = `${x + 10}px`;
+                    hoverBox.style.top = `${y + 10}px`;
+                }
+            
+                function hideTooltip() {
+                    hoverBox.style.display = 'none';
+                }
+            
+                spanElement.addEventListener('mouseover', function(e) {
+                    if(isMobileOrTablet()){
+                        return;
+                    }
+                    showTooltip(this, e.pageX, e.pageY);
+                });
+    
+                spanElement.addEventListener('click', function(e) {
+                    loadAndShow(wordDict.character); 
+                    const newUrl = new URL(window.location);
+                    newUrl.searchParams.set('query', wordDict.character);
+                    history.pushState({}, '', newUrl);
+                    hoverBox.style.display = 'none';
+                });
+    
+                spanElement.addEventListener('mouseout', hideTooltip);
+                spanElement.addEventListener('mousemove', function(e) {
+                    hoverBox.style.left = `${e.pageX + 10}px`;
+                    hoverBox.style.top = `${e.pageY + 10}px`;
+                });
+                
+                cmnDiv.appendChild(spanElement);
             });
             
-            cmnDiv.appendChild(spanElement);
+            let engDiv = document.createElement('div');
+            engDiv.classList.add("mainExampleEnglish");
+            engDiv.textContent = english;
+            
+            let pinDiv = document.createElement('div');
+            pinDiv.classList.add("mainExamplePinyin");
+            // Combine all pinyin from the word dictionaries
+            pinDiv.textContent = mandarin.map(word => word.pinyin).join(' ');
+            
+            exampleD.appendChild(cmnDiv);
+            exampleD.appendChild(engDiv);
+            exampleD.style.marginBottom = '1em';
+            examplesDiv.appendChild(exampleD);
         });
-        
-        
-        let engDiv = document.createElement('div');
-        engDiv.style.opacity = '0.6';
-        engDiv.textContent = english;
-        
-        let pinDiv = document.createElement('div');
-        pinDiv.style.opacity = '0.8';
-        pinDiv.style.fontSize = '0.7em';
-        pinDiv.style.color = 'var(--dimmer-text-color)';
-        pinDiv.textContent = pinyin;
-        
-        exampleD.appendChild(cmnDiv);
-        exampleD.appendChild(engDiv);
-        exampleD.style.marginBottom = '1em';
-        examplesDiv.appendChild(exampleD);
-    });
 }
 
     
@@ -464,11 +458,11 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
             examplesDiv.style.display = 'block';
             loadButtonsContainer.style.display = 'flex';
             toggleButton.style.textAlign = 'center';
-            toggleButton.innerHTML = '<span style="text-decoration: underline;">collapse</span> ⤴';
+            toggleButton.innerHTML = '<span style="text-decoration: underline;">collapse</span>↑';
         } else {
             examplesDiv.style.display = 'none';
             loadButtonsContainer.style.display = 'none';
-            toggleButton.innerHTML = '<span style="text-decoration: underline;">expand</span> ⤵';
+            toggleButton.innerHTML = '<span style="text-decoration: underline;">expand</span> ↓';
             toggleButton.style.cursor = 'pointer';
             toggleButton.style.opacity = '0.4';
             toggleButton.style.textAlign = 'center';
@@ -573,6 +567,7 @@ function loadAndShow(character) {
             // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
             // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
            
+            console.log('this')
             renderCardData(data);
             currentGridPlotters = data.plotters;
             displayCard(true, true);
@@ -598,7 +593,7 @@ function loadAndShow(character) {
 function setupAddToDeck(){
     let addcardDiv = document.getElementById('flashcard_addcard');
     addcardDiv.classList.add("corner-buttons")
-    addcardDiv.textContent = "+";
+    addcardDiv.innerHTML = '<div class="doc-iconw"></div>';
     const hoverBox = document.getElementById('pinyin-hover-box');
     
     function showTooltip(element, content, event) {
@@ -712,12 +707,12 @@ function renderCardData(data) {
     descriptionContainer.id = 'descriptionContainer';
 
     const rawLabel = document.createElement('div');
-    rawLabel.textContent = "Character breakdown ⤵";
+    rawLabel.innerHTML = "Character breakdown ↓";
     rawLabel.style.marginTop = '2em';
     rawLabel.style.marginBottom = '1em';
     rawLabel.style.opacity = '0.6';
     const exLabel = document.createElement('div');
-    exLabel.textContent = "Examples ⤵";
+    exLabel.innerHTML = "Examples ↓";
     exLabel.style.marginTop = '2em';
     exLabel.style.marginBottom = '1em';
     exLabel.style.opacity = '0.6';
@@ -828,6 +823,9 @@ function renderCardData(data) {
                     };
         
                     wordLink.addEventListener('mouseover', function (e) {
+                        if(isMobileOrTablet()){
+                            return;
+                        }
                         const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
                         const english = chardict[similar_char].definition;
                         const hsklvl = "chardict[similar_char].hsk_level";
@@ -928,6 +926,8 @@ function renderCardData(data) {
             const hoverBox = document.getElementById('pinyin-hover-box');
 
             function showTooltip(element, content, event) {
+                if(isMobileOrTablet())
+                    return;
                 hoverBox.innerHTML = content;
                 hoverBox.style.display = 'block';
                 hoverBox.style.left = `${event.pageX + 10}px`;
@@ -948,6 +948,8 @@ function renderCardData(data) {
             };
 
             wordLink.addEventListener('mouseover', function(e) {
+                if(isMobileOrTablet())
+                    return;
                 const pinyin = toAccentedPinyin(entry.pinyin);
                 const english = entry.english;
                 const hsklvl = "chardict[similar_char].hsk_level";

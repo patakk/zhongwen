@@ -21,6 +21,7 @@
     color: #000;
     color: rgba(0, 0, 0);
     min-width: 100px;
+    max-width: 100%;
     display: inline-block;
     text-align: center;
 }
@@ -113,9 +114,13 @@
 }
 
 
-#flashcard_addcard {
+/* #flashcard_addcard {
     padding: .3em .7em .4em .7em;
+} */
+#flashcard_addcard {
+    padding: .5em .5em .5em .5em;
 }
+
 #flashcard_close {
     padding: .3em .7em .4em .7em;
 }
@@ -498,6 +503,15 @@ and (max-device-width: 1024px) {
     max-width: 500px;
 }
 
+.hover-pinyin {
+    font-size: 0.9em;
+    margin-bottom: 0.2em;
+}
+
+.hover-english {
+    font-size: 0.8em;
+    color: #666;  /* or any color you prefer */
+}
 
 .clickable-char.darkmode {
     color: rgb(233, 233, 233);
@@ -1021,6 +1035,16 @@ input[type="checkbox"].darkmode:checked::after {
     flex-direction: column;
 }   
 
+.mainExampleEnglish {
+    opacity: 0.6;
+    font-size: 0.9em;
+}
+
+.mainExamplePinyin {
+    opacity: 0.8;
+    font-size: 0.7em;
+    color: var(--dimmer-text-color);
+}
 
 #flashcard_close {
     position: fixed;
@@ -1063,28 +1087,43 @@ input[type="checkbox"].darkmode:checked::after {
     display: inline;
     width: 1em;
     height: 1em;
+    background-size: contain;
 }
 
 .down-iconw {
     background-image: url("/static/icons/arrowdnw.png");
     width: 1em;
     height: 1em;
+    background-size: contain;
 }
 
 .up-iconw {
     background-image: url("/static/icons/arrowupw.png");
     width: 1em;
     height: 1em;
+    background-size: contain;
 }
 
 .down-iconb {
     background-image: url("/static/icons/arrowdnb.png");
     width: 1em;
     height: 1em;
+    background-size: contain;
 }
 
 .up-iconb {
     background-image: url("/static/icons/arrowupb.png");
     width: 1em;
     height: 1em;
+    background-size: contain;
+}
+
+.doc-iconw {
+    background-image: url("/static/icons/docw.png");
+    width: 1em;
+    height: 1em;
+    background-size: contain;
+}
+.doc-iconw.darkmode {
+    background-image: url("/static/icons/docb.png");
 }

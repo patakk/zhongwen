@@ -23,8 +23,14 @@
             background-color: var(--background-color);
             color: var(--text-color);
             overflow-y: auto;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+
+            
+            -webkit-font-feature-settings: "liga" 0;
+            font-feature-settings: "liga" 0;
+            -webkit-text-rendering: geometricPrecision;
+            text-rendering: geometricPrecision;
         }
         body::-webkit-scrollbar {
             display: none;
@@ -60,6 +66,7 @@
             border-collapse: collapse;
             margin-top: 1em;
             margin-bottom: 1em;
+            table-layout: fixed;
         }
 
 
@@ -168,10 +175,13 @@
 
         }
 
-        td:nth-child(6), th:nth-child(6) {
-            width: 5%; 
-            max-width: 5%;
-        }
+        td:nth-child(1), th:nth-child(1) { width: 20%; }
+        td:nth-child(2), th:nth-child(2) { width: 20%; }
+        td:nth-child(3), th:nth-child(3) { width: 20%; }
+        td:nth-child(4), th:nth-child(4) { width: 20%; }
+        td:nth-child(5), th:nth-child(5) { width: 15%; }
+        td:nth-child(6), th:nth-child(6) { width: 5%; }
+
 
         @media (max-width: 768px) {
            
@@ -200,15 +210,15 @@
 
 
             td:first-child, th:first-child {
-                width: 50%; /* Character column */
+                width: 50%;
             }
 
             td:nth-child(5), th:nth-child(5) {
-                width: 30%; /* Learned column */
+                width: 30%;
             }
 
             td:nth-child(6), th:nth-child(6) {
-                width: 15%; /* Streak column */
+                width: 15%;
             }
         }
         
@@ -341,8 +351,8 @@
 
         .remove-card {
             cursor: pointer;
-            max-width: 1em;
-            width: 1em;
+            width: 30px;
+            max-width: 30px;
             text-align: center;
             align-items: center;
         }
@@ -407,10 +417,10 @@
     </script>
     <div class="container">
         <h1>Progress</h1>
-        <p>Cards in deck: {{ numcards }}</p>
-        <p>Due cards: {{ duecards }}</p>
-        <p>Learning cards: {{ learningcards }}</p>
-        <p>Learned cards: {{ learnedcards }}</p>
+        <p id="numcards">Cards in deck: {{ numcards }}</p>
+        <!-- <p>Due cards: {{ duecards }}</p> -->
+        <!-- <p>Learning cards: {{ learningcards }}</p> -->
+        <!-- <p>Learned cards: {{ learnedcards }}</p> -->
         <table>
         <tr>
         <table>
@@ -448,7 +458,7 @@
                                 <td style="text-align: right;">/</td>
                             {% endif %}
                         {% endif %}
-                    <td class="remove-card tooltip-header" style="text-align: center; max-width: 1rem;" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >             
+                    <td class="remove-card tooltip-header" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >             
                         <img src="/static/icons/trashw.png" alt="delete" class="trash-iconw">
                         <img src="/static/icons/trashb.png" alt="delete" class="trash-iconb">
                     </td>
@@ -695,6 +705,7 @@
                         }
                         console.log('Card removed successfully');
                         this.parentElement.remove();
+                        document.getElementById('numcards').textContent = `Cards in deck: ${document.querySelectorAll('.character').length}`;
                         // redue learning cards element 
                     })
                     .catch(error => {

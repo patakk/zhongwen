@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask import send_file
+from flask import flash
+from flask_mail import Mail, Message
 from datetime import timedelta
 from datetime import datetime
 from datetime import timezone
@@ -43,9 +45,8 @@ from backend.common import get_pinyin
 from backend.common import get_char_info
 from backend.common import get_chars_info
 from backend.common import dictionary
-from flask import flash
+from backend.routes.manage import validate_password
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 import json
 import os
@@ -54,29 +55,9 @@ from flask import Flask
 
 from backend.routes.api import api_bp
 from backend.routes.puzzles import puzzles_bp
+from backend.routes.manage import manage_bp
+from backend.setup import create_app
 
-# from flask_limiter import Limiter
-# from flask_limiter.util import get_remote_address
-# from flask_wtf.csrf import CSRFProtect
-
-FLASK_CONFIG = {
-    'SECRET_KEY': "zhongwen-hen-you-yi-si",
-    'SESSION_TYPE': 'filesystem',
-    'SESSION_PERMANENT': True,
-    'SESSION_COOKIE_SECURE': True,
-    'SESSION_COOKIE_HTTPONLY': True,
-    'SESSION_COOKIE_SAMESITE': 'Lax',
-    'PERMANENT_SESSION_LIFETIME': timedelta(days=30),
-    'SQLALCHEMY_TRACK_MODIFICATIONS': False
-}
-
-
-def create_app():
-    app = Flask(__name__)
-    app.config.update(FLASK_CONFIG)
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(BASE_DIR, "flashcards.db")}'
-    db_init_app(app)
-    return app
 app = create_app()
 application = app
 
@@ -88,6 +69,7 @@ application = app
 
 app.register_blueprint(api_bp)
 app.register_blueprint(puzzles_bp)
+app.register_blueprint(manage_bp)
 
 log_file = 'zhongwen.log'
 if os.path.exists('/home/patakk/logs'):
@@ -152,9 +134,10 @@ def user_progress():
     uprogress = db_load_user_progress(username)
 
     logger.info(f"User progress for {username}")
+    logger.info(uprogress)
 
     # pcards = list(uprogress['progress'].keys())
-    lcards = uprogress['learning_cards']
+    lcards = uprogress.get('learning_cards', [])
     # pncards = uprogress['presented_new_cards']
     # dncards = uprogress['daily_new_cards']
     acards = set(lcards)
@@ -263,15 +246,6 @@ def check_session():
 def get_crunch():
     return send_file('data/crunch.mp3', mimetype='audio/mpeg')
 
-def validate_password(password):
-    if len(password) < 6:  # Increased from 6 to 8
-        return False, "Password must be at least 8 characters"
-    # if not any(c.isupper() for c in password):
-    #     return False, "Password must contain an uppercase letter"
-    # if not any(c.isdigit() for c in password):
-    #     return False, "Password must contain a number"
-    return True, ""
-
 
 @app.route('/login', methods=['GET', 'POST'])
 @timing_decorator
@@ -361,7 +335,7 @@ def login():
 @app.route('/logout')
 def logout():
    session.clear()  # This clears everything in the session, including flash messages
-   return redirect(url_for('login'))
+   return redirect(url_for('home'))
 
 
 @app.route('/')
@@ -400,9 +374,8 @@ def grid():
     logger.info(f"Query deck: {querydeck}")
 
     username = session.get('username')
-    print(username)
     if username and username != 'tempuser':
-        learning_cards = db_load_user_progress(username)['learning_cards']
+        learning_cards = db_load_user_progress(username).get('learning_cards', [])
     else:
         learning_cards = []
     cc = {

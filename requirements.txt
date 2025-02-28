@@ -2,6 +2,8 @@ flask
 Flask-SQLAlchemy
 Flask-Limiter
 Flask-WTF
+Flask-Migrate
+flask-mail
 python-dateutil
 pypinyin
 Pillow

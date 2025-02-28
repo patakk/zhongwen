@@ -4,6 +4,7 @@ from functools import wraps
 
 from flask import redirect, session, url_for
 from flask import request
+from backend.db.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +53,14 @@ def session_required(func):
             session["darkmode"] = False
         if "username" not in session:
             session["username"] = "tempuser"
+
+        username = session.get('username')
+        if username:
+            user = User.query.filter_by(username=username).first()
+            if user is None and username != 'tempuser':
+                session.clear()
+                return redirect(url_for('home'))
+
         session.modified = True
         return func(*args, **kwargs)
     return wrapper

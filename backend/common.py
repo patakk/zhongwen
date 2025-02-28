@@ -11,11 +11,11 @@ dictionary = HanziDictionary()
 
 from .flashcard_app import init_flashcard_app, get_flashcard_app
 
-BASE_DIR = '.'
-DATA_DIR = os.path.join(BASE_DIR, 'data')
+DATA_DIR = './data'
 
 
 from pypinyin import lazy_pinyin, Style
+
 
 def get_pinyin(hanzi):
     result = lazy_pinyin(hanzi, style=Style.TONE)
@@ -63,7 +63,19 @@ def get_tatoeba_page(character, page):
         is_last = True
     for tid in tids[aa:bb]:
         tatoebas.append(TATOEBA_DATA[tid])
-    return tatoebas, is_last
+
+    examples = []
+    for idx, t in enumerate(tatoebas):
+        try:
+            words = pseg.cut(t['cmn'])
+            cmn = []
+            for a, b in words:
+                cmn.append({**get_char_info(a, pinyin=True, english=True), 'character': a})
+            examples.append({**t, 'cmn': cmn})
+        except:
+            pass
+
+    return examples, is_last
 
 def get_char_info(character, pinyin=False, english=False, function=False, full=False):
     if full:
