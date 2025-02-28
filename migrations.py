@@ -164,21 +164,20 @@ def add_user(username, password, email):
 @app.cli.command("list-learning-cards")
 @click.argument("username")
 def list_learning_cards(username):
-    """List all learning cards for a given user."""
     user = User.query.filter_by(username=username).first()
     if not user:
-        click.echo(f"User {username} not found.")
+        print(f"User {username} not found")
         return
-    
-    if not user.progress or not user.progress.learning_cards:
-        click.echo(f"No learning cards found for user {username}")
-        return
-    
-    click.echo(f"\nLearning cards for {username}:")
-    for card in user.progress.learning_cards:
-        click.echo(card)
 
-# Add hanzi to learning cards command
+    user_progress = UserProgress.query.filter_by(user_id=user.id).first()
+    if not user_progress:
+        print(f"No progress data for {username}")
+        return
+
+    print(f"\nLearning cards for {username}:")
+    for card in user_progress.learning_cards:
+        print(card)
+
 @app.cli.command("add-learning-card")
 @click.argument("username")
 @click.argument("hanzi")
@@ -194,7 +193,7 @@ def add_learning_card(username, hanzi):
         return
     
     # Get current learning cards
-    learning_cards = user.progress.learning_cards or []
+    learning_cards = list(user.progress.learning_cards or [])  # Create a new list
     
     # Check if card already exists
     if hanzi in learning_cards:
@@ -203,10 +202,19 @@ def add_learning_card(username, hanzi):
     
     # Add new card
     learning_cards.append(hanzi)
-    user.progress.learning_cards = learning_cards
+    
+    # Force SQLAlchemy to recognize the change
+    user.progress.learning_cards = None  # First set to None
+    db.session.flush()  # Flush the change
+    user.progress.learning_cards = learning_cards  # Then set the new list
+    
     db.session.commit()
     
+    # Verify the change
+    db.session.refresh(user.progress)
     click.echo(f"Added '{hanzi}' to learning cards for user {username}")
+    click.echo(f"Current learning cards: {user.progress.learning_cards}")
+
 
 
 '''
