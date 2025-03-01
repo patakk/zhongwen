@@ -103,7 +103,6 @@ body {
 
 @media screen and (max-width: 1024px) {
     body {
-        font-size: 14px; /* Slightly smaller base font size for mobile */
     }
 
     #deck-select {
@@ -116,19 +115,16 @@ body {
     #characters-link {
         top: 10px;
         left: 10px;
-        font-size: 14px;
     }
 
     #message {
         bottom: 10px;
         left: 10px;
-        font-size: 14px;
     }
 
     #font-select {
         top: 40px;
         right: 10px;
-        font-size: 14px;
         width: 120px;
         margin-top: 8px;
     }

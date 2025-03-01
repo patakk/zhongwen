@@ -128,6 +128,7 @@ a {
     width: 100%;
     font-size: 1em;
     white-space: nowrap;
+    box-sizing: border-box;
     padding: 7px;
 }
 
@@ -188,7 +189,7 @@ a {
     left: 25px;
     position: fixed;
     box-sizing: border-box;
-    z-index: 666;
+    z-index: 1666;
     text-align: center;
     right: 25px;
     left: auto;
