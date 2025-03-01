@@ -440,7 +440,7 @@
                     <tr>    
                     {% endif %}
 
-                    <td style="text-align: left;" class="character" onclick="showFlashcard('{{ stat.character }}')">
+                    <td style="text-align: left;" class="character" data-pinyin=' {{ stat.pinyin }} ' onclick="showFlashcard('{{ stat.character }}')">
                         <a>{{ stat.character }}</a>
                     </td>
                     <td class="varvar" style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
@@ -485,6 +485,7 @@
     <script>
         const username = {{ username | tojson | safe }};
         const maxnumcard = {{ maxnumcards | tojson | safe }};
+        let numcards = {{ numcards }};
         let isDarkMode = {{ darkmode | tojson | safe }};
         // const saveButton = document.getElementById('saveButton');
         let currentGridPlotters = [];
@@ -651,17 +652,46 @@
                 });
         }
 
+        
+        let overlay, flashcardContent, messageElement;
+        
+
         document.addEventListener('DOMContentLoaded', function() {
             const tooltipHeaders = document.querySelectorAll('.tooltip-header');
             const dateCells = document.querySelectorAll('.next-review-date');
             const hoverBox = document.getElementById('pinyin-hover-box');
     
+            overlay = document.getElementById('flashcard_overlay');
+            flashcardContent = document.getElementById('flashcard_container');
+            messageElement = document.getElementById('message');
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.style.display = 'none';
+                }
+            });
+
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay && !e.target.closest('#font-select')) {
+                    overlay.style.display = 'none';
+                    // bordercanvas.style.display = 'none';
+                    // document.getElementById('font-select').style.display = 'none';
+                }
+            });
 
             function showTooltip(element, content, event) {
+                if(isMobileOrTablet()) return;
+
                 hoverBox.textContent = content;
                 hoverBox.style.display = 'block';
                 hoverBox.style.left = `${event.pageX + 10}px`;
                 hoverBox.style.top = `${event.pageY + 10}px`;
+
+                
+                // setTimeout(() => {
+                //     hideTooltip();
+                // }, 400);
             }
     
             function hideTooltip() {
@@ -676,10 +706,6 @@
                     const tooltip = this.getAttribute('data-tooltip');
                     showTooltip(this, tooltip, e);
                 });
-
-                setTimeout(() => {
-                    hideTooltip();
-                }, 400);
     
                 header.addEventListener('mouseout', hideTooltip);
     
@@ -705,7 +731,9 @@
                         }
                         console.log('Card removed successfully');
                         this.parentElement.remove();
-                        document.getElementById('numcards').textContent = `Cards in deck: ${document.querySelectorAll('.character').length}`;
+                        numcards -= 1;
+                        //document.getElementById('numcards').textContent = `Cards in deck: ${document.querySelectorAll('.character').length}`;
+                        document.getElementById('numcards').textContent = `Cards in deck: ${numcards}`;
                         // redue learning cards element 
                     })
                     .catch(error => {
@@ -713,7 +741,24 @@
                     });
                 });
             });
-    
+
+            // add hover to characters
+            const characters = document.querySelectorAll('.character');
+            characters.forEach(character => {
+                character.addEventListener('mouseover', function(e) {
+                    const pinyin = this.getAttribute('data-pinyin');
+                    showTooltip(this, pinyin, e);
+                });
+
+                character.addEventListener('mouseout', hideTooltip);
+
+                character.addEventListener('mousemove', function(e) {
+                    hoverBox.style.left = `${e.pageX + 10}px`;
+                    hoverBox.style.top = `${e.pageY + 10}px`;
+                });
+            });
+
+
             const now = new Date();
             dateCells.forEach(cell => {
                 const originalDate = new Date(cell.textContent);
@@ -825,31 +870,11 @@
                 console.error('Error:', error);
             });
         }
-        let overlay, flashcardContent, messageElement;
-        document.addEventListener('DOMContentLoaded', function() {
-            overlay = document.getElementById('flashcard_overlay');
-            flashcardContent = document.getElementById('flashcard_container');
-            messageElement = document.getElementById('message');
-
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    overlay.style.display = 'none';
-                }
-            });
-
-
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay && !e.target.closest('#font-select')) {
-                    overlay.style.display = 'none';
-                    // bordercanvas.style.display = 'none';
-                    // document.getElementById('font-select').style.display = 'none';
-                }
-            });
-        });
     </script>
     <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     
+    <p id="message"></p>
     
 </body>
 </html>

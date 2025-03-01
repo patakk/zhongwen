@@ -373,7 +373,7 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
                     spanElement.style.color = 'var(--accent-word)';
                 }
                 spanElement.style.cursor = 'pointer';
-            
+
                 function showTooltip(element, x, y) {
                     // Use the pinyin from the dictionary
                     hoverBox.innerHTML = `
@@ -384,8 +384,14 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
                     hoverBox.style.left = `${x + 10}px`;
                     hoverBox.style.top = `${y + 10}px`;
                     hoverBox.style.display = 'block';
+                    const windowWidth = window.innerWidth;
+                    const tooltipWidth = hoverBox.offsetWidth;
+                    console.log(x, tooltipWidth, windowWidth)
+                    const rightEdgePosition = x + 10 + tooltipWidth;
+                    if (rightEdgePosition > windowWidth) {
+                        x = windowWidth - tooltipWidth - 20;
+                    }
                     hoverBox.style.left = `${x + 10}px`;
-                    hoverBox.style.top = `${y + 10}px`;
                 }
             
                 function hideTooltip() {
@@ -400,6 +406,16 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
                 });
     
                 spanElement.addEventListener('click', function(e) {
+                    if(isMobileOrTablet()){
+                        if(hoverBox.style.display === 'block'){
+                            //showTooltip(this, e.pageX, e.pageY);
+                            //return;
+                        }
+                        else{
+                            showTooltip(this, e.pageX, e.pageY);
+                            return;
+                        }
+                    }
                     loadAndShow(wordDict.character); 
                     const newUrl = new URL(window.location);
                     newUrl.searchParams.set('query', wordDict.character);
@@ -567,7 +583,6 @@ function loadAndShow(character) {
             // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
             // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
            
-            console.log('this')
             renderCardData(data);
             currentGridPlotters = data.plotters;
             displayCard(true, true);

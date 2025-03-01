@@ -86,14 +86,14 @@
             color: white;
         }
 
-        a {
+        .links {
             color: rgb(15, 15, 15);
             text-decoration: none;
             background-color: #d4d4d4;
             padding: 0px 4px;
         }
 
-        a:hover {
+        .links:hover {
             background-color: #ff0000;
             color: #ffffff;
         }
@@ -223,10 +223,6 @@
             /* text-transform: lowercase; */
         }
 
-        a,
-        h1 {
-            text-transform: none;
-        }
 
         .container ul ul>li::before {
             content: " ";
@@ -279,14 +275,14 @@
             </p>
             </br>
             <p>
-                Start <a href="{{ url_for('welcome') }}">here</a> to access the main features of the website.
+                Start <a class="links" href="{{ url_for('welcome') }}">here</a> to access the main features of the website.
             </p>
             </br>
             <div class="contact-info">
                 <div>Contact:</div>
                 <ul>
-                    <li>Email: <a href="mailto:paolo@patakk.xyz">paolo@patakk.xyz</a></li>
-                    <li style="padding-top:5px;">Twitter: <a href="https://twitter.com/patakk" target="_blank">@patakk</a></li>
+                    <li>Email: <a class="links" href="mailto:paolo@patakk.xyz">paolo@patakk.xyz</a></li>
+                    <li style="padding-top:5px;">Twitter: <a class="links" href="https://twitter.com/patakk" target="_blank">@patakk</a></li>
                 </ul>
             </div>
         </div>
@@ -298,15 +294,15 @@
                     <div class="flashcard-guide">
                         <p>
                             <span class="smallh">Chinese-English translations:</span></br>
-                            <p style="margin-left:20px;">CC-CEDICT database, licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+                            <p style="margin-left:20px;">CC-CEDICT database, licensed under a <a class="links" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
                             </br>
                             <span class="smallh">Character animations:</span>
-                            <p style="margin-left:20px;">Derived from <a href="https://github.com/chanind/hanzi-writer-data" target="_blank">hanzi-writer-data</a> and the <a href="https://github.com/skishore/makemeahanzi" target="_blank">Make Me A Hanzi project</a>, using Arphic Technology fonts under the <a href="{{ url_for('static', filename='licenses/ARPHICPL.TXT') }}" target="_blank">Arphic Public License</a>.</p>
+                            <p style="margin-left:20px;">Derived from <a class="links" href="https://github.com/chanind/hanzi-writer-data" target="_blank">hanzi-writer-data</a> and the <a class="links" href="https://github.com/skishore/makemeahanzi" target="_blank">Make Me A Hanzi project</a>, using Arphic Technology fonts under the <a class="links" href="{{ url_for('static', filename='licenses/ARPHICPL.TXT') }}" target="_blank">Arphic Public License</a>.</p>
                             </br>
                             <span class="smallh">Hanzi drawing puzzle:</span></br>
                             <p style="margin-left:20px;">Modified implementation of the 
-                                <a href="https://github.com/chanind/hanzi-writer" target="_blank">Hanzi Writer library</a>
-                                (<a href="{{ url_for('static', filename='licenses/MIT-LICENSE.txt') }}" target="_blank">MIT License</a>).
+                                <a class="links" href="https://github.com/chanind/hanzi-writer" target="_blank">Hanzi Writer library</a>
+                                (<a class="links" href="{{ url_for('static', filename='licenses/MIT-LICENSE.txt') }}" target="_blank">MIT License</a>).
                             </p>
                         </p>
                     </div>
@@ -325,7 +321,7 @@
                 <li> <div class="subheader">Project License</div>
                     <div class="flashcard-guide">
                         <p>
-                            This project is available under the <a href="{{ url_for('static', filename='licenses/MIT-LICENSE.txt') }}" target="_blank">MIT License</a>. You are free to use, modify, and distribute it, provided you include the original copyright notice and license terms.
+                            This project is available under the <a class="links" href="{{ url_for('static', filename='licenses/MIT-LICENSE.txt') }}" target="_blank">MIT License</a>. You are free to use, modify, and distribute it, provided you include the original copyright notice and license terms.
                         </p>
                     </div>
                 </li>
@@ -378,6 +374,8 @@
             // guide.style.display = 'block';
         });
     </script>
+    {% include 'kofi.html' %}
+
 </body>
 
 </html>
