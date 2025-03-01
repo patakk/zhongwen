@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -426,11 +427,15 @@
         <h2>Custom cards</h2>
         <p id="numcards">Cards in deck: {{ numcards }}</p>
         <p>
-            <a class="links" href="{{ url_for('grid', deck='custom') }}">Preview cards in grid</a>
+            <a class="links" href="{{ url_for('grid', deck='custom') }}">Preview cards in grid <i class="fas fa-th-large"></i></a>
         </p>
         <p>
-            <a class="links" href="{{ url_for('flashcards') }}">Practice cards</a>
+            <a class="links" href="{{ url_for('flashcards') }}">Practice as flashcards <i class="fas fa-exchange-alt"></i></a>
         </p>
+        <p>
+            <a class="links" href="{{ url_for('hanzipractice', deck='custom') }}">Practice writing <i class="fas fa-pen"></i></a>
+        </p>
+        
         <!-- <p>Due cards: {{ duecards }}</p> -->
         <!-- <p>Learning cards: {{ learningcards }}</p> -->
         <!-- <p>Learned cards: {{ learnedcards }}</p> -->

@@ -32,7 +32,7 @@ const dropdownToggle = document.getElementById('dropdown-toggle');
 const deckOptionsElement = document.getElementById('deck-options');
 
 
-function populateDropdown() {
+function populateDropdown(deck=null) {
     const hskKeys = [];
     const nonHskKeys = [];
     const customKeys = [];
@@ -47,7 +47,12 @@ function populateDropdown() {
         }
     });
     const sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
-    selectDeck(hskKeys[0]);
+    if(deck){
+        selectDeck(deck);
+    }
+    else{
+        selectDeck(hskKeys[0]);
+    }
     sortedKeys.forEach(deck => {
         const option = document.createElement('div');
         option.className = 'option';
@@ -563,30 +568,23 @@ function showResults() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // Check for deck query parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const deckParam = urlParams.get('deck');
+    if(deckParam){
+        // remove deck query from url
+        const url = new URL(window.location.href);
+        url.searchParams.delete('deck');
+        window.history.replaceState({}, document.title, url);
+    }
+    // remove deck from url
     getDarkmode();
-    populateDropdown();
+    
+    populateDropdown(deckParam);
 });
 
 window.addEventListener('resize', () => {
     // startTest();
 });
 
-
-function changeDeck(deck, func=null) {
-    fetch(`./api/change_deck?deck=${deck}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        console.log('Deck changed successfully');
-        window.location.reload();
-    })
-    .catch(error => {
-        console.error('There was a problem changing the deck:', error);
-    });
-}

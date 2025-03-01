@@ -11,7 +11,7 @@
     <title>Home - 中文</title>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
 
         html, body {
@@ -165,10 +165,11 @@
         <div class="link-container">
             <!-- <a href="{{ url_for('puzzles.hanzitest_fillin') }}">fill in</a> -->
             <!-- <a href="{{ url_for('puzzles.hanzitest_pinyin') }}" class="puzzle-link">📝 Pinyin Input</a> -->
-            <a href="{{ url_for('puzzles.hanzitest_table') }}" class="puzzle-link">📝 Pinyin Input</a>
-            <a href="{{ url_for('puzzles.hanzitest_choices') }}" class="puzzle-link">✅ Pinyin Choice</a>
-            <a href="{{ url_for('puzzles.hanzitest_choices2') }}" class="puzzle-link">☑️ Hanzi Choice</a>
-            <a href="{{ url_for('puzzles.hanzitest_draw') }}" class="puzzle-link">✍️ Write Hanzi</a>
+            <a href="{{ url_for('puzzles.hanzitest_table') }}" class="puzzle-link"><i class="fas fa-keyboard"></i> Pinyin Input</a>
+            <a href="{{ url_for('puzzles.hanzitest_choices') }}" class="puzzle-link"><i class="fas fa-check-square"></i> Pinyin Choice</a>
+            <a href="{{ url_for('puzzles.hanzitest_choices2') }}" class="puzzle-link"><i class="fas fa-tasks"></i> Hanzi Choice</a>
+            <a href="{{ url_for('puzzles.hanzitest_draw') }}" class="puzzle-link"><i class="fas fa-pen-fancy"></i> Write Hanzi</a>
+
             
             <!-- <a href="{{ url_for('hanzipractice') }}">practice hanzi</a> -->
         </div>
