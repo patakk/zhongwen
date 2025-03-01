@@ -4,10 +4,13 @@ from urllib.parse import unquote
 import copy
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.attributes import flag_modified
+from flask import request, redirect, url_for, flash
 
+from flask_mail import Mail, Message
 
 from backend.db.extensions import db
 from backend.db.models import StrokeData, User, UserProgress, UserString, Card, UserNotes
+from backend.db.extensions import db, mail
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +46,7 @@ def db_get_all_stroke_data(username):
 def db_create_user(
     username,
     password,  # New parameter
+    email,  # New parameter
     base_new_cards_limit,
     new_cards_limit,
     new_cards_limit_last_updated,
@@ -54,6 +58,7 @@ def db_create_user(
 ):
     user = User(username=username)
     user.set_password(password)
+    user.set_email(email, verified=False)
     db.session.add(user)
     db.session.flush()
 
@@ -70,7 +75,31 @@ def db_create_user(
     )
     db.session.add(user_progress)
     db.session.commit()
-    print(username, user_progress.to_dict())
+
+
+            # if User.query.filter_by(email=email).first():
+            #     flash('Email already registered', 'danger')
+            #     session['_from_post'] = True
+            #     return redirect(url_for('manage.email_management'))
+
+    token = user.generate_email_verification_token()
+    verification_link = url_for('home', token=token, _external=True)
+    
+    msg = Message('Verify Your Email',
+                    recipients=[email])
+    msg.body = f'''Please click on the following link to verify your email:
+    {verification_link}
+    
+    If you did not request this email, please ignore it.'''
+    
+    try:
+        mail.send(msg)
+        db.session.commit()
+        flash('Verification email sent. Please check your inbox.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Error sending verification email.', 'danger')
+
     return user
 
 

@@ -253,6 +253,7 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()  # Added strip()
         password = request.form.get('password', '')
+        email = request.form.get('email', '')
         action = request.form.get('action')
         
         settings = {
@@ -273,10 +274,11 @@ def login():
                 flash(msg, 'error')
                 return redirect(url_for('login'))
                 
-            try:
+            if True:
                 user = db_create_user(
                     username=username,
                     password=password,
+                    email=email,
                     base_new_cards_limit=20,
                     new_cards_limit=20,
                     new_cards_limit_last_updated=getshortdate(),
@@ -299,9 +301,8 @@ def login():
                 flash('Account created successfully!', 'success')
                 return redirect(url_for('welcome'))
                 
-            except Exception as e:
+            else:
                 flash('Error creating account', 'error')
-                logger.error(f"Error creating user: {str(e)}")
                 return redirect(url_for('login'))
         
         # Login

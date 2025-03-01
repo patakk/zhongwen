@@ -9,6 +9,7 @@ from flask import request, redirect, url_for, flash
 from backend.db.models import User
 from backend.db.extensions import db, mail
 from backend.decorators import session_required
+from backend.decorators import hard_session_required
 
 
 def validate_password(password):
@@ -18,7 +19,7 @@ def validate_password(password):
 
 
 @manage_bp.route('/email-management', methods=['GET', 'POST'])
-@session_required
+@hard_session_required
 def email_management():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -31,8 +32,7 @@ def email_management():
                 session['_from_post'] = True
                 return redirect(url_for('manage.email_management'))
 
-            user.email = email
-            user.email_verified = False
+            user.set_email(email, verified=False)
             token = user.generate_email_verification_token()
             
             # Send verification email
@@ -48,7 +48,7 @@ def email_management():
             try:
                 mail.send(msg)
                 db.session.commit()
-                flash('Verification email sent. Please check your inbox.', 'success')
+                flash('Verification email sent.', 'success')
             except Exception as e:
                 db.session.rollback()
                 flash('Error sending verification email.', 'danger')
@@ -81,7 +81,7 @@ def verify_email(token):
     return redirect(url_for('home'))
 
 @manage_bp.route('/change-password', methods=['GET', 'POST'])
-@session_required
+@hard_session_required
 def change_password():
     if request.method == 'POST':
         current_password = request.form.get('current_password')

@@ -26,6 +26,14 @@ class User(db.Model):
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
+    def set_email(self, email, verified=False):
+        self.email = email
+        self.email_verified = verified
+
+    def verify_email(self):
+        self.email_verified = True
+        self.email_verification_token = None
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 

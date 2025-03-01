@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -53,9 +54,11 @@
             flex-direction: column;
             align-items: center;
         }
+        input[type="email"],
         input[type="text"],
         input[type="password"] {
-            width: 250px;
+            width: 100%;
+            min-width: 100%;
             max-width: 90%;
             padding: 10px;
             margin-bottom: 20px;
@@ -63,6 +66,7 @@
             font-size: 16px;
             font-family: inherit;
             font-weight: 500;
+            box-sizing: border-box;
         }
         input[type="submit"] {
             width: 100px;
@@ -78,6 +82,12 @@
         input[type="submit"]:hover {
             background-color: black;
             color: white;
+        }
+        input[type="email"]:focus {
+            outline: none;
+            border: 2px solid #7100bd; 
+            border-radius: 0px;
+            outline: none;
         }
         input[type="text"]:focus {
             outline: none;
@@ -109,6 +119,31 @@
                 font-size: 2em;
             }
         }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .password-container input {
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #555;
+        }
+
+        .toggle-password:hover {
+            color: #000;
+        }
+
     </style>
 </head>
 <script>
@@ -129,7 +164,11 @@
 
         <form method="POST">
             <input type="text" name="username" placeholder="username" required>
-            <input type="password" name="password" placeholder="password" required>
+            <div class="password-container">
+                <input type="password" name="password" id="password" placeholder="password" required>
+                <i class="toggle-password fas fa-eye-slash" onclick="togglePasswordVisibility()"></i>
+            </div>
+            <input type="email" name="email" placeholder="email (optional)">
             <div class="button-group">
                 <input type="submit" name="action" value="Login">
                 <input type="submit" name="action" value="Register">
@@ -143,33 +182,33 @@
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         }
 
-        window.addEventListener('resize', adjustHeight);
-        window.addEventListener('orientationchange', adjustHeight);
-        adjustHeight();
+        document.addEventListener('DOMContentLoaded', ()=>{
+            window.addEventListener('resize', adjustHeight);
+            window.addEventListener('orientationchange', adjustHeight);
+            adjustHeight();
 
-        let inputfield = document.querySelector('input[type="text"]');
-        inputfield.focus();
+            let inputfield = document.querySelector('input[type="text"]');
+            inputfield.focus();
+        });
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.toggle-password');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            }
+        }
+
     </script>
 
     <style>
-        .flash-message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 0px;
-            text-align: center;
-        }
-
-        .error {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #ef5350;
-        }
-
-        .success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #66bb6a;
-        }
 
         /* .button-group {
             display: flex;
