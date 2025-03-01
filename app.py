@@ -123,7 +123,7 @@ def get_simple_char_data():
 
 from collections import defaultdict
 
-@app.route('/user_progress')
+@app.route('/account')
 @hard_session_required
 def user_progress():
     username = request.args.get('user', session.get('username'))

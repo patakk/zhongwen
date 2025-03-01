@@ -63,7 +63,7 @@ def email_management():
     email = ''
     if session.get('username', 'tempuser') != 'tempuser':
         email = User.query.filter_by(username=session['username']).first().email
-    return render_template('email_management.html', current_user={'email': email})
+    return render_template('email_management.html', username=session['username'], current_user={'email': email})
 
 
 
@@ -121,4 +121,4 @@ def change_password():
     if not session.pop('_from_post', False):
         session.pop('_flashes', None)
         
-    return render_template('password_change.html')
+    return render_template('password_change.html', username=session['username'])

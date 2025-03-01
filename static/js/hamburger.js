@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (username && username !== 'tempuser') {
         const loginMenuItem = document.getElementById('loginMenuItem');
-        loginMenuItem.innerHTML = `<a class="deck-option" href="/user_progress">你好 ${username}!</a>`;
+        loginMenuItem.innerHTML = `<a class="deck-option" href="/account">你好 ${username}!</a>`;
         loginMenuItem.parentNode.prepend(loginMenuItem);
     }
 

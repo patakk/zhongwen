@@ -82,6 +82,17 @@ p.darkmode {
     background-color: #886467;
 }
 
+.links {
+    color: rgb(15, 15, 15);
+    text-decoration: none;
+    background-color: #d4d4d4;
+    padding: 0px 4px;
+}
+
+.links:hover {
+    background-color: #ff0000;
+    color: #ffffff;
+}
 
 .flash-message {
     padding: 10px;

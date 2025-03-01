@@ -116,6 +116,9 @@
         }
         
     </style>
+    <script>
+        let username = {{ username | tojson | safe }};
+    </script>
 </head>
 <body>
     {% include 'menu.html' %}
