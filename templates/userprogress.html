@@ -425,7 +425,12 @@
         </p>
         <h2>Custom cards</h2>
         <p id="numcards">Cards in deck: {{ numcards }}</p>
-        <a class="links" href="{{ url_for('flashcards') }}">Practice custom cards</a>
+        <p>
+            <a class="links" href="{{ url_for('grid', deck='custom') }}">Preview cards in grid</a>
+        </p>
+        <p>
+            <a class="links" href="{{ url_for('flashcards') }}">Practice cards</a>
+        </p>
         <!-- <p>Due cards: {{ duecards }}</p> -->
         <!-- <p>Learning cards: {{ learningcards }}</p> -->
         <!-- <p>Learned cards: {{ learnedcards }}</p> -->
