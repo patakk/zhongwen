@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <title>Login - 中文</title>
     <style>
         html, body {
@@ -42,12 +43,16 @@
             max-width: 80%;
             max-height: 90%;
             overflow-y: auto;
+            width: 300px;
         }
         h1 {
             font-size: 36px;
             margin-bottom: 20px;
             color: black;
             text-align: center;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 3em;
+            width: 300px;
         }
         form {
             display: flex;
@@ -107,8 +112,6 @@
         }
 
         h1 {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 3em;
         }
 
         @media screen and (max-width: 768px) {
@@ -116,7 +119,6 @@
                 padding: 20px;
             }
             h1 {
-                font-size: 2em;
             }
         }
 

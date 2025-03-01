@@ -32,7 +32,7 @@ DECKS_INFO = {key : CARDDECKS[key]["name"] for key in CARDDECKS}
 DECKNAMES = {
     d : CARDDECKS[d]['name'] for d in CARDDECKS
 }
-DECKNAMES['custom'] = 'Custom deck'
+DECKNAMES['custom'] = 'Custom'
 
 init_flashcard_app({})
 flashcard_app = get_flashcard_app()

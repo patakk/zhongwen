@@ -381,7 +381,7 @@ def grid():
         learning_cards = []
     cc = {
         'custom': {
-            'name': 'Custom deck',
+            'name': DECKNAMES['custom'],
             'chars': get_chars_info(learning_cards, pinyin=True) if learning_cards else {},
         },
         **CARDDECKS_W_PINYIN

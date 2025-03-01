@@ -19,6 +19,7 @@ from backend.db.models import Card, UserNotes
 from backend.db.extensions import db
 
 from backend.common import CARDDECKS
+from backend.common import DECKNAMES
 from backend.common import flashcard_app
 from backend.common import dictionary
 from backend.common import get_tatoeba_page
@@ -492,10 +493,9 @@ def get_random_characters():
         learning_cards = db_load_user_progress(username)['learning_cards']
     else:
         learning_cards = []
-        
     cd = {
         'custom': {
-            'name': 'Custom deck',
+            'name': DECKNAMES['custom'],
             'chars': learning_cards,
         },
         **CARDDECKS
