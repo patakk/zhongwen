@@ -97,6 +97,11 @@
 #flashcard_addcard {
     top: 0;
     left: 0;
+    padding: .5em .5em .5em .5em;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #flashcard_close {
@@ -118,7 +123,6 @@
     padding: .3em .7em .4em .7em;
 } */
 #flashcard_addcard {
-    padding: .5em .5em .5em .5em;
 }
 
 #flashcard_close {
@@ -324,7 +328,7 @@ p::selection {
     }
 
     #flashcard_addcard {
-        font-size: 14px;
+        font-size: 1em;
     }
 
     #flashcard_practice {

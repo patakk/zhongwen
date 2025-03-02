@@ -608,7 +608,7 @@ function loadAndShow(character) {
 function setupAddToDeck(){
     let addcardDiv = document.getElementById('flashcard_addcard');
     addcardDiv.classList.add("corner-buttons")
-    addcardDiv.innerHTML = '<div class="doc-iconw"></div>';
+    addcardDiv.innerHTML = '<i class="fa-solid fa-stroopwafel"></i>';
     const hoverBox = document.getElementById('pinyin-hover-box');
     
     function showTooltip(element, content, event) {
@@ -622,17 +622,33 @@ function setupAddToDeck(){
         hoverBox.style.display = 'none';
     }
 
-    addcardDiv.addEventListener('mouseover', function (e) {
-        let tooltipContent = `add to learning deck`;
-        showTooltip(this, tooltipContent, e);
+    // Handle click for mobile devices
+    addcardDiv.addEventListener('click', function(e) {
+        if (isMobileOrTablet()) {
+            // Show message for 1000ms on mobile
+            let tooltipContent = `added to learning deck`;
+            showTooltip(this, tooltipContent, e);
+            
+            // Hide after 1 second
+            setTimeout(hideTooltip, 766);
+        }
     });
 
-    addcardDiv.addEventListener('mouseout', hideTooltip);
-    addcardDiv.addEventListener('mousemove', function (e) {
-        hoverBox.style.left = `${e.pageX + 10}px`;
-        hoverBox.style.top = `${e.pageY + 10}px`;
-    });
+    // Keep the hover behavior for desktop
+    if (!isMobileOrTablet()) {
+        addcardDiv.addEventListener('mouseover', function(e) {
+            let tooltipContent = `Add to learning deck`;
+            showTooltip(this, tooltipContent, e);
+        });
+
+        addcardDiv.addEventListener('mouseout', hideTooltip);
+        addcardDiv.addEventListener('mousemove', function(e) {
+            hoverBox.style.left = `${e.pageX + 10}px`;
+            hoverBox.style.top = `${e.pageY + 10}px`;
+        });
+    }
 }
+
 
 function renderCardData(data) {
     const container = document.getElementById('flashcard_container');

@@ -165,7 +165,7 @@ function startTest() {
     shuffledWords = Object.keys(currentcharacters);
     shuffleArray(shuffledWords);
 
-    shuffledWords = shuffledWords.filter(word => word.length <= 2);
+    // shuffledWords = shuffledWords.filter(word => word.length <= 3);
 
     currentIndex = 0;
     correctAnswers = 0;

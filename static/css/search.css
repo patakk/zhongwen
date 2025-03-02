@@ -108,25 +108,42 @@ input[type="text"] {
     font-size: 1em;
     font-family: inherit;
 }
+
 input[type="submit"] {
     width: 100px;
     padding: 10px;
-    background-color: var(--dimmed-background-color);
-    color: black;
+    background-color: var(--dimmer-background-color);
+    color: var(--text-color);
     border: 2px solid black;
     cursor: pointer;
     font-size: 16px;
     margin-bottom: 1em;
     font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: background-color 0.1s, color 0.1s, transform 0.1s;
 }
-input[type="submit"]:hover {
-    background-color: black;
-    color: white;
+
+@media (hover: hover) {
+    input[type="submit"]:hover {
+        background-color: black;
+        color: white;
+    }
 }
-::selection {
-    background-color: black;
-    color: white;
+
+input[type="submit"]:active {
+    background-color: var(--text-color) !important;
+    color: var(--dimmer-background-color) !important;
+    transform: scale(0.98);
 }
+
+input[type="submit"]:focus:not(:active) {
+    background-color: var(--dimmer-background-color) !important;
+    color: var(--text-color) !important;
+    transform: scale(1);
+}
+
 
 #results {
     margin-top: 20px;
@@ -275,14 +292,7 @@ and (orientation: landscape) {
     margin: 0 2px;
 }
 
-#srch-btn {
-    color: rgb(14,14,14);
-}
 
-#srch-btn.darkmode {
-    background-color: rgb(14,14,14);
-    color: rgb(222,222,222);
-}
 /* 
 .result-item.darkmode {
     border-color: rgb(128, 128, 128);
@@ -291,17 +301,6 @@ and (orientation: landscape) {
 } */
 
 
-
-input[type="text"].darkmode {
-    border-color: rgb(128, 128, 128);
-    background-color: rgb(34, 34, 34);
-}
-input[type="submit"].darkmode {
-    border-color: rgb(128, 128, 128);
-}
-input[type="submit"].darkmode:hover {
-    border-color: rgb(128, 128, 128);
-}
 
 
 

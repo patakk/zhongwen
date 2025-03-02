@@ -298,14 +298,13 @@ def db_save_user_progress(username, progress_data):
 
 
 def db_load_user_progress(username):
-    logger.info(f"Loading progress for user: {username}")
     user = User.query.filter_by(username=username).first()
     if not user or not user.progress:
         return {}
         
     user_prog = user.progress
     data = user_prog.to_dict()
-    logger.info(f"Loaded progress data: {data}")
+    logger.info("Loaded progress data")
     
     if getshortdate() != data.get("new_cards_limit_last_updated"):
         data["new_cards_limit"] = data["base_new_cards_limit"]

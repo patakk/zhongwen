@@ -32,6 +32,13 @@ html::-webkit-scrollbar {
     text-align: center;
 }
 
+#test-container {
+    width: 80%;
+    max-width: 90%;
+    text-align: center;
+}
+
+
 #character-display {
     font-size: 72px;
     margin-bottom: 20px;
@@ -315,6 +322,7 @@ h1 {
         max-width: 100%;
     }
 }
+
 
 #confetti-container {
     position: fixed;
