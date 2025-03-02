@@ -32,7 +32,7 @@ html::-webkit-scrollbar {
     text-align: center;
 }
 
-@media screen and (orientation: landscape) and (min-height: 1000px) {
+@media screen and (orientation: landscape) and (min-width: 1200px) {
     #test-container {
         width: 80%;
         max-width: 90%;
