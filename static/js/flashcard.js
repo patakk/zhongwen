@@ -1671,6 +1671,14 @@ function renderCardData(data) {
     // displayCharMatches(data.char_matches);
     setupAddToDeck();
     // setupCloseButton();
+
+    // check if "flashcards" in url
+    let url = window.location.href;
+    let urlsplit = url.split('/');
+    let last = urlsplit[urlsplit.length - 1];
+    if(last === "flashcards"){
+        addcard.style.display = 'none';
+    }
     if(username === "tempuser"){
         addcard.style.display = 'none';
     }
