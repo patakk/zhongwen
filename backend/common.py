@@ -44,10 +44,12 @@ pos_map = {
 def get_tatoeba_page(character, page):
     tatoebas = []
     tids = TATOEBA_MAP.get(character, [])
-    if not tids:
-        return None
-    perpage = 5
+    examples = []
     is_last = False
+    return examples, is_last
+    if not tids:
+        return examples, is_last
+    perpage = 5
     aa = perpage*page
     bb = aa + perpage
     if aa < 0:
@@ -64,7 +66,6 @@ def get_tatoeba_page(character, page):
     for tid in tids[aa:bb]:
         tatoebas.append(TATOEBA_DATA[tid])
 
-    examples = []
     for idx, t in enumerate(tatoebas):
         try:
             words = pseg.cut(t['cmn'])
@@ -150,23 +151,22 @@ def char_full_info_(char):
     main_components = [x for x in main_components if len(x) == 1]
 
     similars = {}
-    for comp in main_components:
-        similar = decomposer.get_characters_with_component(comp)
-        if similar:
-            similars[comp] = similar[:]
-
-    try:
-        exam = dictionary.dictionary_search(char)
-        appears_in = []
-        for e in exam:
-            if e['simplified'] == char:
-                continue
-            appears_in.append({'simplified': e['simplified'], 'pinyin': e['pinyin'], 'english': e['definition']})
-            # if len(appears_in) > 5:
-            #     break
-
-    except:
-        appears_in = []
+    appears_in = []
+    # for comp in main_components:
+    #     similar = decomposer.get_characters_with_component(comp)
+    #     if similar:
+    #         similars[comp] = similar[:]
+    # try:
+    #     exam = dictionary.dictionary_search(char)
+    #     appears_in = []
+    #     for e in exam:
+    #         if e['simplified'] == char:
+    #             continue
+    #         appears_in.append({'simplified': e['simplified'], 'pinyin': e['pinyin'], 'english': e['definition']})
+    #         # if len(appears_in) > 5:
+    #         #     break
+    # except:
+    #     appears_in = []
 
     return {
         'english': definition,

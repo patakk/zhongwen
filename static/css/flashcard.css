@@ -94,16 +94,6 @@
     box-sizing: content-box;
 }
 
-#flashcard_addcard {
-    top: 0;
-    left: 0;
-    padding: .5em .5em .5em .5em;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 #flashcard_close {
     position: sticky;
     top: 100px;
@@ -118,6 +108,24 @@
     padding: .3em .5em .4em .5em;
 }
 
+
+#flashcard_addcard {
+    top: -.1em;
+    left: 0;
+    padding: .0em .5em .5em .5em;
+    margin: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    opacity: .5;
+    font-size: 2em;
+}
+
+#flashcard_addcard.addedToDeck {
+    opacity: 1;
+}
 
 /* #flashcard_addcard {
     padding: .3em .7em .4em .7em;

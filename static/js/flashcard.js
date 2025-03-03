@@ -237,6 +237,35 @@ function createPlotters(data){
 
 async function renderPlotters(plotters, pinyinparts=null){
     const plotterElement = document.getElementById('flashcard_plotter');
+
+    
+    let size = 355;
+    if(plotters.length == 2){
+        size = 355;
+    }
+    if(plotters.length == 3){
+        size = 300;
+    }
+    else if(plotters.length > 3){
+        size = 250;
+    }
+    if(isMobileOrTablet()){
+        if(plotters.length == 2){
+            size = 255;
+        }
+        if(plotters.length == 3){
+            size = 172;
+        }
+        else if(plotters.length > 3){
+            size = 172*2;
+        }
+        else if(plotters.length > 5){
+            size = 122;
+        }
+    }
+    plotterElement.style.minHeight = `${size/2}px`;
+
+    
     plotterElement.innerHTML = '';
     if(plotterElement && plotters){
         // Store plotters as a property of the container element
@@ -608,7 +637,7 @@ function loadAndShow(character) {
 function setupAddToDeck(){
     let addcardDiv = document.getElementById('flashcard_addcard');
     addcardDiv.classList.add("corner-buttons")
-    addcardDiv.innerHTML = '<i class="fa-solid fa-stroopwafel"></i>';
+    addcardDiv.innerHTML = '<i class="far fa-bookmark"></i>';
     const hoverBox = document.getElementById('pinyin-hover-box');
     
     function showTooltip(element, content, event) {
@@ -1385,11 +1414,19 @@ function renderCardData(data) {
     // displayCharMatches(data.char_matches);
     setupAddToDeck();
     // setupCloseButton();
-    if(data.is_learning || username === "tempuser"){
-        document.getElementById('flashcard_addcard').style.display = 'none';
+    if(username === "tempuser"){
+        const element = document.getElementById('flashcard_addcard');
+        element.style.display = 'none';
+    }
+    if(data.is_learning){
+        const element = document.getElementById('flashcard_addcard');
+        element.innerHTML = '<i class="fas fa-bookmark"></i>';
+        element.classList.add('addedToDeck');
     }
     else{
-        document.getElementById('flashcard_addcard').style.display = 'block';
+        const element = document.getElementById('flashcard_addcard');
+        element.innerHTML = '<i class="far fa-bookmark"></i>';
+        element.classList.remove('addedToDeck');
     }
     document.getElementById('flashcard_addcard').onclick = function(){
         // print current character
@@ -1404,11 +1441,13 @@ function renderCardData(data) {
         let middley = y + height/2;
 
         const element = document.getElementById('flashcard_addcard');
-        element.classList.add('fall-out');
-        setTimeout(() => {
-            element.style.display = 'none';
-            element.classList.remove('fall-out');
-        }, 350);
+        element.innerHTML = '<i class="fas fa-bookmark"></i>';
+        element.classList.add('addedToDeck');
+        // element.classList.add('fall-out');
+        // setTimeout(() => {
+        //     element.style.display = 'none';
+        //     element.classList.remove('fall-out');
+        // }, 350);
 
         // let smallcanvas = document.createElement('canvas');
         // smallcanvas.width = 200;

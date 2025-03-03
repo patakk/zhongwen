@@ -395,6 +395,7 @@ function createHanziWriters(characters) {
                     });
             }
         });
+        let strokesdata = [];
         writer.quiz({
             onMistake: function(strokeData) {
                 console.log('Oh no! you made a mistake on stroke ' + strokeData.strokeNum);
@@ -412,6 +413,7 @@ function createHanziWriters(characters) {
                 console.log("You've made " + strokeData.totalMistakes + ' total mistakes on this quiz');
                 console.log('There are ' + strokeData.strokesRemaining + ' strokes remaining in this character');
                 console.log('');
+                strokesdata.push(strokeData.drawnPath.points);
             },
             onComplete: function(summaryData) {
                 console.log('You did it! You finished drawing ' + summaryData.character);
@@ -430,12 +432,62 @@ function createHanziWriters(characters) {
                 wordTotalStrokeCount += writer._character.strokes.length;
                 totalStrokeCount += writer._character.strokes.length;
                 numFinished++;
+                
+                let www = writer._positioner.width;
+                let hhh = writer._positioner.height;
+                let xoff = writer._positioner.xOffset;
+                let yoff = writer._positioner.yOffset;
+                let ppadding = writer._positioner.padding;
+                let ssscale = writer._positioner.scale;
+                www = www/ssscale;
+                hhh = hhh/ssscale;
+                strokesdata.forEach(stroke => {
+                    stroke.forEach(function(point){
+                        point.x = (point.x+xoff)/www;
+                        point.y = (point.y+yoff)/hhh;
+                    });
+                });
+                // trueStrokeData.forEach(stroke => {
+                //     stroke.forEach(function(point){
+                //         point.x = (point.x+xoff)/www;
+                //         point.y = (point.y+yoff)/hhh;
+                //     });
+                // });
+                let data = {
+                    character: summaryData.character,
+                    strokes: strokesdata,
+                    positioner: writer._positioner,
+                    mistakes: summaryData.totalMistakes,
+                    strokeCount: writer._character.strokes.length
+                };
+                saveData(data);
+
                 if (numFinished === characters.length) {
                     handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount);
                 }
             }
         });
         currentWriters.push(writer);
+    });
+}
+
+
+function saveData(data) {
+    fetch('./api/save_stroke_data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        console.log('Data saved successfully');
+    })
+    .catch(error => {
+        console.error('There was a problem saving the data:', error);
     });
 }
 

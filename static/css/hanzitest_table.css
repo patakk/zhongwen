@@ -194,7 +194,8 @@ body::-webkit-scrollbar {
 
 h1 {
     font-family: "Helvetica", serif;
-    font-size: 60px;
+    font-size: 3em;
+    margin-top: 1em;
 }
 
 
