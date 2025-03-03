@@ -33,7 +33,7 @@ const dropdownToggle = document.getElementById('dropdown-toggle');
 const deckOptionsElement = document.getElementById('deck-options');
 
 
-function populateDropdown(deckj=null) {
+function populateDropdown(deckj=false) {
     const hskKeys = [];
     const nonHskKeys = [];
     const customKeys = [];
@@ -58,7 +58,7 @@ function populateDropdown(deckj=null) {
         sortedKeys = [...nonHskKeys, ...hskKeys];
     }
     if(deckj){
-        selectDeck(deckj);
+        selectDeck('custom');
     }
     else{
         selectDeck(hskKeys[0]);
@@ -154,7 +154,7 @@ async function checkCustom(func=null){
     })
     .then(data => {
         hasCustom = !data.empty;
-        populateDropdown();
+        populateDropdown(hasCustom);
         if(func != null){
             func();
         }
@@ -668,7 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // remove deck from url
     getDarkmode();
     
-    populateDropdown(deckParam);
+    populateDropdown(hasCustom);
 });
 
 window.addEventListener('resize', () => {
