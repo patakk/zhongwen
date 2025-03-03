@@ -42,7 +42,7 @@
 
 
         .home-container {
-            border: 2px dashed rgb(14, 14, 14);
+            border: var(--dimmer-border);
             padding: 40px 80px;
             display: flex;
             flex-direction: column;
@@ -52,14 +52,10 @@
             overflow-y: auto;
         }
 
-        .home-container.darkmode {
-            border-color: rgb(180, 180, 180);
-        }
-
         h1 {
             font-size: 36px;
             margin-bottom: 20px;
-            color: rgb(14, 14, 14);
+            color: var(--text-color)
             text-align: center;
         }
         .link-container {
@@ -68,12 +64,11 @@
             align-items: center;
         }
         .mainlink {
+            color: var(--text-color);
             width: 200px;
             padding: 10px;
             margin: 10px 0;
-            background-color: rgb(255, 255, 255);
-            color: rgb(14, 14, 14);
-            border: 2px solid rgb(14, 14, 14);
+            border: var(--simple-border);
             text-decoration: none;
             font-size: 16px;
             font-family: inherit;
@@ -88,31 +83,22 @@
             margin-left: 10px;
         }
         .mainlink:hover {
-            background-color: rgb(14, 14, 14);
             color: rgb(255, 255, 255);
         }
         ::selection {
-            background-color: rgb(14, 14, 14);
             color: rgb(255, 255, 255);
         }
 
-        .home-container.darkmode a.darkmode {
-            background-color: rgb(14, 14, 14);
-            color: rgb(233, 233, 233);
-            border-color: rgb(180, 180, 180);
-        }
 
-        .home-container.darkmode a.darkmode:hover {
-            background-color: rgb(233, 233, 233);
-            color: rgb(14, 14, 14);
+        .home-container a:hover {
+            color: var(--dimmer-background-color);
+            background-color: var(--dimmer-text-color);
         }
 
         .home-container.darkmode {
-            background-color: rgb(14, 14, 14);
         }
 
         ::selection.darkmode {
-            background-color: rgb(233, 233, 233);
             color: rgb(14, 14, 14);
         }
 
@@ -158,13 +144,13 @@
     <div class="home-container">
         <h1>中文</h1>
         <div class="link-container">
-            <a class="mainlink" id="progressUrl" href="{{ url_for('user_progress') }}"><span style="flex: 1; text-align: left;">my account</span> <i class="fa-solid fa-person-through-window"></i></a>
+            <a class="mainlink" id="progressUrl" href="{{ url_for('user_progress') }}"><span style="flex: 1; text-align: left;">my account</span> <i class="fa-solid fa-user"></i></a>
             <a class="mainlink" href="{{ url_for('grid') }}"><span style="flex: 1; text-align: left;">grid</span> <i class="fas fa-th-large"></i></a>
             <a class="mainlink" id="flashcardsUrlMain" href="{{ url_for('flashcards') }}">  <span style="flex: 1; text-align: left;">flashcards</span> <i class="fa-solid fa-arrow-right-arrow-left"></i></a>
             <a class="mainlink" href="{{ url_for('stories') }}"><span style="flex: 1; text-align: left;">stories</span> <i class="fa-solid fa-book"></i></a>
             <!-- <a class="mainlink" href="{{ url_for('convert') }}">convert to strokes</a> -->
             <a class="mainlink" href="{{ url_for('puzzles.puzzles') }}"><span style="flex: 1; text-align: left;">puzzles</span> <i class="fa-solid fa-puzzle-piece"></i></a>
-            <a class="mainlink" href="{{ url_for('hanzipractice') }}"><span style="flex: 1; text-align: left;">practice writing</span> <i class="fa-solid fa-dumbbell"></i></a>
+            <a class="mainlink" href="{{ url_for('hanzipractice') }}"><span style="flex: 1; text-align: left;">practice writing</span> <i class="fas fa-pen-fancy"></i></a>
             <a class="mainlink" href="{{ url_for('search') }}"><span style="flex: 1; text-align: left;">search</span> <i class="fa-solid fa-magnifying-glass"></i></a>
             <a class="mainlink" href="{{ url_for('pageinfo') }}"><span style="flex: 1; text-align: left;">page info</span> <i class="fa-solid fa-circle-info"></i></a>
         </div>
@@ -180,7 +166,7 @@
     <script>
         
         if(username === 'tempuser'){
-            document.getElementById('progressUrl').textContent = 'login';
+            document.getElementById('progressUrl').innerHTML = `<span style="flex: 1; text-align: left;">login</span> <i class="fa-solid fa-person-through-window"></i>`
             document.getElementById('progressUrl').href = "{{ url_for('login') }}";
         }
 

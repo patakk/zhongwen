@@ -470,21 +470,16 @@ def character_animation(character):
 
     return send_file(output, mimetype="image/gif")
 
-@api_bp.route("/get_characters_for_practice", methods=["GET"])
+@api_bp.route("/check_if_custom_is_empty", methods=["GET"])
 @session_required
-@timing_decorator
-def get_characters_for_practice():
-    deck = session["deck"]
-    characters_data = [
-        {
-            "character": char,
-            "pinyin": data["pinyin"],
-            "english": data["english"],
-        }
-        for char in CARDDECKS[deck]["chars"]
-        if (data := get_char_info(char, pinyin=True, english=True))
-    ]
-    return jsonify({"characters": characters_data})
+def check_if_custom_is_empty():
+    username = session["username"]
+    if username and username != 'tempuser':
+        learning_cards = db_load_user_progress(username)["learning_cards"]
+    else:
+        learning_cards = []
+    print(username, learning_cards, not bool(learning_cards))
+    return jsonify({"empty": not bool(learning_cards)})
 
 
 @api_bp.route("/get_random_characters", methods=["POST"])

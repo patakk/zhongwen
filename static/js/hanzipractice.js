@@ -25,6 +25,7 @@ const deckNameElement = document.getElementById('deck-name');
 const answerTableBody = document.getElementById('answer-table-body');
 let NUM_QUESTIONS = 10;
 let currentWriters = [];
+let hasCustom = false;
 
 
 const selectedDeckElement = document.getElementById('selected-deck');
@@ -32,10 +33,11 @@ const dropdownToggle = document.getElementById('dropdown-toggle');
 const deckOptionsElement = document.getElementById('deck-options');
 
 
-function populateDropdown(deck=null) {
+function populateDropdown(deckj=null) {
     const hskKeys = [];
     const nonHskKeys = [];
     const customKeys = [];
+    deckOptionsElement.innerHTML = '';
 
     Object.keys(decknames).forEach(deck => {
         if (deck.includes("hsk")) {
@@ -46,9 +48,17 @@ function populateDropdown(deck=null) {
             nonHskKeys.push(deck);
         }
     });
-    const sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
-    if(deck){
-        selectDeck(deck);
+    let sortedKeys;
+    if(hasCustom){
+        sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
+        console.log('has custom');
+    }
+    else{
+        console.log('aaaaaa custom');
+        sortedKeys = [...nonHskKeys, ...hskKeys];
+    }
+    if(deckj){
+        selectDeck(deckj);
     }
     else{
         selectDeck(hskKeys[0]);
@@ -120,6 +130,31 @@ async function loadNewWords(func=null){
     })
     .then(data => {
         currentcharacters = data;
+        if(func != null){
+            func();
+        }
+    })
+    .catch(error => {
+        console.error('There was a problem getting new words:', error);
+    });
+}  
+
+async function checkCustom(func=null){
+    fetch(`../api/check_if_custom_is_empty`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        hasCustom = !data.empty;
+        populateDropdown();
         if(func != null){
             func();
         }
@@ -620,7 +655,7 @@ function showResults() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    
+    checkCustom();
     // Check for deck query parameter in URL
     const urlParams = new URLSearchParams(window.location.search);
     const deckParam = urlParams.get('deck');
