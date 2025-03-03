@@ -95,7 +95,7 @@ def hanzitest_choices():
     return render_template("puzzles/hanzitest_choices.html", **context)
 
 
-@puzzles_bp.route("/hanzitest_choices2")
+@puzzles_bp.route("/hanzitest_choices")
 @session_required
 @timing_decorator
 def hanzitest_choices2():

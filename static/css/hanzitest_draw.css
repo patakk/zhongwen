@@ -30,11 +30,13 @@ html::-webkit-scrollbar {
     width: 60%;
     max-width: 90%;
     text-align: center;
+    border-top: var(--dimmer-border);
+    margin: 2rem 0;
 }
 
 @media screen and (orientation: landscape) and (min-width: 1200px) {
     #test-container {
-        width: 80%;
+        width: 90%;
         max-width: 90%;
         text-align: center;
     }
@@ -106,7 +108,6 @@ html::-webkit-scrollbar {
 #deck-name {
     text-align: center;
     margin-bottom: 20px;
-    font-weight: bold;
 }
 
 #answer-table-container {
@@ -154,32 +155,8 @@ html::-webkit-scrollbar {
 }
 
 @media screen and (max-width: 768px) {
-    #test-container {
-    }
-
-    #answer-table-container {
-        max-height: 70vh;
-        overflow-y: auto;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        width: 100%; /* Full width on mobile */
-    }
-
-    #answer-table-container::-webkit-scrollbar { 
-        width: 0;
-        height: 0;
-    }
-    
-    #buttons {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        width: 90%;
-        margin-top: 10px;
-        margin-left: auto;
-        margin-right: auto;
-    }
 }
+
 
 
 @media screen and (max-width: 768px) {
@@ -198,9 +175,10 @@ html::-webkit-scrollbar {
 
 #english-display {
     border-top: 1px solid #00000055;
-    padding-top: 55px;
-    padding-bottom: 22px;
-    font-size: 33px;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    font-size: 2em;
+    white-space: wrap;
 }
 
 #pinyin-display {
@@ -231,9 +209,9 @@ h1 {
 
 @media screen and (max-width: 767px) {
     h1 {
-        font-size: 33px;
         margin-bottom: 4px;
-        margin-top: 34px;
+        margin-top: 2em;
+        font-size: 2em;
     }
 
     #deck-name {
@@ -241,6 +219,8 @@ h1 {
         margin-bottom: 10px;
     }
 
+    #title {
+    }
 
     h2 {
         margin-top: 10px;
@@ -283,6 +263,9 @@ h1 {
         font-size: 26px;
     }
     
+    #deck-name {
+        margin-top: 20px;
+    }
 }
 #drawing-area {
     display: flex;
@@ -368,13 +351,13 @@ h1 {
         font-size: 50px;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
+    
 }
 
 
 .custom-dropdown {
     position: relative;
     font-family: Arial, sans-serif;
-    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -439,9 +422,6 @@ h1 {
     background-color: #f0f0f0;
 }
 
-#title.darkmode{
-    color: #f0f0f0;
-}
 
 .options-container.darkmode {
     background-color: #303030;

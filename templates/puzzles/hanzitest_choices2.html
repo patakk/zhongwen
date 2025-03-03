@@ -26,14 +26,16 @@
     </style>
 </head>
 <body>
-    <h1 id="title">Test your Hanzi 🧾</h1>
-    <div class="custom-dropdown">
+    <h1 id="title">Test your Hanzi <i class="fas fa-check-square"></i></h1>
+    
+    <div class="custom-dropdown deck-dropdown">
         <div id="deck-name"><div id="deck-name-label">Current Deck:</div> <div id="selected-deck">Select a deck</div></div>
         <div id="deck-options" class="options-container"></div>
     </div>
 
+    
     {% include 'menu.html' %}
-
+        
     <div id="test-container">
         <div id="character-display"></div>
         <div id="pinyin-options"></div>
@@ -48,7 +50,7 @@
             <table id="answer-table">
                 <thead>
                     <tr style="font-weight: bold;">
-                        <td>Meaning</td>
+                        <td>Character</td>
                         <td>Your Answer</td>
                         <td>Correct Answer</td>
                     </tr>
@@ -59,8 +61,8 @@
         </div>
         <button id="restart-btn">Restart Test</button>
     </div>
-    <button id="skip-btn">Skip</button>
     <div id="confetti-container"></div>
+    <button id="skip-btn">Skip</button>
 
     <script>
         
@@ -69,7 +71,6 @@
         let decknames = {{ decknames | tojson | safe }};
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
-        
 
         function isIPhone(){
             const ua = navigator.userAgent;
@@ -89,7 +90,7 @@
     </script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/hanzitest_choices2.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hanzitest_choices.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
 </body>
 </html>

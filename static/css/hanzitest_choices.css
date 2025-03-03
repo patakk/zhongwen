@@ -12,13 +12,14 @@ body {
 
 #test-container {
     width: 90%;
-    max-width: 600px;
     text-align: center;
+    border-top: var(--dimmer-border);
+    margin: 2rem 0;
 }
 
 #character-display {
-    font-size: 2em;
-    margin: 30px 0px;
+    font-size: 4em;
+    margin: 2rem 0;
 }
 
 #character-display.darkmode {
@@ -31,6 +32,8 @@ body {
     justify-content: center;
     gap: 10px;
     margin-bottom: 20px;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .pinyin-option {
@@ -84,14 +87,28 @@ body {
     margin-top: 20px;
 }
 
-#deck-name {
+
+#deck-name, #font-name {
+    white-space: nowrap;
     text-align: center;
-    margin-bottom: 20px;
+    font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
+    cursor: pointer;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: row;
 }
 
-#deck-name.darkmode {
+
+#deck-name.darkmode, #font-name.darkmode {
     color: #f0f0f0
 }
+
+
+#deck-name-label, #font-name-label {
+    padding: 3px 11px;
+}
+
 
 #answer-table-container {
     width: 100%;
@@ -119,11 +136,10 @@ body {
 
 @media screen and (max-width: 767px) {
     #test-container {
-        width: 95%;
+        width: 100%;
     }
 
     h1 {
-        font-size: 26px;
     }
 
     h2 {
@@ -132,15 +148,14 @@ body {
 
     #title {
         margin-top: 40px;
-        font-size: 33px;
+        font-size: 2em;
         margin-bottom: 4px;
-        margin-top: 34px;
+        margin-top: 2em;;
     }
     
     h1 {
         font-size: 33px;
         margin-bottom: 4px;
-        margin-top: 34px;
     }
 
     #deck-name {
@@ -170,7 +185,7 @@ body {
     #character-display {
         /* font-size: 62px; */
         margin-bottom: 20px;
-        font-size: 1.3em;
+        font-size: 4em;
     }
 
 
@@ -238,37 +253,11 @@ h1 {
 .custom-dropdown {
     position: relative;
     font-family: Arial, sans-serif;
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
-.deck-dropdown{
-    margin-top: 20px;
-
-}
-
-
-#deck-name, #font-name {
-    white-space: nowrap;
-    text-align: center;
-    font-family: "Helvetica", serif;
-    font-family: 'Noto Sans Mono', monospace;
+#deck-name {
     cursor: pointer;
     margin-bottom: 0;
-    display: flex;
-    flex-direction: row;
-}
-
-
-#deck-name.darkmode, #font-name.darkmode {
-    color: #f0f0f0
-}
-
-
-#deck-name-label, #font-name-label {
-    padding: 3px 11px;
 }
 
 
@@ -280,9 +269,9 @@ h1 {
     right: 0;
     background-color: white;
     border: 2px solid #ccc;
+    font-size: 1em;
     max-height: 400px;
     overflow-y: auto;
-    font-size: 1em;
     z-index: 1000;
     scrollbar-width: none; 
     -ms-overflow-style: none; 

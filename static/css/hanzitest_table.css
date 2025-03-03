@@ -26,15 +26,17 @@ body::-webkit-scrollbar {
 
 
 #test-container {
-    width: 60%;
-    max-width: 70%;
+    width: 90%;
     text-align: center;
+    border-top: var(--dimmer-border);
+    margin: 1rem 0;
+    padding: 1rem 0;
 }
 
 #character-display {
     font-size: 72px;
     height: 100px;
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
     display: none;
 }
 
@@ -199,7 +201,7 @@ h1 {
 .custom-dropdown {
     position: relative;
     font-family: Arial, sans-serif;
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -326,8 +328,9 @@ h1 {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     row-gap: 10px;
     column-gap: 30px;
-    margin: auto;
+    margin: 2rem auto;
     justify-items: center;
+    max-width: 60%;
 }
 
 .grid-item {
@@ -377,20 +380,18 @@ h1 {
 @media (max-width: 768px) {
    
 
+    .grid {
+        max-width: 100%;
+    }
+
     h2 {
         margin-top: 10px;
     }
 
     #title {
-        margin-top: 40px;
-        font-size: 33px;
+        font-size: 2em;
         margin-bottom: 4px;
-        margin-top: 34px;
-    }
-    h1 {
-        font-size: 33px;
-        margin-bottom: 4px;
-        margin-top: 34px;
+        margin-top: calc(2em + 14px);
     }
     
     #deck-name {

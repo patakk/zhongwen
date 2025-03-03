@@ -84,28 +84,14 @@ body {
     margin-top: 20px;
 }
 
-
-#deck-name, #font-name {
-    white-space: nowrap;
+#deck-name {
     text-align: center;
-    font-family: "Helvetica", serif;
-    font-family: 'Noto Sans Mono', monospace;
-    cursor: pointer;
-    margin-bottom: 0;
-    display: flex;
-    flex-direction: row;
+    margin-bottom: 20px;
 }
 
-
-#deck-name.darkmode, #font-name.darkmode {
+#deck-name.darkmode {
     color: #f0f0f0
 }
-
-
-#deck-name-label, #font-name-label {
-    padding: 3px 11px;
-}
-
 
 #answer-table-container {
     width: 100%;
@@ -252,11 +238,37 @@ h1 {
 .custom-dropdown {
     position: relative;
     font-family: Arial, sans-serif;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-#deck-name {
+.deck-dropdown{
+    margin-top: 20px;
+
+}
+
+
+#deck-name, #font-name {
+    white-space: nowrap;
+    text-align: center;
+    font-family: "Helvetica", serif;
+    font-family: 'Noto Sans Mono', monospace;
     cursor: pointer;
     margin-bottom: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+
+#deck-name.darkmode, #font-name.darkmode {
+    color: #f0f0f0
+}
+
+
+#deck-name-label, #font-name-label {
+    padding: 3px 11px;
 }
 
 
@@ -268,9 +280,9 @@ h1 {
     right: 0;
     background-color: white;
     border: 2px solid #ccc;
-    font-size: 1em;
     max-height: 400px;
     overflow-y: auto;
+    font-size: 1em;
     z-index: 1000;
     scrollbar-width: none; 
     -ms-overflow-style: none; 
