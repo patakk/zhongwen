@@ -183,7 +183,8 @@ def main_card_data(character):
     learning_cards = db_load_user_value(username, "learning_cards") or []
     is_learning = character in learning_cards
 
-    res = get_tatoeba_page(character, 0)
+    # res = get_tatoeba_page(character, 0)
+    res = None
     if res:
         examples, is_last = res
     else:

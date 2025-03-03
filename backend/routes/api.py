@@ -25,6 +25,7 @@ from backend.common import dictionary
 from backend.common import get_tatoeba_page
 from backend.common import get_char_info
 from backend.common import get_chars_info
+from backend.common import char_decomp_info
 
 
 logger = logging.getLogger(__name__)
@@ -216,6 +217,9 @@ def get_characters_pinyinenglish():
                 characters.append(character)
         characters = sorted(characters)
     return jsonify({"characters": get_chars_info(characters, pinyin=True, english=True)})
+
+
+
 
 @api_bp.route("/get_all_chars_pinyinenglish", methods=["GET", "POST"])
 @session_required
@@ -510,6 +514,16 @@ def get_random_characters():
     characters_data = get_chars_info(random_chars, pinyin=True, english=True)
     return jsonify(characters_data)
 
+import time
+# char_decomp_info
+@api_bp.route("/get_char_decomp_info", methods=["POST"])
+@session_required
+@timing_decorator
+def get_char_decomp_info():
+    data = request.get_json()
+    characters = data.get("characters")
+    print("hello", characters)
+    return jsonify(char_decomp_info(characters))
 
 
 @api_bp.route("/get_all_stroke_data", methods=["GET"])

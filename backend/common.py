@@ -40,13 +40,12 @@ flashcard_app = get_flashcard_app()
 pos_map = {
     'n': 'noun', 'nr': 'proper noun', 'ns': 'place noun', 'nt': 'temporal noun', 'nz': 'other noun', 'v': 'verb', 'a': 'adjective', 'ad': 'adverb', 'an': 'prenoun', 'ag': 'adjective-adverb', 'al': 'adjective-numeral', 'b': 'other', 'c': 'complement', 'd': 'adverb', 'e': 'exclamation', 'f': 'surname', 'g': 'morpheme', 'h': 'prefix', 'i': 'idiom', 'j': 'abbreviation', 'k': 'suffix', 'l': 'temporary word', 'm': 'number', 'ng': 'gender noun', 'nx': 'kernel noun', 'o': 'onomatopoeia', 'p': 'preposition', 'q': 'classifier', 'r': 'pronoun', 'u': 'auxiliary', 'v': 'verb', 'vd': 'verb-auxiliary', 'vg': 'verb-object', 'vn': 'pronoun-verb', 'w': 'punctuation', 'x': 'non-lexeme', 'y': 'language-particle', 'z': 'state-particle'
 }
-
+import time
 def get_tatoeba_page(character, page):
     tatoebas = []
     tids = TATOEBA_MAP.get(character, [])
     examples = []
     is_last = False
-    return examples, is_last
     if not tids:
         return examples, is_last
     perpage = 5
@@ -122,6 +121,42 @@ def get_random_chars_from_deck(deck, n, pinyin=False, english=False, function=Fa
     characters = characters[:n]
     return {c: get_char_info(c, pinyin, english, function) for c in characters}
 
+def char_decomp_info(char):
+    decomposed = decomposer.decompose(char)
+    # radicals = decomposed.get('radical', [])
+    # radicals_with_meaning = {}
+    # for radical in radicals:
+    #     meaning = decomposer.get_radical_meaning(radical)
+    #     radicals_with_meaning[radical] = meaning
+
+    main_components = decomposed.get('once', [])
+    main_components = [x for x in main_components if len(x) == 1]
+
+    if not main_components:
+        main_components = [char]
+
+    ccs = []
+    similars = {}
+    for comp in main_components:
+        try:
+            similar = decomposer.get_characters_with_component(comp)
+            if similar:
+                similars[comp] = similar[:]
+                ccs += similar
+        except:
+            pass
+    # ccs = list(set(ccs))
+    # ccs_f = []
+    # for c in ccs:
+    #     flag = True
+    #     for comp in main_components:
+    #         if c not in similars.get(comp, []):
+    #             flag = False
+    #     if flag:
+    #         ccs_f.append(c)
+
+    #return {char: ccs_f}
+    return similars
 
 def char_full_info_(char):
     definition = "-"

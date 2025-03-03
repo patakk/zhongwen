@@ -30,6 +30,41 @@ function getCharactersHoverInfo(characters=null, func=null) {
         .catch(error => console.error('Error:', error));
 }
 
+function getCharactersDecompInfo(characters=null, func=null) {
+    const url = './api/get_char_decomp_info';
+    
+    const charactersArray = characters instanceof Set ? Array.from(characters) : characters;
+    
+    const payload = { characters: charactersArray };
+
+
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+    };
+
+    fetch(url, options)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if(func){
+                func(data);
+            }
+            return data;
+            // updateCharacterDisplay(data.characters);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+
+
 let currentWriters = [];
 function getCharactersPinyinEnglish(characters=null, func=null) {
     const url = './api/get_characters_pinyinenglish';
@@ -343,7 +378,15 @@ function wrapImageUrls(inputString) {
     return outputString;
 }
 
-function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback parameter
+function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fetchCallback parameter
+    if(examples.length === 0){
+        getExamplesPage(0, character, () => {
+            getExamplesDiv(fdescript, currentExamples, character, is_last);
+        });
+    }
+    if(document.getElementById('mainExamplesContainer')){
+        document.getElementById('mainExamplesContainer').remove();
+    }
     let containerDiv = document.createElement('div');
     let page = 0;
     containerDiv.id = 'mainExamplesContainer';
@@ -415,7 +458,6 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
                     hoverBox.style.display = 'block';
                     const windowWidth = window.innerWidth;
                     const tooltipWidth = hoverBox.offsetWidth;
-                    console.log(x, tooltipWidth, windowWidth)
                     const rightEdgePosition = x + 10 + tooltipWidth;
                     if (rightEdgePosition > windowWidth) {
                         x = windowWidth - tooltipWidth - 20;
@@ -433,23 +475,32 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
                     }
                     showTooltip(this, e.pageX, e.pageY);
                 });
-    
+                
                 spanElement.addEventListener('click', function(e) {
                     if(isMobileOrTablet()){
                         if(hoverBox.style.display === 'block'){
-                            //showTooltip(this, e.pageX, e.pageY);
-                            //return;
-                        }
-                        else{
+                            loadAndShow(wordDict.character); 
+                            const newUrl = new URL(window.location);
+                            newUrl.searchParams.set('query', wordDict.character);
+                            history.pushState({}, '', newUrl);
+                            hoverBox.style.display = 'none';
+                        } else {
                             showTooltip(this, e.pageX, e.pageY);
+                            
+                            // Auto-hide after 2 seconds on mobile
+                            setTimeout(() => {
+                                hoverBox.style.display = 'none';
+                            }, 2000);
+                            
                             return;
                         }
+                    } else {
+                        loadAndShow(wordDict.character); 
+                        const newUrl = new URL(window.location);
+                        newUrl.searchParams.set('query', wordDict.character);
+                        history.pushState({}, '', newUrl);
+                        hoverBox.style.display = 'none';
                     }
-                    loadAndShow(wordDict.character); 
-                    const newUrl = new URL(window.location);
-                    newUrl.searchParams.set('query', wordDict.character);
-                    history.pushState({}, '', newUrl);
-                    hoverBox.style.display = 'none';
                 });
     
                 spanElement.addEventListener('mouseout', hideTooltip);
@@ -484,14 +535,16 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
     // Add click handlers for load buttons
     loadMoreButton.addEventListener('click', async () => {
         page++;
-        getExamplesPage(page, character, populateExamples);
+        await getExamplesPage(page, character);
+        populateExamples(currentExamples);
         loadLessButton.style.display = 'block'; 
     });
 
     loadLessButton.addEventListener('click', async () => {
         if (page > 0) {
             page--;
-            getExamplesPage(page, character, populateExamples);
+            await getExamplesPage(page, character);
+            populateExamples(currentExamples);
             if (page === 0) {
                 loadLessButton.style.display = 'none'; 
             }
@@ -499,6 +552,7 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
     });
 
     toggleButton.addEventListener('click', () => {
+        console.log("hell   " + Math.random());
         if (examplesDiv.style.display === 'none') {
             examplesDiv.style.display = 'block';
             loadButtonsContainer.style.display = 'flex';
@@ -522,8 +576,12 @@ function getExamplesDiv(examples, character, is_last) {  // Added fetchCallback 
     containerDiv.appendChild(toggleButton);
     containerDiv.appendChild(loadButtonsContainer);
     
+    fdescript.appendChild(containerDiv);
+
     return containerDiv;
 }
+
+let currentExamples = [];
 
 const getExamplesPage = async (page, character, func) => {
     try {
@@ -535,7 +593,10 @@ const getExamplesPage = async (page, character, func) => {
             body: JSON.stringify({ character: character, page: page })
         });
         const data = await response.json();
-        func(data.examples);
+        currentExamples = data.examples;
+        if(func){
+            func();
+        }
         let loadMoreButton = document.getElementById('loadMoreButton');
         loadMoreButton.style.display = data.is_last ? 'none' : 'block';
     } catch (error) {
@@ -676,6 +737,162 @@ function setupAddToDeck(){
             hoverBox.style.top = `${e.pageY + 10}px`;
         });
     }
+}
+
+function constSimilars(similars, similarsDiv){
+
+    getCharactersDecompInfo(similars, (similars_per_component) => {
+
+        let ss = "";
+        let kkeys = Object.keys(similars_per_component);
+        kkeys.forEach((component, idx) => {
+            if(idx < kkeys.length - 1){
+                ss += component + ", ";
+            }
+            else if(kkeys.length > 2){
+                ss += " and" + component;
+            }
+            else{
+                ss += component;
+            }
+        });
+
+        similarsDiv.innerHTML = `<span class="rawDefLabel">Similar characters by visual components (${ss.trim()}):</span>`;
+    
+        let allWords = new Set();
+        Object.values(similars_per_component).forEach(similar_chars => {
+            similar_chars.forEach(similar_char => allWords.add(similar_char));
+        }); 
+
+
+        getCharactersHoverInfo(allWords, (data) => {
+            let chardict = data;
+            Object.entries(similars_per_component).forEach(([component, similar_chars]) => {
+                const p = document.createElement('p');
+                let num_similars_per_component = similar_chars.length;
+                const linkss = document.createElement('div');
+                linkss.classList.add('scrollableHanzis'); // Fixed style assignment
+                const expandBtn = document.createElement('button');
+        
+                linkss.style.paddingLeft = '1em';
+                p.style.paddingLeft = '1em';
+                p.textContent = component;
+                similarsDiv.appendChild(p);
+        
+                similar_chars.forEach(similar_char => {
+                    const wordLink = document.createElement('a');
+                    const hoverBox = document.getElementById('pinyin-hover-box');
+        
+                    function showTooltip(element, content, event) {
+                        hoverBox.innerHTML = content;
+                        hoverBox.style.display = 'block';
+                        hoverBox.style.left = `${event.pageX + 10}px`;
+                        hoverBox.style.top = `${event.pageY + 10}px`;
+                    }
+        
+                    function hideTooltip() {
+                        hoverBox.style.display = 'none';
+                    }
+        
+                    wordLink.addEventListener('mouseover', function (e) {
+                        if(isMobileOrTablet()){
+                            return;
+                        }
+                        const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
+                        const english = chardict[similar_char].definition;
+                        const hsklvl = "chardict[similar_char].hsk_level";
+                        let tooltipContent = `<strongsfasf>${pinyin}</strong><br>${english}<br>`;
+                    
+                        if (isDarkMode) {
+                            tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
+                        }
+                        
+                        tooltipContent = `
+                            <div class="hover-pinyin">${pinyin}</div>
+                            <div class="hover-english">${english}</div>
+                        `;
+
+                        showTooltip(this, tooltipContent, e);
+                    });
+                    
+                    wordLink.addEventListener('click', function (e) {
+                        if(isMobileOrTablet()){
+                            if(hoverBox.style.display === 'block'){
+                                loadAndShow(similar_char);
+                                const newUrl = new URL(window.location);
+                                newUrl.searchParams.set('query', similar_char);
+                                history.pushState({}, '', newUrl);
+                                hoverBox.style.display = 'none';
+                            } else {
+                                const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
+                                const english = chardict[similar_char].definition;
+                                let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
+                                if (isDarkMode) {
+                                    tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
+                                }
+                                tooltipContent = `
+                                    <div class="hover-pinyin">${pinyin}</div>
+                                    <div class="hover-english">${english}</div>
+                                `;
+                                showTooltip(this, tooltipContent, e);
+                                e.preventDefault();
+                                
+                                // Auto-hide after 2 seconds on mobile
+                                setTimeout(() => {
+                                    hoverBox.style.display = 'none';
+                                }, 2000);
+                                
+                                return;
+                            }
+                        } else {
+                            loadAndShow(similar_char);
+                            const newUrl = new URL(window.location);
+                            newUrl.searchParams.set('query', similar_char);
+                            history.pushState({}, '', newUrl);
+                            hoverBox.style.display = 'none';
+                        }
+                    });
+        
+                    wordLink.addEventListener('mouseout', hideTooltip);
+                    wordLink.addEventListener('mousemove', function (e) {
+                        hoverBox.style.left = `${e.pageX + 10}px`;
+                        hoverBox.style.top = `${e.pageY + 10}px`;
+                    });
+        
+                    wordLink.textContent = similar_char;
+                    wordLink.className = 'word-link';
+                    if (isDarkMode) wordLink.classList.add('darkmode');
+                    linkss.appendChild(wordLink);
+                });
+        
+                // Expand button
+                similarsDiv.appendChild(linkss);
+                setTimeout(() => {
+                    if (num_similars_per_component > 74) {
+                        expandBtn.textContent = "...";
+                        expandBtn.className = "expand-button";
+                        expandBtn.onclick = function () {
+                            if (linkss.classList.contains("expanded")) {
+                                linkss.classList.remove("expanded");
+                                expandBtn.textContent = "...";
+                                expandBtn.style.fontWeight = "bold";
+                                expandBtn.style.backgroundColor = "var(--dimmer-background-color)";
+                            } else {
+                                linkss.classList.add("expanded");
+                                expandBtn.textContent = "collapse";
+                                expandBtn.style.fontWeight = "normal";
+                                expandBtn.style.backgroundColor = "var(--dimmer-background-color)";
+                            }
+                        };
+
+                        // Append the button after the corresponding 'linkss' element (not inside)
+                        //similarsDiv.appendChild(expandBtn);
+                        similarsDiv.insertBefore(expandBtn, linkss.nextSibling);
+                    }
+                }, 110);
+            });
+        });
+    });
 }
 
 
@@ -835,15 +1052,18 @@ function renderCardData(data) {
         
     
 
+
         // Similar Characters per Component
         const similarsDiv = document.createElement('div');
-        similarsDiv.innerHTML = `<span class="rawDefLabel">Components of ${char} in other characters:</span>`;
+        similarsDiv.innerHTML = `<span class="rawDefLabel">Similar characters by visual components  shares:</span>`;
         similarsDiv.classList.add('rawDefEntry');
-
+        constSimilars(char, similarsDiv);
+        
         let allWords = new Set();
         Object.values(similars_per_component).forEach(similar_chars => {
             similar_chars.forEach(similar_char => allWords.add(similar_char));
         }); 
+
 
         getCharactersHoverInfo(allWords, (data) => {
             let chardict = data;
@@ -874,14 +1094,6 @@ function renderCardData(data) {
                         hoverBox.style.display = 'none';
                     }
         
-                    wordLink.onclick = function () {
-                        loadAndShow(similar_char);
-                        const newUrl = new URL(window.location);
-                        newUrl.searchParams.set('query', similar_char);
-                        history.pushState({}, '', newUrl);
-                        hoverBox.style.display = 'none';
-                    };
-        
                     wordLink.addEventListener('mouseover', function (e) {
                         if(isMobileOrTablet()){
                             return;
@@ -890,12 +1102,47 @@ function renderCardData(data) {
                         const english = chardict[similar_char].definition;
                         const hsklvl = "chardict[similar_char].hsk_level";
                         let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
-        
+                    
                         if (isDarkMode) {
                             tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
                         }
                         showTooltip(this, tooltipContent, e);
                     });
+                    
+                    wordLink.addEventListener('click', function (e) {
+                        if(isMobileOrTablet()){
+                            if(hoverBox.style.display === 'block'){
+                                loadAndShow(similar_char);
+                                const newUrl = new URL(window.location);
+                                newUrl.searchParams.set('query', similar_char);
+                                history.pushState({}, '', newUrl);
+                                hoverBox.style.display = 'none';
+                            } else {
+                                const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
+                                const english = chardict[similar_char].definition;
+                                let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
+                                if (isDarkMode) {
+                                    tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
+                                }
+                                showTooltip(this, tooltipContent, e);
+                                e.preventDefault();
+                                
+                                // Auto-hide after 2 seconds on mobile
+                                setTimeout(() => {
+                                    hoverBox.style.display = 'none';
+                                }, 2000);
+                                
+                                return;
+                            }
+                        } else {
+                            loadAndShow(similar_char);
+                            const newUrl = new URL(window.location);
+                            newUrl.searchParams.set('query', similar_char);
+                            history.pushState({}, '', newUrl);
+                            hoverBox.style.display = 'none';
+                        }
+                    });
+                    
         
                     wordLink.addEventListener('mouseout', hideTooltip);
                     wordLink.addEventListener('mousemove', function (e) {
@@ -1065,7 +1312,7 @@ function renderCardData(data) {
 
         //document.getElementById('flashcard_overlay').appendChild(appearsInDiv);
         entryDiv.appendChild(similarsDiv);
-        entryDiv.appendChild(appearsInDiv);
+        // entryDiv.appendChild(appearsInDiv);
 
 
         tabContentContainer.appendChild(entryDiv);
@@ -1086,36 +1333,35 @@ function renderCardData(data) {
         });
     });
 
-    const descriptionLabel = document.createElement('p');
-    descriptionLabel.textContent = "LLM description ";
-    descriptionLabel.id = 'descriptionLabel';
-    descriptionLabel.class = 'notes-label';
-    const descriptionParagraph = document.createElement('p');
-    descriptionParagraph.innerHTML = ai_content;
-    descriptionParagraph.id = 'descriptionParagraph';
+    const llmLabel = document.createElement('p');
+    llmLabel.textContent = "LLM description ";
+    llmLabel.id = 'descriptionLabel';
+    llmLabel.class = 'notes-label';
+    const llmParagraph = document.createElement('p');
+    llmParagraph.innerHTML = ai_content;
+    llmParagraph.id = 'descriptionParagraph';
 
     if(ai_content.trim() === ''){
 
     }
     else{
-        descriptionContainer.appendChild(descriptionLabel);
-        descriptionContainer.appendChild(descriptionParagraph);
+        // descriptionContainer.appendChild(llmLabel);
+        // descriptionContainer.appendChild(llmParagraph);
     }
 
     // Add click handler to the label
 
 
     // Replace the existing content
-    document.getElementById('flashcard_description').innerHTML = '';
-    document.getElementById('flashcard_description').appendChild(exLabel);
-    console.log(data);
-    if(data.examples.length > 0){
-        let mainExamplesDiv = getExamplesDiv(data.examples, data.character, data.is_last);
-        document.getElementById('flashcard_description').appendChild(mainExamplesDiv);
-    }
-    document.getElementById('flashcard_description').appendChild(rawLabel);
-    document.getElementById('flashcard_description').appendChild(tabNav);
-    document.getElementById('flashcard_description').appendChild(descriptionContainer);
+    let fdescript = document.getElementById('flashcard_description');
+    fdescript.innerHTML = '';
+    fdescript.appendChild(rawLabel);
+    fdescript.appendChild(tabNav);
+    fdescript.appendChild(descriptionContainer);
+    fdescript.appendChild(exLabel);
+    // if(data.examples.length > 0){
+        let mainExamplesDiv = getExamplesDiv(fdescript, data.examples, data.character, data.is_last);
+    // }
 
     const notesParagraph = document.createElement('p');
     // Initially render the markdown
@@ -1325,6 +1571,8 @@ function renderCardData(data) {
     publicNotesLabel.id = 'publicNotesLabel';
     publicNotesLabel.class = 'notes-label';
 
+    let addcard = document.getElementById('flashcard_addcard');
+
 
     // document.getElementById('flashcard_description').prepend(publicNotesLabel);
     // document.getElementById('flashcard_description').prepend(notesLabel);
@@ -1361,16 +1609,16 @@ function renderCardData(data) {
         }
     });
     
-    descriptionLabel.classList.add('collapsed');
-    descriptionParagraph.style.display = 'none';
+    llmLabel.classList.add('collapsed');
+    llmParagraph.style.display = 'none';
 
-    descriptionLabel.addEventListener('click', () => {
-        descriptionParagraph.style.display = descriptionParagraph.style.display === 'none' ? 'block' : 'none';
-        if (descriptionParagraph.style.display === 'none') {
-            descriptionLabel.classList.add('collapsed');
+    llmLabel.addEventListener('click', () => {
+        llmParagraph.style.display = llmParagraph.style.display === 'none' ? 'block' : 'none';
+        if (llmParagraph.style.display === 'none') {
+            llmLabel.classList.add('collapsed');
         }
         else {
-            descriptionLabel.classList.remove('collapsed');
+            llmLabel.classList.remove('collapsed');
         }
     });
     // rawLabel.addEventListener('click', () => {
@@ -1415,20 +1663,21 @@ function renderCardData(data) {
     setupAddToDeck();
     // setupCloseButton();
     if(username === "tempuser"){
-        const element = document.getElementById('flashcard_addcard');
-        element.style.display = 'none';
+        addcard.style.display = 'none';
     }
     if(data.is_learning){
-        const element = document.getElementById('flashcard_addcard');
-        element.innerHTML = '<i class="fas fa-bookmark"></i>';
-        element.classList.add('addedToDeck');
+        addcard.innerHTML = '<i class="fas fa-bookmark"></i>';
+        addcard.classList.add('addedToDeck');
     }
     else{
-        const element = document.getElementById('flashcard_addcard');
-        element.innerHTML = '<i class="far fa-bookmark"></i>';
-        element.classList.remove('addedToDeck');
+        addcard.innerHTML = '<i class="far fa-bookmark"></i>';
+        addcard.classList.remove('addedToDeck');
     }
-    document.getElementById('flashcard_addcard').onclick = function(){
+
+    container.addEventListener("scroll", function () {
+        addcard.style.transform = `translateY(${container.scrollTop}px)`;
+    });
+    addcard.onclick = function(){
         // print current character
         addWordToLearning(data.character);
         let rect = document.getElementById('flashcard_addcard').getBoundingClientRect();
@@ -1613,7 +1862,6 @@ function handleOrientationChange() {
     const container = document.getElementById('flashcard_container');
     if (window.matchMedia("(min-height: 846px) and (max-height: 1024px) and (orientation:landscape)").matches) {
         container.style.width = '60%';
-        console.log("2asfasfasf")
     }
     else if (window.matchMedia("(min-width: 846px) and (max-width: 1024px)").matches) {
         container.style.width = '90%';

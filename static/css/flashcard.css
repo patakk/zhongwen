@@ -110,17 +110,19 @@
 
 
 #flashcard_addcard {
-    top: -.1em;
     left: 0;
-    padding: .0em .5em .5em .5em;
+    top: 0;
+    padding: .5em;
     margin: 0;
     line-height: 1;
-    display: flex;
+    /* display: flex; */
     align-items: center;
     justify-content: center;
     background: none;
-    opacity: .5;
+    position: absolute;
     font-size: 2em;
+    color: var(--dimmer-text-color);
+    z-index: 21110;
 }
 
 #flashcard_addcard.addedToDeck {
@@ -152,7 +154,6 @@
 
 #flashcard_description {
     width: 100%;
-    font-size: 16px;
     margin-top: 30px;
     overflow-y: visible;
     user-select: text;
@@ -192,17 +193,18 @@ p::selection {
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-y: hidden;
-    overflow-y: auto;
     scrollbar-width: none;
-    -ms-overflow-style: none;
     padding: 42px;
     box-sizing: border-box;
-    overflow-x: hidden;
     transition: transform 0.2s, background-color 0.1s;
     z-index: 1032;
     font-family: var(--font-family);
     font-weight: 400;
+    overflow-y: hidden;
+    overflow-y: visible;
+    overflow: visible;
+    -ms-overflow-style: none;
+    overflow-x: hidden;
 }
 
 #flashcard_container::-webkit-scrollbar {
@@ -280,9 +282,6 @@ p::selection {
     color: rgb(233, 233, 233);
 }
 
-#flashcard_addcard.darkmode {
-    color: rgb(233, 233, 233);
-}
 
 
 #flashcard_pinyin.darkmode {
@@ -336,7 +335,7 @@ p::selection {
     }
 
     #flashcard_addcard {
-        font-size: 1em;
+        font-size: 2em;
     }
 
     #flashcard_practice {
@@ -478,7 +477,7 @@ and (max-device-width: 1024px) {
     border: 0;
     text-decoration: none;
     color: #000000;
-    font-size: 1em;
+    font-size: 1.4em;
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.05)
 }
@@ -1066,6 +1065,7 @@ input[type="checkbox"].darkmode:checked::after {
 }
 
 .clickable-example-char {
+    font-size: 1.4em;
     margin: 0 .1em;
 }
 .clickable-example-char:hover {
