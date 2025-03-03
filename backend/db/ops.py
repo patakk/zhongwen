@@ -233,33 +233,29 @@ def db_update_or_create_note(username, word, notes, is_public=False):
     except Exception as e:
         db.session.rollback()
         return False, f"Error saving note: {str(e)}"
+
 def db_store_user_value(username, key, value):
     try:
         user = User.query.filter_by(username=username).first()
         if not user:
             return False, f"User '{username}' not found"
             
-        # Get all current progress data
         current_data = db_load_user_progress(username)
-        logger.info(f"Current data before update: {current_data}")
         
         if not current_data:
             return False, f"No progress found for user '{username}'"
         
         # Update the specific key
         current_data[key] = value
-        logger.info(f"Data after update, before save: {current_data}")
         
         # Save all progress data back
         success, message = db_save_user_progress(username, current_data)
         
         # Verify immediate state after save
         user_prog = user.progress
-        logger.info(f"Direct DB state after save: {user_prog.to_dict()}")
         
         # Load and verify
         loaded = db_load_user_value(username, key)
-        logger.info(f"Loaded value after save: {loaded}")
         
         return success, message
         

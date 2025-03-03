@@ -20,15 +20,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: white;
+            background-color: var(--background-color);
             font-size: 16px;
         }
         .container {
             width: 60%;
             max-width: 800px;
-            background-color: white;
+            background-color: var(--background-color);
             padding: 2rem;
-            border: 2px dashed black;
+            border: var(--dimmer-border);
             overflow-y: auto;
             max-height: 90vh;
             scrollbar-width: none; /* For Firefox */
@@ -40,7 +40,6 @@
         h1 {
             font-family: 'Noto Sans Mono', monospace;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: #333;
             font-size: 2em;
             margin-top: 0;
         }
@@ -56,21 +55,21 @@
         .btn {
             display: inline-block;
             padding: 10px 20px;
-            background-color: white;
-            color: black;
+            background-color: var(--background-color);
+            color: var(--text-color);
             text-decoration: none;
-            border: 2px solid black;
+            border: var(--simple-borer);
             font-weight: bold;
         }
         .btn:hover {
-            background-color: black;
-            color: white;
+            background-color: var(--text-color);
+            color: var(--background-color);
         }
         
         a {
-            color: rgb(15, 15, 15);
+            color: var(--text-color);
             text-decoration: none;
-            background-color: #d4d4d4;
+            background-color: #var(--dimmer-background);
             padding: 1px 2px;
         }
 
@@ -80,8 +79,8 @@
         }
         
         .flashcard-guide {
-            background-color: #f9f9f9;
-            border: 2px solid #7c7c7c;
+            background-color: var(--dimmer-background-color);
+            border: var(--simple-border);
             padding: 10px;
             width: 80%;
             margin: 20px auto;
@@ -125,8 +124,6 @@
 
             .flashcard-guide {
                 width: 100%;
-                background-color: #f9f9f9;
-                border: 2px solid #000000;
                 padding: 5px;
                 margin: 5px auto;
                 margin-bottom: 14px;
@@ -176,7 +173,7 @@
 
         a.darkmode:hover {
             background-color: #ff0000;
-            color: #f3f3f3;
+            color: var;
         }
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
@@ -194,7 +191,11 @@
         }
     </style>
 </head>
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
 <body>
+{% endif %}
    
     {% include 'menu.html' %}
     
@@ -244,7 +245,7 @@
                 </div>
             </li> -->
             <li>
-                <a href="{{ url_for('flashcards') }}">Flashcards</a> - learn characters using spaced repetition (login required)
+                <a href="{{ url_for('flashcards') }}">Flashcards</a> - learn characters using spaced repetition <strong>(login required)</strong>
                 <div class="flashcard-guide">
                     <div class="pc-guide">
                         <ul>
