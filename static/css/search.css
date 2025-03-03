@@ -100,12 +100,13 @@ form {
 }
 input[type="text"] {
     color: var(--text-color);
+    outline: none;
     background-color: var(--background-color);
     width: 100%;
     max-width: 250px;
     padding: 10px;
     margin-bottom: 20px;
-    border: 2px solid black;
+    border: 2px solid var(--dimmer-border-color-a);
     font-size: 1em;
     font-family: inherit;
 }
@@ -114,8 +115,8 @@ input[type="submit"] {
     width: 100px;
     padding: 10px;
     background-color: var(--dimmer-background-color);
-    color: var(--text-color);
-    border: 2px solid black;
+    color: var(--dimmer-text-color);
+    border: 2px solid var(--dimmer-border-color-a);
     cursor: pointer;
     font-size: 16px;
     margin-bottom: 1em;
@@ -123,20 +124,18 @@ input[type="submit"] {
     -webkit-tap-highlight-color: transparent;
     -webkit-appearance: none;
     appearance: none;
-    transition: background-color 0.1s, color 0.1s, transform 0.1s;
 }
 
 @media (hover: hover) {
     input[type="submit"]:hover {
-        background-color: black;
-        color: white;
+        color: var(--dimmer-background-color);
+        background-color: var(--dimmer-text-color);
     }
 }
 
 input[type="submit"]:active {
-    background-color: var(--text-color) !important;
-    color: var(--dimmer-background-color) !important;
-    transform: scale(0.98);
+    color: var(--text-color) !important;
+    background-color: var(--dimmer-background-color) !important;
 }
 
 

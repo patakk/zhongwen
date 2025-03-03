@@ -378,11 +378,19 @@ function wrapImageUrls(inputString) {
     return outputString;
 }
 
+let exampleAttempts = 0;
+
 function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fetchCallback parameter
     if(examples.length === 0){
-        getExamplesPage(0, character, () => {
-            getExamplesDiv(fdescript, currentExamples, character, is_last);
-        });
+        if(exampleAttempts < 2){
+            getExamplesPage(0, character, () => {
+                getExamplesDiv(fdescript, currentExamples, character, is_last);
+            });
+        }
+        else{
+            return;
+        }    
+        exampleAttempts++;
     }
     if(document.getElementById('mainExamplesContainer')){
         document.getElementById('mainExamplesContainer').remove();
@@ -552,7 +560,6 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
     });
 
     toggleButton.addEventListener('click', () => {
-        console.log("hell   " + Math.random());
         if (examplesDiv.style.display === 'none') {
             examplesDiv.style.display = 'block';
             loadButtonsContainer.style.display = 'flex';
@@ -594,6 +601,7 @@ const getExamplesPage = async (page, character, func) => {
         });
         const data = await response.json();
         currentExamples = data.examples;
+        console.log(currentExamples);
         if(func){
             func();
         }
@@ -1360,7 +1368,8 @@ function renderCardData(data) {
     fdescript.appendChild(descriptionContainer);
     fdescript.appendChild(exLabel);
     // if(data.examples.length > 0){
-        let mainExamplesDiv = getExamplesDiv(fdescript, data.examples, data.character, data.is_last);
+    exampleAttempts = 0;
+    let mainExamplesDiv = getExamplesDiv(fdescript, data.examples, data.character, data.is_last);
     // }
 
     const notesParagraph = document.createElement('p');
