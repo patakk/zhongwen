@@ -153,7 +153,12 @@
 
     </style>
 </head>
+
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
 <body>
+{% endif %}
     
     {% include 'menu.html' %}
 

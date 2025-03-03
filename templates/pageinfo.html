@@ -86,18 +86,6 @@
             color: white;
         }
 
-        .links {
-            color: rgb(15, 15, 15);
-            text-decoration: none;
-            background-color: #d4d4d4;
-            padding: 0px 4px;
-        }
-
-        .links:hover {
-            background-color: #ff0000;
-            color: #ffffff;
-        }
-
         .flashcard-guide {
             background-color: var(--dimmer-background-color);
             border: 2px solid var(--border-color);
@@ -231,15 +219,6 @@
             content: " ";
         }
 
-        a.darkmode {
-            color: rgb(255, 255, 255);
-            background-color: #2e2e2e;
-        }
-
-        a.darkmode:hover {
-            background-color: #e03400;
-            color: #f3f3f3;
-        }
 
         .smallh {}
 
@@ -260,7 +239,11 @@
     </style>
 </head>
 
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
 <body>
+{% endif %}
     
     {% include 'menu.html' %}
     <div class="container">

@@ -83,11 +83,12 @@ p.darkmode {
 }
 
 .links {
-    color: rgb(15, 15, 15);
+    color: var(--text-color);
     text-decoration: none;
-    background-color: #d4d4d4;
+    background-color: var(--dimmer-border-color-a);
     padding: 0px 4px;
 }
+
 
 .links:hover {
     background-color: #ff0000;

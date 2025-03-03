@@ -25,7 +25,11 @@
         
     </style>
 </head>
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
 <body>
+{% endif %}
     <h1 id="title">Test your pinyin <span id="brain"><i class="fas fa-keyboard"></i></span></h1>
     <div class="custom-dropdown deck-dropdown">
         <div id="deck-name"><div id="deck-name-label">Current Deck:</div> <div id="selected-deck">Select a deck</div></div>

@@ -100,6 +100,7 @@ form {
 }
 input[type="text"] {
     color: var(--text-color);
+    background-color: var(--background-color);
     width: 100%;
     max-width: 250px;
     padding: 10px;
@@ -136,12 +137,6 @@ input[type="submit"]:active {
     background-color: var(--text-color) !important;
     color: var(--dimmer-background-color) !important;
     transform: scale(0.98);
-}
-
-input[type="submit"]:focus:not(:active) {
-    background-color: var(--dimmer-background-color) !important;
-    color: var(--text-color) !important;
-    transform: scale(1);
 }
 
 

@@ -64,7 +64,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1em;
+            margin-top: 2em;
             margin-bottom: 1em;
             table-layout: fixed;
         }
@@ -272,8 +272,6 @@
             cursor: pointer;
         }
         a {
-            text-decoration: none;
-            color: #110000;
         }
         
         .due-date {
@@ -418,21 +416,21 @@
     <div class="container">
         <h1>Profile</h1>
         <h2>Account Management</h2>
-        <p>
+        <p style="padding-left: 1em;">
             <a class="links" href="{{ url_for('manage.change_password') }}">Change password</a>
         </p>
-        <p>
+        <p style="padding-left: 1em;">
             <a class="links" href="{{ url_for('manage.email_management') }}">Change email</a>
         </p>
         <h2>Custom cards</h2>
-        <p id="numcards">Cards in deck: {{ numcards }}</p>
-        <p>
+        <p style="padding-left: 1em;" id="numcards">Cards in deck: {{ numcards }}</p>
+        <p style="padding-left: 1em;">
             <a class="links" href="{{ url_for('grid', deck='custom') }}">Preview cards in grid <i class="fas fa-th-large"></i></a>
         </p>
-        <p>
+        <p style="padding-left: 1em;">
             <a class="links" href="{{ url_for('flashcards') }}">Practice as flashcards <i class="fas fa-exchange-alt"></i></a>
         </p>
-        <p>
+        <p style="padding-left: 1em;">
             <a class="links" href="{{ url_for('hanzipractice', deck='custom') }}">Practice writing <i class="fas fa-pen"></i></a>
         </p>
         

@@ -25,7 +25,11 @@
         
     </style>
 </head>
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
 <body>
+{% endif %}
     <h1 class="title">Test your hanzi <i class="fas fa-pen-fancy"></i></h1>
     <div class="custom-dropdown">
         <div id="deck-name"><div id="deck-name-label">Current Deck:</div> <div id="selected-deck">Select a deck</div></div>

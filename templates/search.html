@@ -24,9 +24,11 @@
     <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script>
 </head>
 
-
-
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
 <body>
+{% endif %}
    
     {% include 'menu.html' %}
 
