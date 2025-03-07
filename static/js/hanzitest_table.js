@@ -112,7 +112,6 @@ function simplifyPinyin(pinyin, removeAccents = true, removeNumbers = false) {
             .replace(/['\s]+/g, ''); // Remove spaces and apostrophes
     } else if (removeAccents) {
         // If it doesn't contain numbers and we want to remove accents
-        console.log("fasfaknasfaf")
         return pinyin
             .toLowerCase().trim()
             .replace(/[āáǎà]/g, 'a')
@@ -251,6 +250,43 @@ function populateGrid() {
             input.classList.add("darkmode");
         }
 
+        function moveFocus(){
+            let flag = false;
+            let firstIncorrectInput = null;
+            let newcurentHanzi = null;
+            for(let i = 0; i < allhanzi.length*2; i++){
+                let idx = i%allhanzi.length;
+                if(allhanzi[idx] == hanzi){
+                    flag = true;
+                }
+                if(flag){
+                    if(inputsbyhanzi[allhanzi[idx]].dataset.correct === 'false' && allhanzi[idx] != hanzi){
+                        firstIncorrectInput = inputsbyhanzi[allhanzi[idx]];
+                        break;
+                    }
+                }
+            }
+            if(firstIncorrectInput == null){
+                    for(let i = 0; i < allhanzi.length*2; i++){
+                        let idx = i%allhanzi.length;
+                        if(inputsbyhanzi[allhanzi[idx]].dataset.correct === 'false' && allhanzi[idx] != hanzi){
+                            firstIncorrectInput = inputsbyhanzi[allhanzi[idx]];
+                            break;
+                        }
+                    }
+            }
+            else{
+                characterDisplay.textContent = firstIncorrectInput.dataset.hanzi;
+                inputsbyhanzi[curentHanzi].classList.remove("editing");
+                inputsbyhanzi[curentHanzi].parentNode.classList.remove("editing");
+                newcurentHanzi = firstIncorrectInput.dataset.hanzi;
+            }
+            if(newcurentHanzi != null){
+                inputsbyhanzi[newcurentHanzi].classList.add("editing");
+                inputsbyhanzi[newcurentHanzi].parentNode.classList.add("editing");
+                inputsbyhanzi[newcurentHanzi].focus();
+            }
+        }
         
         // add calback for typing into input
         input.addEventListener('input', function(e) {
@@ -260,48 +296,7 @@ function populateGrid() {
                 e.target.dataset.correct = false;
                 e.target.blur();
 
-                let flag = false;
-                let firstIncorrectInput = null;
-                for(let i = 0; i < allhanzi.length; i++){
-                    if(allhanzi[i] == hanzi){
-                        flag = true;
-                    }
-                    if(flag){
-                        if(inputsbyhanzi[allhanzi[i]].dataset.correct === 'false' && allhanzi[i] != hanzi){
-                            // inputsbyhanzi[allhanzi[i]].classList.add("editing");
-                            // curentHanzi = allhanzi[i];
-                            // characterDisplay.textContent = allhanzi[i];
-                            // textInput.value = "";
-                            // textInput.focus();
-                            firstIncorrectInput = inputsbyhanzi[allhanzi[i]];
-                            break;
-                        }
-                    }
-                }
-                if(firstIncorrectInput == null){
-                        //first incorrect input
-                        for(let i = 0; i < allhanzi.length; i++){
-                            if(inputsbyhanzi[allhanzi[i]].dataset.correct === 'false' && allhanzi[i] != hanzi){
-                                firstIncorrectInput = inputsbyhanzi[allhanzi[i]];
-                                break;
-                            }
-                        }
-                }
-                else{
-                    characterDisplay.textContent = firstIncorrectInput.dataset.hanzi;
-                    inputsbyhanzi[curentHanzi].classList.remove("editing");
-                    inputsbyhanzi[curentHanzi].parentNode.classList.remove("editing");
-                    curentHanzi = firstIncorrectInput.dataset.hanzi;
-                }
-                //first next incorrect input
-                
-                
-                inputsbyhanzi[curentHanzi].classList.add("editing");
-                inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
-                
-                // textInput.value = "";
-                // textInput.focus();
-                inputsbyhanzi[curentHanzi].focus();
+                moveFocus()
                 return;
             }
             const userInput = e.target.value.trim();
@@ -319,7 +314,16 @@ function populateGrid() {
             console.log(userAnswer, simplifiedCorrectPinyin, isCorrect);
             // correct answer
             if (isCorrect) {
-                
+
+                correctAnswers++;
+
+                if(correctAnswers == NUM_QUESTIONS){
+                    revealBtn.classList.add("hidden");
+                    restartBtn.innerHTML = "Restart Test " + '<i class="fa-solid fa-vial-circle-check"></i>';
+                    restartBtn.classList.remove("hidden");
+                    console.log("finished");
+                }
+
                 let x = e.target.getBoundingClientRect().left + e.target.getBoundingClientRect().width/2;
                 let y = e.target.getBoundingClientRect().top + e.target.getBoundingClientRect().height/2;
                 fastConfetti(x, y, pinyin);
@@ -329,7 +333,7 @@ function populateGrid() {
                 // disable input
                 e.target.disabled = true;
 
-                e.target.value = inputdecksflattend[hanzi].pinyin;
+                // e.target.value = inputdecksflattend[hanzi].pinyin;
 
                 vibrateElement(e.target.parentNode);
                 // defocus
@@ -355,58 +359,13 @@ function populateGrid() {
                         }
                     }
                 }
-                if(firstIncorrectInput == null){
-                    //first incorrect input
-                    for(let i = 0; i < allhanzi.length; i++){
-                        if(inputsbyhanzi[allhanzi[i]].dataset.correct === 'false' && allhanzi[i] != hanzi){
-                            firstIncorrectInput = inputsbyhanzi[allhanzi[i]];
-                            break;
-                        }
-                    }
-                    // check if all are correct
-                    if(firstIncorrectInput == null){
-                        characterDisplay.textContent = "DONE!";
-                        textInput.value = "";
-                        finished = true;
-                        inputsbyhanzi[curentHanzi].classList.remove("editing");
-                        inputsbyhanzi[curentHanzi].parentNode.classList.remove("editing");
-                        restartBtn.classList.remove("hidden");
-                        revealBtn.classList.add("hidden");
-                        restartBtn.innerText = "Restart Test 📝";
-                        startConfetti();
-                        // playSong();
-                        playTwang();
-                    }
-                    else{
-                        characterDisplay.textContent = firstIncorrectInput.dataset.hanzi;
-                        inputsbyhanzi[curentHanzi].classList.remove("editing");
-                        curentHanzi = firstIncorrectInput.dataset.hanzi;
-                        //first next incorrect input
-                        
-                        inputsbyhanzi[curentHanzi].classList.add("editing");
-                        inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
-                        
-                        textInput.value = "";
-                        inputsbyhanzi[curentHanzi].focus();
-                    }
-                }
-                else{
-                    characterDisplay.textContent = firstIncorrectInput.dataset.hanzi;
-                    inputsbyhanzi[curentHanzi].classList.remove("editing");
-                    curentHanzi = firstIncorrectInput.dataset.hanzi;
-                    //first next incorrect input
-                    
-                    inputsbyhanzi[curentHanzi].classList.add("editing");
-                    inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
-                    
-                    textInput.value = "";
-                    inputsbyhanzi[curentHanzi].focus();
-                }
+                e.target.classList.remove("editing");
+                moveFocus();
             }
             else{
                 e.target.classList.remove('pinyin-correct');
                 e.target.dataset.correct = false;
-            }
+            }   
         }); 
 
         input.addEventListener('focus', function(e) {
@@ -481,14 +440,14 @@ function populateGrid() {
 
 function revealAnswers(){
     revealBtn.classList.add("hidden");
-    restartBtn.innerText = "Restart Test 💩";
+    restartBtn.innerHTML = "Restart Test " + '<i class="fa-solid fa-poo"></i>';
+    restartBtn.classList.remove("hidden");
     allinputs.forEach(input => {
         if(input.dataset.correct === 'false'){
             input.value = currentcharacters[input.dataset.hanzi].pinyin;
             input.classList.add('pinyin-revealed');
             input.disabled = true;
         }
-        restartBtn.classList.remove("hidden");
         // input.dispatchEvent(new Event('input'));
     });
 }
