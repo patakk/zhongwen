@@ -133,12 +133,12 @@ function drawBg(ctx, dbg1, dbg2) {
     ctx.save();
     ctx.lineWidth = Math.max(0.6, ctx.canvas.width / 128)*.6;
     if (isDarkMode) {
-        ctx.strokeStyle = `rgba(${222},${222},${222}, .5)`;
+        ctx.strokeStyle = `rgba(${222},${222},${222}, .215)`;
     }
     else {
-        ctx.strokeStyle = `rgba(${33},${33},${33}, .5)`;
+        ctx.strokeStyle = `rgba(${33},${33},${33}, .215)`;
     }
-    ctx.strokeRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+     ctx.strokeRect(2, 2, ctx.canvas.width-4, ctx.canvas.height-4);
 
     if (dbg1) {
         ctx.save();
@@ -152,29 +152,29 @@ function drawBg(ctx, dbg1, dbg2) {
         let w = Math.round(17*Math.sqrt(2)/2)*2-1;
         let q2 = (writerSize - q1*w) / (w-1);
         let qq2 = (writerSize*Math.sqrt(2) - q1*w) / (w-1);
-        ctx.setLineDash([d1, d2]);
+        // ctx.setLineDash([d1, d2]);
         if (isDarkMode) {
             ctx.strokeStyle = `rgba(${222},${222},${222}, .215)`;
         }
         else {
             ctx.strokeStyle = `rgba(${33},${33},${33}, .215)`;
         }
-        ctx.setLineDash([q1, qq2]);
+        // ctx.setLineDash([q1, qq2]);
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(ctx.canvas.width, ctx.canvas.height);
-        ctx.setLineDash([q1, qq2]);
+        // ctx.setLineDash([q1, qq2]);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(ctx.canvas.width, 0);
         ctx.lineTo(0, ctx.canvas.height);
         ctx.stroke();
-        ctx.setLineDash([d1, d2]);
+        // ctx.setLineDash([d1, d2]);
         ctx.beginPath();
         ctx.moveTo(ctx.canvas.width / 2, 0);
         ctx.lineTo(ctx.canvas.width / 2, ctx.canvas.height);
         ctx.stroke();
-        ctx.setLineDash([d1, d2]);
+        // ctx.setLineDash([d1, d2]);
         ctx.beginPath();
         ctx.moveTo(0, ctx.canvas.height / 2);
         ctx.lineTo(ctx.canvas.width, ctx.canvas.height / 2);
@@ -582,7 +582,6 @@ class HanziPlotter {
             this.canvas.style.height = this.dimension/2 + 'px';
             this.ctx = this.canvas.getContext('2d');
         }
-        this.canvas.id = 'hanzi-canvas';
         this.init();
     }
 

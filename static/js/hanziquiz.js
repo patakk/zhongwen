@@ -121,7 +121,7 @@ async function renderPlotters(){
         size = 250;
     }
     size=writerSize;
-    drawingArea.style.minHeight = `${size/2}px`;
+    // drawingArea.style.minHeight = `${size/2}px`;
     
     if(drawingArea && plotters){
         // Store plotters as a property of the container element
@@ -254,8 +254,8 @@ function startTest() {
     streakCount = 0;
     numFinished = 0;
     userAnswers = [];
-    window.scrollTo(0, 0);
-    window.scrollTo(0, 1);
+    // window.scrollTo(0, 0);
+    // window.scrollTo(0, 1);
     showWord();
     resultsDiv.style.display = 'none';
     document.getElementById('test-container').style.display = 'block';
@@ -277,7 +277,7 @@ function replaceAt(str, index, replacement) {
     if(pinyinLabel.classList.contains('active')){
         pinyinLabel.classList.remove('active');
     }
-    window.scrollTo(0, 0);
+    // window.scrollTo(0, 0);
     if (currentIndex < shuffledWords.length) {
         // progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledWords.length)}`;
     } else {
@@ -339,7 +339,7 @@ function replaceAt(str, index, replacement) {
     }
     loadStrokeData(nextChar);
     
-    window.scrollTo(0, 1);
+    // window.scrollTo(0, 1);
 }
 
 restartBtn.addEventListener('click', () => {
@@ -692,10 +692,17 @@ document.addEventListener('DOMContentLoaded', () => {
     writerSize = 800;
 
     mainCanvas = document.createElement('canvas');
+    mainCanvas.id = 'main-canvas';
     mainCanvas.width = writerSize;
     mainCanvas.height = writerSize;
-    mainCanvas.style.width = writerSize/2 + 'px';   
-    mainCanvas.style.height = writerSize/2 + 'px';
+    // mainCanvas.style.width = writerSize/2 + 'px';   
+    // mainCanvas.style.height = writerSize/2 + 'px';
+
+    // if screen smaller than 500 width
+    if(window.innerWidth < window.innerHeight && window.innerWidth < 500){
+        // mainCanvas.style.width = writerSize/2 + 'px';   
+        // mainCanvas.style.height = writerSize/2 + 'px';
+    }
 
     
     shuffledWords = Object.keys(currentcharacters);

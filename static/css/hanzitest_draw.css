@@ -169,14 +169,14 @@ html::-webkit-scrollbar {
 }
 
 #english-display {
-    padding-top: 1em;
-    padding-bottom: 1em;
+    padding-top: .7em;
+    padding-bottom: .7em;
     font-size: 1.4em;
     white-space: wrap;
 }
 
 #pinyin-display {
-    font-size: 33px;
+    font-size: 2em;
     color: var(--text-color);
     width: 200px;
     text-align: center;
@@ -277,12 +277,10 @@ h1 {
 
 
     #english-display {
-        font-size: 26px;
         padding-top: 22px;
     }
 
     #pinyin-display {
-        font-size: 26px;
     }
     
     #deck-name {
@@ -498,4 +496,15 @@ h1 {
 #selected-font.darkmode {
     font-weight: bold;
     background-color: #353535;
+}
+
+#main-canvas {
+    width: 400px;
+}
+
+@media screen and (max-width: 768px) {
+    #main-canvas {
+        width: 95%;
+    }
+    
 }
