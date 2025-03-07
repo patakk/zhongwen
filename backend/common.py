@@ -1,6 +1,7 @@
 import json
 import random
 import os
+import re
 import jieba.posseg as pseg
 
 from hanzipy.decomposer import HanziDecomposer
@@ -87,7 +88,13 @@ def get_char_info(character, pinyin=False, english=False, function=False, full=F
             info['pinyin'] = get_pinyin(character)
             # info['pinyin'] = dlup[0]['pinyin']
         if english:
-            info['english'] = dlup[0]['definition']
+            if len(dlup) == 1:
+                best_entry = dlup[0]
+            else:
+                best_entry = next((entry for entry in dlup if entry_req(entry['definition'])), dlup[0])
+
+            definition = best_entry['definition']
+            info['english'] = definition.strip("/")
     except:
         info['pinyin'] = "N/A"
         info['english'] = "N/A"
@@ -158,10 +165,36 @@ def char_decomp_info(char):
     #return {char: ccs_f}
     return similars
 
+
+def entry_req(definition):
+    
+    cleaned_definition = re.sub(r"/CL:[^/]+", "", definition)
+    cleaned_definition = re.sub(r"/variant of [^/]+", "", cleaned_definition)
+    cleaned_definition = re.sub(r"/used in [^/]+", "", cleaned_definition)
+    cleaned_definition = re.sub(r"/abbr. for [^/]+", "", cleaned_definition)
+
+    cleaned_definition = cleaned_definition.strip("/").strip()
+    if not cleaned_definition:
+        return False
+
+    r1 = "surname " not in cleaned_definition
+    r2 = "variant of" not in cleaned_definition
+    r3 = "used in" not in cleaned_definition
+    r4 = "abbr. for" not in cleaned_definition
+
+    return r1 and r2 and r3 and r4
+
 def char_full_info_(char):
     definition = "-"
     try:
-        definition = dictionary.definition_lookup(char)[0]['definition']
+        definition = dictionary.definition_lookup(char)
+        
+        if len(definition) == 1:
+            best_entry = definition[0]
+        else:
+            best_entry = next((entry for entry in definition if entry_req(entry['definition'])), definition[0])
+
+        definition = best_entry['definition']
     except:
         pass
     frequency = "-"

@@ -19,6 +19,7 @@ let wordTotalMistakeCount = 0;
 let wordTotalStrokeCount = 0;
 let totalStrokeCount = 0;
 let totalMistakeCount = 0;
+let charIterator = 0;
 let numFinished = 0;
 let totalAnswered = 0;
 const deckNameElement = document.getElementById('deck-name');
@@ -27,6 +28,12 @@ let NUM_QUESTIONS = 10;
 let currentWriters = [];
 let hasCustom = false;
 
+let hanziplotterFirstLoad = true;
+
+let writerSize;
+
+
+let mainCanvas;
 
 const selectedDeckElement = document.getElementById('selected-deck');
 const dropdownToggle = document.getElementById('dropdown-toggle');
@@ -51,10 +58,8 @@ function populateDropdown(deckj=false) {
     let sortedKeys;
     if(hasCustom){
         sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
-        console.log('has custom');
     }
     else{
-        console.log('aaaaaa custom');
         sortedKeys = [...nonHskKeys, ...hskKeys];
     }
     if(deckj){
@@ -74,9 +79,11 @@ function populateDropdown(deckj=false) {
   
   function selectDeck(deck) {
     inputdeck = deck;
+    cachedStrokes = null;
     selectedDeckElement.textContent = decknames[deck];
     deckOptionsElement.style.display = 'none';
-    
+    nextPlotter = null;
+    // currentWriters = [];
     loadNewWords(startTest);
   }
   
@@ -88,31 +95,58 @@ function populateDropdown(deckj=false) {
 //   }
 
 function resetWord(){
-    drawingArea.removeEventListener('click', handleAreaClick);
-    
-    if(pinyinLabel.classList.contains('active')){
-        pinyinLabel.classList.remove('active');
-    }
-    window.scrollTo(0, 0);
-    if (currentIndex < shuffledWords.length) {
-        // progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledWords.length)}`;
-    } else {
-        currentIndex = 0;
-    }
-    let characterData = currentcharacters[shuffledWords[currentIndex]];
-    englishDisplay.textContent = characterData.english;
-    wordTotalMistakeCount = 0;
-    wordTotalStrokeCount = 0;
-    
-    currentWord = shuffledWords[currentIndex];
-    currentEnglish = characterData.english;
-    currentPinyin = characterData.pinyin;
-    createHanziWriters(shuffledWords[currentIndex]);
-    pinyinLabel.textContent = characterData.pinyin;
-    confirmDarkmode();
-    
-    window.scrollTo(0, 1);
+  
 }
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'q') {
+    }
+});
+
+
+async function renderPlotters(){
+    const drawingArea = document.getElementById('drawing-area');
+    
+
+    let plotters = currentWriters;
+    
+    let size = 355;
+    if(plotters.length == 2){
+        size = 355;
+    }
+    if(plotters.length == 3){
+        size = 300;
+    }
+    else if(plotters.length > 3){
+        size = 250;
+    }
+    size=writerSize;
+    drawingArea.style.minHeight = `${size/2}px`;
+    
+    if(drawingArea && plotters){
+        // Store plotters as a property of the container element
+        drawingArea.plotters = plotters;
+        
+        // get all internal loadPromise from plotters and await them
+        const loadPromises = plotters.map(plotter => plotter.loadPromise);
+        await Promise.all(loadPromises);
+
+        plotters.forEach((plotter, index) => {
+
+            let colors = ["#151511ee", "#151511aa", "#151511aa"];
+            if(isDarkMode){
+                colors = ["#e5ddedec", "#e5ddedaa", "#e5ddedaa"];
+            }
+            // plotter.displayDiagonals();
+            // plotter.clearBg();
+            plotter.canvas.dataset.plotterIndex = index;
+        });
+    }
+    else{
+        console.error('No plotter element found');
+    }
+}
+    
 
 async function loadNewWords(func=null){
     fetch(`../api/get_random_characters`, {
@@ -204,12 +238,11 @@ function shuffleArray(array) {
 
 function startTest() {
     
-    
     shuffledWords = Object.keys(currentcharacters);
     shuffleArray(shuffledWords);
 
     // shuffledWords = shuffledWords.filter(word => word.length <= 2);
-
+    cachedStrokes = null;
     currentIndex = 0;
     correctAnswers = 0;
     wordTotalMistakeCount = 0;
@@ -228,9 +261,19 @@ function startTest() {
     document.getElementById('test-container').style.display = 'block';
 }
 
-function showWord() {
-    drawingArea.removeEventListener('click', handleAreaClick);
+
+function replaceAt(str, index, replacement) {
+    return str.slice(0, index) + replacement + str.slice(index + 1);
+ }
+
+  function showWord() {
+    // drawingArea.removeEventListener('click', handleAreaClick);
+
+    pinyinLabel.classList.add('active');
     
+    if(!pinyinLabel.classList.contains('active')){
+    pinyinLabel.classList.add('active');
+}
     if(pinyinLabel.classList.contains('active')){
         pinyinLabel.classList.remove('active');
     }
@@ -247,15 +290,60 @@ function showWord() {
     
     currentWord = shuffledWords[currentIndex];
     currentEnglish = characterData.english;
-    currentPinyin = characterData.pinyin;
-    createHanziWriters(shuffledWords[currentIndex]);
-    pinyinLabel.textContent = characterData.pinyin;
-    confirmDarkmode();
+
+    let currentSWord = currentWord.split('').map((word, index) => {
+        if (word !== currentWord[charIterator%currentWord.length]) {
+            return '<span style="opacity: 0.33" class="hanzipart">' + word + '</span>';
+        }
+        return '<span class="hiddenHanzi hanzipart">' + word + '</span>';
+    }
+    ).join('');
+    let currentPin = characterData.pinyin.split(' ').map((word, index) => {
+        if (currentWord.split('')[index] !== currentWord[charIterator%currentWord.length]) {
+            return '<span style="opacity: 0.33">' + word + '</span>';
+        }
+        return '<span>' + word + '</span>';
+    }
+    ).join(' ');
+    if(currentWord.length == 1){
+        currentPin = '<span>' + characterData.pinyin + '</span>';
+        currentSWord = '<span class="hiddenHanzi hanzipart">' + currentWord + '</span>';
+    }
+    currentPinyin = currentPin + "<br>" + currentSWord;
+    pinyinLabel.innerHTML = currentPinyin;
+    // confirmDarkmode();
+
+    if(cachedStrokes && cachedStrokes.character == currentWord[charIterator%currentWord.length]){
+        currentWriters[0].replaceStrokes(cachedStrokes.character, cachedStrokes.medians,  cachedStrokes.strokes);
+        restartQ();
+    }
+    else{
+        console.log("loading" + currentWord[charIterator%currentWord.length]);
+        loadStrokeData(currentWord[charIterator%currentWord.length], () => {
+            currentWriters[0].replaceStrokes(cachedStrokes.character, cachedStrokes.medians,  cachedStrokes.strokes);
+            restartQ();
+        });
+    }
+
+    if(hanziplotterFirstLoad){
+        hanziplotterFirstLoad = false;
+        createHanziWriters(currentWord);
+    }
+    renderPlotters();
+
+    let nextIdx = (currentIndex + 1) % shuffledWords.length;
+    let nextWord = shuffledWords[nextIdx];
+    let nextChar = nextWord[charIterator%nextWord.length];
+    if(nextIdx == 0){
+        nextChar = nextWord[(charIterator+1)%nextWord.length];
+    }
+    loadStrokeData(nextChar);
     
     window.scrollTo(0, 1);
 }
 
 restartBtn.addEventListener('click', () => {
+    
     startTest();
 });
 
@@ -264,18 +352,31 @@ let skipState = 0;
 
 pinyinLabel.addEventListener('click', () => {
     if(pinyinLabel.classList.contains('active')){
-        pinyinLabel.classList.remove('active');
+        // pinyinLabel.classList.remove('active');
     }
     else{
-        pinyinLabel.classList.add('active');
+        // pinyinLabel.classList.add('active');
     }
 });
 
-resetBtn.addEventListener('click', () => {
+function restartQ(){
     skipState = 0;  
     numFinished = 0;
-    showWord();
+    // showWord();
+    
+    if(currentWriters.length > 0){
+        currentWriters[0].stopAnimation();
+        console.log('stopping animation');
+    }
+    currentWriters.forEach(writer => {
+        writer.restartQuiz();
+    });
     skipBtn.textContent = 'Reveal';
+    pinyinLabel.classList.remove('active');
+}
+
+resetBtn.addEventListener('click', () => {
+    restartQ();
 });
 
 skipBtn.addEventListener('click', () => {
@@ -288,26 +389,18 @@ skipBtn.addEventListener('click', () => {
                 return;
             }
             const writer = writers[index];
-            writer.cancelQuiz();
-
-            writer.animateCharacter({
-                onComplete: function() {
-                    totalStrokeCount += writer._character.strokes.length;
-                    totalMistakeCount += writer._character.strokes.length;
-                    animateCharactersSequentially(writers, index + 1);
-                }
-            });
+            writer.giveUp();
         }
         
         totalAnswered++;
         // Start the sequential animation
         animateCharactersSequentially(currentWriters);
         
-        currentWriters.forEach(writer => {
-            writer.showOutline();
-        });
+        // currentWriters.forEach(writer => {
+        //     writer.showOutline();
+        // });
 
-        drawingArea.addEventListener('click', handleAreaClick);
+        // drawingArea.addEventListener('click', handleAreaClick);
         
         if(!pinyinLabel.classList.contains('active')){
             pinyinLabel.classList.add('active');
@@ -326,13 +419,18 @@ skipBtn.addEventListener('click', () => {
     else{
         skipState = 0;
         currentIndex++;
+        if(currentIndex >= shuffledWords.length){
+            currentIndex = 0;
+            charIterator++;
+        }
         numFinished = 0;
         
         streakCount = 0;
         streakCheckpoint = streakIncrement;
+        currentWriters[0].clearBg();
 
         showWord();
-        skipBtn.textContent = 'Give up';
+        skipBtn.textContent = 'Reveal';
     }
 });
 
@@ -349,161 +447,96 @@ let currentPinyin = '';
 let streakCount = 0;
 let streakIncrement = 20;
 let streakCheckpoint = streakIncrement;
+let nextPlotter = null;
+let cachedStrokes = null;
+let workingPlotter = null;
+
+
+async function loadStrokeData(character, onLoad=null) {
+    try {
+        const response = await fetch(`/static/strokes_data/${character}.json`);
+        if (!response.ok) {
+            console.log('Network response was not ok for character:', character);  
+            return;
+        }
+        const data = await response.json();
+        cachedStrokes = data;
+        cachedStrokes.character = character;
+        if(onLoad){
+            onLoad();
+        }
+    } catch (error) {
+        console.error('Error loading character data:', error);
+        throw error;
+    }
+}
 
 function createHanziWriters(characters) {
 
-    drawingArea.innerHTML = '';
-    currentWriters = [];
-    let writerSize = 400;
-    let containerWidth = characters.length * (writerSize + 10); // 10px gap between writers
-    drawingArea.style.width = `${containerWidth}px`;
-    if(window.innerWidth < window.innerHeight){
-        writerSize = window.innerWidth*0.8;
-        drawingArea.style.width = window.innerWidth+"px";
-        if(window.innerWidth >= 1023){
-            writerSize = window.innerWidth*0.6;
-            drawingArea.style.width = window.innerWidth*.8+"px";
-            console.log('ipad');
-        }
-    }
+    // drawingArea.innerHTML = '';
 
-    drawingArea.style.display = 'flex';
-    drawingArea.style.justifyContent = 'center';
-    drawingArea.style.alignItems = 'center';
-    drawingArea.style.gap = '10px';
+    let char = characters[0];
 
-    characters.split('').forEach((char, index) => {
-        const strokeWrapper = document.createElement('div');
-        strokeWrapper.style.position = 'relative';
-        strokeWrapper.id = `flashcard_stroke_wrapper_${index}`;
-        drawingArea.appendChild(strokeWrapper);
-
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("width", writerSize);
-        svg.setAttribute("height", writerSize);
-        svg.setAttribute("id", `grid-background-${index}`);
-        const dashSize = Math.max(2, Math.floor(writerSize / 25));
-        const dashPattern = `${dashSize},${dashSize}`;
-
-        svg.innerHTML = `
-            <rect x="0" y="0" width="${writerSize}" height="${writerSize}" fill="none" stroke="#7e779155" stroke-width="4" stroke-dasharray="${dashPattern}" />
-            <line x1="0" y1="0" x2="${writerSize}" y2="${writerSize}" stroke="#7e779155" stroke-width="2" stroke-dasharray="${dashPattern}" />
-            <line x1="${writerSize}" y1="0" x2="0" y2="${writerSize}" stroke="#7e779155" stroke-width="2" stroke-dasharray="${dashPattern}" />
-            <line x1="${writerSize/2}" y1="0" x2="${writerSize/2}" y2="${writerSize}" stroke="#7e779155" stroke-width="2" stroke-dasharray="${dashPattern}" />
-            <line x1="0" y1="${writerSize/2}" x2="${writerSize}" y2="${writerSize/2}" stroke="#7e779155" stroke-width="2" stroke-dasharray="${dashPattern}" />
-        `;
-
-        strokeWrapper.appendChild(svg);
-
-        let strokeColor = '#000000';
-        let radicalColor = '#000000';
-            
+    let strokeColor = '#000000';
+    let radicalColor = '#000000';
         
-        if(isDarkMode){
-            strokeColor = '#ffffff';
-            radicalColor = '#ffffff';
-        }
-        const writer = HanziWriter.create(`grid-background-${index}`, char, {
-            width: writerSize,
-            height: writerSize,
-            padding: 5,
-            strokeColor: strokeColor,
-            strokeAnimationSpeed: 1,
-            delayBetweenStrokes: 170,
-            drawingWidth: 40,
-            showCharacter: false,
-            showOutline: false,
-            showHintAfterMisses: 2,
-            highlightOnComplete: true,
-            highlightCompleteColor: '#77FFAA',
-            charDataLoader: function(char) {
-                return fetch(`/static/strokes_data/${char}.json`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .catch(error => {
-                        console.error('Error loading character data:', error);
-                        return null;
-                    });
-            }
-        });
-        let strokesdata = [];
-        writer.quiz({
-            onMistake: function(strokeData) {
-                console.log('Oh no! you made a mistake on stroke ' + strokeData.strokeNum);
-                console.log("You've made " + strokeData.mistakesOnStroke + " mistakes on this stroke so far");
-                console.log("You've made " + strokeData.totalMistakes + " total mistakes on this quiz");
-                console.log("There are " + strokeData.strokesRemaining + " strokes remaining in this character");
-                console.log('');
-                streakCount = 0;
-                streakCheckpoint = streakIncrement;
-            },
-            onCorrectStroke: function(strokeData) {
-                streakCount++;
-                console.log('Yes!!! You got stroke ' + strokeData.strokeNum + ' correct!');
-                console.log('You made ' + strokeData.mistakesOnStroke + ' mistakes on this stroke');
-                console.log("You've made " + strokeData.totalMistakes + ' total mistakes on this quiz');
-                console.log('There are ' + strokeData.strokesRemaining + ' strokes remaining in this character');
-                console.log('');
-                strokesdata.push(strokeData.drawnPath.points);
-            },
-            onComplete: function(summaryData) {
-                console.log('You did it! You finished drawing ' + summaryData.character);
-                console.log('You made ' + summaryData.totalMistakes + ' total mistakes on this quiz');
-                console.log('currecnt wordTotalStrokeCount:', wordTotalStrokeCount);
-                console.log('currecnt wordTotalMistakeCount:', wordTotalMistakeCount);
-                console.log('');
-                if(streakCount >= streakCheckpoint){
-                    confetti(streakCheckpoint);
-                    while(streakCount >= streakCheckpoint){
-                        streakCheckpoint += streakIncrement;
-                    }
-                }
-                wordTotalMistakeCount += summaryData.totalMistakes;
-                totalMistakeCount += Math.min(summaryData.totalMistakes, writer._character.strokes.length);
-                wordTotalStrokeCount += writer._character.strokes.length;
-                totalStrokeCount += writer._character.strokes.length;
-                numFinished++;
-                
-                let www = writer._positioner.width;
-                let hhh = writer._positioner.height;
-                let xoff = writer._positioner.xOffset;
-                let yoff = writer._positioner.yOffset;
-                let ppadding = writer._positioner.padding;
-                let ssscale = writer._positioner.scale;
-                www = www/ssscale;
-                hhh = hhh/ssscale;
-                strokesdata.forEach(stroke => {
-                    stroke.forEach(function(point){
-                        point.x = (point.x+xoff)/www;
-                        point.y = (point.y+yoff)/hhh;
-                    });
-                });
-                // trueStrokeData.forEach(stroke => {
-                //     stroke.forEach(function(point){
-                //         point.x = (point.x+xoff)/www;
-                //         point.y = (point.y+yoff)/hhh;
-                //     });
-                // });
-                let data = {
-                    character: summaryData.character,
-                    strokes: strokesdata,
-                    positioner: writer._positioner,
-                    mistakes: summaryData.totalMistakes,
-                    strokeCount: writer._character.strokes.length
-                };
-                saveData(data);
-
-                if (numFinished === characters.length) {
-                    handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount);
-                }
-            }
-        });
-        currentWriters.push(writer);
+    
+    if(isDarkMode){
+        strokeColor = '#ffffff';
+        radicalColor = '#ffffff';
+    }
+    
+    workingPlotter = new HanziPlotter({
+        character: char,
+        dimension: writerSize,
+        speed: .075,
+        lineThickness: 8*writerSize/200,
+        jitterAmp: 0,
+        colors: ['#003052ee', '#c1b2db', '#ff4405dd', '#b4ed8c'], // c1 c1d s1 s1d
+        showDiagonals: true,
+        lineType: "mitter",
+        showGrid: false,
+        clearBackground: false,
+        canvas: mainCanvas,
     });
+    workingPlotter.quiz({
+        onComplete: (userData) => {
+            let userStrokes = userData.strokes;
+            let userChar = userData.character;
+            numFinished = 0;
+            skipState = 1;
+            skipBtn.textContent = 'Next';
+            
+            if(!pinyinLabel.classList.contains('active')){
+                pinyinLabel.classList.add('active');
+            }
+
+            let normalizedUserStrokes = userStrokes.map(stroke => {
+                let nstroke = stroke.map(function(point){
+                    return {x: point.x/writerSize, y: point.y/writerSize};
+                });
+                return nstroke;
+            });
+
+            // remove points with none or null or undefined values
+            normalizedUserStrokes = normalizedUserStrokes.filter(stroke => stroke.length > 1);
+            normalizedUserStrokes = normalizedUserStrokes.map(stroke => {
+                return stroke.filter(point => point.x && point.y);
+            });
+
+            let data = {
+                character: userChar,
+                strokes: normalizedUserStrokes,
+            };
+            saveData(data);
+
+        },
+    });
+    currentWriters = [workingPlotter];
+
+    let nextChar = shuffledWords[(currentIndex + 1) % shuffledWords.length][0];
+    loadStrokeData(nextChar);
+   
 }
 
 
@@ -526,7 +559,7 @@ function saveData(data) {
     });
 }
 
-function confetti(congrats=null) {
+function confetti(congrats=null) {  
     const container = document.getElementById('confetti-container');
     const emojis = ['🎉', '🎊', '🥳', '🎈', '🎊', '🍰', '🎂', '🥂'];
     let confettiCount = 60;
@@ -621,7 +654,7 @@ function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
         drawingArea.addEventListener('click', handleAreaClick);
         
         currentWriters.forEach(writer => {
-            writer.showOutline();
+            // writer.showOutline();
         });
     }, 200);
 }
@@ -655,23 +688,32 @@ function showResults() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    writerSize = 800;
+
+    mainCanvas = document.createElement('canvas');
+    mainCanvas.width = writerSize;
+    mainCanvas.height = writerSize;
+    mainCanvas.style.width = writerSize/2 + 'px';   
+    mainCanvas.style.height = writerSize/2 + 'px';
+
+    
+    shuffledWords = Object.keys(currentcharacters);
+
+    drawingArea.appendChild(mainCanvas);
     checkCustom();
     // Check for deck query parameter in URL
     const urlParams = new URLSearchParams(window.location.search);
     const deckParam = urlParams.get('deck');
     if(deckParam){
-        // remove deck query from url
         const url = new URL(window.location.href);
         url.searchParams.delete('deck');
         window.history.replaceState({}, document.title, url);
     }
-    // remove deck from url
     getDarkmode();
     
-    populateDropdown(hasCustom);
 });
 
 window.addEventListener('resize', () => {
-    // startTest();
 });
 

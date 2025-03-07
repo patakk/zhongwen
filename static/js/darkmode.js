@@ -137,6 +137,22 @@ function confirmDarkmode(){
     catch(e){
         //console.log(e)
     }
+    
+    try{
+        restartQ();
+        // plotterElement.plotters.forEach(hanziplotter => {
+        //     console.log("hanziplotter.plotter.getContext()");
+        //     console.log(hanziplotter.plotter);
+        //     console.log(hanziplotter.plotter.getContext());
+            
+        //     let context = hanziplotter.plotter.getContext();
+        //     context.ctx.canvas.classList.add('plotter');
+        //     animateStrokes(context);
+        // });
+    }
+    catch(e){
+        //console.log(e)
+    }
 }
 
 document.addEventListener('keydown', function(event) {

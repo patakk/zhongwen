@@ -131,7 +131,7 @@ function drawBg(ctx, dbg1, dbg2) {
         return;
     }
     ctx.save();
-    ctx.lineWidth = Math.max(0.6, ctx.canvas.width / 128);
+    ctx.lineWidth = Math.max(0.6, ctx.canvas.width / 128)*.6;
     if (isDarkMode) {
         ctx.strokeStyle = `rgba(${222},${222},${222}, .5)`;
     }
@@ -142,25 +142,39 @@ function drawBg(ctx, dbg1, dbg2) {
 
     if (dbg1) {
         ctx.save();
-        ctx.setLineDash([6, 4]);
+        ctx.lineCap = this.lineType;
+        ctx.lineJoin = this.lineType;
+        let d1 = 25;
+        let k = 16;
+        let d2 = (writerSize - d1*k) / (k-1);
+        let dd2 = (writerSize*Math.sqrt(2) - d1*k) / (k-1);
+        let q1 = 25;
+        let w = Math.round(17*Math.sqrt(2)/2)*2-1;
+        let q2 = (writerSize - q1*w) / (w-1);
+        let qq2 = (writerSize*Math.sqrt(2) - q1*w) / (w-1);
+        ctx.setLineDash([d1, d2]);
         if (isDarkMode) {
-            ctx.strokeStyle = `rgba(${222},${222},${222}, .25)`;
+            ctx.strokeStyle = `rgba(${222},${222},${222}, .215)`;
         }
         else {
-            ctx.strokeStyle = `rgba(${33},${33},${33}, .5)`;
+            ctx.strokeStyle = `rgba(${33},${33},${33}, .215)`;
         }
+        ctx.setLineDash([q1, qq2]);
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(ctx.canvas.width, ctx.canvas.height);
+        ctx.setLineDash([q1, qq2]);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(ctx.canvas.width, 0);
         ctx.lineTo(0, ctx.canvas.height);
         ctx.stroke();
+        ctx.setLineDash([d1, d2]);
         ctx.beginPath();
         ctx.moveTo(ctx.canvas.width / 2, 0);
         ctx.lineTo(ctx.canvas.width / 2, ctx.canvas.height);
         ctx.stroke();
+        ctx.setLineDash([d1, d2]);
         ctx.beginPath();
         ctx.moveTo(0, ctx.canvas.height / 2);
         ctx.lineTo(ctx.canvas.width, ctx.canvas.height / 2);
@@ -187,6 +201,7 @@ function drawBg(ctx, dbg1, dbg2) {
             ctx.strokeStyle = `rgba(${222},${11},${66}, .3)`;
         }
         ctx.beginPath();
+        ctx.lineCap = this.lineType;
         ctx.moveTo(ctx.canvas.width / 3, 0);
         ctx.lineTo(ctx.canvas.width / 3, ctx.canvas.height);
         ctx.stroke();
@@ -236,10 +251,60 @@ function getToneColor(ipinyin) {
     return color;
 }
 
+function smoothCurve(line, smoothFactor = 0.5) {
+    let smoothed = [line[0]]; // Always keep the first point
+
+    for (let i = 1; i < line.length - 1; i++) {
+        let prev = line[i - 1];
+        let curr = line[i];
+        let next = line[i + 1];
+
+        // Apply a simple smoothing algorithm (weighted average)
+        let smoothedPoint = {
+            x: curr.x + smoothFactor * (prev.x + next.x - 2 * curr.x),
+            y: curr.y + smoothFactor * (prev.y + next.y - 2 * curr.y)
+        };
+
+        smoothed.push(smoothedPoint);
+    }
+
+    smoothed.push(line[line.length - 1]); // Always keep the last point
+    return smoothed;
+}
+
+function subdivideCurve(line, divisions = 2) {
+    let subdivided = [];
+
+    for (let i = 0; i < line.length - 1; i++) {
+        let p1 = line[i];
+        let p2 = line[i + 1];
+
+        subdivided.push(p1);
+
+        // Insert additional points between p1 and p2
+        for (let j = 1; j <= divisions; j++) {
+            let t = j / (divisions + 1);
+            let x = p1.x + t * (p2.x - p1.x);
+            let y = p1.y + t * (p2.y - p1.y);
+
+            subdivided.push({ x, y });
+        }
+    }
+
+    subdivided.push(line[line.length - 1]); // Always keep the last point
+    return subdivided;
+}
+
+
 function fix(strokes) {
     let nstrokes = strokes.map(stroke => {
         stroke = removeShortSegments(stroke, 30);
-        stroke = evenOutPoints(stroke, 150);
+        stroke = subdivideCurve(stroke, 4); // Subdivide the curve
+        stroke = smoothCurve(stroke, 0.5); // Apply smoothing
+        // stroke = evenOutPoints(stroke, 150);
+        // let length = calculatePolylineLength(stroke).totalLength;
+        // let numPoints = Math.min(10, Math.floor(length / 30));
+        // stroke = resamplePolyline(stroke, numPoints);
         return stroke;
     });
     return nstrokes;
@@ -250,6 +315,56 @@ function power(p, g) {
         return 0.5 * Math.pow(2 * p, g);
     else
         return 1 - 0.5 * Math.pow(2 * (1 - p), g);
+}
+
+function calculatePolylineLength(line) {
+    let totalLength = 0;
+    let segmentLengths = [];
+    for (let i = 0; i < line.length - 1; i++) {
+        let p1 = line[i];
+        let p2 = line[i + 1];
+        let dx = p2.x - p1.x;
+        let dy = p2.y - p1.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        totalLength += distance;
+        segmentLengths.push(distance);
+    }
+    return { totalLength, segmentLengths };
+}
+
+
+function getPointAtPercentage(line, percentage) {
+    let polylen = calculatePolylineLength(line);
+    let totalLength = polylen.totalLength;
+    let segmentLengths = polylen.segmentLengths;
+
+    let targetLength = totalLength * percentage;
+    let accumulatedLength = 0;
+    for (let i = 0; i < segmentLengths.length; i++) {
+        accumulatedLength += segmentLengths[i];
+        if (accumulatedLength >= targetLength) {
+            let p1 = line[i];
+            let p2 = line[i + 1];
+            let remainingLength = targetLength - (accumulatedLength - segmentLengths[i]);
+            let t = remainingLength / segmentLengths[i];
+            return {
+                x: p1.x + t * (p2.x - p1.x),
+                y: p1.y + t * (p2.y - p1.y)
+            };
+        }
+    }
+    return line[line.length - 1];
+}
+
+
+function resamplePolyline(line, numPoints) {
+    let resampledLine = [];
+    for (let i = 0; i < numPoints; i++) {
+        let percentage = i / (numPoints - 1);
+        let point = getPointAtPercentage(line, percentage);
+        resampledLine.push(point);
+    }
+    return resampledLine;
 }
 
 function evenOutPoints(line, maxLength = 100) {
@@ -304,23 +419,127 @@ function removeShortSegments(line, minLength = 5) {
     return newLine;
 }
 
+function drawMask(maskRegion, pathData, offX = 0, offY = 0) {
+    // Normalize the path data first to ensure consistent spacing
+    pathData = pathData.replace(/([A-Za-z])/g, ' $1 ')
+                 .replace(/\s+/g, ' ')
+                 .trim();
+    
+    const commands = pathData.split(' ');
+    let x = 0, y = 0;   // Current position
+    let startX = 0, startY = 0;  // Start position for 'z' command
+    
+    let i = 0;
+    while (i < commands.length) {
+      const cmd = commands[i++];
+      
+      // Skip empty elements
+      if (!cmd) continue;
+      
+      switch (cmd.toUpperCase()) {
+        case 'M': // moveto
+          startX = x = parseFloat(commands[i++]);
+          startY = y = parseFloat(commands[i++]);
+          x = x/1000*800 + offX;
+          y = 800 - y/1000*800 + offY;
+          maskRegion.moveTo(x, y);
+          
+          // In SVG, after a moveto, subsequent coordinate pairs are treated as implicit lineto commands
+          while (i < commands.length && !isNaN(parseFloat(commands[i]))) {
+            x = parseFloat(commands[i++]);
+            y = parseFloat(commands[i++]);
+            x = x/1000*800 + offX;
+            y = 800 - y/1000*800 + offY;
+            maskRegion.lineTo(x, y);
+          }
+          break;
+          
+        case 'L': // lineto
+          while (i < commands.length && !isNaN(parseFloat(commands[i]))) {
+            x = parseFloat(commands[i++]);
+            y = parseFloat(commands[i++]);
+            x = x/1000*800 + offX;
+            y = 800 - y/1000*800 + offY;
+            maskRegion.lineTo(x, y);
+          }
+          break;
+          
+        case 'Q': // quadratic curve
+          while (i + 3 < commands.length && !isNaN(parseFloat(commands[i]))) {
+            const cx = parseFloat(commands[i++]);
+            const cy = parseFloat(commands[i++]);
+            x = parseFloat(commands[i++]);
+            y = parseFloat(commands[i++]);
+            const scaledCx = cx/1000*800 + offX;
+            const scaledCy = 800 - cy/1000*800 + offY;
+            const scaledX = x/1000*800 + offX;
+            const scaledY = 800 - y/1000*800 + offY;
+            maskRegion.quadraticCurveTo(scaledCx, scaledCy, scaledX, scaledY);
+          }
+          break;
+          
+        case 'C': // cubic curve
+          while (i + 5 < commands.length && !isNaN(parseFloat(commands[i]))) {
+            const cx1 = parseFloat(commands[i++]);
+            const cy1 = parseFloat(commands[i++]);
+            const cx2 = parseFloat(commands[i++]);
+            const cy2 = parseFloat(commands[i++]);
+            x = parseFloat(commands[i++]);
+            y = parseFloat(commands[i++]);
+            const scaledCx1 = cx1/1000*800 + offX;
+            const scaledCy1 = 800 - cy1/1000*800 + offY;
+            const scaledCx2 = cx2/1000*800 + offX;
+            const scaledCy2 = 800 - cy2/1000*800 + offY;
+            const scaledX = x/1000*800 + offX;
+            const scaledY = 800 - y/1000*800 + offY;
+            maskRegion.bezierCurveTo(scaledCx1, scaledCy1, scaledCx2, scaledCy2, scaledX, scaledY);
+          }
+          break;
+          
+        case 'Z': // closepath
+          maskRegion.closePath();
+          x = startX;
+          y = startY;
+          break;
+          
+        default:
+          // If we encounter a command we don't recognize, it's safer to stop or log an error
+          console.warn(`Unrecognized SVG path command: ${cmd}`);
+          break;
+      }
+    }
+  }
+  
+
+
+
+const IDLE = 'idle';
+const ANIMATING = 'animating';
+const QUIZ = 'quiz';
+const ANIMATING_STROKE = 'animating_stroke';
+
 
 class HanziPlotter {
     constructor({
         character,
         strokes,
+        masks,
         dimension = 100,
         speed = 1,
         lineThickness = 2,
         jitterAmp = 0,
         colors = ['#0f06'],
-        lineType = 'miter',
+        lineType = "round",
         showDiagonals = false,
         showGrid = false,
+        state = IDLE,
         clickAnimation = true,
+        clearBackground = true,
+        canvas = null,
     }) {
         this.character = character;
         this.strokes_ = strokes;
+        this.masks_ = masks;
         this.dimension = dimension;
         this.speed = speed;
         this.seed = Math.random() * 1000;
@@ -329,39 +548,518 @@ class HanziPlotter {
         this.colors = colors;
         this.lineType = lineType;
         this.clickAnimation = clickAnimation;
+        this.strokeAttempts = 0;
+        this.state = state;
+        this.clearBackground = clearBackground;
+        this.loadPromise = null;
+
+        this.useMask = false;
+        this.userStrokes = [];
+        this.currentStroke = null;
+        this.isDrawing = false;
+        this.quizComplete = false;
+        this.isQuizing = false;
+        this.isDestroyed = false;
+
+        this.mouseDownWhileQuizing = false;
 
         this.showDiagonals = showDiagonals;
         this.showGrid = showGrid;
-        if (strokes) {
-            this.processStrokes(strokes);
-            this.loadPromise = Promise.resolve();
-        } else {
-            this.loadPromise = this.loadStrokeData();
+        this.clickListener = null;
+        
+        this.lastX = null;
+        this.lastY = null;
+        this.easingFactor = 0.2;
+        
+        if(canvas){
+            this.canvas = canvas;
+            this.ctx = this.canvas.getContext('2d');
+        }else{
+            this.canvas = document.createElement('canvas');
+            this.canvas.width = this.dimension;
+            this.canvas.height = this.dimension;
+            this.canvas.style.width = this.dimension/2 + 'px';
+            this.canvas.style.height = this.dimension/2 + 'px';
+            this.ctx = this.canvas.getContext('2d');
         }
-       
+        this.canvas.id = 'hanzi-canvas';
+        this.init();
     }
 
-    finishSetup(){
+    replaceStrokes(character, strokes, masks) {
+        this.character = character;
+        this.strokes_ = strokes;
+        this.masks_ = masks;
+        this.totalLength = null;
+        this.init();
+    }
 
-        // Create canvas
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = this.dimension;
-        this.canvas.height = this.dimension;
-        this.canvas.style.width = this.dimension/2 + 'px';
-        this.canvas.style.height = this.dimension/2 + 'px';
-        this.ctx = this.canvas.getContext('2d');
+    init() {
+        this.originalStrokes = undefined;
+        if (this.strokes_) {
+            this.processStrokes(this.strokes_);
+            this.processMasks(this.masks_);
+            this.isAnimating = false;
+            this.isAnimatingStroke = false;
+            this.isAnimatingInterp = false;
+            this.animationProgress = 0;
+            this.animationFrame = null;
+            this.loadPromise = Promise.resolve();
+        } else {
+            this.loadPromise = this.loadStrokeData(this.onDataReady.bind(this));
+        }
+    }   
+
+    processMasks(){
+
+    }
+
+    onDataReady(){
+        this.processStrokes(this.data.medians);
+        this.processMasks(this.data.strokes);
+        this.setupDrawingEvents();
 
         // Animation properties
         this.isAnimating = false;
+        this.isAnimatingStroke = false;
+        this.isAnimatingInterp = false;
         this.animationProgress = 0;
         this.animationFrame = null;
 
-        this.originalStrokes = undefined;
 
-        // Bind methods
         if(this.clickAnimation){
-            this.canvas.addEventListener('click', () => this.startAnimation());
+            this.clickListener = this.canvas.addEventListener('click', this.startAnimation.bind(this));
         }
+
+    }
+
+    destroyy() {
+        this.canvas.removeEventListener('click', this.startAnimation);
+        this.isDestroyed = true;
+        // check event listeners
+        //remove all click event listeners on canvas
+
+    }
+
+    setupDrawingEvents() {
+        // Mouse events
+        this.canvas.addEventListener('mousedown', this.startUserDrawing.bind(this));
+        this.canvas.addEventListener('mousemove', this.userStrokeMove.bind(this));
+        this.canvas.addEventListener('mouseup', this.userStrokeEnded.bind(this));
+        this.canvas.addEventListener('mouseout', this.userStrokeEnded.bind(this));
+        
+        // Touch events
+        this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this));
+        this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this));
+        this.canvas.addEventListener('touchend', this.handleTouchEnd.bind(this));
+    }
+
+    setState(state) {
+        console.log('Transitioning from', this.state, 'to', state);
+        
+    }
+
+    handleTouchStart(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        this.canvas.dispatchEvent(mouseEvent);
+    }
+    
+    handleTouchMove(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        this.canvas.dispatchEvent(mouseEvent);
+    }
+    
+    handleTouchEnd(e) {
+        e.preventDefault();
+        const mouseEvent = new MouseEvent('mouseup', {});
+        this.canvas.dispatchEvent(mouseEvent);
+    }
+    
+    startUserDrawing(e) {
+        if (!this.isQuizing) return;
+        if (this.isAnimatingStroke) return;
+        if (this.isAnimatingInterp) return;
+
+        this.mouseDownWhileQuizing = true;
+        
+        this.isDrawing = true;
+        this.currentStroke = [];
+        
+        const rect = this.canvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+        const y = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+        
+        this.lastX = x;
+        this.lastY = y;
+        
+        this.currentStroke.push({ x, y });
+        this.drawUserStrokes();
+    }
+    
+    userStrokeMove(e) {
+        if (!this.isDrawing || !this.isQuizing) return;
+        
+        const rect = this.canvas.getBoundingClientRect();
+        const rawX = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+        const rawY = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+        
+        // Apply simple smoothing formula
+        const x = this.lastX + (rawX - this.lastX) * this.easingFactor;
+        const y = this.lastY + (rawY - this.lastY) * this.easingFactor;
+        
+        // Update last position
+        this.lastX = x;
+        this.lastY = y;
+        
+        this.currentStroke.push({ x, y });
+        this.drawUserStrokes();
+    }
+    
+    compareToReal(userStroke, realStroke) {
+        const scaledRealStroke = realStroke.map(pt => ({
+            x: pt.x / 1000,
+            y: pt.y / 1000,
+        }));
+        const scaledUserStroke = userStroke.map(pt => ({
+            x: pt.x / this.dimension,
+            y: pt.y / this.dimension,
+        }));
+    
+        // Get the vector from the first to the last point for both strokes
+        const realVector = {
+            x: scaledRealStroke[scaledRealStroke.length - 1].x - scaledRealStroke[0].x,
+            y: scaledRealStroke[scaledRealStroke.length - 1].y - scaledRealStroke[0].y
+        };
+    
+        const userVector = {
+            x: scaledUserStroke[scaledUserStroke.length - 1].x - scaledUserStroke[0].x,
+            y: scaledUserStroke[scaledUserStroke.length - 1].y - scaledUserStroke[0].y
+        };
+    
+        // Normalize the vectors
+        const normalize = (vector) => {
+            const length = Math.hypot(vector.x, vector.y);
+            return { x: vector.x / length, y: vector.y / length };
+        };
+    
+        const normalizedRealVector = normalize(realVector);
+        const normalizedUserVector = normalize(userVector);
+    
+        const dotProduct = normalizedRealVector.x * normalizedUserVector.x + normalizedRealVector.y * normalizedUserVector.y;
+    
+    
+        // Check if the first points are relatively close
+        const distFirst = Math.hypot(scaledUserStroke[0].x - scaledRealStroke[0].x, scaledUserStroke[0].y - scaledRealStroke[0].y);
+        const firstPointThreshold = 0.35;
+    
+        // Check if the length of the user stroke is within 10% of the real stroke
+        const realLength = Math.hypot(realVector.x, realVector.y);
+        const userLength = Math.hypot(userVector.x, userVector.y);
+        const lengthThreshold = 0.5; // 10% difference allowed
+    
+        const lengthRatio = Math.abs(userLength - realLength) / realLength;
+    
+        const threshold = 0.8; // Cosine similarity threshold for direction comparison
+
+        if(dotProduct < threshold){
+            console.log('dot product failed');
+        }
+        else{
+        }
+        if(distFirst > firstPointThreshold){
+            console.log('distFirst failed');
+        }
+        else{
+        }
+        if(realLength < 0.16)
+            return dotProduct > threshold && distFirst < firstPointThreshold;
+        if(lengthRatio > lengthThreshold){
+            console.log('lengthRatio failed');
+        }
+        return dotProduct > threshold && distFirst < firstPointThreshold && lengthRatio < lengthThreshold;
+    }
+    
+    
+    startStrokeAnimation() {
+        if(!this.isQuizing){
+            return;
+        }
+        this.isAnimatingStroke = true;
+        this.strokeStartTime = Date.now();
+        let numPoints = this.strokes[this.userStrokes.length].length;
+        const duration = numPoints / this.speed * 1; // duration in milliseconds
+        const animate = () => {
+    
+            const elapsed = Date.now() - this.strokeStartTime;
+            const progress = Math.min(elapsed / duration, 1);
+    
+            this.clearBg();
+            this.drawUserStrokes();
+
+            this.ctx.save();
+            this.ctx.lineCap = this.lineType;
+            this.ctx.lineJoin = this.lineType;
+            this.ctx.strokeStyle = this.colors[0];
+            this.ctx.lineWidth = this.lineThickness * 1.24;
+            if(isDarkMode){
+                this.ctx.strokeStyle = this.colors[1];
+            }
+            this.drawStroke(this.strokes[this.userStrokes.length], progress);
+
+            this.ctx.restore();
+
+    
+            if (progress < 1) {
+                this.strokeAnimationFrame = requestAnimationFrame(animate);
+            } else {
+                cancelAnimationFrame(this.strokeAnimationFrame);
+                this.clearBg();
+                this.isAnimatingStroke = false;
+                this.drawUserStrokes(false);
+            }
+
+        };
+        
+        this.clearBg();
+        this.strokeAnimationFrame = requestAnimationFrame(animate);
+    }
+
+    restartQuiz() {
+        this.userStrokes = [];
+        this.currentStroke = null;
+        this.strokeAttempts = 0;
+        this.quizComplete = false;
+        this.quiz({onComplete: this.onCompleteQuiz});
+    }
+    
+    userStrokeEnded() {
+        if (!this.isDrawing || !this.isQuizing) return;
+        if (this.userStrokes.length >= this.strokes.length) return;
+
+        
+        this.isDrawing = false;
+        if (this.currentStroke && this.currentStroke.length > 0) {
+            const isGoodMatch = this.compareToReal(this.currentStroke, this.strokes[this.userStrokes.length]);
+            // Provide feedback based on match
+            if (isGoodMatch) {
+                console.log("Good stroke!");
+                
+                let resampled = resamplePolyline(this.currentStroke, this.strokes[this.userStrokes.length].length);
+                this.userStrokes.push(resampled);
+                
+                // const scaledRealStroke = this.strokes[this.userStrokes.length].map(pt => ({
+                //     x: pt.x / 1000 * this.dimension,
+                //     y: pt.y / 1000 * this.dimension,
+                // }));
+                // this.userStrokes.push(scaledRealStroke);
+                this.strokeAttempts = 0;
+            } else if (this.strokeAttempts < 2) {
+                console.log("Try again");
+                this.strokeAttempts++;
+            } else {
+                console.log("Demoing stroke");
+                // You could show a hint or the correct stroke here
+                this.strokeAttempts++;
+                this.startStrokeAnimation();
+                this.isAnimatingStroke = true;
+            }
+            
+            // Check if quiz is complete
+            if (this.userStrokes.length === this.strokes.length) {
+                console.log("Quiz complete!");
+                // Handle quiz completion
+                this.quizComplete = true;
+                this.clearBg();
+                // this.draw(1, false, () => {this.drawUserStrokes(false, false);});
+                // this.drawUserStrokes(false, false);
+                // this.draw(1, false);
+                this.startInterpol();
+                //     setTimeout(() => {
+                //     this.isQuizing = false;
+                // }, 1777);
+                this.onCompleteQuiz({'strokes': this.userStrokes, 'character': this.character});
+            }
+            this.currentStroke = null;
+        }
+        if(!this.quizComplete){
+            this.drawUserStrokes();
+        }
+        // this.drawUserStrokes();
+    }
+
+    startInterpol(){
+        
+        this.isAnimatingInterp = false;
+        console.log("this.userStrokes.length");
+        console.log("this.strokes.length");
+        console.log(this.userStrokes.length);
+        console.log(this.strokes.length);
+        // let resampleUserStrokes = this.userStrokes.map((stroke, sidx) => {
+        //         let numPts = this.strokes[sidx].length;
+        //         return resamplePolyline(stroke, numPts);
+        //     }
+        // );
+        let resampleUserStrokes = this.userStrokes;
+
+        let factor = 0.0;
+        let frame = 0.0;
+
+        const aanim = () => {
+            frame++;
+            factor = .5 + Math.cos(frame / 50 * Math.PI) * 0.5;
+            let interpolatedStrokes = this.strokes.map((stroke, sidx) => {
+                let interpolated = stroke.map((point, pidx) => {
+                    let userPoint = resampleUserStrokes[sidx][pidx];
+                    return {
+                        x: userPoint.x * factor * 1000 / this.dimension + point.x * (1 - factor),
+                        y: userPoint.y * factor * 1000 / this.dimension + point.y * (1 - factor),
+                    };
+                });
+                return interpolated;
+            });
+
+            let interlength = interpolatedStrokes.reduce((total, stroke) => {
+                return total + this.getStrokeLength(stroke);
+            }, 0);
+
+            this.draw({ progress: 1, clearbg: true, onDrawComplete: null, alpha: 1, strokes_in: interpolatedStrokes, strokes_in_length: interlength });
+            this.interpAnimFrame = requestAnimationFrame(aanim);
+
+           if(frame==50){
+                cancelAnimationFrame(this.interpAnimFrame);
+                this.clearBg();
+                this.isAnimatingInterp = false;
+            }
+           if(frame==40){
+                this.isQuizing = false;
+            }
+        }
+
+        aanim();
+    }
+
+
+    
+    
+    drawUserStrokes(clearbg=true, drawFake=false) {
+        if (!this.isQuizing) return;
+        
+        if(clearbg)
+            this.clearBg();
+        
+        // Set stroke style for user drawing
+        this.ctx.save();
+        this.ctx.strokeStyle = this.colors[2];
+        if(isDarkMode){
+            this.ctx.strokeStyle = this.colors[3];
+        }
+        this.ctx.lineWidth = this.lineThickness;
+        this.ctx.lineCap = this.lineType;
+        // this.ctx.lineJoin = 'round';
+        
+        // Draw all completed strokes
+        //for (const stroke of this.userStrokes) {
+        if(drawFake){
+            this.ctx.save();
+            this.ctx.lineCap = this.lineType;
+            this.ctx.lineJoin = this.lineType;
+            this.ctx.strokeStyle = this.colors[0];
+            this.ctx.lineWidth = this.lineThickness * 1.64;
+            if(isDarkMode){
+                this.ctx.strokeStyle = this.colors[1];
+            }
+
+            for (let idx = 0; idx < this.userStrokes.length; idx++) {
+                const stroke = this.strokes[idx];
+    
+                if (stroke.length < 2) continue;
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(stroke[0].x/1000*this.dimension, stroke[0].y/1000*this.dimension);
+                
+                for (let i = 1; i < stroke.length; i++) {
+                    this.ctx.lineTo(stroke[i].x/1000*this.dimension, stroke[i].y/1000*this.dimension);
+                }
+                
+                this.ctx.stroke();
+            }
+            this.ctx.restore();
+        }
+        else{
+            this.ctx.save();
+            this.ctx.strokeStyle = this.colors[0];
+            this.ctx.lineWidth = this.lineThickness * .5;
+            this.ctx.lineWidth = this.lineThickness * 1.24;
+            // this.ctx.globalAlpha = 0.6;
+            if(isDarkMode){
+                this.ctx.strokeStyle = this.colors[1];
+                // this.ctx.globalAlpha = 0.64;
+            }
+            // replace alpha with 88
+            for (let idx = 0; idx < this.userStrokes.length; idx++) {
+                const stroke = this.userStrokes[idx];
+    
+                if (stroke.length < 2) continue;
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(stroke[0].x, stroke[0].y);
+                
+                for (let i = 1; i < stroke.length; i++) {
+                    this.ctx.lineTo(stroke[i].x, stroke[i].y);
+                }
+                
+                this.ctx.stroke();
+            }
+            this.ctx.restore();
+        }
+        
+        // Draw the current stroke being drawn
+        if (this.currentStroke && this.currentStroke.length > 1 && this.quizComplete === false) {
+            this.ctx.save();
+            this.ctx.lineCap = this.lineType;
+            this.ctx.lineJoin = this.lineType;
+            this.ctx.strokeStyle = this.colors[2];
+            if(isDarkMode){
+                this.ctx.strokeStyle = this.colors[3];
+            }
+            this.ctx.lineWidth = this.lineThickness * 1;
+            this.ctx.lineWidth = this.lineThickness * 1.24;
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.currentStroke[0].x, this.currentStroke[0].y);
+            
+            for (let i = 1; i < this.currentStroke.length; i++) {
+                this.ctx.lineTo(this.currentStroke[i].x, this.currentStroke[i].y);
+            }
+            
+            this.ctx.stroke();
+            this.ctx.restore();
+        }
+        this.ctx.restore();
+    }
+    
+    async quiz(props) {
+        this.onCompleteQuiz = props.onComplete;
+        await this.loadPromise;
+
+        // Reset user strokes when entering quiz mode
+        this.userStrokes = [];
+        this.currentStroke = null;
+        this.isQuizing = true;
+        
+        // Clear canvas and draw background
+        
+        this.clearBg();
+        
     }
 
     processStrokes(strokes) {
@@ -390,6 +1088,8 @@ class HanziPlotter {
 
         this.strokes = fix(strokes);
         this.originalStrokes = this.strokes;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
     }
 
     applyJitter(strokes, amplitude) {
@@ -423,6 +1123,22 @@ class HanziPlotter {
         this.colors = colors;
     }
 
+    displayGrid() {
+        this.showGrid = true;
+    }
+
+    displayDiagonals() {
+        this.showDiagonals = true;
+    }
+
+    hideGrid() {
+        this.showGrid = false;
+    }
+
+    hideDiagonals() {
+        this.showDiagonals = false;
+    }
+
     setLineThickness(thickness) {
         this.lineThickness = thickness;
     }
@@ -437,33 +1153,58 @@ class HanziPlotter {
         return this.canvas;
     }
 
+    isState(state) {
+        return this.state === state;
+    }
+
     clear() {
         this.ctx.clearRect(0, 0, this.dimension, this.dimension);
     }
 
+    clearBg() {
+        this.clear();
+
+        // draw black bg
+        if(!this.clearBackground){
+            this.ctx.fillStyle = isDarkMode ? '#232124' : '#f3f3f3';
+            this.ctx.fillRect(0, 0, this.dimension, this.dimension);
+        }
+        
+        drawBg(this.ctx, this.showDiagonals, this.showGrid);
+    }
+
+    giveUp(){
+        this.isQuizing = false;
+        this.clearBg();
+        this.startAnimation();
+    }
+
     startAnimation() {
-        // if (this.isAnimating) return;
-        if(this.isAnimating){
-            this.stopAnimation();
+        // check if no a real number
+        if(this.isQuizing){
+            return;
+        }
+        if(this.isDestroyed){
+            return;
         }
         this.isAnimating = true;
         this.startTime = Date.now();
         let numPoints = 0;
         this.originalStrokes.forEach(stroke => numPoints += stroke.length);
-        const duration = numPoints / this.speed ; // duration in milliseconds
-
+        const duration = numPoints / this.speed; // duration in milliseconds
         const animate = () => {
             if (!this.isAnimating) return;
-    
             const elapsed = Date.now() - this.startTime;
             const progress = Math.min(elapsed / duration, 1);
-    
-            this.draw(progress);
-    
+            
+            const underlay = Math.max(.35, Math.min(progress*4, 0.35))
+            this.clearBg();
+            this.draw({ progress: 1, clearbg: false, onDrawComplete: null, alpha: underlay });
+            this.draw({ progress: progress, clearbg: false, onDrawComplete: null, alpha: 1 });
             if (progress < 1) {
                 this.animationFrame = requestAnimationFrame(animate);
             } else {
-                this.isAnimating = false;
+                this.stopAnimation();
             }
         };
     
@@ -475,6 +1216,16 @@ class HanziPlotter {
         if (this.animationFrame) {
             cancelAnimationFrame(this.animationFrame);
             this.animationFrame = null;
+        }
+        if(this.strokeAnimationFrame){
+            cancelAnimationFrame(this.strokeAnimationFrame);
+            this.clearBg();
+            this.isAnimatingStroke = false;
+        }
+        if(this.interpAnimFrame){
+            cancelAnimationFrame(this.interpAnimFrame);
+            this.clearBg();
+            this.isAnimatingInterp = false;
         }
         this.seed = Math.random() * 1000;
     }
@@ -491,12 +1242,29 @@ class HanziPlotter {
         }
     }
 
-    async draw(progress = 1) {
+    async draw(config = {}) {
+        const {
+            progress = 1,
+            clearbg = true,
+            onDrawComplete = null,
+            alpha = 1,
+            strokes_in = null,
+            strokes_in_length = null
+        } = config;
+
         await this.loadPromise;
         
+        let workingStrokes = this.originalStrokes.map(stroke => {
+            return stroke.map(point => ({
+                x: point.x,
+                y: point.y
+            }));
+        });
+        if(strokes_in){
+            workingStrokes = strokes_in;
+        }
 
-
-        if(this.originalStrokes === undefined){
+        if(workingStrokes === undefined){
             let span = document.createElement('span');
             span.textContent = this.character;
             span.style.fontSize = '10em';
@@ -506,85 +1274,73 @@ class HanziPlotter {
             this.canvas = span;
             return;
         }
-        this.clear();
         
+        if(clearbg) this.clearBg();
 
-        drawBg(this.ctx, this.showDiagonals, this.showGrid);
+
         // Calculate total length of all strokes
-        if (!this.totalLength) {
-            this.totalLength = this.originalStrokes.reduce((total, stroke) => {
-                return total + this.getStrokeLength(stroke);
-            }, 0);
+        this.totalLength = workingStrokes.reduce((total, stroke) => {
+            return total + this.getStrokeLength(stroke);
+        }, 0);
+        let workingStrokesLength = workingStrokes.reduce((total, stroke) => {
+            return total + this.getStrokeLength(stroke);
+        }, 0);
+        if(strokes_in_length){
+            workingStrokesLength = strokes_in_length;
         }
     
         // Find which stroke we're on and its progress based on distance
-        let distanceTarget = this.totalLength * progress;
+        let distanceTarget = workingStrokesLength * progress;
         let distanceCovered = 0;
-        let currentStrokeIndex = 0;
+        let d = 0;
         let currentStrokeProgress = 0;
     
-        for (let i = 0; i < this.originalStrokes.length; i++) {
-            const strokeLength = this.getStrokeLength(this.originalStrokes[i]);
+        for (let i = 0; i < workingStrokes.length; i++) {
+            const strokeLength = this.getStrokeLength(workingStrokes[i]);
             if (distanceCovered + strokeLength > distanceTarget) {
-                currentStrokeIndex = i;
+                d = i;
                 currentStrokeProgress = (distanceTarget - distanceCovered) / strokeLength;
                 break;
             }
             distanceCovered += strokeLength;
-            currentStrokeIndex = i;
+            d = i;
             currentStrokeProgress = 1;
         }
+
     
-        let strokes = this.applyJitter(this.originalStrokes, this.jitterAmp);
+        let strokes = this.applyJitter(workingStrokes, this.jitterAmp);
+        this.ctx.save();
         this.ctx.lineCap = this.lineType;
-        // this.ctx.lineJoin = this.lineType;
+        this.ctx.lineCap = this.lineType;
+        this.ctx.lineJoin = this.lineType;
         if(this.colors[0]){
             this.ctx.strokeStyle = this.colors[0];
             this.ctx.lineWidth = this.lineThickness*2;
-            // strokes = this.applyJitter(this.originalStrokes, this.jitterAmp+135);
-            // this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
         }
-
-        this.jitteredStrokes = this.applyJitter(this.originalStrokes, this.jitterAmp);
+        this.ctx.globalAlpha = alpha;
+        // this.jitteredStrokes = this.applyJitter(workingStrokes, this.jitterAmp);
         if(this.colors[0]){
             this.ctx.strokeStyle = this.colors[0];
-            this.ctx.lineWidth = this.lineThickness;
-            this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
+            if(isDarkMode){
+                this.ctx.strokeStyle = this.colors[1];
+            }
+            this.ctx.lineWidth = this.lineThickness * 1.24;
+            if(this.useMask){
+                this.ctx.lineWidth = this.lineThickness*3;
+            }
+            this.drawPartial(strokes, d, currentStrokeProgress, alpha);
         }
-        strokes = this.jitteredStrokes;
+        this.ctx.restore();
+        // strokes = this.jitteredStrokes;
     
-        strokes = this.applyJitter(this.originalStrokes, this.jitterAmp+111);
-        // if(this.colors[2]){
-            // this.ctx.strokeStyle = this.colors[2];
-            // this.ctx.lineWidth = Math.max(0.5, this.lineThickness/1);
-            // this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
-        // }
-    
-        // for(let i = 0; i < 10; i++){
-        //     strokes = this.applyJitter(this.originalStrokes, this.jitterAmp-111/2+111*i/9*(.8+.4*power(noise(i*.1, this.seed), 4)));
-        //     if(this.colors[2]){
-        //         this.ctx.strokeStyle = this.colors[2];
-        //         this.ctx.lineWidth = Math.max(0.5, this.lineThickness/5);
-        //         this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
-        //     }
-        // }
-    
-        strokes = this.applyJitter(this.originalStrokes, this.jitterAmp+45);
-        if(isDarkMode){
-            // this.ctx.strokeStyle = '#fff7';
+        // strokes = this.applyJitter(workingStrokes, this.jitterAmp+111);
+        
+        // strokes = this.applyJitter(workingStrokes, this.jitterAmp+45);
+
+        if(onDrawComplete){
+            onDrawComplete();
         }
-        // if(this.colors[0] == null && this.colors[2] == null){
-        //     this.ctx.lineWidth = this.lineThickness/3;
-        //     this.ctx.strokeStyle = this.colors[1];
-        //     this.ctx.strokeStyle = "#fff5";
-        //     if(parseInt(this.colors[1][2]) < 9){
-        //         this.ctx.strokeStyle = "#333a";
-        //         if(isDarkMode){
-        //             this.ctx.strokeStyle = "#5555";
-        //         }
-        //     }
-            // this.drawPartial(strokes, currentStrokeIndex, currentStrokeProgress);
-        // }
+
     }
     
     getStrokeLength(stroke) {
@@ -597,16 +1353,59 @@ class HanziPlotter {
         return length;
     }
 
-    drawPartial(strokes, currentStrokeIndex, currentStrokeProgress){
-        for (let i = 0; i < currentStrokeIndex && i < strokes.length; i++) {
-            this.drawStroke(strokes[i]);
+    drawPartial(strokes, d, currentStrokeProgress, alpha=1){
+        // if (this.useMask) {
+        //     let maskregion = new Path2D();
+        //     this.ctx.save(); 
+        //     for (let i = 0; i < d && i < strokes.length; i++) {
+        //         drawMask(maskregion, this.masks_[i], this.offsetX, this.offsetY);
+        //     }
+        //     this.ctx.clip(maskregion);
+        // }
+
+        // for (let i = 0; i < d && i < strokes.length; i++) {
+        //     this.drawStroke(strokes[i]);
+        // }
+
+        // if (this.useMask) {
+        //     this.ctx.restore();
+        // }
+
+        let maskregion;
+        if (this.useMask) {
+           maskregion = new Path2D();
         }
-        if (currentStrokeIndex >= 0 && currentStrokeIndex < strokes.length) {
-            this.drawStroke(strokes[currentStrokeIndex], currentStrokeProgress);
+
+        for (let i = 0; i < d && i < strokes.length; i++) {
+            if (this.useMask) {
+                this.ctx.save(); 
+                maskregion = new Path2D();
+                drawMask(maskregion, this.masks_[i], this.offsetX, this.offsetY);
+                this.ctx.clip(maskregion);
+            }
+            this.drawStroke(strokes[i], 1, false, alpha);
+            if (this.useMask) {
+                this.ctx.restore();
+            }
+        }
+
+        if (d >= 0 && d < strokes.length) {
+            if (this.useMask) {
+                this.ctx.save(); 
+                let maskregion = new Path2D();
+                drawMask(maskregion, this.masks_[d], this.offsetX, this.offsetY);
+                this.ctx.clip(maskregion);
+            }
+
+            this.drawStroke(strokes[d], currentStrokeProgress, false, alpha);
+            
+            if (this.useMask) {
+                this.ctx.restore();
+            }
         }
     }
-
-    drawStroke(stroke, progress = 1) {
+    
+    drawStroke(stroke, progress = 1, smooth = false, alpha=1) {
         if (!stroke || stroke.length < 2) return;
     
         // Ensure progress is between 0 and 1
@@ -619,58 +1418,80 @@ class HanziPlotter {
             y: pt.y * this.dimension / 1000
         }));
     
-        // Calculate how many points to draw based on progress
-        const maxPoints = progress * scaledStroke.length - 1;
-        
-        // Start from the first point
+        // Calculate total distance and the target length based on progress
+        let totalDistance = 0;
+        let segmentLengths = [0];
+    
+        // Calculate segment lengths
+        for (let i = 1; i < scaledStroke.length; i++) {
+            const dx = scaledStroke[i].x - scaledStroke[i - 1].x;
+            const dy = scaledStroke[i].y - scaledStroke[i - 1].y;
+            totalDistance += Math.sqrt(dx * dx + dy * dy);
+            segmentLengths.push(totalDistance);
+        }
+    
+        const targetLength = progress * totalDistance;
+    
+        // Draw the stroke up to the target length
         this.ctx.moveTo(scaledStroke[0].x, scaledStroke[0].y);
     
-        // Draw bezier curves through points
-        for (let i = 0; i < maxPoints; i++) {
-            // Get the points needed for the bezier curve
-            const p0 = i > 0 ? scaledStroke[i - 1] : scaledStroke[i];
-            const p1 = scaledStroke[i];
-            const p2 = scaledStroke[i + 1];
-            const p3 = i < scaledStroke.length - 2 ? scaledStroke[i + 2] : p2;
+        let accumulatedLength = 0;
+        for (let i = 1; i < scaledStroke.length; i++) {
+            const p1 = scaledStroke[i - 1];
+            const p2 = scaledStroke[i];
+            const segmentDistance = segmentLengths[i] - segmentLengths[i - 1];
     
-            // Calculate control points
-            const cx1 = p1.x + (p2.x - p0.x) / 6;
-            const cy1 = p1.y + (p2.y - p0.y) / 6;
-            const cx2 = p2.x - (p3.x - p1.x) / 6;
-            const cy2 = p2.y - (p3.y - p1.y) / 6;
+            accumulatedLength += segmentDistance;
     
-            // If this is the last segment and we're not at full progress,
-            // interpolate the final point
-            if (i === Math.floor(maxPoints) && maxPoints % 1 !== 0) {
-                const t = maxPoints % 1;
-                // Bezier interpolation
-                const mt = 1 - t;
-                const mt2 = mt * mt;
-                const mt3 = mt2 * mt;
-                const t2 = t * t;
-                const t3 = t2 * t;
-                
-                const x = mt3 * p1.x + 
-                            3 * mt2 * t * cx1 +
-                            3 * mt * t2 * cx2 +
-                            t3 * p2.x;
-                const y = mt3 * p1.y + 
-                            3 * mt2 * t * cy1 +
-                            3 * mt * t2 * cy2 +
-                            t3 * p2.y;
-                            
-                this.ctx.bezierCurveTo(cx1, cy1, cx2, cy2, x, y);
+            // Check if we've reached or surpassed the target length
+            if (accumulatedLength >= targetLength) {
+                // Interpolate the position on this segment based on progress
+                const remainingLength = targetLength - (accumulatedLength - segmentDistance);
+                const ratio = remainingLength / segmentDistance;
+    
+                const x = p1.x + (p2.x - p1.x) * ratio;
+                const y = p1.y + (p2.y - p1.y) * ratio;
+    
+                if (smooth) {
+                    // Bezier curve control points
+                    const p0 = i > 1 ? scaledStroke[i - 2] : p1;
+                    const p3 = i < scaledStroke.length - 1 ? scaledStroke[i + 1] : p2;
+                    const cx1 = p1.x + (p2.x - p0.x) / 6;
+                    const cy1 = p1.y + (p2.y - p0.y) / 6;
+                    const cx2 = p2.x - (p3.x - p1.x) / 6;
+                    const cy2 = p2.y - (p3.y - p1.y) / 6;
+    
+                    // Use the bezier curve to interpolate the stroke
+                    this.ctx.bezierCurveTo(cx1, cy1, cx2, cy2, x, y);
+                } else {
+                    // For straight line, simply draw up to the interpolated point
+                    this.ctx.lineTo(x, y);
+                }
+                break;
             } else {
-                this.ctx.bezierCurveTo(cx1, cy1, cx2, cy2, p2.x, p2.y);
+                if (smooth) {
+                    // Draw a bezier curve between the current segment
+                    const p0 = i > 1 ? scaledStroke[i - 2] : p1;
+                    const p3 = i < scaledStroke.length - 1 ? scaledStroke[i + 1] : p2;
+                    const cx1 = p1.x + (p2.x - p0.x) / 6;
+                    const cy1 = p1.y + (p2.y - p0.y) / 6;
+                    const cx2 = p2.x - (p3.x - p1.x) / 6;
+                    const cy2 = p2.y - (p3.y - p1.y) / 6;
+    
+                    this.ctx.bezierCurveTo(cx1, cy1, cx2, cy2, p2.x, p2.y);
+                } else {
+                    // Draw the entire segment as a straight line
+                    this.ctx.lineTo(p2.x, p2.y);
+                }
             }
-            // this.ctx.fillStyle = '#000a';
-            // this.ctx.fillRect(p2.x-2.1/2, p2.y-2.1/2, 2.1, 2.1);
         }
     
         this.ctx.stroke();
     }
     
-    async loadStrokeData() {
+    
+    
+    async loadStrokeData(onReady=null) {
         try {
             this.originalStrokes = undefined;
             const response = await fetch(`/static/strokes_data/${this.character}.json`);
@@ -679,8 +1500,11 @@ class HanziPlotter {
                 return;
             }
             const data = await response.json();
-            this.finishSetup();
-            this.processStrokes(data.medians);
+            this.data = data;
+            console.log('Loaded character data:', this.character, this.data);
+            if(onReady){
+                onReady();
+            }
         } catch (error) {
             console.error('Error loading character data:', error);
             throw error;

@@ -68,9 +68,8 @@ function drawLinesBg(canvas) {
 
 }
 
-function drawStrokes(canvas, strokes, positioner) {
+function drawStrokes(canvas, strokes) {
     const ctx = canvas.getContext('2d');
-    const scale = canvas.width / positioner.width;
   
     drawLinesBg(canvas);
 
@@ -99,12 +98,13 @@ function drawStrokes(canvas, strokes, positioner) {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.lineWidth = 3;
+    console.log(strokes)
 
     strokes.forEach(stroke => {
         ctx.beginPath();
         stroke.forEach((point, index) => {
-            var x = point.x * canvas.width;
-            var y = (.9-point.y) * canvas.height;
+            var x = point[0] * canvas.width;
+            var y = point[1] * canvas.height;
             x = (x-canvas.width*.5) * .9 + canvas.width*.5;
             y = (y-canvas.height*.5) * .9 + canvas.height*.5;
             const radius = canvas.width*.0142 + canvas.width*.02 * (1.-index / stroke.length);
@@ -209,7 +209,7 @@ function initStats(){
     const charactersContainer = document.getElementById('characters-container');
 
     charactersContainer.innerHTML = '';
-    console.log("1111");
+    console.log(strokes_per_character);
 
 
     Object.entries(strokes_per_character).forEach(([character, attempts]) => {
@@ -227,19 +227,17 @@ function initStats(){
         canvas.width = 100;
         canvas.height = 100;
         function func(strokes) {
-            let trueStrokeData = [];
-            strokes.forEach(stroke => {
-                trueStrokeData.push(stroke.points);
-            });
-            trueStrokeData.forEach(stroke => {
-                stroke.forEach(point => {
-                    point.x = point.x / 1000;
-                    point.y = point.y / 1000;
-                });
-            });
-            drawStrokes(canvas, trueStrokeData, attempts[0].positioner);
+            // let trueStrokeData = [];
+            // trueStrokeData = strokes.map(stroke => {
+            //     stroke.forEach(point => {
+            //         point.x = point.x / 1000;
+            //         point.y = point.y / 1000;
+            //     });
+            //     return stroke;
+            // });
+            // drawStrokes(canvas, trueStrokeData);
         }
-        var wwriter = createInvisibleHanziWriter(character, func);
+        // var wwriter = createInvisibleHanziWriter(character, func);
         // canvasContainer.appendChild(canvas);
 
         attempts.forEach((attempt, index) => {

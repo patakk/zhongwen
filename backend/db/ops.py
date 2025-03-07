@@ -21,19 +21,18 @@ def getshortdate():
 
 def db_get_all_stroke_data(username):
     characters = db_get_all_character_strokes(username)
-
+    print("AAAAAAAAAAA", characters)
     result = {}
     for character in characters:
+        print(character)
         stroke_data_entries = db_get_stroke_entries(username, character)
+        print(stroke_data_entries)
         character_attempts = []
         for entry in stroke_data_entries:
             character_attempts.append(
                 {
                     "id": entry.id,
                     "strokes": entry.strokes,
-                    "positioner": entry.positioner,
-                    "mistakes": entry.mistakes,
-                    "stroke_count": entry.stroke_count,
                     "timestamp": entry.timestamp.isoformat(),
                 }
             )
@@ -128,18 +127,34 @@ def db_get_all_character_strokes(username):
     user = User.query.filter_by(username=username).first()
     if not user:
         return []
+    
     characters = (
         db.session.query(StrokeData.character)
         .filter_by(user_id=user.id)
         .distinct()
         .all()
     )
+    
     return [char[0] for char in characters]
 
+
 def db_add_stroke_data(chardata):
+    # Insert the new stroke data into the database
     new_stroke_data = StrokeData.from_dict(chardata)
     db.session.add(new_stroke_data)
     db.session.commit()
+
+    # Immediately check if the data was inserted
+    inserted_data = StrokeData.query.filter_by( 
+        user_id=new_stroke_data.user_id,
+        character=new_stroke_data.character
+    ).first()
+
+    if inserted_data:
+        print("Insert successful:", inserted_data)
+    else:
+        print("Insert failed!")
+
 
 
 def db_init_app(app):
@@ -265,7 +280,6 @@ def db_store_user_value(username, key, value):
         return False, f"Error: {str(e)}"
 
 def db_save_user_progress(username, progress_data):
-    logger.info(f"Attempting to save progress data: {progress_data}")
     user = User.query.filter_by(username=username).first()
     if not user:
         return False, f"User '{username}' not found"
@@ -285,11 +299,9 @@ def db_save_user_progress(username, progress_data):
         db.session.commit()
         # Verify the save immediately
         db.session.refresh(user_prog)
-        logger.info(f"Progress saved and verified: {user_prog.to_dict()}")
         return True, "Progress saved successfully"
     except Exception as e:
         db.session.rollback()
-        logger.error(f"Error saving progress: {str(e)}")
         return False, str(e)
 
 

@@ -217,8 +217,6 @@ function adjustFlashCardChars(){
 function createPlotters(data){
     const chars = data.character.split('');
     const plotters = [];
-    let lineType = 'round'; 
-    lineType = 'miter'; 
     let size = 355;
     if(chars.length == 2){
         size = 355;
@@ -254,10 +252,10 @@ function createPlotters(data){
                 character: char,
                 dimension: size,
                 speed: .04,
-                lineThickness: 11*size/200,
+                lineThickness: 8*size/200,
                 jitterAmp: 0,
                 colors: colors,
-                lineType: lineType,
+                lineType: "round",
                 showDiagonals: false,
                 showGrid: false,
             });
@@ -318,7 +316,7 @@ async function renderPlotters(plotters, pinyinparts=null){
             }
             plotter.setColors(colors);
             try{
-                plotter.draw();
+                plotter.draw(1, false);
                 plotter.canvas.dataset.plotterIndex = index;
                 plotterElement.appendChild(plotter.canvas);
             }

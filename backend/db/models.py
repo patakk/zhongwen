@@ -4,6 +4,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from backend.db.extensions import db
 import secrets
 
+
+from sqlalchemy import LargeBinary
+import pickle
+
+
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     character = db.Column(db.String(10), unique=True, nullable=False)
@@ -47,14 +52,11 @@ class StrokeData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     character = db.Column(db.String(10), nullable=False)
-    strokes = db.Column(JSON, nullable=False)
-    positioner = db.Column(JSON, nullable=False)
-    mistakes = db.Column(db.Integer, nullable=False)
-    stroke_count = db.Column(db.Integer, nullable=False)
+    _strokes = db.Column(LargeBinary, nullable=True)
     timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
 
     def __repr__(self):
-        return f"<StrokeData {self.user_ref.username} - {self.character}>" 
+        return f"<StrokeData {self.user_ref.username} - {self.character}>"
 
     @classmethod
     def from_dict(cls, data):
@@ -62,14 +64,30 @@ class StrokeData(db.Model):
         if not user:
             raise ValueError(f"User not found: {data['username']}")
         
+        # Serialize strokes to store as integers (multiplied by 1000)
+        ss = [
+            [[int(p['x'] * 1000) if p['x'] is not None else 0, 
+            int(p['y'] * 1000) if p['y'] is not None else 0] 
+            for p in stroke]
+            for stroke in data['strokes']
+        ]
+        serialized_strokes = pickle.dumps(ss)
+        
         return cls(
             user_id=user.id,
             character=data['character'],
-            strokes=data['strokes'],
-            positioner=data['positioner'],
-            mistakes=data['mistakes'],
-            stroke_count=data['strokeCount'],
+            _strokes=serialized_strokes,
         )
+
+    @property
+    def strokes(self):
+        """Automatically convert stored strokes back to floats when accessed."""
+        deserialized = pickle.loads(self._strokes)
+        return [
+            [[x / 1000, y / 1000] for x, y in stroke]
+            for stroke in deserialized
+        ]
+
 
 
 class UserProgress(db.Model):

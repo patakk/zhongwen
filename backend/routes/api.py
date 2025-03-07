@@ -2,6 +2,7 @@ import io
 import json
 import logging
 import random
+import re
 import os
 from urllib.parse import unquote
 
@@ -46,6 +47,51 @@ def get_examples_page():
     examples, is_last = get_tatoeba_page(character, page)
     return jsonify({"examples": examples, "is_last": is_last})
 
+import datetime
+from datetime import timezone
+
+@api_bp.route('/get_progress_data_for_chars', methods=["POST"])
+@session_required
+def get_progress_data_for_chars():
+    data = request.get_json()
+    
+    username = data.get('user', session.get('username'))
+    if not username:
+        return "User or deck not specified", 400
+    uprogress = db_load_user_progress(username)
+
+    acards = data.get('chars', [])
+
+    if not acards:
+        return jsonify([])
+
+    progress_stats = []
+    for character in acards:
+        char_progress = uprogress['progress'].get(character, {})
+        correct_answers = char_progress.get('answers', []).count('correct')
+        total_answers = len(char_progress.get('answers', []))
+        accuracy = (correct_answers / total_answers * 100) if total_answers > 0 else 0
+        simple_char_info = get_char_info(character, pinyin=True, english=True)
+        stats = {
+            'character': character,
+            'meaning': simple_char_info.get('english', 'N/A'),
+            'pinyin': simple_char_info.get('pinyin', 'N/A'),
+            'box': char_progress.get('box', 0),
+            'views': char_progress.get('views', 0),
+            'streak': char_progress.get('streak', 0),
+            'difficulty': char_progress.get('difficulty', None),
+            'accuracy': round(accuracy, 2),
+            'num_incorrect': char_progress.get('num_incorrect', 0),
+            'next_review': char_progress.get('next_review', None),
+            'is_due': char_progress.get('next_review') and datetime.fromisoformat(char_progress['next_review']).replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc),
+        }
+        progress_stats.append(stats)
+
+    print(progress_stats)
+
+    return jsonify({'progress_stats': progress_stats})
+
+
 @api_bp.route("/add_word_to_learning", methods=["POST"])
 @session_required
 def add_word_to_learning():
@@ -53,16 +99,23 @@ def add_word_to_learning():
     if not data or "word" not in data:
         return jsonify({"error": "Missing required fields"}), 400
     word = data["word"]
+
+    words = re.split(r'[^\u4e00-\u9fff]+', word)
+    words = [w for w in words if w and len(w) <= 6]
+
     username = session.get("username")
-    flashcard_app.add_word_to_learning(username, word)
-    print(f"Word added to learning: {word}")
-    return jsonify({"status": "success"})
+    
+    added_words = []
+    for w in words:
+        flashcard_app.add_word_to_learning(username, w)
+        added_words.append(w)
+    
+    return jsonify({"status": "success", "added_words": added_words})
 
 @api_bp.route("/remove_word_from_learning", methods=["POST"])
 @session_required
 def remove_word_from_learning():
     data = request.get_json()
-    print(data)
     if not data or "word" not in data:
         return jsonify({"error": "Missing required fields"}), 400
     word = data["word"]
@@ -188,6 +241,7 @@ def get_characters_simple_info():
         except:
             cinfo = {"definition": "-", "pinyin": "-"}
         cinfos[char] = cinfo
+    cinfos = get_chars_info(characters, pinyin=True, english=True)
     return jsonify(cinfos)
 
 @api_bp.route("/get_deck_chars", methods=["GET", "POST"])
@@ -397,19 +451,14 @@ def save_stroke_data():
     data = request.json
     character: str = data.get("character")
     strokes: dict[dict[str, float]] = data.get("strokes")
-    positioner: dict = data.get("positioner")
-    mistakes: int = data.get("mistakes")
-    stroke_count: int = data.get("strokeCount")
     username: str = session["username"]
     chardata = {
         "character": character,
         "strokes": strokes,
-        "positioner": positioner,
-        "mistakes": mistakes,
-        "strokeCount": stroke_count,
         "username": username,
     }
     db_add_stroke_data(chardata)
+    print(f"Stroke data saved for {character}")
     return jsonify({"message": "Stroke data saved successfully"})
 
 
@@ -478,7 +527,6 @@ def check_if_custom_is_empty():
         learning_cards = db_load_user_progress(username)["learning_cards"]
     else:
         learning_cards = []
-    print(username, learning_cards, not bool(learning_cards))
     return jsonify({"empty": not bool(learning_cards)})
 
 

@@ -123,6 +123,8 @@ def get_simple_char_data():
 
 from collections import defaultdict
 
+
+    
 @app.route('/account')
 @hard_session_required
 def user_progress():
@@ -141,6 +143,7 @@ def user_progress():
     # pncards = uprogress['presented_new_cards']
     # dncards = uprogress['daily_new_cards']
     acards = set(lcards)
+    
 
     progress_stats = []
     for character in acards:
@@ -164,8 +167,6 @@ def user_progress():
         }
         progress_stats.append(stats)
 
-    # Sort by box (descending) and then by accuracy (descending)
-    #progress_stats.sort(key=lambda x: (-x['box'], -x['accuracy']))
     progress_stats.sort(key=lambda x: x['next_review'] if x['next_review'] else "a")
 
     numcards = len(progress_stats)
@@ -173,7 +174,6 @@ def user_progress():
     learnedcards = len([card for card in progress_stats if card['box'] == 6])
     learningcards = len([card for card in progress_stats if card['box'] < 6])
 
-    # print(session[session['username']]["base_new_cards_limit"])
     return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), progress_stats=progress_stats, decks=DECKS_INFO, maxnumcards=db_load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
 
 
@@ -411,20 +411,17 @@ def hanzitest_pinyin():
 @session_required
 @timing_decorator
 def hanzipractice():
-    # deck = session['deck']
-    # characters_data = []
-    # for char, data in CARDDECKS[deck].items():
-    #     characters_data.append({
-    #         "character": char,
-    #         "pinyin": data['pinyin'],
-    #         "english": data['english'],
-    #     })
-    #return render_template('hanzipractice.html', darkmode=session['darkmode'], username=session['username'], characters=characters_data, decks=DECKS_INFO, deck=session['deck'])
-    #characters = {k: v for deck in CARDDECKS.values() for k, v in deck.items()}
-    
     context = get_common_context()
     context["decknames"] = DECKNAMES
     return render_template("hanzipractice.html", **context)
+
+@app.route('/hanziquiz')
+@session_required
+@timing_decorator
+def hanziquiz():
+    context = get_common_context()
+    context["decknames"] = DECKNAMES
+    return render_template("hanziquiz.html", **context)
 
 # @app.route('/convert')
 # @session_required

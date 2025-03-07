@@ -27,9 +27,6 @@ def transfer_stroke_data(from_username, to_username):
                 username=to_username,
                 character=entry.character,
                 strokes=entry.strokes,
-                positioner=entry.positioner,
-                mistakes=entry.mistakes,
-                stroke_count=entry.stroke_count,
                 timestamp=entry.timestamp
             )
             session.add(new_entry)
