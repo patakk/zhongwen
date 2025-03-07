@@ -377,9 +377,30 @@ h1 {
     border: 2px solid rgb(0, 0, 0);
 }
 
+.pinyin-popup {
+    position: absolute;
+    background: rgba(220, 220, 220, 0.8);
+    color: rgb(54, 54, 54);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 1em;
+    pointer-events: auto;
+    max-width: 20%;
+    z-index: 1000;
+    transform: translate(5px, 5px);
+}
+
+.pinyin-popup.darkmode {
+    background: rgba(54, 54, 54, 0.8);
+    color: rgb(220, 220, 220);
+}
 
 @media (max-width: 768px) {
    
+    .pinyin-popup {
+        max-width: 50%;
+    }
+
 
     .grid {
         max-width: 100%;
@@ -481,23 +502,6 @@ h1 {
     animation: shake .14s ease-in-out;
   }
 
-.pinyin-popup {
-    position: absolute;
-    background: rgba(220, 220, 220, 0.8);
-    color: rgb(54, 54, 54);
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 1em;
-    pointer-events: auto;
-    max-width: 50%;
-    z-index: 1000;
-    transform: translate(5px, 5px);
-}
-
-.pinyin-popup.darkmode {
-    background: rgba(54, 54, 54, 0.8);
-    color: rgb(220, 220, 220);
-}
 
 
 .hanzi {

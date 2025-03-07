@@ -218,6 +218,17 @@ function populateGrid() {
         
             let x = e.clientX;
             let y = e.clientY + window.scrollY;
+
+            let popupwidth = popup.getBoundingClientRect().width;
+            let popupheight = popup.getBoundingClientRect().height;
+
+            if(x + popupwidth > window.innerWidth){
+                x = window.innerWidth - popupwidth - 10;
+            }
+            if(y + popupheight > window.innerHeight + window.scrollY){
+                y = window.innerHeight + window.scrollY - popupheight - 10;
+            }
+
             popup.style.left = `${x}px`;
             popup.style.top = `${y}px`;
         
