@@ -407,10 +407,10 @@ def hanzitest_pinyin():
     return render_template("puzzles/hanzitest_pinyin.html", **context)
 '''
 
-@app.route('/writing')
+@app.route('/hanziwriting')
 @session_required
 @timing_decorator
-def writing():
+def hanziwriting():
     context = get_common_context()
     context["decknames"] = DECKNAMES
     return render_template("hanziquiz.html", **context)
