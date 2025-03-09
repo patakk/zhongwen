@@ -146,7 +146,6 @@ def user_progress():
 def main_card_data(character):
     username = session.get('username')
     simple_info = get_char_info(character, pinyin=True, english=True, function=True)
-    is_learning = character in learning_cards
 
     # res = get_tatoeba_page(character, 0)
     res = None
@@ -160,7 +159,6 @@ def main_card_data(character):
         "pinyin": simple_info['pinyin'],
         "english": simple_info['english'],
         "function": simple_info['function'],
-        "is_learning": is_learning,
         "examples": examples,
         "is_last": is_last,
         "html": "IMPLEMENT ME", #data.get('examples', ''),

@@ -1731,14 +1731,6 @@ function renderCardData(data) {
     if(username === "tempuser"){
         addcard.style.display = 'none';
     }
-    if(data.is_learning){
-        // addcard.innerHTML = '<i class="fas fa-bookmark"></i>';
-        // addcard.classList.add('addedToDeck');
-    }
-    else{
-        // addcard.innerHTML = '<i class="far fa-bookmark"></i>';
-        // addcard.classList.remove('addedToDeck');
-    }
 
     container.addEventListener("scroll", function () {
         addcard.style.transform = `translateY(${container.scrollTop}px)`;
