@@ -53,34 +53,34 @@ def db_create_user(
 ):
     user = User(username=username)
     user.set_password(password)
-    user.set_email(email, verified=False)
-    db.session.add(user)
-    db.session.flush()
+    if len(email) > 0:
+        user.set_email(email, verified=False)
 
-    
     new_set = WordList(name="Learning set", user=user)
     new_entry = WordEntry(word="什么", list=new_set)
-    db.session.add(new_entry)
 
+    db.session.add(user)
+    db.session.add(new_entry)
     db.session.add(new_set)
     db.session.commit()
 
-    token = user.generate_email_verification_token()
-    verification_link = url_for('home', token=token, _external=True)
-    
-    msg = Message('Verify Your Email',
-                    recipients=[email])
-    msg.body = f'''Please click on the following link to verify your email:
-    {verification_link}
-    
-    If you did not request this email, please ignore it.'''
-    
-    try:
-        db.session.commit()
-        flash('Verification email sent. Please check your inbox.', 'success')
-    except Exception as e:
-        db.session.rollback()
-        flash('Error sending verification email.', 'danger')
+    if len(email) > 0:
+        token = user.generate_email_verification_token()
+        verification_link = url_for('home', token=token, _external=True)
+        
+        msg = Message('Verify Your Email',
+                        recipients=[email])
+        msg.body = f'''Please click on the following link to verify your email:
+        {verification_link}
+        
+        If you did not request this email, please ignore it.'''
+        
+        try:
+            db.session.commit()
+            flash('Verification email sent. Please check your inbox.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Error sending verification email.', 'danger')
 
     return user
 
