@@ -195,7 +195,7 @@ def add_word_to_learning():
 @session_required
 def remove_word_from_learning():
     data = request.get_json()
-    if not data or "character" not in data or 'set_name' not in data
+    if not data or "character" not in data or 'set_name' not in data:
         return jsonify({"error": "Missing required fields"}), 400
     character = data["character"]
     set_name = data.get("set_name")
