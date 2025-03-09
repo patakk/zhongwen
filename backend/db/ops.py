@@ -248,6 +248,26 @@ def db_get_all_words_by_list_as_dict(username):
         result[word_list.name] = [word.word for word in words]
     return result
 
+def db_remove_word_from_set(username, wordlist_name, word):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return None
+    word_set = WordList.query.filter_by(
+        user_id=user.id,
+        name=wordlist_name
+    ).first()
+    if not word_set:
+        return None
+    word_entry = WordEntry.query.filter_by(
+        list_id=word_set.id,
+        word=word
+    ).first()
+    if not word_entry:
+        return None
+    db.session.delete(word_entry)
+    db.session.commit()
+    return word_entry
+
 def db_add_words_to_set(username, wordlist_name, words):
     user = User.query.filter_by(username=username).first()
     if not user:

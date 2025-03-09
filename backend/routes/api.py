@@ -21,6 +21,7 @@ from backend.db.ops import db_get_user_wordlists
 from backend.db.ops import db_rename_word_list
 from backend.db.ops import db_delete_word_list
 from backend.db.ops import db_get_stroke_data_for_character
+from backend.db.ops import db_remove_word_from_set
 
 from backend.db.models import Card, UserNotes
 from backend.db.extensions import db
@@ -194,13 +195,14 @@ def add_word_to_learning():
 @session_required
 def remove_word_from_learning():
     data = request.get_json()
-    if not data or "word" not in data:
+    if not data or "character" not in data:
         return jsonify({"error": "Missing required fields"}), 400
-    word = data["word"]
+    character = data["character"]
+    set_name = data.get("set_name")
     username = session.get("username")
-    # flashcard_app.remove_word_from_learning(username, word)
-    print(f"Word removed from learning: {word}")
-    return jsonify({"status": "success"})
+    print(f"Removing word '{character}' from list '{set_name}'")
+    result = db_remove_word_from_set(username, set_name, character)
+    return jsonify({"message": f"Word '{character}' removed from list '{set_name}'"})
 
 
 @api_bp.route("/load_deck_chars")

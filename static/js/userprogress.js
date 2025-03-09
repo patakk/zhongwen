@@ -42,7 +42,7 @@ function addToTable(progressRows) {
         binIcon.addEventListener('click', () => {
             let character = binIcon.getAttribute('data-character');
             removeRows(character);
-            removeCardFromLearning(character);
+            removeCardFromLearning(currentWordlist, character);
         });
 
         let characterCell = row.querySelector('.character');
@@ -106,7 +106,7 @@ function populateDropdown() {
     dropdownMenu.appendChild(createOption);
 }
 
-function addWord(symbol, set_name){
+function addWordTable(symbol, set_name){
     addWordsInput.value = '';
     
     fetch("./api/add_word_to_learning", {
@@ -167,17 +167,10 @@ function handleRename(e){
 
 
 function removeWordlist(wordlist){
-    if(Object.keys(wordlists_words).length == 1){
-        alert("You can't delete the last word list");
-        return;
-    }
    if(wordlist == currentWordlist){
         
         delete wordlists_words[currentWordlist];
         currentWordlist = Object.keys(wordlists_words)[0];
-        console.log(wordlists_words);
-        console.log(wordlists_words);
-        console.log(currentWordlist);
         dropdownTrigger.innerHTML = currentWordlist + " <i class='fa-solid fa-circle'></i>";
         let tableBody = document.querySelector("table tbody");
         tableBody.innerHTML = "";
@@ -209,7 +202,7 @@ function handleAddCards(e){
     let words = addWordsInput.value;
     let deck = currentWordlist;
     console.log("handling add cards", words, deck); 
-    addWord(words, currentWordlist);
+    addWordTable(words, currentWordlist);
 }
 
 function formatDateTime(dateTimeString) {
@@ -345,29 +338,28 @@ fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
 });
 }
 
-function removeCardFromLearning(character){
-        fetch(`./api/remove_word_from_learning`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ word: character })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            console.log('Card removed successfully');
-            // count the number of row elelemnts
-            
-            let numcards = Object.keys(wordlists_words[currentWordlist]).length;
-            document.getElementById('numcards').textContent = `Cards in deck: ${numcards}`;
-            // redue learning cards element 
-        })
-        .catch(error => {
-            console.error('There was a problem removing the card:', error);
-        });
-    }
+function removeCardFromLearning(wordlist, character){
+    wordlists_words[currentWordlist] = wordlists_words[currentWordlist].filter(word => word.character !== character);
+    fetch(`./api/remove_word_from_learning`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ character: character, set_name: wordlist })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        console.log('Card removed successfully');
+        
+        let numcards = Object.keys(wordlists_words[currentWordlist]).length;
+        document.getElementById('numcards').textContent = `Cards in deck: ${numcards}`;
+    })
+    .catch(error => {
+        console.error('There was a problem removing the card:', error);
+    });
+}
 
     
 
@@ -443,8 +435,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.remove-card').forEach(binIcon => {
         binIcon.addEventListener('click', (event) => {
             let character = binIcon.getAttribute('data-charater');
+            // remove it from dctionary
             removeRows(character);
-            removeCardFromLearning(character);
+            removeCardFromLearning(currentWordlist, character);
         });
     });
 

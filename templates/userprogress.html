@@ -570,7 +570,6 @@
             let link = document.getElementById("hanziWritingLink");
             link.href = "{{ url_for('hanziwriting', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
 
-            console.log(link.href);
             let gridLink = document.getElementById("gridLink");
             gridLink.href = "{{ url_for('grid', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
 
@@ -719,7 +718,8 @@
                 const value = item.dataset.value;
                 
                 if (value === 'create_new') {
-                    createWordlist(e);
+                    const name = prompt('Enter the name of the new word list');
+                    createWordlist(name);
                 } else {
                     selectedListName = value;
                     currentWordlist = value;

@@ -686,7 +686,7 @@ function loadAndShow(character) {
 }
 
 
-function addWord(symbol, set_name){
+function addWord(symbol, set_name, get_rows=false){
     alert("Added " + symbol + " to " + set_name);
     
     fetch("./api/add_word_to_learning", {
@@ -694,7 +694,7 @@ function addWord(symbol, set_name){
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ word: symbol, set_name: set_name, get_rows: false})
+        body: JSON.stringify({ word: symbol, set_name: set_name, get_rows: get_rows})
     })
     .then(response => response.json())
     .then(data => {
