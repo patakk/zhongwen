@@ -32,12 +32,15 @@ from backend.db.ops import db_get_all_public_notes
 from backend.db.ops import db_get_all_stroke_data
 from backend.db.ops import db_store_user_string
 from backend.db.ops import db_get_user_string
+from backend.db.ops import db_get_all_words_by_list_as_dict
+from backend.db.ops import db_get_word_list_names_only
+from backend.db.ops import db_get_user_wordlists
+
 from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
 from backend.common import CARDDECKS_W_PINYIN
 from backend.common import TATOEBA_MAP
 from backend.common import TATOEBA_DATA
-from backend.common import flashcard_app
 from backend.common import get_tatoeba_page
 from backend.common import DECKNAMES
 
@@ -98,8 +101,6 @@ def get_card_data():
     character = request.args.get('character')
     message = ''
     if not character:
-        message, character = flashcard_app.select_card(session['username'])
-    if not character:
         return jsonify({'message': 'No cards available', 'chars_breakdown': None})
     chars_breakdown = breakdown_chars(character)
     return  jsonify({'message': message, **main_card_data(character), 'chars_breakdown': chars_breakdown})
@@ -133,48 +134,14 @@ def user_progress():
     if not username:
         return "User or deck not specified", 400
 
-    uprogress = db_load_user_progress(username)
+    wordlists_words = db_get_all_words_by_list_as_dict(username)
+    for wl in wordlists_words:
+        nww = []
+        for w in wordlists_words[wl]:
+            nww.append(get_char_info(w, pinyin=True, english=False))
+        wordlists_words[wl] = nww
 
-    logger.info(f"User progress for {username}")
-    logger.info(uprogress)
-
-    # pcards = list(uprogress['progress'].keys())
-    lcards = uprogress.get('learning_cards', [])
-    # pncards = uprogress['presented_new_cards']
-    # dncards = uprogress['daily_new_cards']
-    acards = set(lcards)
-    
-
-    progress_stats = []
-    for character in acards:
-        char_progress = uprogress['progress'].get(character, {})
-        correct_answers = char_progress.get('answers', []).count('correct')
-        total_answers = len(char_progress.get('answers', []))
-        accuracy = (correct_answers / total_answers * 100) if total_answers > 0 else 0
-        simple_char_info = get_char_info(character, pinyin=True, english=True)
-        stats = {
-            'character': character,
-            'meaning': simple_char_info.get('english', 'N/A'),
-            'pinyin': simple_char_info.get('pinyin', 'N/A'),
-            'box': char_progress.get('box', 0),
-            'views': char_progress.get('views', 0),
-            'streak': char_progress.get('streak', 0),
-            'difficulty': char_progress.get('difficulty', None),
-            'accuracy': round(accuracy, 2),
-            'num_incorrect': char_progress.get('num_incorrect', 0),
-            'next_review': char_progress.get('next_review', None),
-            'is_due': char_progress.get('next_review') and datetime.fromisoformat(char_progress['next_review']).replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc),
-        }
-        progress_stats.append(stats)
-
-    progress_stats.sort(key=lambda x: x['next_review'] if x['next_review'] else "a")
-
-    numcards = len(progress_stats)
-    duecards = len([card for card in progress_stats if card['is_due']])
-    learnedcards = len([card for card in progress_stats if card['box'] == 6])
-    learningcards = len([card for card in progress_stats if card['box'] < 6])
-
-    return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), progress_stats=progress_stats, decks=DECKS_INFO, maxnumcards=db_load_user_value(username, 'new_cards_limit'), numcards=numcards, duecards=duecards, learnedcards=learnedcards, learningcards=learningcards)
+    return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(username), wordlists_words=wordlists_words)
 
 
 def main_card_data(character):
@@ -275,7 +242,7 @@ def login():
                 flash(msg, 'error')
                 return redirect(url_for('login'))
                 
-            if True:
+            try:
                 user = db_create_user(
                     username=username,
                     password=password,
@@ -287,7 +254,7 @@ def login():
                     last_new_cards_date=[],
                     presented_new_cards=[],
                     learning_cards={},
-                    progress={}
+                    progress={},
                 )
                 
                 session.clear()
@@ -301,8 +268,7 @@ def login():
                 logger.info(f"New user registered successfully: {username}")
                 flash('Account created successfully!', 'success')
                 return redirect(url_for('welcome'))
-                
-            else:
+            except:
                 flash('Error creating account', 'error')
                 return redirect(url_for('login'))
         
@@ -363,7 +329,9 @@ def pageinfo():
 @hard_session_required
 @timing_decorator
 def flashcards():
-    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO)
+    username = session.get('username')
+    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], custom_deck_names=db_get_word_list_names_only(username), decks=DECKS_INFO)
+
 
 @app.route('/grid', methods=['GET'])
 @session_required
@@ -376,23 +344,18 @@ def grid():
     logger.info(f"Query deck: {querydeck}")
 
     username = session.get('username')
-    if username and username != 'tempuser':
-        learning_cards = db_load_user_progress(username).get('learning_cards', [])
-    else:
-        learning_cards = []
+    custom_wordlists = db_get_user_wordlists(username, pinyin=True, english=False)
     cc = {
-        'custom': {
-            'name': DECKNAMES['custom'],
-            'chars': get_chars_info(learning_cards, pinyin=True) if learning_cards else {},
-        },
+        **custom_wordlists,
         **CARDDECKS_W_PINYIN
     }
 
+    custom_deck_names = list(custom_wordlists.keys())
     if not character:
-        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, deck=querydeck)
+        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, custom_deck_names=custom_deck_names, deck=querydeck)
     main_data = main_card_data(character)
     main_data['chars_breakdown'] = breakdown_chars(character)
-    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=main_data, decks=cc, deck=querydeck)
+    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=main_data, decks=cc, custom_deck_names=custom_deck_names, deck=querydeck)
 
 from backend.routes.puzzles import get_common_context
 
@@ -412,7 +375,17 @@ def hanzitest_pinyin():
 @timing_decorator
 def hanziwriting():
     context = get_common_context()
-    context["decknames"] = DECKNAMES
+
+    user_wordlists = db_get_word_list_names_only(session['username'])
+    user_wordlists = {wl: wl for wl in user_wordlists}
+    # DECKNAMES = {
+    #     d : CARDDECKS[d]['name'] for d in CARDDECKS
+    # }
+    context["decknames"] = {
+        **DECKNAMES,
+        **user_wordlists
+    }
+        
     return render_template("hanziquiz.html", **context)
 
 # @app.route('/convert')
@@ -830,7 +803,7 @@ def search():
     results = []
     if query:
         results = get_search_results(query)
-    return render_template('search.html', results=results, query=query, darkmode=session['darkmode'], decks=DECKS_INFO, username=session['username'])
+    return render_template('search.html', results=results, query=query, darkmode=session['darkmode'], decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(session['username']), username=session['username'])
 
 
 @app.route('/search_results', methods=['POST'])

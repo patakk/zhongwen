@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime, timezone
 from urllib.parse import unquote
 import copy
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,24 +8,20 @@ from flask import request, redirect, url_for, flash
 from flask_mail import Mail, Message
 
 from backend.db.extensions import db
-from backend.db.models import StrokeData, User, UserProgress, UserString, Card, UserNotes
+from backend.db.models import StrokeData, User, UserProgress, UserString, Card, UserNotes, WordList, WordEntry
 from backend.db.extensions import db, mail
+from backend.common import get_chars_info
+from backend.common import getshortdate
 
 logger = logging.getLogger(__name__)
 
 
-def getshortdate():
-    return datetime.now(timezone.utc).strftime("%Y%m%d")
-
 
 def db_get_all_stroke_data(username):
     characters = db_get_all_character_strokes(username)
-    print("AAAAAAAAAAA", characters)
     result = {}
     for character in characters:
-        print(character)
         stroke_data_entries = db_get_stroke_entries(username, character)
-        print(stroke_data_entries)
         character_attempts = []
         for entry in stroke_data_entries:
             character_attempts.append(
@@ -38,8 +33,18 @@ def db_get_all_stroke_data(username):
             )
 
         result[character] = character_attempts
-
     return result
+
+def db_get_stroke_data_for_character(username, character):
+    entries = db_get_stroke_entries(username, character)
+    return [
+        {
+            "id": entry.id,
+            "strokes": entry.strokes,
+            "timestamp": entry.timestamp.isoformat(),
+        }
+        for entry in entries
+    ]
 
 
 def db_create_user(
@@ -72,14 +77,15 @@ def db_create_user(
         learning_cards=learning_cards,
         progress=progress,
     )
+
+    
+    new_set = WordList(name="Learning set", user=user)
+    new_entry = WordEntry(word="什么", list=new_set)
+    db.session.add(new_entry)
+
+    db.session.add(new_set)
     db.session.add(user_progress)
     db.session.commit()
-
-
-            # if User.query.filter_by(email=email).first():
-            #     flash('Email already registered', 'danger')
-            #     session['_from_post'] = True
-            #     return redirect(url_for('manage.email_management'))
 
     token = user.generate_email_verification_token()
     verification_link = url_for('home', token=token, _external=True)
@@ -92,7 +98,6 @@ def db_create_user(
     If you did not request this email, please ignore it.'''
     
     try:
-        mail.send(msg)
         db.session.commit()
         flash('Verification email sent. Please check your inbox.', 'success')
     except Exception as e:
@@ -123,6 +128,49 @@ def db_get_stroke_entries(username, character):
         character=character
     ).order_by(StrokeData.timestamp.desc()).all()
 
+def db_delete_word_list(username, name):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return None
+    
+    word_list = WordList.query.filter_by(
+        user_id=user.id,
+        name=name
+    ).first()
+    
+    if not word_list:
+        return None
+    
+    db.session.delete(word_list)
+    db.session.commit()
+    return True
+
+def db_rename_word_list(username, current_name, new_name):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return None
+    
+    word_list = WordList.query.filter_by(
+        user_id=user.id,
+        name=current_name
+    ).first()
+    
+    if not word_list:
+        return None
+    
+    existing_list = WordList.query.filter_by(
+        user_id=user.id,
+        name=new_name
+    ).first()
+    
+    if existing_list:
+        return False
+    
+    word_list.name = new_name
+    db.session.commit()
+    return word_list
+
+
 def db_get_all_character_strokes(username):
     user = User.query.filter_by(username=username).first()
     if not user:
@@ -136,6 +184,112 @@ def db_get_all_character_strokes(username):
     )
     
     return [char[0] for char in characters]
+
+def db_get_word_list_names_only(username):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return None
+    word_lists = WordList.query.filter_by(user_id=user.id).all()
+    return [word_list.name for word_list in word_lists]
+
+
+def db_get_word_list(username, wordlist_name="Learning set"):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return None
+    wordlist = WordList.query.filter_by(
+        user_id=user.id,
+        name=wordlist_name
+    ).first()
+    if not wordlist:
+        new_wordlist = db_create_set(username, wordlist_name)
+        words = WordEntry.query.filter_by(list_id=new_wordlist.id).all()
+        return words
+    words = WordEntry.query.filter_by(list_id=wordlist.id).all()
+    return [word.word for word in words]
+
+def db_create_set(username, name):
+    user = User.query.filter_by(username=username).first()
+    new_set = WordList(name=name, user=user)
+    db.session.add(new_set)
+    db.session.commit()
+    return new_set
+
+
+def db_get_user_wordlists(username, pinyin=False, english=False):
+    custom_wordlists = {}
+    if username and username != 'tempuser':
+        wordlists = db_get_all_words_by_list_as_dict(username)
+        if pinyin or english:
+            custom_wordlists = {
+                key: {
+                    'name': key,
+                    'chars': get_chars_info(wordlists[key], pinyin=pinyin, english=english)
+                } for key in wordlists
+            }
+        else:
+            custom_wordlists = {
+                key: {
+                    'name': key,
+                    'chars': wordlists[key]
+                } for key in wordlists
+            }
+    return custom_wordlists
+
+
+def db_get_all_words_by_list_as_dict(username):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return None
+    word_lists = WordList.query.filter_by(user_id=user.id).all()
+    result = {}
+    for word_list in word_lists:
+        words = WordEntry.query.filter_by(list_id=word_list.id).all()
+        result[word_list.name] = [word.word for word in words]
+    return result
+
+def db_add_words_to_set(username, wordlist_name, words):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return None
+        
+    word_set = WordList.query.filter_by(
+        user_id=user.id, 
+        name=wordlist_name
+    ).first()
+    
+    if not word_set:
+        return None
+    
+    added_words = []
+    skipped_words = []
+    
+    # Get all existing words in this list to check against
+    existing_words = set([entry.word for entry in WordEntry.query.filter_by(
+        list_id=word_set.id
+    ).all()])
+    
+    # Add new words that don't already exist
+    for word in words:
+        if word in existing_words:
+            skipped_words.append(word)
+            continue
+            
+        new_entry = WordEntry(word=word, list=word_set)
+        db.session.add(new_entry)
+        added_words.append(word)
+        # Update our tracking set to handle duplicates in the input list
+        existing_words.add(word)
+    
+    if added_words:  # Only commit if we actually added something
+        db.session.commit()
+    
+    return {
+        "added": added_words,
+        "skipped": skipped_words,
+        "wordlist": word_set
+    }
+
 
 
 def db_add_stroke_data(chardata):

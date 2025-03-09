@@ -143,12 +143,12 @@ function startTest() {
 }
 
 function showNextCharacter() {
-    if (currentIndex < NUM_QUESTIONS) {
+    if (currentIndex < Math.min(NUM_QUESTIONS, shuffledCharacters.length)) {
         if (userAnswers[currentIndex] === undefined || currentIndex == 0) {
             let character = shuffledCharacters[currentIndex];
             characterDisplay.textContent = character;
             generatePinyinOptions(character);
-            progressDiv.textContent = `Question ${currentIndex + 1} of ${NUM_QUESTIONS}`;
+            progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledCharacters.length)}`;
         } else {
             currentIndex++;
             showNextCharacter();
@@ -250,7 +250,7 @@ function showSkippedQuestions() {
     let character = shuffledCharacters[currentIndex];
     characterDisplay.textContent = character;
     generatePinyinOptions(character);
-    progressDiv.textContent = `Question ${currentIndex + 1} of ${NUM_QUESTIONS}`;
+    progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledCharacters.length)}`;
 }
 
 restartBtn.addEventListener('click', startTest);
@@ -293,7 +293,7 @@ function showResults() {
     document.getElementById('test-container').style.display = 'none';
     skipBtn.style.display = 'none';
     resultsDiv.style.display = 'block';
-    const totalQuestions = NUM_QUESTIONS;
+    const totalQuestions = Math.min(NUM_QUESTIONS, shuffledCharacters.length);
     const score = (correctAnswers / totalQuestions) * 100;
     scoreSpan.textContent = `${correctAnswers} / ${totalQuestions}`;
     accuracySpan.textContent = `${score.toFixed(2)}%`;

@@ -63,8 +63,7 @@ def email_management():
     email = ''
     if session.get('username', 'tempuser') != 'tempuser':
         email = User.query.filter_by(username=session['username']).first().email
-    return render_template('email_management.html', username=session['username'], current_user={'email': email})
-
+    return render_template('email_management.html', darkmode=session['darkmode'], username=session['username'], current_user={'email': email})
 
 
 @manage_bp.route('/verify-email/<token>')
@@ -72,13 +71,12 @@ def email_management():
 def verify_email(token):
     user = User.query.filter_by(email_verification_token=token).first()
     if user:
-        user.email_verified = True
-        user.email_verification_token = None
-        db.session.commit()
+        user.verify_email()
         flash('Email verified successfully!', 'success')
     else:
         flash('Invalid or expired verification link', 'danger')
     return redirect(url_for('home'))
+
 
 @manage_bp.route('/change-password', methods=['GET', 'POST'])
 @hard_session_required
@@ -121,4 +119,4 @@ def change_password():
     if not session.pop('_from_post', False):
         session.pop('_flashes', None)
         
-    return render_template('password_change.html', username=session['username'])
+    return render_template('password_change.html', darkmode=session['darkmode'], username=session['username'])

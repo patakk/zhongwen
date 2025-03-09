@@ -133,7 +133,7 @@ function simplifyPinyin(pinyin, removeAccents = true, removeNumbers = false) {
 function showResults() {
     document.getElementById('test-container').style.display = 'none';
     resultsDiv.style.display = 'block';
-    const totalQuestions = Math.min(NUM_QUESTIONS, shuffledCharacters.length);
+    const totalQuestions = Math.min(NUM_QUESTIONS, allhanzi.length);
     const score = (correctAnswers / totalQuestions) * 100;
     scoreSpan.textContent = `${correctAnswers} / ${totalQuestions}`;
     accuracySpan.textContent = `${score.toFixed(2)}%`;
@@ -327,12 +327,13 @@ function populateGrid() {
             if (isCorrect) {
 
                 correctAnswers++;
-
-                if(correctAnswers == NUM_QUESTIONS){
+                if(correctAnswers == Math.min(NUM_QUESTIONS, allhanzi.length)){
                     revealBtn.classList.add("hidden");
                     restartBtn.innerHTML = "Restart Test " + '<i class="fa-solid fa-vial-circle-check"></i>';
                     restartBtn.classList.remove("hidden");
                     console.log("finished");
+                    
+                    playTwang();
                 }
 
                 let x = e.target.getBoundingClientRect().left + e.target.getBoundingClientRect().width/2;
@@ -581,6 +582,10 @@ function populateDropdown() {
     });
     const sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
     selectDeck(hskKeys[0]);
+    console.log(decknames);
+    console.log(decknames);
+    console.log(decknames);
+    console.log(decknames);
     sortedKeys.forEach(deck => {
         const option = document.createElement('div');
         option.className = 'option';

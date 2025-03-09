@@ -7,13 +7,15 @@ from datetime import date, datetime, timedelta, timezone
 
 from flask import session
 
-from backend.db.ops import (getshortdate, db_load_user_progress, db_load_user_value,
+from backend.db.ops import (db_load_user_progress, db_load_user_value,
                             db_save_user_progress, db_store_user_value)
 
 logger = logging.getLogger(__name__)
 
 _flashcard_app = None
 
+def getshortdate():
+    return datetime.now(timezone.utc).strftime("%Y%m%d")
 
 def init_flashcard_app(cards):
     global _flashcard_app
@@ -36,7 +38,7 @@ class FlashcardApp:
         self.last_new_cards_date = []
         self.presented_new_cards = []
         self.cards = cards
-
+    
     def add_word_to_learning(self, username, word):
         current_learning = db_load_user_value(username, "learning_cards") or []
         if word not in current_learning:

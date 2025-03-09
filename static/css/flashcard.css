@@ -87,7 +87,6 @@
 
 .corner-buttons {
     position: absolute;
-    text-align: center;
     font-size: 16px;
     cursor: pointer;
     font-weight: 500;
@@ -116,13 +115,30 @@
     margin: 0;
     line-height: 1;
     /* display: flex; */
-    align-items: center;
-    justify-content: center;
+    align-items: left;
+    justify-content: left;
     background: none;
     position: absolute;
-    font-size: 2em;
+    font-size: 1em;
     color: var(--dimmer-text-color);
     z-index: 21110;
+}
+
+
+
+.addcard-dropdown-menu {
+    text-align: left;
+    padding: .1em 0em;  
+    margin: .4em 0;  
+    background-color: var(--dimmer-background-color);
+  }
+
+.dropdown-item {
+    padding: .2em .3em;  
+}
+
+.dropdown-item:hover {
+    background-color: var(--dimmer-border-color-a);
 }
 
 #flashcard_addcard.addedToDeck {

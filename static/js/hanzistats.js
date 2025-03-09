@@ -96,9 +96,8 @@ function drawStrokes(canvas, strokes) {
     //   });
 
     ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    ctx.lineJoin = 'round'; 
     ctx.lineWidth = 3;
-    console.log(strokes)
 
     strokes.forEach(stroke => {
         ctx.beginPath();
@@ -128,8 +127,10 @@ function toggleView() {
     const container = document.getElementById('characters-container');
     if (isGridView) {
         container.classList.add('grid-view');
+        initGrid();
     } else {
         container.classList.remove('grid-view');
+        initList();
     }
 }
 
@@ -143,26 +144,39 @@ async function fetchCharacterList() {
 
   
 async function loadAllCharacterAnimations() {
+    const charcontainer = document.getElementById('characters-container');
+
     const characters = await fetchCharacterList();
     const container = document.createElement('div');
     container.id = 'character-animations';
-    document.body.appendChild(container);
+    charcontainer.parentNode.insertBefore(container, charcontainer);
 
     for (const character of characters) {
-        const charDiv = document.createElement('div');
-        charDiv.className = 'character-animation';
-        
-        const img = document.createElement('img');
-        img.alt = `Animation for ${character}`;
-        
-        const response = await fetch(`/api/character_animation/${character}`);
-        if (response.ok) {
+        try {
+            const response = await fetch(`./api/character_animation/${character}`);
+            
+            // Skip characters with insufficient data or other issues
+            if (!response.ok || response.status === 204) {
+                console.log(`Skipping animation for ${character}: insufficient data`);
+                continue;
+            }
+            console.log(`Creating animation for ${character}`);
+            
+            const charDiv = document.createElement('div');
+            charDiv.className = 'character-animation';
+            
+            const img = document.createElement('img');
+            img.alt = `Animation for ${character}`;
             img.src = URL.createObjectURL(await response.blob());
+            
             charDiv.appendChild(img);
             container.appendChild(charDiv);
+        } catch (error) {
+            console.error(`Error loading animation for ${character}:`, error);
         }
     }
 }
+
 
 function createInvisibleHanziWriter(char, func) {
     const offScreenDiv = document.createElement('div');
@@ -204,12 +218,47 @@ function createInvisibleHanziWriter(char, func) {
     return writer2;
 }
 
-function initStats(){
+function initGrid(){
     
     const charactersContainer = document.getElementById('characters-container');
 
     charactersContainer.innerHTML = '';
-    console.log(strokes_per_character);
+
+
+    Object.entries(strokes_per_character).forEach(([character, attempts]) => {
+        const characterLabel = document.createElement('h2');
+        characterLabel.textContent = character;
+    
+
+        const canvasContainer = document.createElement('div');
+        canvasContainer.className = 'canvas-container';
+
+        attempts.forEach((attempt, index) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = DIMS;
+            canvas.height = canvas.width;
+            canvas.style.width = canvas.width/2 + 'px';
+            canvas.style.height = canvas.height/2 + 'px';
+            canvas.className = 'character-canvas';
+            canvasContainer.appendChild(canvas);
+
+            let dict_of_strokes = attempt.strokes;
+            let strokes = [];
+            for (let key in dict_of_strokes) {
+                strokes.push(dict_of_strokes[key]);
+            }
+            drawStrokes(canvas, strokes, attempt.positioner);
+        });
+
+        charactersContainer.appendChild(canvasContainer);
+    });
+}
+
+function initList(){
+    
+    const charactersContainer = document.getElementById('characters-container');
+
+    charactersContainer.innerHTML = '';
 
 
     Object.entries(strokes_per_character).forEach(([character, attempts]) => {
@@ -265,13 +314,14 @@ function initStats(){
 let alreadloadedanims = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-    getDarkmode(initStats);
+    getDarkmode(initList);
     
     const toggleViewElement = document.getElementById('toggle-view');
     toggleViewElement.addEventListener('click', toggleView);
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'b' && event.ctrlKey && !alreadloadedanims) {
+            initList();
             loadAllCharacterAnimations();
             alreadloadedanims = true;
         }

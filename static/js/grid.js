@@ -717,21 +717,21 @@ function playHanziAudio() {
 
 
 function addWordToLearning(symbol){
-    inputdecks['custom'].chars[symbol] = currentData[symbol];
-    fetch("./api/add_word_to_learning", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ word: symbol })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data); 
-    })
-    .catch(error => {
-        console.error("Error:", error);
-    });
+    // inputdecks['custom'].chars[symbol] = currentData[symbol];
+    // fetch("./api/add_word_to_learning", {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify({ word: symbol })
+    // })
+    // .then(response => response.json())
+    // .then(data => {
+    //     console.log(data); 
+    // })
+    // .catch(error => {
+    //     console.error("Error:", error);
+    // });
 }
 
 function loadAllData(){

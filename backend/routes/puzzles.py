@@ -6,6 +6,7 @@ from flask import Blueprint, jsonify, render_template, session
 from backend.decorators import session_required, timing_decorator
 from backend.flashcard_app import get_flashcard_app
 from backend.common import get_chars_info
+from backend.db.ops import db_get_word_list_names_only
 
 flashcard_app = get_flashcard_app()
 
@@ -73,7 +74,16 @@ def get_random_chars_from_deck(deck, n, pinyin=False, english=False, function=Fa
 @timing_decorator
 def hanzitest_table():
     context = get_common_context()
-    context["decknames"] = DECKNAMES
+    
+    user_wordlists = db_get_word_list_names_only(session['username'])
+    user_wordlists = {wl: wl for wl in user_wordlists}
+    # DECKNAMES = {
+    #     d : CARDDECKS[d]['name'] for d in CARDDECKS
+    # }
+    context["decknames"] = {
+        **DECKNAMES,
+        **user_wordlists
+    }
     return render_template("puzzles/hanzitest_table.html", **context)
 
 
@@ -82,7 +92,15 @@ def hanzitest_table():
 @timing_decorator
 def hanzitest_draw():
     context = get_common_context()
-    context["decknames"] = DECKNAMES
+    user_wordlists = db_get_word_list_names_only(session['username'])
+    user_wordlists = {wl: wl for wl in user_wordlists}
+    # DECKNAMES = {
+    #     d : CARDDECKS[d]['name'] for d in CARDDECKS
+    # }
+    context["decknames"] = {
+        **DECKNAMES,
+        **user_wordlists
+    }
     return render_template("puzzles/hanzitest_draw.html", **context)
 
 
@@ -91,7 +109,15 @@ def hanzitest_draw():
 @timing_decorator
 def hanzitest_choices():
     context = get_common_context()
-    context["decknames"] = DECKNAMES
+    user_wordlists = db_get_word_list_names_only(session['username'])
+    user_wordlists = {wl: wl for wl in user_wordlists}
+    # DECKNAMES = {
+    #     d : CARDDECKS[d]['name'] for d in CARDDECKS
+    # }
+    context["decknames"] = {
+        **DECKNAMES,
+        **user_wordlists
+    }
     return render_template("puzzles/hanzitest_choices.html", **context)
 
 
@@ -100,7 +126,15 @@ def hanzitest_choices():
 @timing_decorator
 def hanzitest_choices2():
     context = get_common_context()
-    context["decknames"] = DECKNAMES
+    user_wordlists = db_get_word_list_names_only(session['username'])
+    user_wordlists = {wl: wl for wl in user_wordlists}
+    # DECKNAMES = {
+    #     d : CARDDECKS[d]['name'] for d in CARDDECKS
+    # }
+    context["decknames"] = {
+        **DECKNAMES,
+        **user_wordlists
+    }
     return render_template("puzzles/hanzitest_choices2.html", **context)
 
 

@@ -27,6 +27,7 @@ class User(db.Model):
     notes = db.relationship("UserNotes", backref="user", lazy=True)
     user_string = db.relationship("UserString", backref="user", uselist=False)
     stroke_entries = db.relationship("StrokeData", backref="user_ref", lazy=True)
+    word_lists = db.relationship("WordList", backref="user", lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -46,6 +47,18 @@ class User(db.Model):
         token = secrets.token_urlsafe(32)
         self.email_verification_token = token
         return token
+    
+class WordList(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    words = db.relationship("WordEntry", backref="list", lazy=True, cascade="all, delete-orphan")
+
+
+class WordEntry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    word = db.Column(db.String(10), nullable=False)
+    list_id = db.Column(db.Integer, db.ForeignKey('word_list.id'), nullable=False)
 
 
 class StrokeData(db.Model):

@@ -12,22 +12,29 @@ from backend.db.ops import db_add_stroke_data
 from backend.decorators import session_required
 from backend.decorators import timing_decorator
 from backend.decorators import hard_session_required
-from backend.flashcard_app import get_flashcard_app
 from backend.db.ops import db_update_or_create_note
 from backend.db.ops import db_load_user_progress
+from backend.db.ops import db_add_words_to_set
+from backend.db.ops import db_create_set
+from backend.db.ops import db_add_words_to_set
+from backend.db.ops import db_get_user_wordlists
+from backend.db.ops import db_rename_word_list
+from backend.db.ops import db_delete_word_list
+from backend.db.ops import db_get_stroke_data_for_character
 
 from backend.db.models import Card, UserNotes
 from backend.db.extensions import db
 
 from backend.common import CARDDECKS
 from backend.common import DECKNAMES
-from backend.common import flashcard_app
+from backend.common import CARDDECKS_W_PINYIN
+
 from backend.common import dictionary
 from backend.common import get_tatoeba_page
 from backend.common import get_char_info
 from backend.common import get_chars_info
 from backend.common import char_decomp_info
-
+from backend.db.models import User, WordList
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +42,46 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 with open("data/audio_mappings.json", "r", encoding="utf-8") as f:
     audio_mappings = json.load(f)
+
+
+@api_bp.route("/rename_wordlist", methods=["POST"])
+@session_required
+def rename_wordlist():
+    data = request.get_json()
+    if not data or "name" not in data or "newname" not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+    name = data["name"]
+    newname = data["newname"]
+    username = session.get("username")
+    db_rename_word_list(username, name, newname)
+    return jsonify({"message": f"Word list '{name}' renamed to '{newname}'"})
+
+@api_bp.route('/remove_wordlist', methods=["POST"])
+@session_required
+def remove_wordlist():
+    data = request.get_json()
+    if not data or "name" not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+    name = data["name"]
+    username = session.get("username")
+    db_delete_word_list(username, name)
+    print(f"Removing word list '{name}'")
+    return jsonify({"message": f"Word list '{name}' removed"})
+
+@api_bp.route("/create_wordlist", methods=["POST"])
+@session_required
+def create_wordlist():
+    data = request.get_json()
+    if not data or "name" not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+    name = data["name"]
+    username = session.get("username")
+    result = db_create_set(username, name)
+    if result:
+        print(f"Word list '{name}' created successfully")
+        return jsonify({"message": f"Word list '{name}' created successfully"})
+    print(f"Word list creation failed")
+    return jsonify({"error": "Word list creation failed"}), 500
 
 @api_bp.route("/get_examples_page", methods=["POST"])
 @session_required
@@ -87,30 +134,61 @@ def get_progress_data_for_chars():
         }
         progress_stats.append(stats)
 
-    print(progress_stats)
-
     return jsonify({'progress_stats': progress_stats})
+
 
 
 @api_bp.route("/add_word_to_learning", methods=["POST"])
 @session_required
 def add_word_to_learning():
     data = request.get_json()
+    print(data)
     if not data or "word" not in data:
         return jsonify({"error": "Missing required fields"}), 400
     word = data["word"]
 
     words = re.split(r'[^\u4e00-\u9fff]+', word)
     words = [w for w in words if w and len(w) <= 6]
+    
+    if not words:
+        return jsonify({"error": "No valid Chinese words found in input"}), 400
 
     username = session.get("username")
+    set_name = data.get("set_name")
+    get_rows = data.get("get_rows", True)
     
-    added_words = []
-    for w in words:
-        flashcard_app.add_word_to_learning(username, w)
-        added_words.append(w)
+    # If set name not provided, use the user's first available set
+    if not set_name:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+            
+        first_set = WordList.query.filter_by(user_id=user.id).first()
+        if not first_set:
+            return jsonify({"error": "No word lists found for user"}), 404
+            
+        set_name = first_set.name
     
-    return jsonify({"status": "success", "added_words": added_words})
+    result = db_add_words_to_set(username, set_name, words)
+    
+    if result is None:
+        return jsonify({"error": "User or word list not found"}), 404
+
+    if not get_rows:
+        return jsonify({"message": "Processing complete"}), 200
+    
+    response = {
+        "message": f"Processing complete for list '{set_name}'",
+        "added": result["added"],
+    }   
+    
+    if result["skipped"]:
+        response["skipped"] = result["skipped"]
+        response["skipped_reason"] = "Words already exist in the list"
+    
+    return jsonify(response)
+
+
 
 @api_bp.route("/remove_word_from_learning", methods=["POST"])
 @session_required
@@ -120,7 +198,7 @@ def remove_word_from_learning():
         return jsonify({"error": "Missing required fields"}), 400
     word = data["word"]
     username = session.get("username")
-    flashcard_app.remove_word_from_learning(username, word)
+    # flashcard_app.remove_word_from_learning(username, word)
     print(f"Word removed from learning: {word}")
     return jsonify({"status": "success"})
 
@@ -209,13 +287,13 @@ def get_characters_with_pinyin():
 
 @api_bp.route("/get_twang")
 def get_twang():
-    return send_file("./data/twang.mp3", mimetype="audio/mpeg")
+    return send_file("../data/twang.mp3", mimetype="audio/mpeg")
 
 
 @api_bp.route("/get_story_audio_clip")
 def get_story_audio_clip():
     name = request.args.get("name")
-    file_path = "data/stories/clips/" + name + ".mp3"
+    file_path = "../data/stories/clips/" + name + ".mp3"
     if not os.path.exists(file_path):
         return "File not found", 404
     return send_file(file_path, mimetype="audio/mpeg")
@@ -471,41 +549,25 @@ from PIL import Image, ImageDraw
 @api_bp.route("/character_animation/<character>", methods=["GET"])
 @session_required
 def character_animation(character):
-    username = session["username"]
-    strokes_per_character = get_all_stroke_data_(username)
-    if character not in strokes_per_character:
-        return "Character not found", 404
-
-    strokes_datas = strokes_per_character[character]
+    strokes_datas = db_get_stroke_data_for_character(session["username"], character)
+    if len(strokes_datas) < 2:
+        return jsonify({"status": "insufficient_data"}), 204 
+    
     frames = []
-
-    # Set up the image parameters
     width, height = 100, 100
-    background_color = (255, 255, 255)  # White background
-    point_color = (0, 0, 0)  # Black points
+    background_color = (255, 255, 255) 
+    point_color = (0, 0, 0) 
 
-    if len(strokes_datas) < 4:
-        return "Not enough data to create animation", 400
     for data in strokes_datas:
-        # Create a blank image
         img = Image.new("RGB", (width, height), background_color)
         draw = ImageDraw.Draw(img)
         strokes = data["strokes"]
-        # Draw strokes up to the current index
-        for key in strokes:
-            try:
-                stroke = strokes[key]
-            except:
-                stroke = key
+        for stroke in strokes:
             for point in stroke:
-                x = int(point["x"] * width)
-                y = int((1 - point["y"]) * height - height * 0.05)
+                x = int(point[0] * width)
+                y = int(point[1] * height - height * 0.05)
                 draw.ellipse([x - 2, y - 2, x + 2, y + 2], fill=point_color)
-
-        # Add the frame to our list
         frames.append(img)
-
-    # Create GIF
     output = BytesIO()
     frames[0].save(
         output,
@@ -518,6 +580,7 @@ def character_animation(character):
     output.seek(0)
 
     return send_file(output, mimetype="image/gif")
+
 
 @api_bp.route("/check_if_custom_is_empty", methods=["GET"])
 @session_required
@@ -540,11 +603,10 @@ def get_random_characters():
         learning_cards = db_load_user_progress(username)['learning_cards']
     else:
         learning_cards = []
+    
+    custom_wordlists = db_get_user_wordlists(username)
     cd = {
-        'custom': {
-            'name': DECKNAMES['custom'],
-            'chars': learning_cards,
-        },
+        **custom_wordlists,
         **CARDDECKS
     }
 
@@ -622,5 +684,5 @@ def record_answer():
     correct = request.args.get("correct")
     username = session["username"]
     logger.info(f"Answer recorded for {character}: {correct}")
-    flashcard_app.record_answer(username, character, correct)
+    # flashcard_app.record_answer(username, character, correct)
     return jsonify({"message": "Answer recorded successfully"})

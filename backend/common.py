@@ -1,6 +1,7 @@
 import json
 import random
 import os
+from datetime import datetime, timezone
 import re
 import jieba.posseg as pseg
 
@@ -10,7 +11,7 @@ from hanzipy.dictionary import HanziDictionary
 decomposer = HanziDecomposer()
 dictionary = HanziDictionary()
 
-from .flashcard_app import init_flashcard_app, get_flashcard_app
+# from .flashcard_app import init_flashcard_app, get_flashcard_app
 
 DATA_DIR = './data'
 
@@ -33,10 +34,9 @@ DECKS_INFO = {key : CARDDECKS[key]["name"] for key in CARDDECKS}
 DECKNAMES = {
     d : CARDDECKS[d]['name'] for d in CARDDECKS
 }
-DECKNAMES['custom'] = 'Custom'
 
-init_flashcard_app({})
-flashcard_app = get_flashcard_app()
+# init_flashcard_app({})
+# flashcard_app = get_flashcard_app()
 
 pos_map = {
     'n': 'noun', 'nr': 'proper noun', 'ns': 'place noun', 'nt': 'temporal noun', 'nz': 'other noun', 'v': 'verb', 'a': 'adjective', 'ad': 'adverb', 'an': 'prenoun', 'ag': 'adjective-adverb', 'al': 'adjective-numeral', 'b': 'other', 'c': 'complement', 'd': 'adverb', 'e': 'exclamation', 'f': 'surname', 'g': 'morpheme', 'h': 'prefix', 'i': 'idiom', 'j': 'abbreviation', 'k': 'suffix', 'l': 'temporary word', 'm': 'number', 'ng': 'gender noun', 'nx': 'kernel noun', 'o': 'onomatopoeia', 'p': 'preposition', 'q': 'classifier', 'r': 'pronoun', 'u': 'auxiliary', 'v': 'verb', 'vd': 'verb-auxiliary', 'vg': 'verb-object', 'vn': 'pronoun-verb', 'w': 'punctuation', 'x': 'non-lexeme', 'y': 'language-particle', 'z': 'state-particle'
@@ -110,7 +110,12 @@ def get_char_info(character, pinyin=False, english=False, function=False, full=F
         else:
             function = functions
         info['function'] = function
+    info['character'] = character
     return info
+
+
+def getshortdate():
+    return datetime.now(timezone.utc).strftime("%Y%m%d")
 
 def get_chars_info(characters, pinyin=False, english=False, function=False):
     return {c: get_char_info(c, pinyin, english, function) for c in characters}

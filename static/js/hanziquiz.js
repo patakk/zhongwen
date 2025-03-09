@@ -55,18 +55,29 @@ function populateDropdown(deckj=false) {
             nonHskKeys.push(deck);
         }
     });
-    let sortedKeys;
+    let sortedKeys = Object.keys(decknames);
     if(hasCustom){
-        sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
+        // sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
     }
     else{
-        sortedKeys = [...nonHskKeys, ...hskKeys];
+        // sortedKeys = [...nonHskKeys, ...hskKeys];
     }
-    if(deckj){
-        selectDeck('custom');
+    // if(deckj){
+    //     selectDeck('custom');
+    // }
+    // else{
+    //     selectDeck(hskKeys[0]);
+    // }
+    // use the neame from query url
+    let url = new URL(window.location.href);
+    let deckName = url.searchParams.get("deck");
+    if(deckName){
+        selectDeck(deckName);
+        url.searchParams.delete('deck');
+        window.history.replaceState({}, document.title, url);
     }
     else{
-        selectDeck(hskKeys[0]);
+        selectDeck(sortedKeys[0]);
     }
     sortedKeys.forEach(deck => {
         const option = document.createElement('div');
@@ -164,31 +175,6 @@ async function loadNewWords(func=null){
     })
     .then(data => {
         currentcharacters = data;
-        if(func != null){
-            func();
-        }
-    })
-    .catch(error => {
-        console.error('There was a problem getting new words:', error);
-    });
-}  
-
-async function checkCustom(func=null){
-    fetch(`../api/check_if_custom_is_empty`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        hasCustom = !data.empty;
-        populateDropdown(hasCustom);
         if(func != null){
             func();
         }
@@ -708,15 +694,15 @@ document.addEventListener('DOMContentLoaded', () => {
     shuffledWords = Object.keys(currentcharacters);
 
     drawingArea.appendChild(mainCanvas);
-    checkCustom();
+    populateDropdown();
     // Check for deck query parameter in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const deckParam = urlParams.get('deck');
-    if(deckParam){
-        const url = new URL(window.location.href);
-        url.searchParams.delete('deck');
-        window.history.replaceState({}, document.title, url);
-    }
+    // const urlParams = new URLSearchParams(window.location.search);
+    // const deckParam = urlParams.get('deck');
+    // if(deckParam){
+    //     const url = new URL(window.location.href);
+    //     url.searchParams.delete('deck');
+    //     window.history.replaceState({}, document.title, url);
+    // }
     getDarkmode();
     
 });
