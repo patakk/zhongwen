@@ -327,7 +327,6 @@ def delete_word_list(list_id):
 
 
 '''
-
 # List all word lists
 flask --app migrations.py list-word-lists
 
@@ -357,5 +356,4 @@ flask --app migrations.py stroke-stats --character "好"
 
 # Delete a word list
 flask --app migrations.py delete-word-list 5
-
 '''
