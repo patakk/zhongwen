@@ -131,7 +131,11 @@
     padding: .1em 0em;  
     margin: .4em 0;  
     background-color: var(--dimmer-background-color);
-  }
+}
+
+.addcard-dropdown-menu > *:not(:last-child) {
+    border-bottom: 1px solid var(--dimmer-border-color-a);;
+}
 
 .dropdown-item {
     padding: .2em .3em;  
@@ -348,10 +352,6 @@ p::selection {
     #flashcard_function {
         font-size: 1.1em;
         margin-bottom: 15px;
-    }
-
-    #flashcard_addcard {
-        font-size: 2em;
     }
 
     #flashcard_practice {

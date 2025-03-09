@@ -21,6 +21,7 @@
     --due-color: #f8d7da;
     --learned-color: #d4edda;
     --deckname-color: #d44141;
+    --deckname-color: #e33100;
 }
 
 ::selection {

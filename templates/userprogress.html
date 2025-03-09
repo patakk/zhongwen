@@ -179,16 +179,19 @@
         }
 
         .varvar {
-
+            display: none;
         }
-
+/* 
         td:nth-child(1), th:nth-child(1) { width: 20%; }
         td:nth-child(2), th:nth-child(2) { width: 20%; }
         td:nth-child(3), th:nth-child(3) { width: 20%; }
         td:nth-child(4), th:nth-child(4) { width: 20%; }
         td:nth-child(5), th:nth-child(5) { width: 15%; }
-        td:nth-child(6), th:nth-child(6) { width: 5%; }
+        td:nth-child(6), th:nth-child(6) { width: 5%; } */
 
+
+        td:nth-child(1), th:nth-child(1) { width: 95%; }
+        td:nth-child(6), th:nth-child(6) { width: 5%; }
 
         @media (max-width: 1024px) {
             .container {
@@ -393,7 +396,7 @@
             width: 100%;
         }
 
-        input[type="text"] {
+        #newWords {
             color: var(--text-color);
             outline: none;
             background-color: var(--background-color);
@@ -406,19 +409,19 @@
             font-family: inherit;
         }
 
-        #addWords::placeholder {
+        #newWords::placeholder {
             font-style: italic;
             font-size: 0.8em;
             color: gray;
         }
 
-        input[type="submit"] {
+        #addWordButton {
             padding: 10px;
             background-color: var(--dimmer-background-color);
             color: var(--dimmer-text-color);
             border: 2px solid var(--dimmer-border-color-a);
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1em;
             font-family: inherit;
             -webkit-tap-highlight-color: transparent;
             -webkit-appearance: none;
@@ -430,14 +433,10 @@
                 flex-direction: row;
             }
 
-            input[type="text"] {
+            #newWords {
                 max-width: none;
                 width: 80%;
                 margin-right: 10px;
-            }
-
-            input[type="submit"] {
-                width: 30%;
             }
         }
 
@@ -482,7 +481,7 @@
         <div id="dropdown-options" class="dropdown-menu" style="display: none;"></div>
         
         <form id="wordForm" onsubmit="handleRename(event)">
-            <input id="rename-btn" type="submit" class="links" value="Rename set"></input>
+            <input id="renameButton" type="submit" class="links" value="Rename set"></input>
         </form>
 
         <p style="padding-left: 0.0em;" id="numcards">Cards in deck: </p>
@@ -506,8 +505,8 @@
         
 
         <form id="wordForm" onsubmit="handleAddCards(event)">
-            <input type="text" name="query" id="addWords" placeholder="a word or a list of words (separated with spaces)">
-            <input id="word-btn" type="submit" value="Add words">
+            <input type="text" name="query" id="newWords" placeholder="a word or a list of words (separated with spaces)">
+            <input id="addWordButton" type="submit" value="Add words">
         </form>
 
             <!-- <p>Due cards: {{ duecards }}</p> -->
@@ -520,7 +519,7 @@
                 <!-- <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th> -->
                 <th class="tooltip-header varvar" data-tooltip="Number of consecutive correct answers">Streak</th>
                 <th class="tooltip-header varvar" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
-                <th class="tooltip-header" data-tooltip="Scheduled date and time for the next review">Next Review</th>
+                <th class="tooltip-header varvar" data-tooltip="Scheduled date and time for the next review">Next Review</th>
             </tr>
                 {% for stat in progress_stats %}
                     <tr data-character='{{ stat.character }}'>    
@@ -535,12 +534,12 @@
                     <td class="varvar"  style="text-align: right;">{{ stat.streak }}</td>
                     <td class="varvar"  style="text-align: right;">{{ stat.num_incorrect }}</td>
                         {% if stat.is_due == 1 %}
-                        <td style="text-align: right;" class="next-review-date">DUE</td>
+                        <td style="text-align: right;" class="varvar next-review-date">DUE</td>
                         {% else %}
                             {% if stat.next_review is not none %}
-                                <td style="text-align: right;" class="next-review-date">{{ stat.next_review }}</td>
+                                <td style="text-align: right;" class="varvar next-review-date">{{ stat.next_review }}</td>
                             {% else %}
-                                <td style="text-align: right;">/</td>
+                                <td style="text-align: right;" class="varvar">/</td>
                             {% endif %}
                         {% endif %}
                     <td class="remove-card tooltip-header" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >             
@@ -633,14 +632,23 @@
         }
 
         
-        #rename-btn {
+        #renameButton {
             color: var(--dimmer-text-color);
             text-decoration: none;
             opacity: 0.4;
             background-color: var(--dimmer-border-color-a);
-            padding: 0px 4px;
-            margin-top: 4px;
+            padding: .2em .4em;
+            margin-top: .4em;
+            font-family: inherit;
+            border: 2px solid var(--dimmer-border-color-a);
+            outline: none;
         }
+
+        #renameButton {
+            outline: none;
+            box-shadow: none;
+        }
+
 
         #wordset-label-container {
             display: flex;
@@ -694,7 +702,7 @@
                 if (!isVisible) {
                     // Position the dropdown below the trigger
                     const rect = dropdownTrigger.getBoundingClientRect();
-                    // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-caret-down'></i>";
+                    // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-arrow-down'></i>";
                     dropdownTrigger.innerHTML = currentWordlist;
                     dropdownMenu.style.top = rect.bottom + 'px';
                     dropdownMenu.style.left = rect.left + 'px';
@@ -702,7 +710,7 @@
                     
                     dropdownMenu.style.display = 'block';
                 } else {
-                    // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-caret-right'></i>";
+                    // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-arrow-down'></i>";
                     dropdownTrigger.innerHTML = currentWordlist;
                     dropdownMenu.style.display = 'none';
                 }

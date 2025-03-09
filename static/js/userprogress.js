@@ -27,7 +27,7 @@ function addToTable(progressRows) {
             <td class="varvar" style="text-align: right;">${(stat.box / 6 * 100).toFixed(1)}%</td>
             <td class="varvar" style="text-align: right;">${stat.streak}</td>
             <td class="varvar" style="text-align: right;">${stat.num_incorrect}</td>
-            <td style="text-align: right;" class="next-review-date">
+            <td style="text-align: right;" class="varvar next-review-date">
                 ${stat.is_due ? "DUE" : (stat.next_review ? stat.next_review : "/")}
             </td>
             <td class="remove-card tooltip-header" data-tooltip="Remove from learning" data-character="${stat.character}">
