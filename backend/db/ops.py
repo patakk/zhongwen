@@ -8,7 +8,7 @@ from flask import request, redirect, url_for, flash
 from flask_mail import Mail, Message
 
 from backend.db.extensions import db
-from backend.db.models import StrokeData, User, UserProgress, UserString, Card, UserNotes, WordList, WordEntry
+from backend.db.models import StrokeData, User, UserString, Card, UserNotes, WordList, WordEntry
 from backend.db.extensions import db, mail
 from backend.common import get_chars_info
 from backend.common import getshortdate
@@ -31,7 +31,6 @@ def db_get_all_stroke_data(username):
                     "timestamp": entry.timestamp.isoformat(),
                 }
             )
-
         result[character] = character_attempts
     return result
 
@@ -51,14 +50,6 @@ def db_create_user(
     username,
     password,  # New parameter
     email,  # New parameter
-    base_new_cards_limit,
-    new_cards_limit,
-    new_cards_limit_last_updated,
-    daily_new_cards,
-    last_new_cards_date,
-    presented_new_cards,
-    learning_cards,
-    progress,
 ):
     user = User(username=username)
     user.set_password(password)
@@ -66,25 +57,12 @@ def db_create_user(
     db.session.add(user)
     db.session.flush()
 
-    user_progress = UserProgress(
-        user_id=user.id,
-        base_new_cards_limit=base_new_cards_limit,
-        new_cards_limit=new_cards_limit,
-        new_cards_limit_last_updated=new_cards_limit_last_updated,
-        daily_new_cards=daily_new_cards,
-        last_new_cards_date=last_new_cards_date,
-        presented_new_cards=presented_new_cards,
-        learning_cards=learning_cards,
-        progress=progress,
-    )
-
     
     new_set = WordList(name="Learning set", user=user)
     new_entry = WordEntry(word="什么", list=new_set)
     db.session.add(new_entry)
 
     db.session.add(new_set)
-    db.session.add(user_progress)
     db.session.commit()
 
     token = user.generate_email_verification_token()
@@ -422,81 +400,6 @@ def db_update_or_create_note(username, word, notes, is_public=False):
     except Exception as e:
         db.session.rollback()
         return False, f"Error saving note: {str(e)}"
-
-def db_store_user_value(username, key, value):
-    try:
-        user = User.query.filter_by(username=username).first()
-        if not user:
-            return False, f"User '{username}' not found"
-            
-        current_data = db_load_user_progress(username)
-        
-        if not current_data:
-            return False, f"No progress found for user '{username}'"
-        
-        # Update the specific key
-        current_data[key] = value
-        
-        # Save all progress data back
-        success, message = db_save_user_progress(username, current_data)
-        
-        # Verify immediate state after save
-        user_prog = user.progress
-        
-        # Load and verify
-        loaded = db_load_user_value(username, key)
-        
-        return success, message
-        
-    except Exception as e:
-        db.session.rollback()
-        logger.error(f"Error in db_store_user_value: {str(e)}")
-        return False, f"Error: {str(e)}"
-
-def db_save_user_progress(username, progress_data):
-    user = User.query.filter_by(username=username).first()
-    if not user:
-        return False, f"User '{username}' not found"
-        
-    user_prog = user.progress
-    if user_prog:
-        # Special handling for JSON fields
-        for key, value in progress_data.items():
-            value = copy.deepcopy(value)
-            setattr(user_prog, key, value)
-            flag_modified(user_prog, key)
-    else:
-        user_prog = UserProgress.from_dict(user, progress_data)
-        db.session.add(user_prog)
-    
-    try:
-        db.session.commit()
-        # Verify the save immediately
-        db.session.refresh(user_prog)
-        return True, "Progress saved successfully"
-    except Exception as e:
-        db.session.rollback()
-        return False, str(e)
-
-
-def db_load_user_progress(username):
-    user = User.query.filter_by(username=username).first()
-    if not user or not user.progress:
-        return {}
-        
-    user_prog = user.progress
-    data = user_prog.to_dict()
-    logger.info("Loaded progress data")
-    
-    if getshortdate() != data.get("new_cards_limit_last_updated"):
-        data["new_cards_limit"] = data["base_new_cards_limit"]
-        data["new_cards_limit_last_updated"] = getshortdate()
-
-        user_prog.new_cards_limit = data["new_cards_limit"]
-        user_prog.new_cards_limit_last_updated = data["new_cards_limit_last_updated"]
-        db.session.commit()
-    
-    return data
 
 def db_load_user_value(username, key):
     data = db_load_user_progress(username)

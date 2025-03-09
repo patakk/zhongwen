@@ -21,7 +21,6 @@ from backend.decorators import session_required
 from backend.decorators import hard_session_required
 from backend.decorators import timing_decorator
 from backend.db.ops import getshortdate
-from backend.db.ops import db_load_user_progress
 from backend.db.ops import db_load_user_value
 from backend.db.ops import db_init_app
 from backend.db.ops import db_user_exists
@@ -200,15 +199,15 @@ def hanziviz():
     return render_template('hanziviz.html', darkmode=session['darkmode'], characters=characters)
 
 
-@app.route('/check_session')
-@session_required
-def check_session():
-    sess = dict(session)
-    sess = {**sess, **db_load_user_progress(session['username'])}
-    return Response(
-        json.dumps(sess, ensure_ascii=False, indent=4),
-        mimetype='application/json'
-    )
+# @app.route('/check_session')
+# @session_required
+# def check_session():
+#     sess = dict(session)
+#     sess = {**sess, **db_load_user_progress(session['username'])}
+#     return Response(
+#         json.dumps(sess, ensure_ascii=False, indent=4),
+#         mimetype='application/json'
+#     )
 
 @app.route('/get_crunch')
 def get_crunch():
@@ -242,19 +241,11 @@ def login():
                 flash(msg, 'error')
                 return redirect(url_for('login'))
                 
-            try:
+            if True:
                 user = db_create_user(
                     username=username,
                     password=password,
                     email=email,
-                    base_new_cards_limit=20,
-                    new_cards_limit=20,
-                    new_cards_limit_last_updated=getshortdate(),
-                    daily_new_cards=[],
-                    last_new_cards_date=[],
-                    presented_new_cards=[],
-                    learning_cards={},
-                    progress={},
                 )
                 
                 session.clear()
@@ -267,8 +258,9 @@ def login():
                 
                 logger.info(f"New user registered successfully: {username}")
                 flash('Account created successfully!', 'success')
-                return redirect(url_for('welcome'))
-            except:
+                # return redirect(url_for('welcome'))
+                return redirect(url_for('home'))
+            else:
                 flash('Error creating account', 'error')
                 return redirect(url_for('login'))
         

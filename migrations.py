@@ -1,7 +1,7 @@
 from flask_migrate import Migrate
 from backend.setup import create_app
 from backend.db.extensions import db
-from backend.db.models import User, UserProgress, UserNotes, UserString, Card, StrokeData, WordList, WordEntry
+from backend.db.models import User, UserNotes, UserString, Card, StrokeData, WordList, WordEntry
 import click
 from flask.cli import with_appcontext
 from datetime import datetime
@@ -139,25 +139,10 @@ def add_user(username, password, email):
         user.email = email
         user.email_verified = True
         user.email_verification_token = None
-    
-    # Create default UserProgress for the new user
-    default_progress = UserProgress(
-        user_id=None,  # Will be set after user is committed
-        base_new_cards_limit=20,
-        new_cards_limit=20,
-        new_cards_limit_last_updated=datetime.now().strftime("%Y-%m-%d"),
-        daily_new_cards=[],
-        last_new_cards_date={},
-        presented_new_cards=[],
-        learning_cards=[],
-        progress={}
-    )
 
     # Add to database
     db.session.add(user)
     db.session.flush()  # This generates the user.id
-    default_progress.user_id = user.id
-    db.session.add(default_progress)
     db.session.commit()
 
     click.echo(f"User {username} created successfully.")
@@ -344,6 +329,7 @@ flask --app migrations.py reset-password username newpassword
 
 # Add a new user
 flask --app migrations.py add-user username password --email optional@email.com
+
 
 # List all word lists
 flask --app migrations.py list-word-lists

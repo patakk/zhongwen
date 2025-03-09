@@ -4,11 +4,9 @@ import random
 from flask import Blueprint, jsonify, render_template, session
 
 from backend.decorators import session_required, timing_decorator
-from backend.flashcard_app import get_flashcard_app
 from backend.common import get_chars_info
 from backend.db.ops import db_get_word_list_names_only
 
-flashcard_app = get_flashcard_app()
 
 from backend.common import DECKS_INFO
 from backend.common import CARDDECKS

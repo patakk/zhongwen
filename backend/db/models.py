@@ -23,7 +23,6 @@ class User(db.Model):
     email_verified = db.Column(db.Boolean, default=False)
     email_verification_token = db.Column(db.String(100), unique=True, nullable=True)
 
-    progress = db.relationship("UserProgress", backref="user", uselist=False)
     notes = db.relationship("UserNotes", backref="user", lazy=True)
     user_string = db.relationship("UserString", backref="user", uselist=False)
     stroke_entries = db.relationship("StrokeData", backref="user_ref", lazy=True)
@@ -100,55 +99,6 @@ class StrokeData(db.Model):
             [[x / 1000, y / 1000] for x, y in stroke]
             for stroke in deserialized
         ]
-
-
-
-class UserProgress(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    base_new_cards_limit = db.Column(db.Integer, nullable=False)
-    new_cards_limit = db.Column(db.Integer, nullable=False)
-    new_cards_limit_last_updated = db.Column(db.String(32), nullable=False)
-    daily_new_cards = db.Column(JSON, nullable=False)
-    last_new_cards_date = db.Column(JSON, nullable=False)
-    presented_new_cards = db.Column(JSON, nullable=False)
-    learning_cards = db.Column(JSON, nullable=False)
-    progress = db.Column(JSON, nullable=False)
-
-    def to_dict(self):
-        return {
-            "base_new_cards_limit": self.base_new_cards_limit,
-            "daily_new_cards": self.daily_new_cards,
-            "last_new_cards_date": self.last_new_cards_date,
-            "new_cards_limit": self.new_cards_limit,
-            "new_cards_limit_last_updated": self.new_cards_limit_last_updated,
-            "presented_new_cards": self.presented_new_cards,
-            "learning_cards": self.learning_cards,
-            "progress": self.progress,
-        }
-
-    @classmethod
-    def from_dict(cls, user, data):
-        """
-        Create a UserProgress instance from a dictionary.
-        
-        Args:
-            user: Can be either a User instance or user_id
-            data: Dictionary containing progress data
-        """
-        user_id = user.id if isinstance(user, User) else user
-        
-        return cls(
-            user_id=user_id,
-            base_new_cards_limit=data["base_new_cards_limit"],
-            new_cards_limit=data["new_cards_limit"],
-            new_cards_limit_last_updated=data["new_cards_limit_last_updated"],
-            daily_new_cards=data["daily_new_cards"],
-            last_new_cards_date=data["last_new_cards_date"],
-            presented_new_cards=data["presented_new_cards"],
-            learning_cards=data["learning_cards"],
-            progress=data["progress"],
-        )
 
 
 class UserNotes(db.Model):

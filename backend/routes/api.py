@@ -13,7 +13,6 @@ from backend.decorators import session_required
 from backend.decorators import timing_decorator
 from backend.decorators import hard_session_required
 from backend.db.ops import db_update_or_create_note
-from backend.db.ops import db_load_user_progress
 from backend.db.ops import db_add_words_to_set
 from backend.db.ops import db_create_set
 from backend.db.ops import db_add_words_to_set
@@ -106,7 +105,6 @@ def get_progress_data_for_chars():
     username = data.get('user', session.get('username'))
     if not username:
         return "User or deck not specified", 400
-    uprogress = db_load_user_progress(username)
 
     acards = data.get('chars', [])
 
@@ -115,7 +113,7 @@ def get_progress_data_for_chars():
 
     progress_stats = []
     for character in acards:
-        char_progress = uprogress['progress'].get(character, {})
+        char_progress = {}
         correct_answers = char_progress.get('answers', []).count('correct')
         total_answers = len(char_progress.get('answers', []))
         accuracy = (correct_answers / total_answers * 100) if total_answers > 0 else 0
@@ -584,27 +582,11 @@ def character_animation(character):
     return send_file(output, mimetype="image/gif")
 
 
-@api_bp.route("/check_if_custom_is_empty", methods=["GET"])
-@session_required
-def check_if_custom_is_empty():
-    username = session["username"]
-    if username and username != 'tempuser':
-        learning_cards = db_load_user_progress(username)["learning_cards"]
-    else:
-        learning_cards = []
-    return jsonify({"empty": not bool(learning_cards)})
-
-
 @api_bp.route("/get_random_characters", methods=["POST"])
 @session_required
 @timing_decorator
 def get_random_characters():
     username = session.get('username')
-    
-    if username and username != 'tempuser':
-        learning_cards = db_load_user_progress(username)['learning_cards']
-    else:
-        learning_cards = []
     
     custom_wordlists = db_get_user_wordlists(username)
     cd = {
