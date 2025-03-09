@@ -167,7 +167,7 @@ function handleRename(e){
 
 
 function removeWordlist(wordlist){
-    if(len(Object.keys(wordlists_words)) == 1){
+    if(Object.keys(wordlists_words).length == 1){
         alert("You can't delete the last word list");
         return;
     }
