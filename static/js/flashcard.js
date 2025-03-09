@@ -850,7 +850,7 @@ function constSimilars(similars, similarsDiv){
                             return;
                         }
                         const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
-                        const english = chardict[similar_char].definition;
+                        const english = chardict[similar_char].english;
                         const hsklvl = "chardict[similar_char].hsk_level";
                         let tooltipContent = `<strongsfasf>${pinyin}</strong><br>${english}<br>`;
                     
