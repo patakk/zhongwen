@@ -327,6 +327,24 @@ def delete_word_list(list_id):
 
 
 '''
+# List all users and their details
+flask --app migrations.py list-users
+
+# Set/update email for a user
+flask --app migrations.py set-email username user@example.com
+
+# Show detailed stats for a user
+flask --app migrations.py user-stats username
+
+# Delete a user (will ask for confirmation)
+flask --app migrations.py delete-user username
+
+# Reset a user's password
+flask --app migrations.py reset-password username newpassword
+
+# Add a new user
+flask --app migrations.py add-user username password --email optional@email.com
+
 # List all word lists
 flask --app migrations.py list-word-lists
 
