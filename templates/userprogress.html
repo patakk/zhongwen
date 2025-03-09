@@ -677,7 +677,13 @@
             
 
             document.getElementById("removeListBtn").addEventListener("click", function() {
-                removeWordlist(prompt("Confirm the name of the set to be removed"));
+                
+                if(Object.keys(wordlists_words).length == 1){
+                    alert("You can't delete the last word list");
+                }
+                else{
+                    removeWordlist(prompt("Confirm the name of the set to be removed"));
+                }
             });
             
             // Toggle dropdown visibility
