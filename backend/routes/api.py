@@ -195,7 +195,7 @@ def add_word_to_learning():
 @session_required
 def remove_word_from_learning():
     data = request.get_json()
-    if not data or "character" not in data:
+    if not data or "character" not in data or 'set_name' not in data
         return jsonify({"error": "Missing required fields"}), 400
     character = data["character"]
     set_name = data.get("set_name")
@@ -567,7 +567,7 @@ def character_animation(character):
         for stroke in strokes:
             for point in stroke:
                 x = int(point[0] * width)
-                y = int(point[1] * height - height * 0.05)
+                y = int(point[1] * height)
                 draw.ellipse([x - 2, y - 2, x + 2, y + 2], fill=point_color)
         frames.append(img)
     output = BytesIO()
