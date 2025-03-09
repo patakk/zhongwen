@@ -60,12 +60,6 @@ def user_stats(username):
     # Notes stats
     notes_count = UserNotes.query.filter_by(user_id=user.id).count()
     click.echo(f"Total notes: {notes_count}")
-    
-    if user.progress:
-        click.echo("\nProgress info:")
-        click.echo(f"Base new cards limit: {user.progress.base_new_cards_limit}")
-        click.echo(f"Current new cards limit: {user.progress.new_cards_limit}")
-        click.echo(f"Last updated: {user.progress.new_cards_limit_last_updated}")
 
 # Delete user command
 @app.cli.command("delete-user")
@@ -78,9 +72,6 @@ def delete_user(username):
         click.echo(f"User {username} not found.")
         return
     
-    # Delete associated records first
-    if user.progress:
-        db.session.delete(user.progress)
     
     if user.notes:
         for note in user.notes:
