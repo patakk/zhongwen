@@ -140,8 +140,13 @@ def add_user(username, password, email):
         user.email_verified = True
         user.email_verification_token = None
 
-    # Add to database
+    new_set = WordList(name="Learning set", user=user)
+    new_entry = WordEntry(word="你好", list=new_set)
     db.session.add(user)
+    db.session.add(new_entry)
+    db.session.add(new_set)
+
+    # Add to database
     db.session.flush()  # This generates the user.id
     db.session.commit()
 
