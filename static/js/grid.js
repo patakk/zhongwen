@@ -174,7 +174,7 @@ function toggleGridList(){
         newUrl.searchParams.delete('list');
         history.pushState({}, '', newUrl);
     } else {
-        document.getElementById('lcontainer').style.display = 'block';
+        document.getElementById('lcontainer').style.display = 'flex';
         document.getElementById('grid-cont').style.display = 'none';
         if(window.innerWidth / window.innerHeight > 16/9){
         }

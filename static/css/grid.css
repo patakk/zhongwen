@@ -510,9 +510,11 @@ and (orientation: landscape) {
 }
 
 .lgrid-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    max-width: 80%;
     padding: 10px;
 }
 
@@ -520,9 +522,7 @@ and (orientation: landscape) {
     border: var(--dimmer-border);
     max-height: 100px;
     height: 100px;
-    /* border-left: 0;
-    border-right: 0;
-    border-top: 0; */
+    width: 100%;
     padding-right: 12px;
     padding-top: 12px;
     padding-bottom: 12px;
@@ -552,6 +552,8 @@ and (orientation: landscape) {
     display: none;
     max-width: 80%;
     width: 100%;
+    align-items: center;
+    justify-content: center;
 }
 
 
@@ -661,12 +663,8 @@ and (orientation: landscape) {
 }
 
 
-@media screen and (max-width: 768px) { /* Adjust the breakpoint as needed */
+@media screen and (max-width: 1025px) { /* Adjust the breakpoint as needed */
     #flashcard_container {
-        /* width: 90%;
-        height: 75%;
-        transform: translateY(8%);
-        padding: 10px; */
     }
     .flashcard {
         margin-left: 6px;
@@ -728,9 +726,6 @@ and (orientation: landscape) {
     }
 
     .grid-item {
-        /* border: var(--dimmer-border);;
-        background-color: #f6f6f6;
-        background-color: rgb(255, 255, 255); */
         height: 50px;
         display: flex;
         font-weight: 400;
@@ -743,7 +738,6 @@ and (orientation: landscape) {
         overflow: hidden;
     }
 
-    
 
     .lgrid-item {
         border: var(--dimmer-border);
@@ -758,10 +752,10 @@ and (orientation: landscape) {
     }
     
     .lgrid-wrapper {
-        display: grid;
+        /* display: grid;
         grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
         gap: 10px;
-        padding: 10px;
+        padding: 10px; */
     }
 
     

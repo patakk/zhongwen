@@ -383,6 +383,9 @@ def grid():
         decknames_sorted = list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
     decknames_sorted_with_name = {deck: DECKNAMES[deck] for deck in decknames_sorted}
 
+    for d in cc:
+        cc[d]['chars'] = get_chars_info(cc[d]['chars'], pinyin=True, english=True)
+
     if not character:
         return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, deck=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
     main_data = main_card_data(character)
