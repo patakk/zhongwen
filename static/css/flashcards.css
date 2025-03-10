@@ -145,6 +145,7 @@ html, body {
    white-space: wrap;
    max-width: fit-content;
    word-wrap: break-word;
+   font-family: "Noto Sans", sans-serif;
 }
 
 .english {
@@ -152,6 +153,7 @@ html, body {
    white-space: wrap;
    word-wrap: break-word;
    max-width: fit-content;
+   font-family: "Noto Sans", sans-serif;
 }
 
 .answer.inactive {
