@@ -367,12 +367,27 @@ def grid():
         **custom_wordlists,
         **CARDDECKS_W_PINYIN
     }
+
     custom_deck_names = list(custom_wordlists.keys())
+    user_wordlists = db_get_word_list_names_only(username)
+    for wl in custom_wordlists:
+        DECKNAMES[wl] = custom_wordlists[wl]['name']
+    if user_wordlists:
+        user_wordlists = {wl: wl for wl in user_wordlists}
+        hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
+        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
+        decknames_sorted = list(sorted(user_wordlists.keys())) + list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
+    else:
+        hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
+        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
+        decknames_sorted = list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
+    decknames_sorted_with_name = {deck: DECKNAMES[deck] for deck in decknames_sorted}
+
     if not character:
-        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, custom_deck_names=custom_deck_names, deck=querydeck)
+        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, deck=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
     main_data = main_card_data(character)
     main_data['chars_breakdown'] = breakdown_chars(character)
-    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=main_data, decks=cc, custom_deck_names=custom_deck_names, deck=querydeck)
+    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=main_data, decks=cc, deck=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
 
 from backend.routes.puzzles import get_common_context
 

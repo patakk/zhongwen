@@ -54,8 +54,8 @@
     <div class="has-submenu" id="deckMenu">
         <span class="submenuName" id="deckSubmenuName">sets</span>
         <ul class="gridSubmenu" id="deckSubmenu">
-            {% for key, deck in decks.items() %}
-                <li class="menu-option-parent"><a class="deck-option deck-change" data-deck="{{ key }}">{{ deck.name }}</a></li>
+            {% for key, deckname in decknames_sorted_with_name.items() %}
+                <li class="menu-option-parent"><a class="deck-option deck-change" data-deck="{{ key }}">{{ deckname }}</a></li>
             {% endfor %}
         </ul>
     </div>
