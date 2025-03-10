@@ -624,10 +624,9 @@ class HanziPlotter {
         this.animationProgress = 0;
         this.animationFrame = null;
 
-
         if(this.clickAnimation){
             if(isMobileOrTablet()){
-                this.clickListener = this.canvas.addEventListener('touchstart', this.startUserDrawing.bind(this));
+                this.clickListener = this.canvas.addEventListener('touchstart', this.startAnimation.bind(this));
             }
             else{
                 this.clickListener = this.canvas.addEventListener('click', this.startAnimation.bind(this));
