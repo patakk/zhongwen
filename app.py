@@ -315,7 +315,7 @@ def pageinfo():
     return render_template('pageinfo.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO)
 
 @app.route('/flashcards', methods=['GET'])
-@hard_session_required
+@session_required
 @timing_decorator
 def flashcards():
     querydeck = request.args.get('deck')

@@ -4,7 +4,8 @@ let currentWordInfo = {};
 let nextWordInfo = {};
 let prevWordInfo = {};
 
-let lineWidth = 20;
+let lineWidth = 6;
+let lineType = 'round';
 
 async function getPinyinEnglishFor(word) {
 
@@ -42,8 +43,8 @@ function drawCanvas() {
             }
             ctx.lineWidth = lineWidth;
             ctx.strokeStyle = isDarkMode ? 'white' : 'black';
-            ctx.lineCap = 'mitter';
-            ctx.lineJoin = 'mitter';
+            ctx.lineCap = lineType;
+            ctx.lineJoin = lineType;
             ctx.stroke();
         });
     });
@@ -415,8 +416,8 @@ function setupCanvas(){
     canvas.style.position = 'absolute';
     canvas.style.top = flashcardElement.offsetWidth*.05 + 'px';
     canvas.style.left = '0';
-    lineWidth = flashcardElement.offsetWidth*.025;
 
+    lineWidth = flashcardElement.offsetWidth*.035;
     if(isMobileOrTablet()){
         // canvas.width = flashcardElement.offsetWidth*2;
         // canvas.height = flashcardElement.offsetWidth*.25*2;
