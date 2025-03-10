@@ -122,16 +122,6 @@ html, body {
     flex-direction: column;
 }
 
-@media screen and (max-width: 768px) {
-    #flashcard {
-        width: 90%;
-        height: 60%;
-        max-width: 90%;
-        max-height: 90%;
-    }
-    
-}
-
 .hanzi {
     font-size: 6em;
     flex: 1;
@@ -150,12 +140,18 @@ html, body {
 }
 
 .pinyin {
-   font-size: 1.5em;
+   font-size: 1.25em;
    margin-bottom: 0.5em;
+   white-space: wrap;
+   max-width: fit-content;
+   word-wrap: break-word;
 }
 
 .english {
    font-size: 1em;
+   white-space: wrap;
+   word-wrap: break-word;
+   max-width: fit-content;
 }
 
 .answer.inactive {
@@ -165,4 +161,16 @@ html, body {
 ::selection {
     background: transparent;
     color: inherit;
+}
+
+
+@media screen and (max-width: 768px) {
+    #flashcard {
+        width: 90%;
+        height: 60%;
+        max-width: 90%;
+        max-height: 90%;
+        font-size: 1em;
+    }
+    
 }
