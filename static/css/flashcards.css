@@ -124,37 +124,51 @@ html, body {
 
 .hanzi {
     font-size: 6em;
-    flex: 1;
+    flex: 3;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .answer {
-    flex: 3;
+    flex: 4;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     color: var(--dimmer-text-color);
+    overflow: hidden; 
+    width: 100%;
 }
 
 .pinyin {
-   font-size: 1.25em;
-   margin-bottom: 0.5em;
-   white-space: wrap;
-   max-width: fit-content;
-   word-wrap: break-word;
-   font-family: "Noto Sans", sans-serif;
+    flex: 1;
+    font-size: 1.25em;
+    margin-bottom: 0.5em;
+    white-space: normal;
+    width: 100%; 
+    word-wrap: break-word;
+    font-family: "Noto Sans SC", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .english {
-   font-size: 1em;
-   white-space: wrap;
-   word-wrap: break-word;
-   max-width: fit-content;
-   font-family: "Noto Sans", sans-serif;
+    flex: 3;
+    font-size: 1em;
+    white-space: normal;
+    width: 100%;
+    word-wrap: break-word;
+    font-style: italic;
+    font-family: "Noto Sans SC", sans-serif;
+    opacity: 0.5;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
 }
+
 
 .answer.inactive {
     visibility: hidden;
