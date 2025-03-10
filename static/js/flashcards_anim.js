@@ -390,6 +390,13 @@ async function loadStrokeData(character, onLoad=null) {
 
 document.addEventListener('DOMContentLoaded', function() {
     currentFont = 'Noto Sans';
+
+    let url = new URL(window.location.href);
+    let deck = url.searchParams.get('deck');
+    if(deck){
+        inputdeck = deck;
+    }
+
     confirmDarkmode();
     getNewWord();
     handleFont();
