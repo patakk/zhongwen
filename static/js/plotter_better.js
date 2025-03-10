@@ -301,7 +301,6 @@ function fix(strokes) {
         stroke = removeShortSegments(stroke, 30);
         stroke = subdivideCurve(stroke, 4); // Subdivide the curve
         stroke = smoothCurve(stroke, 0.5); // Apply smoothing
-        // stroke = evenOutPoints(stroke, 150);
         // let length = calculatePolylineLength(stroke).totalLength;
         // let numPoints = Math.min(10, Math.floor(length / 30));
         // stroke = resamplePolyline(stroke, numPoints);
@@ -627,7 +626,12 @@ class HanziPlotter {
 
 
         if(this.clickAnimation){
-            this.clickListener = this.canvas.addEventListener('click', this.startAnimation.bind(this));
+            if(isMobileOrTablet()){
+                this.clickListener = this.canvas.addEventListener('touchstart', this.startUserDrawing.bind(this));
+            }
+            else{
+                this.clickListener = this.canvas.addEventListener('click', this.startAnimation.bind(this));
+            }
         }
 
     }
