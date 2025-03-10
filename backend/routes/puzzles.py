@@ -28,6 +28,24 @@ def get_common_context():
     }
 
 
+def add_sorted_decknames_to_context(username, context):
+    user_wordlists = db_get_word_list_names_only(username)
+    if user_wordlists:
+        user_wordlists = {wl: wl for wl in user_wordlists}
+        context["decknames"] = {
+            **DECKNAMES,
+            **user_wordlists
+        }
+        hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
+        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
+        context["decknames_sorted"] = list(sorted(user_wordlists.keys())) + list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
+    else:
+        context["decknames"] = DECKNAMES
+        hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
+        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
+        context["decknames_sorted"] = list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
+
+
 @puzzles_bp.route("/")
 @session_required
 @timing_decorator
@@ -73,15 +91,7 @@ def get_random_chars_from_deck(deck, n, pinyin=False, english=False, function=Fa
 def hanzitest_table():
     context = get_common_context()
     
-    user_wordlists = db_get_word_list_names_only(session['username'])
-    user_wordlists = {wl: wl for wl in user_wordlists}
-    # DECKNAMES = {
-    #     d : CARDDECKS[d]['name'] for d in CARDDECKS
-    # }
-    context["decknames"] = {
-        **DECKNAMES,
-        **user_wordlists
-    }
+    add_sorted_decknames_to_context(session.get('username'), context)
     return render_template("puzzles/hanzitest_table.html", **context)
 
 
@@ -90,15 +100,7 @@ def hanzitest_table():
 @timing_decorator
 def hanzitest_draw():
     context = get_common_context()
-    user_wordlists = db_get_word_list_names_only(session['username'])
-    user_wordlists = {wl: wl for wl in user_wordlists}
-    # DECKNAMES = {
-    #     d : CARDDECKS[d]['name'] for d in CARDDECKS
-    # }
-    context["decknames"] = {
-        **DECKNAMES,
-        **user_wordlists
-    }
+    add_sorted_decknames_to_context(session.get('username'), context)
     return render_template("puzzles/hanzitest_draw.html", **context)
 
 
@@ -107,15 +109,7 @@ def hanzitest_draw():
 @timing_decorator
 def hanzitest_choices():
     context = get_common_context()
-    user_wordlists = db_get_word_list_names_only(session['username'])
-    user_wordlists = {wl: wl for wl in user_wordlists}
-    # DECKNAMES = {
-    #     d : CARDDECKS[d]['name'] for d in CARDDECKS
-    # }
-    context["decknames"] = {
-        **DECKNAMES,
-        **user_wordlists
-    }
+    add_sorted_decknames_to_context(session.get('username'), context)
     return render_template("puzzles/hanzitest_choices.html", **context)
 
 
@@ -124,15 +118,7 @@ def hanzitest_choices():
 @timing_decorator
 def hanzitest_choices2():
     context = get_common_context()
-    user_wordlists = db_get_word_list_names_only(session['username'])
-    user_wordlists = {wl: wl for wl in user_wordlists}
-    # DECKNAMES = {
-    #     d : CARDDECKS[d]['name'] for d in CARDDECKS
-    # }
-    context["decknames"] = {
-        **DECKNAMES,
-        **user_wordlists
-    }
+    add_sorted_decknames_to_context(session.get('username'), context)
     return render_template("puzzles/hanzitest_choices2.html", **context)
 
 

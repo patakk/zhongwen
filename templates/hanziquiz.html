@@ -88,7 +88,8 @@
         let decknames = {{ decknames | tojson | safe }};
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
-
+        let decknames_sorted = {{ decknames_sorted | tojson | safe }};
+        
 
         function isIPhone(){
             const ua = navigator.userAgent;

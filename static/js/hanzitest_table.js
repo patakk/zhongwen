@@ -580,12 +580,9 @@ function populateDropdown() {
             nonHskKeys.push(deck);
         }
     });
-    const sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
-    selectDeck(hskKeys[0]);
-    console.log(decknames);
-    console.log(decknames);
-    console.log(decknames);
-    console.log(decknames);
+    const sortedKeys = decknames_sorted;
+    console.log(sortedKeys);
+    selectDeck(sortedKeys[0]);
     sortedKeys.forEach(deck => {
         const option = document.createElement('div');
         option.className = 'option';

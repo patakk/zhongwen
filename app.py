@@ -57,6 +57,8 @@ from flask import Flask
 
 from backend.routes.api import api_bp
 from backend.routes.puzzles import puzzles_bp
+from backend.routes.puzzles import add_sorted_decknames_to_context
+
 from backend.routes.manage import manage_bp
 from backend.setup import create_app
 
@@ -93,6 +95,7 @@ def breakdown_chars(word):
     for char in word:
         infos[char] = get_char_info(char, full=True)
     return infos
+
 
 @app.route('/get_card_data')
 @session_required
@@ -329,10 +332,23 @@ def flashcards():
         **custom_wordlists,
         **CARDDECKS
     }
-    for key in cc:
-        cc[key]['chars'] = cc[key]['chars'][:100]
-    custom_deck_names = list(custom_wordlists.keys())
-    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], custom_deck_names=custom_deck_names, decks=cc, deck=querydeck)
+
+    for wl in custom_wordlists:
+        DECKNAMES[wl] = custom_wordlists[wl]['name']
+
+    user_wordlists = db_get_word_list_names_only(username)
+    if user_wordlists:
+        user_wordlists = {wl: wl for wl in user_wordlists}
+        hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
+        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
+        decknames_sorted = list(sorted(user_wordlists.keys())) + list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
+    else:
+        hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
+        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
+        decknames_sorted = list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
+    decknames_sorted_with_name = {deck: DECKNAMES[deck] for deck in decknames_sorted}
+
+    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=cc, deck=querydeck, decknames_sorted_with_name=decknames_sorted_with_name)
 
 
 @app.route('/grid', methods=['GET'])
@@ -371,22 +387,13 @@ def hanzitest_pinyin():
     return render_template("puzzles/hanzitest_pinyin.html", **context)
 '''
 
+
 @app.route('/hanziwriting')
 @session_required
 @timing_decorator
 def hanziwriting():
     context = get_common_context()
-
-    user_wordlists = db_get_word_list_names_only(session['username'])
-    user_wordlists = {wl: wl for wl in user_wordlists}
-    # DECKNAMES = {
-    #     d : CARDDECKS[d]['name'] for d in CARDDECKS
-    # }
-    context["decknames"] = {
-        **DECKNAMES,
-        **user_wordlists
-    }
-        
+    add_sorted_decknames_to_context(session.get('username'), context)
     return render_template("hanziquiz.html", **context)
 
 # @app.route('/convert')

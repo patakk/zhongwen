@@ -36,6 +36,7 @@ async function loadNewWords(func=null){
         return response.json();
     })
     .then(data => {
+        console.log(data)
         currentcharacters = data;
         if(func != null){
             func();
@@ -60,8 +61,8 @@ function populateDropdown() {
             nonHskKeys.push(deck);
         }
     });
-    const sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
-    selectDeck(nonHskKeys[0]);
+    const sortedKeys = decknames_sorted;
+    selectDeck(hskKeys[0]);
     sortedKeys.forEach(deck => {
         const option = document.createElement('div');
         option.className = 'option';
@@ -145,7 +146,7 @@ function showNextCharacter() {
     if (currentIndex < Math.min(NUM_QUESTIONS, shuffledCharacters.length)) {
         if (userAnswers[currentIndex] === undefined || currentIndex == 0) {
             let character = shuffledCharacters[currentIndex];
-            characterDisplay.textContent = currentcharacters[character].english.replace(/;/g, ',');
+            characterDisplay.textContent = character;
             generatePinyinOptions(character);
             progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledCharacters.length)}`;
         } else {
@@ -247,7 +248,7 @@ function showSkippedQuestions() {
     console.log('Skipped Questions:', skippedQuestions);
     currentIndex = skippedQuestions[0];
     let character = shuffledCharacters[currentIndex];
-    characterDisplay.textContent = currentcharacters[character].english.replace(/;/g, ',');
+    characterDisplay.textContent = character;
     generatePinyinOptions(character);
     progressDiv.textContent = `Question ${currentIndex + 1} of ${Math.min(NUM_QUESTIONS, shuffledCharacters.length)}`;
 }
@@ -262,7 +263,7 @@ let lastmousey;
 function generatePinyinOptions(character) {
     const correctPinyin = shuffledCharacters[currentIndex];
     let options = [currentcharacters[correctPinyin].pinyin];
-    while (options.length < NUM_OPTIONS) {
+    while (options.length < Math.min(NUM_OPTIONS, shuffledCharacters.length)) {
         const randomChar = shuffledCharacters[Math.floor(Math.random() * shuffledCharacters.length)];
         const randomPinyin = currentcharacters[randomChar].pinyin;
         if (!options.includes(randomPinyin)) {

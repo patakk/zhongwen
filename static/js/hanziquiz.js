@@ -55,7 +55,7 @@ function populateDropdown(deckj=false) {
             nonHskKeys.push(deck);
         }
     });
-    let sortedKeys = Object.keys(decknames);
+    let sortedKeys = decknames_sorted;
     if(hasCustom){
         // sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
     }

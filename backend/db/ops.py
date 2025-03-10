@@ -290,6 +290,8 @@ def db_add_words_to_set(username, wordlist_name, words):
 
 
 
+
+
 def db_add_stroke_data(chardata):
     # Insert the new stroke data into the database
     new_stroke_data = StrokeData.from_dict(chardata)
