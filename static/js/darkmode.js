@@ -137,6 +137,13 @@ function confirmDarkmode(){
     catch(e){
         //console.log(e)
     }
+
+    try {
+        drawCanvas();
+    }
+    catch(e){
+        //console.log(e)
+    }
     
     try{
         restartQ();

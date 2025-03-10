@@ -465,18 +465,7 @@
         </p>
         <h2>Word sets</h2>
 
-        <div id="wordset-label-container">
-            <div id="wordListDropdown" class="custom-dropdown-trigger">
-                Select a word list <i class="fa-solid fa-circle"></i>
-            </div><span id="removeListBtn"><i class="fa-solid fa-circle-xmark"></i></span>
-        </div>
-        <div id="dropdown-options" class="dropdown-menu" style="display: none;"></div>
-        
-        <form id="wordForm" onsubmit="handleRename(event)">
-            <input id="renameButton" type="submit" class="links" value="Rename set"></input>
-        </form>
-
-        <p style="padding-left: 0.0em;" id="numcards">Cards in deck: </p>
+        <p style="padding-left: 0.0em; display: none;" id="numcards">Cards in deck: </p>
         
         <p style="padding-left: 0.0em;">
             <a class="links" id="gridLink">
@@ -495,6 +484,17 @@
             </a>
         </p>
         
+
+        <div id="wordset-label-container">
+            <div id="wordListDropdown" class="custom-dropdown-trigger">
+                Select a word list <i class="fa-solid fa-circle"></i>
+            </div><span id="removeListBtn"><i class="fa-solid fa-circle-xmark"></i></span>
+        </div>
+        <div id="dropdown-options" class="dropdown-menu" style="display: none;"></div>
+        
+        <form id="wordForm" onsubmit="handleRename(event)">
+            <input id="renameButton" type="submit" class="links" value="Rename set"></input>
+        </form>
 
         <form id="wordForm" onsubmit="handleAddCards(event)">
             <input type="text" name="query" id="newWords" placeholder="a word or a list of words (separated with spaces)">

@@ -318,8 +318,21 @@ def pageinfo():
 @hard_session_required
 @timing_decorator
 def flashcards():
+    querydeck = request.args.get('deck')
+    if not querydeck:
+        querydeck = 'hsk1'
+
     username = session.get('username')
-    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], custom_deck_names=db_get_word_list_names_only(username), decks=DECKS_INFO)
+
+    custom_wordlists = db_get_user_wordlists(username, pinyin=False, english=False)
+    cc = {
+        **custom_wordlists,
+        **CARDDECKS
+    }
+    for key in cc:
+        cc[key]['chars'] = cc[key]['chars'][:100]
+    custom_deck_names = list(custom_wordlists.keys())
+    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], custom_deck_names=custom_deck_names, decks=cc, deck=querydeck)
 
 
 @app.route('/grid', methods=['GET'])
@@ -338,7 +351,6 @@ def grid():
         **custom_wordlists,
         **CARDDECKS_W_PINYIN
     }
-
     custom_deck_names = list(custom_wordlists.keys())
     if not character:
         return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, custom_deck_names=custom_deck_names, deck=querydeck)

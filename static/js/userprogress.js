@@ -1,4 +1,4 @@
-let addWordsInput = document.getElementById('addWords');
+let addWordsInput = document.getElementById('newWords');
     
 
 function addToTable(progressRows) {

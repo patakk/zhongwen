@@ -185,6 +185,11 @@ a {
 }
 
 
+.submenuName::selection {
+    background-color: transparent !important;
+    color: var(--text-color) !important;;
+}
+
 #mainSubmenu.active {
     display: block;
 }
