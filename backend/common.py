@@ -126,7 +126,7 @@ CARDDECKS_W_PINYIN = {
     deck: {
         "name": CARDDECKS[deck]["name"],
         "chars": get_chars_info(CARDDECKS[deck]["chars"], pinyin=True)
-    } for deck in CARDDECKS if 'hsk' in deck
+    } for deck in CARDDECKS
 }
 
 def get_random_chars_from_deck(deck, n, pinyin=False, english=False, function=False):
