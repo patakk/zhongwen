@@ -136,7 +136,7 @@ html, body {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    color: var(--dimmer-text-color);
+    color: var(--text-color);
     overflow: hidden; 
     width: 100%;
 }
@@ -149,6 +149,7 @@ html, body {
     width: 100%; 
     word-wrap: break-word;
     font-family: "Noto Sans SC", sans-serif;
+    opacity: 0.9;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -162,7 +163,7 @@ html, body {
     word-wrap: break-word;
     font-style: italic;
     font-family: "Noto Sans SC", sans-serif;
-    opacity: 0.65;
+    opacity: 0.5;
     display: flex; 
     align-items: center;
     justify-content: center;
