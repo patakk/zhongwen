@@ -100,15 +100,25 @@ function interpolateCards() {
         let charwidth = canvas.height;
         let charheight = canvas.height;
 
-        let numchars = numchars2;
+        let numchars = Math.max(numchars1, numchars2);
 
         for(let idx = 0; idx < numchars; idx++){
-            let cx1 = canvas.width / 2 - (numchars1 * charwidth) / 2 + idx * charwidth;
+            let cx1 = canvas.width / 2 - (numchars1 * charwidth) / 2 + Math.min(idx, numchars1-1) * charwidth;
             let cy1 = canvas.height / 2 - charheight / 2;
-            let cx2 = canvas.width / 2 - (numchars2 * charwidth) / 2 + idx * charwidth;
+            let cx2 = canvas.width / 2 - (numchars2 * charwidth) / 2 + Math.min(idx, numchars2-1) * charwidth;
             let cy2 = canvas.height / 2 - charheight / 2;
-            let charstrokes1 = prevWordInfo.strokes[idx%numchars1].strokes;
-            let charstrokes2 = currentWordInfo.strokes[idx%numchars2].strokes;
+
+            // if(numchars1 === 1 && numchars2 === 1){
+            //     cx1 = canvas.width / 2 - charwidth / 2;
+            //     cx2 = canvas.width / 2 - charwidth / 2;
+            // }
+            // if(numchars1 === 1 && numchars2 === 2){
+            //     cx1 = canvas.width / 2 - charwidth / 2;
+            //     cx2 = canvas.width / 2 - (numchars2 * charwidth) / 2 + idx * charwidth;
+            // }
+
+            let charstrokes1 = prevWordInfo.strokes[Math.min(idx, numchars1-1)].strokes;
+            let charstrokes2 = currentWordInfo.strokes[Math.min(idx, numchars2-1)].strokes;
             let numcharstrokes = Math.max(charstrokes1.length, charstrokes2.length);
             for(let charstrokeidx = 0; charstrokeidx < numcharstrokes; charstrokeidx++){
                 let stroke1 = charstrokes1[charstrokeidx%charstrokes1.length];
@@ -436,6 +446,7 @@ function handleTopLeftButtons() {
             e.preventDefault();
             e.stopPropagation();
             inputdeck = this.dataset.deck;
+            currentWord = '';
             getNewWord();
             document.querySelectorAll('.deck-change').forEach(opt => opt.classList.remove('selected-option'));
             this.classList.add('selected-option');
