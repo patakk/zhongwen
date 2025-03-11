@@ -826,10 +826,15 @@ def get_search_results(query):
 @session_required
 def search():
     query = request.args.get('query')
+    character = request.args.get('character')
     results = []
+    main_data = None
     if query:
         results = get_search_results(query)
-    return render_template('search.html', results=results, query=query, darkmode=session['darkmode'], decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(session['username']), username=session['username'])
+    if character:
+        main_data = main_card_data(character)
+        main_data['chars_breakdown'] = breakdown_chars(character)
+    return render_template('search.html', results=results, query=query, darkmode=session['darkmode'], decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(session['username']), username=session['username'], character=main_data)
 
 
 @app.route('/search_results', methods=['POST'])

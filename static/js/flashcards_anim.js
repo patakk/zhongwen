@@ -109,15 +109,6 @@ function interpolateCards() {
             let cx2 = canvas.width / 2 - (numchars2 * charwidth) / 2 + Math.min(idx, numchars2-1) * charwidth;
             let cy2 = canvas.height / 2 - charheight / 2;
 
-            // if(numchars1 === 1 && numchars2 === 1){
-            //     cx1 = canvas.width / 2 - charwidth / 2;
-            //     cx2 = canvas.width / 2 - charwidth / 2;
-            // }
-            // if(numchars1 === 1 && numchars2 === 2){
-            //     cx1 = canvas.width / 2 - charwidth / 2;
-            //     cx2 = canvas.width / 2 - (numchars2 * charwidth) / 2 + idx * charwidth;
-            // }
-
             let charstrokes1 = prevWordInfo.strokes[Math.min(idx, numchars1-1)].strokes;
             let charstrokes2 = currentWordInfo.strokes[Math.min(idx, numchars2-1)].strokes;
             let numcharstrokes = Math.max(charstrokes1.length, charstrokes2.length);
@@ -135,8 +126,19 @@ function interpolateCards() {
                     let y = cy1 + stroke1[i].y * charheight + (cy2+stroke2[i].y * charheight - stroke1[i].y * charheight-cy1) * Math.min(1, Math.max(0, usedprogress - popo));
                     ctx.lineTo(x, y);
                 }
+
+                let saw = (1-2*Math.abs(.5-progress));
+                lineWidth = flashcardElement.offsetWidth*.035 * (.7+.6*saw*saw*saw);;
+
+                let lightness = isDarkMode ? 1 : 0;
+
+                if(isDarkMode)
+                    lightness = lightness - .2*(saw);
+                else
+                    lightness = lightness + .15*(saw);
+
                 ctx.lineWidth = lineWidth;
-                ctx.strokeStyle = isDarkMode ? 'white' : 'black';
+                ctx.strokeStyle = `rgba(${lightness*255},${lightness*255},${lightness*255},${1})`;
                 ctx.lineCap = 'mitter';
                 ctx.lineJoin = 'mitter';
                 ctx.stroke();
@@ -394,8 +396,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let url = new URL(window.location.href);
     let deck = url.searchParams.get('deck');
-    if(deck){
+    if(deck && inputdecks[deck]){
         inputdeck = deck;
+    }
+    else{
+        inputdeck = 'hsk1';
+        let newUrl = new URL(window.location);
+        newUrl.searchParams.set('deck', inputdeck);
+        history.pushState({}, '', newUrl);
     }
 
     confirmDarkmode();
@@ -417,7 +425,9 @@ function setupCanvas(){
     canvas.style.top = flashcardElement.offsetWidth*.05 + 'px';
     canvas.style.left = '0';
 
-    lineWidth = flashcardElement.offsetWidth*.035;
+    progress = 0;
+    let saw = (1-2*Math.abs(.5-progress));
+    lineWidth = flashcardElement.offsetWidth*.035 * (.7+.6*saw*saw*saw);;
     if(isMobileOrTablet()){
         // canvas.width = flashcardElement.offsetWidth*2;
         // canvas.height = flashcardElement.offsetWidth*.25*2;
@@ -465,6 +475,9 @@ function handleTopLeftButtons() {
             e.preventDefault();
             e.stopPropagation();
             inputdeck = this.dataset.deck;
+            let newUrl = new URL(window.location);
+            newUrl.searchParams.set('deck', inputdeck);
+            history.pushState({}, '', newUrl);
             currentWord = '';
             getNewWord();
             document.querySelectorAll('.deck-change').forEach(opt => opt.classList.remove('selected-option'));

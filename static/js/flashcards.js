@@ -65,6 +65,16 @@ function getNewWord() {
 
 document.addEventListener('DOMContentLoaded', function() {
     currentFont = 'Noto Sans';
+    console.log("currentFont")
+    
+    const newUrl = new URL(window.location);
+    inputdeck = newUrl.searchParams.get('deck') || 'hsk1';
+    document.querySelectorAll('.deck-change').forEach(opt => {
+        if (opt.dataset.deck === inputdeck) {
+            opt.classList.add('selected-option');
+        }
+    });
+
     confirmDarkmode();
     getNewWord();
     handleFont();
@@ -102,6 +112,11 @@ function handleTopLeftButtons() {
             e.preventDefault();
             e.stopPropagation();
             inputdeck = this.dataset.deck;
+            console.log("inputdeck change")
+            console.log(inputdeck);
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('deck', inputdeck);
+            history.pushState({}, '', newUrl);
             getNewWord();
             document.querySelectorAll('.deck-change').forEach(opt => opt.classList.remove('selected-option'));
             this.classList.add('selected-option');

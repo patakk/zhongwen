@@ -54,6 +54,7 @@
     <script>
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
+        const characterdata = {{ character | tojson | safe }};
 
     </script>
     <!-- <script src="{{ url_for('static', filename='js/border.js') }}"></script> -->
@@ -129,6 +130,12 @@
                     resultItem.appendChild(indexSpan);
                     resultItem.appendChild(hanziSection);
                     resultItem.appendChild(detailsSection);
+
+                    // on mouse enter
+                    resultItem.onmouseenter = () => {
+                        loadCard(result.hanzi);
+                    };
+
                     resultsContainer.appendChild(resultItem);
                 });
             } else if (query) {

@@ -568,7 +568,7 @@ class HanziPlotter {
         
         this.lastX = null;
         this.lastY = null;
-        this.easingFactor = 0.2;
+        this.easingFactor = 0.4;
         
         if(canvas){
             this.canvas = canvas;
@@ -625,8 +625,7 @@ class HanziPlotter {
         this.animationFrame = null;
 
         if(this.clickAnimation){
-                this.clickListener = this.canvas.addEventListener('click', this.startAnimation.bind(this));
-                if(isMobileOrTablet()){
+            if(isMobileOrTablet()){
                 this.clickListener = this.canvas.addEventListener('touchstart', this.startAnimation.bind(this));
             }
             else{
@@ -1504,7 +1503,6 @@ class HanziPlotter {
             }
             const data = await response.json();
             this.data = data;
-            console.log('Loaded character data:', this.character, this.data);
             if(onReady){
                 onReady();
             }

@@ -6,6 +6,18 @@ let canvasrendered = false;
 
 function showFlashcard(character) {
     messageElement.textContent = 'Loading...';
+    let url = new URL(window.location);
+    url.searchParams.set('character', character);
+    window.history.replaceState({}, '', url);
+
+    if(loadedCard.character === character){
+        loadedCard.plotters = createPlotters(loadedCard);
+        renderCardData(loadedCard);
+        displayCard(true, true);
+        confirmDarkmode();
+        return;
+    }
+
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
         .then(response => {
             if (!response.ok) {
@@ -31,6 +43,31 @@ function showFlashcard(character) {
             messageElement.textContent = `Error: ${error.message}`;
         });
 }
+
+let loadedCard = null;
+function loadCard(character) {
+    messageElement.textContent = 'Loading...';
+    fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            let chars = character.split('');
+            data.plotters = createPlotters(data);
+            loadedCard = data;
+            messageElement.textContent = "";
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            messageElement.textContent = `Error: ${error.message}`;
+        });
+}
+
+
+
 
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
@@ -103,6 +140,9 @@ document.addEventListener('keydown', function(event) {
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay && !e.target.closest('#font-select')) {
         overlay.style.display = 'none';
+        let url = new URL(window.location);
+        url.searchParams.delete('character');
+        window.history.replaceState({}, '', url);
         // bordercanvas.style.display = 'none';
         // document.getElementById('font-select').style.display = 'none';
     }
@@ -117,7 +157,24 @@ document.addEventListener('DOMContentLoaded', function() {
     pinyinElement.addEventListener('click', function() {
         playHanziAudio();
     });
+
+    
+    if(characterdata){
+        showAfterLoad(characterdata);
+        scrollToTop(document.getElementById('flashcard_container'));
+    }
 });
+
+
+
+
+function showAfterLoad(data){
+    data.plotters = createPlotters(data);
+    renderCardData(data);
+    currentGridPlotters = data.plotters;
+    displayCard(true, true);
+    cardVisible = true;
+}
 
 
 // window.addEventListener('resize', adjustHeight);
