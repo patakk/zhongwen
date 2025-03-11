@@ -16,14 +16,11 @@
     top: 60px;
 }
 
-#deckMenu span, #fontMenu span {
-    display: inline-block;
-    width: 55px;
-}
 
 #deckMenu:hover, #fontMenu:hover {
     cursor: pointer;
 }
+
 
 #deckSubmenu, #fontSubmenu {
     display: none;

@@ -843,44 +843,8 @@ and (orientation: landscape) {
     top: 60px;
 }
 
-#deckMenu span, #fontMenu span {
-    display: inline-block;
-    width: 55px;
-}
 
 
-
-
-#deckMenu:hover, #fontMenu:hover {
-    cursor: pointer;
-}
-
-#deckSubmenu, #fontSubmenu {
-    display: none;
-    position: absolute;
-    left: 0px;
-    top: 32px;
-    background-color: var(--background-color);
-    border: var(--simple-border);
-    box-sizing: border-box;
-}
-
-
-/* #fontSubmenu {
-    left: -10px;
-    top: 20;
-} */
-
-#deckSubmenu.active, #fontSubmenu.active {
-    display: block;
-}
-
-#deckSubmenu li, #fontSubmenu li {
-    list-style-type: none;
-    padding: 0px;
-    text-align: left;
-    min-width: 135px;
-}
 
 @media (max-width: 768px) {
     

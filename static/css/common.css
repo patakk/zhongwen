@@ -170,6 +170,7 @@ a {
     background: var(--lifted-background-color);
     padding: 3px 5px 3px 5px;
     color: var(--text-color);
+    width: 4em;
 }
 
 .submenuName.darkmode {
@@ -187,6 +188,12 @@ a {
 }
 
 
+#deckMenu span, #fontMenu span, #mainMenu span {
+    display: inline-block;
+    /* width: 4em; */
+    box-sizing: border-box;
+}
+
 .submenuName::selection {
     background-color: transparent !important;
     color: var(--text-color) !important;;
@@ -198,7 +205,6 @@ a {
 
 #mainMenu {
     top: 25px;
-    left: 25px;
     position: fixed;
     box-sizing: border-box;
     z-index: 1666;
@@ -208,12 +214,39 @@ a {
 }
 #mainMenu span {
     display: inline-block;
-    width: 55px;
 }
 #mainMenu:hover {
     cursor: pointer;
 }
 #mainSubmenu li {
+    list-style-type: none;
+    padding: 0px;
+    text-align: left;
+    min-width: 135px;
+}
+
+
+
+#deckMenu:hover, #fontMenu:hover {
+    cursor: pointer;
+}
+
+#deckSubmenu, #fontSubmenu {
+    display: none;
+    position: absolute;
+    left: 0px;
+    top: 32px;
+    background-color: var(--background-color);
+    border: var(--simple-border);
+    box-sizing: border-box;
+}
+
+
+#deckSubmenu.active, #fontSubmenu.active {
+    display: block;
+}
+
+#deckSubmenu li, #fontSubmenu li {
     list-style-type: none;
     padding: 0px;
     text-align: left;
@@ -238,13 +271,10 @@ a {
 
 
     #mainMenu {
-        width: auto;
     }
     
     #mainMenu span {
         display: inline-block;
-        width: auto; 
-        min-width: auto;
     }
     
     .deck-option {

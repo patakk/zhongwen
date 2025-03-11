@@ -22,9 +22,21 @@ async function getPinyinEnglishFor(word) {
     return await Promise.all(promises);
 }
 
-function drawCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+function drawbg(ctx){
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+    // ctx.shadowColor = isDarkMode ? '#333' : '#ddd';
+    // ctx.shadowOffsetX = 5; 
+    // ctx.shadowOffsetY = 5;
+    // ctx.shadowBlur = 0;
 
+    ctx.fillStyle = isDarkMode ? '#2a2a2a' : 'white';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+}
+
+function drawCanvas() {
+        
+    drawbg(ctx);
     let numchars = currentWordInfo.strokes.length;
     let charwidth = canvas.height;
     let charheight = canvas.height;
@@ -94,7 +106,7 @@ function interpolateCards() {
 
         let usedprogress = power(progress, 2.5)*1.3;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawbg(ctx);
 
         let numchars1 = prevWordInfo.strokes.length;
         let numchars2 = currentWordInfo.strokes.length;
@@ -128,7 +140,7 @@ function interpolateCards() {
                 }
 
                 let saw = (1-2*Math.abs(.5-progress));
-                lineWidth = flashcardElement.offsetWidth*.035 * (.7+.6*saw*saw*saw);;
+                lineWidth = flashcardElement.offsetWidth*.025 * (.7+.6*saw*saw*saw);;
 
                 let lightness = isDarkMode ? 1 : 0;
 
@@ -147,6 +159,9 @@ function interpolateCards() {
 
         if(progress < 1){
             requestAnimationFrame(animation);
+        }
+        else{
+            redrawCurrentCard();
         }
     }
     animation();
@@ -427,7 +442,7 @@ function setupCanvas(){
 
     progress = 0;
     let saw = (1-2*Math.abs(.5-progress));
-    lineWidth = flashcardElement.offsetWidth*.035 * (.7+.6*saw*saw*saw);;
+    lineWidth = flashcardElement.offsetWidth*.025 * (.7+.6*saw*saw*saw);;
     if(isMobileOrTablet()){
         // canvas.width = flashcardElement.offsetWidth*2;
         // canvas.height = flashcardElement.offsetWidth*.25*2;
