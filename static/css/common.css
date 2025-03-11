@@ -22,6 +22,7 @@
     --learned-color: #d4edda;
     --deckname-color: #d44141;
     --deckname-color: #e33100;
+    --home-link-bg-color: #d0d0d08f;
 }
 
 ::selection {
@@ -30,6 +31,8 @@
 }
 
 .darkmode {
+    --dimmer-background-color: #1d1d1d;
+    --home-link-bg-color: #232323;
     --deckname-color: #76968f;
     --lifted-background-color: #222222;
     --due-color: #4b3232;
@@ -42,7 +45,6 @@
     --dimmer-border-color-a: rgba(65, 65, 65, 0.671);
     --dimmer-border-color-b: rgba(65, 65, 65, 0.845);
     --background-color: #111;
-    --dimmer-background-color: #1d1d1d;
     --text-color: #e6e6e6;
     --dimmer-text-color: #888888;
     --griditem-background-color: #171717;
