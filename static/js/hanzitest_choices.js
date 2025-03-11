@@ -13,7 +13,7 @@ let shuffledCharacters = [];
 let userAnswers = [];
 let characters = {};
 const answerTableBody = document.getElementById('answer-table-body');
-const NUM_QUESTIONS = 10;
+const NUM_QUESTIONS = 5;
 const NUM_OPTIONS = 16;
 
 const deckNameElement = document.getElementById('deck-name');
@@ -303,7 +303,8 @@ function showResults() {
         const row = document.createElement('tr');
         row.className = answer.isCorrect ? 'correct-row' : 'incorrect-row';
         row.innerHTML = `
-            <td>${answer.english}</td>
+            <td style="font-size: 1.5em;">${answer.character}</td>
+            <!-- <td>${answer.english}</td> -->
             <td>${answer.userAnswer}</td>
             <td>${answer.correctAnswer}</td>
         `;

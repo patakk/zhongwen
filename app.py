@@ -375,7 +375,7 @@ def grid():
     if user_wordlists:
         user_wordlists = {wl: wl for wl in user_wordlists}
         hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
-        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
+        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k and k not in user_wordlists]
         decknames_sorted = list(sorted(user_wordlists.keys())) + list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
     else:
         hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]

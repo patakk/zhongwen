@@ -37,7 +37,7 @@ def add_sorted_decknames_to_context(username, context):
             **user_wordlists
         }
         hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
-        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
+        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k and k not in user_wordlists]
         context["decknames_sorted"] = list(sorted(user_wordlists.keys())) + list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
     else:
         context["decknames"] = DECKNAMES
@@ -104,6 +104,7 @@ def hanzitest_draw():
     return render_template("puzzles/hanzitest_draw.html", **context)
 
 
+
 @puzzles_bp.route("/hanzitest_choices")
 @session_required
 @timing_decorator
@@ -111,15 +112,6 @@ def hanzitest_choices():
     context = get_common_context()
     add_sorted_decknames_to_context(session.get('username'), context)
     return render_template("puzzles/hanzitest_choices.html", **context)
-
-
-@puzzles_bp.route("/hanzitest_choices")
-@session_required
-@timing_decorator
-def hanzitest_choices2():
-    context = get_common_context()
-    add_sorted_decknames_to_context(session.get('username'), context)
-    return render_template("puzzles/hanzitest_choices2.html", **context)
 
 
 @puzzles_bp.route("/hanzitest_fillin")
