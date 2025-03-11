@@ -3,16 +3,18 @@ const flashcardContent = document.getElementById('flashcard_container');
 const messageElement = document.getElementById('message');
 
 let canvasrendered = false;
+let loadedCard = null;
+let activeCharacter;
+let cardVisible = false;
 
 function showFlashcard(character) {
+    cardVisible = true;
     messageElement.textContent = 'Loading...';
     let url = new URL(window.location);
     url.searchParams.set('character', character);
     window.history.replaceState({}, '', url);
 
-    if(loadedCard.character === character){
-        loadedCard.plotters = createPlotters(loadedCard);
-        renderCardData(loadedCard);
+    if(loadedCard && loadedCard.character === activeCharacter){
         displayCard(true, true);
         confirmDarkmode();
         return;
@@ -26,17 +28,12 @@ function showFlashcard(character) {
             return response.json();
         })
         .then(data => {
-            // bordercanvas.style.display = 'block';
+            // activeCharacter = character;
             data.plotters = createPlotters(data);
-            renderCardData(data);
+            loadedCard = data;
+            renderCard(data);
             displayCard(true, true);
             confirmDarkmode();
-            // if(!canvasrendered){
-            //     renderBorder();
-            //     canvasrendered = true;
-            // }
-
-            // recordView(character);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -44,7 +41,6 @@ function showFlashcard(character) {
         });
 }
 
-let loadedCard = null;
 function loadCard(character) {
     messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
@@ -58,6 +54,7 @@ function loadCard(character) {
             let chars = character.split('');
             data.plotters = createPlotters(data);
             loadedCard = data;
+            renderCard(loadedCard);
             messageElement.textContent = "";
         })
         .catch(error => {
@@ -67,10 +64,9 @@ function loadCard(character) {
 }
 
 
-
-
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
+        cardVisible = false;
         overlay.style.display = 'none';
         // ccanvas.style.display = 'none';
     }
@@ -78,6 +74,7 @@ overlay.addEventListener('click', (e) => {
 
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
+        cardVisible = false;
         overlay.style.display = 'none';
     }
 });
@@ -109,33 +106,10 @@ function isMobileOrTablet() {
     return check || /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
-// if(isMobileOrTablet()){
-//     document.addEventListener('click', function(event) {
-//         if (!event.target.classList.contains('clickable-char')) {
-//             change(event);
-//         }
-//     });
-// }
-
 function adjustHeight() {
     var vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
-
-
-document.addEventListener('keydown', function(event) {
-    
-});
-
-
-// document.getElementById('font-select').addEventListener('change', function(event) {
-//     currentFont = event.target.value;
-//     document.querySelector('.character').style.fontFamily = `"${currentFont}", sans-serif`;
-//     changeFont(currentFont);
-//     this.blur();
-//     event.stopPropagation(); // Add this line to prevent the event from bubbling up
-// });
-
 
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay && !e.target.closest('#font-select')) {
@@ -143,40 +117,88 @@ overlay.addEventListener('click', (e) => {
         let url = new URL(window.location);
         url.searchParams.delete('character');
         window.history.replaceState({}, '', url);
-        // bordercanvas.style.display = 'none';
-        // document.getElementById('font-select').style.display = 'none';
     }
 });
-
-document.addEventListener('DOMContentLoaded', function() {
-    // document.getElementById('font-select').style.display = 'none';
-    getFont();
-    // setupBackgroundCanvas();
-
-    const pinyinElement = document.getElementById('flashcard_pinyin');
-    pinyinElement.addEventListener('click', function() {
-        playHanziAudio();
-    });
-
-    
-    if(characterdata){
-        showAfterLoad(characterdata);
-        scrollToTop(document.getElementById('flashcard_container'));
-    }
-});
-
-
 
 
 function showAfterLoad(data){
     data.plotters = createPlotters(data);
-    renderCardData(data);
+    loadedCard = data;
+    renderCard(data);
     currentGridPlotters = data.plotters;
     displayCard(true, true);
     cardVisible = true;
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+});
 
-// window.addEventListener('resize', adjustHeight);
-// window.addEventListener('orientationchange', adjustHeight);
-// adjustHeight();
+
+function updateSearchResults(results, query) {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '';
+    if (results && results.length > 0) {
+        results.forEach((result, index) => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+
+            const indexSpan = document.createElement('span');
+            indexSpan.className = 'result-index';
+            indexSpan.textContent = index + 1;
+
+            const hanziSection = document.createElement('div');
+            hanziSection.className = 'hanzi-section';
+            hanziSection.textContent = result.hanzi;
+
+            const detailsSection = document.createElement('div');
+            detailsSection.className = 'details-section';
+
+            const pinyin = document.createElement('div');
+            pinyin.className = 'res-pin';
+            pinyin.textContent = result.pinyin;
+
+            const english = document.createElement('div');
+            english.className = 'res-eng';
+            english.textContent = result.english;
+
+            detailsSection.appendChild(pinyin);
+            detailsSection.appendChild(english);
+
+            if (result.traditional) {
+                const traditional = document.createElement('div');
+                traditional.textContent = `Traditional: ${result.traditional}`;
+                detailsSection.appendChild(traditional);
+            }
+
+            resultItem.appendChild(indexSpan);
+            resultItem.appendChild(hanziSection);
+            resultItem.appendChild(detailsSection);
+
+            let timeout;
+            resultItem.onclick = () => {
+                clearTimeout(timeout);
+                showFlashcard(result.hanzi);
+            }
+
+            resultItem.onmouseenter = () => {
+                if(cardVisible){
+                    return;
+                }
+                activeCharacter = result.hanzi;
+                timeout = setTimeout(() => {
+                    loadCard(result.hanzi);
+                }, 200);
+            };
+
+            resultItem.onmouseleave = () => {
+                clearTimeout(timeout);
+            };
+
+            resultsContainer.appendChild(resultItem);
+        });
+    } else if (query) {
+        const noResults = document.createElement('div');
+        noResults.textContent = `No results found for "${query}"`;
+        resultsContainer.appendChild(noResults);
+    }
+}

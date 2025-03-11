@@ -4,7 +4,7 @@ const flashcardContent = document.getElementById('flashcard_container');
 const messageElement = document.getElementById('message');
 
 let isAnswerVisible = false;
-let currentGridPlotters = [];
+// let currentGridPlotters = [];
 
 
 function shuffleArray(array) {
@@ -220,15 +220,19 @@ function createGrid(characters, useAllDecks){
         if(isDarkMode){
             gridItem.classList.add('darkmode');
         }
+        let timeout;
         gridItem.addEventListener('click', () => {
-            // loadAndShow(charData.character); 
+            // loadRenderDisplay(charData.character); 
+            clearTimeout(timeout);
             showLoaded();
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('query', charData.character);
             history.pushState({}, '', newUrl);
         });
-        let timeout;
         gridItem.addEventListener('mouseenter', () => {
+            if(cardVisible){
+                return;
+            }
             activeCharacter = charData.character;
             timeout = setTimeout(() => {
                 loadCard(charData.character);
@@ -309,8 +313,20 @@ function createListItem(charData, idx) {
         </div>
         <span class="list-english">${charData.english}</span>
     `;
+    
+    let timeout;
+    item.addEventListener('mouseenter', () => {
+        activeCharacter = charData.character;
+        timeout = setTimeout(() => {
+            loadCard(charData.character);
+        }, 200);
+    });
+    item.addEventListener('mouseleave', () => {
+        clearTimeout(timeout);
+    });
     item.addEventListener('click', () => {
-        loadAndShow(charData.character); 
+        clearTimeout(timeout);
+        showLoaded();
         const newUrl = new URL(window.location);
         newUrl.searchParams.set('query', charData.character);
         history.pushState({}, '', newUrl);
@@ -375,7 +391,7 @@ overlaycolors.forEach((color, idx) => {
     overlaycolors[idx] = `#${color}`;
 });
 
-function loadAndShow(character) {
+function loadRenderDisplay(character) {
     messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
         .then(response => {
@@ -393,30 +409,13 @@ function loadAndShow(character) {
             }
 
             let chars = character.split('');
-            // if(prefetchedPlotters){
-            //     let isOkay = true;
-            //     prefetchedPlotters.forEach((plotter, idx) => {
-            //         if(plotter.char !== chars[idx]){
-            //             isOkay = false;
-            //         }
-            //     });
-            //     if(isOkay)
-            //         data.plotters = prefetchedPlotters;
-            //     else
-            //         data.plotters = createPlotters(data);
-            // }
-            // else{
                 data.plotters = createPlotters(data);
-            // }
-            // overlay.style.backgroundColor = overlaycolors[hsklvl];
             let overlay = document.getElementById('flashcard_overlay');
             let currentColor = getColorByTime(overlaycolors);
-            // overlay.style.backgroundColor = currentColor;
-            // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
-            // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
-           
-            renderCardData(data);
-            currentGridPlotters = data.plotters;
+
+            console.log("this one 411")
+            renderCard(data);
+            // currentGridPlotters = data.plotters;
             displayCard(true, true);
             cardVisible = true;
             try{
@@ -440,14 +439,13 @@ function loadAndShow(character) {
 let loadedCard = null;
 
 function showLoaded(){
-    if(!loadedCard || loadedCard.character !== activeCharacter){
-        loadAndShow(activeCharacter);
+    cardVisible = true;
+    if(loadedCard && loadedCard.character === activeCharacter){
+        displayCard(true, true);
         return;
     }
-    renderCardData(loadedCard);
-    currentGridPlotters = loadedCard.plotters;
-    displayCard(true, true);
-    cardVisible = true;
+    // currentGridPlotters = loadedCard.plotters;
+    loadRenderDisplay(activeCharacter);
 }
 
 function loadCard(character) {
@@ -466,35 +464,10 @@ function loadCard(character) {
             catch(e){
 
             }
-
-            let chars = character.split('');
-            // if(prefetchedPlotters){
-            //     let isOkay = true;
-            //     prefetchedPlotters.forEach((plotter, idx) => {
-            //         if(plotter.char !== chars[idx]){
-            //             isOkay = false;
-            //         }
-            //     });
-            //     if(isOkay)
-            //         data.plotters = prefetchedPlotters;
-            //     else
-            //         data.plotters = createPlotters(data);
-            // }
-            // else{
-                data.plotters = createPlotters(data);
-            // }
-            // overlay.style.backgroundColor = overlaycolors[hsklvl];
-            let overlay = document.getElementById('flashcard_overlay');
-            let currentColor = getColorByTime(overlaycolors);
-            // overlay.style.backgroundColor = currentColor;
-            // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
-            // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
-           
-            // renderCardData(data);
-            // currentGridPlotters = data.plotters;
-            // displayCard(true, true);
-            // cardVisible = true;
+            data.plotters = createPlotters(data);
             loadedCard = data;
+            console.log("this one 464")
+            renderCard(loadedCard);
             messageElement.textContent = "";
         })
         .catch(error => {
@@ -505,10 +478,9 @@ function loadCard(character) {
 
 function showAfterLoad(data){
     data.plotters = createPlotters(data);
-    console.log("data")
-    console.log(data)
-    renderCardData(data);
-    currentGridPlotters = data.plotters;
+    console.log("this one 476")
+    renderCard(data);
+    // currentGridPlotters = data.plotters;
     displayCard(true, true);
     cardVisible = true;
 }
@@ -677,7 +649,7 @@ window.addEventListener('popstate', function(event) {
     const query = urlParams.get('query');
     
     if (query) {
-        loadAndShow(query);
+        loadRenderDisplay(query);
         scrollToTop(document.getElementById('flashcard_container'), null);
     }
 });

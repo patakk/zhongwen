@@ -1,5 +1,5 @@
 let addWordsInput = document.getElementById('newWords');
-    
+let cardVisible = false;    
 
 function addToTable(progressRows) {
     let tableBody = document.querySelector("table tbody");
@@ -49,6 +49,25 @@ function addToTable(progressRows) {
         characterCell.addEventListener('mouseover', function(e) {
             const pinyin = this.getAttribute('data-pinyin');
             showTooltip(this, pinyin, e);
+        });
+        let timeout;
+        characterCell.addEventListener('mouseenter', function(e) {
+            if(cardVisible){
+                return;
+            }
+            activeCharacter = stat.character;
+            console.log(activeCharacter)
+            timeout = setTimeout(() => {
+                loadCard(stat.character);
+            }, 200);
+        });
+        
+        characterCell.addEventListener('mouseleave', () => {
+            clearTimeout(timeout);
+        });
+        characterCell.addEventListener('click', function(e) {
+            clearTimeout(timeout);
+            showFlashcard(stat.character);
         });
 
         characterCell.addEventListener('mouseout', hideTooltip);
@@ -309,33 +328,35 @@ let overlay, flashcardContent, messageElement;
 let loadedCard = null;
 
 function loadCard(character) {
-let messageElement = document.getElementById('message');
-messageElement.textContent = 'Loading...';
-fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
-.then(response => {
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-    return response.json();
-})
-.then(data => {
-    try{
-        bordercanvas.style.display = 'block';
-    }
-    catch(e){
+    let messageElement = document.getElementById('message');
+    messageElement.textContent = 'Loading...';
+    fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        try{
+            bordercanvas.style.display = 'block';
+        }
+        catch(e){
 
-    }
-    let chars = character.split('');
-    data.plotters = createPlotters(data);
-    let overlay = document.getElementById('flashcard_overlay');
-    // let currentColor = getColorByTime(overlaycolors);
-    loadedCard = data;
-    messageElement.textContent = "";
-})
-.catch(error => {
-    console.error('Error:', error);
-    messageElement.textContent = `Error: ${error.message}`;
-});
+        }
+        let chars = character.split('');
+        data.plotters = createPlotters(data);
+        loadedCard = data;
+        renderCard(loadedCard);
+        let overlay = document.getElementById('flashcard_overlay');
+        // let currentColor = getColorByTime(overlaycolors);
+        loadedCard = data;
+        messageElement.textContent = "";
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        messageElement.textContent = `Error: ${error.message}`;
+    });
 }
 
 function removeCardFromLearning(wordlist, character){
@@ -401,6 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
+            cardVisible = false;
             overlay.style.display = 'none';
         }
     });
@@ -408,6 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay && !e.target.closest('#font-select')) {
+            cardVisible = false;
             overlay.style.display = 'none';
             // bordercanvas.style.display = 'none';
             // document.getElementById('font-select').style.display = 'none';
@@ -448,9 +471,27 @@ document.addEventListener('DOMContentLoaded', function() {
             const character = this.getAttribute('data-character');
             showTooltip(this, pinyin, e);
 
-            loadCard(character);
         });
 
+        let timeout;
+        character.addEventListener('mouseenter', function(e) {
+            if(cardVisible){
+                return;
+            }
+            activeCharacter = stat.character;
+            timeout = setTimeout(() => {
+                console.log(stat.character + "asfakslnfask");
+                loadCard(stat.character);
+            }, 200);
+        });
+        character.addEventListener('click', function(e) {
+            clearTimeout(timeout);
+            showFlashcard(stat.character);
+        });
+
+        character.addEventListener('mouseleave', () => {
+            clearTimeout(timeout);
+        });
         character.addEventListener('mouseout', hideTooltip);
 
         character.addEventListener('mousemove', function(e) {
@@ -552,10 +593,10 @@ function changeFont(font) {
 }
 
 function showFlashcard(character) {
-
-    if(loadedCard && loadedCard.character === character){
-        renderCardData(loadedCard);
+    cardVisible = true;
+    if(loadedCard && loadedCard.character === activeCharacter){
         displayCard(true, true);
+        confirmDarkmode();
         return;
     }
 
@@ -569,9 +610,8 @@ function showFlashcard(character) {
     .then(data => {
         // bordercanvas.style.display = 'block';
         data.plotters = createPlotters(data);
-        currentGridPlotters = data.plotters;
-
-        renderCardData(data);
+        loadedCard = data;
+        renderCard(data);
         displayCard(true, true);
         // recordView(character);
     })

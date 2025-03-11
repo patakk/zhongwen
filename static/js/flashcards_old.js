@@ -643,7 +643,7 @@ function getNextCard(func=null) {
             // }
         }
         else{
-            renderCardData(prefetchedCard);
+            renderCard(prefetchedCard);
             displayCard(false, false);
         }
         if (func) {
@@ -670,7 +670,7 @@ function getNextCard(func=null) {
                         getNextCard();
                     }
                     else{
-                        renderCardData(data);
+                        renderCard(data);
                         displayCard(false, false);
                     }
                     if (func) {

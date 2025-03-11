@@ -141,7 +141,7 @@ function displayCharMatches(charMatches) {
             }
             
             wordLink.onclick = function() {
-                loadAndShow(word); 
+                loadRenderDisplay(word); 
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('query', word);
                 history.pushState({}, '', newUrl);
@@ -299,7 +299,6 @@ async function renderPlotters(plotters, pinyinparts=null){
     plotterElement.style.minHeight = `${size/2}px`;
 
     
-    plotterElement.innerHTML = '';
     if(plotterElement && plotters){
         // Store plotters as a property of the container element
         plotterElement.plotters = plotters;
@@ -307,6 +306,7 @@ async function renderPlotters(plotters, pinyinparts=null){
         // get all internal loadPromise from plotters and await them
         const loadPromises = plotters.map(plotterinfo => plotterinfo.plotter.loadPromise);
         await Promise.all(loadPromises);
+        plotterElement.innerHTML = '';
 
         plotters.forEach((plotterinfo, index) => {
             const plotter = plotterinfo.plotter;
@@ -485,7 +485,7 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
                 spanElement.addEventListener('click', function(e) {
                     if(isMobileOrTablet()){
                         if(hoverBox.style.display === 'block'){
-                            loadAndShow(wordDict.character); 
+                            loadRenderDisplay(wordDict.character); 
                             const newUrl = new URL(window.location);
                             newUrl.searchParams.set('query', wordDict.character);
                             history.pushState({}, '', newUrl);
@@ -501,7 +501,7 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
                             return;
                         }
                     } else {
-                        loadAndShow(wordDict.character); 
+                        loadRenderDisplay(wordDict.character); 
                         const newUrl = new URL(window.location);
                         newUrl.searchParams.set('query', wordDict.character);
                         history.pushState({}, '', newUrl);
@@ -625,7 +625,7 @@ function setupCloseButton(){
 
 let prefetchedPlotters = null;
 
-function loadAndShow(character) {
+function loadRenderDisplay(character) {
     messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
         .then(response => {
@@ -641,29 +641,8 @@ function loadAndShow(character) {
             catch(e){
 
             }
-
-            let chars = character.split('');
-            // if(prefetchedPlotters){
-            //     let isOkay = true;
-            //     prefetchedPlotters.forEach((plotter, idx) => {
-            //         if(plotter.char !== chars[idx]){
-            //             isOkay = false;
-            //         }
-            //     });
-            //     if(isOkay)
-            //         data.plotters = prefetchedPlotters;
-            //     else
-            //         data.plotters = createPlotters(data);
-            // }
-            // else{
-                data.plotters = createPlotters(data);
-            // }
-            // overlay.style.backgroundColor = overlaycolors[hsklvl];
-            // overlay.style.backgroundColor = currentColor;
-            // let hexstring = 'f9414450-f3722c50-f8961e50-f9844a50-f9c74f50-90be6d50-43aa8b50-4d908e50-57759050-277da150'
-            // overlay.style.backgroundColor = `#${hexstring.split('-')[Math.floor(Math.random() * hexstring.split('-').length)]}`;
-           
-            renderCardData(data);
+            data.plotters = createPlotters(data);
+            renderCard(data);
             currentGridPlotters = data.plotters;
             displayCard(true, true);
             cardVisible = true;
@@ -677,7 +656,6 @@ function loadAndShow(character) {
 
             }
             messageElement.textContent = '';
-            // recordView(character);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -869,7 +847,7 @@ function constSimilars(similars, similarsDiv){
                     wordLink.addEventListener('click', function (e) {
                         if(isMobileOrTablet()){
                             if(hoverBox.style.display === 'block'){
-                                loadAndShow(similar_char);
+                                loadRenderDisplay(similar_char);
                                 const newUrl = new URL(window.location);
                                 newUrl.searchParams.set('query', similar_char);
                                 history.pushState({}, '', newUrl);
@@ -896,7 +874,7 @@ function constSimilars(similars, similarsDiv){
                                 return;
                             }
                         } else {
-                            loadAndShow(similar_char);
+                            loadRenderDisplay(similar_char);
                             const newUrl = new URL(window.location);
                             newUrl.searchParams.set('query', similar_char);
                             history.pushState({}, '', newUrl);
@@ -947,7 +925,7 @@ function constSimilars(similars, similarsDiv){
 }
 
 
-function renderCardData(data) {
+function renderCard(data) {
     const container = document.getElementById('flashcard_container');
     if(container.style.display === 'none' || !container.style.display){
         container.style.display = 'flex';
@@ -1011,7 +989,6 @@ function renderCardData(data) {
         plotterElement.innerHTML = '';
         renderPlotters(data.plotters, pparts);
     }
-
     //document.getElementById('flashcard_pinyin').textContent = toAccentedPinyin(data.pinyin);
     document.getElementById('flashcard_pinyin').textContent = data.pinyin;
     document.getElementById('flashcard_pinyin').dataset.characters = data.character;
@@ -1163,7 +1140,7 @@ function renderCardData(data) {
                     wordLink.addEventListener('click', function (e) {
                         if(isMobileOrTablet()){
                             if(hoverBox.style.display === 'block'){
-                                loadAndShow(similar_char);
+                                loadRenderDisplay(similar_char);
                                 const newUrl = new URL(window.location);
                                 newUrl.searchParams.set('query', similar_char);
                                 history.pushState({}, '', newUrl);
@@ -1186,7 +1163,7 @@ function renderCardData(data) {
                                 return;
                             }
                         } else {
-                            loadAndShow(similar_char);
+                            loadRenderDisplay(similar_char);
                             const newUrl = new URL(window.location);
                             newUrl.searchParams.set('query', similar_char);
                             history.pushState({}, '', newUrl);
@@ -1298,7 +1275,7 @@ function renderCardData(data) {
             }
             
             wordLink.onclick = function() {
-                loadAndShow(similar_char); 
+                loadRenderDisplay(similar_char); 
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('query', similar_char);
                 history.pushState({}, '', newUrl);
@@ -1904,7 +1881,7 @@ function renderCardData(data) {
 
     try {
         if(overlay){
-            overlay.style.display = 'flex';
+            // overlay.style.display = 'flex';
         }
         if(messageElement){
             messageElement.textContent = '';
@@ -1949,6 +1926,7 @@ function scrollToTop(element, func=null) {
 }
 
 function displayCard(showAnswer=true, showPinyin=true) {
+    document.getElementById('flashcard_overlay').style.display = 'flex';
     const flashcardElement = document.getElementById('flashcard_description');
     const englishElement = document.getElementById('flashcard_english');
     const pinyinElement = document.getElementById('flashcard_pinyin');

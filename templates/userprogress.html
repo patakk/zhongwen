@@ -516,7 +516,7 @@
                 {% for stat in progress_stats %}
                     <tr data-character='{{ stat.character }}'>    
 
-                    <td style="text-align: left;" class="character" data-character='{{ stat.character }}'  data-pinyin='{{ stat.pinyin }}' onclick="showFlashcard('{{ stat.character }}')">
+                    <td style="text-align: left;" class="character" data-character='{{ stat.character }}'  data-pinyin='{{ stat.pinyin }}'>
                         <a>{{ stat.character }}</a>
                     </td>
                     <td class="varvar" style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>

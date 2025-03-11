@@ -166,7 +166,7 @@ def db_get_all_character_strokes(username):
 def db_get_word_list_names_only(username):
     user = User.query.filter_by(username=username).first()
     if not user:
-        return None
+        return []
     word_lists = WordList.query.filter_by(user_id=user.id).all()
     return [word_list.name for word_list in word_lists]
 
@@ -174,7 +174,7 @@ def db_get_word_list_names_only(username):
 def db_get_word_list(username, wordlist_name="Learning set"):
     user = User.query.filter_by(username=username).first()
     if not user:
-        return None
+        return []
     wordlist = WordList.query.filter_by(
         user_id=user.id,
         name=wordlist_name
