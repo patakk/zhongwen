@@ -37,6 +37,8 @@
             <input type="text" name="query" id="searchQuery">
             <input id="srch-btn" type="submit" value="Search">
         </form>
+        <div id="search-info">
+        </div>
         
         <div id="results">
            
@@ -62,8 +64,18 @@
         const characterdata = {{ character | tojson | safe }};
         const results = {{ results | tojson | safe }};
         const query = {{ query | tojson | safe }};
+        const searchTimeIn = {{ search_time | tojson | safe }};
+
+
+        function showSearchTime(time){
+            document.getElementById('search-info').innerHTML = `<p>Search time: ${time.toFixed(5)} seconds</p>`;
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
+
+            if(searchTimeIn){
+                showSearchTime(searchTimeIn);
+            }
 
             document.getElementById('searchQuery').value = query;
             updateSearchResults(results, query);
@@ -96,6 +108,8 @@
                 });
 
                 const resp = await response.json();
+                showSearchTime(resp.search_time);
+
                 updateSearchResults(resp.results, resp.query);
                 window.history.pushState({}, '', `?query=${query}`);
                 

@@ -65,7 +65,6 @@
         h2 {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 2em;
-            margin-bottom: .5em;
         }
 
         table {
@@ -102,7 +101,7 @@
         }
 
         td, th {
-            padding: 8px;
+            padding: 0;
             overflow-wrap: break-word;
             word-wrap: break-word;
             word-break: break-word;
@@ -312,6 +311,8 @@
 
         .tooltip-header {
             white-space: wrap;
+            line-height: 2rem;
+            padding-left: .5rem;
         }
 
         #maxNewCards {
@@ -349,6 +350,8 @@
             max-width: 30px;
             text-align: center;
             align-items: center;
+            margin: 0 auto;
+            color: var(--dimmer-text-color);
         }
 
         .trash-iconw {
@@ -386,6 +389,10 @@
             flex-direction: row; /* Change from column to row */
             align-items: center; /* Center vertically */
             width: 100%;
+        }
+
+        #wordForm {
+            margin-top: 1em;
         }
 
         #newWords {
@@ -432,8 +439,94 @@
             }
         }
 
+        #word-sets {
+            background-color: var(--dimmest-background-color);
+            padding: 1em;
+        }
+
+        .practice-icon {
+            display: inline-block;
+            text-align: center;
+            width: 1.4em;
+            min-width: 1.4em;
+        }
+
+        .practice-label {
+            opacity: .5;
+        }
 
 
+        
+        .wlink-wrapper {
+            width: 100%;
+            margin: .5em 0;
+        }
+
+        .alinks {
+            color: var(--text-color);
+            text-decoration: none;
+            background-color: var(--dimmer-background-color);
+            padding: 0px 4px;
+        }
+
+
+        .alinks:hover {
+            background-color: #ff0000;
+            color: #ffffff;
+        } 
+        .wlinks {
+            color: var(--text-color);
+            text-decoration: none;
+            background-color: var(--dimmer-background-color);
+            display: block;
+            padding: 0px .2em;
+        }
+
+        .wlinks:hover {
+            background-color: #ff0000;
+            color: #ffffff;
+        }
+
+        .stat-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+            padding: .2em .4em;
+        }
+
+        .oddrow {
+            background-color: var(--lifted-background-color);
+        }
+
+        .stat-hanzi {
+        }
+
+        .stat-pinyin {
+            font-style: italic;
+        }
+
+        .stat-hanzi-pinyin {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .stat-pinyin, .stat-english {
+            font-size: .8rem;
+            transform: translateY(.4em);
+            text-align: right;
+            opacity: 0.7;
+        }
+
+        .stat-english {
+            flex: 3;
+            padding-left: 10%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
@@ -458,89 +551,113 @@
         <h1>Profile</h1>
         <h2>Account</h2>
         <p style="padding-left: 0.0em;">
-            <a class="links" href="{{ url_for('manage.change_password') }}">Change password</a>
+            <a class="alinks" href="{{ url_for('manage.change_password') }}">Change password</a>
         </p>
         <p style="padding-left: 0.0em;">
-            <a class="links" href="{{ url_for('manage.email_management') }}">Change email</a>
+            <a class="alinks" href="{{ url_for('manage.email_management') }}">Change email</a>
         </p>
-        <h2>Word sets</h2>
-
-        <p style="padding-left: 0.0em; display: none;" id="numcards">Cards in deck: </p>
+        <h2>Word lists</h2>
         
-        <p style="padding-left: 0.0em;">
-            <a class="links" id="gridLink">
-                Preview cards in grid <i class="fa-solid fa-braille"></i>
-            </a>
-        </p>
-        
-        <p style="padding-left: 0.0em;">
-            <a class="links" id="flashcardsLink">
-                Practice as flashcards <i class="fas fa-pen"></i>
-            </a>
-        </p>
-        <p style="padding-left: 0.0em;">
-            <a class="links" id="hanziWritingLink">
-                Practice writing <i class="fas fa-pen"></i>
-            </a>
-        </p>
-        
+        <div id="word-sets">
+            
+            <div id="wordset-label-container">
+                <div id="wordListDropdown" class="custom-dropdown-trigger">
+                    <span class="dropdown-text">Select a word list</span> <i class="fas fa-circle"></i>
+                </div>
+                <span id="removeListBtn"><i class="fas fa-circle-xmark"></i></span>
+                <span id="renameListBtn"><i class="fas fa-file-signature"></i></span>
+            </div>
+            <div id="dropdown-options" class="dropdown-menu" style="display: none;"></div>
+            
+            <!-- <form onsubmit="handleRename(event)">
+                <input id="renameButton" type="submit" class="wlinks" value="Rename word list"></input>
+            </form> -->
 
-        <div id="wordset-label-container">
-            <div id="wordListDropdown" class="custom-dropdown-trigger">
-                Select a word list <i class="fa-solid fa-circle"></i>
-            </div><span id="removeListBtn"><i class="fa-solid fa-circle-xmark"></i></span>
-        </div>
-        <div id="dropdown-options" class="dropdown-menu" style="display: none;"></div>
-        
-        <form id="wordForm" onsubmit="handleRename(event)">
-            <input id="renameButton" type="submit" class="links" value="Rename set"></input>
-        </form>
+            <div style="padding-left: 0.0em; display: none;" id="numcards">Words in list: </div>
 
-        <form id="wordForm" onsubmit="handleAddCards(event)">
-            <input type="text" name="query" id="newWords" placeholder="a word or a list of words (separated with spaces)">
-            <input id="addWordButton" type="submit" value="Add words">
-        </form>
+            <div class="wlink-wrapper">
+                <a class="wlinks" id="listLink">
+                    <span class="practice-icon"><i class="fas fa-list"></i></span> <span class="practice-label">Preview in a list</span>
+                </a>
+            </div>
 
-            <!-- <p>Due cards: {{ duecards }}</p> -->
-        <!-- <p>Learning cards: {{ learningcards }}</p> -->
-        <!-- <p>Learned cards: {{ learnedcards }}</p> -->
-        <table>
-            <tr>
-                <th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th>
-                <th class="tooltip-header varvar" data-tooltip="Current learning stage of the character (%)">Learned</th>
-                <!-- <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th> -->
-                <th class="tooltip-header varvar" data-tooltip="Number of consecutive correct answers">Streak</th>
-                <th class="tooltip-header varvar" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
-                <th class="tooltip-header varvar" data-tooltip="Scheduled date and time for the next review">Next Review</th>
-            </tr>
-                {% for stat in progress_stats %}
-                    <tr data-character='{{ stat.character }}'>    
+            <div class="wlink-wrapper">
+                <a class="wlinks" id="gridLink">
+                    <span class="practice-icon"><i class="fas fa-braille"></i></span> <span class="practice-label">Preview in a grid </span>
+                </a>
+            </div>
 
-                    <td style="text-align: left;" class="character" data-character='{{ stat.character }}'  data-pinyin='{{ stat.pinyin }}'>
-                        <a>{{ stat.character }}</a>
-                    </td>
-                    <td class="varvar" style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
-                    <!-- <td style="text-align: right;">
-                        {{ '{:.2f}'.format(stat.difficulty) if stat.difficulty is not none else '/' }}
-                    </td> -->
-                    <td class="varvar"  style="text-align: right;">{{ stat.streak }}</td>
-                    <td class="varvar"  style="text-align: right;">{{ stat.num_incorrect }}</td>
-                        {% if stat.is_due == 1 %}
-                        <td style="text-align: right;" class="varvar next-review-date">DUE</td>
-                        {% else %}
-                            {% if stat.next_review is not none %}
-                                <td style="text-align: right;" class="varvar next-review-date">{{ stat.next_review }}</td>
-                            {% else %}
-                                <td style="text-align: right;" class="varvar">/</td>
-                            {% endif %}
-                        {% endif %}
-                    <td class="remove-card tooltip-header" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >             
-                        <i class="fa-solid fa-circle-xmark"></i>
-                    </td>
+            <div style="padding: .01em;">
+
+            <div class="wlink-wrapper">
+                <a class="wlinks" id="flashcardsLink">
+                    <span class="practice-icon"><i class="fas fa-eye"></i></span> <span class="practice-label">Flashcards </span>
+                </a>
+            </div>
+            <div class="wlink-wrapper">
+                <a class="wlinks" id="hanziWritingLink">
+                    <span class="practice-icon"><i class="fas fa-pen"></i></span> <span class="practice-label">Writing </span>
+                </a>
+            </div>
+
+            <div style="padding: .01em;">
+
+            <div class="wlink-wrapper">
+                <a class="wlinks" id="pinyinChoiceLink">
+                    <span class="practice-icon"><i class="fas fa-keyboard"></i></span> <span class="practice-label">Choice puzzle </span>
+                </a>
+            </div>
+            <div class="wlink-wrapper">
+                <a class="wlinks" id="pinyinTableLink">
+                    <span class="practice-icon"><i class="fas fa-i-cursor"></i></span> <span class="practice-label">Input puzzle </span>
+                </a>
+            </div>
+
+            <form id="wordForm" onsubmit="handleAddCards(event)">
+                <input type="text" name="query" id="newWords" placeholder="a word or a list of words (separated with spaces)">
+                <input id="addWordButton" type="submit" value="Add words">
+            </form>
+
+                <!-- <p>Due cards: {{ duecards }}</p> -->
+            <!-- <p>Learning cards: {{ learningcards }}</p> -->
+            <!-- <p>Learned cards: {{ learnedcards }}</p> -->
+            <table>
+                <tr>
+                    <th class="tooltip-header" data-tooltip="The Chinese character being learned">Characters</th>
+                    <th class="tooltip-header varvar" data-tooltip="Current learning stage of the character (%)">Learned</th>
+                    <!-- <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th> -->
+                    <th class="tooltip-header varvar" data-tooltip="Number of consecutive correct answers">Streak</th>
+                    <th class="tooltip-header varvar" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
+                    <th class="tooltip-header varvar" data-tooltip="Scheduled date and time for the next review">Next Review</th>
                 </tr>
-                {% endfor %}
-        </table>
-    </div>
+                    {% for stat in progress_stats %}
+                        <tr class="stat-row" data-character='{{ stat.character }}'>    
+
+                        <td style="text-align: left;" class="character" data-character='{{ stat.character }}'  data-pinyin='{{ stat.pinyin }}'>
+                            <a>{{ stat.character }}</a>
+                        </td>
+                        <td class="varvar" style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
+                        <!-- <td style="text-align: right;">
+                            {{ '{:.2f}'.format(stat.difficulty) if stat.difficulty is not none else '/' }}
+                        </td> -->
+                        <td class="varvar"  style="text-align: right;">{{ stat.streak }}</td>
+                        <td class="varvar"  style="text-align: right;">{{ stat.num_incorrect }}</td>
+                            {% if stat.is_due == 1 %}
+                            <td style="text-align: right;" class="varvar next-review-date">DUE</td>
+                            {% else %}
+                                {% if stat.next_review is not none %}
+                                    <td style="text-align: right;" class="varvar next-review-date">{{ stat.next_review }}</td>
+                                {% else %}
+                                    <td style="text-align: right;" class="varvar">/</td>
+                                {% endif %}
+                            {% endif %}
+                        <td class="remove-card" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >             
+                            <i class="fas fa-circle-xmark"></i>
+                        </td>
+                    </tr>
+                    {% endfor %}
+            </table>
+        </div>
     <div id="pinyin-hover-box" style="display: none;"></div>
 
     {% include 'flashcard.html' %}
@@ -564,6 +681,15 @@
             let gridLink = document.getElementById("gridLink");
             gridLink.href = "{{ url_for('grid', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
 
+            let listLink = document.getElementById("listLink");
+            listLink.href = "{{ url_for('grid', deck='PLACEHOLDER', list='true') | safe }}".replace("PLACEHOLDER", currentWordlist);
+
+            let pinyinTableLink = document.getElementById("pinyinTableLink");
+            pinyinTableLink.href = "{{ url_for('puzzles.hanzitest_table', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
+
+            let pinyinChoiceLink = document.getElementById("pinyinChoiceLink");
+            pinyinChoiceLink.href = "{{ url_for('puzzles.hanzitest_choices', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
+            
             let flashcardsLink = document.getElementById("flashcardsLink");
             flashcardsLink.href = "{{ url_for('flashcards', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
         }
@@ -580,21 +706,37 @@
 
     <style>
         .custom-dropdown-trigger {
-          padding: .25em;
-          /* border: 2px solid var(--dimmer-border-color-a); */
-          border: var(--dimmer-border);
-          cursor: pointer;
-          background-color: var(--background-color);
-          background-color: var(--dimmer-border-color-a);
-          color: var(--deckname-color);
-          position: relative;
-          font-size: 1.5em;
-          flex-grow: 1;
-          text-align: left;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
+            padding: .25em;
+            border: var(--dimmer-border);
+            cursor: pointer;
+            background-color: var(--dimmer-background-color);
+            color: var(--text-color);
+            position: relative;
+            font-size: 1.5em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-grow: 1;
+            min-width: 200px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
+
+        .dropdown-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 0; /* Ensures flexbox properly allows shrinking */
+        }
+
+        .custom-dropdown-trigger i {
+            flex-shrink: 0; /* Prevents the icon from shrinking */
+            margin-left: 0.5em;
+        }
+
         
         .dropdown-menu {
           position: absolute;
@@ -622,14 +764,12 @@
           font-weight: bold;
         }
 
-        
         #renameButton {
             color: var(--dimmer-text-color);
             text-decoration: none;
             opacity: 0.4;
             background-color: var(--dimmer-border-color-a);
-            padding: .2em .4em;
-            margin-top: .4em;
+            padding: .2em .4em .2em .4em;
             font-family: inherit;
             border: 2px solid var(--dimmer-border-color-a);
             outline: none;
@@ -645,19 +785,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
+            width: 40%;
         }
 
-        #removeListBtn {
+        #removeListBtn, #renameListBtn {
             padding: 0;
             margin: .25em .25em .25em .5em;
             /* border: 2px solid var(--dimmer-border-color-a); */
             cursor: pointer;
-            background-color: var(--background-color);
             color: var(--deckname-color);
+            color: var(--dimmer-text-color);;
             position: relative;
             font-size: 1.5em;
             flex-shrink: 0;
+        }
+
+        #renameListBtn {
+            color: inherit;
+            color: var(--rename-btn-color);
+            color: var(--dimmer-text-color);;
         }
       </style>
     <script>
@@ -670,7 +816,7 @@
             let keys = Object.keys(wordlists_words);
             addToTable(wordlists_words[currentWordlist]);
             reworkUrls();
-            dropdownTrigger.innerHTML = currentWordlist;
+            dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-down'></i>";
 
             let selectedListName = null;
             
@@ -684,6 +830,10 @@
                     removeWordlist(prompt("Confirm the name of the set to be removed"));
                 }
             });
+
+            document.getElementById("renameListBtn").addEventListener("click", function() {
+                handleRename();
+            });
             
             // Toggle dropdown visibility
             dropdownTrigger.addEventListener('click', function(e) {
@@ -694,7 +844,7 @@
                     // Position the dropdown below the trigger
                     const rect = dropdownTrigger.getBoundingClientRect();
                     // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-arrow-down'></i>";
-                    dropdownTrigger.innerHTML = currentWordlist;
+                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-up'></i>";
                     dropdownMenu.style.top = rect.bottom + 'px';
                     dropdownMenu.style.left = rect.left + 'px';
                     dropdownMenu.style.minWidth = rect.width + 'px';
@@ -702,7 +852,7 @@
                     dropdownMenu.style.display = 'block';
                 } else {
                     // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-arrow-down'></i>";
-                    dropdownTrigger.innerHTML = currentWordlist;
+                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-down'></i>";
                     dropdownMenu.style.display = 'none';
                 }
             });
@@ -725,9 +875,9 @@
                     currentWordlist = value;
                     
                     let tableBody = document.querySelector("table tbody");
-                    tableBody.innerHTML = '<tr><th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th><th class="tooltip-header varvar" data-tooltip="Current learning stage of the character (%)">Learned</th><!-- <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th> --><th class="tooltip-header varvar" data-tooltip="Number of consecutive correct answers">Streak</th><th class="tooltip-header varvar" data-tooltip="Total number of incorrect answers for this character">Incorrect</th><th class="tooltip-header" data-tooltip="Scheduled date and time for the next review">Next Review</th></tr>';
+                    tableBody.innerHTML = '<tr><th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th><th class="tooltip-header varvar" data-tooltip="Current learning stage of the character (%)">Learned</th><!-- <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th> --><th class="tooltip-header varvar" data-tooltip="Number of consecutive correct answers">Streak</th><th class="tooltip-header varvar" data-tooltip="Total number of incorrect answers for this character">Incorrect</th><th class="tooltip-header varvar" data-tooltip="Scheduled date and time for the next review">Next Review</th></tr>';
                     addToTable(wordlists_words[currentWordlist]);
-                    dropdownTrigger.innerHTML = value;
+                    dropdownTrigger.innerHTML = value + " <i class='fa-solid fa-caret-down'></i>";
 
                     reworkUrls();
                 }
@@ -740,7 +890,7 @@
             document.addEventListener('click', function(e) {
                 if (!dropdownTrigger.contains(e.target) && !dropdownMenu.contains(e.target)) {
                     dropdownMenu.style.display = 'none';
-                    dropdownTrigger.innerHTML = currentWordlist;
+                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-down'></i>";
                 }
             });
 

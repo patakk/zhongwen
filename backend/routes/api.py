@@ -120,7 +120,7 @@ def get_progress_data_for_chars():
         simple_char_info = get_char_info(character, pinyin=True, english=True)
         stats = {
             'character': character,
-            'meaning': simple_char_info.get('english', 'N/A'),
+            'english': simple_char_info.get('english', 'N/A'),
             'pinyin': simple_char_info.get('pinyin', 'N/A'),
             'box': char_progress.get('box', 0),
             'views': char_progress.get('views', 0),

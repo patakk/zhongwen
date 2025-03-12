@@ -140,7 +140,7 @@ def user_progress():
     for wl in wordlists_words:
         nww = []
         for w in wordlists_words[wl]:
-            nww.append(get_char_info(w, pinyin=True, english=False))
+            nww.append(get_char_info(w, pinyin=True, english=True))
         wordlists_words[wl] = nww
 
     return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(username), wordlists_words=wordlists_words)
@@ -383,6 +383,7 @@ def grid():
         decknames_sorted = list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
     decknames_sorted_with_name = {deck: DECKNAMES[deck] for deck in decknames_sorted}
 
+    
     for d in cc:
         cc[d]['chars'] = get_chars_info(cc[d]['chars'], pinyin=True, english=True)
 
@@ -779,8 +780,8 @@ def get_search_results(query):
 
     if only_hanzi:
         definition = dictionary.definition_lookup(query)
-        for d in definition:
-            results.append({'hanzi': d['simplified'], 'pinyin': get_pinyin(d['simplified']), 'english': d['definition'], 'match_type': 'hanzi'})
+        # for d in definition:
+        #     results.append({'hanzi': d['simplified'], 'pinyin': get_pinyin(d['simplified']), 'english': d['definition'], 'match_type': 'hanzi'})
         exact_matches = []
         other_matches = []
         res = dictionary.get_examples(query)
@@ -790,7 +791,7 @@ def get_search_results(query):
                     exact_matches.append({'hanzi': r['simplified'], 'pinyin': get_pinyin(r['simplified']), 'english': r['definition'], 'match_type': 'hanzi'})
                 else:
                     other_matches.append({'hanzi': r['simplified'], 'pinyin': get_pinyin(r['simplified']), 'english': r['definition'], 'match_type': 'hanzi'})
-        results = exact_matches + other_matches
+        results += exact_matches + other_matches
 
     else:
         res = dictionary.search_by_pinyin(query)
@@ -829,24 +830,30 @@ def search():
     character = request.args.get('character')
     results = []
     main_data = None
+
+    start_time = time.time()
     if query:
         results = get_search_results(query)
     if character:
         main_data = main_card_data(character)
         main_data['chars_breakdown'] = breakdown_chars(character)
-    return render_template('search.html', results=results, query=query, darkmode=session['darkmode'], decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(session['username']), username=session['username'], character=main_data)
+    search_time = time.time() - start_time
+    return render_template('search.html', results=results, query=query, darkmode=session['darkmode'], decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(session.get('username')), username=session['username'], character=main_data, search_time=search_time)
 
 
 @app.route('/search_results', methods=['POST'])
 @timing_decorator
 @session_required
 def search_results():
+    start_time = time.time()
     data = request.json
     query = data.get('query', '')
     results = []
+    start_time = time.time()
     if query:
         results = get_search_results(query)
-    return jsonify({'results': results, 'query': query})
+    search_time = time.time() - start_time
+    return jsonify({'results': results, 'query': query, 'search_time': search_time})
     
 @app.route('/hanzi_strokes_history')
 @session_required

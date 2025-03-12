@@ -56,8 +56,8 @@ def db_create_user(
     if len(email) > 0:
         user.set_email(email, verified=False)
 
-    new_set = WordList(name="Learning set", user=user)
-    new_entry = WordEntry(word="什么", list=new_set)
+    new_set = WordList(name="Learning list (default)", user=user)
+    new_entry = WordEntry(word="你好", list=new_set)
 
     db.session.add(user)
     db.session.add(new_entry)

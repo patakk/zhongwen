@@ -770,7 +770,6 @@ document.addEventListener('keyup', function(event) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    
     const characterDiv = document.getElementById('flashcard_character');
     const plotterDiv = document.getElementById('flashcard_plotter');
 

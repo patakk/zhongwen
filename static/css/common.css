@@ -3,6 +3,7 @@
     --background-color: #ffffff;
     --lifted-background-color: #f1f1f1;
     --simple-border: 2px solid #afafaf;
+    --dimmest-background-color: #f5f5f5;
     --dimmer-background-color: #f5f5f5;
     --dimmer-border-color: #d0d0d0;
     --dimmer-border-color-a: #d0d0d08f;
@@ -22,6 +23,7 @@
     --learned-color: #d4edda;
     --deckname-color: #d44141;
     --deckname-color: #e33100;
+    --rename-btn-color: #43ac72;
     --home-link-bg-color: #d0d0d08f;
 }
 
@@ -32,9 +34,11 @@
 
 .darkmode {
     --dimmer-background-color: #1d1d1d;
+    --dimmest-background-color: #141414;
     --home-link-bg-color: #232323;
     --deckname-color: #76968f;
-    --lifted-background-color: #222222;
+    --rename-btn-color: #767c96;
+    --lifted-background-color: #181818;
     --due-color: #4b3232;
     --learned-color: #374b32;
     --accent-word: rgb(255, 191, 28);

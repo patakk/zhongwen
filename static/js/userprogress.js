@@ -5,7 +5,7 @@ function addToTable(progressRows) {
     let tableBody = document.querySelector("table tbody");
     let hoverBox = document.getElementById('pinyin-hover-box');
     
-    progressRows.forEach(stat => {
+    progressRows.forEach((stat, idx) => {
         if (document.querySelector(`tr[data-character="${stat.character}"]`)) {
             return; // Skip if character already exists
         }
@@ -20,18 +20,22 @@ function addToTable(progressRows) {
         } 
         row.setAttribute("data-character", stat.character);
 
+        const isodd = idx % 2 === 1 ? " oddrow" : "";
+
         row.innerHTML = `
-            <td style="text-align: left;" class="character" data-pinyin="${stat.pinyin}" onclick="showFlashcard('${stat.character}')">
-                <a>${stat.character}</a>
             </td>
-            <td class="varvar" style="text-align: right;">${(stat.box / 6 * 100).toFixed(1)}%</td>
-            <td class="varvar" style="text-align: right;">${stat.streak}</td>
-            <td class="varvar" style="text-align: right;">${stat.num_incorrect}</td>
-            <td style="text-align: right;" class="varvar next-review-date">
-                ${stat.is_due ? "DUE" : (stat.next_review ? stat.next_review : "/")}
+                <div class="stat-row character${isodd}" data-pinyin="${stat.pinyin}" data-english="${stat.english}" onclick="showFlashcard('${stat.character}')">
+                    <div class="stat-hanzi-pinyin">
+                        <div class="stat-hanzi"><a>${stat.character}</a></div>
+                        <div class="stat-pinyin">${stat.pinyin}</div>
+                    </div>
+                    <div class="stat-english">${stat.english}</div>
+                </div>
             </td>
-            <td class="remove-card tooltip-header" data-tooltip="Remove from learning" data-character="${stat.character}">
-                <i class="fa-solid fa-circle-xmark"></i>
+            <td>
+                <div class="remove-card" data-tooltip="Remove from learning" data-character="${stat.character}">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </div>
             </td>
         `;
 
@@ -48,7 +52,8 @@ function addToTable(progressRows) {
         let characterCell = row.querySelector('.character');
         characterCell.addEventListener('mouseover', function(e) {
             const pinyin = this.getAttribute('data-pinyin');
-            showTooltip(this, pinyin, e);
+            const english = this.getAttribute('data-english');
+            showTooltip(this, english, e);
         });
         let timeout;
         characterCell.addEventListener('mouseenter', function(e) {
@@ -73,9 +78,21 @@ function addToTable(progressRows) {
         characterCell.addEventListener('mouseout', hideTooltip);
 
         characterCell.addEventListener('mousemove', function(e) {
-            hoverBox.style.left = `${e.pageX + 10}px`;
-            hoverBox.style.top = `${e.pageY + 10}px`;
+            const hoverBoxWidth = hoverBox.offsetWidth;
+            const hoverBoxHeight = hoverBox.offsetHeight;
+            const maxX = window.innerWidth - hoverBoxWidth - 10;
+            const maxY = window.innerHeight - hoverBoxHeight - 10;
+        
+            let newX = e.pageX + 10;
+            let newY = e.pageY + 10;
+        
+            if (newX > maxX) newX = maxX;
+            if (newY > maxY) newY = maxY;
+        
+            hoverBox.style.left = `${newX}px`;
+            hoverBox.style.top = `${newY}px`;
         });
+        
     });
 
     setTimeout(() => {
@@ -98,8 +115,9 @@ function getRowData(chars){
         addToTable(data.progress_stats);
         data.progress_stats.forEach(stat => {
             let pinyin = stat.pinyin;
+            let english = stat.english;
             let character = stat.character;
-            wordlists_words[currentWordlist].push({character: character, pinyin: pinyin});
+            wordlists_words[currentWordlist].push({character: character, pinyin: pinyin, english: english});
         });
     })
     .catch(error => {
@@ -168,7 +186,7 @@ function renameWordlistInDB(name, newname){
 }
 
 function handleRename(e){
-    e.preventDefault();
+    if(e) e.preventDefault();
     let newName = prompt("Enter a new name for the word list");
     if(newName){
         let oldname = currentWordlist;
@@ -176,7 +194,7 @@ function handleRename(e){
         wordlists_words[newName] = wordlists_words[currentWordlist];
         delete wordlists_words[currentWordlist];
         currentWordlist = newName;
-        dropdownTrigger.innerHTML = currentWordlist + " <i class='fa-solid fa-circle'></i>";
+        dropdownTrigger.innerHTML = currentWordlist + " <i class='fa-solid fa-caret-down'></i>";
         populateDropdown();
         addToTable(wordlists_words[currentWordlist]);
         reworkUrls();
@@ -190,7 +208,7 @@ function removeWordlist(wordlist){
         
         delete wordlists_words[currentWordlist];
         currentWordlist = Object.keys(wordlists_words)[0];
-        dropdownTrigger.innerHTML = currentWordlist + " <i class='fa-solid fa-circle'></i>";
+        dropdownTrigger.innerHTML = currentWordlist + " <i class='fa-solid fa-caret-down'></i>";
         let tableBody = document.querySelector("table tbody");
         tableBody.innerHTML = "";
         reworkUrls();
@@ -468,8 +486,9 @@ document.addEventListener('DOMContentLoaded', function() {
     characters.forEach(character => {
         character.addEventListener('mouseover', function(e) {
             const pinyin = this.getAttribute('data-pinyin');
+            const english = this.getAttribute('data-english');
             const character = this.getAttribute('data-character');
-            showTooltip(this, pinyin, e);
+            showTooltip(this, english, e);
 
         });
 

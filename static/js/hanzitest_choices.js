@@ -62,7 +62,15 @@ function populateDropdown() {
         }
     });
     const sortedKeys = decknames_sorted;
-    selectDeck(hskKeys[0]);
+
+    let url = new URL(window.location);
+    let deck = url.searchParams.get('deck');
+    if (deck) {
+        inputdeck = deck;
+    } else {
+        inputdeck = hskKeys[0];
+    }
+    selectDeck(inputdeck);
     sortedKeys.forEach(deck => {
         const option = document.createElement('div');
         option.className = 'option';
