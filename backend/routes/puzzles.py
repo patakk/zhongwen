@@ -24,7 +24,7 @@ def get_common_context():
     return {
         "darkmode": session["darkmode"],
         "username": session["username"],
-        "deck": "hsk1",
+        "wordlist": "hsk1",
     }
 
 

@@ -511,7 +511,7 @@ async function loadNewWords(func=null){
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({deck: inputdeck, num: NUM_QUESTIONS}),
+        body: JSON.stringify({wordlist: inputdeck, num: NUM_QUESTIONS}),
     })
     .then(response => {
         if (!response.ok) {
@@ -533,6 +533,11 @@ async function loadNewWords(func=null){
 
 function selectDeck(deck) {
     inputdeck = deck;
+
+    let url = new URL(window.location);
+    url.searchParams.set('wordlist', inputdeck);
+    window.history.replaceState({}, '', url);
+
     selectedDeckElement.textContent = decknames[inputdeck];
     deckOptionsElement.style.display = 'none';
     restartBtn.classList.add("hidden");
@@ -583,12 +588,14 @@ function populateDropdown() {
     
     const sortedKeys = decknames_sorted;
     let url = new URL(window.location);
-    let deck = url.searchParams.get('deck');
+    let deck = url.searchParams.get('wordlist');
     if (deck) {
         inputdeck = deck;
     } else {
         inputdeck = hskKeys[0];
     }
+    url.searchParams.set('wordlist', inputdeck);
+    window.history.replaceState({}, '', url);
     selectDeck(inputdeck);
     sortedKeys.forEach(deck => {
         const option = document.createElement('div');

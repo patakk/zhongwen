@@ -226,7 +226,7 @@ function createGrid(characters, useAllDecks){
             clearTimeout(timeout);
             showLoaded();
             const newUrl = new URL(window.location);
-            newUrl.searchParams.set('query', charData.character);
+            newUrl.searchParams.set('character', charData.character);
             history.pushState({}, '', newUrl);
         });
         gridItem.addEventListener('mouseenter', () => {
@@ -328,7 +328,7 @@ function createListItem(charData, idx) {
         clearTimeout(timeout);
         showLoaded();
         const newUrl = new URL(window.location);
-        newUrl.searchParams.set('query', charData.character);
+        newUrl.searchParams.set('character', charData.character);
         history.pushState({}, '', newUrl);
     });
     return item;
@@ -611,7 +611,7 @@ function changeDeck(deck) {
     grid.innerHTML = '';
     // change url parameter deck to currentDeck
     const newUrl = new URL(window.location);
-    newUrl.searchParams.set('deck', deck);
+    newUrl.searchParams.set('wordlist', deck);
     history.pushState({}, '', newUrl);
     drawBothLayouts(currentData);
     window.scrollTo(0, 0);
@@ -743,8 +743,9 @@ function loadAllData(){
         
         // get deck from url
         const urlParams = new URLSearchParams(window.location.search);
-        const deck = urlParams.get('deck') || 'hsk1';
+        const deck = urlParams.get('wordlist') || 'hsk1';
         currentDeck = deck;
+        urlParams.set('wordlist', deck);
         drawBothLayouts(currentData);
 
         getFont();
@@ -795,9 +796,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-
     if (inputdeck) {
         currentDeck = inputdeck;
+    }
+    if(inputdecks[currentDeck]){
+    }
+    else{
+        currentDeck = 'hsk1';
+        // set url
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('wordlist', currentDeck);
+        history.pushState({}, '', newUrl);
     }
     currentData = inputdecks[currentDeck].chars;
     confirmDarkmode();

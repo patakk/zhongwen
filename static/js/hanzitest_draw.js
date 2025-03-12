@@ -102,7 +102,7 @@ async function loadNewWords(func=null){
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({deck: inputdeck, num: 100}),
+        body: JSON.stringify({wordlist: inputdeck, num: 100}),
     })
     .then(response => {
         if (!response.ok) {

@@ -127,7 +127,7 @@ function getDeck_c() {
                         console.log('Deck changed to', currentDeck);
                         
                         const newUrl = new URL(window.location);
-                        newUrl.searchParams.set('deck', currentDeck);
+                        newUrl.searchParams.set('wordlist', currentDeck);
                         history.pushState({}, '', newUrl);
 
                         // classList.remove('active');
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const urlParams = new URLSearchParams(window.location.search);
-    const deck = urlParams.get('deck') || 'hsk1';
+    const deck = urlParams.get('wordlist') || 'hsk1';
     currentDeck = deck;
     
     if(username === 'tempuser'){

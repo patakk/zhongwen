@@ -539,7 +539,7 @@
             </li>
             <li><a href="{{ url_for('lists') }}">Example Lists</a></li>
             <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
-            <li><a href="{{ url_for('hanzipractice') }}">Practice 汉字</a></li>
+            <li><a href="{{ url_for('hanziwriting') }}">Practice 汉字</a></li>
             <li><a href="{{ url_for('search') }}">Search</a></li>
             <li class="has-submenu">
                 <span>Fonts</span>
@@ -558,7 +558,7 @@
 
     <script>
         const inputdecks = {{ decks | tojson | safe }};        
-        let inputdeck = {{ deck | tojson | safe }};
+        let inputdeck = {{ wordlist | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
         const username = {{ username | tojson | safe }};
         let convertedText = {{ convertedText | tojson | safe }};

@@ -206,14 +206,14 @@ def remove_word_from_learning():
 @api_bp.route("/load_deck_chars")
 @session_required
 def load_deck():
-    deck = request.args.get("deck")
+    wordlist = request.args.get("wordlist")
     characters_data = [
         {
             "character": char,
             "pinyin": data["pinyin"],
             "english": data["english"],
         }
-        for char, data in CARDDECKS[deck].items()
+        for char, data in CARDDECKS[wordlist].items()
     ]
     return jsonify(characters_data)
 
@@ -279,9 +279,9 @@ def store_notes():
 @api_bp.route("/get_characters_with_pinyin")
 @session_required
 def get_characters_with_pinyin():
-    deck = session["deck"]
+    wordlist = session["wordlist"]
     characters_data = []
-    for char, data in CARDDECKS[deck].items():
+    for char, data in CARDDECKS[wordlist].items():
         characters_data.append({"character": char, "pinyin": data["pinyin"]})
     return jsonify({"characters": characters_data})
 
@@ -326,7 +326,7 @@ def get_characters_simple_info():
 @session_required
 def get_deck_chars():
     jdata = request.get_json()
-    deck = jdata['deck']
+    deck = jdata['wordlist']
     characters = CARDDECKS[deck]['chars']
     data = get_chars_info(CARDDECKS[deck]["chars"], pinyin=True)
     return jsonify(data)
@@ -407,7 +407,7 @@ def get_font():
 @api_bp.route("/change_deck", methods=["POST"])
 @timing_decorator
 def change_deck():
-    session["deck"] = request.args.get("deck")
+    session["deck"] = request.args.get("wordlist")
     return jsonify({"message": "Deck changed successfully"})
 
 
@@ -416,7 +416,7 @@ def change_deck():
 @timing_decorator
 def get_deck():
     logger.info(f"Current deck: {session['deck']}")
-    return jsonify({"deck": session["deck"]})
+    return jsonify({"wordlist": session["deck"]})
 
 @api_bp.route("/get_api_key", methods=["GET"])
 def get_api_key():
@@ -595,7 +595,7 @@ def get_random_characters():
     }
 
     data = request.get_json()
-    deck = data.get("deck")
+    deck = data.get("wordlist")
     num = int(data.get("num", 24))
     random_chars = cd[deck]['chars']
     random.shuffle(random_chars)

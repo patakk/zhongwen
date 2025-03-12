@@ -410,14 +410,14 @@ document.addEventListener('DOMContentLoaded', function() {
     currentFont = 'Noto Sans';
 
     let url = new URL(window.location.href);
-    let deck = url.searchParams.get('deck');
+    let deck = url.searchParams.get('wordlist');
     if(deck && inputdecks[deck]){
         inputdeck = deck;
     }
     else{
         inputdeck = 'hsk1';
         let newUrl = new URL(window.location);
-        newUrl.searchParams.set('deck', inputdeck);
+        newUrl.searchParams.set('wordlist', inputdeck);
         history.pushState({}, '', newUrl);
     }
 
@@ -491,7 +491,7 @@ function handleTopLeftButtons() {
             e.stopPropagation();
             inputdeck = this.dataset.deck;
             let newUrl = new URL(window.location);
-            newUrl.searchParams.set('deck', inputdeck);
+            newUrl.searchParams.set('wordlist', inputdeck);
             history.pushState({}, '', newUrl);
             currentWord = '';
             getNewWord();

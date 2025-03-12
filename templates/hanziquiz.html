@@ -84,7 +84,7 @@
     <script>
         
         let currentcharacters = {};
-        let inputdeck = {{ deck | tojson | safe }};
+        let inputdeck = {{ wordlist | tojson | safe }};
         let decknames = {{ decknames | tojson | safe }};
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};

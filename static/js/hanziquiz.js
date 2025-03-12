@@ -55,30 +55,18 @@ function populateDropdown(deckj=false) {
             nonHskKeys.push(deck);
         }
     });
-    let sortedKeys = decknames_sorted;
-    if(hasCustom){
-        // sortedKeys = [...customKeys, ...nonHskKeys, ...hskKeys];
+    const sortedKeys = decknames_sorted;
+
+    let url = new URL(window.location);
+    let deck = url.searchParams.get('wordlist');
+    if (deck) {
+        inputdeck = deck;
+    } else {
+        inputdeck = hskKeys[0];
     }
-    else{
-        // sortedKeys = [...nonHskKeys, ...hskKeys];
-    }
-    // if(deckj){
-    //     selectDeck('custom');
-    // }
-    // else{
-    //     selectDeck(hskKeys[0]);
-    // }
-    // use the neame from query url
-    let url = new URL(window.location.href);
-    let deckName = url.searchParams.get("deck");
-    if(deckName){
-        selectDeck(deckName);
-        url.searchParams.delete('deck');
-        window.history.replaceState({}, document.title, url);
-    }
-    else{
-        selectDeck(sortedKeys[0]);
-    }
+    url.searchParams.set('wordlist', inputdeck);
+    window.history.replaceState({}, '', url);
+    selectDeck(inputdeck);
     sortedKeys.forEach(deck => {
         const option = document.createElement('div');
         option.className = 'option';
@@ -90,6 +78,11 @@ function populateDropdown(deckj=false) {
   
   function selectDeck(deck) {
     inputdeck = deck;
+    
+    let url = new URL(window.location);
+    url.searchParams.set('wordlist', inputdeck);
+    window.history.replaceState({}, '', url);
+    
     cachedStrokes = null;
     selectedDeckElement.textContent = decknames[deck];
     deckOptionsElement.style.display = 'none';
@@ -165,7 +158,7 @@ async function loadNewWords(func=null){
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({deck: inputdeck, num: 100}),
+        body: JSON.stringify({wordlist: inputdeck, num: 100}),
     })
     .then(response => {
         if (!response.ok) {
@@ -697,10 +690,10 @@ document.addEventListener('DOMContentLoaded', () => {
     populateDropdown();
     // Check for deck query parameter in URL
     // const urlParams = new URLSearchParams(window.location.search);
-    // const deckParam = urlParams.get('deck');
+    // const deckParam = urlParams.get('wordlist');
     // if(deckParam){
     //     const url = new URL(window.location.href);
-    //     url.searchParams.delete('deck');
+    //     url.searchParams.delete('wordlist');
     //     window.history.replaceState({}, document.title, url);
     // }
     getDarkmode();

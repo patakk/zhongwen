@@ -120,7 +120,7 @@ async function loadNewWords(func=null){
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({deck: inputdeck, num: 100}),
+        body: JSON.stringify({wordlist: inputdeck, num: 100}),
     })
     .then(response => {
         if (!response.ok) {
@@ -658,11 +658,11 @@ document.addEventListener('DOMContentLoaded', () => {
     checkCustom();
     // Check for deck query parameter in URL
     const urlParams = new URLSearchParams(window.location.search);
-    const deckParam = urlParams.get('deck');
+    const deckParam = urlParams.get('wordlist');
     if(deckParam){
         // remove deck query from url
         const url = new URL(window.location.href);
-        url.searchParams.delete('deck');
+        url.searchParams.delete('wordlist');
         window.history.replaceState({}, document.title, url);
     }
     // remove deck from url

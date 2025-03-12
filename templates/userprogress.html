@@ -676,22 +676,22 @@
         
         function reworkUrls(){
             let link = document.getElementById("hanziWritingLink");
-            link.href = "{{ url_for('hanziwriting', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
+            link.href = "{{ url_for('hanziwriting', wordlist='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
 
             let gridLink = document.getElementById("gridLink");
-            gridLink.href = "{{ url_for('grid', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
+            gridLink.href = "{{ url_for('grid', wordlist='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
 
             let listLink = document.getElementById("listLink");
-            listLink.href = "{{ url_for('grid', deck='PLACEHOLDER', list='true') | safe }}".replace("PLACEHOLDER", currentWordlist);
+            listLink.href = "{{ url_for('grid', wordlist='PLACEHOLDER', list='true') | safe }}".replace("PLACEHOLDER", currentWordlist);
 
             let pinyinTableLink = document.getElementById("pinyinTableLink");
-            pinyinTableLink.href = "{{ url_for('puzzles.hanzitest_table', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
+            pinyinTableLink.href = "{{ url_for('puzzles.hanzitest_table', wordlist='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
 
             let pinyinChoiceLink = document.getElementById("pinyinChoiceLink");
-            pinyinChoiceLink.href = "{{ url_for('puzzles.hanzitest_choices', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
+            pinyinChoiceLink.href = "{{ url_for('puzzles.hanzitest_choices', wordlist='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
             
             let flashcardsLink = document.getElementById("flashcardsLink");
-            flashcardsLink.href = "{{ url_for('flashcards', deck='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
+            flashcardsLink.href = "{{ url_for('flashcards', wordlist='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
         }
     </script>
 

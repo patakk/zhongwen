@@ -321,7 +321,7 @@ def pageinfo():
 @session_required
 @timing_decorator
 def flashcards():
-    querydeck = request.args.get('deck')
+    querydeck = request.args.get('wordlist')
     if not querydeck:
         querydeck = 'hsk1'
 
@@ -348,15 +348,15 @@ def flashcards():
         decknames_sorted = list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
     decknames_sorted_with_name = {deck: DECKNAMES[deck] for deck in decknames_sorted}
 
-    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=cc, deck=querydeck, decknames_sorted_with_name=decknames_sorted_with_name)
+    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=cc, wordlist=querydeck, decknames_sorted_with_name=decknames_sorted_with_name)
 
 
 @app.route('/grid', methods=['GET'])
 @session_required
 @timing_decorator
 def grid():
-    character = request.args.get('query')
-    querydeck = request.args.get('deck')
+    character = request.args.get('character')
+    querydeck = request.args.get('wordlist')
     if not querydeck:
         querydeck = 'hsk1'
     logger.info(f"Query deck: {querydeck}")
@@ -388,10 +388,10 @@ def grid():
         cc[d]['chars'] = get_chars_info(cc[d]['chars'], pinyin=True, english=True)
 
     if not character:
-        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, deck=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
+        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, wordlist=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
     main_data = main_card_data(character)
     main_data['chars_breakdown'] = breakdown_chars(character)
-    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=main_data, decks=cc, deck=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
+    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=main_data, decks=cc, wordlist=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
 
 from backend.routes.puzzles import get_common_context
 
@@ -419,13 +419,13 @@ def hanziwriting():
 # @session_required
 # @timing_decorator
 # def convert():
-#     return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, deck=session['deck'])
+#     return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, wordlist=session['deck'])
 
 @app.route('/convert2')
 @session_required
 @timing_decorator
 def convert2():
-    return render_template('convert2.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, deck=session['deck'])
+    return render_template('convert2.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, wordlist=session['deck'])
 
 @app.route('/convert3')
 @session_required
@@ -439,7 +439,7 @@ def convert3():
     lines = convertedText.split('\n')
     translations = get_translations(lines)
 
-    return render_template('convert3.html', darkmode=session['darkmode'], username=session['username'], convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, deck=session['deck'], transPerLine=translations)
+    return render_template('convert3.html', darkmode=session['darkmode'], username=session['username'], convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
 
 @app.route('/convert')
 @session_required
@@ -453,7 +453,7 @@ def convert():
     lines = convertedText.split('\n')
     translations = get_translations(lines)
 
-    return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, deck=session['deck'], transPerLine=translations)
+    return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
 
 
 
@@ -468,7 +468,7 @@ def stories():
     chars = chars.intersection(stroke_chars)
     char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
     all_chapters = [[chapter['title'] for chapter in all_stories[story_name]['chapters_list']] for story_name in stories_names]
-    return render_template('stories.html', darkmode=session['darkmode'], chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, deck=session['deck'])
+    return render_template('stories.html', darkmode=session['darkmode'], chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'])
 
 @app.route('/get_story/<int:story_index>/<int:chapter_index>')
 @session_required
