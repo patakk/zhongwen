@@ -144,6 +144,13 @@ function confirmDarkmode(){
     catch(e){
         //console.log(e)
     }
+
+    try {
+        drawMasks();
+    }
+    catch(e){
+        //console.log(e)
+    }
     
     try{
         restartQ();

@@ -34,7 +34,7 @@ function drawbg(ctx){
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
-function drawCanvas() {
+function drawStrokes() {
         
     drawbg(ctx);
     let numchars = currentWordInfo.strokes.length;
@@ -43,7 +43,7 @@ function drawCanvas() {
     currentWordInfo.strokes.forEach(function(charstrokes, idx) {
         let cx = canvas.width / 2 - (numchars * charwidth) / 2 + idx * charwidth;
         let cy = canvas.height / 2 - charheight / 2;
-        charstrokes.strokes.forEach(function(stroke) {
+        charstrokes.strokes.fstrokes.forEach(function(stroke) {
             let x0 = cx + stroke[0].x * charwidth;
             let y0 = cy + stroke[0].y * charheight;
             ctx.moveTo(x0, y0);
@@ -60,6 +60,42 @@ function drawCanvas() {
             ctx.stroke();
         });
     });
+
+}
+
+let tiititit = null;
+function drawMasks(){
+    let progg = 0;
+    clearInterval(tiititit);
+    tiititit = null;
+    function aanimate(){
+        progg += 0.045;
+        let maskregion;
+        drawbg(ctx);
+        let numchars = currentWordInfo.strokes.length;
+        let charwidth = canvas.height;
+        let charheight = canvas.height;
+        currentWordInfo.strokes.forEach(function(charstrokes, idx) {
+            let cx = canvas.width / 2 - (numchars * charwidth) / 2 + idx * charwidth+ Math.random()*0;
+            let cy = canvas.height / 2 - charheight / 2 + Math.random()*0
+            charstrokes.masks.forEach(function(mask){
+                maskregion = new Path2D();
+                drawMask(maskregion, mask, cx/canvas.height*1000+charstrokes.strokes.offsetX, cy/canvas.height*1000+charstrokes.strokes.offsetY, canvas.height);
+                let opacity = progg;
+                if(revealed){
+                    opacity = 1;
+                }
+                opacity = 1;
+                ctx.fillStyle = isDarkMode ? `rgba(255,255,255,${opacity})` : `rgba(0,0,0,${opacity})`;
+                ctx.fill(maskregion);
+            });
+        });
+        if(progg < 1){
+            tiititit = setTimeout(aanimate, 1000/160);
+        }
+    }
+
+    aanimate();
 }
 
 function redrawCurrentCard() {
@@ -67,7 +103,9 @@ function redrawCurrentCard() {
     let answerContainer = flashcardElement.querySelector('.answer');
     // hanziContainer.textContent = currentWordInfo.character;
 
-    drawCanvas();
+    drawStrokes();
+
+    drawMasks();
 
     let pinyinContainer = flashcardElement.querySelector('.pinyin');
     pinyinContainer.textContent = currentWordInfo.pinyin.map(toAccentedPinyin);
@@ -84,6 +122,98 @@ function power(p, g) {
     else
         return 1 - 0.5 * Math.pow(2 * (1 - p), g);
 }
+
+
+function drawMask(maskRegion, pathData, offX = 0, offY = 0, dimension=800) {
+    // Normalize the path data first to ensure consistent spacing
+    pathData = pathData.replace(/([A-Za-z])/g, ' $1 ')
+                 .replace(/\s+/g, ' ')
+                 .trim();
+    const commands = pathData.split(' ');
+    let x = 0, y = 0;   // Current position
+    let startX = 0, startY = 0;  // Start position for 'z' command
+    
+    let i = 0;
+    while (i < commands.length) {
+      const cmd = commands[i++];
+      
+      // Skip empty elements
+      if (!cmd) continue;
+      
+      switch (cmd.toUpperCase()) {
+        case 'M': // moveto
+          startX = x = parseFloat(commands[i++]);
+          startY = y = parseFloat(commands[i++]);
+          x = x/1000*dimension + offX*dimension/1000;
+          y = dimension - y/1000*dimension + offY*dimension/1000;
+          maskRegion.moveTo(x, y);
+          
+          // In SVG, after a moveto, subsequent coordinate pairs are treated as implicit lineto commands
+          while (i < commands.length && !isNaN(parseFloat(commands[i]))) {
+            x = parseFloat(commands[i++]);
+            y = parseFloat(commands[i++]);
+            x = x/1000*dimension + offX*dimension/1000;
+            y = dimension - y/1000*dimension + offY*dimension/1000;
+            maskRegion.lineTo(x, y);
+          }
+          break;
+          
+        case 'L': // lineto
+          while (i < commands.length && !isNaN(parseFloat(commands[i]))) {
+            x = parseFloat(commands[i++]);
+            y = parseFloat(commands[i++]);
+            x = x/1000*dimension + offX*dimension/1000;
+            y = dimension - y/1000*dimension + offY*dimension/1000;
+            maskRegion.lineTo(x, y);
+          }
+          break;
+          
+        case 'Q': // quadratic curve
+          while (i + 3 < commands.length && !isNaN(parseFloat(commands[i]))) {
+          const cx = parseFloat(commands[i++]);
+            const cy = parseFloat(commands[i++]);
+            x = parseFloat(commands[i++]);
+            y = parseFloat(commands[i++]);
+            const scaledCx = cx/1000*dimension + offX*dimension/1000;
+            const scaledCy = dimension - cy/1000*dimension + offY*dimension/1000;
+            const scaledX = x/1000*dimension + offX*dimension/1000;
+            const scaledY = dimension - y/1000*dimension + offY*dimension/1000;
+            maskRegion.quadraticCurveTo(scaledCx, scaledCy, scaledX, scaledY);
+        }
+          break;
+          
+        case 'C': // cubic curve
+          while (i + 5 < commands.length && !isNaN(parseFloat(commands[i]))) {
+            const cx1 = parseFloat(commands[i++]);
+            const cy1 = parseFloat(commands[i++]);
+            const cx2 = parseFloat(commands[i++]);
+            const cy2 = parseFloat(commands[i++]);
+            x = parseFloat(commands[i++]);
+            y = parseFloat(commands[i++]);
+            const scaledCx1 = cx1/1000*dimension + offX*dimension/1000;
+            const scaledCy1 = dimension - cy1/1000*dimension + offY*dimension/1000;
+            const scaledCx2 = cx2/1000*dimension + offX*dimension/1000;
+            const scaledCy2 = dimension - cy2/1000*dimension + offY*dimension/1000;
+            const scaledX = x/1000*dimension + offX*dimension/1000;
+            const scaledY = dimension - y/1000*dimension + offY*dimension/1000;
+            maskRegion.bezierCurveTo(scaledCx1, scaledCy1, scaledCx2, scaledCy2, scaledX, scaledY);
+          }
+          break;
+          
+        case 'Z': // closepath
+          maskRegion.closePath();
+          x = startX;
+          y = startY;
+          break;
+          
+        default:
+          // If we encounter a command we don't recognize, it's safer to stop or log an error
+          console.warn(`Unrecognized SVG path command: ${cmd}`);
+          break;
+      }
+    }
+  }
+  
 
 function interpolateCards() {
     let hanziContainer = flashcardElement.querySelector('.hanzi');
@@ -115,21 +245,27 @@ function interpolateCards() {
 
         let numchars = Math.max(numchars1, numchars2);
 
+        let maskregion;
+        // maskregion = new Path2D();
         for(let idx = 0; idx < numchars; idx++){
             let cx1 = canvas.width / 2 - (numchars1 * charwidth) / 2 + Math.min(idx, numchars1-1) * charwidth;
             let cy1 = canvas.height / 2 - charheight / 2;
             let cx2 = canvas.width / 2 - (numchars2 * charwidth) / 2 + Math.min(idx, numchars2-1) * charwidth;
             let cy2 = canvas.height / 2 - charheight / 2;
 
-            let charstrokes1 = prevWordInfo.strokes[Math.min(idx, numchars1-1)].strokes;
-            let charstrokes2 = currentWordInfo.strokes[Math.min(idx, numchars2-1)].strokes;
+            let charstrokes1 = prevWordInfo.strokes[Math.min(idx, numchars1-1)].strokes.fstrokes;
+            let charstrokes2 = currentWordInfo.strokes[Math.min(idx, numchars2-1)].strokes.fstrokes;
+            let charmasks1 = prevWordInfo.strokes[Math.min(idx, numchars1-1)].masks;
+            let charmasks2 = currentWordInfo.strokes[Math.min(idx, numchars2-1)].masks;
             let numcharstrokes = Math.max(charstrokes1.length, charstrokes2.length);
+
             for(let charstrokeidx = 0; charstrokeidx < numcharstrokes; charstrokeidx++){
                 let stroke1 = charstrokes1[charstrokeidx%charstrokes1.length];
                 let stroke2 = charstrokes2[charstrokeidx%charstrokes2.length];
                 stroke1 = resamplePolyline(stroke1, stroke2.length);
                 let x0 = cx1 + stroke1[0].x * charwidth + (cx2+stroke2[0].x * charwidth - stroke1[0].x * charwidth-cx1) * usedprogress;
                 let y0 = cy1 + stroke1[0].y * charheight + (cy2+stroke2[0].y * charheight - stroke1[0].y * charheight-cy1) * usedprogress;
+                
                 ctx.moveTo(x0, y0);
                 ctx.beginPath();
                 for (let i = 1; i < stroke1.length; i++) {
@@ -154,10 +290,16 @@ function interpolateCards() {
                 ctx.lineCap = 'mitter';
                 ctx.lineJoin = 'mitter';
                 ctx.stroke();
+                // drawMask(maskregion, charmasks1[charstrokeidx], prevWordInfo.strokes[Math.min(idx, numchars1-1)].offsetX, prevWordInfo.strokes[Math.min(idx, numchars1-1)].offsetY, canvas.height);
+                // ctx.stroke(maskregion);
+                // drawMask(maskregion, charmasks2[charstrokeidx%charstrokes2.length], cx2/canvas.height*1000+nextWordInfo.strokes[Math.min(idx, numchars2-1)].strokes.offsetX/canvas.height*1000, cy2/canvas.height*1000+nextWordInfo.strokes[Math.min(idx, numchars2-1)].strokes.offsetY, canvas.height);
             }
+            // let lightness = isDarkMode ? 1 : 0;
+            // ctx.fillStyle = `rgba(${lightness*255},${lightness*255},${lightness*255},${1})`;
+            // ctx.fill(maskregion);
         }
 
-        if(progress < 1){
+        if(progress < 1-0.035*8){
             requestAnimationFrame(animation);
         }
         else{
@@ -382,7 +524,7 @@ function processStrokes(strokes) {
     })));
 
     let fstrokes = fix(strokes);
-    return fstrokes;
+    return {fstrokes, offsetX, offsetY};
 }
 
 async function loadStrokeData(character, onLoad=null) {
@@ -398,6 +540,7 @@ async function loadStrokeData(character, onLoad=null) {
         }
         return {
             strokes: processStrokes(data.medians),
+            masks: data.strokes,
             character: character,
         }
     } catch (error) {
