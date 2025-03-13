@@ -48,14 +48,17 @@ window['nextLoadedCard'] = null;
 window['prevLoadedCard'] = null;
 
 let unlocked = false;
+let donefirst = false;
 function maybeLoadRenderAndThenShow(character, dir=0, force_unlock=false){
     cardVisible = true;
+    console.log("clicked", character, unlocked, donefirst);
 
-
-    if(!unlocked){
+    if(!unlocked && donefirst){
+        donefirst = false;
         return;
     }
-    unlocked = false;
+    donefirst = true;
+    unlocked = true;
 
     if(dir == 1){
         if(window['nextLoadedCard']){
