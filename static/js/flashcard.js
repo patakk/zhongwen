@@ -350,7 +350,6 @@ function toAccentedPinyin(input) {
     };
     
     function applyToneMark(syllable, tone) {
-        // If no tone number is provided, return the syllable as is
         if (!tone) return syllable;
         
         const vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
@@ -390,12 +389,10 @@ function toAccentedPinyin(input) {
         return syllable;
     }
 
-    // Handle format with brackets: [suo3] or [suo]
     let result = input.replace(/\[([a-z]+)([1-5])?\]/gi, (match, syllable, tone) => {
         return '[' + applyToneMark(syllable, tone) + ']';
     });
     
-    // Handle simple pinyin format: jiang4 or jiang
     result = result.replace(/\b([a-z]+)([1-5])?\b/gi, (match, syllable, tone) => {
         return applyToneMark(syllable, tone);
     });
@@ -684,6 +681,7 @@ function loadRenderDisplay(character) {
 
             }
             data.plotters = createPlotters(data);
+            window['loadedCard'] = data;
             renderCard(data);
             currentGridPlotters = data.plotters;
             displayCard(true, true);
