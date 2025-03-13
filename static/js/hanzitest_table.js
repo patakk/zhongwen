@@ -97,35 +97,18 @@ function convertToNumberedPinyin(pinyin) {
 }
 
 function simplifyPinyin(pinyin, removeAccents = true, removeNumbers = false) {
-    if (removeNumbers) {
-        return pinyin.toLowerCase().replace(/[1-5]/g, '');
-    }
-    if (/[1-5]/.test(pinyin)) {
-        // If it contains numbers, convert to accented pinyin
-        return pinyin.toLowerCase().trim()
-            .replace(/a([1-5])/g, match => 'āáǎàa'[parseInt(match[1]) - 1])
-            .replace(/e([1-5])/g, match => 'ēéěèe'[parseInt(match[1]) - 1])
-            .replace(/i([1-5])/g, match => 'īíǐìi'[parseInt(match[1]) - 1])
-            .replace(/o([1-5])/g, match => 'ōóǒòo'[parseInt(match[1]) - 1])
-            .replace(/u([1-5])/g, match => 'ūúǔùu'[parseInt(match[1]) - 1])
-            .replace(/v([1-5])/g, match => 'ǖǘǚǜü'[parseInt(match[1]) - 1])
-            .replace(/['\s]+/g, ''); // Remove spaces and apostrophes
-    } else if (removeAccents) {
-        // If it doesn't contain numbers and we want to remove accents
-        return pinyin
-            .toLowerCase().trim()
-            .replace(/[āáǎà]/g, 'a')
-            .replace(/[ēéěè]/g, 'e')
-            .replace(/[īíǐì]/g, 'i')
-            .replace(/[ōóǒò]/g, 'o')
-            .replace(/[ūúǔù]/g, 'u')
-            .replace(/[ǖǘǚǜü]/g, 'v')
-            .replace(/['\s]+/g, ''); // Remove spaces and apostrophes
-    } else {
-        // If it doesn't contain numbers and we want to keep accents
-        return pinyin.toLowerCase().replace(/['\s]+/g, '');
-    }
+    let result = pinyin.toLowerCase();
+    result = result.replace(/[0-9]/g, '');
+    result = result
+        .replace(/[āáǎà]/g, 'a')
+        .replace(/[ēéěè]/g, 'e')
+        .replace(/[īíǐì]/g, 'i')
+        .replace(/[ōóǒò]/g, 'o')
+        .replace(/[ūúǔù]/g, 'u')
+        .replace(/[ǖǘǚǜü]/g, 'u');
+    return result.replace(/ /g, '')
 }
+
 
 
 
@@ -316,14 +299,12 @@ function populateGrid() {
             }
             e.target.dataset.userInput = userInput;
             const hanzi = e.target.dataset.hanzi;
-            const pinyin = currentcharacters[hanzi].pinyin;
+            const pinyin = currentcharacters[hanzi].pinyin[0];
             const hasNumbers = /[1-5]/.test(userInput);
             const userAnswer = simplifyPinyin(userInput);
-            const simplifiedCorrectPinyin = simplifyPinyin(pinyin, removeAccents=true);
+            let simplifiedCorrectPinyin = simplifyPinyin(pinyin, removeAccents=true);
             const isCorrect = userAnswer === simplifiedCorrectPinyin;
-            // console.log('Correct:', simplifiedCorrectPinyin, 'User:', userAnswer, 'Result:', isCorrect);
-            console.log(userAnswer, simplifiedCorrectPinyin, isCorrect);
-            // correct answer
+            console.log('Correct:', simplifiedCorrectPinyin, 'User:', userAnswer, 'Result:', isCorrect);
             if (isCorrect) {
 
                 correctAnswers++;
@@ -345,7 +326,7 @@ function populateGrid() {
                 // disable input
                 e.target.disabled = true;
 
-                // e.target.value = inputdecksflattend[hanzi].pinyin;
+                // e.target.value = inputdecksflattend[hanzi].pinyin[0];
 
                 vibrateElement(e.target.parentNode);
                 // defocus
@@ -404,10 +385,10 @@ function populateGrid() {
                 return;
             }
             const hanzi = e.target.dataset.hanzi;
-            const pinyin = currentcharacters[hanzi].pinyin;
+            const pinyin = currentcharacters[hanzi].pinyin[0];
             const hasNumbers = /[1-5]/.test(userInput);
             const userAnswer = simplifyPinyin(userInput);
-            const simplifiedCorrectPinyin = simplifyPinyin(pinyin, removeAccents=true);
+            const simplifiedCorrectPinyin = simplifyPinyin(pinyin, removeNumbers=true);
             const isCorrect = userAnswer === simplifiedCorrectPinyin;
             if(isCorrect) {
             }
@@ -456,7 +437,7 @@ function revealAnswers(){
     restartBtn.classList.remove("hidden");
     allinputs.forEach(input => {
         if(input.dataset.correct === 'false'){
-            input.value = currentcharacters[input.dataset.hanzi].pinyin;
+            input.value = currentcharacters[input.dataset.hanzi].pinyin[0];
             input.classList.add('pinyin-revealed');
             input.disabled = true;
         }

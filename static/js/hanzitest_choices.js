@@ -220,15 +220,15 @@ function fastConfetti(x, y, hanzi) {
 
 function checkAnswer(selectedPinyin) {
     let character = shuffledCharacters[currentIndex];
-    const correctPinyin = currentcharacters[character].pinyin;
-    const isCorrect = selectedPinyin === correctPinyin;
+    const correctPinyin = currentcharacters[character].pinyin.map(toAccentedPinyin);
+    const isCorrect = selectedPinyin[0] === correctPinyin[0];
 
     userAnswers[currentIndex] = {
         character: character,
         userAnswer: selectedPinyin,
         correctAnswer: correctPinyin,
         isCorrect: isCorrect,
-        english: currentcharacters[character].english.replace(/;/g, ',')
+        english: currentcharacters[character].english.map((s)=>{return s.replace(/;/g, ',');})
     };
 
     if (isCorrect) {
@@ -278,10 +278,10 @@ let lastmousey;
 
 function generatePinyinOptions(character) {
     const correctPinyin = shuffledCharacters[currentIndex];
-    let options = [currentcharacters[correctPinyin].pinyin];
+    let options = [currentcharacters[correctPinyin].pinyin.map(toAccentedPinyin)];
     while (options.length < Math.min(NUM_OPTIONS, shuffledCharacters.length)) {
         const randomChar = shuffledCharacters[Math.floor(Math.random() * shuffledCharacters.length)];
-        const randomPinyin = currentcharacters[randomChar].pinyin;
+        const randomPinyin = currentcharacters[randomChar].pinyin.map(toAccentedPinyin);
         if (!options.includes(randomPinyin)) {
             options.push(randomPinyin);
         }

@@ -277,16 +277,16 @@ function replaceAt(str, index, replacement) {
         return '<span class="hiddenHanzi hanzipart">' + word + '</span>';
     }
     ).join('');
-    let currentPin = characterData.pinyin.split(' ').map((word, index) => {
+    let currentPin = characterData.pinyin[0].split(' ').map((word, index) => {
         if (currentWord.split('')[index] !== currentWord[charIterator%currentWord.length]) {
-            return '<span style="opacity: 0.33">' + word + '</span>';
+            return '<span style="opacity: 0.33">' + toAccentedPinyin(word) + '</span>';
         }
-        return '<span>' + word + '</span>';
+        return '<span>' + toAccentedPinyin(word) + '</span>';
     }
     ).join(' ');
     if(currentWord.length == 1){
-        currentPin = '<span>' + characterData.pinyin + '</span>';
-        currentSWord = '<span class="hiddenHanzi hanzipart">' + currentWord + '</span>';
+        currentPin = '<span>' + toAccentedPinyin(characterData.pinyin[0]) + '</span>';
+        currentSWord = '<span class="hiddenHanzi hanzipart">' + toAccentedPinyin(currentWord) + '</span>';
     }
     currentPinyin = currentPin + "<br>" + currentSWord;
     pinyinLabel.innerHTML = currentPinyin;
