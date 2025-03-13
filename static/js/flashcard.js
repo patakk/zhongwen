@@ -260,6 +260,7 @@ function createPlotters(data){
                 lineType: "round",
                 showDiagonals: false,
                 showGrid: false,
+                useMask: true,
             });
         }
         catch(e){

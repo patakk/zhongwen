@@ -418,12 +418,11 @@ function removeShortSegments(line, minLength = 5) {
     return newLine;
 }
 
-function drawMask(maskRegion, pathData, offX = 0, offY = 0) {
+function drawMask(maskRegion, pathData, offX = 0, offY = 0, dimension=800) {
     // Normalize the path data first to ensure consistent spacing
     pathData = pathData.replace(/([A-Za-z])/g, ' $1 ')
                  .replace(/\s+/g, ' ')
                  .trim();
-    
     const commands = pathData.split(' ');
     let x = 0, y = 0;   // Current position
     let startX = 0, startY = 0;  // Start position for 'z' command
@@ -439,16 +438,16 @@ function drawMask(maskRegion, pathData, offX = 0, offY = 0) {
         case 'M': // moveto
           startX = x = parseFloat(commands[i++]);
           startY = y = parseFloat(commands[i++]);
-          x = x/1000*800 + offX;
-          y = 800 - y/1000*800 + offY;
+          x = x/1000*dimension + offX*dimension/1000;
+          y = dimension - y/1000*dimension + offY*dimension/1000;
           maskRegion.moveTo(x, y);
           
           // In SVG, after a moveto, subsequent coordinate pairs are treated as implicit lineto commands
           while (i < commands.length && !isNaN(parseFloat(commands[i]))) {
             x = parseFloat(commands[i++]);
             y = parseFloat(commands[i++]);
-            x = x/1000*800 + offX;
-            y = 800 - y/1000*800 + offY;
+            x = x/1000*dimension + offX*dimension/1000;
+            y = dimension - y/1000*dimension + offY*dimension/1000;
             maskRegion.lineTo(x, y);
           }
           break;
@@ -457,24 +456,24 @@ function drawMask(maskRegion, pathData, offX = 0, offY = 0) {
           while (i < commands.length && !isNaN(parseFloat(commands[i]))) {
             x = parseFloat(commands[i++]);
             y = parseFloat(commands[i++]);
-            x = x/1000*800 + offX;
-            y = 800 - y/1000*800 + offY;
+            x = x/1000*dimension + offX*dimension/1000;
+            y = dimension - y/1000*dimension + offY*dimension/1000;
             maskRegion.lineTo(x, y);
           }
           break;
           
         case 'Q': // quadratic curve
           while (i + 3 < commands.length && !isNaN(parseFloat(commands[i]))) {
-            const cx = parseFloat(commands[i++]);
+          const cx = parseFloat(commands[i++]);
             const cy = parseFloat(commands[i++]);
             x = parseFloat(commands[i++]);
             y = parseFloat(commands[i++]);
-            const scaledCx = cx/1000*800 + offX;
-            const scaledCy = 800 - cy/1000*800 + offY;
-            const scaledX = x/1000*800 + offX;
-            const scaledY = 800 - y/1000*800 + offY;
+            const scaledCx = cx/1000*dimension + offX*dimension/1000;
+            const scaledCy = dimension - cy/1000*dimension + offY*dimension/1000;
+            const scaledX = x/1000*dimension + offX*dimension/1000;
+            const scaledY = dimension - y/1000*dimension + offY*dimension/1000;
             maskRegion.quadraticCurveTo(scaledCx, scaledCy, scaledX, scaledY);
-          }
+        }
           break;
           
         case 'C': // cubic curve
@@ -485,12 +484,12 @@ function drawMask(maskRegion, pathData, offX = 0, offY = 0) {
             const cy2 = parseFloat(commands[i++]);
             x = parseFloat(commands[i++]);
             y = parseFloat(commands[i++]);
-            const scaledCx1 = cx1/1000*800 + offX;
-            const scaledCy1 = 800 - cy1/1000*800 + offY;
-            const scaledCx2 = cx2/1000*800 + offX;
-            const scaledCy2 = 800 - cy2/1000*800 + offY;
-            const scaledX = x/1000*800 + offX;
-            const scaledY = 800 - y/1000*800 + offY;
+            const scaledCx1 = cx1/1000*dimension + offX*dimension/1000;
+            const scaledCy1 = dimension - cy1/1000*dimension + offY*dimension/1000;
+            const scaledCx2 = cx2/1000*dimension + offX*dimension/1000;
+            const scaledCy2 = dimension - cy2/1000*dimension + offY*dimension/1000;
+            const scaledX = x/1000*dimension + offX*dimension/1000;
+            const scaledY = dimension - y/1000*dimension + offY*dimension/1000;
             maskRegion.bezierCurveTo(scaledCx1, scaledCy1, scaledCx2, scaledCy2, scaledX, scaledY);
           }
           break;
@@ -534,6 +533,7 @@ class HanziPlotter {
         state = IDLE,
         clickAnimation = true,
         clearBackground = true,
+        useMask = false,
         canvas = null,
     }) {
         this.character = character;
@@ -552,7 +552,7 @@ class HanziPlotter {
         this.clearBackground = clearBackground;
         this.loadPromise = null;
 
-        this.useMask = false;
+        this.useMask = useMask;
         this.userStrokes = [];
         this.currentStroke = null;
         this.isDrawing = false;
@@ -608,8 +608,8 @@ class HanziPlotter {
         }
     }   
 
-    processMasks(){
-
+    processMasks(masks){
+        this.masks_ = masks;
     }
 
     onDataReady(){
@@ -1382,8 +1382,9 @@ class HanziPlotter {
             if (this.useMask) {
                 this.ctx.save(); 
                 maskregion = new Path2D();
-                drawMask(maskregion, this.masks_[i], this.offsetX, this.offsetY);
+                drawMask(maskregion, this.masks_[i], this.offsetX, this.offsetY, this.dimension);
                 this.ctx.clip(maskregion);
+                // this.ctx.stroke(maskregion);
             }
             this.drawStroke(strokes[i], 1, false, alpha);
             if (this.useMask) {
@@ -1395,8 +1396,9 @@ class HanziPlotter {
             if (this.useMask) {
                 this.ctx.save(); 
                 let maskregion = new Path2D();
-                drawMask(maskregion, this.masks_[d], this.offsetX, this.offsetY);
+                drawMask(maskregion, this.masks_[d], this.offsetX, this.offsetY, this.dimension);
                 this.ctx.clip(maskregion);
+                // this.ctx.stroke(maskregion);
             }
 
             this.drawStroke(strokes[d], currentStrokeProgress, false, alpha);
