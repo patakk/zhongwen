@@ -70,9 +70,9 @@ function redrawCurrentCard() {
     drawCanvas();
 
     let pinyinContainer = flashcardElement.querySelector('.pinyin');
-    pinyinContainer.textContent = currentWordInfo.pinyin;
+    pinyinContainer.textContent = currentWordInfo.pinyin.map(toAccentedPinyin);
     let englishContainer = flashcardElement.querySelector('.english');
-    englishContainer.textContent = currentWordInfo.english;
+    englishContainer.textContent = currentWordInfo.english.map(toAccentedPinyin);
     answerContainer.classList.toggle('inactive', !revealed);
     handleFont();
 }

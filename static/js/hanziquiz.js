@@ -263,7 +263,7 @@ function replaceAt(str, index, replacement) {
         currentIndex = 0;
     }
     let characterData = currentcharacters[shuffledWords[currentIndex]];
-    englishDisplay.textContent = characterData.english;
+    englishDisplay.textContent = characterData.english[0];
     wordTotalMistakeCount = 0;
     wordTotalStrokeCount = 0;
     
