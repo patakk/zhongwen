@@ -7,12 +7,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Home - 中文</title>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
 
     <style>
+
 
         html, body {
             height: 100%;
@@ -52,10 +54,12 @@
             overflow-y: auto;
         }
 
-        h1 {
-            font-size: 36px;
+        #title {
+            font-size: 4.5em;
             margin-bottom: 20px;
-            color: var(--text-color)
+            font-family: "Noto Sans Mono", monospace;
+            font-family: "Noto Serif SC", serif;
+            color: var(--text-color);
             text-align: center;
         }
         .link-container {
@@ -102,11 +106,11 @@
             color: rgb(14, 14, 14);
         }
 
-        h1 {
+        #title {
             color: rgb(14, 14, 14);
         }
 
-        h1.darkmode {
+        #title.darkmode {
             color: rgb(255, 255, 255);
         }
         
@@ -140,7 +144,8 @@
     {% include 'menu.html' %}
 
     <div class="home-container">
-        <h1>中文</h1>
+        <!-- <div class="title">中文</div> -->
+        <div id="title">汉字</div>
         <div class="link-container">
             <a class="mainlink" id="progressUrl" href="{{ url_for('user_progress') }}"><span style="flex: 1; text-align: left;">my account</span> <i class="fa-solid fa-user"></i></a>
             <a class="mainlink" href="{{ url_for('grid') }}"><span style="flex: 1; text-align: left;">grid</span> <i class="fas fa-th-large"></i></a>

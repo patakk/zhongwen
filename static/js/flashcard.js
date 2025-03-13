@@ -253,7 +253,7 @@ function createPlotters(data){
             plotter = new HanziPlotter({
                 character: char,
                 dimension: size,
-                speed: .04,
+                speed: .07,
                 lineThickness: 8*size/200,
                 jitterAmp: 0,
                 colors: colors,
@@ -318,6 +318,7 @@ async function renderPlotters(plotters, pinyinparts=null){
                 colors = ["#e5ddedec", "#e5ddedaa", "#e5ddedaa"];
             }
                 colors = ["#151511ee", "#e5ddedaa", "#e5ddedaa"];
+                colors = ["#151511ee", "#e5ddedee", "#e5ddedaa"];
                 plotter.setColors(colors);
             try{
                 plotter.draw(1, false);

@@ -183,7 +183,7 @@
 /* Remove the max-height and overflow-y from #flashcard_description */
 #flashcard_description {
     font-size: 1em;
-    margin: 30px;
+    margin: 0;
     user-select: text;
 }
 
@@ -214,7 +214,7 @@ p::selection {
     flex-direction: column;
     align-items: center;
     scrollbar-width: none;
-    padding: 42px;
+    padding: 1em;
     box-sizing: border-box;
     transition: transform 0.2s, background-color 0.1s;
     z-index: 1032;
@@ -864,9 +864,13 @@ input[type="checkbox"].darkmode:checked::after {
 
 .tab-nav {
     display: flex;
-    gap: 10px;
+    gap: .25em;
+    margin-left: 10px;
     margin-bottom: 10px;
     border-bottom: 2px solid var(--dimmer-border-color-a);
+    width: calc(100% + 2em);
+    transform: translateX(-1em);
+    margin: 0 0;
 }
 
 .tab-button {
@@ -876,6 +880,7 @@ input[type="checkbox"].darkmode:checked::after {
     padding: 10px 15px;
     cursor: pointer;
     font-size: 1.3em;
+    margin-left: 1em;
     transition: background 0.03s;
     border-bottom: 2px solid transparent;
     border: 2px solid transparent;
@@ -893,7 +898,7 @@ input[type="checkbox"].darkmode:checked::after {
 
 .tab-content-container {
     padding: 10px;
-    border: 2px solid var(--dimmer-border-color-a);
+    /* border: 2px solid var(--dimmer-border-color-a); */
     font-size: 1em;
 }
 
@@ -1169,14 +1174,14 @@ input[type="checkbox"].darkmode:checked::after {
 
 .grid-cell {
     padding: 8px;
-    border-bottom: 1px solid var(--dimmer-background-color);
+    border-bottom: 2px dashed var(--dimmer-border-color-b);
 }
 
 .header .grid-cell {
-    font-weight: bold;
+    color: var(--dimmer-text-color);
     background-color: var(--dimmer-background-color);
 }
 
 .pinyin-cell {
-    border-right: 1px solid var(--dimmer-border-color-a);
+    border-right: 2px solid var(--dimmer-border-color-b);
 }
