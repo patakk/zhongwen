@@ -571,51 +571,6 @@ overlaycolors.forEach((color, idx) => {
     overlaycolors[idx] = `#${color}`;
 });
 
-function loadRenderDisplay(character) {
-    messageElement.textContent = 'Loading...';
-    fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            try{
-                bordercanvas.style.display = 'block';
-            }
-            catch(e){
-
-            }
-
-            let chars = character.split('');
-                data.plotters = createPlotters(data);
-            let overlay = document.getElementById('flashcard_overlay');
-            let currentColor = getColorByTime(overlaycolors);
-
-            console.log("this one 411")
-            renderCard(data);
-            // currentGridPlotters = data.plotters;
-            displayCard(true, true);
-            cardVisible = true;
-            try{
-                if(!canvasrendered || true){
-                    renderBorder();
-                    canvasrendered = true;
-                }
-            }
-            catch(e){
-
-            }
-            messageElement.textContent = '';
-            // recordView(character);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            messageElement.textContent = `Error: ${error.message}`;
-        });
-}
-
 let loadedCard = null;
 
 function showLoaded(){

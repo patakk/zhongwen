@@ -681,6 +681,7 @@ function loadRenderDisplay(character) {
 
             }
             data.plotters = createPlotters(data);
+            console.log(data);
             window['loadedCard'] = data;
             renderCard(data);
             currentGridPlotters = data.plotters;
@@ -993,6 +994,7 @@ function createClickableHanziElements(text) {
             wordSpan.style.textDecoration = 'underline';
             
             wordSpan.addEventListener('click', function() {
+                console.log('click');
                 loadRenderDisplay(word);
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('query', word);
