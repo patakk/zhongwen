@@ -735,10 +735,11 @@ function handleTouchMove(evt) {
     let yUp = evt.touches[0].clientY;
     let xDiff = xDown - xUp;
     let yDiff = yDown - yUp;
+    console.log(xDiff, yDiff);
     if (Math.abs(xDiff) > Math.abs(yDiff)) {
-        if (xDiff > 30) {
+        if (xDiff > 8) {
             loadAndShowPreviousCard();
-        } else if (xDiff < -30) {
+        } else if (xDiff < -8) {
             loadAndShowNextCard();
         }
     }
