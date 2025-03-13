@@ -80,28 +80,48 @@ def get_tatoeba_page(character, page):
 
     return examples, is_last
 
+from hanziconv import HanziConv
+
+def simplify_hanzi(text):
+    return HanziConv.toSimplified(text)
+
 def get_char_info(character, pinyin=False, english=False, function=False, full=False):
     if full:
         return char_full_info_(character)
     info = {}
     try:
-        dlup = dictionary.definition_lookup(character)
-        if pinyin:
-            info['pinyin'] = get_pinyin(character)
-            # info['pinyin'] = dlup[0]['pinyin']
-        if english:
-            if len(dlup) == 1:
-                best_entry = dlup[0]
-            else:
-                best_entry = next((entry for entry in dlup if entry_req(entry['definition'])), dlup[0])
+        # definition_results = dictionary.definition_lookup(character)
+        # if pinyin:
+        #     # info['pinyin'] = get_pinyin(character)
+        #     info['pinyin'] = definition_results[0]['pinyin']
+        # if english:
+        #     if len(definition_results) == 1:
+        #         best_entry = definition_results[0]
+        #     else:
+        #         best_entry = next((entry for entry in definition_results if entry_req(entry['definition'])), definition_results[0])
 
-            definition = best_entry['definition']
-            info['english'] = definition.strip("/")
+        #     definition = best_entry['definition']
+        #     info['english'] = definition.strip("/")
+
+        info['english'] = []
+        info['pinyin'] = []
+        definition_results = dictionary.definition_lookup(simplify_hanzi(character))
+        if len(definition_results) >= 1:
+            best_entry = next((entry for entry in definition_results if entry_req(entry['definition'])), 
+                              definition_results[0])
+            
+            info['english'].append(best_entry['definition'])
+            info['pinyin'].append(best_entry['pinyin'])
+            
+            for entry in definition_results:
+                if entry != best_entry:
+                    info['english'].append(entry['definition'])
+                    info['pinyin'].append(entry['pinyin'])
     except:
         info['pinyin'] = "N/A"
         info['english'] = "N/A"
     if function:
-        words = pseg.cut(character)
+        words = pseg.cut(simplify_hanzi(character))
         functions = []
         for _, flag in words:
             f = pos_map.get(flag, 'unknown')
@@ -192,18 +212,26 @@ def entry_req(definition):
     return r1 and r2 and r3 and r4
 
 def char_full_info_(char):
-    definition = "-"
+    char = simplify_hanzi(char)
+    definition = []
+    pinyin = []
     try:
-        definition = dictionary.definition_lookup(char)
+        definition_results = dictionary.definition_lookup(char)
         
-        if len(definition) == 1:
-            best_entry = definition[0]
-        else:
-            best_entry = next((entry for entry in definition if entry_req(entry['definition'])), definition[0])
-
-        definition = best_entry['definition']
+        if len(definition_results) >= 1:
+            best_entry = next((entry for entry in definition_results if entry_req(entry['definition'])), 
+                              definition_results[0])
+            
+            definition.append(best_entry['definition'])
+            pinyin.append(best_entry['pinyin'])
+            
+            for entry in definition_results:
+                if entry != best_entry:
+                    definition.append(entry['definition'])
+                    pinyin.append(entry['pinyin'])
     except:
-        pass
+        definition = ["-"]
+        pinyin = ["-"]
     frequency = "-"
     rank = "-"
     try:
@@ -252,5 +280,6 @@ def char_full_info_(char):
         'main_components': main_components,
         'similars': similars,
         'appears_in': appears_in,
-        'pinyin': get_pinyin(char),
+        'pinyin': pinyin,
+        # 'pinyin': get_pinyin(char),
     }

@@ -150,6 +150,7 @@ function displayCharMatches(charMatches) {
 
             
             wordLink.addEventListener('mouseover', function(e) {
+                console.log("this shouldnt be running");
                 const pinyin =  chardict[word].pinyin;
                 const english = chardict[word].english;
                 const hsklvl = chardict[word].hsk_level;
@@ -245,6 +246,7 @@ function createPlotters(data){
     if(isDarkMode){
         colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
     }
+    colors = ["#151511aa", "#e5ddedaa"];
     chars.forEach((char, index) => {
         let plotter = null;
         try{
@@ -314,7 +316,8 @@ async function renderPlotters(plotters, pinyinparts=null){
             if(isDarkMode){
                 colors = ["#e5ddedec", "#e5ddedaa", "#e5ddedaa"];
             }
-            plotter.setColors(colors);
+                colors = ["#151511ee", "#e5ddedaa", "#e5ddedaa"];
+                plotter.setColors(colors);
             try{
                 plotter.draw(1, false);
                 plotter.canvas.dataset.plotterIndex = index;
@@ -345,21 +348,61 @@ function toAccentedPinyin(input) {
         '4': 'àèìòùǜ',
         '5': 'aeiouü'
     };
-
-    return input.split(' ').map(word => 
-        word.replace(/([a-z]+)([1-5])/i, (_, syllable, tone) => {
-            let vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
-            let index = syllable.split('').findIndex(c => vowels.includes(c));
-            if (syllable.includes('ou')) index = syllable.indexOf('o');
-            if (index !== -1) {
-                let charArray = syllable.split('');
-                charArray[index] = toneMap[tone][vowels.indexOf(charArray[index])];
-                return charArray.join('');
+    
+    function applyToneMark(syllable, tone) {
+        // If no tone number is provided, return the syllable as is
+        if (!tone) return syllable;
+        
+        const vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
+        let syllableLower = syllable.toLowerCase();
+        
+        if (syllableLower.includes('a')) {
+            let index = syllableLower.indexOf('a');
+            let result = syllable.split('');
+            result[index] = toneMap[tone][0];
+            return result.join('');
+        }
+        
+        if (syllableLower.includes('e')) {
+            let index = syllableLower.indexOf('e');
+            let result = syllable.split('');
+            result[index] = toneMap[tone][1];
+            return result.join('');
+        }
+        
+        if (syllableLower.includes('ou')) {
+            let index = syllableLower.indexOf('o');
+            let result = syllable.split('');
+            result[index] = toneMap[tone][3];
+            return result.join('');
+        }
+        
+        for (let i = syllableLower.length - 1; i >= 0; i--) {
+            let char = syllableLower[i];
+            let vowelIndex = vowels.indexOf(char);
+            if (vowelIndex !== -1) {
+                let result = syllable.split('');
+                result[i] = toneMap[tone][vowelIndex];
+                return result.join('');
             }
-            return syllable;
-        })
-    ).join(' ');
+        }
+        
+        return syllable;
+    }
+
+    // Handle format with brackets: [suo3] or [suo]
+    let result = input.replace(/\[([a-z]+)([1-5])?\]/gi, (match, syllable, tone) => {
+        return '[' + applyToneMark(syllable, tone) + ']';
+    });
+    
+    // Handle simple pinyin format: jiang4 or jiang
+    result = result.replace(/\b([a-z]+)([1-5])?\b/gi, (match, syllable, tone) => {
+        return applyToneMark(syllable, tone);
+    });
+    
+    return result;
 }
+
 
 function wrapImageUrls(inputString) {
     // const imageRegex = /(?:^|\s)(https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp))(?:\s|$|<)/gi;
@@ -455,8 +498,8 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
                 function showTooltip(element, x, y) {
                     // Use the pinyin from the dictionary
                     hoverBox.innerHTML = `
-                        <div class="hover-pinyin">${wordDict.pinyin}</div>
-                        <div class="hover-english">${wordDict.english}</div>
+                        <div class="hover-pinyin">${wordDict.pinyin.map(toAccentedPinyin)}</div>
+                        <div class="hover-english">${wordDict.english.map(toAccentedPinyin)}</div>
                     `;
                     hoverBox.style.display = 'block';
                     hoverBox.style.left = `${x + 10}px`;
@@ -599,7 +642,6 @@ const getExamplesPage = async (page, character, func) => {
         });
         const data = await response.json();
         currentExamples = data.examples;
-        console.log(currentExamples);
         if(func){
             func();
         }
@@ -827,8 +869,8 @@ function constSimilars(similars, similarsDiv){
                         if(isMobileOrTablet()){
                             return;
                         }
-                        const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
-                        const english = chardict[similar_char].english;
+                        const pinyin = chardict[similar_char].pinyin.map(toAccentedPinyin);
+                        const english = chardict[similar_char].english.map(toAccentedPinyin);
                         const hsklvl = "chardict[similar_char].hsk_level";
                         let tooltipContent = `<strongsfasf>${pinyin}</strong><br>${english}<br>`;
                     
@@ -853,8 +895,8 @@ function constSimilars(similars, similarsDiv){
                                 history.pushState({}, '', newUrl);
                                 hoverBox.style.display = 'none';
                             } else {
-                                const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
-                                const english = chardict[similar_char].definition;
+                                const pinyin = chardict[similar_char].pinyin.map(toAccentedPinyin);
+                                const english = chardict[similar_char].definition.map(toAccentedPinyin);
                                 let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
                                 if (isDarkMode) {
                                     tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
@@ -924,6 +966,64 @@ function constSimilars(similars, similarsDiv){
     });
 }
 
+function createClickableHanziElements(text) {
+    const container = document.createElement('span');
+    const regex = /([\u4e00-\u9fa5]+(?:\|[\u4e00-\u9fa5]+)?)(?:\[([^\]]+)\])?/g;
+    
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = regex.exec(text)) !== null) {
+        // Add any text before the match
+        if (match.index > lastIndex) {
+            container.appendChild(document.createTextNode(
+                text.substring(lastIndex, match.index)
+            ));
+        }
+        
+        const fullMatch = match[0];
+        const hanziPart = match[1];
+        
+        const hanziWords = hanziPart.split('|');
+        
+        hanziWords.forEach((word, index) => {
+            const wordSpan = document.createElement('span');
+            wordSpan.className = 'clickable-hanzi';
+            wordSpan.textContent = word;
+            wordSpan.style.cursor = 'pointer';
+            wordSpan.style.color = '#0066cc';
+            wordSpan.style.textDecoration = 'underline';
+            
+            wordSpan.addEventListener('click', function() {
+                loadRenderDisplay(word);
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('query', word);
+                history.pushState({}, '', newUrl);
+            });
+            
+            container.appendChild(wordSpan);
+            
+            if (index < hanziWords.length - 1) {
+                container.appendChild(document.createTextNode('|'));
+            }
+        });
+        
+        if (match[2]) {
+            container.appendChild(document.createTextNode('[' + match[2] + ']'));
+        }
+        
+        lastIndex = match.index + fullMatch.length;
+    }
+    
+    if (lastIndex < text.length) {
+        container.appendChild(document.createTextNode(
+            text.substring(lastIndex)
+        ));
+    }
+    
+    return container;
+}
+
 
 function renderCard(data) {
     const container = document.getElementById('flashcard_container');
@@ -970,10 +1070,17 @@ function renderCard(data) {
         let pinyin_part = pinyin_split_list[index];
         pparts.push(pinyin_part);
         span.dataset.pinyin = pinyin_part;
-        if(isMobileOrTablet()){
+        if(isMobileOrTablet() || true){
             span.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent triggering the change event
-                window.location.href = `./search?query=${encodeURIComponent(char)}`;
+                e.stopPropagation();
+                // window.location.href = `./search?query=${encodeURIComponent(char)}`;
+                window['nextLoadedCard'] = null;
+                window['prevLoadedCard'] = null;
+                window['loadedCard'] = null;
+                loadRenderDisplay(char);
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('query', char);
+                history.pushState({}, '', newUrl);
             });
             span.style.hover = 'color: #ffd91c';
             // span.style.cursor = 'pointer';
@@ -990,21 +1097,20 @@ function renderCard(data) {
         renderPlotters(data.plotters, pparts);
     }
     //document.getElementById('flashcard_pinyin').textContent = toAccentedPinyin(data.pinyin);
-    document.getElementById('flashcard_pinyin').textContent = data.pinyin;
+    document.getElementById('flashcard_pinyin').textContent = data.pinyin.map(toAccentedPinyin);
     document.getElementById('flashcard_pinyin').dataset.characters = data.character;
     if(data.english.constructor === Array){
         document.getElementById('flashcard_english').innerHTML = '';
         let englishList = document.createElement('ul');
         data.english.forEach(english => {
             let englishItem = document.createElement('li');
-            englishItem.textContent = english;
+            englishItem.textContent = toAccentedPinyin(english);
             englishList.appendChild(englishItem);
         });
         document.getElementById('flashcard_english').appendChild(englishList);
     } else {
-        document.getElementById('flashcard_english').innerHTML = data.english;
+        document.getElementById('flashcard_english').innerHTML = toAccentedPinyin(data.english);
     }
-   
     let ai_content = data.html;
 
 
@@ -1064,18 +1170,82 @@ function renderCard(data) {
         const entryDiv = document.createElement('div');
         entryDiv.classList.add('tab-content');
         entryDiv.id = `tab-${index}`;
+        entryDiv.innerHTML = '';
+        
         const filteredRadicals = Object.entries(radicals)
             .filter(([rad, meaning]) => meaning && meaning !== "No glyph available")
             .map(([rad, meaning]) => `${rad} (${meaning})`)
             .join(', ');
 
-            entryDiv.innerHTML = `
-            <div class="rawDefEntry"><div class="rawDefLabel">Definition:</div> <div class="rawDefContent">${english}</div></div>
-            <div class="rawDefEntry"><div class="rawDefLabel">Pinyin:</div> <div class="rawDefContent">${pinyin}</div></div>
-            ${rank !== null ? `<div class="rawDefEntry"><div class="rawDefLabel">Frequency rank:</div> <div class="rawDefContent">${rank}</div></div>` : ''}
-            <div class="rawDefEntry"><div class="rawDefLabel">Graphical components:</div> <div class="rawDefContent">${graphical_components.join(', ')}</div></div>
-            ${filteredRadicals ? `<div class="rawDefEntry"><div class="rawDefLabel">Radicals:</div> <div class="rawDefContent">${filteredRadicals}</div></div>` : ''}
-        `;
+
+        function createDefEntry(label, content) {
+            const entry = document.createElement('div');
+            entry.className = 'rawDefEntry';
+            
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'rawDefLabel';
+            labelDiv.textContent = label;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'rawDefContent';
+            contentDiv.textContent = content;
+            
+            entry.appendChild(labelDiv);
+            entry.appendChild(contentDiv);
+            return entry;
+        }
+
+        const definitionsTable = document.createElement('div');
+        definitionsTable.className = 'definitions-grid';
+
+        const headerRow = document.createElement('div');
+        headerRow.className = 'grid-row header';
+
+        const pinyinHeader = document.createElement('div');
+        pinyinHeader.className = 'grid-cell pinyin-cell';
+        pinyinHeader.textContent = 'Pinyin';
+
+        const meaningHeader = document.createElement('div');
+        meaningHeader.className = 'grid-cell meaning-cell';
+        meaningHeader.textContent = 'Meaning';
+
+        headerRow.appendChild(pinyinHeader);
+        headerRow.appendChild(meaningHeader);
+        definitionsTable.appendChild(headerRow);
+
+        // Determine the number of rows needed
+        const maxEntries = Math.max(pinyin.length, english.length);
+
+        // Create a row for each definition pair
+        for (let i = 0; i < maxEntries; i++) {
+            const dataRow = document.createElement('div');
+            dataRow.className = 'grid-row';
+            
+            const pinyinCell = document.createElement('div');
+            pinyinCell.className = 'grid-cell pinyin-cell';
+            pinyinCell.textContent = i < pinyin.length ? toAccentedPinyin(pinyin[i]) : '';
+            
+            const meaningCell = document.createElement('div');
+            meaningCell.className = 'grid-cell meaning-cell';
+            meaningCell.appendChild(createClickableHanziElements(toAccentedPinyin(english[i])));
+            
+            dataRow.appendChild(pinyinCell);
+            dataRow.appendChild(meaningCell);
+            definitionsTable.appendChild(dataRow);
+        }
+
+        entryDiv.appendChild(definitionsTable);
+
+        if (rank !== null) {
+            entryDiv.appendChild(createDefEntry('Frequency rank:', rank));
+        }
+        entryDiv.appendChild(createDefEntry('Graphical components:', graphical_components.join(', ')));
+        if (filteredRadicals) {
+            entryDiv.appendChild(createDefEntry('Radicals:', filteredRadicals));
+        }
+
+
+    
         //<div class="rawDefEntry"><div class="rawDefLabel">Main components:</div> <div class="rawDefContent">${main_components.join(', ')}</div></div>
         
     
@@ -1126,8 +1296,8 @@ function renderCard(data) {
                         if(isMobileOrTablet()){
                             return;
                         }
-                        const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
-                        const english = chardict[similar_char].definition;
+                        const pinyin = chardict[similar_char].pinyin.map(toAccentedPinyin);
+                        const english = chardict[similar_char].definition.map(toAccentedPinyin);
                         const hsklvl = "chardict[similar_char].hsk_level";
                         let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
                     
@@ -1147,7 +1317,7 @@ function renderCard(data) {
                                 hoverBox.style.display = 'none';
                             } else {
                                 const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
-                                const english = chardict[similar_char].definition;
+                                const english = toAccentedPinyin(chardict[similar_char].definition);
                                 let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
                                 if (isDarkMode) {
                                     tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
@@ -1254,8 +1424,8 @@ function renderCard(data) {
             wordLink.classList.add('word-link-example');
             // wordLink.classList.add('word-link-small');
             // show hanzi and pinyin and enlgish
-            const pinyin = toAccentedPinyin(entry.pinyin);
-            const english = entry.english;
+            const pinyin = entry.pinyin.map(toAccentedPinyin);
+            const english = entry.english.map(toAccentedPinyin);
             wordLink.innerHTML = `<span class="small_hanzi">${similar_char}</span> - <span class="small_english">${english}</span>`;
 
             const hoverBox = document.getElementById('pinyin-hover-box');
@@ -1285,7 +1455,7 @@ function renderCard(data) {
             wordLink.addEventListener('mouseover', function(e) {
                 if(isMobileOrTablet())
                     return;
-                const pinyin = toAccentedPinyin(entry.pinyin);
+                const pinyin = entry.pinyin.map(toAccentedPinyin);
                 const english = entry.english;
                 const hsklvl = "chardict[similar_char].hsk_level";
                 //let tooltipContent = `<span><strong>${pinyin}</strong><br>${english}<br></span>`;
@@ -1935,7 +2105,8 @@ function displayCard(showAnswer=true, showPinyin=true) {
     pinyinElement.classList.toggle('visible', showPinyin || showAnswer);
     flashcardElement.style.visibility = showAnswer ? 'visible' : 'hidden';
     englishElement.style.visibility = showAnswer ? 'visible' : 'hidden';
-    functionElement.style.visibility = showAnswer ? 'visible' : 'hidden';
+    // functionElement.style.visibility = showAnswer ? 'visible' : 'hidden';
+    functionElement.style.display = 'none';
     char_matchesElement.style.visibility = showAnswer ? 'visible' : 'hidden';
 }
 

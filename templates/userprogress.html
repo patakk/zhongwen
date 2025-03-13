@@ -106,6 +106,7 @@
             word-wrap: break-word;
             word-break: break-word;
             white-space: normal;
+            border: 2px solid var(--dimmer-border-color-a);
         }
 
         .character {
@@ -248,8 +249,8 @@
 
 
 
-            td:nth-child(1), th:nth-child(1) { width: 80%; }
-            td:nth-child(2), th:nth-child(2) { width: 20%; }
+            td:nth-child(1), th:nth-child(1) { width: 85%; }
+            td:nth-child(2), th:nth-child(2) { width: 15%; }
         }
 
         @media (max-width: 1433px) {
@@ -346,8 +347,6 @@
 
         .remove-card {
             cursor: pointer;
-            width: 30px;
-            max-width: 30px;
             text-align: center;
             align-items: center;
             margin: 0 auto;
@@ -440,7 +439,7 @@
         }
 
         #word-sets {
-            background-color: var(--dimmest-background-color);
+            background-color: var(--dimmer-background-color);
             padding: 1em;
         }
 
@@ -477,7 +476,7 @@
         .wlinks {
             color: var(--text-color);
             text-decoration: none;
-            background-color: var(--dimmer-background-color);
+            background-color: var(--dimmest-background-color);
             display: block;
             padding: 0px .2em;
         }
@@ -493,6 +492,7 @@
             justify-content: space-between;
             width: 100%;
             padding: .2em .4em;
+            line-height: 2rem;
         }
 
         .oddrow {
@@ -526,6 +526,18 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        @media screen and (max-width: 768px) {
+            
+            .stat-hanzi-pinyin {
+                flex: 1;
+            }
+
+            .stat-english {
+                flex: 2;
+                display: none;
+            }
         }
 
     </style>
@@ -564,7 +576,7 @@
                 <div id="wordListDropdown" class="custom-dropdown-trigger">
                     <span class="dropdown-text">Select a word list</span> <i class="fas fa-circle"></i>
                 </div>
-                <span id="removeListBtn"><i class="fas fa-circle-xmark"></i></span>
+                <span id="removeListBtn"><i class="fas fa-xmark"></i></span>
                 <span id="renameListBtn"><i class="fas fa-file-signature"></i></span>
             </div>
             <div id="dropdown-options" class="dropdown-menu" style="display: none;"></div>
@@ -577,17 +589,17 @@
 
             <div class="wlink-wrapper">
                 <a class="wlinks" id="listLink">
-                    <span class="practice-icon"><i class="fas fa-list"></i></span> <span class="practice-label">Preview in a list</span>
+                    <span class="practice-icon"><i class="fas fa-list"></i></span> <span class="practice-label">Table view</span>
                 </a>
             </div>
 
             <div class="wlink-wrapper">
                 <a class="wlinks" id="gridLink">
-                    <span class="practice-icon"><i class="fas fa-braille"></i></span> <span class="practice-label">Preview in a grid </span>
+                    <span class="practice-icon"><i class="fas fa-braille"></i></span> <span class="practice-label">Grid view</span>
                 </a>
             </div>
 
-            <div style="padding: .01em;">
+            <div style="padding-top: .5em;"></div>
 
             <div class="wlink-wrapper">
                 <a class="wlinks" id="flashcardsLink">
@@ -599,8 +611,6 @@
                     <span class="practice-icon"><i class="fas fa-pen"></i></span> <span class="practice-label">Writing </span>
                 </a>
             </div>
-
-            <div style="padding: .01em;">
 
             <div class="wlink-wrapper">
                 <a class="wlinks" id="pinyinChoiceLink">
@@ -652,7 +662,7 @@
                                 {% endif %}
                             {% endif %}
                         <td class="remove-card" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >             
-                            <i class="fas fa-circle-xmark"></i>
+                            <i class="fas fa-xmark"></i>
                         </td>
                     </tr>
                     {% endfor %}

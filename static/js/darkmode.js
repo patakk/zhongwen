@@ -160,6 +160,16 @@ function confirmDarkmode(){
     catch(e){
         //console.log(e)
     }
+    try{
+        window['loadedCard'].plotters.forEach(child => {
+            if(child.plotter){
+                child.plotter.draw();
+            }
+        });
+    }
+    catch(e){
+        //console.log(e)
+    }
 }
 
 document.addEventListener('keydown', function(event) {

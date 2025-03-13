@@ -779,7 +779,7 @@ def get_search_results(query):
     #only_latin_with_numbers = any(char.isdigit() for char in query) and all(regex.match(r'[\p{Latin}0-9]', char) for char in query if char.strip())
 
     if only_hanzi:
-        definition = dictionary.definition_lookup(query)
+        # definition = dictionary.definition_lookup(query)
         # for d in definition:
         #     results.append({'hanzi': d['simplified'], 'pinyin': get_pinyin(d['simplified']), 'english': d['definition'], 'match_type': 'hanzi'})
         exact_matches = []
@@ -788,9 +788,9 @@ def get_search_results(query):
         for fr in res:
             for r in res[fr]:
                 if r['simplified'] == query:
-                    exact_matches.append({'hanzi': r['simplified'], 'pinyin': get_pinyin(r['simplified']), 'english': r['definition'], 'match_type': 'hanzi'})
+                    exact_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
                 else:
-                    other_matches.append({'hanzi': r['simplified'], 'pinyin': get_pinyin(r['simplified']), 'english': r['definition'], 'match_type': 'hanzi'})
+                    other_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
         results += exact_matches + other_matches
 
     else:
@@ -799,14 +799,14 @@ def get_search_results(query):
             dd = dictionary.definition_lookup(r)
             for d in dd:
                 if d:
-                    results.append({'hanzi': r, 'pinyin': get_pinyin(d['simplified']), 'english': d['definition'], 'match_type': 'english'})
+                    results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english'})
         if len(results) == 0:
             res = dictionary.search_by_english(query)
             for r in res:
                 dd = dictionary.definition_lookup(r)
                 for d in dd:
                     if d:
-                        results.append({'hanzi': r, 'pinyin': get_pinyin(d['simplified']), 'english': d['definition'], 'match_type': 'english'})
+                        results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english'})
             qwords = query.split(" ") 
             if len(qwords) > 1:
                 fresults = []

@@ -387,6 +387,7 @@ p::selection {
 
 .clickable-char {
     transition: color 0.8s;
+    cursor: pointer;
 }
 
 /* @media only screen 
@@ -1154,4 +1155,28 @@ input[type="checkbox"].darkmode:checked::after {
 }
 .doc-iconw.darkmode {
     background-image: url("/static/icons/docb.png");
+}
+
+.definitions-grid {
+    display: grid;
+    grid-template-columns: 20% 80%;
+    margin-bottom: 10px;
+}
+
+.grid-row {
+    display: contents;
+}
+
+.grid-cell {
+    padding: 8px;
+    border-bottom: 1px solid var(--dimmer-background-color);
+}
+
+.header .grid-cell {
+    font-weight: bold;
+    background-color: var(--dimmer-background-color);
+}
+
+.pinyin-cell {
+    border-right: 1px solid var(--dimmer-border-color-a);
 }

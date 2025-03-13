@@ -43,8 +43,184 @@ function removeTones(pinyin) {
 
 let typedDisplay = document.getElementById('typedDisplay');
 
+window['loadedCard'] = null;
+window['nextLoadedCard'] = null;
+window['prevLoadedCard'] = null;
+
+let unlocked = false;
+function maybeLoadRenderAndThenShow(character, dir=0, force_unlock=false){
+    cardVisible = true;
+
+
+    if(!unlocked){
+        return;
+    }
+    unlocked = false;
+
+    if(dir == 1){
+        if(window['nextLoadedCard']){
+            console.log("loaded next", window['nextLoadedCard'].character);
+            renderCard(window['nextLoadedCard']);
+            activeCharacter = character;
+            window['prevLoadedCard'] = Object.assign({}, window['loadedCard']);
+            window['loadedCard'] = Object.assign({}, window['nextLoadedCard']);
+            
+            let next_neighs = getNeighbors(character);
+            let next_nextchar = next_neighs.nextchar;
+            let next_prevchar = next_neighs.prevchar;
+            console.log("loading next next", next_nextchar);
+            loadCard(next_nextchar, false, 'nextLoadedCard');
+            return;
+        }
+        else{
+            maybeLoadRenderAndThenShow(nextchar, 0);
+            return;
+        }
+    }
+    if(dir == -1){
+        if(window['prevLoadedCard']){
+            renderCard(window['prevLoadedCard']);
+            activeCharacter = character;
+            window['nextLoadedCard'] = Object.assign({}, window['loadedCard']);
+            window['loadedCard'] = Object.assign({}, window['prevLoadedCard']);
+            
+            let prev_neighs = getNeighbors(character);
+            let prev_nextchar = prev_neighs.nextchar;
+            let prev_prevchar = prev_neighs.prevchar;
+            loadCard(prev_prevchar, false, 'prevLoadedCard');
+            return;
+        }
+        else{
+            maybeLoadRenderAndThenShow(prevchar, 0);
+            return;
+        }
+    }
+    if(window['loadedCard'] && window['loadedCard'].character === activeCharacter){
+        let neighs = getNeighbors(character);
+        let nextchar = neighs.nextchar;
+        let prevchar = neighs.prevchar;
+        displayCard(true, true);
+        confirmDarkmode();
+        loadCard(nextchar, false, 'nextLoadedCard');
+        loadCard(prevchar, false, 'prevLoadedCard');
+
+        return;
+    }
+
+    fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // bordercanvas.style.display = 'block';
+        data.plotters = createPlotters(data);
+        window['loadedCard'] = data;
+        renderCard(data);
+        displayCard(true, true);
+        unlocked = true;
+        let nextcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(window['loadedCard'].character) + 1;
+        let prevcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(window['loadedCard'].character) - 1;
+        nextcharidx = nextcharidx % wordlists_words[currentWordlist].length;
+        prevcharidx = (prevcharidx + wordlists_words[currentWordlist].length) % wordlists_words[currentWordlist].length;
+        let nextchar = wordlists_words[currentWordlist][nextcharidx].character;
+        let prevchar = wordlists_words[currentWordlist][prevcharidx].character;
+        loadCard(nextchar, false, 'nextLoadedCard');
+        loadCard(prevchar, false, 'prevLoadedCard');
+        // recordView(character);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function getNeighbors(inputChar){
+    let charidx = currentCharList.indexOf(inputChar);
+    let nexcharidx = (charidx + 1) % currentCharList.length;
+    let prevcharidx = (charidx - 1 + currentCharList.length) % currentCharList.length;
+    let nextchar = currentCharList[nexcharidx];
+    let prevchar = currentCharList[prevcharidx];
+    return {nextchar, prevchar};
+}
+
+function loadAndShowPreviousCard() {
+    let currentCharacter = activeCharacter;
+    let neighs = getNeighbors(currentCharacter);
+    let prevChar = neighs.prevchar;
+    let nextChar = neighs.nextchar;
+    maybeLoadRenderAndThenShow(prevChar, -1);
+}
+
+function loadAndShowNextCard() {
+    let currentCharacter = activeCharacter;
+    let neighs = getNeighbors(currentCharacter);
+    let prevChar = neighs.prevchar;
+    let nextChar = neighs.nextchar;
+    console.log(activeCharacter, nextChar);
+    maybeLoadRenderAndThenShow(nextChar, 1);
+}
+
+
+let xDown = null;
+let yDown = null;
+document.addEventListener('touchstart', handleTouchStart, false);
+document.addEventListener('touchmove', handleTouchMove, false);
+function getTouches(evt) {
+    return evt.touches || evt.originalEvent.touches;
+}
+function handleTouchStart(evt) {
+    const firstTouch = getTouches(evt)[0];
+    xDown = firstTouch.clientX;
+    yDown = firstTouch.clientY;
+}
+function handleTouchMove(evt) {
+    if (!xDown || !yDown) {
+        return;
+    }
+    let xUp = evt.touches[0].clientX;
+    let yUp = evt.touches[0].clientY;
+    let xDiff = xDown - xUp;
+    let yDiff = yDown - yUp;
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {
+        if (xDiff > 0) {
+            loadAndShowPreviousCard();
+        } else {
+            loadAndShowNextCard();
+        }
+    }
+    xDown = null;
+    yDown = null;
+}
+
+
+let isNavigating = false;
+document.addEventListener('keydown', function(event) {
+    if(event.key === 'Escape') {
+        hideCard();
+        return;
+    }
+
+    if (cardVisible && !isNavigating) {
+        if (event.key === 'ArrowLeft' || event.key === 'a') {
+            isNavigating = true;
+            loadAndShowPreviousCard();
+            setTimeout(function() {
+                isNavigating = false;
+            }, 22);
+        } else if (event.key === 'ArrowRight' || event.key === 'd') {
+            isNavigating = true;
+            loadAndShowNextCard();
+            setTimeout(function() {
+                isNavigating = false;
+            }, 22); 
+        }
+    }
+});
 
 document.addEventListener('keydown', function(event) {
+    return;
     if(document.getElementById('chatbox')){
         const chatboxStyle = document.getElementById('chatbox').style.display;
         if (chatboxStyle !== 'none' && chatboxStyle !== '') {
@@ -78,7 +254,7 @@ document.addEventListener('keydown', function(event) {
         // }
     }
 
-    if (event.key.length === 1) {
+    if (event.key.length === 1 && !cardVisible) {
         inputString += event.key;
         
         // Update and show the typed display
@@ -224,7 +400,7 @@ function createGrid(characters, useAllDecks){
         gridItem.addEventListener('click', () => {
             // loadRenderDisplay(charData.character); 
             clearTimeout(timeout);
-            showLoaded();
+            maybeLoadRenderAndThenShow(charData.character, 0, true);
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('character', charData.character);
             history.pushState({}, '', newUrl);
@@ -235,7 +411,7 @@ function createGrid(characters, useAllDecks){
             }
             activeCharacter = charData.character;
             timeout = setTimeout(() => {
-                loadCard(charData.character);
+                loadCard(charData.character, true, 'loadedCard');
             }, 200);
         });
         gridItem.addEventListener('mouseleave', () => {
@@ -282,6 +458,7 @@ function createLists(characters, useAllDecks) {
 
     
     let ichars = Object.keys(characters);
+
     ichars.forEach((character, idx) => {
         let charData = characters[character];
         charData.character = character;
@@ -318,7 +495,7 @@ function createListItem(charData, idx) {
     item.addEventListener('mouseenter', () => {
         activeCharacter = charData.character;
         timeout = setTimeout(() => {
-            loadCard(charData.character);
+            loadCard(charData.character, true, 'loadedCard');
         }, 200);
     });
     item.addEventListener('mouseleave', () => {
@@ -326,7 +503,7 @@ function createListItem(charData, idx) {
     });
     item.addEventListener('click', () => {
         clearTimeout(timeout);
-        showLoaded();
+        maybeLoadRenderAndThenShow(charData.character, 0, true);
         const newUrl = new URL(window.location);
         newUrl.searchParams.set('character', charData.character);
         history.pushState({}, '', newUrl);
@@ -448,45 +625,88 @@ function showLoaded(){
     loadRenderDisplay(activeCharacter);
 }
 
-function loadCard(character) {
+
+function loadCard(character, render=false, targetVar = 'loadedCard') {
+    let messageElement = document.getElementById('message');
     messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            try{
-                bordercanvas.style.display = 'block';
-            }
-            catch(e){
-
-            }
-            data.plotters = createPlotters(data);
-            loadedCard = data;
-            console.log("this one 464")
-            renderCard(loadedCard);
-            messageElement.textContent = "";
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            messageElement.textContent = `Error: ${error.message}`;
-        });
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        try{
+            bordercanvas.style.display = 'block';
+        }
+        catch(e){
+        }
+        data.plotters = createPlotters(data);
+        window[targetVar] = data;
+        if(render){
+            renderCard(window[targetVar]);
+        }
+        messageElement.textContent = "";
+        unlocked = true;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        messageElement.textContent = `Error: ${error.message}`;
+    });
 }
+
+// function loadCard(character) {
+//     messageElement.textContent = 'Loading...';
+//     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
+//         .then(response => {
+//             if (!response.ok) {
+//                 throw new Error('Network response was not ok');
+//             }
+//             return response.json();
+//         })
+//         .then(data => {
+//             try{
+//                 bordercanvas.style.display = 'block';
+//             }
+//             catch(e){
+
+//             }
+//             data.plotters = createPlotters(data);
+//             loadedCard = data;
+//             console.log("this one 464")
+//             renderCard(loadedCard);
+//             messageElement.textContent = "";
+//         })
+//         .catch(error => {
+//             console.error('Error:', error);
+//             messageElement.textContent = `Error: ${error.message}`;
+//         });
+// }
 
 function showAfterLoad(data){
     data.plotters = createPlotters(data);
     console.log("this one 476")
     renderCard(data);
+    window['loadedCard'] = data;
+
+    let neighs = getNeighbors(data.character);
+    let nextchar = neighs.nextchar;
+    let prevchar = neighs.prevchar;
+    displayCard(true, true);
+    confirmDarkmode();
+    loadCard(nextchar, false, 'nextLoadedCard');
+    loadCard(prevchar, false, 'prevLoadedCard');
+
+    unlocked = true;
     // currentGridPlotters = data.plotters;
     displayCard(true, true);
     cardVisible = true;
 }
 
-
+let currentCharList = null;
 function drawBothLayouts(data, useAllDecks=false){    
+    currentCharList = Object.keys(data);
     createGrid(data, useAllDecks);
     createLists(data, useAllDecks);
 }
@@ -867,10 +1087,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if(characterdata){
         showAfterLoad(characterdata);
+        activeCharacter = characterdata.character;
         let overlay = document.getElementById('flashcard_overlay');
         let currentColor = getColorByTime(overlaycolors);
         // overlay.style.backgroundColor = currentColor;
-        console.log(currentColor)
         
         scrollToTop(document.getElementById('flashcard_container'));
     }

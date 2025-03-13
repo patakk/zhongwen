@@ -24,7 +24,7 @@ function addToTable(progressRows) {
 
         row.innerHTML = `
             </td>
-                <div class="stat-row character${isodd}" data-pinyin="${stat.pinyin}" data-english="${stat.english}" onclick="showFlashcard('${stat.character}')">
+                <div class="stat-row character${isodd}" data-pinyin="${stat.pinyin}" data-english="${stat.english}"')">
                     <div class="stat-hanzi-pinyin">
                         <div class="stat-hanzi"><a>${stat.character}</a></div>
                         <div class="stat-pinyin">${stat.pinyin}</div>
@@ -34,7 +34,7 @@ function addToTable(progressRows) {
             </td>
             <td>
                 <div class="remove-card" data-tooltip="Remove from learning" data-character="${stat.character}">
-                    <i class="fa-solid fa-circle-xmark"></i>
+                    <i class="fa-solid fa-xmark"></i>
                 </div>
             </td>
         `;
@@ -61,9 +61,8 @@ function addToTable(progressRows) {
                 return;
             }
             activeCharacter = stat.character;
-            console.log(activeCharacter)
             timeout = setTimeout(() => {
-                loadCard(stat.character);
+                loadCard(stat.character, true, 'loadedCard');
             }, 200);
         });
         
@@ -72,7 +71,7 @@ function addToTable(progressRows) {
         });
         characterCell.addEventListener('click', function(e) {
             clearTimeout(timeout);
-            showFlashcard(stat.character);
+            maybeLoadRenderAndThenShow(stat.character, 0, true);
         });
 
         characterCell.addEventListener('mouseout', hideTooltip);
@@ -343,9 +342,11 @@ function getFont() {
 
 
 let overlay, flashcardContent, messageElement;
-let loadedCard = null;
+window['loadedCard'] = null;
+window['nextLoadedCard'] = null;
+window['prevLoadedCard'] = null;
 
-function loadCard(character) {
+function loadCard(character, render=false, targetVar = 'loadedCard') {
     let messageElement = document.getElementById('message');
     messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
@@ -360,22 +361,21 @@ function loadCard(character) {
             bordercanvas.style.display = 'block';
         }
         catch(e){
-
         }
-        let chars = character.split('');
         data.plotters = createPlotters(data);
-        loadedCard = data;
-        renderCard(loadedCard);
-        let overlay = document.getElementById('flashcard_overlay');
-        // let currentColor = getColorByTime(overlaycolors);
-        loadedCard = data;
+        window[targetVar] = data;
+        if(render){
+            renderCard(window[targetVar]);
+        }
         messageElement.textContent = "";
+        unlocked = true;
     })
     .catch(error => {
         console.error('Error:', error);
         messageElement.textContent = `Error: ${error.message}`;
     });
 }
+
 
 function removeCardFromLearning(wordlist, character){
     wordlists_words[currentWordlist] = wordlists_words[currentWordlist].filter(word => word.character !== character);
@@ -499,13 +499,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             activeCharacter = stat.character;
             timeout = setTimeout(() => {
-                console.log(stat.character + "asfakslnfask");
-                loadCard(stat.character);
+                loadCard(stat.character, true, 'loadedCard');
             }, 200);
         });
         character.addEventListener('click', function(e) {
             clearTimeout(timeout);
-            showFlashcard(stat.character);
+            maybeLoadRenderAndThenShow(stat.character);
         });
 
         character.addEventListener('mouseleave', () => {
@@ -611,11 +610,72 @@ function changeFont(font) {
     });
 }
 
-function showFlashcard(character) {
+function getNeighbors(inputChar){
+    let nextcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(inputChar) + 1;
+    let prevcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(inputChar) - 1;
+    nextcharidx = nextcharidx % wordlists_words[currentWordlist].length;
+    prevcharidx = (prevcharidx + wordlists_words[currentWordlist].length) % wordlists_words[currentWordlist].length;
+    let nextchar = wordlists_words[currentWordlist][nextcharidx].character;
+    let prevchar = wordlists_words[currentWordlist][prevcharidx].character;
+    return {nextchar, prevchar};
+}
+
+let unlocked = false;
+function maybeLoadRenderAndThenShow(character, dir=0, force_unlock=false){
     cardVisible = true;
-    if(loadedCard && loadedCard.character === activeCharacter){
+
+    if(!unlocked){
+        return;
+    }
+    unlocked = false;
+
+    if(dir == 1){
+        if(window['nextLoadedCard']){
+            console.log("loaded next", window['nextLoadedCard'].character);
+            renderCard(window['nextLoadedCard']);
+            activeCharacter = character;
+            window['prevLoadedCard'] = Object.assign({}, window['loadedCard']);
+            window['loadedCard'] = Object.assign({}, window['nextLoadedCard']);
+            
+            let next_neighs = getNeighbors(character);
+            let next_nextchar = next_neighs.nextchar;
+            let next_prevchar = next_neighs.prevchar;
+            console.log("loading next next", next_nextchar);
+            loadCard(next_nextchar, false, 'nextLoadedCard');
+            return;
+        }
+        else{
+            maybeLoadRenderAndThenShow(nextchar, 0);
+            return;
+        }
+    }
+    if(dir == -1){
+        if(window['prevLoadedCard']){
+            renderCard(window['prevLoadedCard']);
+            activeCharacter = character;
+            window['nextLoadedCard'] = Object.assign({}, window['loadedCard']);
+            window['loadedCard'] = Object.assign({}, window['prevLoadedCard']);
+            
+            let prev_neighs = getNeighbors(character);
+            let prev_nextchar = prev_neighs.nextchar;
+            let prev_prevchar = prev_neighs.prevchar;
+            loadCard(prev_prevchar, false, 'prevLoadedCard');
+            return;
+        }
+        else{
+            maybeLoadRenderAndThenShow(prevchar, 0);
+            return;
+        }
+    }
+    if(window['loadedCard'] && window['loadedCard'].character === activeCharacter){
+        let neighs = getNeighbors(character);
+        let nextchar = neighs.nextchar;
+        let prevchar = neighs.prevchar;
         displayCard(true, true);
         confirmDarkmode();
+        loadCard(nextchar, false, 'nextLoadedCard');
+        loadCard(prevchar, false, 'prevLoadedCard');
+
         return;
     }
 
@@ -629,12 +689,88 @@ function showFlashcard(character) {
     .then(data => {
         // bordercanvas.style.display = 'block';
         data.plotters = createPlotters(data);
-        loadedCard = data;
+        window['loadedCard'] = data;
         renderCard(data);
         displayCard(true, true);
+        unlocked = true;
+        let nextcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(window['loadedCard'].character) + 1;
+        let prevcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(window['loadedCard'].character) - 1;
+        nextcharidx = nextcharidx % wordlists_words[currentWordlist].length;
+        prevcharidx = (prevcharidx + wordlists_words[currentWordlist].length) % wordlists_words[currentWordlist].length;
+        let nextchar = wordlists_words[currentWordlist][nextcharidx].character;
+        let prevchar = wordlists_words[currentWordlist][prevcharidx].character;
+        loadCard(nextchar, false, 'nextLoadedCard');
+        loadCard(prevchar, false, 'prevLoadedCard');
         // recordView(character);
     })
     .catch(error => {
         console.error('Error:', error);
     });
 }
+
+
+// swipe left right
+let xDown = null;
+let yDown = null;
+document.addEventListener('touchstart', handleTouchStart, false);
+document.addEventListener('touchmove', handleTouchMove, false);
+function getTouches(evt) {
+    return evt.touches || evt.originalEvent.touches;
+}
+function handleTouchStart(evt) {
+    const firstTouch = getTouches(evt)[0];
+    xDown = firstTouch.clientX;
+    yDown = firstTouch.clientY;
+}
+function handleTouchMove(evt) {
+    if (!xDown || !yDown) {
+        return;
+    }
+    let xUp = evt.touches[0].clientX;
+    let yUp = evt.touches[0].clientY;
+    let xDiff = xDown - xUp;
+    let yDiff = yDown - yUp;
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {
+        if (xDiff > 0) {
+            loadAndShowPreviousCard();
+        } else {
+            loadAndShowNextCard();
+        }
+    }
+    xDown = null;
+    yDown = null;
+}
+
+function loadAndShowPreviousCard() {
+    let idx = wordlists_words[currentWordlist].map(word => word.character).indexOf(activeCharacter);
+    let prevChar = wordlists_words[currentWordlist][(idx - 1 + wordlists_words[currentWordlist].length) % wordlists_words[currentWordlist].length].character;
+    // activeCharacter = prevChar;
+    maybeLoadRenderAndThenShow(prevChar, -1);
+}
+
+function loadAndShowNextCard() {
+    let idx = wordlists_words[currentWordlist].map(word => word.character).indexOf(activeCharacter);
+    let nextChar = wordlists_words[currentWordlist][(idx + 1) % wordlists_words[currentWordlist].length].character;
+    // activeCharacter = nextChar;
+    maybeLoadRenderAndThenShow(nextChar, 1);
+}
+
+let isNavigating = false;
+document.addEventListener('keydown', function(event) {
+    if (cardVisible && !isNavigating) {
+        if (event.key === 'ArrowLeft' || event.key === 'a') {
+            isNavigating = true;
+            loadAndShowPreviousCard();
+            setTimeout(function() {
+                isNavigating = false;
+            }, 22);
+        } else if (event.key === 'ArrowRight' || event.key === 'd') {
+            isNavigating = true;
+            loadAndShowNextCard();
+            setTimeout(function() {
+                isNavigating = false;
+            }, 22); 
+        }
+    }
+});
+
