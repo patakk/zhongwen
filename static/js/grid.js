@@ -866,7 +866,7 @@ function changeDeck(deck) {
 
 window.addEventListener('popstate', function(event) {
     const urlParams = new URLSearchParams(window.location.search);
-    const query = urlParams.get('query');
+    const query = urlParams.get('character');
     
     if (query) {
         loadRenderDisplay(query);
@@ -881,7 +881,7 @@ function hideCard() {
     scrollToTop(document.getElementById('flashcard_container'), () => {overlay.style.display = 'none';});
         
     const newUrl = new URL(window.location);
-    newUrl.searchParams.delete('query');
+    newUrl.searchParams.delete('character');
     history.pushState({}, '', newUrl);
 }
 overlay.addEventListener('click', (e) => {
