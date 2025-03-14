@@ -170,9 +170,9 @@ function redrawCurrentCard() {
     drawMasks();
 
     let pinyinContainer = flashcardElement.querySelector('.pinyin');
-    pinyinContainer.textContent = currentWordInfo.pinyin.map(toAccentedPinyin);
+    pinyinContainer.textContent = currentWordInfo.pinyin.map(toAccentedPinyin)[0];
     let englishContainer = flashcardElement.querySelector('.english');
-    englishContainer.textContent = currentWordInfo.english.map(toAccentedPinyin);
+    englishContainer.textContent = currentWordInfo.english.map(toAccentedPinyin)[0];
     answerContainer.classList.toggle('inactive', !revealed);
     handleFont();
 }
