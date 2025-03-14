@@ -286,7 +286,7 @@ function interpolateCards() {
 
     let progress = 0;
     function animation(){
-        progress += 0.0035;
+        progress += 0.035;
         if(progress >= 1){
             progress = 1;
         }
