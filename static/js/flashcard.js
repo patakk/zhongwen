@@ -1106,7 +1106,7 @@ function renderCard(data) {
         pinyItem.style.opacity = 0.6;
         pinyItem.style.paddingRight = "0.5em";
         pinyItem.style.fontStyle = 'italic';
-        let englishItem = createClickableHanziElements(toAccentedPinyin(english));
+        let englishItem = createClickableHanziElements(toAccentedPinyin(english.replace(/\//g, ' / ')));
         let englishRow = document.createElement('div');
         pinyItem.textContent = "(" + toAccentedPinyin(data.pinyin[index]) + ")";
         if(index == 0){
@@ -1241,7 +1241,7 @@ function renderCard(data) {
             
             const meaningCell = document.createElement('div');
             meaningCell.className = 'grid-cell meaning-cell';
-            meaningCell.appendChild(createClickableHanziElements(toAccentedPinyin(english[i])));
+            meaningCell.appendChild(createClickableHanziElements(toAccentedPinyin(english[i].replace(/\//g, ' / '))));
             
             dataRow.appendChild(pinyinCell);
             dataRow.appendChild(meaningCell);
