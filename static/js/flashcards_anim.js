@@ -675,25 +675,25 @@ function handleTopLeftButtons() {
         }
     });
     
-    document.getElementById('fontMenu').addEventListener('click', function(event) {
-        if(!event.target.closest('#fontSubmenu')){
-            document.getElementById('fontSubmenu').classList.add('active')
-        }
-    });
+    // document.getElementById('fontMenu').addEventListener('click', function(event) {
+    //     if(!event.target.closest('#fontSubmenu')){
+    //         document.getElementById('fontSubmenu').classList.add('active')
+    //     }
+    // });
     
     document.addEventListener('click', function(event) {
         if (!event.target.closest('#deckMenu')) {
             document.getElementById('deckSubmenu').classList.remove('active');
         }
-        if (!event.target.closest('#fontMenu')) {
-            document.getElementById('fontSubmenu').classList.remove('active');
-        }
+        // if (!event.target.closest('#fontMenu')) {
+        //     document.getElementById('fontSubmenu').classList.remove('active');
+        // }
     });
 
     
     document.querySelectorAll('.deck-change').forEach(function(deckOption) {
         deckOption.addEventListener('click', function(e) {
-            document.getElementById('fontSubmenu').classList.remove('active');
+            // document.getElementById('fontSubmenu').classList.remove('active');
             document.getElementById('deckSubmenu').classList.remove('active');
             e.preventDefault();
             e.stopPropagation();
@@ -710,7 +710,7 @@ function handleTopLeftButtons() {
    
     document.querySelectorAll('.font-change').forEach(function(fontOption) {
         fontOption.addEventListener('click', function(e) {
-            document.getElementById('fontSubmenu').classList.remove('active');
+            // document.getElementById('fontSubmenu').classList.remove('active');
             document.getElementById('deckSubmenu').classList.remove('active');
             e.preventDefault();
             e.stopPropagation();
