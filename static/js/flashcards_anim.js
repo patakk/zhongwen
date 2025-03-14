@@ -22,45 +22,73 @@ async function getPinyinEnglishFor(word) {
     return await Promise.all(promises);
 }
 
-function drawbg(ctx){
+function cross(ctx, x, y, DX, DY, opacity=1){
+
+    let ropacity = opacity*0.5;
+    let dopacity = opacity*0.75;
+    let copacity = opacity*0.35;
+    
+    ctx.strokeStyle = isDarkMode ? `rgba(255,255,255,${ropacity})` : `rgba(0,0,0,${ropacity})`;
+    ctx.strokeRect(x, y, DX, DY);
+
+    ctx.strokeStyle = isDarkMode ? `rgba(255,255,255,${dopacity})` : `rgba(44,0,0,${dopacity})`;
+    // diagonal1
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x+DX, y+DY);
+    ctx.stroke();
+    // diagonal2
+    ctx.beginPath();
+    ctx.moveTo(x+DX, y);
+    ctx.lineTo(x, y+DY);
+    ctx.stroke();
+    
+    ctx.strokeStyle = isDarkMode ? `rgba(255,255,255,${copacity})` : `rgba(0,0,0,${copacity})`;
+    // middle1
+    ctx.beginPath();
+    ctx.moveTo(x, y+DY/2);
+    ctx.lineTo(x+DX, y+DY/2);
+    ctx.stroke();
+    // middle2
+    ctx.beginPath();
+    ctx.moveTo(x+DX/2, y);
+    ctx.lineTo(x+DX/2, y+DY);
+    ctx.stroke();
+}
+
+function drawbg(ctx, progress, numchars1, numchars2){
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     
     let A = ctx.canvas.height;
     ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.16)';
     ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(A, A);
-    ctx.lineTo(2*A, 0);
-    ctx.lineTo(3*A, A);
-    ctx.lineTo(4*A, 0);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(0, A);
-    ctx.lineTo(A, 0);
-    ctx.lineTo(2*A, A);
-    ctx.lineTo(3*A, 0);
-    ctx.lineTo(4*A, A);
-    ctx.stroke();
 
-    ctx.save();
-    ctx.translate(-A/2, 0);
-    
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(A, A);
-    ctx.lineTo(2*A, 0);
-    ctx.lineTo(3*A, A);
-    ctx.lineTo(4*A, 0);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(0, A);
-    ctx.lineTo(A, 0);
-    ctx.lineTo(2*A, A);
-    ctx.lineTo(3*A, 0);
-    ctx.lineTo(4*A, A);
-    ctx.stroke();
-    ctx.restore();
+    let cx = ctx.canvas.width / 2;
+    let cy = ctx.canvas.height / 2;
+    let charwidth = ctx.canvas.height;
+    let charheight = ctx.canvas.height;
+
+    let opa = 1;
+    for(let idx = 0; idx < numchars1; idx++){
+        let x0 = cx - (numchars1 * charwidth) / 2 + idx * charwidth;
+        let y0 = cy - charheight / 2;
+        x0 = Math.round(x0);
+        y0 = Math.round(y0);
+        let opacity = 1 - progress;
+        opacity *= opa;
+        cross(ctx, x0, y0, charwidth, charheight, opacity);
+    }
+    for(let idx = 0; idx < numchars2; idx++){
+        let x0 = cx - (numchars2 * charwidth) / 2 + idx * charwidth;
+        let y0 = cy - charheight / 2;
+        x0 = Math.round(x0);
+        y0 = Math.round(y0);
+        let opacity = progress;
+        opacity *= opa;
+        cross(ctx, x0, y0, charwidth, charheight, opacity);
+    }
+
+
     // ctx.shadowColor = isDarkMode ? '#333' : '#ddd';
     // ctx.shadowOffsetX = 5; 
     // ctx.shadowOffsetY = 5;
@@ -72,8 +100,8 @@ function drawbg(ctx){
 
 function drawStrokes() {
         
-    drawbg(ctx);
     let numchars = currentWordInfo.strokes.length;
+    drawbg(ctx, 0, numchars, numchars);
     let charwidth = canvas.height;
     let charheight = canvas.height;
     currentWordInfo.strokes.forEach(function(charstrokes, idx) {
@@ -107,7 +135,7 @@ function drawMasks(){
     function aanimate(){
         progg += 0.045;
         let maskregion;
-        drawbg(ctx);
+        drawbg(ctx, progg, currentWordInfo.strokes.length, currentWordInfo.strokes.length);
         let numchars = currentWordInfo.strokes.length;
         let charwidth = canvas.height;
         let charheight = canvas.height;
@@ -271,12 +299,13 @@ function interpolateCards() {
 
         let usedprogress = power(progress, 2.5)*1.3;
 
-        drawbg(ctx);
 
         let numchars1 = prevWordInfo.strokes.length;
         let numchars2 = currentWordInfo.strokes.length;
         let charwidth = canvas.height;
         let charheight = canvas.height;
+
+        drawbg(ctx, progress, numchars1, numchars2);
 
         let numchars = Math.max(numchars1, numchars2);
 
