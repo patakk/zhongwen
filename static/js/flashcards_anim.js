@@ -25,16 +25,42 @@ async function getPinyinEnglishFor(word) {
 function drawbg(ctx){
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     
-    ctx.strokeStyle = isDarkMode ? 'white' : 'black';
+    let A = ctx.canvas.height;
+    ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.16)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.lineTo(ctx.canvas.width, 0);
-    ctx.lineTo(ctx.canvas.width, ctx.canvas.height);
-    ctx.lineTo(0, ctx.canvas.height);
-    ctx.lineTo(0, 0);
+    ctx.lineTo(A, A);
+    ctx.lineTo(2*A, 0);
+    ctx.lineTo(3*A, A);
+    ctx.lineTo(4*A, 0);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, A);
+    ctx.lineTo(A, 0);
+    ctx.lineTo(2*A, A);
+    ctx.lineTo(3*A, 0);
+    ctx.lineTo(4*A, A);
     ctx.stroke();
 
+    ctx.save();
+    ctx.translate(-A/2, 0);
+    
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(A, A);
+    ctx.lineTo(2*A, 0);
+    ctx.lineTo(3*A, A);
+    ctx.lineTo(4*A, 0);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, A);
+    ctx.lineTo(A, 0);
+    ctx.lineTo(2*A, A);
+    ctx.lineTo(3*A, 0);
+    ctx.lineTo(4*A, A);
+    ctx.stroke();
+    ctx.restore();
     // ctx.shadowColor = isDarkMode ? '#333' : '#ddd';
     // ctx.shadowOffsetX = 5; 
     // ctx.shadowOffsetY = 5;
@@ -111,62 +137,14 @@ function drawMasks(){
 function redrawCurrentCard() {
     let hanziContainer = flashcardElement.querySelector('.hanzi');
     let answerContainer = flashcardElement.querySelector('.answer');
-    let pinyinContainer = document.getElementById('pinyin');
-    let englishContainer = document.getElementById('english');
-    pinyinContainer.innerHTML = '';
-    englishContainer.innerHTML = '';
-
-    if(answerContainer){
-        answerContainer.innerHTML = '';
-    }
 
     drawStrokes();
     drawMasks();
 
-    // Clear previous content
-    pinyinContainer.classList.add('pinyin');
-    flashcardElement.appendChild(pinyinContainer);
-    
-    englishContainer.classList.add('english');
-    flashcardElement.appendChild(englishContainer);
-    
-    // Create a container for the pinyin-meaning pairs
-    let pairsContainer = document.createElement('div');
-    pairsContainer.classList.add('pinyin-meaning-pairs');
-    
-    // Process each pair
-    const maxPairs = Math.max(currentWordInfo.pinyin.length, currentWordInfo.english.length);
-    
-    for (let i = 0; i < maxPairs; i++) {
-        const pinyin = i < currentWordInfo.pinyin.length ? currentWordInfo.pinyin[i] : '';
-        const english = i < currentWordInfo.english.length ? currentWordInfo.english[i] : '';
-        
-        let pairElement = document.createElement('div');
-        pairElement.classList.add('pinyin-meaning-pair');
-        
-        // Add special class for the first (main) pair
-        if (i === 0) {
-            // pairElement.classList.add('main-pair');
-        }
-        
-        // Create and add pinyin part
-        let pinyinElement = document.createElement('div');
-        pinyinElement.classList.add(i === 0 ? 'pinyinRow' : 'pinyinRowSmall');
-        pinyinElement.textContent = toAccentedPinyin(pinyin);
-        pairElement.appendChild(pinyinElement);
-        
-        // Create and add meaning part
-        let englishElement = document.createElement('div');
-        englishElement.classList.add(i === 0 ? 'englishRow' : 'englishRowSmall');
-        englishElement.textContent = english;
-        pairElement.appendChild(englishElement);
-        // Add the pair to the container
-        pairsContainer.appendChild(pairElement);
-    }
-    
-    // Add the pairs container to the answer container
-    answerContainer.appendChild(pairsContainer);
-    
+    let pinyinContainer = flashcardElement.querySelector('.pinyin');
+    pinyinContainer.textContent = currentWordInfo.pinyin.map(toAccentedPinyin);
+    let englishContainer = flashcardElement.querySelector('.english');
+    englishContainer.textContent = currentWordInfo.english.map(toAccentedPinyin);
     answerContainer.classList.toggle('inactive', !revealed);
     handleFont();
 }
@@ -278,9 +256,9 @@ function interpolateCards() {
     // hanziContainer.textContent = currentWordInfo.character;
 
     let pinyinContainer = flashcardElement.querySelector('.pinyin');
-    pinyinContainer.textContent = currentWordInfo.pinyin;
+    // pinyinContainer.textContent = currentWordInfo.pinyin;
     let englishContainer = flashcardElement.querySelector('.english');
-    englishContainer.textContent = currentWordInfo.english;
+    // englishContainer.textContent = currentWordInfo.english;
     answerContainer.classList.toggle('inactive', !revealed);
     handleFont();
 

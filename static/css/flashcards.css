@@ -109,7 +109,7 @@ html, body {
     border: 2px dashed var(--dimmer-border-color-a);
     text-align: center;
     font-family: "Noto Sans", sans-serif;
-    font-size: 1.3em;
+    font-size: 1em;
     z-index: 22000;
     max-width: 70%;
     width: 70vh;
@@ -166,6 +166,7 @@ html, body {
     justify-content: left;
     overflow-y: auto;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 
@@ -206,6 +207,7 @@ html, body {
     flex-direction: column;
     width: 100%;
     gap: 10px;
+    padding-top: 3em;
 }
 
 .pinyin-meaning-pair {
@@ -223,13 +225,15 @@ html, body {
 /* You may want to adjust these styles */
 .pinyinRow, .pinyinRowSmall {
     width: 100%;
-    text-align: left;
+    text-align: center;
+    font-size: 1.5em;
 }
 
 .englishRow, .englishRowSmall {
     width: 100%;
-    text-align: left;
-    margin-left: 15px; /* Indent the meaning */
+    text-align: center;
+    padding-left: 1em;
+    box-sizing: border-box;
 }
 
 
