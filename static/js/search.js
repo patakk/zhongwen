@@ -163,11 +163,11 @@ function updateSearchResults(results, query) {
 
             const pinyin = document.createElement('div');
             pinyin.className = 'res-pin';
-            pinyin.textContent = result.pinyin;
+            pinyin.textContent = toAccentedPinyin(result.pinyin);
 
             const english = document.createElement('div');
             english.className = 'res-eng';
-            english.textContent = result.english;
+            english.textContent = toAccentedPinyin(result.english);
 
             detailsSection.appendChild(pinyin);
             detailsSection.appendChild(english);
@@ -235,6 +235,9 @@ function maybeLoadRenderAndThenShow(character, dir=0, force_unlock=false){
     donefirst = true;
     unlocked = true;
 
+    let url = new URL(window.location);
+    url.searchParams.set('character', character);
+    window.history.replaceState({}, '', url);
     if(dir == 1){
         if(window['nextLoadedCard']){
             console.log("loaded next", window['nextLoadedCard'].character);

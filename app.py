@@ -762,6 +762,8 @@ def deviceinfo():
 
 from pypinyin import lazy_pinyin, Style
 
+from hanziconv import HanziConv
+
 def move_tone_number_to_end(pinyin):
     return ''.join([char for char in pinyin if char not in '1234']) + ''.join([char for char in pinyin if char in '1234'])
     
@@ -784,8 +786,14 @@ def get_search_results(query):
             for r in res[fr]:
                 if r['simplified'] == query:
                     exact_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
+                elif r['traditional'] == query:
+                    exact_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
                 else:
-                    other_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
+                    if query == HanziConv.toSimplified(query):
+                        other_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
+                    else:
+                        other_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
+
         results += exact_matches + other_matches
 
     else:

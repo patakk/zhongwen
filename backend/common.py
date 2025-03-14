@@ -4,6 +4,7 @@ import os
 from datetime import datetime, timezone
 import re
 import jieba.posseg as pseg
+from hanziconv import HanziConv
 
 from hanzipy.decomposer import HanziDecomposer
 from hanzipy.dictionary import HanziDictionary
@@ -82,8 +83,6 @@ def get_tatoeba_page(character, page):
             pass
 
     return examples, is_last
-
-from hanziconv import HanziConv
 
 def simplify_hanzi(text):
     return HanziConv.toSimplified(text)
@@ -203,8 +202,8 @@ def entry_req(definition):
 
     return r1 and r2 and r3 and r4
 
-def char_full_info_(char):
-    char = simplify_hanzi(char)
+def char_full_info_(original_char):
+    char = simplify_hanzi(original_char)
     definition = []
     pinyin = []
     try:
@@ -263,13 +262,14 @@ def char_full_info_(char):
     # except:
     #     appears_in = []
 
-    stroke_count = STROKE_COUNT.get(char, -1)
 
     return {
         'english': definition,
         'frequency': frequency,
         'rank': rank,
-        'stroke_count': stroke_count,
+        'simplified': HanziConv.toSimplified(char),
+        'traditional': HanziConv.toTraditional(char),
+        'stroke_count': STROKE_COUNT.get(original_char, -1),
         'radicals': radicals_with_meaning,
         'graphical': graphical,
         'main_components': main_components,

@@ -27,9 +27,9 @@ function addToTable(progressRows) {
                 <div class="stat-row character${isodd}" data-pinyin="${stat.pinyin}" data-english="${stat.english}"')">
                     <div class="stat-hanzi-pinyin">
                         <div class="stat-hanzi"><a>${stat.character}</a></div>
-                        <div class="stat-pinyin">${stat.pinyin}</div>
+                        <div class="stat-pinyin">${toAccentedPinyin(stat.pinyin[0])}</div>
                     </div>
-                    <div class="stat-english">${stat.english}</div>
+                    <div class="stat-english">${toAccentedPinyin(stat.english[0])}</div>
                 </div>
             </td>
             <td>

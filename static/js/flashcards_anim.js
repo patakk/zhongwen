@@ -69,23 +69,34 @@ function drawbg(ctx, progress, numchars1, numchars2){
     let charheight = ctx.canvas.height;
 
     let opa = 1;
-    for(let idx = 0; idx < numchars1; idx++){
-        let x0 = cx - (numchars1 * charwidth) / 2 + idx * charwidth;
-        let y0 = cy - charheight / 2;
-        x0 = Math.round(x0);
-        y0 = Math.round(y0);
-        let opacity = 1 - progress;
-        opacity *= opa;
-        cross(ctx, x0, y0, charwidth, charheight, opacity);
+    if(numchars1 == numchars2){
+        for(let idx = 0; idx < numchars1; idx++){
+            let x0 = cx - (numchars1 * charwidth) / 2 + idx * charwidth;
+            let y0 = cy - charheight / 2;
+            x0 = Math.round(x0);
+            y0 = Math.round(y0);
+            cross(ctx, x0, y0, charwidth, charheight, opa);
+        }
     }
-    for(let idx = 0; idx < numchars2; idx++){
-        let x0 = cx - (numchars2 * charwidth) / 2 + idx * charwidth;
-        let y0 = cy - charheight / 2;
-        x0 = Math.round(x0);
-        y0 = Math.round(y0);
-        let opacity = progress;
-        opacity *= opa;
-        cross(ctx, x0, y0, charwidth, charheight, opacity);
+    else{
+        for(let idx = 0; idx < numchars1; idx++){
+            let x0 = cx - (numchars1 * charwidth) / 2 + idx * charwidth;
+            let y0 = cy - charheight / 2;
+            x0 = Math.round(x0);
+            y0 = Math.round(y0);
+            let opacity = 1 - progress;
+            opacity *= opa;
+            cross(ctx, x0, y0, charwidth, charheight, opacity);
+        }
+        for(let idx = 0; idx < numchars2; idx++){
+            let x0 = cx - (numchars2 * charwidth) / 2 + idx * charwidth;
+            let y0 = cy - charheight / 2;
+            x0 = Math.round(x0);
+            y0 = Math.round(y0);
+            let opacity = progress;
+            opacity *= opa;
+            cross(ctx, x0, y0, charwidth, charheight, opacity);
+        }
     }
 
 
@@ -172,7 +183,7 @@ function redrawCurrentCard() {
     let pinyinContainer = flashcardElement.querySelector('.pinyin');
     pinyinContainer.textContent = currentWordInfo.pinyin.map(toAccentedPinyin)[0];
     let englishContainer = flashcardElement.querySelector('.english');
-    englishContainer.textContent = currentWordInfo.english.map(toAccentedPinyin)[0];
+    englishContainer.textContent = currentWordInfo.english.map(toAccentedPinyin)[0].replace(/\//g, ' / ');
     answerContainer.classList.toggle('inactive', !revealed);
     handleFont();
 }

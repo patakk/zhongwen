@@ -342,66 +342,6 @@ async function renderPlotters(plotters, pinyinparts=null){
     }
 }
     
-function toAccentedPinyin(input) {
-    const toneMap = {
-        '1': 'āēīōūǖ',
-        '2': 'áéíóúǘ',
-        '3': 'ǎěǐǒǔǚ',
-        '4': 'àèìòùǜ',
-        '5': 'aeiouü'
-    };
-    
-    function applyToneMark(syllable, tone) {
-        if (!tone) return syllable;
-        
-        const vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
-        let syllableLower = syllable.toLowerCase();
-        
-        if (syllableLower.includes('a')) {
-            let index = syllableLower.indexOf('a');
-            let result = syllable.split('');
-            result[index] = toneMap[tone][0];
-            return result.join('');
-        }
-        
-        if (syllableLower.includes('e')) {
-            let index = syllableLower.indexOf('e');
-            let result = syllable.split('');
-            result[index] = toneMap[tone][1];
-            return result.join('');
-        }
-        
-        if (syllableLower.includes('ou')) {
-            let index = syllableLower.indexOf('o');
-            let result = syllable.split('');
-            result[index] = toneMap[tone][3];
-            return result.join('');
-        }
-        
-        for (let i = syllableLower.length - 1; i >= 0; i--) {
-            let char = syllableLower[i];
-            let vowelIndex = vowels.indexOf(char);
-            if (vowelIndex !== -1) {
-                let result = syllable.split('');
-                result[i] = toneMap[tone][vowelIndex];
-                return result.join('');
-            }
-        }
-        
-        return syllable;
-    }
-
-    let result = input.replace(/\[([a-z]+)([1-5])?\]/gi, (match, syllable, tone) => {
-        return '[' + applyToneMark(syllable, tone) + ']';
-    });
-    
-    result = result.replace(/\b([a-z]+)([1-5])?\b/gi, (match, syllable, tone) => {
-        return applyToneMark(syllable, tone);
-    });
-    
-    return result;
-}
-
 
 function wrapImageUrls(inputString) {
     // const imageRegex = /(?:^|\s)(https?:\/\/[^\s<>"]+?\.(?:jpg|jpeg|png|gif|bmp|webp))(?:\s|$|<)/gi;
@@ -993,7 +933,7 @@ function createClickableHanziElements(text) {
             wordSpan.textContent = word;
             wordSpan.style.cursor = 'pointer';
             wordSpan.style.color = 'var(--hanzi-link-color)';
-            wordSpan.style.textDecoration = 'underline';
+            // wordSpan.style.textDecoration = 'underline';
             
             wordSpan.addEventListener('click', function() {
                 console.log('click');
@@ -1164,6 +1104,8 @@ function renderCard(data) {
         const english = char_info.english;
         const pinyin = char_info.pinyin;
         const frequency = char_info.frequency;
+        const traditional = char_info.traditional;
+        const simplified = char_info.simplified;
         const rank = char_info.rank;
         const stroke_count = char_info.stroke_count;
         const graphical_components = char_info.graphical; // list of chars
@@ -1192,7 +1134,7 @@ function renderCard(data) {
             .join(', ');
 
 
-        function createDefEntry(label, content) {
+        function createDefEntry(label, content, contentDiv) {
             const entry = document.createElement('div');
             entry.className = 'rawDefEntry';
             
@@ -1200,11 +1142,15 @@ function renderCard(data) {
             labelDiv.className = 'rawDefLabel';
             labelDiv.textContent = label;
             
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'rawDefContent';
-            contentDiv.textContent = content;
-            
             entry.appendChild(labelDiv);
+            if(contentDiv){
+                contentDiv.className = 'rawDefContent';
+                entry.appendChild(contentDiv);
+                return entry;
+            }
+            contentDiv = document.createElement('div');
+            contentDiv.className = 'rawDefContent';
+            contentDiv.innerHTML = content;
             entry.appendChild(contentDiv);
             return entry;
         }
@@ -1271,6 +1217,13 @@ function renderCard(data) {
         if (stroke_count !== null && stroke_count !== 0 && stroke_count !== -1) {
             entryDiv.appendChild(createDefEntry('Stroke count: ', stroke_count));
         }
+        if (traditional !== simplified && char !== traditional) {
+            entryDiv.appendChild(createDefEntry('Traditional: ', null, createClickableHanziElements(traditional)));
+        }
+        if (traditional !== simplified && char !== simplified) {
+            entryDiv.appendChild(createDefEntry('Simplified: ', null, createClickableHanziElements(simplified)));
+        }
+
         entryDiv.appendChild(createDefEntry('Graphical components: ', graphical_components.join(', ')));
         if (filteredRadicals) {
             entryDiv.appendChild(createDefEntry('Radicals: ', filteredRadicals));
