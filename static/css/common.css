@@ -25,7 +25,8 @@
     --deckname-color: #d44141;
     --deckname-color: #e33100;
     --rename-btn-color: #43ac72;
-    --home-link-bg-color: #d0d0d08f;
+    --home-link-bg-color: #d0d0d0;
+    --stories-background-color: #e4e4e4;
 }
 
 ::selection {
@@ -36,6 +37,7 @@
 .darkmode {
     --hanzi-link-color: #4978fa;
     --hanzi-link-color: #9795df;
+    --stories-background-color: #2b2b33;
     --dimmer-background-color: #1d1d1d;
     --dimmest-background-color: #141414;
     --home-link-bg-color: #232323;

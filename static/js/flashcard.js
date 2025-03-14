@@ -1298,8 +1298,8 @@ function renderCard(data) {
                                 history.pushState({}, '', newUrl);
                                 hoverBox.style.display = 'none';
                             } else {
-                                const pinyin = toAccentedPinyin(chardict[similar_char].pinyin);
-                                const english = toAccentedPinyin(chardict[similar_char].definition);
+                                const pinyin = toAccentedPinyin(chardict[similar_char].pinyin[0]);
+                                const english = toAccentedPinyin(chardict[similar_char].definition[0]);
                                 let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
                                 if (isDarkMode) {
                                     tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;

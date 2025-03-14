@@ -60,10 +60,10 @@ function confirmDarkmode(){
     try{
         let bg = document.getElementById('plottersWrapper');
         // set bg to random paste color
-        bg.style.backgroundColor = `hsl(${122}, 8%, 87%)`;
-        if(isDarkMode){
-            bg.style.backgroundColor = `hsl(${122}, 2%, 17%)`;
-        }
+        // bg.style.backgroundColor = `hsl(${122}, 8%, 87%)`;
+        // if(isDarkMode){
+        //     bg.style.backgroundColor = `hsl(${122}, 2%, 17%)`;
+        // }
     }
     catch(e){
     }
