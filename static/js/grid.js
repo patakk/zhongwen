@@ -390,7 +390,7 @@ function createGrid(characters, useAllDecks){
         gridItem.className = 'grid-item';
         gridItem.innerHTML = `
             <span class="char">${charData.character}</span>
-            <span class="grid-pinyin">${charData.pinyin}</span>
+            <span class="grid-pinyin">${charData.pinyin.map(toAccentedPinyin)[0]}</span>
         `;
         gridItem.setAttribute('data-length', charData.character.length);
         if(isDarkMode){
@@ -486,9 +486,9 @@ function createListItem(charData, idx) {
                 <span class="list-index">${idx + 1}.</span>
             </div>
             <span class=" list-character list-character-size">${charData.character}</span>
-            <span class="list-pinyin">${charData.pinyin}</span>
+            <span class="list-pinyin">${charData.pinyin.map(toAccentedPinyin)[0]}</span>
         </div>
-        <span class="list-english">${charData.english}</span>
+        <span class="list-english">${charData.english.map(toAccentedPinyin)[0]}</span>
     `;
     
     let timeout;

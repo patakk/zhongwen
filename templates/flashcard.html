@@ -1,4 +1,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&display=swap" rel="stylesheet">
+
+<style>
+    @font-face {
+            font-family: 'Kaiti';
+            src: url("{{ url_for('static', filename='fonts/Kaiti.ttf') }}") format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+</style>
 <script type="text/javascript">
     let custom_deck_names = {{ custom_deck_names | tojson | safe }};
 </script>

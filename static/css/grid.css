@@ -73,7 +73,7 @@ body {
 }
 
 .grid-item {
-    border: var(--dimmer-border);
+    /* border: var(--dimmer-border); */
     background-color: var(--griditem-background-color);
     color: var(--text-color);
     height: 50px;
@@ -85,11 +85,14 @@ body {
     text-align: center;
     word-break: keep-all;
     overflow: hidden;
-    font-size: 22px;
+    font-size: 1.4em;
+    /* box-shadow: 4px 4px 8px rgba(112, 112, 112, 0.1);
+    border-radius: 4px; */
 }
 
 .grid-item:hover {
     background-color: var(--dimmer-background-color);
+    font-size: 1em;
 }
 
 /* .grid-item.darkmode {

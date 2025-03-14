@@ -151,8 +151,8 @@ function displayCharMatches(charMatches) {
             
             wordLink.addEventListener('mouseover', function(e) {
                 console.log("this shouldnt be running");
-                const pinyin =  chardict[word].pinyin;
-                const english = chardict[word].english;
+                const pinyin =  chardict[word].pinyin.map(toAccentedPinyin);
+                const english = chardict[word].english.map(toAccentedPinyin);
                 const hsklvl = chardict[word].hsk_level;
                 let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
 
@@ -896,7 +896,7 @@ function constSimilars(similars, similarsDiv){
                                 hoverBox.style.display = 'none';
                             } else {
                                 const pinyin = chardict[similar_char].pinyin.map(toAccentedPinyin);
-                                const english = chardict[similar_char].definition.map(toAccentedPinyin);
+                                const english = chardict[similar_char].english.map(toAccentedPinyin);
                                 let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
                                 if (isDarkMode) {
                                     tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
