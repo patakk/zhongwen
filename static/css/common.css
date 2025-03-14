@@ -2,8 +2,9 @@
     --font: "Noto Sans Mono", monospace;
     --background-color: #ffffff;
     --lifted-background-color: #f1f1f1;
+    --hanzi-link-color: rgb(0, 90, 224);
     --simple-border: 2px solid #afafaf;
-    --dimmest-background-color: #fafafa;
+    --dimmest-background-color: #fcfcfc;
     --dimmer-background-color: #f5f5f5;
     --dimmer-border-color: #d0d0d0;
     --dimmer-border-color-a: #d0d0d08f;
@@ -33,6 +34,8 @@
 }
 
 .darkmode {
+    --hanzi-link-color: #4978fa;
+    --hanzi-link-color: #9795df;
     --dimmer-background-color: #1d1d1d;
     --dimmest-background-color: #141414;
     --home-link-bg-color: #232323;

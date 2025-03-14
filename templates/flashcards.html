@@ -17,7 +17,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>Flashcard</title>
+        <title>Flashcards</title>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
         <!-- <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}"> -->
@@ -78,8 +78,8 @@
             <div id="flashcard">
                 <div class="hanzi"></div>
                 <div class="answer inactive">
-                    <div class="pinyin"></div>
-                    <div class="english"></div>
+                    <div class="pinyin" id="pinyin"></div>
+                    <div class="english" id="english"></div>
                 </div>
             </div>
         </div>

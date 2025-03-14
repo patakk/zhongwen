@@ -317,10 +317,6 @@ p::selection {
     background-color: rgb(233,233,233, 0);
 }
 
-.word-link.darkmode {
-    background: rgb(60,60,60);
-    color: rgb(214,214,214);
-}
 
 @media screen and (max-width: 1024px) {
     /* #flashcard_container {
@@ -488,15 +484,21 @@ and (max-device-width: 1024px) {
 
 .word-link {
     display: inline-block;
-    padding: 2px 7px 0px 7px;
-    margin: 4px;
+    padding: 0em;
+    margin: 0em .25em;
     border: 2px solid #000;
     border: 0;
     text-decoration: none;
     color: #000000;
-    font-size: 1.4em;
+    font-size: 1em;
     cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.05)
+    /* background-color: rgba(0, 0, 0, 0.05) */
+}
+
+@media screen and (max-width: 845px) {
+    .word-link {
+        margin: 0em .25em;
+    }
 }
 
 .word-link.word-link-small {
@@ -504,16 +506,16 @@ and (max-device-width: 1024px) {
 }
 
 .word-link:hover {
-    background-color: #f0f0f0;
+    /* background-color: #f0f0f0; */
 }
 
 .word-link.darkmode {
-    background: rgb(60, 60, 60);
+    /* background: rgb(60, 60, 60); */
     color: rgb(200, 200, 200);
 }
 
 .word-link.darkmode:hover {
-    background: rgb(80, 80, 80);
+    /* background: rgb(80, 80, 80); */
 }
 
 
@@ -868,8 +870,9 @@ input[type="checkbox"].darkmode:checked::after {
     margin-left: 10px;
     margin-bottom: 10px;
     border-bottom: 2px solid var(--dimmer-border-color-a);
-    width: calc(100% + 2em);
-    transform: translateX(-1em);
+    /* width: calc(100% + 2em); */
+    /* transform: translateX(-1em); */
+    width: 100%;
     margin: 0 0;
 }
 
@@ -933,6 +936,7 @@ input[type="checkbox"].darkmode:checked::after {
 .rawDefContent {
     /* padding:  .5em 1em .5em 1em; */
     display: inline-block;
+    padding-left: .5em;
 }
 
 .scrollableHanzis {
@@ -1165,7 +1169,10 @@ input[type="checkbox"].darkmode:checked::after {
 .definitions-grid {
     display: grid;
     grid-template-columns: 20% 80%;
-    margin-bottom: 10px;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: auto;
+    padding-left: 1em;
 }
 
 .grid-row {
@@ -1175,6 +1182,7 @@ input[type="checkbox"].darkmode:checked::after {
 .grid-cell {
     padding: 8px;
     border-bottom: 2px dashed var(--dimmer-border-color-b);
+    background-color: var(--dimmest-background-color);
 }
 
 .header .grid-cell {
@@ -1183,5 +1191,5 @@ input[type="checkbox"].darkmode:checked::after {
 }
 
 .pinyin-cell {
-    border-right: 2px solid var(--dimmer-border-color-b);
+    border-right: 2px dashed var(--dimmer-border-color-b);
 }

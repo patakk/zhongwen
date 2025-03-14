@@ -148,7 +148,7 @@ def user_progress():
 
 def main_card_data(character):
     username = session.get('username')
-    simple_info = get_char_info(character, pinyin=True, english=True, function=True)
+    simple_info = get_char_info(character, pinyin=True, english=True)
 
     # res = get_tatoeba_page(character, 0)
     res = None
@@ -161,7 +161,6 @@ def main_card_data(character):
         "character": character,
         "pinyin": simple_info['pinyin'],
         "english": simple_info['english'],
-        "function": simple_info['function'],
         "examples": examples,
         "is_last": is_last,
         "html": "IMPLEMENT ME", #data.get('examples', ''),
@@ -409,7 +408,6 @@ def hanzitest_pinyin():
 
 @app.route('/hanziwriting')
 @session_required
-@timing_decorator
 def hanziwriting():
     context = get_common_context()
     add_sorted_decknames_to_context(session.get('username'), context)
@@ -423,13 +421,11 @@ def hanziwriting():
 
 @app.route('/convert2')
 @session_required
-@timing_decorator
 def convert2():
     return render_template('convert2.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, wordlist=session['deck'])
 
 @app.route('/convert3')
 @session_required
-@timing_decorator
 def convert3():
     convertedText = db_get_user_string(session['username'])
     chars = set(''.join(convertedText.split()))
@@ -443,7 +439,6 @@ def convert3():
 
 @app.route('/convert')
 @session_required
-@timing_decorator
 def convert():
     convertedText = db_get_user_string(session['username'])
     chars = set(''.join(convertedText.split()))

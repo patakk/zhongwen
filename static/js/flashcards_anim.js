@@ -25,13 +25,23 @@ async function getPinyinEnglishFor(word) {
 function drawbg(ctx){
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     
+    ctx.strokeStyle = isDarkMode ? 'white' : 'black';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(ctx.canvas.width, 0);
+    ctx.lineTo(ctx.canvas.width, ctx.canvas.height);
+    ctx.lineTo(0, ctx.canvas.height);
+    ctx.lineTo(0, 0);
+    ctx.stroke();
+
     // ctx.shadowColor = isDarkMode ? '#333' : '#ddd';
     // ctx.shadowOffsetX = 5; 
     // ctx.shadowOffsetY = 5;
     // ctx.shadowBlur = 0;
 
     ctx.fillStyle = isDarkMode ? '#2a2a2a' : 'white';
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+   //  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
 function drawStrokes() {
@@ -101,19 +111,66 @@ function drawMasks(){
 function redrawCurrentCard() {
     let hanziContainer = flashcardElement.querySelector('.hanzi');
     let answerContainer = flashcardElement.querySelector('.answer');
-    // hanziContainer.textContent = currentWordInfo.character;
+    let pinyinContainer = document.getElementById('pinyin');
+    let englishContainer = document.getElementById('english');
+    pinyinContainer.innerHTML = '';
+    englishContainer.innerHTML = '';
+
+    if(answerContainer){
+        answerContainer.innerHTML = '';
+    }
 
     drawStrokes();
-
     drawMasks();
 
-    let pinyinContainer = flashcardElement.querySelector('.pinyin');
-    pinyinContainer.textContent = currentWordInfo.pinyin.map(toAccentedPinyin);
-    let englishContainer = flashcardElement.querySelector('.english');
-    englishContainer.textContent = currentWordInfo.english.map(toAccentedPinyin);
+    // Clear previous content
+    pinyinContainer.classList.add('pinyin');
+    flashcardElement.appendChild(pinyinContainer);
+    
+    englishContainer.classList.add('english');
+    flashcardElement.appendChild(englishContainer);
+    
+    // Create a container for the pinyin-meaning pairs
+    let pairsContainer = document.createElement('div');
+    pairsContainer.classList.add('pinyin-meaning-pairs');
+    
+    // Process each pair
+    const maxPairs = Math.max(currentWordInfo.pinyin.length, currentWordInfo.english.length);
+    
+    for (let i = 0; i < maxPairs; i++) {
+        const pinyin = i < currentWordInfo.pinyin.length ? currentWordInfo.pinyin[i] : '';
+        const english = i < currentWordInfo.english.length ? currentWordInfo.english[i] : '';
+        
+        let pairElement = document.createElement('div');
+        pairElement.classList.add('pinyin-meaning-pair');
+        
+        // Add special class for the first (main) pair
+        if (i === 0) {
+            // pairElement.classList.add('main-pair');
+        }
+        
+        // Create and add pinyin part
+        let pinyinElement = document.createElement('div');
+        pinyinElement.classList.add(i === 0 ? 'pinyinRow' : 'pinyinRowSmall');
+        pinyinElement.textContent = toAccentedPinyin(pinyin);
+        pairElement.appendChild(pinyinElement);
+        
+        // Create and add meaning part
+        let englishElement = document.createElement('div');
+        englishElement.classList.add(i === 0 ? 'englishRow' : 'englishRowSmall');
+        englishElement.textContent = english;
+        pairElement.appendChild(englishElement);
+        // Add the pair to the container
+        pairsContainer.appendChild(pairElement);
+    }
+    
+    // Add the pairs container to the answer container
+    answerContainer.appendChild(pairsContainer);
+    
     answerContainer.classList.toggle('inactive', !revealed);
     handleFont();
 }
+
 
 
 function power(p, g) {
@@ -229,7 +286,7 @@ function interpolateCards() {
 
     let progress = 0;
     function animation(){
-        progress += 0.035;
+        progress += 0.0035;
         if(progress >= 1){
             progress = 1;
         }
@@ -577,11 +634,11 @@ let ctx = canvas.getContext('2d');
 function setupCanvas(){
     canvas.width = flashcardElement.offsetWidth*2;
     canvas.height = flashcardElement.offsetWidth*.25*2;
-    canvas.style.width = flashcardElement.offsetWidth + 'px';
+    canvas.style.width = "100%";
     canvas.style.height = flashcardElement.offsetWidth*.25 + 'px';
-    canvas.style.position = 'absolute';
     canvas.style.top = flashcardElement.offsetWidth*.05 + 'px';
     canvas.style.left = '0';
+    canvas.class = "plotter";
 
     progress = 0;
     let saw = (1-2*Math.abs(.5-progress));

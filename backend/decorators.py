@@ -8,7 +8,7 @@ from backend.db.models import User
 
 logger = logging.getLogger(__name__)
 
-ENABLE_TIMING = False
+ENABLE_TIMING = True
 
 def timing_decorator(f):
     @wraps(f)
@@ -18,9 +18,7 @@ def timing_decorator(f):
         start_time = time.time()
         result = f(*args, **kwargs)
         processing_time = time.time() - start_time
-        username = session.get("username", "unknown")
-        with open(f"{username}_timing.txt", "a") as file:
-            file.write(f"{f.__name__}: {processing_time:.4f} seconds\n")
+        logger.info(f"Function {f.__name__} took {processing_time:.2f} seconds")
         return result
     return wrap
 

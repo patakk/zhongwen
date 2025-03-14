@@ -1,5 +1,4 @@
 
-let currentDeck = 'hsk1';
 let currentFont = 'Noto Sans Mono';
 
 

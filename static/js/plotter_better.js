@@ -1256,26 +1256,23 @@ class HanziPlotter {
 
         await this.loadPromise;
         
-        let workingStrokes = this.originalStrokes.map(stroke => {
-            return stroke.map(point => ({
-                x: point.x,
-                y: point.y
-            }));
-        });
-        if(strokes_in){
-            workingStrokes = strokes_in;
-        }
-
-        if(workingStrokes === undefined){
+        let workingStrokes = strokes_in || this.originalStrokes?.map(stroke => 
+            stroke.map(({ x, y }) => ({ x, y }))
+        );
+        
+        if (!workingStrokes) {
             let span = document.createElement('span');
             span.textContent = this.character;
-            span.style.fontSize = '10em';
-            span.style.fontFamily = 'Noto Sans SC';
-            span.style.margin = '0.em';
-            span.style.display = 'inline-block';
+            Object.assign(span.style, {
+                fontSize: '10em',
+                fontFamily: 'Kaiti',
+                margin: '0em',
+                display: 'inline-block'
+            });
             this.canvas = span;
             return;
         }
+        
         
         if(clearbg) this.clearBg();
 

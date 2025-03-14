@@ -29,6 +29,9 @@ ANTHROPIC_DATA = json.load(open(os.path.join(DATA_DIR, "anthropic.json")))
 TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_examples.json")))
 TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_example_ids_by_char.json")))
 DECKS_INFO = {key : CARDDECKS[key]["name"] for key in CARDDECKS}
+STROKE_COUNT = json.load(open(os.path.join(DATA_DIR, "stroke_count.json")))
+# HANZI_DARKNESS_NOTO = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_noto.json")))
+# HANZI_DARKNESS_KAITI = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_kaiti.json")))
 
 
 DECKNAMES = {
@@ -118,21 +121,10 @@ def get_char_info(character, pinyin=False, english=False, function=False, full=F
                     info['english'].append(entry['definition'])
                     info['pinyin'].append(entry['pinyin'])
     except:
-        info['pinyin'] = "N/A"
-        info['english'] = "N/A"
-    if function:
-        words = pseg.cut(simplify_hanzi(character))
-        functions = []
-        for _, flag in words:
-            f = pos_map.get(flag, 'unknown')
-            functions.append(f)
-        function = 'IMPLEMENT ME (FUNCTION)'
-        if len(functions) == 1:
-            function = functions[0]
-        else:
-            function = functions
-        info['function'] = function
+        info['pinyin'] = ["N/A"]
+        info['english'] = ["N/A"]
     info['character'] = character
+    info['stroke_count'] = STROKE_COUNT.get(character, -1)
     return info
 
 
@@ -271,10 +263,13 @@ def char_full_info_(char):
     # except:
     #     appears_in = []
 
+    stroke_count = STROKE_COUNT.get(char, -1)
+
     return {
         'english': definition,
         'frequency': frequency,
         'rank': rank,
+        'stroke_count': stroke_count,
         'radicals': radicals_with_meaning,
         'graphical': graphical,
         'main_components': main_components,

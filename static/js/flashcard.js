@@ -143,7 +143,7 @@ function displayCharMatches(charMatches) {
             wordLink.onclick = function() {
                 loadRenderDisplay(word); 
                 const newUrl = new URL(window.location);
-                newUrl.searchParams.set('query', word);
+                newUrl.searchParams.set('character', word);
                 history.pushState({}, '', newUrl);
                 hoverBox.style.display = 'none';
             };
@@ -306,7 +306,7 @@ async function renderPlotters(plotters, pinyinparts=null){
         // Store plotters as a property of the container element
         plotterElement.plotters = plotters;
         
-        // get all internal loadPromise from plotters and await them
+        // get all internal loadPromise ččom plotters and await them
         const loadPromises = plotters.map(plotterinfo => plotterinfo.plotter.loadPromise);
         await Promise.all(loadPromises);
         plotterElement.innerHTML = '';
@@ -529,7 +529,7 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
                         if(hoverBox.style.display === 'block'){
                             loadRenderDisplay(wordDict.character); 
                             const newUrl = new URL(window.location);
-                            newUrl.searchParams.set('query', wordDict.character);
+                            newUrl.searchParams.set('character', wordDict.character);
                             history.pushState({}, '', newUrl);
                             hoverBox.style.display = 'none';
                         } else {
@@ -545,7 +545,7 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
                     } else {
                         loadRenderDisplay(wordDict.character); 
                         const newUrl = new URL(window.location);
-                        newUrl.searchParams.set('query', wordDict.character);
+                        newUrl.searchParams.set('character', wordDict.character);
                         history.pushState({}, '', newUrl);
                         hoverBox.style.display = 'none';
                     }
@@ -683,7 +683,6 @@ function loadRenderDisplay(character) {
 
             }
             data.plotters = createPlotters(data);
-            console.log(data);
             window['loadedCard'] = data;
             renderCard(data);
             currentGridPlotters = data.plotters;
@@ -850,7 +849,7 @@ function constSimilars(similars, similarsDiv){
                 p.style.paddingLeft = '1em';
                 p.textContent = component;
                 similarsDiv.appendChild(p);
-        
+                similar_chars.sort((a, b) => chardict[a].stroke_count - chardict[b].stroke_count);
                 similar_chars.forEach(similar_char => {
                     const wordLink = document.createElement('a');
                     const hoverBox = document.getElementById('pinyin-hover-box');
@@ -892,7 +891,7 @@ function constSimilars(similars, similarsDiv){
                             if(hoverBox.style.display === 'block'){
                                 loadRenderDisplay(similar_char);
                                 const newUrl = new URL(window.location);
-                                newUrl.searchParams.set('query', similar_char);
+                                newUrl.searchParams.set('character', similar_char);
                                 history.pushState({}, '', newUrl);
                                 hoverBox.style.display = 'none';
                             } else {
@@ -919,7 +918,7 @@ function constSimilars(similars, similarsDiv){
                         } else {
                             loadRenderDisplay(similar_char);
                             const newUrl = new URL(window.location);
-                            newUrl.searchParams.set('query', similar_char);
+                            newUrl.searchParams.set('character', similar_char);
                             history.pushState({}, '', newUrl);
                             hoverBox.style.display = 'none';
                         }
@@ -932,7 +931,8 @@ function constSimilars(similars, similarsDiv){
                     });
         
                     wordLink.textContent = similar_char;
-                    wordLink.className = 'word-link';
+                    wordLink.classList.add('word-link');
+                    wordLink.style.color = 'var(--hanzi-link-color)';
                     if (isDarkMode) wordLink.classList.add('darkmode');
                     linkss.appendChild(wordLink);
                 });
@@ -940,7 +940,7 @@ function constSimilars(similars, similarsDiv){
                 // Expand button
                 similarsDiv.appendChild(linkss);
                 setTimeout(() => {
-                    if (num_similars_per_component > 74) {
+                    if (num_similars_per_component > 274) {
                         expandBtn.textContent = "...";
                         expandBtn.className = "expand-button";
                         expandBtn.onclick = function () {
@@ -992,14 +992,14 @@ function createClickableHanziElements(text) {
             wordSpan.className = 'clickable-hanzi';
             wordSpan.textContent = word;
             wordSpan.style.cursor = 'pointer';
-            wordSpan.style.color = '#0066cc';
+            wordSpan.style.color = 'var(--hanzi-link-color)';
             wordSpan.style.textDecoration = 'underline';
             
             wordSpan.addEventListener('click', function() {
                 console.log('click');
                 loadRenderDisplay(word);
                 const newUrl = new URL(window.location);
-                newUrl.searchParams.set('query', word);
+                newUrl.searchParams.set('character', word);
                 history.pushState({}, '', newUrl);
             });
             
@@ -1081,7 +1081,7 @@ function renderCard(data) {
                 window['loadedCard'] = null;
                 loadRenderDisplay(char);
                 const newUrl = new URL(window.location);
-                newUrl.searchParams.set('query', char);
+                newUrl.searchParams.set('character', char);
                 history.pushState({}, '', newUrl);
             });
             span.style.hover = 'color: #ffd91c';
@@ -1099,20 +1099,30 @@ function renderCard(data) {
         renderPlotters(data.plotters, pparts);
     }
     //document.getElementById('flashcard_pinyin').textContent = toAccentedPinyin(data.pinyin);
-    document.getElementById('flashcard_pinyin').textContent = data.pinyin.map(toAccentedPinyin);
+    document.getElementById('flashcard_english').innerHTML = '';
+    let englishList = document.createElement('ul');
+    data.english.forEach((english, index) => {
+        let pinyItem = document.createElement('span');
+        pinyItem.style.opacity = 0.6;
+        pinyItem.style.paddingRight = "0.5em";
+        pinyItem.style.fontStyle = 'italic';
+        let englishItem = createClickableHanziElements(toAccentedPinyin(english));
+        let englishRow = document.createElement('div');
+        pinyItem.textContent = "(" + toAccentedPinyin(data.pinyin[index]) + ")";
+        if(index == 0){
+            // if(data.pinyin.length > 1){
+                // englishRow.appendChild(pinyItem);
+            // }
+            englishRow.appendChild(englishItem);
+            englishList.appendChild(englishRow);
+        }
+    });
+    document.getElementById('flashcard_pinyin').textContent = data.pinyin.map(toAccentedPinyin)[0];
     document.getElementById('flashcard_pinyin').dataset.characters = data.character;
-    if(data.english.constructor === Array){
-        document.getElementById('flashcard_english').innerHTML = '';
-        let englishList = document.createElement('ul');
-        data.english.forEach(english => {
-            let englishItem = document.createElement('li');
-            englishItem.textContent = toAccentedPinyin(english);
-            englishList.appendChild(englishItem);
-        });
-        document.getElementById('flashcard_english').appendChild(englishList);
-    } else {
-        document.getElementById('flashcard_english').innerHTML = toAccentedPinyin(data.english);
-    }
+    document.getElementById('flashcard_english').appendChild(englishList);
+    // if(chars.length > 1){
+    //     document.getElementById('flashcard_english').appendChild(englishList);
+    // }
     let ai_content = data.html;
 
 
@@ -1155,6 +1165,7 @@ function renderCard(data) {
         const pinyin = char_info.pinyin;
         const frequency = char_info.frequency;
         const rank = char_info.rank;
+        const stroke_count = char_info.stroke_count;
         const graphical_components = char_info.graphical; // list of chars
         const main_components = char_info.main_components; // list of chars
         const radicals = char_info.radicals; // dict of radicals with meaning
@@ -1166,8 +1177,9 @@ function renderCard(data) {
         tabButton.classList.add('tab-button');
         tabButton.textContent = char;
         tabButton.dataset.target = `tab-${index}`;
-        tabNav.appendChild(tabButton);
-
+        if(chars.length > 1){
+            tabNav.appendChild(tabButton);
+        }
         // Create content div
         const entryDiv = document.createElement('div');
         entryDiv.classList.add('tab-content');
@@ -1236,26 +1248,40 @@ function renderCard(data) {
             definitionsTable.appendChild(dataRow);
         }
 
+        const defLabelDiv = document.createElement('div');
+        defLabelDiv.className = 'rawDefLabel';
+        defLabelDiv.textContent = "Definitions:";
+        
+        // append just a horiztonal line
+        const hr = document.createElement('hr');
+        hr.style.border = '0';
+        hr.style.height = '4px';
+        hr.style.backgroundColor = 'var(--dimmer-background-color)';
+        hr.style.marginLeft = '0';
+        hr.style.marginRight = '0';
+
+        entryDiv.appendChild(defLabelDiv);
         entryDiv.appendChild(definitionsTable);
+        entryDiv.appendChild(hr);
+
 
         if (rank !== null) {
-            entryDiv.appendChild(createDefEntry('Frequency rank:', rank));
+            entryDiv.appendChild(createDefEntry('Frequency rank: ', rank));
         }
-        entryDiv.appendChild(createDefEntry('Graphical components:', graphical_components.join(', ')));
+        if (stroke_count !== null && stroke_count !== 0 && stroke_count !== -1) {
+            entryDiv.appendChild(createDefEntry('Stroke count: ', stroke_count));
+        }
+        entryDiv.appendChild(createDefEntry('Graphical components: ', graphical_components.join(', ')));
         if (filteredRadicals) {
-            entryDiv.appendChild(createDefEntry('Radicals:', filteredRadicals));
+            entryDiv.appendChild(createDefEntry('Radicals: ', filteredRadicals));
         }
-
 
     
         //<div class="rawDefEntry"><div class="rawDefLabel">Main components:</div> <div class="rawDefContent">${main_components.join(', ')}</div></div>
         
-    
-
 
         // Similar Characters per Component
         const similarsDiv = document.createElement('div');
-        similarsDiv.innerHTML = `<span class="rawDefLabel">Similar characters by visual components  shares:</span>`;
         similarsDiv.classList.add('rawDefEntry');
         constSimilars(char, similarsDiv);
         
@@ -1279,6 +1305,7 @@ function renderCard(data) {
                 p.textContent = component;
                 similarsDiv.appendChild(p);
         
+                // sort similar_chars by stroke count
                 similar_chars.forEach(similar_char => {
                     const wordLink = document.createElement('a');
                     const hoverBox = document.getElementById('pinyin-hover-box');
@@ -1314,7 +1341,7 @@ function renderCard(data) {
                             if(hoverBox.style.display === 'block'){
                                 loadRenderDisplay(similar_char);
                                 const newUrl = new URL(window.location);
-                                newUrl.searchParams.set('query', similar_char);
+                                newUrl.searchParams.set('character', similar_char);
                                 history.pushState({}, '', newUrl);
                                 hoverBox.style.display = 'none';
                             } else {
@@ -1337,7 +1364,7 @@ function renderCard(data) {
                         } else {
                             loadRenderDisplay(similar_char);
                             const newUrl = new URL(window.location);
-                            newUrl.searchParams.set('query', similar_char);
+                            newUrl.searchParams.set('character', similar_char);
                             history.pushState({}, '', newUrl);
                             hoverBox.style.display = 'none';
                         }
@@ -1449,7 +1476,7 @@ function renderCard(data) {
             wordLink.onclick = function() {
                 loadRenderDisplay(similar_char); 
                 const newUrl = new URL(window.location);
-                newUrl.searchParams.set('query', similar_char);
+                newUrl.searchParams.set('character', similar_char);
                 history.pushState({}, '', newUrl);
                 hoverBox.style.display = 'none';
             };

@@ -51,7 +51,6 @@ let unlocked = false;
 let donefirst = false;
 function maybeLoadRenderAndThenShow(character, dir=0, force_unlock=false){
     cardVisible = true;
-    console.log("clicked", character, unlocked, donefirst);
 
     if(!unlocked && donefirst){
         donefirst = false;
@@ -124,12 +123,9 @@ function maybeLoadRenderAndThenShow(character, dir=0, force_unlock=false){
         renderCard(data);
         displayCard(true, true);
         unlocked = true;
-        let nextcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(window['loadedCard'].character) + 1;
-        let prevcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(window['loadedCard'].character) - 1;
-        nextcharidx = nextcharidx % wordlists_words[currentWordlist].length;
-        prevcharidx = (prevcharidx + wordlists_words[currentWordlist].length) % wordlists_words[currentWordlist].length;
-        let nextchar = wordlists_words[currentWordlist][nextcharidx].character;
-        let prevchar = wordlists_words[currentWordlist][prevcharidx].character;
+        let neighs = getNeighbors(character);
+        let nextchar = neighs.nextchar;
+        let prevchar = neighs.prevchar;
         loadCard(nextchar, false, 'nextLoadedCard');
         loadCard(prevchar, false, 'prevLoadedCard');
         // recordView(character);
@@ -379,6 +375,7 @@ function createGrid(characters, useAllDecks){
             currentDeck = 'shas'
         }
     }
+    
     let ichars = Object.keys(characters);
     // if(useAllDecks){
     //     ichars = [];
@@ -670,6 +667,7 @@ function drawBothLayouts(data, useAllDecks=false){
 }
 
 let currentData = null;
+let currentDeck = null;
 let filteredData = null;
 
 function loadCharacters() {
@@ -771,23 +769,8 @@ function isMobileOrTablet() {
 function changeDeck(deck) {
     currentDeck = deck;
     currentData = inputdecks[currentDeck].chars;
-    // fetch(`./api/?deck=${deck}`, {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },
-    // })
-    // .then(response => {
-    //     if (!response.ok) {
-    //         throw new Error('Network response was not ok');
-    //     }
-    // })
-    // .catch(error => {
-    //     console.error('There was a problem changing the deck:', error);
-    // });
     const grid = document.getElementById('character-grid');
     grid.innerHTML = '';
-    // change url parameter deck to currentDeck
     const newUrl = new URL(window.location);
     newUrl.searchParams.set('wordlist', deck);
     history.pushState({}, '', newUrl);
@@ -977,11 +960,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inputdeck) {
         currentDeck = inputdeck;
     }
+
     if(inputdecks[currentDeck]){
     }
     else{
         currentDeck = 'hsk1';
-        // set url
         const newUrl = new URL(window.location);
         newUrl.searchParams.set('wordlist', currentDeck);
         history.pushState({}, '', newUrl);
@@ -1059,7 +1042,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if(list === 'true'){
         toggleGridList();
     }
-
 });
 
 let currentToggleFont = 0;

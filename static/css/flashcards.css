@@ -149,6 +149,7 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 
 .english {
@@ -161,9 +162,10 @@ html, body {
     font-family: "Noto Sans SC", sans-serif;
     opacity: 0.5;
     display: flex; 
-    align-items: center;
-    justify-content: center;
+    align-items: left;
+    justify-content: left;
     overflow-y: auto;
+    flex-direction: column;
 }
 
 
@@ -186,4 +188,59 @@ html, body {
         font-size: 0.9em;
     }
     
+}
+
+
+
+.flashcard {
+    display: flex;
+    box-sizing: border-box;
+}
+
+.plotter {
+    position: absolute;
+}
+
+.pinyin-meaning-pairs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+}
+
+.pinyin-meaning-pair {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.main-pair {
+    margin-bottom: 15px; /* Add space after the main pair */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Optional: adds a subtle separator */
+    padding-bottom: 10px;
+}
+
+/* You may want to adjust these styles */
+.pinyinRow, .pinyinRowSmall {
+    width: 100%;
+    text-align: left;
+}
+
+.englishRow, .englishRowSmall {
+    width: 100%;
+    text-align: left;
+    margin-left: 15px; /* Indent the meaning */
+}
+
+
+
+
+.pinyinRow {
+    width: 100%;
+}
+
+.pinyinRowSmall {
+    width: 100%;
+    text-align: left;
+    font-size: .7em;
 }
