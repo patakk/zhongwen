@@ -642,6 +642,7 @@ function setupCanvas(){
     canvas.width = flashcardElement.offsetWidth*2;
     canvas.height = flashcardElement.offsetWidth*.25*2;
     canvas.style.width = "100%";
+    canvas.style.width = flashcardElement.offsetWidth + 'px';
     canvas.style.height = flashcardElement.offsetWidth*.25 + 'px';
     canvas.style.top = flashcardElement.offsetWidth*.05 + 'px';
     canvas.style.left = '0';
