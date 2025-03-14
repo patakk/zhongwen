@@ -29,7 +29,7 @@ function cross(ctx, x, y, DX, DY, opacity=1){
     let copacity = opacity*0.35;
     
     ctx.strokeStyle = isDarkMode ? `rgba(255,255,255,${ropacity})` : `rgba(0,0,0,${ropacity})`;
-    ctx.strokeRect(x, y, DX-1, DY-1);
+    ctx.strokeRect(x+1, y+1, DX-1, DY-1);
 
     ctx.strokeStyle = isDarkMode ? `rgba(255,255,255,${dopacity})` : `rgba(44,0,0,${dopacity})`;
     // diagonal1
