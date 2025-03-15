@@ -31,8 +31,8 @@ TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_examples.json")))
 TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_example_ids_by_char.json")))
 DECKS_INFO = {key : CARDDECKS[key]["name"] for key in CARDDECKS}
 STROKE_COUNT = json.load(open(os.path.join(DATA_DIR, "stroke_count.json")))
-# HANZI_DARKNESS_NOTO = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_noto.json")))
-# HANZI_DARKNESS_KAITI = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_kaiti.json")))
+HANZI_DARKNESS_NOTO = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_noto.json")))
+HANZI_DARKNESS_KAITI = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_kaiti.json")))
 
 
 DECKNAMES = {
@@ -123,7 +123,7 @@ def get_char_info(character, pinyin=False, english=False, function=False, full=F
         info['pinyin'] = ["N/A"]
         info['english'] = ["N/A"]
     info['character'] = character
-    info['stroke_count'] = STROKE_COUNT.get(character, -1)
+    info['stroke_count'] = HANZI_DARKNESS_KAITI.get(character, -1)
     return info
 
 
@@ -269,7 +269,7 @@ def char_full_info_(original_char):
         'rank': rank,
         'simplified': HanziConv.toSimplified(char),
         'traditional': HanziConv.toTraditional(char),
-        'stroke_count': STROKE_COUNT.get(original_char, -1),
+        'stroke_count': HANZI_DARKNESS_KAITI.get(original_char, -1),
         'radicals': radicals_with_meaning,
         'graphical': graphical,
         'main_components': main_components,

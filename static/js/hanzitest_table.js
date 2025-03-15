@@ -304,7 +304,7 @@ function populateGrid() {
             const userAnswer = simplifyPinyin(userInput);
             let simplifiedCorrectPinyin = simplifyPinyin(pinyin, removeAccents=true);
             const isCorrect = userAnswer === simplifiedCorrectPinyin;
-            console.log('Correct:', simplifiedCorrectPinyin, 'User:', userAnswer, 'Result:', isCorrect);
+            // console.log('Correct:', simplifiedCorrectPinyin, 'User:', userAnswer, 'Result:', isCorrect);
             if (isCorrect) {
 
                 correctAnswers++;
@@ -319,13 +319,15 @@ function populateGrid() {
 
                 let x = e.target.getBoundingClientRect().left + e.target.getBoundingClientRect().width/2;
                 let y = e.target.getBoundingClientRect().top + e.target.getBoundingClientRect().height/2;
-                fastConfetti(x, y, pinyin);
+                // fastConfetti(x, y, pinyin);
+                fastConfetti(x, y, toAccentedPinyin(pinyin));
                 e.target.classList.add('pinyin-correct');
                 e.target.parentNode.classList.add('grid-item-correct');
                 e.target.dataset.correct = true;
                 // disable input
                 e.target.disabled = true;
 
+                e.target.value = toAccentedPinyin(pinyin);
                 // e.target.value = inputdecksflattend[hanzi].pinyin[0];
 
                 vibrateElement(e.target.parentNode);
@@ -437,7 +439,7 @@ function revealAnswers(){
     restartBtn.classList.remove("hidden");
     allinputs.forEach(input => {
         if(input.dataset.correct === 'false'){
-            input.value = currentcharacters[input.dataset.hanzi].pinyin[0];
+            input.value = toAccentedPinyin(currentcharacters[input.dataset.hanzi].pinyin[0]);
             input.classList.add('pinyin-revealed');
             input.disabled = true;
         }

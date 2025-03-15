@@ -233,10 +233,12 @@ function checkAnswer(selectedPinyin) {
 
     if (isCorrect) {
         correctAnswers++;
-        fastConfetti(lastmousex, lastmousey + window.scrollY-40, '✅');
+        // fastConfetti(lastmousex, lastmousey + window.scrollY-40, '✅');
+        fastConfetti(lastmousex, lastmousey + window.scrollY-40, '＋');
     }
     else{
-        fastConfetti(lastmousex, lastmousey + window.scrollY-40, '❌');
+        // fastConfetti(lastmousex, lastmousey + window.scrollY-40, '❌');
+        fastConfetti(lastmousex, lastmousey + window.scrollY-40, '⨉');
     }
 
 

@@ -437,6 +437,7 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
                 function showTooltip(element, x, y) {
                     // Use the pinyin from the dictionary
                     hoverBox.innerHTML = `
+                        <div class="hover-hanzi">${wordDict.character}</div>
                         <div class="hover-pinyin">${wordDict.pinyin.map(toAccentedPinyin)}</div>
                         <div class="hover-english">${wordDict.english.map(toAccentedPinyin)}</div>
                     `;
@@ -787,7 +788,7 @@ function constSimilars(similars, similarsDiv){
         
                 linkss.style.paddingLeft = '1em';
                 p.style.paddingLeft = '1em';
-                p.textContent = component;
+                p.innerHTML = "<span class='rawDefLabelHanzi'>" + component + ":</span>";
                 similarsDiv.appendChild(p);
                 similar_chars.sort((a, b) => chardict[a].stroke_count - chardict[b].stroke_count);
                 similar_chars.forEach(similar_char => {
@@ -809,8 +810,8 @@ function constSimilars(similars, similarsDiv){
                         if(isMobileOrTablet()){
                             return;
                         }
-                        const pinyin = chardict[similar_char].pinyin.map(toAccentedPinyin);
-                        const english = chardict[similar_char].english.map(toAccentedPinyin);
+                        const pinyin = chardict[similar_char].pinyin.map(toAccentedPinyin)[0];
+                        const english = chardict[similar_char].english.map(toAccentedPinyin)[0];
                         const hsklvl = "chardict[similar_char].hsk_level";
                         let tooltipContent = `<strongsfasf>${pinyin}</strong><br>${english}<br>`;
                     
@@ -819,6 +820,7 @@ function constSimilars(similars, similarsDiv){
                         }
                         
                         tooltipContent = `
+                            <div class="hover-hanzi">${similar_char}</div>
                             <div class="hover-pinyin">${pinyin}</div>
                             <div class="hover-english">${english}</div>
                         `;
@@ -835,13 +837,14 @@ function constSimilars(similars, similarsDiv){
                                 history.pushState({}, '', newUrl);
                                 hoverBox.style.display = 'none';
                             } else {
-                                const pinyin = chardict[similar_char].pinyin.map(toAccentedPinyin);
-                                const english = chardict[similar_char].english.map(toAccentedPinyin);
+                                const pinyin = chardict[similar_char].pinyin.map(toAccentedPinyin)[0];
+                                const english = chardict[similar_char].english.map(toAccentedPinyin)[0];
                                 let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
                                 if (isDarkMode) {
                                     tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
                                 }
                                 tooltipContent = `
+                                    <div class="hover-hanzi">${similar_char}</div>
                                     <div class="hover-pinyin">${pinyin}</div>
                                     <div class="hover-english">${english}</div>
                                 `;
@@ -1128,9 +1131,19 @@ function renderCard(data) {
         entryDiv.id = `tab-${index}`;
         entryDiv.innerHTML = '';
         
+        // const filteredRadicals = Object.entries(radicals)
+        //     .filter(([rad, meaning]) => meaning && meaning !== "No glyph available")
+        //     .map(([rad, meaning]) => `${rad} (${meaning})`)
+        //     .join(', ');
+        
         const filteredRadicals = Object.entries(radicals)
-            .filter(([rad, meaning]) => meaning && meaning !== "No glyph available")
-            .map(([rad, meaning]) => `${rad} (${meaning})`)
+            .map(([rad, meaning]) => {
+                let s = `${rad} <span style="opacity: 0.5;">(-)</span>`;
+                if(meaning && meaning !== "No glyph available"){
+                    s = `${rad} <span style="opacity: 0.5;">(${meaning})</span>`;
+                }
+                return s;
+            })
             .join(', ');
 
 
@@ -1300,7 +1313,7 @@ function renderCard(data) {
                             } else {
                                 const pinyin = toAccentedPinyin(chardict[similar_char].pinyin[0]);
                                 const english = toAccentedPinyin(chardict[similar_char].definition[0]);
-                                let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
+                                let tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
                                 if (isDarkMode) {
                                     tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
                                 }
