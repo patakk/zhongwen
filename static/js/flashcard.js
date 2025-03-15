@@ -1419,8 +1419,8 @@ function renderCard(data) {
             wordLink.classList.add('word-link-example');
             // wordLink.classList.add('word-link-small');
             // show hanzi and pinyin and enlgish
-            const pinyin = entry.pinyin.map(toAccentedPinyin);
-            const english = entry.english.map(toAccentedPinyin);
+            const pinyin = entry.pinyin.map(toAccentedPinyin)[0];
+            const english = entry.english.map(toAccentedPinyin)[0];
             wordLink.innerHTML = `<span class="small_hanzi">${similar_char}</span> - <span class="small_english">${english}</span>`;
 
             const hoverBox = document.getElementById('pinyin-hover-box');
