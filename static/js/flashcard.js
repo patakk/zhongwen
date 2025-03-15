@@ -415,10 +415,10 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
                     const hoverBox = document.getElementById('pinyin-hover-box');
                     const margin = 10;
                     const maxX = window.innerWidth - hoverBox.offsetWidth - margin;
-                    const maxY = window.innerHeight - hoverBox.offsetHeight - margin;
+                    const maxY = window.innerHeight - hoverBox.offsetHeight - margin+ window.scrollY;
                 
                     let newX = Math.min(e.pageX + margin, maxX);
-                    let newY = Math.min(e.pageY + margin, maxY);
+                    let newY = Math.min(e.pageY + margin - window.scrollY*0, maxY);
                 
                     hoverBox.style.left = `${newX}px`;
                     hoverBox.style.top = `${newY}px`;
@@ -639,7 +639,7 @@ function setupAddToDeck(){
         hoverBox.innerHTML = content;
         hoverBox.style.display = 'block';
         hoverBox.style.left = `${event.pageX + 10}px`;
-        hoverBox.style.top = `${event.pageY + 10}px`;
+        hoverBox.style.top = `${event.pageY + 10 - window.scrollY*0}px`;
     }
     
     function hideTooltip() {
@@ -730,13 +730,13 @@ function constSimilars(similars, similarsDiv){
                         const hoverBoxWidth = hoverBox.offsetWidth;
                         const hoverBoxHeight = hoverBox.offsetHeight;
                         const maxX = window.innerWidth - hoverBoxWidth - 10;
-                        const maxY = window.innerHeight - hoverBoxHeight - 10;
+                        const maxY = window.innerHeight - hoverBoxHeight - 10+ window.scrollY;
                     
                         let x = event.pageX + 10;
-                        let y = event.pageY + 10;
+                        let y = event.pageY + 10 - window.scrollY*0;
                     
-                        if (x > maxX) x = maxX;
-                        if (y > maxY) y = maxY;
+                        // if (x > maxX) x = maxX;
+                        // if (y > maxY) y = maxY;
                     
                         hoverBox.style.left = `${x}px`;
                         hoverBox.style.top = `${y}px`;
@@ -813,13 +813,13 @@ function constSimilars(similars, similarsDiv){
                         const hoverBoxWidth = hoverBox.offsetWidth;
                         const hoverBoxHeight = hoverBox.offsetHeight;
                         const maxX = window.innerWidth - hoverBoxWidth - 10;
-                        const maxY = window.innerHeight - hoverBoxHeight - 10;
+                        const maxY = window.innerHeight - hoverBoxHeight - 10+ window.scrollY;
                     
                         let x = e.pageX + 10;
-                        let y = e.pageY + 10;
+                        let y = e.pageY + 10 - window.scrollY*0;
                     
-                        if (x > maxX) x = maxX;
-                        if (y > maxY) y = maxY;
+                        // if (x > maxX) x = maxX;
+                        // if (y > maxY) y = maxY;
                     
                         hoverBox.style.left = `${x}px`;
                         hoverBox.style.top = `${y}px`;
@@ -1237,13 +1237,13 @@ function renderCard(data) {
                         const hoverBoxWidth = hoverBox.offsetWidth;
                         const hoverBoxHeight = hoverBox.offsetHeight;
                         const maxX = window.innerWidth - hoverBoxWidth - 10;
-                        const maxY = window.innerHeight - hoverBoxHeight - 10;
+                        const maxY = window.innerHeight - hoverBoxHeight - 10+ window.scrollY;
                     
                         let x = event.pageX + 10;
-                        let y = event.pageY + 10;
+                        let y = event.pageY + 10 - window.scrollY*0;
                     
                         if (x > maxX) x = maxX;
-                        if (y > maxY) y = maxY;
+                        // if (y > maxY) y = maxY;
                     
                         hoverBox.style.left = `${x}px`;
                         hoverBox.style.top = `${y}px`;
@@ -1308,13 +1308,13 @@ function renderCard(data) {
                         const hoverBoxWidth = hoverBox.offsetWidth;
                         const hoverBoxHeight = hoverBox.offsetHeight;
                         const maxX = window.innerWidth - hoverBoxWidth - 10;
-                        const maxY = window.innerHeight - hoverBoxHeight - 10;
+                        const maxY = window.innerHeight - hoverBoxHeight - 10+ window.scrollY;
                     
                         let x = e.pageX + 10;
-                        let y = e.pageY + 10;
+                        let y = e.pageY + 10 - window.scrollY*0;
                     
                         if (x > maxX) x = maxX;
-                        if (y > maxY) y = maxY;
+                        // if (y > maxY) y = maxY;
                     
                         hoverBox.style.left = `${x}px`;
                         hoverBox.style.top = `${y}px`;
@@ -1412,13 +1412,13 @@ function renderCard(data) {
                 const hoverBoxWidth = hoverBox.offsetWidth;
                 const hoverBoxHeight = hoverBox.offsetHeight;
                 const maxX = window.innerWidth - hoverBoxWidth - 10;
-                const maxY = window.innerHeight - hoverBoxHeight - 10;
+                const maxY = window.innerHeight - hoverBoxHeight - 10+ window.scrollY;
             
                 let x = event.pageX + 10;
-                let y = event.pageY + 10;
+                let y = event.pageY + 10 - window.scrollY*0;
             
                 if (x > maxX) x = maxX;
-                if (y > maxY) y = maxY;
+                // if (y > maxY) y = maxY;
             
                 hoverBox.style.left = `${x}px`;
                 hoverBox.style.top = `${y}px`;
@@ -1457,13 +1457,13 @@ function renderCard(data) {
                 const hoverBoxWidth = hoverBox.offsetWidth;
                 const hoverBoxHeight = hoverBox.offsetHeight;
                 const maxX = window.innerWidth - hoverBoxWidth - 10;
-                const maxY = window.innerHeight - hoverBoxHeight - 10;
+                const maxY = window.innerHeight - hoverBoxHeight - 10+ window.scrollY;
             
                 let x = e.pageX + 10;
-                let y = e.pageY + 10;
+                let y = e.pageY + 10 - window.scrollY*0;
             
                 if (x > maxX) x = maxX;
-                if (y > maxY) y = maxY;
+                // if (y > maxY) y = maxY;
             
                 hoverBox.style.left = `${x}px`;
                 hoverBox.style.top = `${y}px`;
