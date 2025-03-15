@@ -185,6 +185,7 @@ document.addEventListener('keydown', function(event) {
 
 document.getElementById('darkmode-toggle').addEventListener('click', function() {
     isDarkMode = !isDarkMode;
+    document.getElementById('darkmode-toggle').textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
     setDarkmode();
 });
 

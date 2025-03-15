@@ -1,7 +1,7 @@
 
 #deckMenu, #fontMenu {
-    top: 25px;
-    left: 25px;
+    top: 1em;
+    left: 1em;
     position: fixed;
     box-sizing: border-box;
     z-index: 3;

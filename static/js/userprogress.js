@@ -197,7 +197,6 @@ function handleRename(e){
         populateDropdown();
         addToTable(wordlists_words[currentWordlist]);
         reworkUrls();
-        console.log("Renamed word list to " + newName);
     }
 }
 
@@ -433,6 +432,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const tooltipHeaders = document.querySelectorAll('.tooltip-header');
     const dateCells = document.querySelectorAll('.next-review-date');
     const hoverBox = document.getElementById('pinyin-hover-box');
+
+    const addwordInfo = document.getElementById('addwordInfo');
+    addwordInfo.addEventListener('mouseover', function(e) {
+        showTooltip(this, "hellllo", e);
+    });
+    addwordInfo.addEventListener('mouseout', hideTooltip);
+    addwordInfo.addEventListener('mousemove', function(e) {
+        hoverBox.style.left = `${e.pageX + 10}px`;
+        hoverBox.style.top = `${e.pageY + 10}px`;
+    });
 
     overlay = document.getElementById('flashcard_overlay');
     flashcardContent = document.getElementById('flashcard_container');

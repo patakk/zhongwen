@@ -123,7 +123,7 @@ def get_char_info(character, pinyin=False, english=False, function=False, full=F
         info['pinyin'] = ["N/A"]
         info['english'] = ["N/A"]
     info['character'] = character
-    info['stroke_count'] = HANZI_DARKNESS_KAITI.get(character, -1)
+    info['darkness'] = HANZI_DARKNESS_KAITI.get(character, -1)
     return info
 
 
@@ -269,7 +269,7 @@ def char_full_info_(original_char):
         'rank': rank,
         'simplified': HanziConv.toSimplified(char),
         'traditional': HanziConv.toTraditional(char),
-        'stroke_count': HANZI_DARKNESS_KAITI.get(original_char, -1),
+        'darkness': HANZI_DARKNESS_KAITI.get(original_char, -1),
         'radicals': radicals_with_meaning,
         'graphical': graphical,
         'main_components': main_components,

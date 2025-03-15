@@ -100,88 +100,6 @@ function getCharactersPinyinEnglish(characters=null, func=null) {
 
 
 
-function displayCharMatches(charMatches) {
-    const container = document.getElementById('flashcard_char_matches');
-    container.innerHTML = ''; // Clear existing content
-
-    const wordsContainer = document.createElement('div');
-    wordsContainer.className = 'words-container';
-
-    // Flatten the structure and get all unique words
-    const allWords = new Set();
-    for (const char in charMatches) {
-        for (const hskLevel in charMatches[char]) {
-            charMatches[char][hskLevel].forEach(word => allWords.add(word));
-        }
-    }
-    if(allWords.size === 0){
-        return;
-    }
-    getCharactersPinyinEnglish(allWords, (data)=>{
-        // Create a box for each unique word
-        let chardict = {};
-        for(const char of data.characters){
-            chardict[char.character] = char;
-        }
-        allWords.forEach(word => {
-            // wordLink.href = `./grid?query=${encodeURIComponent(word)}`;
-            const wordLink = document.createElement('a');
-            const hoverBox = document.getElementById('pinyin-hover-box');
-
-            function showTooltip(element, content, event) {
-                hoverBox.innerHTML = content;
-                hoverBox.style.display = 'block';
-                hoverBox.style.left = `${event.pageX + 10}px`;
-                hoverBox.style.top = `${event.pageY + 10}px`;
-                
-            }
-
-            function hideTooltip() {
-                hoverBox.style.display = 'none';
-            }
-            
-            wordLink.onclick = function() {
-                loadRenderDisplay(word); 
-                const newUrl = new URL(window.location);
-                newUrl.searchParams.set('character', word);
-                history.pushState({}, '', newUrl);
-                hoverBox.style.display = 'none';
-            };
-
-            
-            wordLink.addEventListener('mouseover', function(e) {
-                console.log("this shouldnt be running");
-                const pinyin =  chardict[word].pinyin.map(toAccentedPinyin);
-                const english = chardict[word].english.map(toAccentedPinyin);
-                const hsklvl = chardict[word].hsk_level;
-                let tooltipContent = `<strong>${pinyin}</strong><br>${english}<br>`;
-
-                if(isDarkMode){
-                    // tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span><br><span style="font-size: 12px; font-style: italic; color: #ffd91c;"> HSK ${hsklvl}</span>`;
-                    tooltipContent = `<span><strong>${pinyin}</strong><br>${english}</span>`;
-                    hoverBox.style.backgroundColor = '#1a1a1a';
-                }
-                showTooltip(this, tooltipContent, e);
-            });
-            wordLink.addEventListener('mouseout', hideTooltip);
-            wordLink.addEventListener('mousemove', function(e) {
-                hoverBox.style.left = `${e.pageX + 10}px`;
-                hoverBox.style.top = `${e.pageY + 10}px`;
-            });
-
-
-            wordLink.textContent = word;
-            wordLink.className = 'word-link';
-            if(isDarkMode)
-                wordLink.classList.add('darkmode');
-            wordsContainer.appendChild(wordLink);
-            
-        });
-    });
-    container.appendChild(wordsContainer);
-}
-
-
 function isMobileOrTablet() {
     let check = false;
     (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
@@ -429,7 +347,7 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
                 spanElement.textContent = wordDict.character;
                 spanElement.classList.add('clickable-example-char');
                 
-                if (character && character.includes(wordDict.character)) {
+                if (character && wordDict.character.includes(character)) {
                     spanElement.style.color = 'var(--accent-word)';
                 }
                 spanElement.style.cursor = 'pointer';
@@ -493,10 +411,20 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
                 });
     
                 spanElement.addEventListener('mouseout', hideTooltip);
-                spanElement.addEventListener('mousemove', function(e) {
-                    hoverBox.style.left = `${e.pageX + 10}px`;
-                    hoverBox.style.top = `${e.pageY + 10}px`;
+                spanElement.addEventListener('mousemove', function (e) {
+                    const hoverBox = document.getElementById('pinyin-hover-box');
+                    const margin = 10;
+                    const maxX = window.innerWidth - hoverBox.offsetWidth - margin;
+                    const maxY = window.innerHeight - hoverBox.offsetHeight - margin;
+                
+                    let newX = Math.min(e.pageX + margin, maxX);
+                    let newY = Math.min(e.pageY + margin, maxY);
+                
+                    hoverBox.style.left = `${newX}px`;
+                    hoverBox.style.top = `${newY}px`;
+                    console.log("thissss")
                 });
+                
                 
                 cmnDiv.appendChild(spanElement);
             });
@@ -790,7 +718,7 @@ function constSimilars(similars, similarsDiv){
                 p.style.paddingLeft = '1em';
                 p.innerHTML = "<span class='rawDefLabelHanzi'>" + component + ":</span>";
                 similarsDiv.appendChild(p);
-                similar_chars.sort((a, b) => chardict[a].stroke_count - chardict[b].stroke_count);
+                similar_chars.sort((a, b) => chardict[a].darkness - chardict[b].darkness);
                 similar_chars.forEach(similar_char => {
                     const wordLink = document.createElement('a');
                     const hoverBox = document.getElementById('pinyin-hover-box');
@@ -798,9 +726,22 @@ function constSimilars(similars, similarsDiv){
                     function showTooltip(element, content, event) {
                         hoverBox.innerHTML = content;
                         hoverBox.style.display = 'block';
-                        hoverBox.style.left = `${event.pageX + 10}px`;
-                        hoverBox.style.top = `${event.pageY + 10}px`;
+                    
+                        const hoverBoxWidth = hoverBox.offsetWidth;
+                        const hoverBoxHeight = hoverBox.offsetHeight;
+                        const maxX = window.innerWidth - hoverBoxWidth - 10;
+                        const maxY = window.innerHeight - hoverBoxHeight - 10;
+                    
+                        let x = event.pageX + 10;
+                        let y = event.pageY + 10;
+                    
+                        if (x > maxX) x = maxX;
+                        if (y > maxY) y = maxY;
+                    
+                        hoverBox.style.left = `${x}px`;
+                        hoverBox.style.top = `${y}px`;
                     }
+                    
         
                     function hideTooltip() {
                         hoverBox.style.display = 'none';
@@ -869,9 +810,21 @@ function constSimilars(similars, similarsDiv){
         
                     wordLink.addEventListener('mouseout', hideTooltip);
                     wordLink.addEventListener('mousemove', function (e) {
-                        hoverBox.style.left = `${e.pageX + 10}px`;
-                        hoverBox.style.top = `${e.pageY + 10}px`;
+                        const hoverBoxWidth = hoverBox.offsetWidth;
+                        const hoverBoxHeight = hoverBox.offsetHeight;
+                        const maxX = window.innerWidth - hoverBoxWidth - 10;
+                        const maxY = window.innerHeight - hoverBoxHeight - 10;
+                    
+                        let x = e.pageX + 10;
+                        let y = e.pageY + 10;
+                    
+                        if (x > maxX) x = maxX;
+                        if (y > maxY) y = maxY;
+                    
+                        hoverBox.style.left = `${x}px`;
+                        hoverBox.style.top = `${y}px`;
                     });
+                    
         
                     wordLink.textContent = similar_char;
                     wordLink.classList.add('word-link');
@@ -1078,7 +1031,7 @@ function renderCard(data) {
     rawLabel.style.marginBottom = '1em';
     rawLabel.style.opacity = '0.6';
     const exLabel = document.createElement('div');
-    exLabel.innerHTML = "Examples ↓";
+    exLabel.innerHTML = `Examples including ${data.character} ↓`;
     exLabel.style.marginTop = '2em';
     exLabel.style.marginBottom = '1em';
     exLabel.style.opacity = '0.6';
@@ -1110,7 +1063,7 @@ function renderCard(data) {
         const traditional = char_info.traditional;
         const simplified = char_info.simplified;
         const rank = char_info.rank;
-        const stroke_count = char_info.stroke_count;
+        const darkness = char_info.darkness;
         const graphical_components = char_info.graphical; // list of chars
         const main_components = char_info.main_components; // list of chars
         const radicals = char_info.radicals; // dict of radicals with meaning
@@ -1227,9 +1180,9 @@ function renderCard(data) {
         if (rank !== null) {
             entryDiv.appendChild(createDefEntry('Frequency rank: ', rank));
         }
-        if (stroke_count !== null && stroke_count !== 0 && stroke_count !== -1) {
-            entryDiv.appendChild(createDefEntry('Stroke count: ', stroke_count));
-        }
+        // if (darkness !== null && darkness !== 0 && darkness !== -1) {
+        //     entryDiv.appendChild(createDefEntry('Stroke count: ', darkness));
+        // }
         if (traditional !== simplified && char !== traditional) {
             entryDiv.appendChild(createDefEntry('Traditional: ', null, createClickableHanziElements(traditional)));
         }
@@ -1276,11 +1229,24 @@ function renderCard(data) {
                     const wordLink = document.createElement('a');
                     const hoverBox = document.getElementById('pinyin-hover-box');
         
+                    
                     function showTooltip(element, content, event) {
                         hoverBox.innerHTML = content;
                         hoverBox.style.display = 'block';
-                        hoverBox.style.left = `${event.pageX + 10}px`;
-                        hoverBox.style.top = `${event.pageY + 10}px`;
+                    
+                        const hoverBoxWidth = hoverBox.offsetWidth;
+                        const hoverBoxHeight = hoverBox.offsetHeight;
+                        const maxX = window.innerWidth - hoverBoxWidth - 10;
+                        const maxY = window.innerHeight - hoverBoxHeight - 10;
+                    
+                        let x = event.pageX + 10;
+                        let y = event.pageY + 10;
+                    
+                        if (x > maxX) x = maxX;
+                        if (y > maxY) y = maxY;
+                    
+                        hoverBox.style.left = `${x}px`;
+                        hoverBox.style.top = `${y}px`;
                     }
         
                     function hideTooltip() {
@@ -1339,9 +1305,21 @@ function renderCard(data) {
         
                     wordLink.addEventListener('mouseout', hideTooltip);
                     wordLink.addEventListener('mousemove', function (e) {
-                        hoverBox.style.left = `${e.pageX + 10}px`;
-                        hoverBox.style.top = `${e.pageY + 10}px`;
+                        const hoverBoxWidth = hoverBox.offsetWidth;
+                        const hoverBoxHeight = hoverBox.offsetHeight;
+                        const maxX = window.innerWidth - hoverBoxWidth - 10;
+                        const maxY = window.innerHeight - hoverBoxHeight - 10;
+                    
+                        let x = e.pageX + 10;
+                        let y = e.pageY + 10;
+                    
+                        if (x > maxX) x = maxX;
+                        if (y > maxY) y = maxY;
+                    
+                        hoverBox.style.left = `${x}px`;
+                        hoverBox.style.top = `${y}px`;
                     });
+                    
         
                     wordLink.textContent = similar_char;
                     wordLink.className = 'word-link';
@@ -1430,9 +1408,20 @@ function renderCard(data) {
                     return;
                 hoverBox.innerHTML = content;
                 hoverBox.style.display = 'block';
-                hoverBox.style.left = `${event.pageX + 10}px`;
-                hoverBox.style.top = `${event.pageY + 10}px`;
-                
+            
+                const hoverBoxWidth = hoverBox.offsetWidth;
+                const hoverBoxHeight = hoverBox.offsetHeight;
+                const maxX = window.innerWidth - hoverBoxWidth - 10;
+                const maxY = window.innerHeight - hoverBoxHeight - 10;
+            
+                let x = event.pageX + 10;
+                let y = event.pageY + 10;
+            
+                if (x > maxX) x = maxX;
+                if (y > maxY) y = maxY;
+            
+                hoverBox.style.left = `${x}px`;
+                hoverBox.style.top = `${y}px`;
             }
 
             function hideTooltip() {
@@ -1464,10 +1453,22 @@ function renderCard(data) {
                 showTooltip(this, tooltipContent, e);
             });
             wordLink.addEventListener('mouseout', hideTooltip);
-            wordLink.addEventListener('mousemove', function(e) {
-                hoverBox.style.left = `${e.pageX + 10}px`;
-                hoverBox.style.top = `${e.pageY + 10}px`;
+            wordLink.addEventListener('mousemove', function (e) {
+                const hoverBoxWidth = hoverBox.offsetWidth;
+                const hoverBoxHeight = hoverBox.offsetHeight;
+                const maxX = window.innerWidth - hoverBoxWidth - 10;
+                const maxY = window.innerHeight - hoverBoxHeight - 10;
+            
+                let x = e.pageX + 10;
+                let y = e.pageY + 10;
+            
+                if (x > maxX) x = maxX;
+                if (y > maxY) y = maxY;
+            
+                hoverBox.style.left = `${x}px`;
+                hoverBox.style.top = `${y}px`;
             });
+            
 
             // wordLink.textContent = similar_char;
             if(isDarkMode)

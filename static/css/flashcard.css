@@ -490,7 +490,7 @@ and (max-device-width: 1024px) {
     border: 0;
     text-decoration: none;
     color: #000000;
-    font-size: 1.2em;
+    font-size: 1.4em;
     font-family: 'Kaiti';
     cursor: pointer;
     /* background-color: rgba(0, 0, 0, 0.05) */
@@ -942,6 +942,7 @@ input[type="checkbox"].darkmode:checked::after {
 
 .rawDefLabelHanzi {
     font-family: "Kaiti";
+    font-size: 1.4em;
 }
 
 .rawDefContent {
@@ -1102,9 +1103,9 @@ input[type="checkbox"].darkmode:checked::after {
 }
 
 .clickable-example-char {
-    font-size: 1.2em;
+    font-size: 1.4em;
     margin: 0 .1em;
-    /* font-family: 'Kaiti'; */
+    font-family: 'Kaiti';
 }
 .clickable-example-char:hover {
     background-color: var(--dimmer-border-color-a);

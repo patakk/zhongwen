@@ -237,14 +237,17 @@ document.addEventListener('DOMContentLoaded', function() {
     var fontChangers = document.querySelectorAll('.font-change');
     var deckChangers = document.querySelectorAll('.deck-change');
 
+    if(isDarkMode){
+        document.getElementById('darkmode-toggle').textContent = 'Light mode';
+    }
+    else{
+        document.getElementById('darkmode-toggle').textContent = 'Dark mode';
+    }
     
-    document.querySelectorAll('.menu-change').forEach(function(fontOption) {
-        fontOption.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            document.querySelectorAll('.menu-change').forEach(opt => opt.classList.remove('selected-option'));
-            document.getElementById('mainSubmenu').classList.remove('active');
-        });
+    document.getElementById('darkmode-toggle').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('mainSubmenu').classList.remove('active');
     });
     
     document.getElementById('mainMenu').addEventListener('click', function(event) {
@@ -276,8 +279,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (username && username !== 'tempuser') {
         const loginMenuItem = document.getElementById('loginMenuItem');
-        loginMenuItem.innerHTML = `<a class="deck-option" href="/account">你好 ${username}!</a>`;
-        loginMenuItem.parentNode.prepend(loginMenuItem);
+        // loginMenuItem.innerHTML = `<a class="deck-option" href="/account"><i class="fa-solid fa-user"></i> ${username}</a>`;
+        loginMenuItem.innerHTML = `<a class="deck-option" href="/account"><span>Account</span><span><i class="fa-solid fa-user"></i></span></a>`;
+        loginMenuItem.parentNode.append(loginMenuItem);
     }
 
     // hamburger.addEventListener('click', function(e) {

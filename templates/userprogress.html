@@ -48,6 +48,7 @@
             overflow-y: auto;
         }
         .container {
+            position: relative;
             width: 50%;
             margin: 0 auto;
             background-color: var(--background-color);
@@ -540,6 +541,37 @@
             }
         }
 
+        #logoutButton {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 2em;
+            padding: .5em;
+            cursor: pointer;
+        }
+
+        #logoutButton.mobile {
+            position: static;
+            top: auto;
+            right: auto;
+            font-size: 1em;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        #accountLine {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #addwordInfo {
+            font-size: 1.15em;
+            opacity: .6;
+            margin-left: .35em;
+            cursor: pointer;
+        }
+
     </style>
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
@@ -560,8 +592,9 @@
             
     </script>
     <div class="container">
+        <a href="{{ url_for('logout') }}" id="logoutButton"><i class="fa-solid fa-right-from-bracket"></i></a>
         <h1>Profile</h1>
-        <h2>Account</h2>
+        <h2><div id="accountLine"><span>Account</span></div></h2>
         <p style="padding-left: 0.0em;">
             <a class="alinks" href="{{ url_for('manage.change_password') }}">Change password</a>
         </p>
@@ -625,7 +658,7 @@
 
             <form id="wordForm" onsubmit="handleAddCards(event)">
                 <input type="text" name="query" id="newWords" placeholder="a word or a list of words (separated with spaces)">
-                <input id="addWordButton" type="submit" value="Add words">
+                <input id="addWordButton" type="submit" value="Add words"><span id="addwordInfo"><i class="fa-solid fa-circle-question"></i></span>
             </form>
 
                 <!-- <p>Due cards: {{ duecards }}</p> -->
@@ -668,6 +701,7 @@
                     {% endfor %}
             </table>
         </div>
+    </div>
     <div id="pinyin-hover-box" style="display: none;"></div>
 
     {% include 'flashcard.html' %}
@@ -716,7 +750,7 @@
 
     <style>
         .custom-dropdown-trigger {
-            padding: .25em;
+            padding: .25em .45em;
             border: var(--dimmer-border);
             cursor: pointer;
             background-color: var(--dimmer-background-color);
@@ -829,6 +863,16 @@
             dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-down'></i>";
 
             let selectedListName = null;
+
+            if (isMobileOrTablet()) {
+                const accountLine = document.getElementById("accountLine");
+                const logoutButton = document.getElementById("logoutButton");
+
+                if (accountLine && logoutButton) {
+                    accountLine.appendChild(logoutButton);
+                    logoutButton.classList.add("mobile");
+                }
+            }
             
 
             document.getElementById("removeListBtn").addEventListener("click", function() {
@@ -855,8 +899,11 @@
                     const rect = dropdownTrigger.getBoundingClientRect();
                     // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-arrow-down'></i>";
                     dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-up'></i>";
-                    dropdownMenu.style.top = rect.bottom + 'px';
-                    dropdownMenu.style.left = rect.left + 'px';
+                    // dropdownMenu.style.top = rect.bottom + 'px';
+                    // dropdownMenu.style.left = rect.left + 'px';
+                    dropdownMenu.style.top = rect.bottom - 21 + 'px';
+                    dropdownMenu.style.left = isMobileOrTablet() ? '1rem' : '3rem';
+                    console.log(rect.left)
                     dropdownMenu.style.minWidth = rect.width + 'px';
                     
                     dropdownMenu.style.display = 'block';
