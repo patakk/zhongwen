@@ -52,6 +52,8 @@
             margin: 0;
             overflow-y: scroll;
             -ms-overflow-style: none;
+
+            background-color: var(--dimmer-background-color);
         }
 
         body::-webkit-scrollbar {
@@ -688,7 +690,7 @@
             position: absolute;
             display: none;
             align-self: flex-start;
-            background: #f8f8f8;
+            background: var(--dimmest-background-color);
             padding: 20px;
             min-width: min(500px, 90vw);
             max-width: 20%;
@@ -709,7 +711,7 @@
         }
 
         #inputContainer.darkmode {
-            background: #202020;
+            /* background: #202020; */
         }
 
         #storyMenu {

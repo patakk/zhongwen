@@ -27,6 +27,7 @@
     --rename-btn-color: #43ac72;
     --home-link-bg-color: #d0d0d0;
     --stories-background-color: #e4e4e4;
+    --playback-background-color: #ffffffd0;
 }
 
 ::selection {
@@ -35,6 +36,7 @@
 }
 
 .darkmode {
+    --playback-background-color: #0a0a0ad7;
     --hanzi-link-color: #4978fa;
     --hanzi-link-color: #9795df;
     --stories-background-color: #2b2b33;

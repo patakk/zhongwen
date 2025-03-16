@@ -276,12 +276,13 @@ function highLightLine(lineIndex) {
     if(isMobileOrTablet()){
         translationBox.style.position = 'absolute';
         translationBox.style.left = 20 + 'px';
-        translationBox.style.top = window.scrollY + 20 + 'px';
+        translationBox.style.top = window.scrollY + 120 + 'px';
     }
     else{
         translationBox.style.position = 'absolute';
         translationBox.style.left = '50%';
-        translationBox.style.bottom = -window.scrollY + 20 + 'px';
+        translationBox.style.transform = 'translateX(-50%)';
+        translationBox.style.bottom = -window.scrollY + 120 + 'px';
     }
 }
 
@@ -332,12 +333,13 @@ function addHoverBehaviorToWrapper(wrapper, lineIndex) {
         if(isMobileOrTablet()){
             translationBox.style.position = 'absolute';
             translationBox.style.left = 20 + 'px';
-            translationBox.style.top = window.scrollY + 20 + 'px';
+            translationBox.style.top = window.scrollY + 120 + 'px';
         }
         else{
             translationBox.style.position = 'absolute';
             translationBox.style.left = '50%';
-            translationBox.style.bottom = -window.scrollY + 20 + 'px';
+            translationBox.style.transform = 'translateX(-50%)';
+            translationBox.style.bottom = -window.scrollY + 120 + 'px';
         }
     });
 
@@ -345,14 +347,14 @@ function addHoverBehaviorToWrapper(wrapper, lineIndex) {
         if(isMobileOrTablet()){
             translationBox.style.position = 'absolute';
             translationBox.style.left = 20 + 'px';
-            translationBox.style.top = window.scrollY + 20 + 'px';
+            translationBox.style.top = window.scrollY + 120 + 'px';
             // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
         }
         else{
             translationBox.style.position = 'absolute';
             translationBox.style.left = '50%';
             translationBox.style.transform = 'translateX(-50%)';
-            translationBox.style.bottom = -window.scrollY + 20 + 'px';
+            translationBox.style.bottom = -window.scrollY + 120 + 'px';
         }
     });
 
@@ -361,14 +363,14 @@ function addHoverBehaviorToWrapper(wrapper, lineIndex) {
         if(isMobileOrTablet()){
             translationBox.style.position = 'absolute';
             translationBox.style.left = 20 + 'px';
-            translationBox.style.top = window.scrollY + 20 + 'px';
+            translationBox.style.top = window.scrollY + 120 + 'px';
             // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
         }
         else{
             translationBox.style.position = 'absolute';
             translationBox.style.left = '50%';
             translationBox.style.transform = 'translateX(-50%)';
-            translationBox.style.bottom = -window.scrollY + 20 + 'px';
+            translationBox.style.bottom = -window.scrollY + 120 + 'px';
         }
     });
 
@@ -637,6 +639,43 @@ function makeAIBubble(prompt, symbol=null){
 }
 
 let timeouts = [];
+
+
+function createPlaybackController() {
+    const controller = document.createElement('div');
+    controller.style.position = 'fixed';
+    controller.style.bottom = '0';
+    controller.style.left = '0';
+    controller.style.width = '100%';
+    controller.style.height = '5em';
+    controller.style.background = 'var(--playback-background-color)';
+    controller.style.display = 'flex';
+    controller.style.justifyContent = 'center';
+    controller.style.alignItems = 'center';
+    controller.style.zIndex = '1000';
+    
+    const button = document.createElement('div');
+    button.innerHTML = '<i class="fa-solid fa-circle-play"></i>';
+    button.style.fontSize = '3em';
+    button.style.color = 'var(--hanzi-link-color)';
+    button.style.cursor = 'pointer';
+    
+    let isPlaying = false;
+    button.addEventListener('click', () => console.log('Event attached'));
+    button.addEventListener('click', () => {
+        if (isPlaying) {
+            button.innerHTML = '<i class="fa-solid fa-circle-play"></i>';
+            stopStory();
+        } else {
+            playStory();
+            button.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        }
+        isPlaying = !isPlaying;
+    });
+    
+    controller.appendChild(button);
+    document.body.appendChild(controller);
+}
 
 function addBubbleInteractions(bubbleobj) {
 
@@ -979,6 +1018,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         waitForImage(okhslImage),
     ]);
 
+
+    createPlaybackController();
 
     colorCanvas.width = okhslImage.width;
     colorCanvas.height = okhslImage.height;

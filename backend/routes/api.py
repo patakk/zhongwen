@@ -120,8 +120,8 @@ def get_progress_data_for_chars():
         simple_char_info = get_char_info(character, pinyin=True, english=True)
         stats = {
             'character': character,
-            'english': simple_char_info.get('english', 'N/A'),
-            'pinyin': simple_char_info.get('pinyin', 'N/A'),
+            'english': simple_char_info.get('english', ['N/A']),
+            'pinyin': simple_char_info.get('pinyin', ['N/A']),
             'box': char_progress.get('box', 0),
             'views': char_progress.get('views', 0),
             'streak': char_progress.get('streak', 0),
@@ -294,8 +294,6 @@ def get_twang():
 def get_story_audio_clip():
     name = request.args.get("name")
     file_path = "../data/stories/clips/" + name + ".mp3"
-    if not os.path.exists(file_path):
-        return "File not found", 404
     return send_file(file_path, mimetype="audio/mpeg")
 
 
