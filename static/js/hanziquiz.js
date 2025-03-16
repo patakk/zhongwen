@@ -471,7 +471,7 @@ function createHanziWriters(characters) {
         speed: .075,
         lineThickness: 8*writerSize/200,
         jitterAmp: 0,
-        colors: ['#003052ee', '#c1b2db', '#ff4405dd', '#b4ed8c'], // c1 c1d s1 s1d
+        colors: ['#000000ee', '#ffffffee', '#ff4405dd', '#b4ed8c'], // c1 c1d s1 s1d
         showDiagonals: true,
         lineType: "mitter",
         showGrid: false,

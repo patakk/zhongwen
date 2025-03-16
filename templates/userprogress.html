@@ -469,11 +469,6 @@
             padding: 0px 4px;
         }
 
-
-        .alinks:hover {
-            background-color: #ff0000;
-            color: #ffffff;
-        } 
         .wlinks {
             color: var(--text-color);
             text-decoration: none;
@@ -482,9 +477,9 @@
             padding: 0px .2em;
         }
 
-        .wlinks:hover {
-            background-color: #ff0000;
-            color: #ffffff;
+        .wlinks:hover, .alinks:hover {
+            background-color: var(--accent-color);
+            color: var(--background-color);
         }
 
         .stat-row {
@@ -750,13 +745,13 @@
 
     <style>
         .custom-dropdown-trigger {
-            padding: .25em .45em;
+            padding: .15em .35em;
             border: var(--dimmer-border);
             cursor: pointer;
             background-color: var(--dimmer-background-color);
             color: var(--text-color);
             position: relative;
-            font-size: 1.5em;
+            font-size: 1.25em;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -771,6 +766,7 @@
         .dropdown-text {
             overflow: hidden;
             text-overflow: ellipsis;
+            color: var(--wordlist-link-color);
             white-space: nowrap;
             flex: 1;
             min-width: 0; /* Ensures flexbox properly allows shrinking */
@@ -860,7 +856,7 @@
             let keys = Object.keys(wordlists_words);
             addToTable(wordlists_words[currentWordlist]);
             reworkUrls();
-            dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-down'></i>";
+            dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-right'></i>";
 
             let selectedListName = null;
 
@@ -898,7 +894,7 @@
                     // Position the dropdown below the trigger
                     const rect = dropdownTrigger.getBoundingClientRect();
                     // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-arrow-down'></i>";
-                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-up'></i>";
+                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-down'></i>";
                     // dropdownMenu.style.top = rect.bottom + 'px';
                     // dropdownMenu.style.left = rect.left + 'px';
                     dropdownMenu.style.top = rect.bottom - 21 + 'px';
@@ -909,7 +905,7 @@
                     dropdownMenu.style.display = 'block';
                 } else {
                     // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-arrow-down'></i>";
-                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-down'></i>";
+                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-right'></i>";
                     dropdownMenu.style.display = 'none';
                 }
             });
@@ -934,7 +930,7 @@
                     let tableBody = document.querySelector("table tbody");
                     tableBody.innerHTML = '<tr><th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th><th class="tooltip-header varvar" data-tooltip="Current learning stage of the character (%)">Learned</th><!-- <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th> --><th class="tooltip-header varvar" data-tooltip="Number of consecutive correct answers">Streak</th><th class="tooltip-header varvar" data-tooltip="Total number of incorrect answers for this character">Incorrect</th><th class="tooltip-header varvar" data-tooltip="Scheduled date and time for the next review">Next Review</th></tr>';
                     addToTable(wordlists_words[currentWordlist]);
-                    dropdownTrigger.innerHTML = value + " <i class='fa-solid fa-caret-down'></i>";
+                    dropdownTrigger.innerHTML = value + " <i class='fa-solid fa-caret-right'></i>";
 
                     reworkUrls();
                 }
@@ -947,7 +943,7 @@
             document.addEventListener('click', function(e) {
                 if (!dropdownTrigger.contains(e.target) && !dropdownMenu.contains(e.target)) {
                     dropdownMenu.style.display = 'none';
-                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-down'></i>";
+                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-right'></i>";
                 }
             });
 

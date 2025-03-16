@@ -1007,7 +1007,8 @@ class HanziPlotter {
                 this.ctx.strokeStyle = this.colors[1];
                 // this.ctx.globalAlpha = 0.64;
             }
-            // replace alpha with 88
+                console.log(this.colors[1]);
+                // replace alpha with 88
             for (let idx = 0; idx < this.userStrokes.length; idx++) {
                 const stroke = this.userStrokes[idx];
     

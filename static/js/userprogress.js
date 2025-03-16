@@ -193,7 +193,7 @@ function handleRename(e){
         wordlists_words[newName] = wordlists_words[currentWordlist];
         delete wordlists_words[currentWordlist];
         currentWordlist = newName;
-        dropdownTrigger.innerHTML = currentWordlist + " <i class='fa-solid fa-caret-down'></i>";
+        dropdownTrigger.innerHTML = currentWordlist + " <i class='fa-solid fa-caret-right'></i>";
         populateDropdown();
         addToTable(wordlists_words[currentWordlist]);
         reworkUrls();
@@ -206,7 +206,7 @@ function removeWordlist(wordlist){
         
         delete wordlists_words[currentWordlist];
         currentWordlist = Object.keys(wordlists_words)[0];
-        dropdownTrigger.innerHTML = currentWordlist + " <i class='fa-solid fa-caret-down'></i>";
+        dropdownTrigger.innerHTML = currentWordlist + " <i class='fa-solid fa-caret-right'></i>";
         let tableBody = document.querySelector("table tbody");
         tableBody.innerHTML = "";
         reworkUrls();

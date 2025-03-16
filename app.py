@@ -387,10 +387,10 @@ def grid():
         cc[d]['chars'] = get_chars_info(cc[d]['chars'], pinyin=True, english=True)
 
     if not character:
-        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, wordlist=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
+        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, inputdeck=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
     main_data = main_card_data(character)
     main_data['chars_breakdown'] = breakdown_chars(character)
-    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=main_data, decks=cc, wordlist=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
+    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=main_data, decks=cc, inputdeck=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
 
 from backend.routes.puzzles import get_common_context
 

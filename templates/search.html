@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
@@ -19,8 +19,8 @@
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
-    <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}"> -->
+    <!-- <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script> -->
 </head>
 
 {% if darkmode %}
@@ -29,7 +29,7 @@
 <body>
 {% endif %}
    
-    {% include 'menu.html' %}
+    <!-- {% include 'menu.html' %} -->
 
     <div id="search-container" class="{% if results %} has-results{% endif %}">
         <h1 id="title">Search</h1>
@@ -46,17 +46,17 @@
         
     </div>
     
-    {% include 'flashcard.html' %}
+    <!-- {% include 'flashcard.html' %} -->
 
     <p id="message"></p>
     <div id="pinyin-hover-box" style="display: none;"></div>
     <script>
     </script>
-    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
     <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script> -->
 
     <script>
         const username = {{ username | tojson | safe }};

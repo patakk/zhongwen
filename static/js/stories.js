@@ -276,7 +276,7 @@ function highLightLine(lineIndex) {
     if(isMobileOrTablet()){
         translationBox.style.position = 'absolute';
         translationBox.style.left = 20 + 'px';
-        translationBox.style.top = window.scrollY + 120 + 'px';
+        translationBox.style.top = window.scrollY + 20 + 'px';
     }
     else{
         translationBox.style.position = 'absolute';
@@ -333,7 +333,7 @@ function addHoverBehaviorToWrapper(wrapper, lineIndex) {
         if(isMobileOrTablet()){
             translationBox.style.position = 'absolute';
             translationBox.style.left = 20 + 'px';
-            translationBox.style.top = window.scrollY + 120 + 'px';
+            translationBox.style.top = window.scrollY + 20 + 'px';
         }
         else{
             translationBox.style.position = 'absolute';
@@ -347,7 +347,7 @@ function addHoverBehaviorToWrapper(wrapper, lineIndex) {
         if(isMobileOrTablet()){
             translationBox.style.position = 'absolute';
             translationBox.style.left = 20 + 'px';
-            translationBox.style.top = window.scrollY + 120 + 'px';
+            translationBox.style.top = window.scrollY + 20 + 'px';
             // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
         }
         else{
@@ -363,7 +363,7 @@ function addHoverBehaviorToWrapper(wrapper, lineIndex) {
         if(isMobileOrTablet()){
             translationBox.style.position = 'absolute';
             translationBox.style.left = 20 + 'px';
-            translationBox.style.top = window.scrollY + 120 + 'px';
+            translationBox.style.top = window.scrollY + 20 + 'px';
             // translationBox.style.transform = "translateX(-" + translationboxwidth + ")";
         }
         else{
@@ -665,7 +665,7 @@ function createPlaybackController() {
     button.addEventListener('click', () => {
         if (isPlaying) {
             button.innerHTML = '<i class="fa-solid fa-circle-play"></i>';
-            stopStory();
+            pauseStory();
         } else {
             playStory();
             button.innerHTML = '<i class="fa-solid fa-pause"></i>';
@@ -976,35 +976,44 @@ function setupDropdowns() {
 }
 
 let stopRequested = false;
+let currentStoryIndex = 0;
+let currentPlayingAudio = null;
 
 function playStory() {
     stopRequested = false;
-    let numlines = currentLines.length;
-    
+
     function playLine(idx) {
         if (stopRequested) {
             unhighlightAllLines();
             return;
         }
-        
+
+        currentStoryIndex = idx;
         console.log(idx);
         highLightLine(idx);
         playLineClip(chapter.clip_ids[idx], () => {
-            if (idx < numlines - 1) {
-                playLine(++idx);
+            if (!stopRequested && idx < currentLines.length - 1) {
+                playLine(idx + 1);
             } else {
                 unhighlightAllLines();
+                currentStoryIndex = 0; // Reset when finished
             }
         });
     }
-    
-    playLine(0);
+
+    playLine(currentStoryIndex);
 }
 
-function stopStory() {
+function pauseStory() {
     stopRequested = true;
-    unhighlightAllLines();
+    if(isMobileOrTablet()){
+        unhighlightAllLines();
+    }
+    if (currentPlayingAudio) {
+        currentPlayingAudio.pause();
+    }
 }
+
 
 
 
@@ -1281,7 +1290,7 @@ function renderTextToDom(plotterElement, plotters, showAllPinyin, colors, size, 
                     }
                     else{
                         storyPlaying = false;
-                        stopStory();
+                        pauseStory();
                     }
                 }
             }
@@ -1791,10 +1800,10 @@ function updateCount() {
 
 function playLineClip(clipName, callback=null) {
     console.log('Playing clip:', clipName);
-    const audio = new Audio(`./api/get_story_audio_clip?name=${clipName}`);
+    currentPlayingAudio = new Audio(`./api/get_story_audio_clip?name=${clipName}`);
     
-    audio.play();
-    audio.onended = function() {
+    currentPlayingAudio.play();
+    currentPlayingAudio.onended = function() {
         if (callback) {
             callback();
         }

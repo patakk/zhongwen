@@ -2,7 +2,7 @@
     --font: "Noto Sans Mono", monospace;
     --background-color: #ffffff;
     --lifted-background-color: #f1f1f1;
-    --hanzi-link-color: rgb(0, 129, 134);
+    --hanzi-link-color: #584e74;
     --simple-border: 2px solid #afafaf;
     --dimmest-background-color: #fcfcfc;
     --dimmer-background-color: #f5f5f5;
@@ -16,8 +16,6 @@
     --thin-border-2: 1px solid var(--dimmer-border-color-b);
     --text-color: #0e0e0e;
     --dimmer-text-color: #505050;
-    --accent-color: rgb(255, 66, 28);
-    --accent-word: rgb(229, 61, 0);
     --dim-accent-color: rgb(185, 72, 49);
     --griditem-background-color: #fcfcfc;
     --due-color: #f8d7da;
@@ -25,9 +23,12 @@
     --deckname-color: #d44141;
     --deckname-color: #e33100;
     --rename-btn-color: #43ac72;
+    --wordlist-link-color: #584e74;
     --home-link-bg-color: #d0d0d0;
     --stories-background-color: #e4e4e4;
     --playback-background-color: #ffffffd0;
+    --accent-color: #bda5b8;
+    --accent-word: rgb(241, 129, 0);
 }
 
 ::selection {
@@ -39,6 +40,9 @@
     --playback-background-color: #0a0a0ad7;
     --hanzi-link-color: #4978fa;
     --hanzi-link-color: #9795df;
+    --wordlist-link-color: #9795df;
+    --accent-color: #9795df;
+    --accent-word: #9795df;
     --stories-background-color: #2b2b33;
     --dimmer-background-color: #1d1d1d;
     --dimmest-background-color: #141414;
@@ -48,8 +52,8 @@
     --lifted-background-color: #181818;
     --due-color: #4b3232;
     --learned-color: #374b32;
-    --accent-word: rgb(255, 191, 28);
     --border-color: #494949;
+    --accent-word: rgb(214, 154, 0);
     --simple-border: 2px solid #444444;
     --dimmer-border-color: #414141;
     --dimmer-border: 2px dashed var(--dimmer-border-color);
