@@ -87,6 +87,13 @@ def get_tatoeba_page(character, page):
 def simplify_hanzi(text):
     return HanziConv.toSimplified(text)
 
+def apply_exceptions(character, definitions):
+    # if character in ['說', '说', '號', '号']:
+    #     first = definitions[1]
+    #     definitions[1] = definitions[0]
+    #     definitions[0] = first
+    return definitions
+
 def get_char_info(character, pinyin=False, english=False, function=False, full=False):
     if full:
         return char_full_info_(character)
@@ -119,6 +126,8 @@ def get_char_info(character, pinyin=False, english=False, function=False, full=F
                 if entry != best_entry:
                     info['english'].append(entry['definition'])
                     info['pinyin'].append(entry['pinyin'])
+            info['english'] = apply_exceptions(character, info['english'])
+            info['pinyin'] = apply_exceptions(character, info['pinyin'])
     except:
         info['pinyin'] = ["N/A"]
         info['english'] = ["N/A"]
@@ -217,7 +226,7 @@ def char_full_info_(original_char):
             pinyin.append(best_entry['pinyin'])
             
             for entry in definition_results:
-                if entry != best_entry:
+                if entry != best_entry and "variant of" not in entry['definition']:
                     definition.append(entry['definition'])
                     pinyin.append(entry['pinyin'])
     except:
@@ -261,7 +270,8 @@ def char_full_info_(original_char):
     #         #     break
     # except:
     #     appears_in = []
-
+    definition = apply_exceptions(original_char, definition)
+    pinyin = apply_exceptions(original_char, pinyin)
 
     return {
         'english': definition,

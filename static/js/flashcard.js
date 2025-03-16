@@ -611,7 +611,7 @@ function populateCardSets() {
         // if clicked, call addWord with current word and listName
         option.addEventListener('click', () => {
             dropdownMenu.style.display = 'none';
-            dropdownTrigger.innerHTML = `Add to <i class='fa-solid fa-circle'></i>`;
+            dropdownTrigger.innerHTML = `Add to <i class="fa-solid fa-caret-right"></i>`;
             addWord(currentCharacter, listName);
         });
     });
@@ -629,7 +629,7 @@ function setupAddToDeck(){
     addcardDiv.innerHTML = `
         <div id="wordset-label-container">
             <div id="wordListDropdown" class="card-custom-dropdown-trigger">
-                Add to <i class="fa-solid fa-circle"></i>
+                Add to <i class="fa-solid fa-caret-right"></i>
             </div>
         </div>
         <div id="dropdown-options" class="addcard-dropdown-menu" style="display: none;"></div>`;
@@ -652,7 +652,7 @@ function setupAddToDeck(){
 
     let flashcardElement = document.getElementById('flashcard_container');
     flashcardElement.addEventListener('click', function(e) {
-        dropdownTrigger.innerHTML = `Add to <i class='fa-solid fa-circle'></i>`;
+        dropdownTrigger.innerHTML = `Add to <i class="fa-solid fa-caret-right"></i>`;
         dropdownMenu.style.display = 'none';
     });
 
@@ -665,7 +665,7 @@ function setupAddToDeck(){
             // Position the dropdown below the trigger
             const rect = dropdownTrigger.getBoundingClientRect();
             // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-caret-down'></i>";
-            dropdownTrigger.innerHTML = "Add to " + " <i class='fa-solid fa-circle-half-stroke'></i>";
+            dropdownTrigger.innerHTML = 'Add to <i class="fa-solid fa-caret-down"></i>';
             dropdownMenu.style.top = rect.bottom + 'px';
             dropdownMenu.style.left = rect.left + 'px';
             dropdownMenu.style.minWidth = rect.width + 'px';
@@ -673,7 +673,7 @@ function setupAddToDeck(){
             dropdownMenu.style.display = 'block';
         } else {
             // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-caret-right'></i>";
-            dropdownTrigger.innerHTML = "Add to " + " <i class='fa-solid fa-circle'></i>";
+            dropdownTrigger.innerHTML = 'Add to <i class="fa-solid fa-caret-right"></i>';
             dropdownMenu.style.display = 'none';
         }
     });

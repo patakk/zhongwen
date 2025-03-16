@@ -299,14 +299,14 @@ function populateGrid() {
             }
             e.target.dataset.userInput = userInput;
             const hanzi = e.target.dataset.hanzi;
-            const pinyin = currentcharacters[hanzi].pinyin[0];
+            const pinyin = currentcharacters[hanzi].pinyin;
             const hasNumbers = /[1-5]/.test(userInput);
             const userAnswer = simplifyPinyin(userInput);
-            let simplifiedCorrectPinyin = simplifyPinyin(pinyin, removeAccents=true);
-            const isCorrect = userAnswer === simplifiedCorrectPinyin;
-            // console.log('Correct:', simplifiedCorrectPinyin, 'User:', userAnswer, 'Result:', isCorrect);
+            let simplifiedCorrectPinyin = pinyin.map(word => {return simplifyPinyin(word, removeAccents=true)});
+            const isCorrect = simplifiedCorrectPinyin.includes(userAnswer);
+            console.log('Correct:', simplifiedCorrectPinyin, 'User:', userAnswer, 'Result:', isCorrect);
             if (isCorrect) {
-
+                e.target.dataset.correct = true;
                 correctAnswers++;
                 if(correctAnswers == Math.min(NUM_QUESTIONS, allhanzi.length)){
                     revealBtn.classList.add("hidden");
@@ -320,14 +320,14 @@ function populateGrid() {
                 let x = e.target.getBoundingClientRect().left + e.target.getBoundingClientRect().width/2;
                 let y = e.target.getBoundingClientRect().top + e.target.getBoundingClientRect().height/2;
                 // fastConfetti(x, y, pinyin);
-                fastConfetti(x, y, toAccentedPinyin(pinyin));
+                fastConfetti(x, y, pinyin.map(toAccentedPinyin));
                 e.target.classList.add('pinyin-correct');
                 e.target.parentNode.classList.add('grid-item-correct');
                 e.target.dataset.correct = true;
                 // disable input
                 e.target.disabled = true;
 
-                e.target.value = toAccentedPinyin(pinyin);
+                e.target.value = pinyin.map(toAccentedPinyin);
                 // e.target.value = inputdecksflattend[hanzi].pinyin[0];
 
                 vibrateElement(e.target.parentNode);
@@ -386,13 +386,8 @@ function populateGrid() {
             if(userInput === ""){
                 return;
             }
-            const hanzi = e.target.dataset.hanzi;
-            const pinyin = currentcharacters[hanzi].pinyin[0];
-            const hasNumbers = /[1-5]/.test(userInput);
-            const userAnswer = simplifyPinyin(userInput);
-            const simplifiedCorrectPinyin = simplifyPinyin(pinyin, removeNumbers=true);
-            const isCorrect = userAnswer === simplifiedCorrectPinyin;
-            if(isCorrect) {
+            if(e.target.dataset.correct === 'true'){
+                return;
             }
             else{
                 e.target.value = "";
@@ -439,7 +434,7 @@ function revealAnswers(){
     restartBtn.classList.remove("hidden");
     allinputs.forEach(input => {
         if(input.dataset.correct === 'false'){
-            input.value = toAccentedPinyin(currentcharacters[input.dataset.hanzi].pinyin[0]);
+            input.value = currentcharacters[input.dataset.hanzi].pinyin.map(toAccentedPinyin);
             input.classList.add('pinyin-revealed');
             input.disabled = true;
         }
@@ -504,7 +499,6 @@ async function loadNewWords(func=null){
     })
     .then(data => {
         currentcharacters = data;
-        console.log(currentcharacters)
         if(func != null){
             func();
         }
