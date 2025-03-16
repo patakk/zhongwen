@@ -129,7 +129,7 @@ def get_char_info(character, pinyin=False, english=False, function=False, full=F
             info['english'] = apply_exceptions(character, info['english'])
             info['pinyin'] = apply_exceptions(character, info['pinyin'])
     except:
-        info['pinyin'] = ["N/A"]
+        info['pinyin'] = [get_pinyin(character)]
         info['english'] = ["N/A"]
     info['character'] = character
     info['darkness'] = HANZI_DARKNESS_KAITI.get(character, -1)

@@ -403,7 +403,7 @@
         }
 
         span.darkmode {
-            background-color: transparent;
+            /* background-color: transparent; */
         }
 
         .plotterContainer {
@@ -411,7 +411,7 @@
         }
 
         span.darkmode {
-            background-color: transparent;
+            /* background-color: transparent; */
         }
 
         div.darkmode {
@@ -754,9 +754,25 @@
             });
             
             document.addEventListener('click', function(event) {
-                if (!event.target.closest('#storyMenu')) {
+                if (!event.target.closest('#storyMenu') && !event.target.closest('#inputContainer')) {
                     let elem = document.getElementById('inputContainer');
                     elem.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('keydown', function(event) {
+                let elem = document.getElementById('inputContainer');
+                if (event.keyCode === 9) {
+                    event.preventDefault();
+                    if(elem.style.display === 'none'){
+                        elem.style.display = 'block';
+                    }
+                    else{
+                        elem.style.display = 'none';
+                    }
+                }
+                if (event.key === 'w') {
+                    playStory();
                 }
             });
         </script>

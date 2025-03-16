@@ -1,4 +1,4 @@
-#flashcard_character {
+.flashcard_character {
     /* font-size: 122px; */
     margin-top: 30px;
     font-weight: 400;
@@ -6,7 +6,12 @@
     color: #000;
     align-items: center;
     
-    font-size: 1.6em;
+    font-size: 2em;
+}
+
+#flashcard_character_noto {
+    font-family: "Noto Sans Mono";
+    margin-top: 0em;
 }
 
 #flashcard_plotter {
@@ -54,14 +59,14 @@
     text-align: center;
 }
 
-#flashcard_character:hover+#flashcard_pinyin,
+.flashcard_character:hover+#flashcard_pinyin,
 #flashcard_pinyin:hover,
 #flashcard_pinyin.visible {
     background-color: transparent;
     color: #000;
 }
 
-#flashcard_character.darkmode:hover+#flashcard_pinyin.darkmode,
+.flashcard_character.darkmode:hover+#flashcard_pinyin.darkmode,
 #flashcard_pinyin.darkmode:hover,
 #flashcard_pinyin.darkmode.visible {
     background-color: transparent;
@@ -185,7 +190,7 @@
     user-select: text;
 }
 
-#flashcard_character::selection,
+.flashcard_character::selection,
 #flashcard_pinyin::selection,
 #flashcard_english::selection,
 h1::selection,
@@ -238,7 +243,7 @@ p::selection {
     text-align: center;
 }
 
-#flashcard_character {
+.flashcard_character {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -246,7 +251,7 @@ p::selection {
     text-align: center;
 }
 
-#flashcard_character span {
+.flashcard_character span {
     display: inline-block;
 }
 
@@ -280,7 +285,7 @@ p::selection {
 }
 
 
-#flashcard_character.darkmode {
+.flashcard_character.darkmode {
     color: rgb(233, 233, 233);
 }
 
@@ -323,7 +328,7 @@ p::selection {
         padding: 20px;
     } */
 
-    #flashcard_character {
+    .flashcard_character {
         /* font-size: 60px; */
         margin-top: 10px;
     }
@@ -365,7 +370,7 @@ p::selection {
         width: 100%;
     }
 
-    #flashcard_character {
+    .flashcard_character {
         /* font-size: 60px; */
     }
 

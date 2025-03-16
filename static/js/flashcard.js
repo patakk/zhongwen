@@ -930,8 +930,14 @@ function renderCard(data) {
     }
 
     const characterElement = document.getElementById('flashcard_character');
-    if(characterElement)
+    const characterNoto = document.getElementById('flashcard_character_noto');
+    characterElement.classList.add('flashcard_character');
+    characterNoto.classList.add('flashcard_character');
+
+    if(characterElement){
         characterElement.innerHTML = '';
+        characterNoto.innerHTML = '';
+    }
 
 
     let chars = data.character.split('');
@@ -987,6 +993,10 @@ function renderCard(data) {
         span.style.textShadow = 'none'; 
         if(characterElement)
             characterElement.appendChild(span);
+
+        let spanclone = span.cloneNode(true);
+        if(characterNoto)
+            characterNoto.appendChild(spanclone);
     });
 
     const plotterElement = document.getElementById('flashcard_plotter');

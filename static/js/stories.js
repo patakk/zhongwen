@@ -970,21 +970,6 @@ function stopStory() {
 
 
 // on 'tab' press toggle visibiliy of id=inputContainer
-document.addEventListener('keydown', function(event) {
-    let elem = document.getElementById('inputContainer');
-    if (event.keyCode === 9) {
-        event.preventDefault();
-        if(elem.style.display === 'none'){
-            elem.style.display = 'block';
-        }
-        else{
-            elem.style.display = 'none';
-        }
-    }
-    if (event.key === 'w') {
-        playStory();
-    }
-});
 
 document.addEventListener("DOMContentLoaded", async function () {
     // dimsSlider = document.getElementById('dimsSlider');
