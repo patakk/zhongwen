@@ -181,9 +181,11 @@ function redrawCurrentCard() {
     drawMasks();
 
     let pinyinContainer = flashcardElement.querySelector('.pinyin');
-    pinyinContainer.textContent = currentWordInfo.pinyin.map(toAccentedPinyin)[0];
+    // pinyinContainer.textContent = currentWordInfo.pinyin.map(toAccentedPinyin)[0];
+    pinyinContainer.innerHTML = currentWordInfo.pinyin.map(toAccentedPinyin).join('<br>');
     let englishContainer = flashcardElement.querySelector('.english');
-    englishContainer.textContent = currentWordInfo.english.map(toAccentedPinyin)[0].replace(/\//g, ' / ');
+    // englishContainer.textContent = currentWordInfo.english.map(toAccentedPinyin)[0].replace(/\//g, ' / ');
+    englishContainer.innerHTML = currentWordInfo.english.map(toAccentedPinyin).map(w=>{return w.replace(/\//g, ' / ')}).join('<br>');
     answerContainer.classList.toggle('inactive', !revealed);
     handleFont();
 }
