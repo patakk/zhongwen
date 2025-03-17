@@ -576,6 +576,12 @@ function loadRenderDisplay(character) {
 
 
 function addWord(symbol, set_name, get_rows=false){
+
+    try{
+    }
+    catch(e){
+    }
+
     alert("Added " + symbol + " to " + set_name);
     
     fetch("./api/add_word_to_learning", {
@@ -597,42 +603,32 @@ function addWord(symbol, set_name, get_rows=false){
 }
 
 function populateCardSets() {
-    const dropdownTrigger = document.getElementById('wordListDropdown');
-    const dropdownMenu = document.getElementById('dropdown-options');
+    const dropdownTriggerCard = document.getElementById('wordListDropdownCard');
+    const dropdownMenu = document.getElementById('dropdown-options-card');
     dropdownMenu.innerHTML = '';
-    
+
     custom_deck_names.forEach(listName => {
         const option = document.createElement('div');
         option.className = 'dropdown-item';
         option.textContent = listName;
         option.dataset.value = listName;
         dropdownMenu.appendChild(option);
-
-        // if clicked, call addWord with current word and listName
         option.addEventListener('click', () => {
             dropdownMenu.style.display = 'none';
-            dropdownTrigger.innerHTML = `Add to <i class="fa-solid fa-caret-right"></i>`;
+            dropdownTriggerCard.innerHTML = `Add to <i class="fa-solid fa-caret-right"></i>`;
             addWord(currentCharacter, listName);
         });
     });
-    
-    // const createOption = document.createElement('div');
-    // createOption.className = 'dropdown-item create-new-option';
-    // createOption.innerHTML = '<i class="fa-solid fa-circle-plus"></i>' + " create word list";
-    // createOption.dataset.value = "create_new";
-    // dropdownMenu.appendChild(createOption);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    setupAddToDeck();
+});
 
 function setupAddToDeck(){
     let addcardDiv = document.getElementById('flashcard_addcard');
     addcardDiv.classList.add("corner-buttons")
-    addcardDiv.innerHTML = `
-        <div id="wordset-label-container">
-            <div id="wordListDropdown" class="card-custom-dropdown-trigger">
-                Add to <i class="fa-solid fa-caret-right"></i>
-            </div>
-        </div>
-        <div id="dropdown-options" class="addcard-dropdown-menu" style="display: none;"></div>`;
+    // addcardDiv.innerHTML = ``;
     const hoverBox = document.getElementById('pinyin-hover-box');
     
     function showTooltip(element, content, event) {
@@ -647,36 +643,65 @@ function setupAddToDeck(){
     }
 
     // Handle click for mobile devices
-    const dropdownTrigger = document.getElementById('wordListDropdown');
-    const dropdownMenu = document.getElementById('dropdown-options');
+    const dropdownTriggerCard = document.getElementById('wordListDropdownCard');
+    const dropdownMenu = document.getElementById('dropdown-options-card');
 
     let flashcardElement = document.getElementById('flashcard_container');
     flashcardElement.addEventListener('click', function(e) {
-        dropdownTrigger.innerHTML = `Add to <i class="fa-solid fa-caret-right"></i>`;
+        dropdownTriggerCard.innerHTML = `Add to <i class="fa-solid fa-caret-right"></i>`;
         dropdownMenu.style.display = 'none';
     });
 
     populateCardSets();
-    dropdownTrigger.addEventListener('click', function(e) {
+    dropdownTriggerCard.addEventListener('click', function(e) {
+        console.log("clicked");
         e.stopPropagation();
         const isVisible = dropdownMenu.style.display === 'block';
-        
         if (!isVisible) {
             // Position the dropdown below the trigger
-            const rect = dropdownTrigger.getBoundingClientRect();
-            // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-caret-down'></i>";
-            dropdownTrigger.innerHTML = 'Add to <i class="fa-solid fa-caret-down"></i>';
+            const rect = dropdownTriggerCard.getBoundingClientRect();
+            // dropdownTriggerCard.innerHTML = "Select a word list <i class='fas fa-caret-down'></i>";
+            dropdownTriggerCard.innerHTML = 'Add to <i class="fa-solid fa-caret-down"></i>';
             dropdownMenu.style.top = rect.bottom + 'px';
             dropdownMenu.style.left = rect.left + 'px';
             dropdownMenu.style.minWidth = rect.width + 'px';
-            
             dropdownMenu.style.display = 'block';
+
+
         } else {
-            // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-caret-right'></i>";
-            dropdownTrigger.innerHTML = 'Add to <i class="fa-solid fa-caret-right"></i>';
+            // dropdownTriggerCard.innerHTML = "Select a word list <i class='fas fa-caret-right'></i>";
+            dropdownTriggerCard.innerHTML = 'Add to <i class="fa-solid fa-caret-right"></i>';
             dropdownMenu.style.display = 'none';
         }
     });
+}
+
+let cardVisible = false;
+
+
+document.getElementById('flashcard_overlay').addEventListener('click', (e) => {
+    if (e.target === overlay) {
+        hideCard();
+    }
+});
+
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        hideCard();
+    }
+});
+
+function hideCard() {
+    // overlay.style.display = 'none';
+    cardVisible = false;
+    scrollToTop(document.getElementById('flashcard_container'), () => {overlay.style.display = 'none';});
+        
+    document.getElementById('dropdown-options-card').style.display = 'none';
+    document.getElementById('wordListDropdownCard').innerHTML = 'Add to <i class="fa-solid fa-caret-right"></i>';
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.delete('character');
+    history.pushState({}, '', newUrl);
 }
 
 function constSimilars(similars, similarsDiv){
@@ -1929,12 +1954,13 @@ function renderCard(data) {
     // displayCharMatches(data.char_matches);
     let url = window.location.href;
     // check if url contains "account"
-    if(!url.includes("account")){
-        setupAddToDeck();
-    }
-    else{
-        addcard.style.display = 'none';
-    }
+    // setupAddToDeck();
+    // if(!url.includes("account")){
+    //     setupAddToDeck();
+    // }
+    // else{
+    //     addcard.style.display = 'none';
+    // }
     // setupCloseButton();
 
     // check if "flashcards" in url
@@ -1962,7 +1988,7 @@ function renderCard(data) {
         let middley = y + height/2;
 
 
-        setupAddToDeck();
+        // setupAddToDeck();
         // element.classList.add('fall-out');
         // setTimeout(() => {
         //     element.style.display = 'none';

@@ -1,5 +1,4 @@
 let addWordsInput = document.getElementById('newWords');
-let cardVisible = false;    
 
 function addToTable(progressRows) {
     let tableBody = document.querySelector("table tbody");
@@ -79,8 +78,9 @@ function addToTable(progressRows) {
         characterCell.addEventListener('mousemove', function(e) {
             const hoverBoxWidth = hoverBox.offsetWidth;
             const hoverBoxHeight = hoverBox.offsetHeight;
+            const scrollY = window.scrollY;
             const maxX = window.innerWidth - hoverBoxWidth - 10;
-            const maxY = window.innerHeight - hoverBoxHeight - 10;
+            const maxY = window.innerHeight - hoverBoxHeight - 10 + scrollY;
         
             let newX = e.pageX + 10;
             let newY = e.pageY + 10;
@@ -101,7 +101,7 @@ function addToTable(progressRows) {
 }
 
 
-function getRowData(chars){
+function getRowData(chars, deck=currentWordlist){
     fetch("./api/get_progress_data_for_chars", {
         method: "POST",
         headers: {
@@ -116,7 +116,7 @@ function getRowData(chars){
             let pinyin = stat.pinyin;
             let english = stat.english;
             let character = stat.character;
-            wordlists_words[currentWordlist].push({character: character, pinyin: pinyin, english: english});
+            wordlists_words[deck].push({character: character, pinyin: pinyin, english: english});
         });
     })
     .catch(error => {
@@ -129,21 +129,22 @@ function populateDropdown() {
     
     Object.keys(wordlists_words).forEach(listName => {
         const option = document.createElement('div');
-        option.className = 'dropdown-item';
+        option.className = 'wordlist-dropdown-item';
         option.textContent = listName;
         option.dataset.value = listName;
         dropdownMenu.appendChild(option);
     });
     
     const createOption = document.createElement('div');
-    createOption.className = 'dropdown-item create-new-option';
+    createOption.className = 'wordlist-dropdown-item create-new-option';
     createOption.innerHTML = '<i class="fa-solid fa-circle-plus"></i>' + " create word list";
     createOption.dataset.value = "create_new";
     dropdownMenu.appendChild(createOption);
 }
 
-function addWordTable(symbol, set_name){
+function addWord(symbol, set_name){
     addWordsInput.value = '';
+    
     
     fetch("./api/add_word_to_learning", {
         method: "POST",
@@ -155,7 +156,23 @@ function addWordTable(symbol, set_name){
     .then(response => response.json())
     .then(data => {
         let addedWords = data.added;
-        getRowData(addedWords);
+        console.log("added words", addedWords);
+        console.log("added words", addedWords);
+        console.log("added words", addedWords);
+        console.log("added words", addedWords);
+        console.log("added words", addedWords);
+        console.log("added words", addedWords);
+        console.log("set_name", set_name);
+        console.log("set_name", set_name);
+        console.log("set_name", set_name);
+        console.log("set_name", set_name);
+        console.log("set_name", set_name);
+        console.log("set_name", set_name);
+        console.log("set_name", set_name);
+        console.log("set_name", set_name);
+        console.log("set_name", set_name);
+        console.log("set_name", set_name);
+        getRowData(addedWords, set_name);
         // addedWords.forEach(word => {
         //     getRowData([word]);
         // });
@@ -237,7 +254,7 @@ function handleAddCards(e){
     let words = addWordsInput.value;
     let deck = currentWordlist;
     console.log("handling add cards", words, deck); 
-    addWordTable(words, currentWordlist);
+    addWord(words, currentWordlist);
 }
 
 function formatDateTime(dateTimeString) {
@@ -447,22 +464,23 @@ document.addEventListener('DOMContentLoaded', function() {
     flashcardContent = document.getElementById('flashcard_container');
     messageElement = document.getElementById('message');
 
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            cardVisible = false;
-            overlay.style.display = 'none';
-        }
-    });
+    // overlay.addEventListener('click', (e) => {
+    //     if (e.target === overlay) {
+    //         cardVisible = false;
+    //         overlay.style.display = 'none';
+    //         document.getElementById('dropdown-options-card').style.display = 'none';
+    //     }
+    // });
 
 
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay && !e.target.closest('#font-select')) {
-            cardVisible = false;
-            overlay.style.display = 'none';
+    // overlay.addEventListener('click', (e) => {
+    //     if (e.target === overlay && !e.target.closest('#font-select')) {
+    //         cardVisible = false;
+    //         overlay.style.display = 'none';
             // bordercanvas.style.display = 'none';
             // document.getElementById('font-select').style.display = 'none';
-        }
-    });
+    //     }
+    // });
 
     
     getFont();

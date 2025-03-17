@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <style>
         * {
             box-sizing: border-box;
@@ -20,17 +23,17 @@
             font-family: 'Noto Sans Mono', monospace;
             margin: 0;
             padding: 20px;
-            background-color: var(--background-color);
+            background-color: var(--accent-color);
             color: var(--text-color);
-            overflow-y: auto;
+            /* overflow-y: auto;
             scrollbar-width: none;
-            -ms-overflow-style: none;
+            -ms-overflow-style: none; */
 
             
-            -webkit-font-feature-settings: "liga" 0;
+            /* -webkit-font-feature-settings: "liga" 0;
             font-feature-settings: "liga" 0;
             -webkit-text-rendering: geometricPrecision;
-            text-rendering: geometricPrecision;
+            text-rendering: geometricPrecision; */
         }
         body::-webkit-scrollbar {
             display: none;
@@ -38,14 +41,14 @@
 
         /* Hide scrollbar for IE, Edge and Firefox */
         body {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            /* -ms-overflow-style: none;  IE and Edge */
+            /* scrollbar-width: none;  Firefox */
         }
 
         /* Ensure the html and body take up full height */
         html, body {
-            height: 100%;
-            overflow-y: auto;
+            /* height: 100%; */
+            /* overflow-y: auto; */
         }
         .container {
             position: relative;
@@ -117,14 +120,14 @@
             text-overflow: none;
         }
         
-        .container {
+        /* .container {
             overflow-x: auto;
-            scrollbar-width: none;  /* Firefox */
-            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none;  
+            -ms-overflow-style: none; 
         }
         .container::-webkit-scrollbar {
-            display: none;  /* WebKit */
-        }
+            display: none; 
+        } */
 
         .settings-container {
             width: 90%;
@@ -568,9 +571,6 @@
         }
 
     </style>
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
-    <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
 </head>
 {% if darkmode %}
 <body class="darkmode">
@@ -581,7 +581,6 @@
     {% include 'menu.html' %}
     
     <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/perlin.js') }}"></script>
 
     <script>
             
@@ -738,8 +737,8 @@
        
 
     </script>
-    <script src="{{ url_for('static', filename='js/userprogress.js') }}"></script>
     <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/userprogress.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
 
@@ -789,12 +788,12 @@
           width: 200px;
         }
         
-        .dropdown-item {
+        .wordlist-dropdown-item {
           padding: 8px 12px;
           cursor: pointer;
         }
         
-        .dropdown-item:hover {
+        .wordlist-dropdown-item:hover {
           background-color: var(--dimmer-background-color);
         }
         
@@ -889,7 +888,7 @@
             dropdownTrigger.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const isVisible = dropdownMenu.style.display === 'block';
-                
+                console.log(isVisible);
                 if (!isVisible) {
                     // Position the dropdown below the trigger
                     const rect = dropdownTrigger.getBoundingClientRect();
@@ -897,9 +896,9 @@
                     dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-down'></i>";
                     // dropdownMenu.style.top = rect.bottom + 'px';
                     // dropdownMenu.style.left = rect.left + 'px';
-                    dropdownMenu.style.top = rect.bottom - 21 + 'px';
+                    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                    dropdownMenu.style.top = rect.bottom - 21 + scrollY + 'px';
                     dropdownMenu.style.left = isMobileOrTablet() ? '1rem' : '3rem';
-                    console.log(rect.left)
                     dropdownMenu.style.minWidth = rect.width + 'px';
                     
                     dropdownMenu.style.display = 'block';
@@ -915,7 +914,7 @@
             
             // Handle option selection
             dropdownMenu.addEventListener('click', function(e) {
-                const item = e.target.closest('.dropdown-item');
+                const item = e.target.closest('.wordlist-dropdown-item');
                 if (!item) return;
                 
                 const value = item.dataset.value;

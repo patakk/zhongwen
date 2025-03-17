@@ -5,7 +5,6 @@ const messageElement = document.getElementById('message');
 let canvasrendered = false;
 let loadedCard = null;
 let activeCharacter;
-let cardVisible = false;
 
 function showFlashcard(character) {
     cardVisible = true;
@@ -79,12 +78,6 @@ overlay.addEventListener('click', (e) => {
     }
 });
 
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        cardVisible = false;
-        overlay.style.display = 'none';
-    }
-});
 
 function isTouchDevice() {
     return (('ontouchstart' in window) ||

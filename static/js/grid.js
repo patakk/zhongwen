@@ -815,21 +815,16 @@ window.addEventListener('popstate', function(event) {
     }
 });
 
-let cardVisible = false;
-function hideCard() {
-    // overlay.style.display = 'none';
-    cardVisible = false;
-    scrollToTop(document.getElementById('flashcard_container'), () => {overlay.style.display = 'none';});
+// let cardVisible = false;
+// function hideCard() {
+//     // overlay.style.display = 'none';
+//     cardVisible = false;
+//     scrollToTop(document.getElementById('flashcard_container'), () => {overlay.style.display = 'none';});
         
-    const newUrl = new URL(window.location);
-    newUrl.searchParams.delete('character');
-    history.pushState({}, '', newUrl);
-}
-overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) {
-        hideCard();
-    }
-});
+//     const newUrl = new URL(window.location);
+//     newUrl.searchParams.delete('character');
+//     history.pushState({}, '', newUrl);
+// }
 
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {

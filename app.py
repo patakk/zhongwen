@@ -143,6 +143,7 @@ def user_progress():
             nww.append(get_char_info(w, pinyin=True, english=True))
         wordlists_words[wl] = nww
 
+    custom_deck_names = list(wordlists_words.keys())
     return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(username), wordlists_words=wordlists_words)
 
 
@@ -362,12 +363,12 @@ def grid():
 
     username = session.get('username')
     custom_wordlists = db_get_user_wordlists(username, pinyin=True, english=False)
+    custom_deck_names = list(custom_wordlists.keys())
     cc = {
         **custom_wordlists,
         **CARDDECKS_W_PINYIN
     }
 
-    custom_deck_names = list(custom_wordlists.keys())
     user_wordlists = db_get_word_list_names_only(username)
     for wl in custom_wordlists:
         DECKNAMES[wl] = custom_wordlists[wl]['name']
