@@ -520,7 +520,7 @@ and (max-device-width: 1024px) {
 }
 
 .word-link.darkmode:hover {
-    /* background: rgb(80, 80, 80); */
+    /* background: rgb(80, 80, 80); */  
 }
 
 
@@ -532,7 +532,7 @@ and (max-device-width: 1024px) {
     padding: 10px;
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 11000;
+    z-index: 31000;
     font-size: 14px;
     font-family: var(--font-family);
     max-width: 500px;
@@ -552,6 +552,7 @@ and (max-device-width: 1024px) {
 .hover-english {
     font-size: 0.8em;
     color: #666;  /* or any color you prefer */
+    word-wrap: break-word;
 }
 
 .clickable-char.darkmode {

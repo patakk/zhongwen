@@ -749,22 +749,26 @@ function constSimilars(similars, similarsDiv){
                     const hoverBox = document.getElementById('pinyin-hover-box');
         
                     function showTooltip(element, content, event) {
+                        let www = window.innerWidth;
+                        let hhh = window.innerHeight;
                         hoverBox.innerHTML = content;
                         hoverBox.style.display = 'block';
                     
-                        const hoverBoxWidth = hoverBox.offsetWidth;
-                        const hoverBoxHeight = hoverBox.offsetHeight;
-                        const maxX = window.innerWidth - hoverBoxWidth - 10;
-                        const maxY = window.innerHeight - hoverBoxHeight - 10+ window.scrollY;
+                        requestAnimationFrame(() => {
+                            const hoverBoxWidth = hoverBox.offsetWidth;
+                            const hoverBoxHeight = hoverBox.offsetHeight;
+                            const maxX = www - hoverBoxWidth - 10; 
+                            const maxY = hhh - hoverBoxHeight - 10 + window.scrollY;
                     
-                        let x = event.pageX + 10;
-                        let y = event.pageY + 10 - window.scrollY*0;
+                            let x = event.pageX + 10;
+                            let y = event.pageY + 10;
                     
-                        // if (x > maxX) x = maxX;
-                        // if (y > maxY) y = maxY;
+                            if (x > maxX) x = maxX;
+                            if (y > maxY) y = maxY;
                     
-                        hoverBox.style.left = `${x}px`;
-                        hoverBox.style.top = `${y}px`;
+                            hoverBox.style.left = `${x}px`;
+                            hoverBox.style.top = `${y}px`;
+                        });
                     }
                     
         
@@ -1340,7 +1344,7 @@ function renderCard(data) {
                         let y = event.pageY + 10 - window.scrollY*0;
                     
                         if (x > maxX) x = maxX;
-                        // if (y > maxY) y = maxY;
+                        if (y > maxY) y = maxY;
                     
                         hoverBox.style.left = `${x}px`;
                         hoverBox.style.top = `${y}px`;
@@ -1515,7 +1519,7 @@ function renderCard(data) {
                 let y = event.pageY + 10 - window.scrollY*0;
             
                 if (x > maxX) x = maxX;
-                // if (y > maxY) y = maxY;
+                if (y > maxY) y = maxY;
             
                 hoverBox.style.left = `${x}px`;
                 hoverBox.style.top = `${y}px`;
@@ -1560,7 +1564,7 @@ function renderCard(data) {
                 let y = e.pageY + 10 - window.scrollY*0;
             
                 if (x > maxX) x = maxX;
-                // if (y > maxY) y = maxY;
+                if (y > maxY) y = maxY;
             
                 hoverBox.style.left = `${x}px`;
                 hoverBox.style.top = `${y}px`;
