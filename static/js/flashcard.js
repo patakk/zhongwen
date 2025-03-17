@@ -1016,7 +1016,7 @@ function createDefinitions(example_words, pinyin, english) {
 
     // Add expand/collapse button outside the table
     if (needsExpandCollapse) {
-        const expandCollapseBtn = document.createElement('button');
+        const expandCollapseBtn = document.createElement('div');
         expandCollapseBtn.className = 'expand-collapse-btn';
         expandCollapseBtn.textContent = 'expand (' + (maxEntries - initialShowCount) + ' more) ↓';
         expandCollapseBtn.setAttribute('data-expanded', 'false');
