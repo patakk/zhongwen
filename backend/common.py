@@ -74,10 +74,11 @@ def get_tatoeba_page(character, page):
 
     for idx, t in enumerate(tatoebas):
         try:
+            t['cmn'] = simplify_hanzi(t['cmn'])
             words = pseg.cut(t['cmn'])
             cmn = []
             for a, b in words:
-                cmn.append({**get_char_info(simplify_hanzi(a), pinyin=True, english=True), 'character': a})
+                cmn.append({**get_char_info(a, pinyin=True, english=True), 'character': a})
             examples.append({**t, 'cmn': cmn})
         except:
             pass
