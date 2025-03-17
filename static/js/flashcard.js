@@ -1065,7 +1065,7 @@ function renderCard(data) {
         characterElement.innerHTML = '';
         characterNoto.innerHTML = '';
     }
-
+    characterNoto.style.display = 'none';
 
     let chars = data.character.split('');
     chars = chars.filter(char => char.match(/[\u4e00-\u9fa5]/));
