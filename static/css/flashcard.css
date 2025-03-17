@@ -1184,17 +1184,17 @@ input[type="checkbox"].darkmode:checked::after {
 
 .definitions-grid {
     display: grid;
-    grid-template-columns: 20% 80%;
+    grid-template-columns: 10% 20% 70%;
     margin-top: 1em;
     margin-bottom: 1em;
-    margin-left: auto;
+    margin-left: 1em;
     padding-left: 1em;
 }
 
 @media screen and (max-width: 845px) {
     .definitions-grid {
         display: grid;
-        grid-template-columns: 30% 70%;
+        grid-template-columns: 10% 30% 60%;
         margin-top: 1em;
         margin-bottom: 1em;
         margin-left: auto;
@@ -1218,6 +1218,47 @@ input[type="checkbox"].darkmode:checked::after {
     background-color: var(--dimmer-background-color);
 }
 
+.hanzi-cell {
+    border-right: 2px dashed var(--dimmer-border-color-b);
+}
+
 .pinyin-cell {
     border-right: 2px dashed var(--dimmer-border-color-b);
+}
+
+.control-row {
+    justify-content: center;
+    padding: 8px 0;
+}
+
+.control-cell {
+    grid-column: span 2;
+    text-align: center;
+}
+
+.definitions-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.expand-collapse-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.expand-collapse-btn {
+    background-color: transparent;
+    border: none;
+    margin: -1em 1em .5em 1em;
+    cursor: pointer;
+    font-size: .8em;
+    opacity: 0.6;
+    font-family: 'Noto Sans Mono';
+    text-decoration: underline;
+}
+
+
+.expand-collapse-btn:hover {
 }

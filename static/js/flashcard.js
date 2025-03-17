@@ -922,6 +922,108 @@ function createClickableHanziElements(text) {
     return container;
 }
 
+function createDefinitions(example_words, pinyin, english) {
+    const container = document.createElement('div');
+    container.className = 'definitions-container';
+    
+    const definitionsTable = document.createElement('div');
+    definitionsTable.className = 'definitions-grid';
+
+    const headerRow = document.createElement('div');
+    headerRow.className = 'grid-row header';
+
+    const hanziHeader = document.createElement('div');
+    hanziHeader.className = 'grid-cell hanzi-cell';
+    hanziHeader.textContent = 'Hanzi';
+
+    const pinyinHeader = document.createElement('div');
+    pinyinHeader.className = 'grid-cell pinyin-cell';
+    pinyinHeader.textContent = 'Pinyin';
+
+    const meaningHeader = document.createElement('div');
+    meaningHeader.className = 'grid-cell meaning-cell';
+    meaningHeader.textContent = 'Meaning';
+
+    headerRow.appendChild(hanziHeader);
+    headerRow.appendChild(pinyinHeader);
+    headerRow.appendChild(meaningHeader);
+    definitionsTable.appendChild(headerRow);
+
+    const maxEntries = Math.max(pinyin.length, english.length);
+    const initialShowCount = 5; // Number of entries to show initially
+    const needsExpandCollapse = maxEntries > initialShowCount;
+    
+    for (let i = 0; i < maxEntries; i++) {
+        const dataRow = document.createElement('div');
+        dataRow.className = 'grid-row';
+        
+        if (i >= initialShowCount && needsExpandCollapse) {
+            dataRow.style.display = 'none';
+            dataRow.classList.add('expandable-row');
+        }
+        
+        const hanziCell = document.createElement('div');
+        hanziCell.className = 'grid-cell hanzi-cell';
+        //hanziCell.innerHTML = i < example_words.length ? createClickableHanziElements(example_words[i]).outerHTML : '';
+        //hanziCell.innerHTML = i < example_words.length ? createClickableHanziElements(example_words[i]).outerHTML : '';
+        hanziCell.appendChild(createClickableHanziElements(example_words[i]));
+        
+        const pinyinCell = document.createElement('div');
+        pinyinCell.className = 'grid-cell pinyin-cell';
+        pinyinCell.textContent = i < pinyin.length ? toAccentedPinyin(pinyin[i]) : '';
+        
+        const meaningCell = document.createElement('div');
+        meaningCell.className = 'grid-cell meaning-cell';
+        meaningCell.appendChild(createClickableHanziElements(toAccentedPinyin(english[i].replace(/\//g, ' / '))));
+        
+        dataRow.appendChild(hanziCell);
+        dataRow.appendChild(pinyinCell);
+        dataRow.appendChild(meaningCell);
+        definitionsTable.appendChild(dataRow);
+    }
+
+    // Add the table to the container
+    container.appendChild(definitionsTable);
+
+    // Add expand/collapse button outside the table
+    if (needsExpandCollapse) {
+        const expandCollapseBtn = document.createElement('button');
+        expandCollapseBtn.className = 'expand-collapse-btn';
+        expandCollapseBtn.textContent = 'expand (' + (maxEntries - initialShowCount) + ' more) ↓';
+        expandCollapseBtn.setAttribute('data-expanded', 'false');
+        
+        expandCollapseBtn.addEventListener('click', function() {
+            const isExpanded = this.getAttribute('data-expanded') === 'true';
+            const expandableRows = definitionsTable.querySelectorAll('.expandable-row');
+            
+            expandableRows.forEach(row => {
+                row.style.display = isExpanded ? 'none' : 'contents';
+            });
+            
+            this.textContent = isExpanded 
+                ? 'expand (' + (maxEntries - initialShowCount) + ' more) ↓' 
+                : 'collapse ↑';
+            this.setAttribute('data-expanded', isExpanded ? 'false' : 'true');
+        });
+        
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'expand-collapse-container';
+        buttonContainer.appendChild(expandCollapseBtn);
+        
+        // Add the button container to the main container
+        container.appendChild(buttonContainer);
+    }
+
+    const defLabelDiv = document.createElement('div');
+    defLabelDiv.className = 'rawDefLabel';
+    defLabelDiv.textContent = "Definitions and appearances in other words:";
+    
+    // Return both the label and the container
+    let definitionsContainer = container;
+    return {defLabelDiv, definitionsContainer};
+}
+
+
 
 function renderCard(data) {
     const container = document.getElementById('flashcard_container');
@@ -1069,6 +1171,7 @@ function renderCard(data) {
         let char_info = data.chars_breakdown[char];
         const english = char_info.english;
         const pinyin = char_info.pinyin;
+        const example_words = char_info.example_words;
         const frequency = char_info.frequency;
         const traditional = char_info.traditional;
         const simplified = char_info.simplified;
@@ -1131,50 +1234,11 @@ function renderCard(data) {
             return entry;
         }
 
-        const definitionsTable = document.createElement('div');
-        definitionsTable.className = 'definitions-grid';
-
-        const headerRow = document.createElement('div');
-        headerRow.className = 'grid-row header';
-
-        const pinyinHeader = document.createElement('div');
-        pinyinHeader.className = 'grid-cell pinyin-cell';
-        pinyinHeader.textContent = 'Pinyin';
-
-        const meaningHeader = document.createElement('div');
-        meaningHeader.className = 'grid-cell meaning-cell';
-        meaningHeader.textContent = 'Meaning';
-
-        headerRow.appendChild(pinyinHeader);
-        headerRow.appendChild(meaningHeader);
-        definitionsTable.appendChild(headerRow);
-
-        // Determine the number of rows needed
-        const maxEntries = Math.max(pinyin.length, english.length);
-
-        // Create a row for each definition pair
-        for (let i = 0; i < maxEntries; i++) {
-            const dataRow = document.createElement('div');
-            dataRow.className = 'grid-row';
-            
-            const pinyinCell = document.createElement('div');
-            pinyinCell.className = 'grid-cell pinyin-cell';
-            pinyinCell.textContent = i < pinyin.length ? toAccentedPinyin(pinyin[i]) : '';
-            
-            const meaningCell = document.createElement('div');
-            meaningCell.className = 'grid-cell meaning-cell';
-            meaningCell.appendChild(createClickableHanziElements(toAccentedPinyin(english[i].replace(/\//g, ' / '))));
-            
-            dataRow.appendChild(pinyinCell);
-            dataRow.appendChild(meaningCell);
-            definitionsTable.appendChild(dataRow);
-        }
-
-        const defLabelDiv = document.createElement('div');
-        defLabelDiv.className = 'rawDefLabel';
-        defLabelDiv.textContent = "Definitions:";
+        let defs = createDefinitions(example_words, pinyin, english);
         
-        // append just a horiztonal line
+        entryDiv.appendChild(defs.defLabelDiv);
+        entryDiv.appendChild(defs.definitionsContainer);
+        
         const hr = document.createElement('hr');
         hr.style.border = '0';
         hr.style.height = '4px';
@@ -1182,8 +1246,6 @@ function renderCard(data) {
         hr.style.marginLeft = '0';
         hr.style.marginRight = '0';
 
-        entryDiv.appendChild(defLabelDiv);
-        entryDiv.appendChild(definitionsTable);
         entryDiv.appendChild(hr);
 
 

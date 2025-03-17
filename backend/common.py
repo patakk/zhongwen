@@ -213,25 +213,42 @@ def entry_req(definition):
 
 def char_full_info_(original_char):
     char = simplify_hanzi(original_char)
+    example_words = []
     definition = []
     pinyin = []
-    try:
+    if True:
         definition_results = dictionary.definition_lookup(char)
+        examples = dictionary.get_examples(char)
+        examples_hf = examples['high_frequency']
+        examples_mf = examples['mid_frequency']
         
         if len(definition_results) >= 1:
             best_entry = next((entry for entry in definition_results if entry_req(entry['definition'])), 
                               definition_results[0])
             
+            example_words.append(best_entry['simplified'])
             definition.append(best_entry['definition'])
             pinyin.append(best_entry['pinyin'])
             
             for entry in definition_results:
                 if entry != best_entry and "variant of" not in entry['definition']:
+                    example_words.append(entry['simplified'])
                     definition.append(entry['definition'])
                     pinyin.append(entry['pinyin'])
-    except:
+        for examp in examples_hf:
+            if examp['simplified'] != char:
+                definition.append(examp['definition'])
+                pinyin.append(examp['pinyin'])
+                example_words.append(examp['simplified'])
+        for examp in examples_mf:
+            if examp['simplified'] != char:
+                definition.append(examp['definition'])
+                pinyin.append(examp['pinyin'])
+                example_words.append(examp['simplified'])
+    else:
         definition = ["-"]
         pinyin = ["-"]
+        example_words = ["-"]
     frequency = "-"
     rank = "-"
     try:
@@ -286,5 +303,6 @@ def char_full_info_(original_char):
         'similars': similars,
         'appears_in': appears_in,
         'pinyin': pinyin,
+        'example_words': example_words,
         # 'pinyin': get_pinyin(char),
     }
