@@ -1,5 +1,5 @@
 let isDarkMode = false;
-let DIMS = 66;
+let DIMS = 128;
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -50,11 +50,6 @@ function drawLinesBg(canvas) {
     ctx.lineTo(canvas.width / 2, canvas.height);
     ctx.stroke();
 
-    ctx.strokeStyle = 'rgb(255, 233, 233)';
-    ctx.lineWidth = 2;
-    if(isDarkMode) {
-        ctx.strokeStyle = 'rgb(55, 0, 0)';
-    }
     // left diagonal
     ctx.beginPath();
     ctx.moveTo(0, 0);
@@ -226,7 +221,8 @@ function initGrid(){
 
 
     Object.entries(strokes_per_character).forEach(([character, attempts]) => {
-        const characterLabel = document.createElement('h2');
+        const characterLabel = document.createElement('div');
+        characterLabel.className = 'character-label';
         characterLabel.textContent = character;
     
 
@@ -237,8 +233,8 @@ function initGrid(){
             const canvas = document.createElement('canvas');
             canvas.width = DIMS;
             canvas.height = canvas.width;
-            canvas.style.width = canvas.width/2 + 'px';
-            canvas.style.height = canvas.height/2 + 'px';
+            // canvas.style.width = canvas.width/2 + 'px';
+            // canvas.style.height = canvas.height/2 + 'px';
             canvas.className = 'character-canvas';
             canvasContainer.appendChild(canvas);
 
@@ -265,7 +261,8 @@ function initList(){
         const characterRow = document.createElement('div');
         characterRow.className = 'character-row';
         
-        const characterLabel = document.createElement('h2');
+        const characterLabel = document.createElement('div');
+        characterLabel.className = 'character-label';
         characterLabel.textContent = character;
         characterRow.appendChild(characterLabel);
     
@@ -293,8 +290,8 @@ function initList(){
             const canvas = document.createElement('canvas');
             canvas.width = DIMS;
             canvas.height = canvas.width;
-            canvas.style.width = canvas.width/2 + 'px';
-            canvas.style.height = canvas.height/2 + 'px';
+            // canvas.style.width = canvas.width/2 + 'px';
+            // canvas.style.height = canvas.height/2 + 'px';
             canvas.className = 'character-canvas';
             canvasContainer.appendChild(canvas);
 

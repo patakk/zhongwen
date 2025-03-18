@@ -34,28 +34,46 @@ html::-webkit-scrollbar {
 .character-row {
     display: flex;
     align-items: center;
-    padding: 8px 0px;
-    border-bottom: 2px solid #ccc3;
+    /* border-bottom: 2px solid #ccc3; */
 }
 
 .character-row.darkmode {
     display: flex;
     align-items: center;
-    padding: 8px 0px;
 }
 
 #characters-container.darkmode > div {
     border-bottom: 2px solid rgba(43, 43, 43, 0.4);
 }
   
-.character-row h2 {
-    font-size: 18px;
+.character-row {
     margin-right: 20px;
     margin-left: 0px;
     margin-top: 0px;
     margin-bottom: 0px;
     padding-bottom: 0px;
     font-weight: 400;
+    color: var(--dim-accent-color);
+    font-size: 3em;
+}
+
+
+.canvas-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.character-canvas {
+    margin-right: 0px;
+    margin-bottom: 0px;
+    width: 1em;
+    height: 1em;
+    /* border: 1px solid #ccc; */
+}
+
+.character-label {
+    font-family: "Kaiti";
+    font-size: 0.8em;
 }
 
 #characters-container {
@@ -88,16 +106,6 @@ h1 {
     }
 }
 
-.canvas-container {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.character-canvas {
-    margin-right: 0px;
-    margin-bottom: 0px;
-    /* border: 1px solid #ccc; */
-}
 
 .grid-view {
     display: grid;

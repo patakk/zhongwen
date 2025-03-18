@@ -146,6 +146,13 @@ function confirmDarkmode(){
     }
 
     try {
+        initList();
+    }
+    catch(e){
+
+    }
+
+    try {
         drawMasks();
     }
     catch(e){

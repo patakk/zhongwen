@@ -958,7 +958,9 @@
                 currentWordlist = name;
                 
                 reworkUrls();
-
+                custom_deck_names.push(name);
+                populateCardSets();
+                
                 let tableBody = document.querySelector("table tbody");
                 tableBody.innerHTML = "";
                 addToTable(wordlists_words[currentWordlist]);
