@@ -24,7 +24,7 @@ def create_app():
     app.config.update(FLASK_CONFIG)
 
     app.config["WTF_CSRF_SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY") or open("/home/patakk/.flask-secret-key", "r").read().strip()
-    csrf = CSRFProtect(app)
+    # csrf = CSRFProtect(app)
 
     app.template_folder = os.path.join(BASE_DIR, '..', 'templates')
     app.static_folder = os.path.join(BASE_DIR, '..', 'static')
