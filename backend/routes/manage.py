@@ -26,7 +26,6 @@ def email_management():
         user = User.query.filter_by(username=session['username']).first()
 
         if user:
-            # Check if email already exists
             if User.query.filter_by(email=email).first():
                 flash('Email already registered', 'danger')
                 session['_from_post'] = True
@@ -34,8 +33,6 @@ def email_management():
 
             user.set_email(email, verified=False)
             token = user.generate_email_verification_token()
-            
-            # Send verification email
             verification_link = url_for('manage.verify_email', token=token, _external=True)
             
             msg = Message('Verify Your Email',
@@ -56,7 +53,6 @@ def email_management():
             session['_from_post'] = True
         return redirect(url_for('manage.email_management'))
     
-    # Clear flashes only on direct page access (not from POST redirect)
     if not session.pop('_from_post', False):
         session.pop('_flashes', None)
     
@@ -69,7 +65,7 @@ def email_management():
 @manage_bp.route('/verify-email/<token>')
 @session_required
 def verify_email(token):
-    user = User.query.filter_by(email_verification_token=token).first()
+    user = User.verify_email_token(token)
     if user:
         user.verify_email()
         flash('Email verified successfully!', 'success')

@@ -52,8 +52,6 @@ from backend.routes.manage import validate_password
 
 import json
 import os
-from datetime import timedelta
-from flask import Flask
 
 from backend.routes.api import api_bp
 from backend.routes.puzzles import puzzles_bp
@@ -61,15 +59,17 @@ from backend.routes.puzzles import add_sorted_decknames_to_context
 
 from backend.routes.manage import manage_bp
 from backend.setup import create_app
+from flask_limiter.util import get_remote_address
+from flask_limiter import Limiter
 
 app = create_app()
 application = app
 
-# limiter = Limiter(
-#     key_func=get_remote_address,
-#     app=app,
-#     default_limits=["11200 per day", "1150 per hour"]
-# )
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=["5 per minute"]
+)
 
 app.register_blueprint(api_bp)
 app.register_blueprint(puzzles_bp)
@@ -216,6 +216,7 @@ def get_crunch():
 
 @app.route('/login', methods=['GET', 'POST'])
 @timing_decorator
+@limiter.limit("5 per minute")
 def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()  # Added strip()
