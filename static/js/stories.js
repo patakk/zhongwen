@@ -1200,7 +1200,7 @@ function playStory() {
 function pauseStory() {
     stopRequested = true;
     if(isMobileOrTablet()){
-        unhighlightAllLines();
+        // unhighlightAllLines();
     }
     if (currentPlayingAudio) {
         currentPlayingAudio.pause();
