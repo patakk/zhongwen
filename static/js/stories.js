@@ -257,10 +257,12 @@ function highLightLine(lineIndex) {
 
 
             document.querySelectorAll('.pinyinLabel').forEach((el) => {
-                el.classList.add('hidden');
+                if(!document.getElementById('pinyinCheckbox').checked)
+                    el.classList.add('hidden');
             });
             document.querySelectorAll('.pinyinLabel.line_' + lineIndex).forEach((el) => {
-                el.classList.remove('hidden');
+                if(!document.getElementById('pinyinCheckbox').checked)
+                    el.classList.remove('hidden');
             });
         }
         else {
@@ -302,8 +304,10 @@ function addHoverBehaviorToWrapper(wrapper, lineIndex) {
 
     wrapper.addEventListener('click', function (event) {
         
-        if (chapter.clip_ids){
-            playLineClip(chapter.clip_ids[lineIndex]);
+        if (chapter.clip_ids && isPlaying){
+            currentPlayingAudio.pause();
+            currentStoryIndex = lineIndex;
+            playStory();
         }
         if(!isMobileOrTablet()){
             // if has clip_ids property
@@ -375,6 +379,10 @@ function addHoverBehaviorToWrapper(wrapper, lineIndex) {
     });
 
     wrapper.addEventListener('mouseleave', function () {
+        if(isPlaying){
+            highLightLine(currentStoryIndex);
+            return;
+        }
         wrapper.classList.remove('desktop');
         translationBox.classList.add('hidden');
         currentHoveredLine = -1;
@@ -385,6 +393,8 @@ function addHoverBehaviorToWrapper(wrapper, lineIndex) {
         }
     });
 }
+
+
 function applyPinyinVisibility() {
     document.querySelectorAll('.pinyinLabel').forEach(element => {
         if (showAllPinyin) {
@@ -424,7 +434,6 @@ function applyInitialStyles(bubbleobj) {
 
     const documentClickHandler = function(event) {
         if (!bubble.contains(event.target)) {
-            console.log("afsasfa")
             removeBubbleFromDOM(bubbleobj);
             activeBubbles = activeBubbles.filter(b => b !== bubbleobj);
             bubbleobj.removed = true;
@@ -490,6 +499,182 @@ class Bubble {
     }
 }
 
+
+function addWord(symbol, set_name, get_rows=false){
+
+    try{
+    }
+    catch(e){
+    }
+
+    alert("Added " + symbol + " to " + set_name);
+    
+    fetch("./api/add_word_to_learning", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ word: symbol, set_name: set_name, get_rows: get_rows})
+    })
+    .then(response => response.json())
+    .then(data => {
+        // addedWords.forEach(word => {
+        //     getRowData([word]);
+        // });
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+
+let currentCharacter;
+
+function populateCardSets() {
+    const dropdownTriggerCard = document.getElementById('wordListDropdownCard');
+    const dropdownMenu = document.getElementById('dropdown-options-card');
+    dropdownMenu.innerHTML = '';
+
+    dropdownMenu.addEventListener('mouseenter', () => {
+    });
+
+    dropdownMenu.addEventListener('mouseleave', () => {
+        dropdownMenu.style.display = 'none';
+    });
+
+    document.addEventListener('click', (e) => {
+        if(!dropdownMenu.contains(e.target)){
+            dropdownMenu.style.display = 'none';
+        }
+    });
+
+    custom_deck_names.forEach(listName => {
+        const option = document.createElement('div');
+        option.className = 'dropdown-item';
+        option.textContent = listName;
+        option.dataset.value = listName;
+        dropdownMenu.appendChild(option);
+        option.addEventListener('click', () => {
+            dropdownMenu.style.display = 'none';
+            addWord(currentCharacter, listName);
+        });
+
+        
+    });
+}
+
+function makeNormalBubble(event, symbol){
+    let bubblediv = document.getElementById('info-bubble');
+    bubblediv.classList.add('info-bubble');
+
+    bubblediv.innerHTML = "";
+
+    currentCharacter = symbol;
+
+    let hanzidiv = document.createElement('div');
+    let pinyindiv = document.createElement('div');
+    let englishdiv = document.createElement('div');
+
+    let addcardbutton = document.createElement('button');
+    addcardbutton.classList.add('normal-bubble-button');
+    addcardbutton.textContent = 'Add word';
+    
+    const dropdownMenu = document.getElementById('dropdown-options-card');
+    let dropdownMenuHeight = dropdownMenu.offsetHeight;
+    let dropdownMenuWidth = dropdownMenu.offsetWidth;
+    console.log(dropdownMenuHeight, dropdownMenuWidth);
+    dropdownMenuHeight = custom_deck_names.length * 40;
+    addcardbutton.addEventListener('click', function(event) {
+        let mouseX = event.clientX + window.scrollX;
+        let mouseY = event.clientY + window.scrollY;
+        if(mouseY + dropdownMenuHeight > window.innerHeight + window.scrollY - 100){
+            mouseY = window.innerHeight - dropdownMenuHeight + window.scrollY - 100;
+        }
+        event.stopPropagation();
+        const isVisible = dropdownMenu.style.display === 'block';
+        if (!isVisible) {
+            dropdownMenu.style.top = mouseY + 10 + 'px';
+            dropdownMenu.style.left = mouseX + 10 +'px';
+            dropdownMenu.style.display = 'block';
+
+        } else {
+            dropdownMenu.style.display = 'none';
+        }
+    });
+
+
+    hanzidiv.id = 'hanzi';
+    pinyindiv.id = 'pinyin';
+    englishdiv.id = 'english';
+
+    hanzidiv.innerText = symbol;
+    pinyindiv.innerText = word_data[symbol].pinyin.map(toAccentedPinyin).join(' / ');
+    word_data[symbol].english.forEach((word, idx) => {
+        englishdiv.innerHTML += `<span>- ${word}</span>`;
+        if(idx < word_data[symbol].english.length - 1){
+            englishdiv.innerHTML += '<br>';
+        }
+    });
+
+    bubblediv.appendChild(hanzidiv);
+    bubblediv.appendChild(pinyindiv);
+    bubblediv.appendChild(englishdiv);
+    bubblediv.appendChild(addcardbutton);
+    bubblediv.style.display = 'flex';
+    // position it next to mouse, takign into account the scroll
+    let mouseX = event.clientX + window.scrollX;
+    let mouseY = event.clientY + window.scrollY;
+
+    let bubbleHeight = bubblediv.offsetHeight;
+    let bubbleWidth = bubblediv.offsetWidth;
+
+    if(mouseY + bubbleHeight > window.innerHeight + window.scrollY-100){
+        mouseY = window.innerHeight + window.scrollY - bubbleHeight-100;
+    }
+
+    bubblediv.style.left = mouseX + 10 + 'px';
+    bubblediv.style.top = mouseY + 10 + 'px';
+    clearTimeout(bubbletimeout);
+    bubbletimeout = setTimeout(() => {
+        bubblediv.style.display = 'none';
+    }, 2000);
+
+    clearTimeout(dctim);
+    document.removeEventListener('click', handledoccl);
+
+    
+    dctim = setTimeout(() => {
+        document.addEventListener('click', handledoccl);
+    }, 33);
+}
+let bubbletimeout;
+let dctim;
+
+function handledoccl(event) {
+    let bubblediv = document.getElementById('info-bubble');
+    if(!bubblediv.contains(event.target)){
+        bubblediv.style.display = 'none';
+    }
+}
+
+function setupNormalBubbleInteractions(){
+    
+    let bubblediv = document.getElementById('info-bubble');
+    bubblediv.addEventListener('mouseenter', function(event) {
+        clearTimeout(bubbletimeout);
+    });
+
+    bubblediv.addEventListener('mouseleave', function(event) {
+        clearTimeout(bubbletimeout);
+        bubbletimeout = setTimeout(() => {
+            bubblediv.style.display = 'none';
+            clearTimeout(dctim);
+            document.removeEventListener('click', handledoccl);
+        }, 2000);
+    });
+    populateCardSets();
+
+}
+
 function makeAIBubble(prompt, symbol=null){
     // removeBubbleFromDOM();
     // remove all bubbles
@@ -498,18 +683,8 @@ function makeAIBubble(prompt, symbol=null){
     }
     let style = null;
 
-    let bubblediv = document.createElement('div');
-    bubblediv.setAttribute('id', 'translation-bubble');
+    let bubblediv = document.getElementById('translation-bubble');
     bubblediv.className = 'translation-bubble';
-    // let lines = request.translatedText.split('\n').map(line => {
-    //     line = line.trim();
-    //     if (line.startsWith('*')) {
-    //         line = `<i>${line.slice(1).trim()}</i>`;
-    //     }
-    //     line = line.split('. ').join('.<br>');
-    //     line = line.split('." ').join('."<br>');
-    //     return line;
-    // });
     window.getSelection().removeAllRanges();
 
     // create a text container
@@ -538,24 +713,25 @@ function makeAIBubble(prompt, symbol=null){
     addToLearningButton.textContent = 'Add to learning';
     addToLearningButton.classList.add('bubble-button');
     addToLearningButton.addEventListener('click', function() {
-        fetch("./api/add_word_to_learning", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ word: symbol })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-        })
-        .catch(error => {
-            console.error("Error:", error);
-        });
+        console.log("ello")
+        // fetch("./api/add_word_to_learning", {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     },
+        //     body: JSON.stringify({ word: symbol })
+        // })
+        // .then(response => response.json())
+        // .then(data => {
+        //     console.log(data);
+        // })
+        // .catch(error => {
+        //     console.error("Error:", error);
+        // });
 
-        if (activeBubble) {
-            removeBubbleFromDOM(activeBubble);
-        }
+        // if (activeBubble) {
+        //     removeBubbleFromDOM(activeBubble);
+        // }
     });
     
     let aiDescriptionButton = document.createElement('div');
@@ -629,53 +805,49 @@ function makeAIBubble(prompt, symbol=null){
         
 
     fetchStream(prompt, bubbleobj);
-
-    // setTimeout(() => {
-    //     let bubble = activeBubbles[activeBubbles.length - 1];
-    //     removeBubbleFromDOM(bubble);
-    //     activeBubbles = activeBubbles.filter(b => b !== bubble);
-    //     bubble.removed = true; // Mark the object as removed
-    // }, 2000);
 }
 
 let timeouts = [];
 
 
+let isPlaying = false;
 function createPlaybackController() {
     const controller = document.createElement('div');
-    controller.style.position = 'fixed';
-    controller.style.bottom = '0';
-    controller.style.left = '0';
-    controller.style.width = '100%';
-    controller.style.height = '5em';
-    controller.style.background = 'var(--playback-background-color)';
-    controller.style.display = 'flex';
-    controller.style.justifyContent = 'center';
-    controller.style.alignItems = 'center';
-    controller.style.zIndex = '1000';
-    
-    const button = document.createElement('div');
-    button.innerHTML = '<i class="fa-solid fa-circle-play"></i>';
-    button.style.fontSize = '3em';
-    button.style.color = 'var(--hanzi-link-color)';
-    button.style.cursor = 'pointer';
-    
-    let isPlaying = false;
-    button.addEventListener('click', () => console.log('Event attached'));
-    button.addEventListener('click', () => {
+    controller.id = 'playback-controller';
+
+    const rewindButton = document.createElement('div');
+    rewindButton.id = 'rewind-button';
+    rewindButton.classList.add('playback-button');
+    rewindButton.innerHTML = '<i class="fa-solid fa-backward"></i>';
+
+    const playButton = document.createElement('div');
+    playButton.id = 'play-button';
+    playButton.classList.add('playback-button');
+    playButton.innerHTML = '<i class="fa-solid fa-circle-play"></i>';
+
+    playButton.addEventListener('click', () => {
         if (isPlaying) {
-            button.innerHTML = '<i class="fa-solid fa-circle-play"></i>';
+            playButton.innerHTML = '<i class="fa-solid fa-circle-play"></i>';
             pauseStory();
         } else {
             playStory();
-            button.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
         }
         isPlaying = !isPlaying;
     });
-    
-    controller.appendChild(button);
+
+    rewindButton.addEventListener('click', () => {
+        playButton.innerHTML = '<i class="fa-solid fa-circle-play"></i>';
+        rewindStory();
+    });
+
+    controller.appendChild(rewindButton);
+    controller.appendChild(playButton);
     document.body.appendChild(controller);
 }
+
+
+
 
 function addBubbleInteractions(bubbleobj) {
 
@@ -851,6 +1023,7 @@ function getStory(selectedStoryIndex, selectedChapterIndex, func=null) {
         .then(data => {
             chapter = data.chapter;
             dataPerCharacter = data.char_data;
+            word_data = data.word_data;
             if(func) {
                 func();
             }
@@ -933,6 +1106,10 @@ function setupDropdowns() {
                     populateChapterOptions();
                     removeDropdownListeners();
                     setupDropdowns();
+                    naturalCheckbox.checked = false;
+                    document.querySelectorAll('.stroke-options').forEach((el) => {
+                        el.style.display = 'none';
+                    });
                 } else if (drop.elem.id == 'storyList') {
                     selectedStoryIndex = value;
                     selectedChapterIndex = 1;
@@ -940,6 +1117,10 @@ function setupDropdowns() {
                     populateChapterOptions();
                     removeDropdownListeners();
                     setupDropdowns();
+                    naturalCheckbox.checked = false;
+                    document.querySelectorAll('.stroke-options').forEach((el) => {
+                        el.style.display = 'none';
+                    });
                 } else if (drop.elem.id == 'fontList') {
                     renderFont = fontList[value - 1];
                     naturalCheckbox.checked = false;
@@ -979,6 +1160,14 @@ let stopRequested = false;
 let currentStoryIndex = 0;
 let currentPlayingAudio = null;
 
+function rewindStory() {
+    pauseStory();
+    unhighlightAllLines();
+    currentStoryIndex = 0;
+    highLightLine(currentStoryIndex);
+    isPlaying = false;
+}
+
 function playStory() {
     stopRequested = false;
 
@@ -989,7 +1178,6 @@ function playStory() {
         }
 
         currentStoryIndex = idx;
-        console.log(idx);
         highLightLine(idx);
         playLineClip(chapter.clip_ids[idx], () => {
             if (!stopRequested && idx < currentLines.length - 1) {
@@ -1028,7 +1216,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     ]);
 
 
+
     createPlaybackController();
+    setupNormalBubbleInteractions();
 
     colorCanvas.width = okhslImage.width;
     colorCanvas.height = okhslImage.height;
@@ -1285,12 +1475,12 @@ function renderTextToDom(plotterElement, plotters, showAllPinyin, colors, size, 
             if(isTitle){
                 currentWrapper.onclick = () => {
                     if(!storyPlaying){
-                        playStory();
+                        // playStory();
                         storyPlaying = true;
                     }
                     else{
                         storyPlaying = false;
-                        pauseStory();
+                        // pauseStory();
                     }
                 }
             }
@@ -1345,7 +1535,7 @@ function renderTextToDom(plotterElement, plotters, showAllPinyin, colors, size, 
                         return;
                     }
                     let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, give me pinyin, and don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
-                    makeAIBubble(prompt, char);
+                    makeNormalBubble(event, char);
                     translationBox.classList.add('hidden');
                 }
             });
@@ -1466,145 +1656,62 @@ function renderPlottersToDOM(plotterElement, plotters, showAllPinyin, colors, si
 
         if (plotter) {
             let char = plotterinfo.char;
-            if (useTextRendering) { 
-                
-                let charContainer = document.createElement('div');
-                charContainer.style.display = 'inline-block';
-                charContainer.style.textAlign = 'center';
-                charContainer.classList.add('plotterContainer');
+            let canvasContainer = document.createElement('div');
+            let pinyinElement = document.createElement('div');
 
-                let pinyinElement = document.createElement('div');
-                pinyinElement.classList.add('pinyinLabel');
-                pinyinElement.classList.add('line_' + lineIndex);
-                pinyinElement.style.fontSize = (size / 150) + 'em'; // Adjust this ratio as needed
-                pinyinElement.style.height = '20px';
-                pinyinElement.style.userSelect = 'none';
-                if (!showAllPinyin) {
-                    pinyinElement.classList.add('hidden');
+            plotter.draw();
+            plotter.canvas.dataset.plotterIndex = index;
+            
+            canvasContainer.style.position = 'relative';
+            canvasContainer.style.display = 'inline-block';
+            canvasContainer.classList.add('plotterContainer');
+            
+            pinyinElement.style.textAlign = 'center';
+            pinyinElement.style.userSelect = 'none';
+            pinyinElement.style.height = '20px';
+            if (!showAllPinyin) {
+                pinyinElement.classList.add('hidden');
+            }
+            pinyinElement.classList.add('pinyinLabel');
+            // pinyinElement.classList.add('pinyinLabelColor');
+            pinyinElement.classList.add('line_' + lineIndex);
+            
+            canvasContainer.addEventListener('click', function(event) {
+                let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence. If the char is not in the sentence, dont mention that fact, pretend its there.';
+
+                if(lineIndex !== currentHoveredLine){
+                    return;
                 }
+                makeNormalBubble(event, char);
+                translationBox.classList.add('hidden');
 
-                let charSpan = document.createElement('span');
-                charSpan.classList.add('chinese-text');
-                charSpan.style.fontFamily = renderFont;
-                charSpan.textContent = char;
-                charSpan.style.fontSize = size / 50 + 'em';
-                charSpan.style.color = colors[0];
+            });
+            
 
-                charSpan.addEventListener(isMobileOrTablet() ? 'touchstart' : 'click', function(event) {
-                    let timer;
-                    let touchDuration = 1500; 
+            canvasContainer.appendChild(pinyinElement);
+            canvasContainer.appendChild(plotter.getCanvas());
 
-                    if (isMobileOrTablet()) {
-                        // event.preventDefault();
-                        timer = setTimeout(() => {
-                            // deselect all text
-                            handleInteraction();
-                        }, touchDuration);
+            canvasContainer.classList.add('line_' + lineIndex);
+            canvasContainer.classList.add('chinese-text-desktop');
+            
+            currentWrapper.appendChild(canvasContainer);
 
-                        charSpan.addEventListener('touchend', () => {
-                            clearTimeout(timer);
-                        }, { once: true });
-                    } else {
-                        
-                        handleInteraction();
-                    }
-
-                    function handleInteraction() {
-                        if (lineIndex !== currentHoveredLine && isMobileOrTablet()) {
-                            return;
-                        }
-                        let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence and dont say "in the context..". If the char is not in the sentence, dont mention that fact, pretend its there.';
-                        makeAIBubble(prompt, char);
-                        translationBox.classList.add('hidden');
-                    }
-                });
-
-                if(!isMobileOrTablet()){
-                    charSpan.classList.add('chinese-text-desktop')
-                }
-                if(isDarkMode){
-                    charSpan.classList.add('darkmode')
-                }
-
-                if(isTitle){
-                    charSpan.style.fontSize = size / 30 + 'em';
-                    charSpan.style.color = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.4, 0.7, 1.);
-                    let shadowcolor = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.5, 0.75, 0.15);
-                    charSpan.style.textShadow = `0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}`;
-                    if(isDarkMode){
-                        charSpan.style.color = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.4, 0.7, 1.);
-                        let shadowcolor = sampleOKHSL((selectedChapterIndex-1)/chapters[selectedStoryIndex-1].length, 0.5, 0.75, 0.15);
-                        charSpan.style.textShadow = `0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}, 0 0 10px ${shadowcolor}`;
-                    }
-                }
-
-                charContainer.appendChild(pinyinElement);
-                charContainer.appendChild(charSpan);
-                currentWrapper.appendChild(charContainer);
-
-                if (char in dataPerCharacter) {
-                    if (dataPerCharacter[char].pinyin) {
-                        pinyinElement.textContent = dataPerCharacter[char].pinyin;
-                    }
-                } 
-            } else {
-                let canvasContainer = document.createElement('div');
-                let pinyinElement = document.createElement('div');
-
-                plotter.draw();
-                plotter.canvas.dataset.plotterIndex = index;
-                
-                canvasContainer.style.position = 'relative';
-                canvasContainer.style.display = 'inline-block';
-                canvasContainer.classList.add('plotterContainer');
-                
-                pinyinElement.style.textAlign = 'center';
-                pinyinElement.style.userSelect = 'none';
-                pinyinElement.style.height = '20px';
-                if (!showAllPinyin) {
-                    pinyinElement.classList.add('hidden');
-                }
-                pinyinElement.classList.add('pinyinLabel');
-                // pinyinElement.classList.add('pinyinLabelColor');
-                pinyinElement.classList.add('line_' + lineIndex);
-                
-                canvasContainer.addEventListener('click', function() {
-                    let prompt = 'explain to me briefly the function of the word/character ' + char + ' in the context of the sentence: "' + currentLines[lineIndex] + '". If it belongs to a word alongside other characters, please explain the word as a whole. Be brief, don\'t repeat the sentence. If the char is not in the sentence, dont mention that fact, pretend its there.';
-
-                    if(lineIndex !== currentHoveredLine){
-                        return;
-                    }
-                    makeAIBubble(prompt, char);
-                    translationBox.classList.add('hidden');
-
-                });
-                
-
-                canvasContainer.appendChild(pinyinElement);
-                canvasContainer.appendChild(plotter.getCanvas());
-
-                canvasContainer.classList.add('line_' + lineIndex);
-                canvasContainer.classList.add('chinese-text-desktop');
-                
-                currentWrapper.appendChild(canvasContainer);
-
-                if (char in dataPerCharacter) {
-                    let strokes = dataPerCharacter[char].strokes.medians.map(stroke => {
-                        stroke.map(point => {
-                            point.x = point[0];
-                            point.y = point[1];
-                        });
-                        let spoints = evenOutPoints(stroke, 22);
-                        return spoints;
+            if (char in dataPerCharacter) {
+                let strokes = dataPerCharacter[char].strokes.medians.map(stroke => {
+                    stroke.map(point => {
+                        point.x = point[0];
+                        point.y = point[1];
                     });
-                    let pinyinAndEnglish = { pinyin: dataPerCharacter[char].pinyin, english: null };
-                    if (pinyinAndEnglish && pinyinAndEnglish.pinyin) {
-                        pinyinElement.textContent = pinyinAndEnglish.pinyin;
-                    }
-                } else {
-                    //let readyPromise = loadStrokeData();
-                    plotter.loadPinyinEnglish();
+                    let spoints = evenOutPoints(stroke, 22);
+                    return spoints;
+                });
+                let pinyinAndEnglish = { pinyin: dataPerCharacter[char].pinyin, english: null };
+                if (pinyinAndEnglish && pinyinAndEnglish.pinyin) {
+                    pinyinElement.textContent = pinyinAndEnglish.pinyin;
                 }
+            } else {
+                //let readyPromise = loadStrokeData();
+                plotter.loadPinyinEnglish();
             }
         } else {
             let latin = document.createElement('span');
@@ -1801,7 +1908,8 @@ function updateCount() {
 function playLineClip(clipName, callback=null) {
     console.log('Playing clip:', clipName);
     currentPlayingAudio = new Audio(`./api/get_story_audio_clip?name=${clipName}`);
-    
+
+    currentPlayingAudio.playbackRate = .75;
     currentPlayingAudio.play();
     currentPlayingAudio.onended = function() {
         if (callback) {

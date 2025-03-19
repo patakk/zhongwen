@@ -458,13 +458,19 @@ def convert():
 @session_required
 @timing_decorator
 def stories():
+    username = session.get('username')
     first_story = all_stories[stories_names[0]]
     first_chapter = first_story['chapters_data'][first_story['chapters_list'][0]['uri']]
     chars = set(''.join([''.join(ls) for ls in first_chapter['hanzi']]) + ''.join(first_chapter['name']))
+    words = []
+    for line in first_chapter['hanzi']:
+        words += line
+    words += first_chapter['name']
     chars = chars.intersection(stroke_chars)
-    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
+    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'chardata': get_char_info(char, pinyin=True, english=True)} for char in chars}
+    word_data = {word: get_char_info(word, pinyin=True, english=True) for word in words}
     all_chapters = [[chapter['title'] for chapter in all_stories[story_name]['chapters_list']] for story_name in stories_names]
-    return render_template('stories.html', darkmode=session['darkmode'], chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'])
+    return render_template('stories.html', darkmode=session['darkmode'], chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], word_data=word_data, custom_deck_names=db_get_word_list_names_only(username))
 
 @app.route('/get_story/<int:story_index>/<int:chapter_index>')
 @session_required
@@ -476,11 +482,17 @@ def get_story(story_index, chapter_index):
     if 1 <= chapter_index <= len(chapter_list):
         chapter = chapter_data[chapter_list[chapter_index-1]['uri']]
         chars = set(''.join([''.join(ls) for ls in chapter['hanzi']]) + ''.join(chapter['name']))
+        words = []
+        for line in chapter['hanzi']:
+            words += line
+        words += chapter['name']
         chars = chars.intersection(stroke_chars)
         char_data = {char: {'pinyin': get_pinyin(char)} for char in chars}
+        word_data = {word: get_char_info(word, pinyin=True, english=True) for word in words}
         return jsonify({
             'chapter': chapter,
-            'char_data': char_data
+            'char_data': char_data,
+            'word_data': word_data
         })
     else:
         return jsonify({'error': 'Story index out of range'}), 404

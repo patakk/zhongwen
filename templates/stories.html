@@ -205,8 +205,6 @@
 
 
         .darkmode {
-            color: rgb(236, 236, 236);
-            border-color: rgb(100, 100, 100);
         }
 
         #plotters.empty {
@@ -417,7 +415,7 @@
         }
 
         div.darkmode {
-            background-color: transparent;
+            /* background-color: transparent; */
         }
 
         .hidden {
@@ -728,6 +726,110 @@
             z-index: 130;
         }
 
+        #playback-controller {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5em;
+            background: var(--playback-background-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .playback-button {
+            color: var(--playback-color);
+            cursor: pointer;
+        }
+
+        .playback-button:hover {
+            color: var(--playback-hover-color);
+        }
+
+        #play-button {
+            font-size: 3em;
+        }
+
+        #rewind-button {
+            font-size: 2.5em;
+            position: absolute;
+            left: 25%;
+            transform: translateX(-50%);
+        }
+
+        #info-bubble {
+            position: absolute;
+            display: none;
+            background: var(--background-color);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            flex-direction: column;
+            max-width: min(500px, 50%);
+        }
+
+        #info-bubble.darkmode {
+            background: var(--dimmest-background-color);
+        }
+
+        #info-bubble #hanzi {
+            font-size: 2em;
+        }
+
+        #info-bubble #pinyin {
+            font-size: 1em;
+            font-style: italic;
+        }
+
+        #info-bubble #english {
+            font-size: 1em;
+            opacity: 0.6;
+        }
+
+        .normal-bubble-button {
+            padding: 6px 12px;
+            background-color:  var(--dimmer-background-color);
+            color:  var(--text-color);
+            cursor: pointer;
+            font: 0.7em Roboto, sans-serif;
+            border: none;
+            /* border: 2px solid var(--text-color); */
+            margin-top: 10px;
+            width: fit-content;
+        }
+
+        .addcard-dropdown-menu {
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        
+        .addcard-dropdown-menu {
+            margin-top: .5em;
+            position: absolute;
+            z-index: 2300;
+            text-align: left;
+            cursor: pointer;
+            background-color: var(--dimmer-background-color);
+        }
+
+        .addcard-dropdown-menu > *:not(:last-child) {
+            border-bottom: 2px solid var(--dimmer-border-color-a);;
+        }
+
+        .dropdown-item {
+            padding: .75em .75em;  
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--dimmer-border-color-a);
+        }
+
+
     </style>
 </head>
 
@@ -741,7 +843,7 @@
         
         
         <div class="has-submenu" id="storyMenu">
-            <span class="submenuName" id="storySubmenuName">stories</span>
+            <span class="submenuName" id="storySubmenuName">options</span>
         </div>
 
         <script>
@@ -863,6 +965,13 @@
             </div>
         </div>
 
+        <div id="info-bubble" class="info-bubble"></div>
+
+        <!-- <div id="wordListDropdownCard" class="card-custom-dropdown-trigger">
+            Add to <i class="fa-solid fa-caret-right"></i>
+        </div> -->
+        <div id="dropdown-options-card" class="addcard-dropdown-menu" style="display: none;"></div>
+
         <script>
             const inputdecks = {{ decks | tojson | safe }};
             let inputdeck = {{ wordlist | tojson | safe }};
@@ -872,6 +981,8 @@
             let chapter = {{ chapter | tojson | safe }};
             let chapters = {{ chapters | tojson | safe }};
             let stories = {{ stories | tojson | safe }};
+            let word_data = {{ word_data | tojson | safe }};
+            let custom_deck_names = {{ custom_deck_names | tojson | safe }};
 
 
             // load image from static/images/okhsl.webp
@@ -930,6 +1041,7 @@
                 return check || /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
             }
         </script>
+    <script src="{{ url_for('static', filename='js/accented_pinyin.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
     <script src="{{ url_for('static', filename='js/stories.js') }}"></script>
