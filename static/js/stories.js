@@ -577,6 +577,11 @@ function makeNormalBubble(event, symbol){
     let addcardbutton = document.createElement('button');
     addcardbutton.classList.add('normal-bubble-button');
     addcardbutton.textContent = 'Add word';
+
+    
+    hanzidiv.addEventListener('click', function() {
+        window.open(`/search?query=${symbol}&character=${symbol}`, '_blank', 'noopener,noreferrer');
+    });
     
     const dropdownMenu = document.getElementById('dropdown-options-card');
     let dropdownMenuHeight = dropdownMenu.offsetHeight;
@@ -631,8 +636,8 @@ function makeNormalBubble(event, symbol){
         mouseY = window.innerHeight + window.scrollY - bubbleHeight-100;
     }
 
-    bubblediv.style.left = mouseX + 10 + 'px';
-    bubblediv.style.top = mouseY + 10 + 'px';
+    bubblediv.style.left = mouseX - 10 + 'px';
+    bubblediv.style.top = mouseY - 10 + 'px';
     clearTimeout(bubbletimeout);
     bubbletimeout = setTimeout(() => {
         bubblediv.style.display = 'none';
