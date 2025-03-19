@@ -2,6 +2,7 @@ from datetime import timedelta
 from flask import Flask
 import os
 from backend.db.extensions import db, migrate, mail
+from flask_wtf.csrf import CSRFProtect
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -14,13 +15,17 @@ FLASK_CONFIG = {
     'SESSION_COOKIE_SAMESITE': 'Lax',
     'PERMANENT_SESSION_LIFETIME': timedelta(days=30),
     'SQLALCHEMY_DATABASE_URI': 'sqlite:////var/lib/zhongweb/flashcards.db',
-    'SQLALCHEMY_TRACK_MODIFICATIONS': False
+    'SQLALCHEMY_TRACK_MODIFICATIONS': False,
 }
+
 
 def create_app():
     app = Flask(__name__)
     app.config.update(FLASK_CONFIG)
-    
+
+    app.config["WTF_CSRF_SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY") or open("/home/patakk/.flask-secret-key", "r").read().strip()
+    csrf = CSRFProtect(app)
+
     app.template_folder = os.path.join(BASE_DIR, '..', 'templates')
     app.static_folder = os.path.join(BASE_DIR, '..', 'static')
 

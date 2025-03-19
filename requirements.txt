@@ -11,3 +11,4 @@ requests
 regex
 jieba
 hanziconv
+flask-wtf

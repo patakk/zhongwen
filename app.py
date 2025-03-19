@@ -97,6 +97,11 @@ def breakdown_chars(word):
     return infos
 
 
+@app.errorhandler(500)
+def handle_500(error):
+    return "Something went wrong, please try again later.", 500
+
+
 @app.route('/get_card_data')
 @session_required
 def get_card_data():
