@@ -841,6 +841,14 @@ def get_search_results(query):
                     indices = [definition.find(qw) for qw in qwords]
                     return [i if i != -1 else float('inf') for i in indices]  # Handle missing words
                 results = sorted(fresults, key=order_key)
+    for r in results:
+        for hskl in range(1, 7):
+            if r['hanzi'] in CARDDECKS[f'hsk{hskl}']['chars']:
+                r['hsklevel'] = hskl
+    # sort by hsk level
+    results = sorted(results, key=lambda x: x.get('hsklevel', 7))
+    for r in results:
+        print(r)
     return results
 
 @app.route('/search', methods=['GET', 'POST'])
