@@ -826,7 +826,7 @@ def get_search_results(query):
             for r in res:
                 dd = dictionary.definition_lookup(r)
                 for d in dd:
-                    if d:
+                    if d and query in d['definition'].lower():
                         results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english'})
             qwords = query.split(" ") 
             if len(qwords) > 1:
@@ -845,10 +845,7 @@ def get_search_results(query):
         for hskl in range(1, 7):
             if r['hanzi'] in CARDDECKS[f'hsk{hskl}']['chars']:
                 r['hsklevel'] = hskl
-    # sort by hsk level
     results = sorted(results, key=lambda x: x.get('hsklevel', 7))
-    for r in results:
-        print(r)
     return results
 
 @app.route('/search', methods=['GET', 'POST'])
