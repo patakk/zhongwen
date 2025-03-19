@@ -68,7 +68,6 @@ application = app
 limiter = Limiter(
     key_func=get_remote_address,
     app=app,
-    default_limits=["5 per minute"]
 )
 
 app.register_blueprint(api_bp)
@@ -218,11 +217,6 @@ def hanziviz():
 def get_crunch():
     return send_file('data/crunch.mp3', mimetype='audio/mpeg')
 
-
-limiter = Limiter(
-    key_func=get_remote_address,
-    app=app,
-)
 
 @app.route('/login', methods=['GET', 'POST'])
 @timing_decorator
