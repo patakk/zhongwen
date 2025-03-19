@@ -219,6 +219,11 @@ def get_crunch():
     return send_file('data/crunch.mp3', mimetype='audio/mpeg')
 
 
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+)
+
 @app.route('/login', methods=['GET', 'POST'])
 @timing_decorator
 @limiter.limit("5 per minute")
