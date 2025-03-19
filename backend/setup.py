@@ -26,7 +26,7 @@ FLASK_CONFIG = {
 def create_app():
     app = Flask(__name__)
     app.config.update(FLASK_CONFIG)
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(BASE_DIR, "flashcards.db")}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/lib/zhongweb/flashcards.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     # setup temlates and static
     app.template_folder = os.path.join(BASE_DIR, '..', 'templates')
