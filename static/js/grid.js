@@ -383,43 +383,50 @@ function createGrid(characters, useAllDecks){
     //         ichars = ichars.concat(value);
     //     }
     // }
+    // Create a document fragment to batch DOM operations
+    const fragment = document.createDocumentFragment();
+
     ichars.forEach(character => {
         let charData = characters[character];
         charData.character = character;
+        
         const gridItem = document.createElement('div');
         gridItem.className = 'grid-item';
-        gridItem.innerHTML = `
-            <span class="char">${charData.character}</span>
-            <span class="grid-pinyin">${charData.pinyin.map(toAccentedPinyin)[0]}</span>
-        `;
-        gridItem.setAttribute('data-length', charData.character.length);
-        if(isDarkMode){
+        gridItem.innerHTML = `<span class="char">${character}</span>`;
+        gridItem.setAttribute('data-length', character.length);
+        
+        if (isDarkMode) {
             gridItem.classList.add('darkmode');
         }
+        
         let timeout;
+        
         gridItem.addEventListener('click', () => {
-            // loadRenderDisplay(charData.character); 
             clearTimeout(timeout);
             maybeLoadRenderAndThenShow(charData.character, 0, true);
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('character', charData.character);
             history.pushState({}, '', newUrl);
         });
+        
         gridItem.addEventListener('mouseenter', () => {
-            if(cardVisible){
-                return;
-            }
+            if (cardVisible) return;
             activeCharacter = charData.character;
             timeout = setTimeout(() => {
                 loadCard(charData.character, true, 'loadedCard');
             }, 200);
         });
+        
         gridItem.addEventListener('mouseleave', () => {
             clearTimeout(timeout);
         });
-        grid.appendChild(gridItem);
+        
+        fragment.appendChild(gridItem);
         charCounter++;
     });
+
+    grid.appendChild(fragment);
+
 
     updateCounterTitle();
     // toggleInvertAllElements();
@@ -446,70 +453,84 @@ function updateCounterTitle(){
 }
 
 function createLists(characters, useAllDecks) {
-    const container = document.getElementById('lcontainer'); // Assume there's a container div in your HTML
+    const container = document.getElementById('lcontainer');
     container.innerHTML = ''; // Clear existing content
-    const gridWrapper = document.createElement('div');
-    gridWrapper.id = 'lgrid-wrapper';
-    gridWrapper.className = 'lgrid-wrapper';
-    container.appendChild(gridWrapper);
-
-    gridWrapper.innerHTML = ''; // Clear existing items
-    let coco = 0;
-
     
-    let ichars = Object.keys(characters);
-
-    ichars.forEach((character, idx) => {
+    const listWrapper = document.createElement('div');
+    listWrapper.id = 'lgrid-wrapper';
+    listWrapper.className = 'lgrid-wrapper';
+    
+    // Create a document fragment to batch DOM operations
+    const fragment = document.createDocumentFragment();
+    const ichars = Object.keys(characters);
+    
+    // Prepare all HTML at once
+    const itemsHTML = ichars.map((character, idx) => {
         let charData = characters[character];
         charData.character = character;
-        const gridItem = createListItem(charData, coco);
-        gridItem.className = 'lgrid-item';
-        gridWrapper.appendChild(gridItem);
-        coco++;
-    });
-}
-
-function populateList(list, characters) {
-    list.innerHTML = ''; // Clear existing items
-    characters.forEach((char, idx) => {
-        const listItem = createListItem(char, idx);
-        list.appendChild(listItem);
-    });
-}
-
-function createListItem(charData, idx) {
-    const item = document.createElement('div');
-    item.className = 'pinyin-english-item';
-    item.innerHTML = `
-        <div class="char-pinyin-group">
-            <div class="index-container">
-                <span class="list-index">${idx + 1}.</span>
+        
+        return `
+            <div class="lgrid-item pinyin-english-item" data-character="${character}">
+                <div class="char-pinyin-group">
+                    <div class="index-container">
+                        <span class="list-index">${idx + 1}.</span>
+                    </div>
+                    <span class="list-character list-character-size">${character}</span>
+                    <span class="list-pinyin">${charData.pinyin.map(toAccentedPinyin)[0]}</span>
+                </div>
+                <span class="list-english">${charData.english.map(toAccentedPinyin)[0]}</span>
             </div>
-            <span class=" list-character list-character-size">${charData.character}</span>
-            <span class="list-pinyin">${charData.pinyin.map(toAccentedPinyin)[0]}</span>
-        </div>
-        <span class="list-english">${charData.english.map(toAccentedPinyin)[0]}</span>
-    `;
+        `;
+    }).join('');
     
-    let timeout;
-    item.addEventListener('mouseenter', () => {
-        activeCharacter = charData.character;
-        timeout = setTimeout(() => {
-            loadCard(charData.character, true, 'loadedCard');
+    // Set inner HTML once
+    listWrapper.innerHTML = itemsHTML;
+    
+    // Use event delegation for all mouse events
+    listWrapper.addEventListener('mouseenter', function(e) {
+        const item = e.target.closest('.lgrid-item');
+        if (!item) return;
+        
+        const character = item.dataset.character;
+        if (!character) return;
+        
+        activeCharacter = character;
+        item.timeout = setTimeout(() => {
+            loadCard(character, true, 'loadedCard');
         }, 200);
-    });
-    item.addEventListener('mouseleave', () => {
-        clearTimeout(timeout);
-    });
-    item.addEventListener('click', () => {
-        clearTimeout(timeout);
-        maybeLoadRenderAndThenShow(charData.character, 0, true);
+    }, true);
+    
+    listWrapper.addEventListener('mouseleave', function(e) {
+        const item = e.target.closest('.lgrid-item');
+        if (!item || !item.timeout) return;
+        
+        clearTimeout(item.timeout);
+    }, true);
+    
+    listWrapper.addEventListener('click', function(e) {
+        const item = e.target.closest('.lgrid-item');
+        if (!item) return;
+        
+        const character = item.dataset.character;
+        if (!character) return;
+        
+        if (item.timeout) {
+            clearTimeout(item.timeout);
+        }
+        
+        maybeLoadRenderAndThenShow(character, 0, true);
         const newUrl = new URL(window.location);
-        newUrl.searchParams.set('character', charData.character);
+        newUrl.searchParams.set('character', character);
         history.pushState({}, '', newUrl);
     });
-    return item;
+    
+    container.appendChild(listWrapper);
 }
+
+// Remove these since we're no longer using them
+// function populateList is now unnecessary
+// function createListItem is now handled inline
+
 
 // Call this function when the page loads and on window resize
 
@@ -774,6 +795,7 @@ function changeDeck(deck) {
     const newUrl = new URL(window.location);
     newUrl.searchParams.set('wordlist', deck);
     history.pushState({}, '', newUrl);
+    console.log('changing deck to', deck);
     drawBothLayouts(currentData);
     window.scrollTo(0, 0);
     document.getElementById('deckSubmenu').classList.remove('active');
@@ -984,7 +1006,6 @@ document.addEventListener('DOMContentLoaded', function() {
             logoutbutton.parentElement.style.display = 'none';
         }
         catch(e){
-            console.log(e);
         }
     }
 

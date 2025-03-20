@@ -271,7 +271,6 @@ document.addEventListener('DOMContentLoaded', function() {
             logoutbutton.style.display = 'none';
         }
         catch(e){
-            console.log(e);
         }
     }
     
