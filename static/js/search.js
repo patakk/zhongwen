@@ -135,78 +135,69 @@ document.addEventListener('DOMContentLoaded', function() {
 
 let currentCharList = [];
 function updateSearchResults(results, query) {
-    currentCharList = results.map(result => result.hanzi);
+    // Update the characters list first
+    currentCharList = results.length ? results.map(result => result.hanzi) : [];
+    
     const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = '';
+    
+    // Use document fragment for batch DOM operations
+    const fragment = document.createDocumentFragment();
+    
     if (results && results.length > 0) {
+        // Prepare template HTML for better performance
+        const template = document.createElement('template');
+        
+        // Build results using innerHTML for faster DOM construction
         results.forEach((result, index) => {
-            const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
-
-            const indexSpan = document.createElement('span');
-            indexSpan.className = 'result-index';
-            indexSpan.textContent = index + 1;
-
-            const hanziSection = document.createElement('div');
-            hanziSection.className = 'hanzi-section';
-            hanziSection.textContent = result.hanzi;
-
-            const detailsSection = document.createElement('div');
-            detailsSection.className = 'details-section';
-
-            const pinyin = document.createElement('div');
-            pinyin.className = 'res-pin';
-            pinyin.textContent = toAccentedPinyin(result.pinyin);
-
-            const english = document.createElement('div');
-            english.className = 'res-eng';
-            english.textContent = toAccentedPinyin(result.english);
-
-            detailsSection.appendChild(pinyin);
-            detailsSection.appendChild(english);
-
-            if (result.traditional) {
-                const traditional = document.createElement('div');
-                traditional.textContent = `Traditional: ${result.traditional}`;
-                detailsSection.appendChild(traditional);
-            }
-
-            resultItem.appendChild(indexSpan);
-            resultItem.appendChild(hanziSection);
-            resultItem.appendChild(detailsSection);
-
-            let timeout;
-            resultItem.onclick = () => {
-                clearTimeout(timeout);
+            const traditional = result.traditional ? 
+                `<div>Traditional: ${result.traditional}</div>` : '';
+                
+            // Create each item using template
+            template.innerHTML = `
+                <div class="result-item">
+                    <span class="result-index">${index + 1}</span>
+                    <div class="hanzi-section">${result.hanzi}</div>
+                    <div class="details-section">
+                        <div class="res-pin">${toAccentedPinyin(result.pinyin)}</div>
+                        <div class="res-eng">${toAccentedPinyin(result.english)}</div>
+                        ${traditional}
+                    </div>
+                </div>
+            `.trim();
+            
+            const resultItem = template.content.firstChild.cloneNode(true);
+            
+            // Use function reference instead of anonymous functions
+            resultItem.addEventListener('click', () => {
                 maybeLoadRenderAndThenShow(result.hanzi);
-            }
-
-            resultItem.onmouseenter = () => {
-                if(cardVisible){
-                    return;
-                }
+            });
+            
+            let timeout;
+            resultItem.addEventListener('mouseenter', () => {
+                if(cardVisible) return;
                 activeCharacter = result.hanzi;
                 timeout = setTimeout(() => {
                     loadCard(result.hanzi, true, 'loadedCard');
                 }, 200);
-            };
-
-            resultItem.onmouseleave = () => {
+            });
+            
+            resultItem.addEventListener('mouseleave', () => {
                 clearTimeout(timeout);
-            };
-
-            resultsContainer.appendChild(resultItem);
+            });
+            
+            fragment.appendChild(resultItem);
         });
     } else if (query) {
         const noResults = document.createElement('div');
         noResults.textContent = `No results found for "${query}"`;
-        resultsContainer.appendChild(noResults);
+        fragment.appendChild(noResults);
     }
+    
+    // Clear and update container in a single operation
+    resultsContainer.innerHTML = '';
+    resultsContainer.appendChild(fragment);
 }
-
-
-
-
+    
 
 
 
