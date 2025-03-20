@@ -12,3 +12,4 @@ regex
 jieba
 hanziconv
 flask-wtf
+nltk
