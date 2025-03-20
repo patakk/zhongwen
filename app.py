@@ -834,9 +834,12 @@ def get_search_results(query):
         for r in res:
             dd = dictionary.definition_lookup(r)
             for idx, d in enumerate(dd):
-                print(d['pinyin'], remove_tones(d['pinyin'].lower()))
-                if d and query in remove_tones(d['pinyin'].lower()):
-                    results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': idx})
+                order = idx
+                piny_removed = remove_tones(d['pinyin'].lower())
+                if d and query in piny_removed:
+                    if 'surname' in d['definition']:
+                        order = 1000
+                    results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': order})
         if len(results) == 0:
             query = normalize_query(query)
             res = dictionary.search_by_english(query)
