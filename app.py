@@ -811,16 +811,16 @@ def get_search_results(query):
         other_matches = []
         res = dictionary.get_examples(query)
         for fr in res:
-            for r in res[fr]:
+            for idx, r in enumerate(res[fr]):
                 if r['simplified'] == query:
-                    exact_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
+                    exact_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
                 elif r['traditional'] == query:
-                    exact_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
+                    exact_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
                 else:
                     if query == HanziConv.toSimplified(query):
-                        other_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
+                        other_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
                     else:
-                        other_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi'})
+                        other_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
 
         for r in other_matches:
             for hskl in range(1, 7):
@@ -833,10 +833,10 @@ def get_search_results(query):
         res = dictionary.search_by_pinyin(query)
         for r in res:
             dd = dictionary.definition_lookup(r)
-            for d in dd:
+            for idx, d in enumerate(dd):
                 print(d['pinyin'], remove_tones(d['pinyin'].lower()))
                 if d and query in remove_tones(d['pinyin'].lower()):
-                    results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english'})
+                    results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': idx})
         if len(results) == 0:
             query = normalize_query(query)
             res = dictionary.search_by_english(query)
