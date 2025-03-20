@@ -10,6 +10,8 @@ from urllib.parse import unquote
 import logging
 import random
 import json
+import string
+from nltk.stem import WordNetLemmatizer
 import regex
 import time
 import os
@@ -49,6 +51,7 @@ from backend.common import get_chars_info
 from backend.common import dictionary
 from backend.routes.manage import validate_password
 
+lemmatizer = WordNetLemmatizer()
 
 import json
 import os
@@ -784,7 +787,14 @@ from hanziconv import HanziConv
 
 def move_tone_number_to_end(pinyin):
     return ''.join([char for char in pinyin if char not in '1234']) + ''.join([char for char in pinyin if char in '1234'])
-    
+
+   
+def normalize_query(text):
+    text = text.lower()
+    text = text.strip(string.punctuation)
+    text = lemmatizer.lemmatize(text)
+    return text
+
 def get_search_results(query):
     query = query.strip().lower()
     results = []
@@ -819,9 +829,11 @@ def get_search_results(query):
         for r in res:
             dd = dictionary.definition_lookup(r)
             for d in dd:
-                if d:
+                print(d['pinyin'], remove_tones(d['pinyin'].lower()))
+                if d and query in remove_tones(d['pinyin'].lower()):
                     results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english'})
         if len(results) == 0:
+            query = normalize_query(query)
             res = dictionary.search_by_english(query)
             for r in res:
                 dd = dictionary.definition_lookup(r)
