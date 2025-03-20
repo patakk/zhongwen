@@ -392,7 +392,7 @@ function createGrid(characters, useAllDecks){
         
         const gridItem = document.createElement('div');
         gridItem.className = 'grid-item';
-        gridItem.innerHTML = `<span class="char">${character}</span>`;
+        gridItem.innerHTML = `<span class="char">${character}</span><span class="grid-pinyin">${charData.pinyin.map(toAccentedPinyin)[0]}</span>`;
         gridItem.setAttribute('data-length', character.length);
         
         if (isDarkMode) {
