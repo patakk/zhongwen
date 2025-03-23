@@ -26,8 +26,8 @@ class User(db.Model):
     email_verified = db.Column(db.Boolean, default=False)
     email_verification_token = db.Column(db.String(100), unique=True, nullable=True, info={'constraint_name': 'uq_user_email_verification_token'})
 
-    #google_id = db.Column(db.String(120), unique=True, nullable=True)
-    google_id = db.Column(db.String(120), nullable=True)
+    google_id = db.Column(db.String(120), unique=True, nullable=True)
+    #google_id = db.Column(db.String(120), nullable=True)
 
     profile_pic = db.Column(db.String(200), nullable=True)
     oauth_token = db.Column(db.String(200), nullable=True)
