@@ -34,7 +34,6 @@ def load_secrets(secrets_file):
 
 auth_keys = load_secrets('/home/patakk/.zhongweb-secrets')
 
-print(auth_keys)
 
 def get_pinyin(hanzi):
     result = lazy_pinyin(hanzi, style=Style.TONE)

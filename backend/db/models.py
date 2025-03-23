@@ -24,11 +24,11 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=True,
                       info={'constraint_name': 'uq_user_email'})
     email_verified = db.Column(db.Boolean, default=False)
-    email_verification_token = db.Column(db.String(100), unique=True, nullable=True,
-                                         info={'constraint_name': 'uq_user_email_verification_token'})
+    email_verification_token = db.Column(db.String(100), unique=True, nullable=True, info={'constraint_name': 'uq_user_email_verification_token'})
 
-    google_id = db.Column(db.String(120), unique=True, nullable=True,
-                          info={'constraint_name': 'uq_user_google_id'})
+    #google_id = db.Column(db.String(120), unique=True, nullable=True)
+    google_id = db.Column(db.String(120), nullable=True)
+
     profile_pic = db.Column(db.String(200), nullable=True)
     oauth_token = db.Column(db.String(200), nullable=True)
     oauth_token_expiry = db.Column(db.DateTime, nullable=True)
