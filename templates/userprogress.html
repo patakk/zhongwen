@@ -571,6 +571,17 @@
             cursor: pointer;
         }
 
+        .google-link {
+        }
+
+
+        .google-icon {
+            width: 1em; 
+            height: 1em;
+            vertical-align: middle;
+            transform: translateY(-.1em);
+        }
+
     </style>
 </head>
 {% if darkmode %}
@@ -596,6 +607,34 @@
         <p style="padding-left: 0.0em;">
             <a class="alinks" href="{{ url_for('manage.email_management') }}">Change email</a>
         </p>
+
+        {% if google_id %}
+            <!-- <p style="padding-left: 0.0em;">
+                <form id="unlink-form" action="{{ url_for('google_auth.unlink_account') }}" method="post" style="display: inline;">
+                    <a class="alinks" href="#" onclick="unlinkGoogle()">Unlink Google Account</a>
+                </form>
+                <script>
+                    function unlinkGoogle() {
+                        if (confirm("Are you sure you want to unlink your Google account?")) {
+                            document.getElementById('unlink-form').submit();
+                        }
+                    }
+                </script>
+            </p> -->
+        {% else %}
+            <p style="padding-left: 0.0em;">
+                <a class="alinks google-link" href="{{ url_for('google_auth.link_account') }}">
+                    <picture>
+                        <img src="{{ url_for('static', filename='images/google-logo.png') }}"
+                            alt="Google logo" 
+                            class="google-icon">
+                    </picture>
+                    Link Google Account
+                </a>
+            </p>
+        {% endif %}
+
+
         <h2>Word lists</h2>
         
         <div id="word-sets">
@@ -706,12 +745,13 @@
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
         let wordlists_words = {{ wordlists_words | tojson | safe }};
+        let google_id = {{ google_id | tojson | safe }};
+        let google_profile_pic = {{ profile_pic | tojson | safe }};
         // const saveButton = document.getElementById('saveButton');
         let currentGridPlotters = [];
         let showAllPinyin = false;
         let keys = Object.keys(wordlists_words);
         let currentWordlist = keys[0];
-
         
         function reworkUrls(){
             let link = document.getElementById("hanziWritingLink");
@@ -851,10 +891,19 @@
 
         const dropdownTrigger = document.getElementById('wordListDropdown');
         const dropdownMenu = document.getElementById('dropdown-options');
-
+        console.log(currentWordlist)
+        console.log(currentWordlist)
+        console.log(currentWordlist)
+        console.log(currentWordlist)
+        console.log(currentWordlist)
+        console.log(currentWordlist)
+        console.log(currentWordlist)
+        console.log(currentWordlist)
+        console.log(currentWordlist)
+        console.log(currentWordlist)
         document.addEventListener('DOMContentLoaded', function() {
             let keys = Object.keys(wordlists_words);
-            addToTable(wordlists_words[currentWordlist]);
+            addToTable(wordlists_words[currentWordlist] || []);
             reworkUrls();
             dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-right'></i>";
 

@@ -1,10 +1,68 @@
 from flask_migrate import Migrate
-from backend.setup import create_app
 from backend.db.extensions import db
 from backend.db.models import User, UserNotes, UserString, Card, StrokeData, WordList, WordEntry
 import click
 from flask.cli import with_appcontext
 from datetime import datetime
+
+
+from datetime import timedelta
+from flask import Flask
+import os
+from backend.db.extensions import db, migrate, mail
+
+import os
+
+def load_secrets(secrets_file):
+    secrets = {}
+    try:
+        with open(secrets_file, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if '=' in line:
+                    key, value = line.split('=', 1)
+                    secrets[key.strip()] = value.strip()
+    except Exception as e:
+        print(f"Warning: Could not load secrets file: {e}")
+    return secrets
+
+auth_keys = load_secrets('/home/patakk/.zhongweb-secrets')
+
+import os
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+FLASK_CONFIG = {
+    'SECRET_KEY': auth_keys.get("FLASK_SECRET_KEY"),
+    'SESSION_TYPE': 'sqlalchemy',
+    'SESSION_PERMANENT': True,
+    'SESSION_COOKIE_SECURE': True,
+    'SESSION_COOKIE_HTTPONLY': True,
+    'SESSION_COOKIE_SAMESITE': 'Lax',
+    'PERMANENT_SESSION_LIFETIME': timedelta(days=30),
+    'SQLALCHEMY_DATABASE_URI': 'sqlite:////home/patakk/zhongweb_db/flashcards.db',
+    'SQLALCHEMY_TRACK_MODIFICATIONS': False,
+}
+
+
+def create_app():
+    app = Flask(__name__)
+    app.config.update(FLASK_CONFIG)
+
+    app.config["WTF_CSRF_SECRET_KEY"] = auth_keys.get("FLASK_SECRET_KEY")
+    # csrf = CSRFProtect(app)
+
+    app.template_folder = os.path.join(BASE_DIR, '..', 'templates')
+    app.static_folder = os.path.join(BASE_DIR, '..', 'static')
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+    mail.init_app(app)
+
+    return app
 
 
 app = create_app()

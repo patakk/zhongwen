@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <title>Login - 中文</title>
+    <title>Register - 中文</title>
     <style>
         html, body {
             height: 100%;
@@ -34,7 +34,7 @@
             align-items: center;
             background-color: white;
         }
-        .login-container {
+        .register-container {
             border: 2px dashed black;
             padding: 40px;
             display: flex;
@@ -75,13 +75,12 @@
             box-sizing: border-box;
         }
         input[type="submit"] {
-            width: 100px;
             padding: 10px;
             background-color: white;
             color: black;
             border: 2px solid black;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1em;
             font-family: inherit;
             font-weight: 500;
         }
@@ -89,18 +88,8 @@
             background-color: black;
             color: white;
         }
-        input[type="email"]:focus {
-            outline: none;
-            border: 2px solid #7100bd; 
-            border-radius: 0px;
-            outline: none;
-        }
-        input[type="text"]:focus {
-            outline: none;
-            border: 2px solid #7100bd; 
-            border-radius: 0px;
-            outline: none;
-        }
+        input[type="email"]:focus,
+        input[type="text"]:focus,
         input[type="password"]:focus {
             outline: none;
             border: 2px solid #7100bd; 
@@ -112,14 +101,9 @@
             color: white;
         }
 
-        h1 {
-        }
-
         @media screen and (max-width: 768px) {
-            .login-container {
+            .register-container {
                 padding: 20px;
-            }
-            h1 {
             }
         }
 
@@ -177,27 +161,61 @@
             margin-right: 10px;
         }
 
-        .register-link {
+        .login-link {
             margin-top: 15px;
             text-align: center;
         }
 
-        .register-link a {
+        .login-link a {
             color: #7100bd;
             text-decoration: none;
         }
 
-        .register-link a:hover {
+        .login-link a:hover {
             text-decoration: underline;
         }
 
+        .password-match-indicator {
+            width: 100%;
+            font-size: 14px;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            color: #555;
+            transition: color 0.3s;
+        }
+
+        .password-match-indicator.match {
+            color: green;
+        }
+
+        .password-match-indicator.mismatch {
+            color: red;
+        }
+
+        .flash-message {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .flash-message.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .flash-message.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
     </style>
 </head>
-<script>
-</script>
 <body>
-    <div class="login-container">
-        <h1>Login</h1>
+    <div class="register-container">
+        <h1>Register</h1>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -209,28 +227,37 @@
             {% endif %}
         {% endwith %}
 
-        <form method="POST">
-            <input type="text" name="username" placeholder="username" required>
+        <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+            <input type="text" name="username" placeholder="username" required autofocus>
+            
             <div class="password-container">
                 <input type="password" name="password" id="password" placeholder="password" required>
-                <i class="toggle-password fas fa-eye-slash" onclick="togglePasswordVisibility()"></i>
+                <i class="toggle-password fas fa-eye-slash" onclick="togglePasswordVisibility('password', this)"></i>
             </div>
-            <div class="button-group">
-                <input type="submit" name="action" value="Login">
+            
+            <div class="password-container">
+                <input type="password" name="confirm_password" id="confirm_password" placeholder="confirm password" required>
+                <i class="toggle-password fas fa-eye-slash" onclick="togglePasswordVisibility('confirm_password', this)"></i>
             </div>
+            
+            <div class="password-match-indicator" id="passwordMatchIndicator"></div>
+            
+            <input type="email" name="email" placeholder="email (optional)">
+            
+            <input type="submit" value="Create Account">
         </form>
-        <div class="register-link" style="margin-top: 15px; text-align: center;">
-            <p>Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
-        </div>
-        
+
         <div class="google-login">
             <p>or</p>
             <a href="{{ url_for('google_auth.login') }}" class="google-button">
                 <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
-                <span>Sign in with Google</span>
+                <span>Sign up with Google</span>
             </a>
         </div>
 
+        <div class="login-link">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+        </div>
     </div>
 
     <script>
@@ -239,51 +266,55 @@
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         }
 
-        document.addEventListener('DOMContentLoaded', ()=>{
+        document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener('resize', adjustHeight);
             window.addEventListener('orientationchange', adjustHeight);
             adjustHeight();
-
-            let inputfield = document.querySelector('input[type="text"]');
-            inputfield.focus();
+            
+            // Password matching check
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirm_password');
+            const indicator = document.getElementById('passwordMatchIndicator');
+            
+            function checkPasswordMatch() {
+                if (confirmPassword.value === '') {
+                    indicator.textContent = '';
+                    indicator.className = 'password-match-indicator';
+                } else if (password.value === confirmPassword.value) {
+                    indicator.textContent = '✓ Passwords match';
+                    indicator.className = 'password-match-indicator match';
+                } else {
+                    indicator.textContent = '✗ Passwords do not match';
+                    indicator.className = 'password-match-indicator mismatch';
+                }
+            }
+            
+            password.addEventListener('input', checkPasswordMatch);
+            confirmPassword.addEventListener('input', checkPasswordMatch);
+            
+            // Form validation
+            document.getElementById('registerForm').addEventListener('submit', function(e) {
+                if (password.value !== confirmPassword.value) {
+                    e.preventDefault();
+                    alert('Passwords do not match!');
+                    confirmPassword.focus();
+                }
+            });
         });
 
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('password');
-            const toggleIcon = document.querySelector('.toggle-password');
+        function togglePasswordVisibility(inputId, icon) {
+            const passwordInput = document.getElementById(inputId);
             
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             } else {
                 passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
             }
         }
-
     </script>
-
-    <style>
-
-        /* .button-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .button-group input[type="submit"] {
-            flex: 1;
-        } */
-
-        /* If you need to maintain the same width as before for the inputs */
-        /* input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            margin-bottom: 10px;
-        } */
-    </style>
 </body>
-
 </html>
