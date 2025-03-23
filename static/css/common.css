@@ -31,6 +31,7 @@
     --accent-word: rgb(241, 129, 0);
     --playback-color: rgb(81, 135, 196);
     --playback-hover-color:rgb(81, 160, 196);
+    --delete-icon-color: #d44141;
 }
 
 
@@ -40,6 +41,7 @@
 }
 
 .darkmode {
+    --delete-icon-color: #ec5a5a;
     --playback-color: #9795df;
     --playback-hover-color: #95b5df;
     --playback-background-color: #0a0a0ad7;

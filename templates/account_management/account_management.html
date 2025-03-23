@@ -603,123 +603,67 @@
     </script>
     <div class="container">
         <a href="{{ url_for('logout') }}" id="logoutButton"><i class="fa-solid fa-right-from-bracket"></i></a>
-        <h1>{{ username }}'s space</h1>
-        <div style="border: 1.5px dashed var(--dimmer-border-color); margin-bottom: 2em;"></div>
-        <p style="padding-left: 0.0em;">
-            <a class="alinks" href="{{ url_for('manage.account_management') }}">Manage account</a>
-        </p>
+        <h1><div id="accountLine"><span>{{ username }}'s account</span></div></h1>
+        <div style="border-top: 2px dashed var(--dimmer-border-color); margin-bottom: 2em;"></div>
 
-
-        <h2>Word lists</h2>
-        
-        <div id="word-sets">
-            
-            <div id="wordset-label-container">
-                <div id="wordListDropdown" class="custom-dropdown-trigger">
-                    <span class="dropdown-text">Select a word list</span> <i class="fas fa-caret-right"></i>
-                </div>
-                <span id="removeListBtn"><i class="fas fa-xmark"></i></span>
-                <span id="renameListBtn"><i class="fas fa-file-signature"></i></span>
-            </div>
-            <div id="dropdown-options" class="dropdown-menu" style="display: none;"></div>
-            
-            <!-- <form onsubmit="handleRename(event)">
-                <input id="renameButton" type="submit" class="wlinks" value="Rename word list"></input>
-            </form> -->
-
-            <div style="padding-left: 0.0em; display: none;" id="numcards">Words in list: </div>
-
-            <div class="wlink-wrapper">
-                <a class="wlinks" id="listLink">
-                    <span class="practice-icon"><i class="fas fa-list"></i></span> <span class="practice-label">Table view</span>
+        {% if google_id %}
+            <p style="padding-left: 0.0em;">
+                <a class="alinks" href="#" onclick="confirmDeletion(); return false;"><i class="fa-solid fa-triangle-exclamation delete-icon"></i> Delete account</a>
+            </p>
+            <form id="unlink-form" action="{{ url_for('google_auth.unlink_account') }}" method="post" style="display: inline;">
+                <a class="alinks" href="#" onclick="unlinkGoogle()">
+                    <picture>
+                        <img src="{{ url_for('static', filename='images/google-logo.png') }}"
+                        alt="Google logo" 
+                        class="google-icon">
+                    </picture>
+                    Unlink Google Account
                 </a>
-            </div>
-
-            <div class="wlink-wrapper">
-                <a class="wlinks" id="gridLink">
-                    <span class="practice-icon"><i class="fas fa-braille"></i></span> <span class="practice-label">Grid view</span>
-                </a>
-            </div>
-
-            <div style="padding-top: .5em;"></div>
-
-            <div class="wlink-wrapper">
-                <a class="wlinks" id="flashcardsLink">
-                    <span class="practice-icon"><i class="fas fa-eye"></i></span> <span class="practice-label">Flashcards </span>
-                </a>
-            </div>
-            <div class="wlink-wrapper">
-                <a class="wlinks" id="hanziWritingLink">
-                    <span class="practice-icon"><i class="fas fa-pen"></i></span> <span class="practice-label">Writing </span>
-                </a>
-            </div>
-
-            <div class="wlink-wrapper">
-                <a class="wlinks" id="pinyinChoiceLink">
-                    <span class="practice-icon"><i class="fas fa-keyboard"></i></span> <span class="practice-label">Choice puzzle </span>
-                </a>
-            </div>
-            <div class="wlink-wrapper">
-                <a class="wlinks" id="pinyinTableLink">
-                    <span class="practice-icon"><i class="fas fa-i-cursor"></i></span> <span class="practice-label">Input puzzle </span>
-                </a>
-            </div>
-
-            <form id="wordForm" onsubmit="handleAddCards(event)">
-                <input type="text" name="query" id="newWords" placeholder="a word or a list of words (separated with spaces)">
-                <input id="addWordButton" type="submit" value="Add words"><span id="addwordInfo"><i class="fa-solid fa-circle-question"></i></span>
+                <script>
+                    function unlinkGoogle() {
+                        if (confirm("Are you sure you want to unlink your Google account?")) {
+                            document.getElementById('unlink-form').submit();
+                        }
+                    }
+                </script>
             </form>
-
-                <!-- <p>Due cards: {{ duecards }}</p> -->
-            <!-- <p>Learning cards: {{ learningcards }}</p> -->
-            <!-- <p>Learned cards: {{ learnedcards }}</p> -->
-            <table>
-                <tr>
-                    <th class="tooltip-header" data-tooltip="The Chinese character being learned">Characters</th>
-                    <th class="tooltip-header varvar" data-tooltip="Current learning stage of the character (%)">Learned</th>
-                    <!-- <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th> -->
-                    <th class="tooltip-header varvar" data-tooltip="Number of consecutive correct answers">Streak</th>
-                    <th class="tooltip-header varvar" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
-                    <th class="tooltip-header varvar" data-tooltip="Scheduled date and time for the next review">Next Review</th>
-                </tr>
-                    {% for stat in progress_stats %}
-                        <tr class="stat-row" data-character='{{ stat.character }}'>    
-
-                        <td style="text-align: left;" class="character" data-character='{{ stat.character }}'  data-pinyin='{{ stat.pinyin }}'>
-                            <a>{{ stat.character }}</a>
-                        </td>
-                        <td class="varvar" style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
-                        <!-- <td style="text-align: right;">
-                            {{ '{:.2f}'.format(stat.difficulty) if stat.difficulty is not none else '/' }}
-                        </td> -->
-                        <td class="varvar"  style="text-align: right;">{{ stat.streak }}</td>
-                        <td class="varvar"  style="text-align: right;">{{ stat.num_incorrect }}</td>
-                            {% if stat.is_due == 1 %}
-                            <td style="text-align: right;" class="varvar next-review-date">DUE</td>
-                            {% else %}
-                                {% if stat.next_review is not none %}
-                                    <td style="text-align: right;" class="varvar next-review-date">{{ stat.next_review }}</td>
-                                {% else %}
-                                    <td style="text-align: right;" class="varvar">/</td>
-                                {% endif %}
-                            {% endif %}
-                        <td class="remove-card" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >             
-                            <i class="fas fa-xmark"></i>
-                        </td>
-                    </tr>
-                    {% endfor %}
-            </table>
-        </div>
+            <!-- <p style="padding-left: 0.0em;">
+                <form id="unlink-form" action="{{ url_for('google_auth.unlink_account') }}" method="post" style="display: inline;">
+                    <a class="alinks" href="#" onclick="unlinkGoogle()">Unlink Google Account</a>
+                </form>
+            </p> -->
+        {% else %}
+            <p style="padding-left: 0.0em;">
+                <a class="alinks" href="{{ url_for('manage.change_password') }}">Change password</a>
+            </p>
+            {% if email %}
+                <p style="padding-left: 0.0em;">
+                    <a class="alinks" href="{{ url_for('manage.email_management') }}">Change email</a>
+                </p>
+            {% else %}
+                <p style="padding-left: 0.0em;">
+                    <a class="alinks" href="{{ url_for('manage.email_management') }}">Add email</a>
+                </p>
+            {% endif %}
+            <p style="padding-left: 0.0em;">
+                <a class="alinks google-link" href="{{ url_for('google_auth.link_account') }}">
+                    <picture>
+                        <img src="{{ url_for('static', filename='images/google-logo.png') }}"
+                            alt="Google logo" 
+                            class="google-icon">
+                    </picture>
+                    Link Google Account
+                </a>
+            </p>
+            <p style="padding-left: 0.0em;">
+                <a class="alinks" href="#" onclick="confirmDeletion(); return false;"><i class="fa-solid fa-triangle-exclamation delete-icon"></i> Delete account</a>
+            </p>
+        {% endif %}
     </div>
-    <div id="pinyin-hover-box" style="display: none;"></div>
-
-    {% include 'flashcard.html' %}
-
-
+    
     <script>
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
-        let wordlists_words = {{ wordlists_words | tojson | safe }};
         let google_id = {{ google_id | tojson | safe }};
         let google_profile_pic = {{ profile_pic | tojson | safe }};
         // const saveButton = document.getElementById('saveButton');
@@ -736,33 +680,12 @@
             }
         }
         
-        function reworkUrls(){
-            let link = document.getElementById("hanziWritingLink");
-            link.href = "{{ url_for('hanziwriting', wordlist='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
-
-            let gridLink = document.getElementById("gridLink");
-            gridLink.href = "{{ url_for('grid', wordlist='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
-
-            let listLink = document.getElementById("listLink");
-            listLink.href = "{{ url_for('grid', wordlist='PLACEHOLDER', list='true') | safe }}".replace("PLACEHOLDER", currentWordlist);
-
-            let pinyinTableLink = document.getElementById("pinyinTableLink");
-            pinyinTableLink.href = "{{ url_for('puzzles.hanzitest_table', wordlist='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
-
-            let pinyinChoiceLink = document.getElementById("pinyinChoiceLink");
-            pinyinChoiceLink.href = "{{ url_for('puzzles.hanzitest_choices', wordlist='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
-            
-            let flashcardsLink = document.getElementById("flashcardsLink");
-            flashcardsLink.href = "{{ url_for('flashcards', wordlist='PLACEHOLDER') }}".replace("PLACEHOLDER", currentWordlist);
-        }
     </script>
 
     <script>
        
 
     </script>
-    <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/account.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
 
@@ -871,147 +794,6 @@
       </style>
     <script>
 
-
-        const dropdownTrigger = document.getElementById('wordListDropdown');
-        const dropdownMenu = document.getElementById('dropdown-options');
-        document.addEventListener('DOMContentLoaded', function() {
-            let keys = Object.keys(wordlists_words);
-            addToTable(wordlists_words[currentWordlist] || []);
-            reworkUrls();
-            dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-right'></i>";
-
-            let selectedListName = null;
-
-            if (isMobileOrTablet()) {
-                const accountLine = document.getElementById("accountLine");
-                const logoutButton = document.getElementById("logoutButton");
-
-                if (accountLine && logoutButton) {
-                    accountLine.appendChild(logoutButton);
-                    logoutButton.classList.add("mobile");
-                }
-            }
-            
-
-            document.getElementById("removeListBtn").addEventListener("click", function() {
-                
-                if(Object.keys(wordlists_words).length == 1){
-                    alert("You can't delete the last word list");
-                }
-                else{
-                    removeWordlist(prompt("Confirm the name of the set to be removed"));
-                }
-            });
-
-            document.getElementById("renameListBtn").addEventListener("click", function() {
-                handleRename();
-            });
-            
-            // Toggle dropdown visibility
-            dropdownTrigger.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const isVisible = dropdownMenu.style.display === 'block';
-                console.log(isVisible);
-                if (!isVisible) {
-                    // Position the dropdown below the trigger
-                    const rect = dropdownTrigger.getBoundingClientRect();
-                    // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-arrow-down'></i>";
-                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-down'></i>";
-                    // dropdownMenu.style.top = rect.bottom + 'px';
-                    // dropdownMenu.style.left = rect.left + 'px';
-                    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-                    dropdownMenu.style.top = rect.bottom - 21 + scrollY + 'px';
-                    dropdownMenu.style.left = isMobileOrTablet() ? '1rem' : '3rem';
-                    dropdownMenu.style.minWidth = rect.width + 'px';
-                    
-                    dropdownMenu.style.display = 'block';
-                } else {
-                    // dropdownTrigger.innerHTML = "Select a word list <i class='fas fa-arrow-down'></i>";
-                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-right'></i>";
-                    dropdownMenu.style.display = 'none';
-                }
-            });
-
-            
-            
-            
-            // Handle option selection
-            dropdownMenu.addEventListener('click', function(e) {
-                const item = e.target.closest('.wordlist-dropdown-item');
-                if (!item) return;
-                
-                const value = item.dataset.value;
-                
-                if (value === 'create_new') {
-                    const name = prompt('Enter the name of the new word list');
-                    createWordlist(name);
-                } else {
-                    selectedListName = value;
-                    currentWordlist = value;
-                    
-                    let tableBody = document.querySelector("table tbody");
-                    tableBody.innerHTML = '<tr><th class="tooltip-header" data-tooltip="The Chinese character being learned">Character</th><th class="tooltip-header varvar" data-tooltip="Current learning stage of the character (%)">Learned</th><!-- <th class="tooltip-header" data-tooltip="Measure of how challenging this character is for the user">Difficulty</th> --><th class="tooltip-header varvar" data-tooltip="Number of consecutive correct answers">Streak</th><th class="tooltip-header varvar" data-tooltip="Total number of incorrect answers for this character">Incorrect</th><th class="tooltip-header varvar" data-tooltip="Scheduled date and time for the next review">Next Review</th></tr>';
-                    addToTable(wordlists_words[currentWordlist]);
-                    dropdownTrigger.innerHTML = value + " <i class='fa-solid fa-caret-right'></i>";
-
-                    reworkUrls();
-                }
-                
-                // Hide dropdown after selection
-                dropdownMenu.style.display = 'none';
-            });
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!dropdownTrigger.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.style.display = 'none';
-                    dropdownTrigger.innerHTML = '<span class="dropdown-text">' + currentWordlist + '</span>' + " <i class='fa-solid fa-caret-right'></i>";
-                }
-            });
-
-
-            function createWordlist(name) {
-                if(!name) return;
-                wordlists_words[name] = [];
-                keys = Object.keys(wordlists_words);
-                populateDropdown();
-                currentWordlist = name;
-                
-                reworkUrls();
-                custom_deck_names.push(name);
-                populateCardSets();
-                
-                let tableBody = document.querySelector("table tbody");
-                tableBody.innerHTML = "";
-                addToTable(wordlists_words[currentWordlist]);
-                return fetch('./api/create_wordlist', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ name: name }),
-                })
-                .then(response => {
-                    if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.error || 'Failed to create word list');
-                    });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(`Success: ${data.message}`);
-                    return data;
-                })
-                .catch(error => {
-                    console.error('Error creating word list:', error);
-                    throw error;
-                });
-            }
-
-            // Initial population of the dropdown
-            populateDropdown();
-        });
     </script>
 
     <p id="message"></p>

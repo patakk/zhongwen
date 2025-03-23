@@ -51,7 +51,6 @@ def create_or_get_google_user(google_info):
             db.session.commit()
             
             # Flash message to inform user (will appear after redirect)
-            from flask import flash
             flash("We noticed you already have an account with this email. We've linked your Google account for easier login!", "success")
             
             return email_user
@@ -198,19 +197,37 @@ def unlink_account():
         return redirect(url_for("login"))
     
     user = User.query.get(session['user_id'])
-    
-    # Make sure they have a password before unlinking
-    if not user.password_hash:
-        flash("Please set a password before unlinking your Google account", "error")
-        return redirect(url_for("set_password"))
-    
-    # Only clear the Google ID and OAuth tokens
+
     user.google_id = None
     user.oauth_token = None
     user.oauth_token_expiry = None
     
-    # Keep email, email_verified, and profile_pic intact
+    if user.email and user.email.endswith('@gmail.com'):
+        user.email = None
+    
+    user.email_verified = False
+    
+    if user.profile_pic and ('googleusercontent.com' in user.profile_pic or 'google.com' in user.profile_pic):
+        user.profile_pic = None
     
     db.session.commit()
-    flash("Your Google account has been unlinked. You can still log in with your email and password.", "success")
-    return redirect(url_for("account"))
+    
+    return redirect(url_for("manage.add_password"))
+    
+    # user.google_id = None
+    # user.oauth_token = None
+    # user.oauth_token_expiry = None
+    
+    # if user.email and user.email.endswith('@gmail.com'):
+    #     user.email = None
+    
+    # user.email_verified = False
+    
+    # if user.profile_pic and ('googleusercontent.com' in user.profile_pic or 'google.com' in user.profile_pic):
+    #     user.profile_pic = None
+    
+    # db.session.commit()
+    
+    # flash("Your Google account has been completely unlinked and all Google-related data has been removed from your profile.", "success")
+    # return redirect(url_for("account"))
+
