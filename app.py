@@ -182,7 +182,7 @@ def account():
     google_id = User.query.filter_by(username=username).first().google_id
     profile_pic = User.query.filter_by(username=username).first().profile_pic
 
-    return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(username), wordlists_words=wordlists_words, google_id=google_id, profile_pic=profile_pic)
+    return render_template('account.html', darkmode=session['darkmode'], username=session.get('username'), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(username), wordlists_words=wordlists_words, google_id=google_id, profile_pic=profile_pic)
 
 
 def main_card_data(character):

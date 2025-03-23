@@ -601,14 +601,11 @@
         <a href="{{ url_for('logout') }}" id="logoutButton"><i class="fa-solid fa-right-from-bracket"></i></a>
         <h1>Profile</h1>
         <h2><div id="accountLine"><span>Account</span></div></h2>
-        <p style="padding-left: 0.0em;">
-            <a class="alinks" href="{{ url_for('manage.change_password') }}">Change password</a>
-        </p>
-        <p style="padding-left: 0.0em;">
-            <a class="alinks" href="{{ url_for('manage.email_management') }}">Change email</a>
-        </p>
 
         {% if google_id %}
+            <p style="padding-left: 0.0em;">
+                <a class="alinks" href="#" onclick="confirmDeletion(); return false;">Delete account</a>
+            </p>
             <!-- <p style="padding-left: 0.0em;">
                 <form id="unlink-form" action="{{ url_for('google_auth.unlink_account') }}" method="post" style="display: inline;">
                     <a class="alinks" href="#" onclick="unlinkGoogle()">Unlink Google Account</a>
@@ -623,6 +620,12 @@
             </p> -->
         {% else %}
             <p style="padding-left: 0.0em;">
+                <a class="alinks" href="{{ url_for('manage.change_password') }}">Change password</a>
+            </p>
+            <p style="padding-left: 0.0em;">
+                <a class="alinks" href="{{ url_for('manage.email_management') }}">Change email</a>
+            </p>
+            <p style="padding-left: 0.0em;">
                 <a class="alinks google-link" href="{{ url_for('google_auth.link_account') }}">
                     <picture>
                         <img src="{{ url_for('static', filename='images/google-logo.png') }}"
@@ -631,6 +634,9 @@
                     </picture>
                     Link Google Account
                 </a>
+            </p>
+            <p style="padding-left: 0.0em;">
+                <a class="alinks" href="#" onclick="confirmDeletion(); return false;">Delete account</a>
             </p>
         {% endif %}
 
@@ -752,6 +758,14 @@
         let showAllPinyin = false;
         let keys = Object.keys(wordlists_words);
         let currentWordlist = keys[0];
+
+        function confirmDeletion() {
+            if (confirm("Are you sure you want to delete your account?")) {
+                if (confirm("REALLY SURE? This action cannot be undone!")) {
+                    window.location.href = "{{ url_for('manage.delete_account') }}";
+                }
+            }
+        }
         
         function reworkUrls(){
             let link = document.getElementById("hanziWritingLink");

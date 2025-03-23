@@ -130,7 +130,6 @@ def delete_user(username):
         click.echo(f"User {username} not found.")
         return
     
-    
     if user.notes:
         for note in user.notes:
             db.session.delete(note)

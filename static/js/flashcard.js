@@ -697,6 +697,8 @@ function hideCard() {
     cardVisible = false;
     scrollToTop(document.getElementById('flashcard_container'), () => {overlay.style.display = 'none';});
         
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'auto';
     document.getElementById('dropdown-options-card').style.display = 'none';
     document.getElementById('wordListDropdownCard').innerHTML = 'Add to <i class="fa-solid fa-caret-right"></i>';
     const newUrl = new URL(window.location);
@@ -2195,6 +2197,8 @@ function scrollToTop(element, func=null) {
 
 function displayCard(showAnswer=true, showPinyin=true) {
     document.getElementById('flashcard_overlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     const flashcardElement = document.getElementById('flashcard_description');
     const englishElement = document.getElementById('flashcard_english');
     const pinyinElement = document.getElementById('flashcard_pinyin');

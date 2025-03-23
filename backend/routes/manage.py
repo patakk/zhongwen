@@ -18,6 +18,31 @@ def validate_password(password):
     return True, ""
 
 
+@manage_bp.route('/delete-account', methods=['GET', 'POST'])
+@hard_session_required
+def delete_account():
+    """Delete a user and all their associated data."""
+    username = session['username']
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return
+    if user.notes:
+        for note in user.notes:
+            db.session.delete(note)
+    if user.user_string:
+        db.session.delete(user.user_string)
+    if user.stroke_entries:
+        for entry in user.stroke_entries:
+            db.session.delete(entry)
+    if user.word_lists:
+        for word_list in user.word_lists:
+            db.session.delete(word_list)
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('home'))
+
+
+
 @manage_bp.route('/email-management', methods=['GET', 'POST'])
 @hard_session_required
 def email_management():
