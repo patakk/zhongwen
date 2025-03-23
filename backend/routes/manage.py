@@ -147,7 +147,7 @@ def change_password():
             user.set_password(new_password)
             db.session.commit()
             flash('Password changed successfully', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('account'))
         except Exception as e:
             db.session.rollback()
             flash('Error updating password', 'danger')

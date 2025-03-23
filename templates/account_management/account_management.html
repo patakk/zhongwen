@@ -602,7 +602,6 @@
             
     </script>
     <div class="container">
-        <a href="{{ url_for('logout') }}" id="logoutButton"><i class="fa-solid fa-right-from-bracket"></i></a>
         <h1><div id="accountLine"><span>{{ username }}'s account</span></div></h1>
         <div style="border-top: 2px dashed var(--dimmer-border-color); margin-bottom: 2em;"></div>
 
@@ -634,15 +633,15 @@
             </p> -->
         {% else %}
             <p style="padding-left: 0.0em;">
-                <a class="alinks" href="{{ url_for('manage.change_password') }}">Change password</a>
+                <a class="alinks" href="{{ url_for('manage.change_password') }}"><i class="fa-solid fa-key"></i> Change password</a>
             </p>
             {% if email %}
                 <p style="padding-left: 0.0em;">
-                    <a class="alinks" href="{{ url_for('manage.email_management') }}">Change email</a>
+                    <a class="alinks" href="{{ url_for('manage.email_management') }}"><i class="fa-solid fa-envelope"></i> Change email</a>
                 </p>
             {% else %}
                 <p style="padding-left: 0.0em;">
-                    <a class="alinks" href="{{ url_for('manage.email_management') }}">Add email</a>
+                    <a class="alinks" href="{{ url_for('manage.email_management') }}"><i class="fa-solid fa-envelope"></i> Add email</a>
                 </p>
             {% endif %}
             <p style="padding-left: 0.0em;">
@@ -669,8 +668,6 @@
         // const saveButton = document.getElementById('saveButton');
         let currentGridPlotters = [];
         let showAllPinyin = false;
-        let keys = Object.keys(wordlists_words);
-        let currentWordlist = keys[0];
 
         function confirmDeletion() {
             if (confirm("Are you sure you want to delete your account?")) {
