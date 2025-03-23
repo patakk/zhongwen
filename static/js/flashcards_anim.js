@@ -353,7 +353,7 @@ function interpolateCards() {
                 }
 
                 let saw = (1-2*Math.abs(.5-progress));
-                lineWidth = flashcardElement.offsetWidth*.035 * (.7+.6*saw*saw*saw);;
+                lineWidth = flashcardElement.offsetWidth*.035 * (.7+.3*saw*saw*saw);;
 
                 let lightness = isDarkMode ? 1 : 0;
 
