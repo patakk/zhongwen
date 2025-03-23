@@ -15,13 +15,23 @@ class Card(db.Model):
     def __repr__(self):
         return f"<Card {self.character}>"
 
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    username = db.Column(db.String(80), unique=True, nullable=False,
+                         info={'constraint_name': 'uq_user_username'})
     password_hash = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=True)
+    email = db.Column(db.String(120), unique=True, nullable=True,
+                      info={'constraint_name': 'uq_user_email'})
     email_verified = db.Column(db.Boolean, default=False)
-    email_verification_token = db.Column(db.String(100), unique=True, nullable=True)
+    email_verification_token = db.Column(db.String(100), unique=True, nullable=True, info={'constraint_name': 'uq_user_email_verification_token'})
+
+    #google_id = db.Column(db.String(120), unique=True, nullable=True)
+    google_id = db.Column(db.String(120), nullable=True)
+
+    profile_pic = db.Column(db.String(200), nullable=True)
+    oauth_token = db.Column(db.String(200), nullable=True)
+    oauth_token_expiry = db.Column(db.DateTime, nullable=True)
 
     notes = db.relationship("UserNotes", backref="user", lazy=True)
     user_string = db.relationship("UserString", backref="user", uselist=False)
@@ -46,6 +56,7 @@ class User(db.Model):
         token = secrets.token_urlsafe(32)
         self.email_verification_token = token
         return token
+
     
 class WordList(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -157,20 +157,6 @@ function addWord(symbol, set_name){
     .then(data => {
         let addedWords = data.added;
         console.log("added words", addedWords);
-        console.log("added words", addedWords);
-        console.log("added words", addedWords);
-        console.log("added words", addedWords);
-        console.log("added words", addedWords);
-        console.log("added words", addedWords);
-        console.log("set_name", set_name);
-        console.log("set_name", set_name);
-        console.log("set_name", set_name);
-        console.log("set_name", set_name);
-        console.log("set_name", set_name);
-        console.log("set_name", set_name);
-        console.log("set_name", set_name);
-        console.log("set_name", set_name);
-        console.log("set_name", set_name);
         console.log("set_name", set_name);
         getRowData(addedWords, set_name);
         // addedWords.forEach(word => {

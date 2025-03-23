@@ -8,6 +8,7 @@ from hanziconv import HanziConv
 
 from hanzipy.decomposer import HanziDecomposer
 from hanzipy.dictionary import HanziDictionary
+from pypinyin import lazy_pinyin, Style
 
 decomposer = HanziDecomposer()
 dictionary = HanziDictionary()
@@ -16,9 +17,23 @@ dictionary = HanziDictionary()
 
 DATA_DIR = './data'
 
+def load_secrets(secrets_file):
+    secrets = {}
+    try:
+        with open(secrets_file, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if '=' in line:
+                    key, value = line.split('=', 1)
+                    secrets[key.strip()] = value.strip()
+    except Exception as e:
+        print(f"Warning: Could not load secrets file: {e}")
+    return secrets
 
-from pypinyin import lazy_pinyin, Style
-    
+auth_keys = load_secrets('/home/patakk/.zhongweb-secrets')
+
 
 def get_pinyin(hanzi):
     result = lazy_pinyin(hanzi, style=Style.TONE)

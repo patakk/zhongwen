@@ -49,21 +49,22 @@ from backend.common import get_pinyin
 from backend.common import get_char_info
 from backend.common import get_chars_info
 from backend.common import dictionary
+from backend.common import auth_keys
 from backend.routes.manage import validate_password
 
 lemmatizer = WordNetLemmatizer()
 
 import json
 import os
-
-from backend.routes.api import api_bp
-from backend.routes.puzzles import puzzles_bp
+import secrets
 from backend.routes.puzzles import add_sorted_decknames_to_context
 
-from backend.routes.manage import manage_bp
 from backend.setup import create_app
 from flask_limiter.util import get_remote_address
 from flask_limiter import Limiter
+
+from flask_dance.contrib.google import make_google_blueprint, google
+
 
 app = create_app()
 application = app
@@ -73,9 +74,6 @@ limiter = Limiter(
     app=app,
 )
 
-app.register_blueprint(api_bp)
-app.register_blueprint(puzzles_bp)
-app.register_blueprint(manage_bp)
 
 log_file = 'zhongwen.log'
 if os.path.exists('/home/patakk/logs'):
@@ -102,6 +100,37 @@ def breakdown_chars(word):
 @app.errorhandler(500)
 def handle_500(error):
     return "Something went wrong, please try again later.", 500
+
+
+from backend.db.extensions import db
+from backend.db.models import User
+from backend.db.models import WordEntry
+from backend.db.models import WordList
+
+@app.route("/link-google", methods=["GET"])
+@session_required
+def link_google_account():
+    if not google.authorized:
+        flash("Please log in with Google first", "error")
+        return redirect(url_for("google.login", next=url_for("link_google_account")))
+    
+    resp = google.get("/oauth2/v2/userinfo")
+    if resp.ok:
+        google_info = resp.json()
+        google_id = google_info["id"]
+        
+        # Update current user
+        current_user = User.query.get(session['user_id'])
+        current_user.google_id = google_id
+        current_user.email = google_info.get("email", current_user.email)
+        current_user.email_verified = True
+        db.session.commit()
+        
+        flash("Your account has been linked with Google!", "success")
+        return redirect(url_for("profile"))  # Or wherever you want
+    
+    flash("Failed to link Google account. Please try again.", "error")
+    return redirect(url_for("profile"))
 
 
 @app.route('/get_card_data')
@@ -137,21 +166,23 @@ from collections import defaultdict
     
 @app.route('/account')
 @hard_session_required
-def user_progress():
+def account():
     username = request.args.get('user', session.get('username'))
 
     if not username:
         return "User or deck not specified", 400
 
-    wordlists_words = db_get_all_words_by_list_as_dict(username)
+    wordlists_words = db_get_all_words_by_list_as_dict(username) or {}
     for wl in wordlists_words:
         nww = []
         for w in wordlists_words[wl]:
             nww.append(get_char_info(w, pinyin=True, english=True))
         wordlists_words[wl] = nww
 
-    custom_deck_names = list(wordlists_words.keys())
-    return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(username), wordlists_words=wordlists_words)
+    google_id = User.query.filter_by(username=username).first().google_id
+    profile_pic = User.query.filter_by(username=username).first().profile_pic
+
+    return render_template('userprogress.html', darkmode=session['darkmode'], username=session.get('username'), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(username), wordlists_words=wordlists_words, google_id=google_id, profile_pic=profile_pic)
 
 
 def main_card_data(character):
@@ -220,16 +251,13 @@ def hanziviz():
 def get_crunch():
     return send_file('data/crunch.mp3', mimetype='audio/mpeg')
 
-
 @app.route('/login', methods=['GET', 'POST'])
 @timing_decorator
-@limiter.limit("5 per minute")
+@limiter.limit("25 per minute")
 def login():
     if request.method == 'POST':
-        username = request.form.get('username', '').strip()  # Added strip()
+        username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
-        email = request.form.get('email', '')
-        action = request.form.get('action')
         
         settings = {
             'darkmode': session.get('darkmode', False),
@@ -237,67 +265,105 @@ def login():
             'font': session.get('font', 'Noto Sans Mono')
         }
         
-        # Registration
-        if action == 'Register':
-            if db_user_exists(username):
-                flash('Username unavailable', 'error')
-                logger.warning(f"Registration attempt with existing username: {username}")
-                return redirect(url_for('login'))
-                
-            is_valid, msg = validate_password(password)
-            if not is_valid:
-                flash(msg, 'error')
-                return redirect(url_for('login'))
-                
-            if True:
-                user = db_create_user(
-                    username=username,
-                    password=password,
-                    email=email,
-                )
-                
-                session.clear()
-                session.permanent = True
-                session.update(settings)
-                session['user_id'] = user.id
-                session['username'] = username
-                session['current_card'] = None
-                session['authenticated'] = True
-                
-                logger.info(f"New user registered successfully: {username}")
-                flash('Account created successfully!', 'success')
-                # return redirect(url_for('welcome'))
-                return redirect(url_for('home'))
-            else:
-                flash('Error creating account', 'error')
-                return redirect(url_for('login'))
-        
         # Login
-        else:
-            try:
-                user, error = db_authenticate_user(username, password)
-                if error:
-                    flash('Invalid username or password', 'error')  # Generic error
-                    logger.warning(f"Failed login attempt for username: {username}")
-                    return redirect(url_for('login'))
-                
-                session.clear()
-                session.permanent = True
-                session.update(settings)
-                session['user_id'] = user.id
-                session['username'] = username
-                session['current_card'] = None
-                session['authenticated'] = True
-                
-                logger.info(f"Successful login for user: {username}")
-                return redirect(url_for('home'))
-                
-            except Exception as e:
-                flash('An error occurred', 'error')
-                logger.error(f"Login error: {str(e)}")
+        try:
+            user, error = db_authenticate_user(username, password)
+            if error:
+                flash('Invalid username or password', 'error')  # Generic error
+                logger.warning(f"Failed login attempt for username: {username}")
                 return redirect(url_for('login'))
             
+            session.clear()
+            session.permanent = True
+            session.update(settings)
+            session['user_id'] = user.id
+            session['username'] = username
+            session['current_card'] = None
+            session['authenticated'] = True
+            
+            logger.info(f"Successful login for user: {username}")
+            return redirect(url_for('home'))
+            
+        except Exception as e:
+            flash('An error occurred', 'error')
+            logger.error(f"Login error: {str(e)}")
+            return redirect(url_for('login'))
+            
     return render_template('login.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+@timing_decorator
+@limiter.limit("25 per minute")
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        email = request.form.get('email', '').strip()
+        
+        settings = {
+            'darkmode': session.get('darkmode', False),
+            'deck': session.get('deck', 'hsk1'),
+            'font': session.get('font', 'Noto Sans Mono')
+        }
+        
+        # Check if passwords match
+        if password != confirm_password:
+            flash('Passwords do not match', 'error')
+            return redirect(url_for('register'))
+        
+        # Check username availability
+        if db_user_exists(username):
+            flash('Username unavailable', 'error')
+            logger.warning(f"Registration attempt with existing username: {username}")
+            return redirect(url_for('register'))
+        
+        # Add email uniqueness check
+        if email:  # Only check if email is provided
+            existing_email_user = User.query.filter_by(email=email).first()
+            if existing_email_user:
+                # Check if it's a Google account
+                if existing_email_user.google_id:
+                    flash('This email is already linked to a Google account. Please sign in with Google.', 'error')
+                else:
+                    flash('This email is already registered. Please log in or use a different email.', 'error')
+                logger.warning(f"Registration attempt with existing email: {email}")
+                return redirect(url_for('register'))
+        
+        # Validate password
+        is_valid, msg = validate_password(password)
+        if not is_valid:
+            flash(msg, 'error')
+            return redirect(url_for('register'))
+        
+        # Create user
+        try:
+            user = db_create_user(
+                username=username,
+                password=password,
+                email=email,
+            )
+            
+            session.clear()
+            session.permanent = True
+            session.update(settings)
+            session['user_id'] = user.id
+            session['username'] = username
+            session['current_card'] = None
+            session['authenticated'] = True
+            
+            logger.info(f"New user registered successfully: {username}")
+            flash('Account created successfully!', 'success')
+            return redirect(url_for('home'))
+        except Exception as e:
+            flash('Error creating account', 'error')
+            logger.error(f"Registration error: {str(e)}")
+            return redirect(url_for('register'))
+            
+    return render_template('register.html')
+
+
 
 
 @app.route('/logout')
@@ -551,17 +617,7 @@ def get_translations(lines):
         return ai_translations
     prompt = '''
         you are a chinese knowledge genius translator, and you behave like a software the takes as input an array of strings, and outputs the complete translations, but each in one line. Your output must under all circumsatnces always simply be these translated lines, nothing else. No comments or anything. Here's the aray, you simply output the lines which I will parse (output raw text in each line): ''' + str(ai_input) 
-    api_key = os.environ.get("OPENAI_API")
-    if not api_key:
-        api_key = os.environ.get("OPENAI_API_KEY_ZHONG_WEN")
-        if not api_key:
-            file_path = "/home/patakk/.zhongwen-openai-apikey"
-            try:
-                with open(file_path, "r") as file:
-                    api_key = file.read().strip()
-            except Exception as e:
-                print(f"Error reading OpenAI API key file: {e}")
-
+    api_key = auth_keys.get("OPENAI_API_KEY_ZHONG_WEN")
     url = "https://api.openai.com/v1/chat/completions"
     headers = {
         "Content-Type": "application/json",
