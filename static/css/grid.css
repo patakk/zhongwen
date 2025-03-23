@@ -477,7 +477,7 @@ and (orientation: landscape) {
     align-items: center;
     padding: 10px 10px;
     border-bottom: 2px dashed #eee;
-    color: #111;
+    color: var(--text-color);
     cursor: pointer;
 }
 .pinyin-english-item:hover {
@@ -485,13 +485,13 @@ and (orientation: landscape) {
 }
 
 .pinyin-english-item.darkmode {
-    background-color: rgb(14, 14, 14);
-    color: rgb(235, 235, 235);
+    /* background-color: rgb(14, 14, 14);
+    color: rgb(235, 235, 235); */
 }
 
 .pinyin-english-item.darkmode:hover {
-    background-color: rgb(14, 14, 14);
-    color: rgb(233, 233, 233);
+    /* background-color: rgb(14, 14, 14);
+    color: rgb(233, 233, 233); */
 }
 
 
@@ -612,7 +612,7 @@ and (orientation: landscape) {
     background-color: rgba(127, 127, 127, 0.1);
 }
 
-.char-pinyin-group.darkmode {
+/* .char-pinyin-group.darkmode {
     background-color: rgb(14, 14, 14);
     color: rgb(235, 235, 235);
 }
@@ -627,7 +627,7 @@ and (orientation: landscape) {
 
 .char-pinyin-group:hover {
     background: #fff0;
-}
+} */
 
 .list-english {
     background: #fff0;

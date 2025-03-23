@@ -464,68 +464,62 @@ function createLists(characters, useAllDecks) {
     const fragment = document.createDocumentFragment();
     const ichars = Object.keys(characters);
     
-    // Prepare all HTML at once
-    const itemsHTML = ichars.map((character, idx) => {
+    // Create DOM elements and attach to fragment
+    ichars.forEach((character, idx) => {
         let charData = characters[character];
         charData.character = character;
         
-        return `
-            <div class="lgrid-item pinyin-english-item" data-character="${character}">
-                <div class="char-pinyin-group">
-                    <div class="index-container">
-                        <span class="list-index">${idx + 1}.</span>
-                    </div>
-                    <span class="list-character list-character-size">${character}</span>
-                    <span class="list-pinyin">${charData.pinyin.map(toAccentedPinyin)[0]}</span>
-                </div>
-                <span class="list-english">${charData.english.map(toAccentedPinyin)[0]}</span>
-            </div>
-        `;
-    }).join('');
-    
-    // Set inner HTML once
-    listWrapper.innerHTML = itemsHTML;
-    
-    // Use event delegation for all mouse events
-    listWrapper.addEventListener('mouseenter', function(e) {
-        const item = e.target.closest('.lgrid-item');
-        if (!item) return;
+        const listItem = document.createElement('div');
+        listItem.className = 'lgrid-item pinyin-english-item';
+        listItem.dataset.character = character;
         
-        const character = item.dataset.character;
-        if (!character) return;
-        
-        activeCharacter = character;
-        item.timeout = setTimeout(() => {
-            loadCard(character, true, 'loadedCard');
-        }, 200);
-    }, true);
-    
-    listWrapper.addEventListener('mouseleave', function(e) {
-        const item = e.target.closest('.lgrid-item');
-        if (!item || !item.timeout) return;
-        
-        clearTimeout(item.timeout);
-    }, true);
-    
-    listWrapper.addEventListener('click', function(e) {
-        const item = e.target.closest('.lgrid-item');
-        if (!item) return;
-        
-        const character = item.dataset.character;
-        if (!character) return;
-        
-        if (item.timeout) {
-            clearTimeout(item.timeout);
+        if (isDarkMode) {
+            listItem.classList.add('darkmode');
         }
+        listItem.innerHTML = `
+            <div class="char-pinyin-group">
+                <div class="index-container">
+                    <span class="list-index">${idx + 1}.</span>
+                </div>
+                <span class="list-character list-character-size">${character}</span>
+                <span class="list-pinyin">${charData.pinyin.map(toAccentedPinyin)[0]}</span>
+            </div>
+            <span class="list-english">${charData.english.map(toAccentedPinyin)[0]}</span>
+        `;
         
-        maybeLoadRenderAndThenShow(character, 0, true);
-        const newUrl = new URL(window.location);
-        newUrl.searchParams.set('character', character);
-        history.pushState({}, '', newUrl);
+        // Add event listeners to each individual item
+        let timeout;
+        
+        listItem.addEventListener('click', () => {
+            clearTimeout(timeout);
+            maybeLoadRenderAndThenShow(character, 0, true);
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('character', character);
+            history.pushState({}, '', newUrl);
+        });
+        
+        listItem.addEventListener('mouseenter', () => {
+            if (cardVisible) return;
+            activeCharacter = character;
+            timeout = setTimeout(() => {
+                loadCard(character, true, 'loadedCard');
+            }, 200);
+        });
+        
+        listItem.addEventListener('mouseleave', () => {
+            clearTimeout(timeout);
+        });
+        
+        fragment.appendChild(listItem);
     });
     
+    // Append the fragment to the wrapper
+    listWrapper.appendChild(fragment);
+    
+    // Add the wrapper to the container
     container.appendChild(listWrapper);
 }
+
 
 // Remove these since we're no longer using them
 // function populateList is now unnecessary
