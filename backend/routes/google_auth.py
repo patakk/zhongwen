@@ -168,6 +168,10 @@ def authorized():
         user.google_id = google_id
         user.email = google_email if google_email else user.email
         user.email_verified = True if google_email else user.email_verified
+    
+        if google_info.get("picture"):
+            user.profile_pic = google_info.get("picture")
+
         db.session.commit()
         
         flash("Your account has been linked with Google!", "success")
