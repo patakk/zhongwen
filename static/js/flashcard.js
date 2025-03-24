@@ -1768,7 +1768,8 @@ function renderCard(data) {
 
     const notesParagraph = document.createElement('p');
     // Initially render the markdown
-    let rendered = marked.parse(data.user_notes || '');
+    // let rendered = marked.parse(data.user_notes || '');
+    let rendered = '';
     rendered = rendered.replace(/>\n\n</g, '>\n<'); // Remove whitespace between tags
     rendered = wrapImageUrls(rendered);
     notesParagraph.innerHTML =  wrapImageUrls(data.user_notes || '');
