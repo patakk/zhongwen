@@ -45,7 +45,7 @@ def create_or_get_google_user(google_info):
             email_user.email_verified = True  # Mark email as verified since Google verified it
             
             # Optionally update profile pic if user doesn't have one
-            if not email_user.profile_pic and google_info.get("picture"):
+            if google_info.get("picture"):
                 email_user.profile_pic = google_info.get("picture")
                 
             db.session.commit()
@@ -68,8 +68,6 @@ def create_or_get_google_user(google_info):
     if existing_user:
         username = f"{username}_{secrets.token_hex(3)}"
     
-    print("AAAAAAAAAAAAAA")
-    print(google_info)
 
     user = User(
         username=username,
