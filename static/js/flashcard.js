@@ -1100,17 +1100,20 @@ function createDefinitionsQ(example_words, pinyin, english) {
         pinyinSection.className = 'pinyin-section';
         pinyinSection.textContent = i < pinyin.length ? toAccentedPinyin(pinyin[i]) : '';
         
+        let afa = createClickableHanziElements(toAccentedPinyin(english[i].replace(/\//g, ' / ')));
+        afa.style.opacity = 0.7;
         // Meaning section that will wrap
         const meaningSection = document.createElement('div');
         meaningSection.className = 'meaning-section';
-        meaningSection.appendChild(createClickableHanziElements(toAccentedPinyin(english[i].replace(/\//g, ' / '))));
-        
+        meaningSection.appendChild(hanziSection);
+        meaningSection.appendChild(pinyinSection);
+        meaningSection.appendChild(afa);
         // Append hanzi and pinyin to the first row
-        firstRowContainer.appendChild(hanziSection);
-        firstRowContainer.appendChild(pinyinSection);
+        // firstRowContainer.appendChild(hanziSection);
+        // firstRowContainer.appendChild(pinyinSection);
         
         // Add the first row container and the meaning section to the entry container
-        entryContainer.appendChild(firstRowContainer);
+        // entryContainer.appendChild(firstRowContainer);
         entryContainer.appendChild(meaningSection);
         
         // Add the entry container to the row

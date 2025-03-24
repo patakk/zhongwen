@@ -1336,8 +1336,6 @@ input[type="checkbox"].darkmode:checked::after {
 }
 
 .entry-container {
-    display: grid;
-    grid-template-columns: auto 1fr;
 }
 
 .first-row-container {
@@ -1348,19 +1346,20 @@ input[type="checkbox"].darkmode:checked::after {
 .hanzi-section {
     width: 60px;
     margin-right: 10px;
+    display: inline-block;
 }
 
 .pinyin-section {
     width: 80px;
     margin-right: 10px;
+    display: inline-block;
 }
 
 .meaning-section {
-    grid-column: 2;
-    grid-row: 1;
     padding-left: 150px; /* Total width of hanzi + pinyin + margins */
     position: relative;
     margin-left: -150px; /* Pull it back so it starts after pinyin */
+    display: inline-block;
 }
 
 /* For mobile screens */
