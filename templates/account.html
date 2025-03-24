@@ -400,11 +400,11 @@
         #newWords {
             color: var(--text-color);
             outline: none;
-            background-color: var(--background-color);
+            background-color: var(--newwords-background-color);
             width: 100%;
             max-width: 400px;
             padding: 10px;
-            margin-right: 10px; /* Add margin between the input and button */
+            margin-right: .5em; /* Add margin between the input and button */
             border: 2px solid var(--dimmer-border-color-a);
             font-size: 1em;
             font-family: inherit;
@@ -413,19 +413,26 @@
         #newWords::placeholder {
             font-style: italic;
             font-size: 0.8em;
-            color: gray;
+            color: var(--text-color);
+            opacity: 0.85;
+        }
+
+        #newWords.darkmode::placeholder {
+            color: var(--background-color);
         }
 
         #addWordButton {
-            padding: 10px;
+            padding: 0px;
             background-color: var(--text-color);
             background-color: var(--dimmer-background-color);
             color: var(--dimmer-background-color);
             color: var(--dimmer-text-color);
-            border: 2px solid var(--text-color);
+            border: 2px solid var(--dimmer-border-color);
             cursor: pointer;
             font-size: 1em;
-            opacity: 0.7;
+            width: 2em;
+            height: 2em;
+            opacity: 0.9;
             font-family: inherit;
             -webkit-tap-highlight-color: transparent;
             -webkit-appearance: none;
@@ -569,9 +576,9 @@
         }
 
         #addwordInfo {
-            font-size: 1.15em;
-            opacity: .6;
-            margin-left: .35em;
+            font-size: 1em;
+            opacity: .35;
+            margin-left: 1em;
             cursor: pointer;
         }
 
@@ -659,8 +666,10 @@
 
 
             <form id="wordForm" onsubmit="handleAddCards(event)">
-                <input type="text" name="query" id="newWords" placeholder="a word or a list of words (separated with spaces)">
-                <input id="addWordButton" type="submit" value="Add words"><span id="addwordInfo"><i class="fa-solid fa-circle-question"></i></span>
+                <label for="newWords" style="padding-right: 1em;">Add: </label>
+                <input type="text" name="query" id="newWords" placeholder="a word or a list of words">
+                <input id="addWordButton" type="submit" value="+">
+                <span id="addwordInfo"><i class="fa-solid fa-circle-question"></i></span>
             </form>
 
             <div style="padding-left: 0.0em; display: none;" id="numcards">Words in list: </div>

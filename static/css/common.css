@@ -34,6 +34,7 @@
     --delete-icon-color: #d44141;
     --code-color: #d44141;
     --code-background-color: #f8d7da;
+    --newwords-background-color: #d4cef0;
 }
 
 
@@ -43,6 +44,7 @@
 }
 
 .darkmode {
+    --newwords-background-color: #6c6b8d;
     --code-color: #43ac72;
     --code-background-color: #d4edda;
     --delete-icon-color: #ec5a5a;
