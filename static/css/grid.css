@@ -475,8 +475,7 @@ and (orientation: landscape) {
 .pinyin-english-item {
     display: flex;
     align-items: top;
-    padding: 0px 0px;
-    margin: 10px 10px;
+    padding: 0em 0em;
     border-bottom: 2px dashed #eee;
     color: var(--text-color);
     cursor: pointer;
