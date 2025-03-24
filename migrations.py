@@ -82,6 +82,7 @@ def list_users():
         click.echo(f"Username: {user.username}")
         click.echo(f"Email: {user.email or 'Not set'}")
         click.echo(f"Email verified: {user.email_verified}")
+        click.echo(f"Profile picture url: {user.profile_pic or 'Not set'}")
 
 # Add/update email command
 @app.cli.command("set-email")
