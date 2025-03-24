@@ -515,9 +515,7 @@ and (orientation: landscape) {
     text-align: right;
     width: 100%;
     text-align: right; /* Align text to the right */
-    overflow: hidden; /* Hide overflow */
     text-align: right;
-    overflow: hidden;
     flex: 8;
 }
 
@@ -525,6 +523,7 @@ and (orientation: landscape) {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-y: scroll;
     width: 80%;
     max-width: 80%;
     padding: 10px;
@@ -540,6 +539,7 @@ and (orientation: landscape) {
     padding-top: 12px;
     padding-bottom: 12px;
     display: flex;
+    overflow: hidden;
     box-sizing: border-box;
 }
 
