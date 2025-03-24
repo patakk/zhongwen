@@ -607,7 +607,9 @@
         <!-- <a href="{{ url_for('home') }}" class="alinks">&lt;&lt; back to home</a> -->
         <h1 style="display: flex; align-items: center; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; margin-right: 10px;">
-              <img src="{{ profile_pic }}" alt="profile picture" style="width: 1.5em; height: 1.5em; border-radius: 50%;"> 
+                {% if profile_pic %}
+                    <img src="{{ profile_pic }}" alt="profile picture" style="width: 1.5em; height: 1.5em; border-radius: 50%;"> 
+                {% endif %}
             </div>
             <span>{{ username }}'s space</span>
           </h1>
