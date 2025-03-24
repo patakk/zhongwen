@@ -142,9 +142,8 @@ function populateDropdown() {
     dropdownMenu.appendChild(createOption);
 }
 
-function addWord(symbol, set_name){
+function addWordDirect(symbol, set_name){
     addWordsInput.value = '';
-    
     
     fetch("./api/add_word_to_learning", {
         method: "POST",
@@ -238,7 +237,7 @@ function handleAddCards(e){
     let words = addWordsInput.value;
     let deck = currentWordlist;
     console.log("handling add cards", words, deck); 
-    addWord(words, currentWordlist);
+    addWordDirect(words, currentWordlist);
 }
 
 function formatDateTime(dateTimeString) {
