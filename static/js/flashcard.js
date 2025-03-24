@@ -953,7 +953,7 @@ function createClickableHanziElements(text) {
     return container;
 }
 
-function createDefinitionsQ(example_words, pinyin, english) {
+function createDefinitions(example_words, pinyin, english) {
     const container = document.createElement('div');
     container.className = 'definitions-container';
     
@@ -1054,7 +1054,7 @@ function createDefinitionsQ(example_words, pinyin, english) {
     return {defLabelDiv, definitionsContainer};
 }
 
-function createDefinitions(example_words, pinyin, english) {
+function createDefinitionsQ(example_words, pinyin, english) {
     const container = document.createElement('div');
     container.className = 'definitions-container';
     
