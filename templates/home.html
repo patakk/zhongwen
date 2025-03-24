@@ -7,9 +7,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet"> -->
     <!-- <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet"> -->
+     -->
     <!-- <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet"> -->
-    <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100..800&display=swap" rel="stylesheet">
+
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100..800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100..800&display=swap" rel="stylesheet">
+    </noscript>
+
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>hanzi</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icons/zi.ico') }}">
@@ -369,6 +377,7 @@
             font-size: 4.5em;
             margin-bottom: 20px;
             font-family: "Noto Serif SC", serif;
+            font-display: swap;
             color: var(--text-color);
             font-weight: bold;
             text-align: center;
@@ -514,5 +523,7 @@
         // }
     </script>
 
+    <script src="{{ url_for('static', filename='js/plotter_better.js') }}" async></script>
+    <script src="{{ url_for('static', filename='js/fontawesome.js') }}" async></script>
 </body>
 </html>
