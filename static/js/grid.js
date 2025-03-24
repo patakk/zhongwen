@@ -70,7 +70,6 @@ function maybeLoadRenderAndThenShow(character, dir=0, force_unlock=false){
             let next_neighs = getNeighbors(character);
             let next_nextchar = next_neighs.nextchar;
             let next_prevchar = next_neighs.prevchar;
-            console.log("loading next next", next_nextchar);
             loadCard(next_nextchar, false, 'nextLoadedCard');
             return;
         }
@@ -655,23 +654,36 @@ function loadCard(character, render=false, targetVar = 'loadedCard') {
 // }
 
 function showAfterLoad(data){
+
     data.plotters = createPlotters(data);
-    console.log("this one 476")
+    loadedCard = data;
     renderCard(data);
-    window['loadedCard'] = data;
-
-    let neighs = getNeighbors(data.character);
-    let nextchar = neighs.nextchar;
-    let prevchar = neighs.prevchar;
-    displayCard(true, true);
-    confirmDarkmode();
-    loadCard(nextchar, false, 'nextLoadedCard');
-    loadCard(prevchar, false, 'prevLoadedCard');
-
-    unlocked = true;
-    // currentGridPlotters = data.plotters;
+    currentGridPlotters = data.plotters;
     displayCard(true, true);
     cardVisible = true;
+
+
+    // data.plotters = createPlotters(data);
+    // window['loadedCard'] = data;
+    // renderCard(data);
+
+    // let neighs = getNeighbors(data.character);
+    // let nextchar = neighs.nextchar;
+    // let prevchar = neighs.prevchar;
+    // displayCard(true, true);
+    // confirmDarkmode();
+
+    // loadCard(nextchar, false, 'nextLoadedCard');
+    // loadCard(prevchar, false, 'prevLoadedCard');
+    // unlocked = true;
+
+
+    // setTimeout(() => {
+    // }, 333);
+
+    // currentGridPlotters = data.plotters;
+    // cardVisible = true;
+
 }
 
 let currentCharList = null;
@@ -1037,10 +1049,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     if(characterdata){
-        showAfterLoad(characterdata);
         activeCharacter = characterdata.character;
-        let overlay = document.getElementById('flashcard_overlay');
-        let currentColor = getColorByTime(overlaycolors);
+        showAfterLoad(characterdata);
+        
+        // let overlay = document.getElementById('flashcard_overlay');
+        // let currentColor = getColorByTime(overlaycolors);
         // overlay.style.backgroundColor = currentColor;
         
         scrollToTop(document.getElementById('flashcard_container'));

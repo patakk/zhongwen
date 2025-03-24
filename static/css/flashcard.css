@@ -1264,3 +1264,114 @@ input[type="checkbox"].darkmode:checked::after {
 
 .expand-collapse-btn:hover {
 }
+
+
+
+.definitions-list {
+    width: 100%;
+}
+
+.definition-header {
+    display: flex;
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.hanzi-header {
+    width: 100px;
+}
+
+.pinyin-header {
+    width: 150px;
+}
+
+.meaning-header {
+    flex: 1;
+}
+
+.definition-row {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.definition-content {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+.definitions-list {
+    width: 100%;
+}
+
+.definition-header {
+    display: flex;
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.hanzi-header {
+    width: 60px;
+    margin-right: 10px;
+}
+
+.pinyin-header {
+    width: 80px;
+    margin-right: 10px;
+}
+
+.meaning-header {
+    flex: 1;
+}
+
+.definition-row {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.entry-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+}
+
+.first-row-container {
+    display: flex;
+    grid-column: 1;
+}
+
+.hanzi-section {
+    width: 60px;
+    margin-right: 10px;
+}
+
+.pinyin-section {
+    width: 80px;
+    margin-right: 10px;
+}
+
+.meaning-section {
+    grid-column: 2;
+    grid-row: 1;
+    padding-left: 150px; /* Total width of hanzi + pinyin + margins */
+    position: relative;
+    margin-left: -150px; /* Pull it back so it starts after pinyin */
+}
+
+/* For mobile screens */
+@media (max-width: 600px) {
+    .entry-container {
+        display: block;
+    }
+    
+    .meaning-section {
+        padding-left: 0;
+        margin-left: 0;
+        margin-top: 5px;
+    }
+}

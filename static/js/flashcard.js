@@ -953,7 +953,7 @@ function createClickableHanziElements(text) {
     return container;
 }
 
-function createDefinitions(example_words, pinyin, english) {
+function createDefinitionsQ(example_words, pinyin, english) {
     const container = document.createElement('div');
     container.className = 'definitions-container';
     
@@ -1054,6 +1054,111 @@ function createDefinitions(example_words, pinyin, english) {
     return {defLabelDiv, definitionsContainer};
 }
 
+function createDefinitions(example_words, pinyin, english) {
+    const container = document.createElement('div');
+    container.className = 'definitions-container';
+    
+    const definitionsList = document.createElement('div');
+    definitionsList.className = 'definitions-list';
+
+    // Create header
+    const headerRow = document.createElement('div');
+    headerRow.className = 'definition-header';
+    headerRow.innerHTML = '<span class="hanzi-header">Hanzi</span>' +
+                          '<span class="pinyin-header">Pinyin</span>' +
+                          '<span class="meaning-header">Meaning</span>';
+    definitionsList.appendChild(headerRow);
+
+    const maxEntries = Math.max(pinyin.length, english.length);
+    const initialShowCount = 5; // Number of entries to show initially
+    const needsExpandCollapse = maxEntries > initialShowCount;
+    
+    for (let i = 0; i < maxEntries; i++) {
+        const definitionRow = document.createElement('div');
+        definitionRow.className = 'definition-row';
+        
+        if (i >= initialShowCount && needsExpandCollapse) {
+            definitionRow.style.display = 'none';
+            definitionRow.classList.add('expandable-row');
+        }
+        
+        // Create a container for the entire entry
+        const entryContainer = document.createElement('div');
+        entryContainer.className = 'entry-container';
+        
+        // First row container (for hanzi, pinyin, and start of meaning)
+        const firstRowContainer = document.createElement('div');
+        firstRowContainer.className = 'first-row-container';
+        
+        // Hanzi section
+        const hanziSection = document.createElement('div');
+        hanziSection.className = 'hanzi-section';
+        hanziSection.appendChild(createClickableHanziElements(example_words[i]));
+        
+        // Pinyin section
+        const pinyinSection = document.createElement('div');
+        pinyinSection.className = 'pinyin-section';
+        pinyinSection.textContent = i < pinyin.length ? toAccentedPinyin(pinyin[i]) : '';
+        
+        // Meaning section that will wrap
+        const meaningSection = document.createElement('div');
+        meaningSection.className = 'meaning-section';
+        meaningSection.appendChild(createClickableHanziElements(toAccentedPinyin(english[i].replace(/\//g, ' / '))));
+        
+        // Append hanzi and pinyin to the first row
+        firstRowContainer.appendChild(hanziSection);
+        firstRowContainer.appendChild(pinyinSection);
+        
+        // Add the first row container and the meaning section to the entry container
+        entryContainer.appendChild(firstRowContainer);
+        entryContainer.appendChild(meaningSection);
+        
+        // Add the entry container to the row
+        definitionRow.appendChild(entryContainer);
+        
+        // Add the row to the list
+        definitionsList.appendChild(definitionRow);
+    }
+
+    // Add the list to the container
+    container.appendChild(definitionsList);
+
+    // Add expand/collapse button outside the list
+    if (needsExpandCollapse) {
+        const expandCollapseBtn = document.createElement('div');
+        expandCollapseBtn.className = 'expand-collapse-btn';
+        expandCollapseBtn.textContent = 'expand (' + (maxEntries - initialShowCount) + ' more) ↓';
+        expandCollapseBtn.setAttribute('data-expanded', 'false');
+        
+        expandCollapseBtn.addEventListener('click', function() {
+            const isExpanded = this.getAttribute('data-expanded') === 'true';
+            const expandableRows = definitionsList.querySelectorAll('.expandable-row');
+            
+            expandableRows.forEach(row => {
+                row.style.display = isExpanded ? 'none' : 'block';
+            });
+            
+            this.textContent = isExpanded 
+                ? 'expand (' + (maxEntries - initialShowCount) + ' more) ↓' 
+                : 'collapse ↑';
+            this.setAttribute('data-expanded', isExpanded ? 'false' : 'true');
+        });
+        
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'expand-collapse-container';
+        buttonContainer.appendChild(expandCollapseBtn);
+        
+        // Add the button container to the main container
+        container.appendChild(buttonContainer);
+    }
+
+    const defLabelDiv = document.createElement('div');
+    defLabelDiv.className = 'rawDefLabel';
+    defLabelDiv.textContent = "Definitions and appearances in other words:";
+    
+    // Return both the label and the container
+    return {defLabelDiv, definitionsContainer: container};
+}
 
 
 function renderCard(data) {
