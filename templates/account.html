@@ -66,7 +66,6 @@
         h1 {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             color: var(--text-color);
-            margin-top: 0;
             font-size: 3em;
         }
 
@@ -210,7 +209,6 @@
                 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
                 color: var(--text-color);
                 font-size: 3em;
-                margin-top: 0;
             }
 
             table {
@@ -529,7 +527,10 @@
         }
 
         @media screen and (max-width: 768px) {
-            
+            h1 {
+                font-size: 2em;
+                margin-top: 1em;
+            }
             .stat-hanzi-pinyin {
                 flex: 1;
             }
@@ -541,21 +542,21 @@
         }
 
         #logoutButton {
-            position: absolute;
+            /* position: absolute;
             top: 0;
             right: 0;
             font-size: 2em;
             padding: .5em;
-            cursor: pointer;
+            cursor: pointer; */
         }
 
         #logoutButton.mobile {
-            position: static;
+            /* position: static;
             top: auto;
             right: auto;
             font-size: 1em;
             padding: 0;
-            cursor: pointer;
+            cursor: pointer; */
         }
 
         #accountLine {
@@ -602,11 +603,12 @@
             
     </script>
     <div class="container">
-        <a href="{{ url_for('logout') }}" id="logoutButton"><i class="fa-solid fa-right-from-bracket"></i></a>
+        <!-- <a href="{{ url_for('home') }}" class="alinks">&lt;&lt; back to home</a> -->
         <h1>{{ username }}'s space</h1>
-        <div style="border: 1.5px dashed var(--dimmer-border-color); margin-bottom: 2em;"></div>
-        <p style="padding-left: 0.0em;">
+        <div style="border-top: 2px dashed var(--dimmer-border-color); margin-bottom: 2em;"></div>
+        <p style="padding-left: 0.0em; display: flex; justify-content: space-between;">
             <a class="alinks" href="{{ url_for('manage.account_management') }}">Manage account</a>
+            <a href="{{ url_for('logout') }}" id="logoutButton"><i class="fa-solid fa-right-from-bracket"></i></a>
         </p>
 
 

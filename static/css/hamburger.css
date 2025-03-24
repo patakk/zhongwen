@@ -160,6 +160,13 @@
     }
 }
 
+@media screen and (min-width: 1000px) and (max-width: 1200px) {
+    #mainMenu {
+        top: 2em;
+        right: 2em;
+    }
+}
+
 .dropdown-menu .selected-option {
     background-color: #ff580a;
     background-color: #f12400;
