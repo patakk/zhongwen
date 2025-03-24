@@ -1875,10 +1875,10 @@ function renderCard(data) {
     document.getElementById('flashcard_description').prepend(checkboxContainer);
 
 
-    marked.setOptions({
-        breaks: true,
-        gfm: true,
-    });
+    // marked.setOptions({
+    //     breaks: true,
+    //     gfm: true,
+    // });
 
     notesParagraph.addEventListener('focus', function() {
         if (this.classList.contains('empty')) {
