@@ -10,12 +10,15 @@
 
 body {
     display: flex;
+    position: relative;
     flex-direction: column;
     align-items: center;
     padding: 10px;
-    margin: 0px;
+    margin: 0px auto;
     overflow-y: scroll;
     -ms-overflow-style: none;
+    width: 60%;
+    box-sizing: border-box;
 }
 
 body::-webkit-scrollbar {
@@ -122,11 +125,25 @@ body::-webkit-scrollbar {
     }
 }
 
+
+@media screen and (max-width: 1024px) {
+    #test-container {
+        width: 90%;
+    }
+    body {
+        width: 100%;
+    }
+}
+
+
 @media screen and (max-width: 767px) {
     #test-container {
         width: 90%;
     }
 
+    body {
+        width: 100%;
+    }
     #answer-table-container {
         max-height: 70vh;
         overflow-y: auto;
@@ -642,4 +659,16 @@ h1 {
         transform: translateY(105vh) rotate(-0deg);
         opacity: 0;
     }
+}
+
+
+#backLink {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    padding: 1em;
+    color: var(--text-color);
+    text-decoration: none;
+    z-index: 1000;
 }

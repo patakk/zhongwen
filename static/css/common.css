@@ -34,7 +34,8 @@
     --delete-icon-color: #d44141;
     --code-color: #d44141;
     --code-background-color: #f8d7da;
-    --newwords-background-color: #d4cef0;
+    --newwords-background-color: #ffffff;
+    --newwords-border-color: #9cb2da;
 }
 
 
@@ -44,7 +45,8 @@
 }
 
 .darkmode {
-    --newwords-background-color: #6c6b8d;
+    --newwords-background-color: #000000;
+    --newwords-border-color: #58569c;
     --code-color: #43ac72;
     --code-background-color: #d4edda;
     --delete-icon-color: #ec5a5a;
