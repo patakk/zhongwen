@@ -16,7 +16,7 @@ google_oauth_bp = make_google_blueprint(
         "https://www.googleapis.com/auth/userinfo.email",
         "openid"
     ],
-    redirect_url="/google_auth/authorized"
+    redirect_to="google_auth.authorized_handler"
 )
 
 google_auth_bp = Blueprint('google_auth', __name__, url_prefix='/google_auth')
@@ -123,8 +123,8 @@ def link_account():
     return redirect(url_for("google.login"))
 
 # Callback route - where Google redirects after authentication
-@google_auth_bp.route("/authorized")
-def authorized():
+@google_auth_bp.route("/authorized_handler")
+def authorized_handler():
     print("Google OAuth callback received")
     if not google.authorized:
         flash("Authentication failed", "error")
@@ -162,7 +162,7 @@ def authorized():
             existing_email_user = User.query.filter_by(email=google_email).first()
             if existing_email_user and existing_email_user.id != user.id:
                 flash("The email associated with this Google account is already used by another user account", "error")
-                return redirect(url_for("account"))
+                return redirect(url_for("manage.account_management"))
         
         # Update current user
         user.google_id = google_id

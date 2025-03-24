@@ -413,7 +413,7 @@ function showTooltip(element, content, event) {
 
         let hoverBox = document.getElementById('pinyin-hover-box');
 
-        hoverBox.textContent = content;
+        hoverBox.innerHTML = content;
         hoverBox.style.display = 'block';
         hoverBox.style.left = `${event.pageX + 10}px`;
         hoverBox.style.top = `${event.pageY + 10}px`;
@@ -459,6 +459,12 @@ function isMobileOrTablet() {
     return check || /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
+const addWordInstructions = `
+    <p>Enter a single character or list of words.</p>
+    <p>E.g. <span class="codeBlock">你,好,早上,好</span></p>
+    <p>or <span class="codeBlock">你 好 早上 好</span></p>
+    <p>Words will be added to the list you have selected in the dropdown menu and will be visible in the table bellow.</p>
+`;
 
 document.addEventListener('DOMContentLoaded', function() {
     const tooltipHeaders = document.querySelectorAll('.tooltip-header');
@@ -467,7 +473,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const addwordInfo = document.getElementById('addwordInfo');
     addwordInfo.addEventListener('mouseover', function(e) {
-        showTooltip(this, "hellllo", e);
+        showTooltip(this, addWordInstructions, e);
     });
     addwordInfo.addEventListener('mouseout', hideTooltip);
     addwordInfo.addEventListener('mousemove', function(e) {

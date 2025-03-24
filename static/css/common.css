@@ -32,6 +32,8 @@
     --playback-color: rgb(81, 135, 196);
     --playback-hover-color:rgb(81, 160, 196);
     --delete-icon-color: #d44141;
+    --code-color: #d44141;
+    --code-background-color: #f8d7da;
 }
 
 
@@ -41,6 +43,8 @@
 }
 
 .darkmode {
+    --code-color: #43ac72;
+    --code-background-color: #d4edda;
     --delete-icon-color: #ec5a5a;
     --playback-color: #9795df;
     --playback-hover-color: #95b5df;
