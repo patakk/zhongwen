@@ -1196,7 +1196,7 @@ input[type="checkbox"].darkmode:checked::after {
 @media screen and (max-width: 845px) {
     .definitions-grid {
         display: grid;
-        grid-template-columns: 10% 30% 60%;
+        grid-template-columns: 20% 30% 50%;
         margin-top: 1em;
         margin-bottom: 1em;
         margin-left: auto;
