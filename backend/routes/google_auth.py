@@ -68,6 +68,9 @@ def create_or_get_google_user(google_info):
     if existing_user:
         username = f"{username}_{secrets.token_hex(3)}"
     
+    print("AAAAAAAAAAAAAA")
+    print(google_info)
+
     user = User(
         username=username,
         email=email,
