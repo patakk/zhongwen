@@ -486,7 +486,6 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay = document.getElementById('flashcard_overlay');
     flashcardContent = document.getElementById('flashcard_container');
     messageElement = document.getElementById('message');
-
     // overlay.addEventListener('click', (e) => {
     //     if (e.target === overlay) {
     //         cardVisible = false;

@@ -832,6 +832,7 @@ function setupAddToDeck(){
     });
 
     populateCardSets();
+    console.log("sjlna")
     dropdownTriggerCard.addEventListener('click', function(e) {
         console.log("clicked");
         e.stopPropagation();
