@@ -460,10 +460,12 @@ function isMobileOrTablet() {
 }
 
 const addWordInstructions = `
-    <p>Enter a single character or list of words.</p>
+    <p>Enter a single character or a list of words.</p>
     <p>E.g. <span class="codeBlock">你,好,早上,好</span></p>
     <p>or <span class="codeBlock">你 好 早上 好</span></p>
-    <p>Words will be added to the list you have selected in the dropdown menu and will be visible in the table bellow.</p>
+    <p>or even <span class="codeBlock">1. 你 2. 好 3. 早上 4. 好</span></p>
+    <p>Any text that has Chinese words sepparated in some way.</p>
+    <p>Words will be parsed and added to the current list and will be visible in the table bellow.</p>
 `;
 
 document.addEventListener('DOMContentLoaded', function() {
