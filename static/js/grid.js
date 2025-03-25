@@ -872,27 +872,27 @@ function playHanziAudio() {
 
 
 
-function addWord(symbol, set_name, get_rows=false){
-    alert("Adaaaaaaaaaaaaaded " + symbol + " to " + set_name);
-    inputdecks[set_name].chars[symbol] = currentData[symbol];
+// function addWord(symbol, set_name, get_rows=false){
+//     alert("Adaaaaaaaaaaaaaded " + symbol + " to " + set_name);
+//     inputdecks[set_name].chars[symbol] = currentData[symbol];
     
-    fetch("./api/add_word_to_learning", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ word: symbol, set_name: set_name, get_rows: get_rows})
-    })
-    .then(response => response.json())
-    .then(data => {
-        // addedWords.forEach(word => {
-        //     getRowData([word]);
-        // });
-    })
-    .catch(error => {
-        console.error("Error:", error);
-    });
-}
+//     fetch("./api/add_word_to_learning", {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json"
+//         },
+//         body: JSON.stringify({ word: symbol, set_name: set_name, get_rows: get_rows})
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         // addedWords.forEach(word => {
+//         //     getRowData([word]);
+//         // });
+//     })
+//     .catch(error => {
+//         console.error("Error:", error);
+//     });
+// }
 
 function addWordToLearning(symbol){
     // inputdecks['custom'].chars[symbol] = currentData[symbol];
