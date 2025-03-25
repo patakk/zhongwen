@@ -801,6 +801,13 @@
             document.execCommand("copy");
             document.body.removeChild(copyText);
         });
+        // run showTooltip on mouseover
+        copyList.addEventListener("mouseenter", function(e) {
+            showTooltip(copyList, "Add list content to clipboard", e);
+        });
+        copyList.addEventListener("mouseleave", function(e) {
+            hideTooltip();
+        });
         
         function reworkUrls(){
             let link = document.getElementById("hanziWritingLink");
