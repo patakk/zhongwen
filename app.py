@@ -801,6 +801,9 @@ import re
 def remove_tones(pinyin):
     return re.sub(r'[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]', lambda m: 'aeiouü'['āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'.index(m.group()) // 4], pinyin)
 
+def remove_all_numbers(pinyin):
+    return re.sub(r'\d', '', pinyin)
+
 def convert_numerical_tones(pinyin):
     tone_marks = {
         'a': ['ā', 'á', 'ǎ', 'à', 'a'],
@@ -893,6 +896,7 @@ def get_search_results(query):
             for idx, d in enumerate(dd):
                 order = idx
                 piny_removed = remove_tones(d['pinyin'].lower())
+                piny_removed = remove_all_numbers(d['pinyin'].lower())
                 if d and query in piny_removed:
                     if 'surname' in d['definition']:
                         order = 1000
