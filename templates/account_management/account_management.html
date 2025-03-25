@@ -605,9 +605,6 @@
         <div style="border-top: 2px dashed var(--dimmer-border-color); margin-bottom: 2em;"></div>
 
         {% if google_id %}
-            <p style="padding-left: 0.0em;">
-                <a class="alinks" href="#" onclick="confirmDeletion(); return false;"><i class="fa-solid fa-triangle-exclamation delete-icon"></i> Delete account</a>
-            </p>
             <form id="unlink-form" action="{{ url_for('google_auth.unlink_account') }}" method="post" style="display: inline;">
                 <a class="alinks" href="#" onclick="unlinkGoogle()">
                     <picture>
@@ -625,6 +622,9 @@
                     }
                 </script>
             </form>
+            <p style="padding-left: 0.0em;">
+                <a class="alinks" href="#" onclick="confirmDeletion(); return false;"><i class="fa-solid fa-triangle-exclamation delete-icon"></i> Delete account</a>
+            </p>
             <!-- <p style="padding-left: 0.0em;">
                 <form id="unlink-form" action="{{ url_for('google_auth.unlink_account') }}" method="post" style="display: inline;">
                     <a class="alinks" href="#" onclick="unlinkGoogle()">Unlink Google Account</a>
