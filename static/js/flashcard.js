@@ -575,32 +575,211 @@ function loadRenderDisplay(character) {
 }
 
 
-function addWord(symbol, set_name, get_rows=false){
-
-    try{
-    }
-    catch(e){
-    }
-
-    alert("Added " + symbol + " to " + set_name);
+function addWord2(symbol, set_name, get_rows = false, countdownSeconds = 3) {
+    const notificationContainer = document.createElement('div');
+    notificationContainer.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: var(--background-color);
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        z-index: 9999;
+        min-width: 250px;
+    `;
     
-    fetch("./api/add_word_to_learning", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ word: symbol, set_name: set_name, get_rows: get_rows})
-    })
-    .then(response => response.json())
-    .then(data => {
-        // addedWords.forEach(word => {
-        //     getRowData([word]);
-        // });
-    })
-    .catch(error => {
-        console.error("Error:", error);
+    const notificationTitle = document.createElement('div');
+    notificationTitle.style.fontWeight = 'bold';
+    notificationTitle.style.marginBottom = '10px';
+    notificationTitle.textContent = `Adding "${symbol}" to "${set_name}"`;
+    
+    const notificationMessage = document.createElement('div');
+    notificationMessage.style.marginBottom = '10px';
+    notificationMessage.textContent = `Will be added in ${countdownSeconds} seconds...`;
+    
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.justifyContent = 'space-between';
+    
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel';
+    cancelButton.style.cssText = `
+        padding: 5px 10px;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    `;
+    
+    const addNowButton = document.createElement('button');
+    addNowButton.textContent = 'Add Now';
+    addNowButton.style.cssText = `
+        padding: 5px 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    `;
+    
+    // Assemble the notification
+    buttonContainer.appendChild(cancelButton);
+    buttonContainer.appendChild(addNowButton);
+    
+    notificationContainer.appendChild(notificationTitle);
+    notificationContainer.appendChild(notificationMessage);
+    notificationContainer.appendChild(buttonContainer);
+    
+    // Add the notification to the page
+    document.body.appendChild(notificationContainer);
+    
+    // Set up the countdown timer
+    let secondsLeft = countdownSeconds;
+    let countdownInterval = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+            clearInterval(countdownInterval);
+            performAddWord();
+        } else {
+            notificationMessage.textContent = `Will be added in ${secondsLeft} seconds...`;
+        }
+    }, 1000);
+    
+    // Function to perform the actual word addition
+    function performAddWord() {
+        fetch("./api/add_word_to_learning", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ word: symbol, set_name: set_name, get_rows: get_rows})
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Show success message
+            notificationMessage.textContent = `Successfully added "${symbol}" to "${set_name}"`;
+            notificationMessage.style.color = '#4CAF50';
+            
+            // Remove buttons
+            buttonContainer.remove();
+            
+            // Remove notification after 2 seconds
+            setTimeout(() => {
+                destroyNotification();
+            }, 2000);
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            notificationMessage.textContent = `Error adding word: ${error.message}`;
+            notificationMessage.style.color = '#f44336';
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                destroyNotification();
+            }, 3000);
+        });
+    }
+    
+    // Function to destroy the notification
+    function destroyNotification() {
+        // Add a fade-out effect
+        notificationContainer.style.transition = 'opacity 0.5s';
+        notificationContainer.style.opacity = '0';
+        
+        // Remove from DOM after the transition
+        setTimeout(() => {
+            if (notificationContainer.parentNode) {
+                notificationContainer.parentNode.removeChild(notificationContainer);
+            }
+        }, 500);
+    }
+    
+    // Set up button event handlers
+    cancelButton.addEventListener('click', () => {
+        clearInterval(countdownInterval);
+        notificationMessage.textContent = 'Addition cancelled';
+        notificationMessage.style.color = '#f44336';
+        
+        // Remove buttons
+        buttonContainer.remove();
+        
+        // Remove notification after 1.5 seconds
+        setTimeout(() => {
+            destroyNotification();
+        }, 1500);
+    });
+    
+    addNowButton.addEventListener('click', () => {
+        clearInterval(countdownInterval);
+        performAddWord();
     });
 }
+
+function addWord(word, setName, get_rows = false) {
+    // Add the word to the set (assuming this operation happens here)
+    
+    function performAddWord() {
+        fetch("./api/add_word_to_learning", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ word: symbol, set_name: set_name, get_rows: get_rows})
+        })
+        .then(response => response.json())
+        .then(data => {
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            notificationMessage.textContent = `Error adding word: ${error.message}`;
+            notificationMessage.style.color = '#f44336';
+            
+        });
+    }
+    
+    // Function to perform the actual word addition
+
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.textContent = `"${word}" added to ${setName}`;
+    
+    // Style the notification
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.left = '20px';
+    notification.style.backgroundColor = '#6fc773';
+    notification.style.color = 'white';
+    notification.style.color = '#fff';
+    if(isDarkMode){
+        notification.style.backgroundColor = '#3cc773';
+    }
+    notification.style.maxWidth = "50%";
+    notification.style.padding = '12px 20px';
+    notification.style.borderRadius = '4px';
+    notification.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+    notification.style.zIndex = '1000';
+    notification.style.opacity = '1';
+    notification.style.transition = 'opacity 0.5s ease-in-out';
+    
+    // Add to document
+    document.body.appendChild(notification);
+    
+    // Remove the notification after 3 seconds
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 500);
+    }, 1000);
+
+    
+    performAddWord();
+  }
+  
+
 
 function populateCardSets() {
     const dropdownTriggerCard = document.getElementById('wordListDropdownCard');
