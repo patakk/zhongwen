@@ -475,12 +475,16 @@ function createLists(characters, useAllDecks) {
         if (isDarkMode) {
             listItem.classList.add('darkmode');
         }
+        let sizeClass = "list-character-size";
+        if(currentFont == 'kaiti'){
+            sizeClass = "list-character-size-kaiti";
+        }
         listItem.innerHTML = `
             <div class="char-pinyin-group">
                 <div class="index-container">
                     <span class="list-index">${idx + 1}.</span>
                 </div>
-                <span class="list-character list-character-size">${character}</span>
+                <span class="list-character ${sizeClass}">${character}</span>
                 <span class="list-pinyin">${charData.pinyin.map(toAccentedPinyin)[0]}</span>
             </div>
             <span class="list-english">${charData.english.map(toAccentedPinyin)[0]}</span>
@@ -1203,10 +1207,17 @@ function updateFontFamily(fontFamily) {
     }
 
     // Update or create the CSS rule
+
+    let tsize = "1.5em";
+    if(currentFont === 'Kaiti'){
+        tsize = "1.8em";
+    }
+    
     styleElement.textContent = `
         .list-character {
             font-family: "${fontFamily}", sans-serif;
             padding-right: 15px;
+            font-size: ${tsize};
         }
     `;
 }

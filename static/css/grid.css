@@ -569,9 +569,6 @@ and (orientation: landscape) {
 }
 
 
-.list-character-size {
-    font-size: 25px;
-}
 
 
 #title {
@@ -645,6 +642,7 @@ and (orientation: landscape) {
 .list-character {
     background: #fff0;
     flex: 3;
+    font-size: 1.5em;
 }
 
 
@@ -674,9 +672,13 @@ and (orientation: landscape) {
     background: #fff0;
 }
 
-.list-character-size {
+/* .list-character-size {
     font-size: 1.4em;
-}
+} */
+
+/* .list-character-size-kaiti {
+    font-size: 2em;
+} */
 
 .list-pinyin {
     font-size: 1em;
