@@ -718,7 +718,6 @@ function addWord2(symbol, set_name, get_rows = false, countdownSeconds = 3) {
 }
 
 function addWord(word, setName, get_rows = false) {
-    // Add the word to the set (assuming this operation happens here)
     
     function performAddWord() {
         fetch("./api/add_word_to_learning", {
@@ -726,7 +725,7 @@ function addWord(word, setName, get_rows = false) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ word: symbol, set_name: set_name, get_rows: get_rows})
+            body: JSON.stringify({ word: word, set_name: set_name, get_rows: get_rows})
         })
         .then(response => response.json())
         .then(data => {
