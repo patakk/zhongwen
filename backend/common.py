@@ -92,7 +92,7 @@ def get_tatoeba_page(character, page):
     for tid in tids[aa:bb]:
         tatoebas.append(TATOEBA_DATA[tid])
 
-    for idx, t in enumerate(tatoebas):
+    for _, t in enumerate(tatoebas):
         try:
             t['cmn'] = simplify_hanzi(t['cmn'])
             words = pseg.cut(t['cmn'])

@@ -278,21 +278,11 @@ function wrapImageUrls(inputString) {
 
 let exampleAttempts = 0;
 
-function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fetchCallback parameter
-    if(examples.length === 0){
-        if(exampleAttempts < 2){
-            getExamplesPage(0, character, () => {
-                getExamplesDiv(fdescript, currentExamples, character, is_last);
-            });
-        }
-        else{
-            return;
-        }    
-        exampleAttempts++;
-    }
+function getExamplesDiv(fdescript, examples, character, is_last) {
     if(document.getElementById('mainExamplesContainer')){
         document.getElementById('mainExamplesContainer').remove();
     }
+    
     let containerDiv = document.createElement('div');
     let page = 0;
     containerDiv.id = 'mainExamplesContainer';
@@ -307,7 +297,7 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
     // Create a container for the load buttons
     let loadButtonsContainer = document.createElement('div');
     loadButtonsContainer.style.display = 'none';  // Initially hidden
-    loadButtonsContainer.style.justifyContent = 'flex-end';  // Changed from space-between to flex-end
+    loadButtonsContainer.style.justifyContent = 'flex-end';
     loadButtonsContainer.style.alignItems = 'center';
     loadButtonsContainer.style.fontSize = '0.8em';
 
@@ -316,7 +306,7 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
     loadLessButton.style.cursor = 'pointer';
     loadLessButton.style.opacity = '0.4';
     loadLessButton.style.display = 'none';  // Initially hidden
-    loadLessButton.style.marginRight = 'auto';  // Add this to push it to the left when visible
+    loadLessButton.style.marginRight = 'auto';
 
     let loadMoreButton = document.createElement('div');
     loadMoreButton.id = 'loadMoreButton';
@@ -330,6 +320,7 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
     let examplesDiv = document.createElement('div');
     examplesDiv.id = 'mainExamples';
     examplesDiv.style.display = 'none';
+    
     function populateExamples(exs){
         examplesDiv.innerHTML = '';
         exs.forEach((example, index) => {
@@ -422,7 +413,6 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
                 
                     hoverBox.style.left = `${newX}px`;
                     hoverBox.style.top = `${newY}px`;
-                    console.log("thissss")
                 });
                 
                 
@@ -435,7 +425,6 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
             
             let pinDiv = document.createElement('div');
             pinDiv.classList.add("mainExamplePinyin");
-            // Combine all pinyin from the word dictionaries
             pinDiv.textContent = mandarin.map(word => word.pinyin).join(' ');
             
             exampleD.appendChild(cmnDiv);
@@ -443,12 +432,8 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
             exampleD.style.marginBottom = '1em';
             examplesDiv.appendChild(exampleD);
         });
-}
+    }
 
-    
-    populateExamples(examples);
-
-    
     // Add click handlers for load buttons
     loadMoreButton.addEventListener('click', async () => {
         page++;
@@ -468,12 +453,41 @@ function getExamplesDiv(fdescript, examples, character, is_last) {  // Added fet
         }
     });
 
+    let examplesLoaded = false;
+    
     toggleButton.addEventListener('click', () => {
         if (examplesDiv.style.display === 'none') {
-            examplesDiv.style.display = 'block';
-            loadButtonsContainer.style.display = 'flex';
-            toggleButton.style.textAlign = 'center';
-            toggleButton.innerHTML = '<span style="text-decoration: underline;">collapse</span>↑';
+            // Load examples on first expand
+            if (!examplesLoaded) {
+                toggleButton.innerHTML = '<span style="text-decoration: underline;">loading...</span>';
+                
+                const loadExamples = () => {
+                    if (examples.length === 0) {
+                        if (exampleAttempts < 2) {
+                            getExamplesPage(0, character, () => {
+                                populateExamples(currentExamples);
+                                examplesLoaded = true;
+                                toggleButton.innerHTML = '<span style="text-decoration: underline;">collapse</span>↑';
+                                examplesDiv.style.display = 'block';
+                                loadButtonsContainer.style.display = 'flex';
+                            });
+                        }
+                        exampleAttempts++;
+                    } else {
+                        populateExamples(examples);
+                        examplesLoaded = true;
+                        toggleButton.innerHTML = '<span style="text-decoration: underline;">collapse</span>↑';
+                        examplesDiv.style.display = 'block';
+                        loadButtonsContainer.style.display = 'flex';
+                    }
+                };
+                
+                loadExamples();
+            } else {
+                examplesDiv.style.display = 'block';
+                loadButtonsContainer.style.display = 'flex';
+                toggleButton.innerHTML = '<span style="text-decoration: underline;">collapse</span>↑';
+            }
         } else {
             examplesDiv.style.display = 'none';
             loadButtonsContainer.style.display = 'none';
