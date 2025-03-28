@@ -113,21 +113,21 @@ def get_char_info(character, full=False):
 def getshortdate():
     return datetime.now(timezone.utc).strftime("%Y%m%d")
 
-def get_chars_info(characters, pinyin=False, english=False, function=False):
-    return {c: get_char_info(c, pinyin, english, function) for c in characters}
+def get_chars_info(characters, function=False):
+    return {c: get_char_info(c) for c in characters}
 
 CARDDECKS_W_PINYIN = {
     deck: {
         "name": CARDDECKS[deck]["name"],
-        "chars": get_chars_info(CARDDECKS[deck]["chars"], pinyin=True)
+        "chars": get_chars_info(CARDDECKS[deck]["chars"])
     } for deck in CARDDECKS
 }
 
-def get_random_chars_from_deck(deck, n, pinyin=False, english=False, function=False):
+def get_random_chars_from_deck(deck, n, function=False):
     characters = CARDDECKS[deck]["chars"]
     random.shuffle(characters)
     characters = characters[:n]
-    return {c: get_char_info(c, pinyin, english, function) for c in characters}
+    return {c: get_char_info(c) for c in characters}
 
 def char_decomp_info(char):
     return DECOMPOSE_CACHE.get(char, {})

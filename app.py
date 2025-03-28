@@ -40,7 +40,7 @@ from backend.common import DECKNAMES
 from backend.common import get_pinyin
 from backend.common import get_char_info
 from backend.common import get_chars_info
-# from backend.common import dictionary
+from backend.common import dictionary
 from backend.common import auth_keys
 from backend.routes.manage import validate_password
 
@@ -121,7 +121,7 @@ def get_simple_char_data():
     character = request.args.get('character')
     cdata = {
         "character": character,
-        **get_char_info(character, pinyin=True, english=True),
+        **get_char_info(character),
     }
     
     return  jsonify({'message': 'success', **cdata})
@@ -144,7 +144,7 @@ def account():
     for wl in wordlists_words:
         nww = []
         for w in wordlists_words[wl]:
-            nww.append(get_char_info(w, pinyin=True, english=True))
+            nww.append(get_char_info(w))
         wordlists_words[wl] = nww
 
     google_id = User.query.filter_by(username=username).first().google_id
@@ -155,7 +155,7 @@ def account():
 
 def main_card_data(character):
     username = session.get('username')
-    simple_info = get_char_info(character, pinyin=True, english=True)
+    simple_info = get_char_info(character)
 
     # res = get_tatoeba_page(character, 0)
     res = None
@@ -427,7 +427,7 @@ def grid():
 
     
     for d in cc:
-        cc[d]['chars'] = get_chars_info(cc[d]['chars'], pinyin=True, english=True)
+        cc[d]['chars'] = get_chars_info(cc[d]['chars'])
 
     if not character:
         return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, inputdeck=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
@@ -509,8 +509,8 @@ def stories():
         words += line
     words += first_chapter['name']
     chars = chars.intersection(stroke_chars)
-    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'chardata': get_char_info(char, pinyin=True, english=True)} for char in chars}
-    word_data = {word: get_char_info(word, pinyin=True, english=True) for word in words}
+    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'chardata': get_char_info(char)} for char in chars}
+    word_data = {word: get_char_info(word) for word in words}
     all_chapters = [[chapter['title'] for chapter in all_stories[story_name]['chapters_list']] for story_name in stories_names]
     return render_template('stories.html', darkmode=session['darkmode'], chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], word_data=word_data, custom_deck_names=db_get_word_list_names_only(username))
 
@@ -530,7 +530,7 @@ def get_story(story_index, chapter_index):
         words += chapter['name']
         chars = chars.intersection(stroke_chars)
         char_data = {char: {'pinyin': get_pinyin(char)} for char in chars}
-        word_data = {word: get_char_info(word, pinyin=True, english=True) for word in words}
+        word_data = {word: get_char_info(word) for word in words}
         return jsonify({
             'chapter': chapter,
             'char_data': char_data,
