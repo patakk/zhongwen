@@ -725,7 +725,7 @@ function addWord(word, setName, get_rows = false) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ word: word, set_name: set_name, get_rows: get_rows})
+            body: JSON.stringify({ word: word, set_name: setName, get_rows: get_rows})
         })
         .then(response => response.json())
         .then(data => {
@@ -738,14 +738,8 @@ function addWord(word, setName, get_rows = false) {
         });
     }
     
-    // Function to perform the actual word addition
-
-
-    // Create notification element
     const notification = document.createElement('div');
     notification.textContent = `"${word}" added to ${setName}`;
-    
-    // Style the notification
     notification.style.position = 'fixed';
     notification.style.top = '20px';
     notification.style.left = '20px';
@@ -762,19 +756,13 @@ function addWord(word, setName, get_rows = false) {
     notification.style.zIndex = '1000';
     notification.style.opacity = '1';
     notification.style.transition = 'opacity 0.5s ease-in-out';
-    
-    // Add to document
     document.body.appendChild(notification);
-    
-    // Remove the notification after 3 seconds
     setTimeout(() => {
       notification.style.opacity = '0';
       setTimeout(() => {
         document.body.removeChild(notification);
       }, 500);
     }, 1000);
-
-    
     performAddWord();
   }
   
