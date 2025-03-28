@@ -29,6 +29,8 @@ data/*_bkp.json
 data/anthropic_2.json
 data/new_translations.json
 data/decompose_cache.json
+data/chars_cache.json
+data/words_cache.json
 
 hanzipy/
 processtrans.py
