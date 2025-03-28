@@ -113,8 +113,8 @@ def apply_exceptions(character, definitions):
 
 def get_char_info(character, pinyin=False, english=False, function=False, full=False):
     if full:
-        return CHARS_CACHE.get(character)
-        #return char_full_info_(character)
+        #return CHARS_CACHE.get(character)
+        return char_full_info_(character)
     info = {}
     try:
         # definition_results = dictionary.definition_lookup(character)
