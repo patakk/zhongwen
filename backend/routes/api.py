@@ -118,7 +118,7 @@ def get_progress_data_for_chars():
         correct_answers = char_progress.get('answers', []).count('correct')
         total_answers = len(char_progress.get('answers', []))
         accuracy = (correct_answers / total_answers * 100) if total_answers > 0 else 0
-        simple_char_info = get_char_info(character, pinyin=True, english=True)
+        simple_char_info = get_char_info(character)
         stats = {
             'character': character,
             'english': simple_char_info.get('english', ['N/A']),
@@ -318,7 +318,7 @@ def get_characters_simple_info():
     #     except:
     #         cinfo = {"definition": "-", "pinyin": "-"}
     #     cinfos[char] = cinfo
-    cinfos = get_chars_info(characters, pinyin=True, english=True)
+    cinfos = get_chars_info(characters)
     return jsonify(cinfos)
 
 @api_bp.route("/get_deck_chars", methods=["GET", "POST"])
@@ -348,7 +348,7 @@ def get_characters_pinyinenglish():
             for character in CARDDECKS[deck]["chars"]:
                 characters.append(character)
         characters = sorted(characters)
-    return jsonify({"characters": get_chars_info(characters, pinyin=True, english=True)})
+    return jsonify({"characters": get_chars_info(characters)})
 
 
 
@@ -600,7 +600,7 @@ def get_random_characters():
     random_chars = cd[deck]['chars']
     random.shuffle(random_chars)
     random_chars = random_chars[:num]
-    characters_data = get_chars_info(random_chars, pinyin=True, english=True)
+    characters_data = get_chars_info(random_chars)
     return jsonify(characters_data)
 
 import time
