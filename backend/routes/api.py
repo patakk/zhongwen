@@ -29,7 +29,6 @@ from backend.common import CARDDECKS
 from backend.common import DECKNAMES
 from backend.common import CARDDECKS_W_PINYIN
 
-from backend.common import dictionary
 from backend.common import get_tatoeba_page
 from backend.common import get_char_info
 from backend.common import get_chars_info
@@ -313,12 +312,12 @@ def get_characters_simple_info():
     inserted = []
     characters = sorted(characters)
     cinfos = {}
-    for char in characters:
-        try:
-            cinfo = dictionary.definition_lookup(char)[0]
-        except:
-            cinfo = {"definition": "-", "pinyin": "-"}
-        cinfos[char] = cinfo
+    # for char in characters:
+    #     try:
+    #         cinfo = dictionary.definition_lookup(char)[0]
+    #     except:
+    #         cinfo = {"definition": "-", "pinyin": "-"}
+    #     cinfos[char] = cinfo
     cinfos = get_chars_info(characters, pinyin=True, english=True)
     return jsonify(cinfos)
 

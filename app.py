@@ -40,7 +40,7 @@ from backend.common import DECKNAMES
 from backend.common import get_pinyin
 from backend.common import get_char_info
 from backend.common import get_chars_info
-from backend.common import dictionary
+# from backend.common import dictionary
 from backend.common import auth_keys
 from backend.routes.manage import validate_password
 
