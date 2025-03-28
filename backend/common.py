@@ -41,6 +41,7 @@ def get_pinyin(hanzi):
 
 
 CARDDECKS = json.load(open(os.path.join(DATA_DIR, "decks.json")))
+CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "chars_cache.json")))
 ANTHROPIC_DATA = json.load(open(os.path.join(DATA_DIR, "anthropic.json")))
 TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_examples.json")))
 TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_example_ids_by_char.json")))
@@ -112,7 +113,8 @@ def apply_exceptions(character, definitions):
 
 def get_char_info(character, pinyin=False, english=False, function=False, full=False):
     if full:
-        return char_full_info_(character)
+        return CHARS_CACHE.get(character)
+        #return char_full_info_(character)
     info = {}
     try:
         # definition_results = dictionary.definition_lookup(character)
