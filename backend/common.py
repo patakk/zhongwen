@@ -6,12 +6,12 @@ import re
 import jieba.posseg as pseg
 from hanziconv import HanziConv
 
-# from hanzipy.decomposer import HanziDecomposer
-# from hanzipy.dictionary import HanziDictionary
+from hanzipy.decomposer import HanziDecomposer
+from hanzipy.dictionary import HanziDictionary
 from pypinyin import lazy_pinyin, Style
 
-# decomposer = HanziDecomposer()
-# dictionary = HanziDictionary()
+decomposer = HanziDecomposer()
+dictionary = HanziDictionary()
 
 # from .flashcard_app import init_flashcard_app, get_flashcard_app
 
@@ -67,6 +67,8 @@ pos_map = {
 
 
 def get_tatoeba_page(character, page):
+    def simplify_hanzi(text):
+        return HanziConv.toSimplified(text)
     tatoebas = []
     tids = TATOEBA_MAP.get(character, [])
     examples = []
@@ -103,59 +105,10 @@ def get_tatoeba_page(character, page):
 
     return examples, is_last
 
-def simplify_hanzi(text):
-    return HanziConv.toSimplified(text)
-
-def apply_exceptions(character, definitions):
-    # if character in ['說', '说', '號', '号']:
-    #     first = definitions[1]
-    #     definitions[1] = definitions[0]
-    #     definitions[0] = first
-    return definitions
-
-def get_char_info(character, pinyin=False, english=False, function=False, full=False):
+def get_char_info(character, full=False):
     if full:
         return CHARS_CACHE.get(character, {})
-        #return char_full_info_(character)
     return WORDS_CACHE.get(character, {})
-    info = {}
-    try:
-        # definition_results = dictionary.definition_lookup(character)
-        # if pinyin:
-        #     # info['pinyin'] = get_pinyin(character)
-        #     info['pinyin'] = definition_results[0]['pinyin']
-        # if english:
-        #     if len(definition_results) == 1:
-        #         best_entry = definition_results[0]
-        #     else:
-        #         best_entry = next((entry for entry in definition_results if entry_req(entry['definition'])), definition_results[0])
-
-        #     definition = best_entry['definition']
-        #     info['english'] = definition.strip("/")
-
-        info['english'] = []
-        info['pinyin'] = []
-        definition_results = dictionary.definition_lookup(simplify_hanzi(character))
-        if len(definition_results) >= 1:
-            best_entry = next((entry for entry in definition_results if entry_req(entry['definition'])), 
-                              definition_results[0])
-            
-            info['english'].append(best_entry['definition'])
-            info['pinyin'].append(best_entry['pinyin'])
-            
-            for entry in definition_results:
-                if entry != best_entry:
-                    info['english'].append(entry['definition'])
-                    info['pinyin'].append(entry['pinyin'])
-            info['english'] = apply_exceptions(character, info['english'])
-            info['pinyin'] = apply_exceptions(character, info['pinyin'])
-    except:
-        info['pinyin'] = [get_pinyin(character)]
-        info['english'] = ["N/A"]
-    info['character'] = character
-    info['darkness'] = HANZI_DARKNESS_KAITI.get(character, -1)
-    return info
-
 
 def getshortdate():
     return datetime.now(timezone.utc).strftime("%Y%m%d")
@@ -178,153 +131,3 @@ def get_random_chars_from_deck(deck, n, pinyin=False, english=False, function=Fa
 
 def char_decomp_info(char):
     return DECOMPOSE_CACHE.get(char, {})
-    decomposed = decomposer.decompose(char)
-    # radicals = decomposed.get('radical', [])
-    # radicals_with_meaning = {}
-    # for radical in radicals:
-    #     meaning = decomposer.get_radical_meaning(radical)
-    #     radicals_with_meaning[radical] = meaning
-
-    main_components = decomposed.get('once', [])
-    main_components = [x for x in main_components if len(x) == 1]
-
-    if not main_components:
-        main_components = [char]
-
-    ccs = []
-    similars = {}
-    for comp in main_components:
-        try:
-            similar = decomposer.get_characters_with_component(comp)
-            if similar:
-                similars[comp] = similar[:]
-                ccs += similar
-        except:
-            pass
-    # ccs = list(set(ccs))
-    # ccs_f = []
-    # for c in ccs:
-    #     flag = True
-    #     for comp in main_components:
-    #         if c not in similars.get(comp, []):
-    #             flag = False
-    #     if flag:
-    #         ccs_f.append(c)
-
-    #return {char: ccs_f}
-    return similars
-
-
-def entry_req(definition):
-    
-    cleaned_definition = re.sub(r"/CL:[^/]+", "", definition)
-    cleaned_definition = re.sub(r"/variant of [^/]+", "", cleaned_definition)
-    cleaned_definition = re.sub(r"/used in [^/]+", "", cleaned_definition)
-    cleaned_definition = re.sub(r"/abbr. for [^/]+", "", cleaned_definition)
-
-    cleaned_definition = cleaned_definition.strip("/").strip()
-    if not cleaned_definition:
-        return False
-
-    r1 = "surname " not in cleaned_definition
-    r2 = "variant of" not in cleaned_definition
-    r3 = "used in" not in cleaned_definition
-    r4 = "abbr. for" not in cleaned_definition
-
-    return r1 and r2 and r3 and r4
-
-def char_full_info_(original_char):
-    char = simplify_hanzi(original_char)
-    example_words = []
-    definition = []
-    pinyin = []
-    if True:
-        definition_results = dictionary.definition_lookup(char)
-        examples = dictionary.get_examples(char)
-        examples_hf = examples['high_frequency']
-        examples_mf = examples['mid_frequency']
-        
-        if len(definition_results) >= 1:
-            best_entry = next((entry for entry in definition_results if entry_req(entry['definition'])), 
-                              definition_results[0])
-            
-            example_words.append(best_entry['simplified'])
-            definition.append(best_entry['definition'])
-            pinyin.append(best_entry['pinyin'])
-            
-            for entry in definition_results:
-                if entry != best_entry and "variant of" not in entry['definition']:
-                    example_words.append(entry['simplified'])
-                    definition.append(entry['definition'])
-                    pinyin.append(entry['pinyin'])
-        for examp in examples_hf:
-            if examp['simplified'] != char:
-                definition.append(examp['definition'])
-                pinyin.append(examp['pinyin'])
-                example_words.append(examp['simplified'])
-        for examp in examples_mf:
-            if examp['simplified'] != char:
-                definition.append(examp['definition'])
-                pinyin.append(examp['pinyin'])
-                example_words.append(examp['simplified'])
-    else:
-        definition = ["-"]
-        pinyin = ["-"]
-        example_words = ["-"]
-    frequency = "-"
-    rank = "-"
-    try:
-        fr = dictionary.get_character_frequency(char)
-        frequency = float(fr['percentage'])
-        rank = int(fr['number'])
-    except:
-        pass
-        
-    decomposed = decomposer.decompose(char)
-    radicals = decomposed.get('radical', [])
-    radicals_with_meaning = {}
-    for radical in radicals:
-        meaning = decomposer.get_radical_meaning(radical)
-        radicals_with_meaning[radical] = meaning
-
-    graphical = list(set(decomposed.get('graphical', [])))
-
-    main_components = decomposed.get('once', [])
-    main_components = [x for x in main_components if len(x) == 1]
-
-    similars = {}
-    appears_in = []
-    # for comp in main_components:
-    #     similar = decomposer.get_characters_with_component(comp)
-    #     if similar:
-    #         similars[comp] = similar[:]
-    # try:
-    #     exam = dictionary.dictionary_search(char)
-    #     appears_in = []
-    #     for e in exam:
-    #         if e['simplified'] == char:
-    #             continue
-    #         appears_in.append({'simplified': e['simplified'], 'pinyin': e['pinyin'], 'english': e['definition']})
-    #         # if len(appears_in) > 5:
-    #         #     break
-    # except:
-    #     appears_in = []
-    definition = apply_exceptions(original_char, definition)
-    pinyin = apply_exceptions(original_char, pinyin)
-
-    return {
-        'english': definition,
-        'frequency': frequency,
-        'rank': rank,
-        'simplified': HanziConv.toSimplified(char),
-        'traditional': HanziConv.toTraditional(char),
-        'darkness': HANZI_DARKNESS_KAITI.get(original_char, -1),
-        'radicals': radicals_with_meaning,
-        'graphical': graphical,
-        'main_components': main_components,
-        'similars': similars,
-        'appears_in': appears_in,
-        'pinyin': pinyin,
-        'example_words': example_words,
-        # 'pinyin': get_pinyin(char),
-    }
