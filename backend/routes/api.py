@@ -90,9 +90,9 @@ def get_examples_page():
         return jsonify({"error": "Missing required fields"}), 400
     page = data["page"]
     character = data["character"]
-    # examples, is_last = get_tatoeba_page(character, page)
-    examples = []
-    is_last = False
+    examples, is_last = get_tatoeba_page(character, page)
+    # examples = []
+    # is_last = False
     return jsonify({"examples": examples, "is_last": is_last})
 
 import datetime

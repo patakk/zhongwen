@@ -98,7 +98,7 @@ def get_tatoeba_page(character, page):
             words = pseg.cut(t['cmn'])
             cmn = []
             for a, b in words:
-                cmn.append({**get_char_info(a, pinyin=True, english=True), 'character': a})
+                cmn.append({**get_char_info(a), 'character': a})
             examples.append({**t, 'cmn': cmn})
         except:
             pass

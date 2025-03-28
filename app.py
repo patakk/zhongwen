@@ -158,8 +158,8 @@ def main_card_data(character):
     username = session.get('username')
     simple_info = get_char_info(character)
 
-    res = get_tatoeba_page(character, 0)
-    # res = None
+    # res = get_tatoeba_page(character, 0)
+    res = None
     if res:
         examples, is_last = res
     else:
