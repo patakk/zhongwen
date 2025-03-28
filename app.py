@@ -369,7 +369,7 @@ def flashcards():
 
     username = session.get('username')
 
-    custom_wordlists = db_get_user_wordlists(username, pinyin=False, english=False)
+    custom_wordlists = db_get_user_wordlists(username)
     cc = {
         **custom_wordlists,
         **CARDDECKS
@@ -404,7 +404,7 @@ def grid():
     logger.info(f"Query deck: {querydeck}")
 
     username = session.get('username')
-    custom_wordlists = db_get_user_wordlists(username, pinyin=True, english=False)
+    custom_wordlists = db_get_user_wordlists(username)
     custom_deck_names = list(custom_wordlists.keys())
     cc = {
         **custom_wordlists,
