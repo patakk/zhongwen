@@ -1,0 +1,65 @@
+{
+    "english": [
+        "cat/CL:隻|只[zhi1]/(dialect) to hide oneself/(coll.) modem",
+        "panda/CL:隻|只[zhi1]",
+        "Garfield (comic strip cat created by Jim Davis)",
+        "owl/(fig.) night owl",
+        "giant panda (Ailuropoda melanoleuca)",
+        "to have dark circles under one's eyes/to have eyes like a panda",
+        "kitten",
+        "kitty",
+        "peephole/chrysoberyl",
+        "owl",
+        "chinchilla/Totoro (anime character)"
+    ],
+    "frequency": 95.6430573964,
+    "rank": 1671,
+    "simplified": "猫",
+    "traditional": "貓",
+    "darkness": 0.21081,
+    "radicals": {
+        "犭": "dog",
+        "艹": "grass",
+        "田": "field"
+    },
+    "graphical": [
+        "艹",
+        "冂",
+        "㇒",
+        "丨",
+        "一",
+        "㇁"
+    ],
+    "main_components": [
+        "犭",
+        "苗"
+    ],
+    "similars": {},
+    "appears_in": [],
+    "pinyin": [
+        "mao1",
+        "xiong2 mao1",
+        "Jia1 fei1 mao1",
+        "ye4 mao1 zi5",
+        "da4 xiong2 mao1",
+        "xiong2 mao1 yan3",
+        "mao1 er2",
+        "mao1 mi1",
+        "mao1 yan3",
+        "mao1 tou2 ying1",
+        "long2 mao1"
+    ],
+    "example_words": [
+        "猫",
+        "熊猫",
+        "加菲猫",
+        "夜猫子",
+        "大熊猫",
+        "熊猫眼",
+        "猫儿",
+        "猫咪",
+        "猫眼",
+        "猫头鹰",
+        "龙猫"
+    ]
+}

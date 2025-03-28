@@ -22,14 +22,9 @@ import requests
 from backend.decorators import session_required
 from backend.decorators import hard_session_required
 from backend.decorators import timing_decorator
-from backend.db.ops import getshortdate
-from backend.db.ops import db_load_user_value
-from backend.db.ops import db_init_app
 from backend.db.ops import db_user_exists
 from backend.db.ops import db_authenticate_user
 from backend.db.ops import db_create_user
-from backend.db.ops import db_get_user_note
-from backend.db.ops import db_get_all_public_notes
 from backend.db.ops import db_get_all_stroke_data
 from backend.db.ops import db_store_user_string
 from backend.db.ops import db_get_user_string
@@ -40,9 +35,6 @@ from backend.db.ops import db_get_user_wordlists
 from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
 from backend.common import CARDDECKS_W_PINYIN
-from backend.common import TATOEBA_MAP
-from backend.common import TATOEBA_DATA
-from backend.common import get_tatoeba_page
 from backend.common import DECKNAMES
 
 from backend.common import get_pinyin
@@ -106,31 +98,6 @@ from backend.db.extensions import db
 from backend.db.models import User
 from backend.db.models import WordEntry
 from backend.db.models import WordList
-
-@app.route("/link-google", methods=["GET"])
-@session_required
-def link_google_account():
-    if not google.authorized:
-        flash("Please log in with Google first", "error")
-        return redirect(url_for("google.login", next=url_for("link_google_account")))
-    
-    resp = google.get("/oauth2/v2/userinfo")
-    if resp.ok:
-        google_info = resp.json()
-        google_id = google_info["id"]
-        
-        # Update current user
-        current_user = User.query.get(session['user_id'])
-        current_user.google_id = google_id
-        current_user.email = google_info.get("email", current_user.email)
-        current_user.email_verified = True
-        db.session.commit()
-        
-        flash("Your account has been linked with Google!", "success")
-        return redirect(url_for("profile"))  # Or wherever you want
-    
-    flash("Failed to link Google account. Please try again.", "error")
-    return redirect(url_for("profile"))
 
 
 @app.route('/get_card_data')

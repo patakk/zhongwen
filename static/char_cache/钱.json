@@ -1,0 +1,63 @@
+{
+    "english": [
+        "coin/money/CL:筆|笔[bi3]/unit of weight, one tenth of a tael 兩|两[liang3]",
+        "surname Qian",
+        "valuable/costly/expensive",
+        "price",
+        "to deposit money/to save money",
+        "to make money",
+        "well-off/wealthy",
+        "rich person/the rich",
+        "money/currency",
+        "purse/wallet",
+        "wealth/money"
+    ],
+    "frequency": 79.7412697653,
+    "rank": 603,
+    "simplified": "钱",
+    "traditional": "錢",
+    "darkness": 0.17242,
+    "radicals": {
+        "钅": "metal/gold",
+        "戋": null
+    },
+    "graphical": [
+        "戋",
+        "乚",
+        "丿",
+        "二",
+        "一"
+    ],
+    "main_components": [
+        "钅",
+        "戋"
+    ],
+    "similars": {},
+    "appears_in": [],
+    "pinyin": [
+        "qian2",
+        "Qian2",
+        "zhi2 qian2",
+        "jia4 qian5",
+        "cun2 qian2",
+        "zheng4 qian2",
+        "you3 qian2",
+        "you3 qian2 ren2",
+        "jin1 qian2",
+        "qian2 bao1",
+        "qian2 cai2"
+    ],
+    "example_words": [
+        "钱",
+        "钱",
+        "值钱",
+        "价钱",
+        "存钱",
+        "挣钱",
+        "有钱",
+        "有钱人",
+        "金钱",
+        "钱包",
+        "钱财"
+    ]
+}
