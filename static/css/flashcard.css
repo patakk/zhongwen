@@ -1374,3 +1374,26 @@ input[type="checkbox"].darkmode:checked::after {
         margin-top: 5px;
     }
 }
+.similar-toggle {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 10px 0;
+    background-color: var(--background-color);
+    border: 1px solid var(--text-color);
+    border-radius: 1px;
+    cursor: pointer;
+    font-size: 14px;
+    user-select: none;
+}
+
+.similar-toggle:hover {
+    background-color: var(--dimmer-background-color);
+}
+
+.similar-toggle.active {
+    background-color: var(--background-color);
+}
+
+.similar-toggle.active:hover {
+    background-color: var(--dimmer-background-color);
+}

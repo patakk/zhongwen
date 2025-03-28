@@ -873,9 +873,9 @@ function hideCard() {
     history.pushState({}, '', newUrl);
 }
 
-function constSimilars(similars, similarsDiv){
+function constSimilars(character, similarsDiv){
 
-    getCharactersDecompInfo(similars, (similars_per_component) => {
+    getCharactersDecompInfo(character, (similars_per_component) => {
 
         let ss = "";
         let kkeys = Object.keys(similars_per_component);
@@ -1015,9 +1015,6 @@ function constSimilars(similars, similarsDiv){
                     
                         let x = e.pageX + 10;
                         let y = e.pageY + 10 - window.scrollY*0;
-                    
-                        // if (x > maxX) x = maxX;
-                        // if (y > maxY) y = maxY;
                     
                         hoverBox.style.left = `${x}px`;
                         hoverBox.style.top = `${y}px`;
@@ -1330,6 +1327,29 @@ function createDefinitionsQ(example_words, pinyin, english) {
     return {defLabelDiv, definitionsContainer: container};
 }
 
+function createSimilarCharactersToggle(char, container) {
+    const toggleDiv = document.createElement('div');
+    toggleDiv.classList.add('similar-toggle');
+    toggleDiv.textContent = 'Load Similar Characters';
+    
+    let isLoaded = false;
+    
+    toggleDiv.addEventListener('click', function() {
+        if (!isLoaded) {
+            constSimilars(char, container);
+            isLoaded = true;
+            toggleDiv.textContent = 'Hide Similar Characters';
+            toggleDiv.classList.add('active');
+        } else {
+            container.innerHTML = '';
+            isLoaded = false;
+            toggleDiv.textContent = 'Load Similar Characters';
+            toggleDiv.classList.remove('active');
+        }
+    });
+    
+    return toggleDiv;
+}
 
 function renderCard(data) {
     const container = document.getElementById('flashcard_container');
@@ -1580,7 +1600,9 @@ function renderCard(data) {
         // Similar Characters per Component
         const similarsDiv = document.createElement('div');
         similarsDiv.classList.add('rawDefEntry');
-        constSimilars(char, similarsDiv);
+
+        const similarsToggleButton = createSimilarCharactersToggle(char, similarsDiv);
+
         
         let allWords = new Set();
         Object.values(similars_per_component).forEach(similar_chars => {
@@ -1883,6 +1905,7 @@ function renderCard(data) {
         }, 110);
 
         //document.getElementById('flashcard_overlay').appendChild(appearsInDiv);
+        entryDiv.appendChild(similarsToggleButton);
         entryDiv.appendChild(similarsDiv);
         // entryDiv.appendChild(appearsInDiv);
 
