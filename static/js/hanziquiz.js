@@ -6,6 +6,7 @@ const resultsDiv = document.getElementById('results');
 const scoreSpan = document.getElementById('score');
 const accuracySpan = document.getElementById('accuracy');
 const strokeAccuracySpan = document.getElementById('stroke_accuracy');
+const helpBtn = document.getElementById('help-btn');
 const restartBtn = document.getElementById('restart-btn');
 const skipBtn = document.getElementById('skip-btn');
 const resetBtn = document.getElementById('end-btn');
@@ -245,7 +246,7 @@ function replaceAt(str, index, replacement) {
     return str.slice(0, index) + replacement + str.slice(index + 1);
  }
 
-  function showWord() {
+function showWord() {
     // drawingArea.removeEventListener('click', handleAreaClick);
 
     pinyinLabel.classList.add('active');
@@ -320,6 +321,15 @@ function replaceAt(str, index, replacement) {
     
     // window.scrollTo(0, 1);
 }
+
+
+
+helpBtn.addEventListener('click', () => {
+
+    const writer = currentWriters[0];
+    writer.helpMode();
+});
+
 
 restartBtn.addEventListener('click', () => {
     
@@ -407,6 +417,7 @@ skipBtn.addEventListener('click', () => {
         streakCount = 0;
         streakCheckpoint = streakIncrement;
         currentWriters[0].clearBg();
+        currentWriters[0].demoMode = false;
 
         showWord();
         skipBtn.textContent = 'Reveal';

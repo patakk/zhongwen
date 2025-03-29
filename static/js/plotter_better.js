@@ -552,6 +552,8 @@ class HanziPlotter {
         this.clearBackground = clearBackground;
         this.loadPromise = null;
 
+        this.demoMode = false;
+
         this.useMask = useMask;
         this.userStrokes = [];
         this.currentStroke = null;
@@ -885,6 +887,8 @@ class HanziPlotter {
                 // this.draw(1, false, () => {this.drawUserStrokes(false, false);});
                 // this.drawUserStrokes(false, false);
                 // this.draw(1, false);
+                this.demoMode = false;
+                cancelAnimationFrame(this.demoAnimationFrame);
                 this.startInterpol();
                 //     setTimeout(() => {
                 //     this.isQuizing = false;
@@ -899,9 +903,22 @@ class HanziPlotter {
         // this.drawUserStrokes();
     }
 
+    helpMode(){
+        this.demoMode = true;
+
+        let oalpha = 0.5;
+        const anim = () => {
+            this.clearBg(oalpha);
+            oalpha -= 0.004;
+            if(oalpha > 0){
+                this.demoAnimationFrame = requestAnimationFrame(anim);
+            }
+        }
+        this.demoAnimationFrame = requestAnimationFrame(anim);
+    }
+
     startInterpol(){
-        
-        this.isAnimatingInterp = false;
+        this.isAnimatingInterp = true;
         console.log("this.userStrokes.length");
         console.log("this.strokes.length");
         console.log(this.userStrokes.length);
@@ -1164,7 +1181,7 @@ class HanziPlotter {
         this.ctx.clearRect(0, 0, this.dimension, this.dimension);
     }
 
-    clearBg() {
+    clearBg(oalpha=0) {
         this.clear();
 
         // draw black bg
@@ -1174,6 +1191,19 @@ class HanziPlotter {
         }
         
         drawBg(this.ctx, this.showDiagonals, this.showGrid);
+
+        if(this.demoMode && !this.isAnimatingInterp){
+            
+            this.draw({
+                progress: 1,
+                clearbg: false,
+                onDrawComplete: null,
+                alpha: oalpha,
+                strokes_in: null,
+                strokes_in_length: null
+            });
+            this.drawUserStrokes(false);
+        }
     }
 
     giveUp(){
@@ -1202,7 +1232,7 @@ class HanziPlotter {
             
             const underlay = Math.max(.35, Math.min(progress*4, 0.35))
             this.clearBg();
-            this.draw({ progress: 1, clearbg: false, onDrawComplete: null, alpha: underlay });
+            // this.draw({ progress: 1, clearbg: false, onDrawComplete: null, alpha: underlay });
             this.draw({ progress: progress, clearbg: false, onDrawComplete: null, alpha: 1 });
             if (progress < 1) {
                 this.animationFrame = requestAnimationFrame(animate);
