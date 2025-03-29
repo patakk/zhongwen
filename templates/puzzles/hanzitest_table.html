@@ -31,6 +31,7 @@
 <body>
 {% endif %}
     <h1 id="title">Test your pinyin <span id="brain"><i class="fas fa-keyboard"></i></span></h1>
+    <a href="{{ url_for('puzzles.puzzles') }}" id="backLink">&lt;&lt; puzzles</a>
     <div class="custom-dropdown deck-dropdown">
         <div id="deck-name"><div id="deck-name-label">Word list:</div> <div id="selected-deck">Select a deck</div></div>
         <div id="deck-options" class="options-container"></div>
@@ -39,7 +40,6 @@
         <div id="font-name"><div id="font-name-label">Font:</div> <div id="selected-font">Select a font</div></div>
         <div id="font-options" class="options-container"></div>
     </div>
-    <a href="{{ url_for('puzzles.puzzles') }}" id="backLink">&lt;&lt; back to puzzles</a>
 
     {% include 'menu.html' %}
 
