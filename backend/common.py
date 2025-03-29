@@ -6,16 +6,19 @@ import re
 import jieba.posseg as pseg
 from hanziconv import HanziConv
 
-from hanzipy.decomposer import HanziDecomposer
+# from hanzipy.decomposer import HanziDecomposer
 from hanzipy.dictionary import HanziDictionary
 from pypinyin import lazy_pinyin, Style
 
-decomposer = HanziDecomposer()
+# decomposer = HanziDecomposer()
 dictionary = HanziDictionary()
+dictionary.search_by_pinyin("ni hao")
+dictionary.search_by_english("hello")
+dictionary.get_examples("你好")  
+dictionary.definition_lookup("你") 
 
 # from .flashcard_app import init_flashcard_app, get_flashcard_app
 
-DATA_DIR = './data'
 
 def load_secrets(secrets_file):
     secrets = {}
@@ -40,6 +43,7 @@ def get_pinyin(hanzi):
     return ' '.join(result)
 
 
+DATA_DIR = './data'
 CARDDECKS = json.load(open(os.path.join(DATA_DIR, "decks.json")))
 CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "chars_cache.json")))
 WORDS_CACHE = json.load(open(os.path.join(DATA_DIR, "words_cache.json")))
