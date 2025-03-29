@@ -820,7 +820,7 @@ def move_tone_number_to_end(pinyin):
 def normalize_query(text):
     text = text.lower()
     text = text.strip(string.punctuation)
-    text = lemmatizer.lemmatize(text)
+    # text = lemmatizer.lemmatize(text)
     return text
 
 def get_search_results(query):

@@ -12,10 +12,6 @@ from pypinyin import lazy_pinyin, Style
 
 # decomposer = HanziDecomposer()
 dictionary = HanziDictionary()
-dictionary.search_by_pinyin("ni hao")
-dictionary.search_by_english("hello")
-dictionary.get_examples("你好")  
-dictionary.definition_lookup("你") 
 
 # from .flashcard_app import init_flashcard_app, get_flashcard_app
 
