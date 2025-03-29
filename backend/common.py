@@ -42,6 +42,7 @@ def get_pinyin(hanzi):
 DATA_DIR = './data'
 CARDDECKS = json.load(open(os.path.join(DATA_DIR, "decks.json")))
 CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "chars_cache.json")))
+STROKES_CACHE = json.load(open(os.path.join(DATA_DIR, "strokes_cache.json")))
 WORDS_CACHE = json.load(open(os.path.join(DATA_DIR, "words_cache.json")))
 DECOMPOSE_CACHE = json.load(open(os.path.join(DATA_DIR, "decompose_cache.json")))
 ANTHROPIC_DATA = json.load(open(os.path.join(DATA_DIR, "anthropic.json")))
