@@ -806,6 +806,7 @@ function changeDeck(deck) {
     newUrl.searchParams.set('wordlist', deck);
     history.pushState({}, '', newUrl);
     console.log('changing deck to', deck);
+    console.log(currentData);
     drawBothLayouts(currentData);
     window.scrollTo(0, 0);
     document.getElementById('deckSubmenu').classList.remove('active');
