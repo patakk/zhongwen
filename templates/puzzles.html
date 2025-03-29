@@ -152,6 +152,14 @@
             background-color: rgb(55, 55, 55);
         }
 
+        #backLink {
+            position: absolute;
+            top: 1em;
+            left: 1em;
+            font-size: 1em;
+            color: var(--text-color);
+            text-decoration: none;
+        }
     </style>
 </head>
 
@@ -160,6 +168,7 @@
 {% else %}
 <body>
 {% endif %}
+<a href="{{ url_for('home') }}" id="backLink">&lt;&lt; home</a>
     
     {% include 'menu.html' %}
 

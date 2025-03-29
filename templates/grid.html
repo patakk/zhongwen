@@ -60,6 +60,14 @@
     </style>
     
     <style>
+        #backLink {
+            position: absolute;
+            top: 1em;
+            left: 1em;
+            font-size: 1em;
+            color: var(--text-color);
+            text-decoration: none;
+        }
     </style>
 </head>
 
@@ -68,6 +76,7 @@
 {% else %}
 <body>
 {% endif %}
+    <a href="{{ url_for('home') }}" id="backLink">&lt;&lt; home</a>
     <h1 id="title">Character Grid</h1>
     <h3 id="title_word_count"></h3>
     <div class="has-submenu" id="deckMenu">

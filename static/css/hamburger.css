@@ -132,7 +132,7 @@
 }
 
 /* Add this new rule */
-.has-submenu:hover > span::after {
+/* .has-submenu:hover > span::after {
     content: '';
     position: absolute;
     top: 0;
@@ -141,7 +141,7 @@
     height: 100%;
     background-color: rgba(255, 14, 14, 0);
     z-index: 1;
-}
+} */
 
 @media screen and (max-width: 768px) {
     .dropdown-menu {

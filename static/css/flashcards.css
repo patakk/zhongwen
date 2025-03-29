@@ -1,19 +1,22 @@
 
-#deckMenu, #fontMenu {
-    top: 1em;
-    left: 1em;
-    position: fixed;
+#deckMenu {
+    top: 3em;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
     box-sizing: border-box;
     z-index: 3;
     text-align: center;
+    width: 100%;
 }
+
 
 #deckMenu {
     z-index: 130;
 }
 
 #fontMenu {
-    top: 60px;
+    top: 4em;
 }
 
 
@@ -22,11 +25,12 @@
 }
 
 
-#deckSubmenu, #fontSubmenu {
+#deckSubmenu {
     display: none;
     position: absolute;
-    left: 0px;
-    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 7em;
     background-color: var(--background-color);
     border: var(--simple-border);
     box-sizing: border-box;
@@ -47,6 +51,17 @@
     padding: 0px;
     text-align: left;
     min-width: 135px;
+}
+
+#deckSubmenuName {
+    font-size: 2em;
+    left: 50%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: "Helvetica", serif;
+    font-weight: bold;
+    background-color: transparent;
 }
 
 @media (max-width: 768px) {

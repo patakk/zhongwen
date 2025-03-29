@@ -1169,7 +1169,7 @@ class HanziPlotter {
 
         // draw black bg
         if(!this.clearBackground){
-            this.ctx.fillStyle = isDarkMode ? '#232124' : '#f3f3f3';
+            this.ctx.fillStyle = isDarkMode ? '#212121' : '#f3f3f3';
             this.ctx.fillRect(0, 0, this.dimension, this.dimension);
         }
         

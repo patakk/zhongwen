@@ -641,6 +641,9 @@ document.addEventListener('DOMContentLoaded', function() {
         history.pushState({}, '', newUrl);
     }
 
+    document.getElementById('deckSubmenuName').textContent = inputdecks[inputdeck].name;
+
+
     confirmDarkmode();
     getNewWord();
     handleFont();
@@ -717,6 +720,7 @@ function handleTopLeftButtons() {
             currentWord = '';
             getNewWord();
             document.querySelectorAll('.deck-change').forEach(opt => opt.classList.remove('selected-option'));
+            document.getElementById('deckSubmenuName').textContent = inputdecks[inputdeck].name;
             this.classList.add('selected-option');
         });
     });
@@ -735,7 +739,8 @@ function handleTopLeftButtons() {
     });
 
     let flashcard_container = document.getElementById('flashcard_container');
-    flashcard_container.addEventListener('click', function(event) {
+    let flashcard = document.getElementById('flashcard');
+    flashcard.addEventListener('click', function(event) {
         revealOrNew();
     });
 

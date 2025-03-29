@@ -22,6 +22,17 @@
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
     <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script>
+
+    <style>
+        #backLink {
+            position: absolute;
+            top: 1em;
+            left: 1em;
+            font-size: 1em;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+    </style>
 </head>
 
 {% if darkmode %}
@@ -29,6 +40,7 @@
 {% else %}
 <body>
 {% endif %}
+    <a href="{{ url_for('hanziwriting') }}" id="backLink">&lt;&lt; home</a>
    
     {% include 'menu.html' %}
 

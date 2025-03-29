@@ -25,6 +25,14 @@
         
     </style>
     <style>
+        #backLink {
+            position: absolute;
+            top: 1em;
+            left: 1em;
+            font-size: 1em;
+            color: var(--text-color);
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -35,6 +43,7 @@
 
     <h2 id="deck-name"></h2>
 
+    <a href="{{ url_for('hanziwriting') }}" id="backLink">&lt;&lt; back</a>
     
     {% include 'menu.html' %}
     

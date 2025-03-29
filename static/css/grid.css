@@ -830,7 +830,7 @@ and (orientation: landscape) {
 }
 
 #deckMenu, #fontMenu {
-    top: 1em;
+    top: 3em;
     left: 1em;
     position: fixed;
     box-sizing: border-box;
@@ -843,7 +843,7 @@ and (orientation: landscape) {
 }
 
 #fontMenu {
-    top: 60px;
+    top: 5em;
 }
 
 

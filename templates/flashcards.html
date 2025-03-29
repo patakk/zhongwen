@@ -40,6 +40,15 @@
         </style>
         
         <style>
+            #backLink {
+                position: absolute;
+                top: 1em;
+                left: 1em;
+                font-size: 1em;
+                color: var(--text-color);
+                text-decoration: none;
+                z-index: 1000;
+            }
         </style>
     </head>
 
@@ -56,16 +65,17 @@
     {% else %}
     <body>
     {% endif %}
+    <a href="{{ url_for('home') }}" id="backLink">&lt;&lt; home</a>
     {% include 'menu.html' %}
 
         <div class="has-submenu" id="deckMenu">
             <span class="submenuName" id="deckSubmenuName">sets</span>
-            <ul class="gridSubmenu" id="deckSubmenu">
-                {% for key, deck in decks.items() %}
-                    <li class="menu-option-parent"><a class="deck-option deck-change" data-deck="{{ key }}">{{ deck.name }}</a></li>
-                {% endfor %}
-            </ul>
         </div>
+        <ul class="gridSubmenu" id="deckSubmenu">
+            {% for key, deck in decks.items() %}
+                <li class="menu-option-parent"><a class="deck-option deck-change" data-deck="{{ key }}">{{ deck.name }}</a></li>
+            {% endfor %}
+        </ul>
         <!-- <div class="has-submenu" id="fontMenu">
             <span class="submenuName" id="fontSubmenuName">fonts</span>
             <ul class="gridSubmenu" id="fontSubmenu">
