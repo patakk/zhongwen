@@ -1,6 +1,6 @@
 
 #deckMenu {
-    top: 3em;
+    top: 4em;
     left: 50%;
     transform: translateX(-50%);
     position: absolute;
@@ -56,6 +56,8 @@
 #deckSubmenuName {
     font-size: 2em;
     left: 50%;
+    width: 50%;
+    max-width: 50%;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
