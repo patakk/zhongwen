@@ -36,6 +36,7 @@ from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
 from backend.common import CARDDECKS_W_PINYIN
 from backend.common import DECKNAMES
+from backend.common import STROKES_CACHE
 from backend.common import get_tatoeba_page
 
 from backend.common import get_pinyin
@@ -55,9 +56,6 @@ from backend.routes.puzzles import add_sorted_decknames_to_context
 from backend.setup import create_app
 from flask_limiter.util import get_remote_address
 from flask_limiter import Limiter
-
-from flask_dance.contrib.google import make_google_blueprint, google
-
 
 app = create_app()
 application = app
@@ -474,7 +472,7 @@ def convert3():
     convertedText = db_get_user_string(session['username'])
     chars = set(''.join(convertedText.split()))
     chars = chars.intersection(stroke_chars)
-    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
+    char_data = {char : {'strokes': STROKES_CACHE[char], 'pinyin': get_pinyin(char)} for char in chars}
     
     lines = convertedText.split('\n')
     translations = get_translations(lines)
@@ -487,7 +485,7 @@ def convert():
     convertedText = db_get_user_string(session['username'])
     chars = set(''.join(convertedText.split()))
     chars = chars.intersection(stroke_chars)
-    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in chars}
+    char_data = {char : {'strokes': STROKES_CACHE[char], 'pinyin': get_pinyin(char)} for char in chars}
     
     lines = convertedText.split('\n')
     translations = get_translations(lines)
@@ -510,7 +508,7 @@ def stories():
         words += line
     words += first_chapter['name']
     chars = chars.intersection(stroke_chars)
-    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'chardata': get_char_info(char)} for char in chars}
+    char_data = {char : {'strokes': STROKES_CACHE[char], 'chardata': get_char_info(char)} for char in chars}
     word_data = {word: get_char_info(word) for word in words}
     all_chapters = [[chapter['title'] for chapter in all_stories[story_name]['chapters_list']] for story_name in stories_names]
     return render_template('stories.html', darkmode=session['darkmode'], chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], word_data=word_data, custom_deck_names=db_get_word_list_names_only(username))
@@ -552,7 +550,7 @@ def get_story_strokes(story_index, chapter_index):
         chapter = chapter_data[chapter_list[chapter_index-1]['uri']]
         chars = set(''.join([''.join(ls) for ls in chapter['hanzi']]) + ''.join(chapter['name']))
         chars = chars.intersection(stroke_chars)
-        stroke_data = {char: json.load(open(f'static/strokes_data/{char}.json', 'r')) for char in chars}
+        stroke_data = {char: STROKES_CACHE[char] for char in chars}
         return jsonify(stroke_data)
     else:
         return jsonify({'error': 'Story index out of range'}), 404
@@ -644,7 +642,7 @@ def store_converted_text():
     old_charset = get_charset(old_string)
     new_charset = get_charset(text)
     needed_chars = new_charset - old_charset
-    char_data = {char : {'strokes': json.load(open(f'static/strokes_data/{char}.json', 'r')), 'pinyin': get_pinyin(char)} for char in needed_chars}
+    char_data = {char : {'strokes': STROKES_CACHE[char], 'pinyin': get_pinyin(char)} for char in needed_chars}
     
     success, message = db_store_user_string(session['username'], text)
     return jsonify({"status": "success" if success else "error", 'message': message, 'dataPerCharacter': char_data, 'transPerLine': translations})
