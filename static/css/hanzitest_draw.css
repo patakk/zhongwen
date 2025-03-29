@@ -173,10 +173,13 @@ html::-webkit-scrollbar {
     padding-bottom: .7em;
     font-size: 1.4em;
     white-space: wrap;
+    display: none;
 }
 
 #pinyin-display {
-    font-size: 2em;
+    font-size: 1.4em;
+    padding-top: .7em;
+    padding-bottom: .7em;
     color: var(--text-color);
     width: 200px;
     text-align: center;
@@ -197,6 +200,7 @@ html::-webkit-scrollbar {
 
 .hanzipart {
     margin: 0 .1em;
+    font-size: 2em;
 }
 
 #pinyin-display > .hiddenHanzi {
@@ -204,7 +208,9 @@ html::-webkit-scrollbar {
     background-color: var(--text-color);
     display: inline-block;
     line-height: 1;
-    padding: 0;
+    padding: 0em;
+    margin-top: .4em;
+    margin-bottom: .4em;
 }
 
 #pinyin-display > .hiddenHanzi::selection {
@@ -212,7 +218,7 @@ html::-webkit-scrollbar {
     background-color: var(--text-color);
     display: inline-block;
     line-height: 1;
-    padding: 0;
+    padding: 0em;
 }
 
 #pinyin-display.active > .hiddenHanzi {
@@ -292,8 +298,7 @@ h1 {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 10px;
-    margin: 20px auto;
+    margin: 0em auto 1em auto;
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
