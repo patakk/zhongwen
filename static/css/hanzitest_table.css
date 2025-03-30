@@ -253,7 +253,6 @@ h1 {
 
 
 #selected-deck {
-    font-weight: bold;
     display: block;
     width: 150px;
     max-width: 150px;
@@ -267,12 +266,10 @@ h1 {
 }
 
 #selected-deck.darkmode {
-    font-weight: bold;
     background-color: #353535;
 }
 
 #selected-font {
-    font-weight: bold;
     background-color: #dcdcdc;
     padding: 3px 11px;
     font-family: "Helvetica", serif;
@@ -280,7 +277,6 @@ h1 {
 }
 
 #selected-font.darkmode {
-    font-weight: bold;
     background-color: #353535;
 }
 

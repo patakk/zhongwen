@@ -420,7 +420,8 @@ function getNewWord() {
     let chars = inputdecks[inputdeck].chars;
 
     if(currentWord === ''){
-        currentWord = chars[Math.floor(Math.random() * chars.length)];
+        //currentWord = chars[Math.floor(Math.random() * chars.length)];
+        currentWord = chars[currentIndexInDeck];
         
         getPinyinEnglishFor(currentWord).then(function(data) {
             currentWordInfo.character = currentWord;
@@ -438,9 +439,24 @@ function getNewWord() {
         // redrawCurrentCard();
         interpolateCards();
     }
-    nextWord = chars[Math.floor(Math.random() * chars.length)];
-    while(nextWord === currentWord && chars.length > 1) {
-        nextWord = chars[Math.floor(Math.random() * chars.length)];
+
+    // nextWord = chars[Math.floor(Math.random() * chars.length)];
+    // while(nextWord === currentWord && chars.length > 1) {
+    //     nextWord = chars[Math.floor(Math.random() * chars.length)];
+    // }
+    currentIndexInDeck++;
+
+    if(currentIndexInDeck >= inputdecks[inputdeck].chars.length){
+        currentIndexInDeck = 0;
+        inputdecks[inputdeck].chars = shuffleArray(inputdecks[inputdeck].chars);
+        nextWord = inputdecks[inputdeck].chars[currentIndexInDeck];
+        while(nextWord === currentWord){
+            inputdecks[inputdeck].chars = shuffleArray(inputdecks[inputdeck].chars);
+            nextWord = inputdecks[inputdeck].chars[currentIndexInDeck];
+        }
+    }
+    else{
+        nextWord = chars[currentIndexInDeck];
     }
 
     getPinyinEnglishFor(nextWord).then(function(data) {
@@ -626,6 +642,14 @@ async function loadStrokeData(character, onLoad=null) {
     }
 }
 
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     currentFont = 'Noto Sans';
 
@@ -643,7 +667,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('deckSubmenuName').textContent = inputdecks[inputdeck].name;
 
-
+    inputdecks[inputdeck] = shuffleArray(inputdecks[inputdeck]);
+    currentIndexInDeck = 0;
     confirmDarkmode();
     getNewWord();
     handleFont();
@@ -681,6 +706,8 @@ function setupCanvas(){
     hanziContainer.appendChild(canvas);
 }
 
+let currentIndexInDeck = 0;
+
 function handleTopLeftButtons() {
 
     setupCanvas();
@@ -714,6 +741,8 @@ function handleTopLeftButtons() {
             e.preventDefault();
             e.stopPropagation();
             inputdeck = this.dataset.deck;
+            currentIndexInDeck = 0;
+            inputdecks[inputdeck] = shuffleArray(inputdecks[inputdeck]);
             let newUrl = new URL(window.location);
             newUrl.searchParams.set('wordlist', inputdeck);
             history.pushState({}, '', newUrl);

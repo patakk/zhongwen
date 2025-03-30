@@ -13,7 +13,7 @@ body {
 
 
 html {
-    overflow-y: hidden;
+    overflow-y: scroll;
     overflow-x: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -55,16 +55,27 @@ html::-webkit-scrollbar {
 .writing-btns {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: white;
-    color: black;
-    border: 2px solid black;
+    background-color: var(--dimmest-background-color);
+    color: var(--text-color);
+    border: 2px solid var(--text-color);
+    border: none;
     cursor: pointer;
+    border-radius: 1em;
+
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 1);
 }
 
+.writing-btns:hover {
+    background-color: var(--background-color);
+}
+
+.writing-btns.darkmode:hover {
+    background-color: rgb(41, 41, 41)
+}
+
+
 .writing-btns.darkmode {
-    background-color: rgb(14, 14, 14);
-    color: rgb(243, 243, 243);
-    border: 2px solid white;
+    box-shadow: 2px 2px 1px rgb(61, 61, 61);
 }
 
 #restart-btn {

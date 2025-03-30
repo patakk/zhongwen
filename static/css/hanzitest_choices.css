@@ -45,7 +45,7 @@ body {
     background-color: var(--dimmer-background-color);
     color: black;
     border-radius: 1em;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     user-select: none;
     transition: background-color 0.3s, color 0.3s;
@@ -53,7 +53,7 @@ body {
 
 .pinyin-option.darkmode {
     color: #f0f0f0;
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.05);
+    box-shadow: 2px 2px 1px rgba(255, 255, 255, 0.1);
     background-color: var(--dimmer-background-color);
 }
 
@@ -392,7 +392,6 @@ h1 {
 
 
 #selected-deck {
-    font-weight: bold;
     display: block;
     width: 150px;
     max-width: 150px;
@@ -406,12 +405,10 @@ h1 {
 }
 
 #selected-deck.darkmode {
-    font-weight: bold;
     background-color: #353535;
 }
 
 #selected-font {
-    font-weight: bold;
     background-color: #dcdcdc;
     padding: 3px 11px;
     font-family: "Helvetica", serif;
@@ -419,7 +416,6 @@ h1 {
 }
 
 #selected-font.darkmode {
-    font-weight: bold;
     background-color: #353535;
 }
 

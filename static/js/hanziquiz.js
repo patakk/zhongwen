@@ -365,7 +365,27 @@ function restartQ(){
 }
 
 resetBtn.addEventListener('click', () => {
-    restartQ();
+
+    if(currentWriters[0].userStrokes.length == 0){
+        skipState = 0;
+        currentIndex--;
+
+        if(currentIndex < 0){
+            currentIndex = shuffledWords.length - 1;
+            if(charIterator > 0){
+                charIterator--;
+            }
+        }
+        
+        currentWriters[0].clearBg();
+        currentWriters[0].demoMode = false;
+
+        showWord();
+        skipBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+    }
+    else{
+        restartQ();
+    }
 });
 
 skipBtn.addEventListener('click', () => {
