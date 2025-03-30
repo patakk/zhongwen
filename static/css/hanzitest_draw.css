@@ -1,4 +1,9 @@
 
+* {
+    touch-action: manipulation;
+}
+
+
 body {
     font-family: 'Noto Sans Mono', monospace;
     display: flex;

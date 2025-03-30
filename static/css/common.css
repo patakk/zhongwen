@@ -38,7 +38,6 @@
     --newwords-border-color: #9cb2da;
 }
 
-
 ::selection {
     background-color: var(--accent-color);
     color: rgb(0, 0, 0);
