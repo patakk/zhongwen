@@ -366,7 +366,7 @@ function restartQ(){
 
 resetBtn.addEventListener('click', () => {
 
-    if(currentWriters[0].userStrokes.length == 0){
+    if(currentWriters[0].userStrokes.length == 0 && skipState == 0){
         skipState = 0;
         currentIndex--;
 
