@@ -30,7 +30,7 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    top: 7em;
+    top: 8em;
     background-color: var(--background-color);
     border: var(--simple-border);
     box-sizing: border-box;
@@ -54,7 +54,7 @@
 }
 
 #deckSubmenuName {
-    font-size: 2em;
+    font-size: 3em;
     left: 50%;
     width: 50%;
     max-width: 50%;

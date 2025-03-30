@@ -776,7 +776,6 @@ function handleTopLeftButtons() {
     document.addEventListener('keydown', function(event) {
         // if 'a', 'd', space, enter, or 'r' is pressed
         if (event.key === 'a' || event.key === 'd' || event.key === ' ' || event.key === 'Enter' || event.key === 'r') {
-            event.preventDefault();
             revealOrNew();
         }
     });
