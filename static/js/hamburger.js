@@ -230,7 +230,10 @@ function getFont_c() {
         });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', hamburgerInit);
+hamburgerInit();
+
+function hamburgerInit() {
     var hamburger = document.getElementById('hamburgerMenu');
     var dropdownMenu = document.getElementById('dropdownMenu');
     var submenus = document.querySelectorAll('.has-submenu');
@@ -274,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    currentFont = getFont_c();
+    // currentFont = getFont_c();
 
     if (username && username !== 'tempuser') {
         const loginMenuItem = document.getElementById('loginMenuItem');
@@ -358,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // }
 
     // Initialize highlighting based on current selections
-});
+}
 
 function toggleMenu() {
     var menu = document.getElementById('dropdownMenu');

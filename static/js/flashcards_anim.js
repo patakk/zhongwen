@@ -653,6 +653,7 @@ function shuffleArray(array) {
 document.addEventListener('DOMContentLoaded', function() {
     currentFont = 'Noto Sans';
 
+
     let url = new URL(window.location.href);
     let deck = url.searchParams.get('wordlist');
     if(deck && inputdecks[deck]){
@@ -669,7 +670,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     inputdecks[inputdeck] = shuffleArray(inputdecks[inputdeck]);
     currentIndexInDeck = 0;
-    confirmDarkmode();
     getNewWord();
     handleFont();
     handleTopLeftButtons();

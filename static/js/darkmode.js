@@ -328,6 +328,7 @@ function getDarkmode(func=null) {
 document.addEventListener('DOMContentLoaded', function() {
     confirmDarkmode();
 });
+confirmDarkmode();
 
 // document.addEventListener('keydown', function(event) {
 //     if (event.ctrlKey && event.key === 'i') {

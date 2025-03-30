@@ -65,11 +65,11 @@
     <div id="pinyin-hover-box" style="display: none;"></div>
     <script>
     </script>
-    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}" async></script>
+    <script src="{{ url_for('static', filename='js/customback.js') }}" async></script>
+    <script src="{{ url_for('static', filename='js/flashcard.js') }}" async></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}" async></script>
 
     <script>
         const username = {{ username | tojson | safe }};

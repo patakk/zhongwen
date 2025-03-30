@@ -57,6 +57,7 @@
         let strokes_per_character = {{ strokes_per_character | tojson | safe }};
         let decks = {{ decks | tojson | safe }};
         const username = {{ username | tojson | safe }};
+        isDarkMode = {{ darkmode | tojson | safe }};
         
 
         function isIPhone(){
@@ -74,9 +75,16 @@
             }
             return false;
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                getDarkmode();
+                console.log('Dark mode set to:', isDarkMode);
+            }, 2000);
+        });
     </script>
-    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}" async></script>
     <script src="{{ url_for('static', filename='js/hanzistats.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}" async></script>
 </body>
 </html>
