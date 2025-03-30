@@ -360,7 +360,7 @@ function restartQ(){
     currentWriters.forEach(writer => {
         writer.restartQuiz();
     });
-    skipBtn.textContent = 'Reveal';
+    skipBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
     pinyinLabel.classList.remove('active');
 }
 
@@ -371,7 +371,7 @@ resetBtn.addEventListener('click', () => {
 skipBtn.addEventListener('click', () => {
     if(skipState == 0){
         skipState = 1;
-        skipBtn.textContent = 'Next';
+        skipBtn.innerHTML = '<i class="fa-solid fa-forward-step"></i>';
 
         function animateCharactersSequentially(writers, index = 0) {
             if (index >= writers.length) {
@@ -380,7 +380,7 @@ skipBtn.addEventListener('click', () => {
             const writer = writers[index];
             writer.giveUp();
         }
-        
+        currentWriters[0].quizComplete = true;
         totalAnswered++;
         // Start the sequential animation
         animateCharactersSequentially(currentWriters);
@@ -420,7 +420,7 @@ skipBtn.addEventListener('click', () => {
         currentWriters[0].demoMode = false;
 
         showWord();
-        skipBtn.textContent = 'Reveal';
+        skipBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
     }
 });
 
@@ -495,7 +495,7 @@ function createHanziWriters(characters) {
             let userChar = userData.character;
             numFinished = 0;
             skipState = 1;
-            skipBtn.textContent = 'Next';
+            skipBtn.innerHTML = '<i class="fa-solid fa-forward-step"></i>';
             
             if(!pinyinLabel.classList.contains('active')){
                 pinyinLabel.classList.add('active');
@@ -603,51 +603,6 @@ document.addEventListener('keydown', (event) => {
         confetti();
     }
 });
-
-function handleAnswer(wordTotalMistakeCount, wordTotalStrokeCount) {
-    const characterData = currentcharacters[shuffledWords[currentIndex]];
-    let isCorrect = false;
-    console.log('**********************')
-    console.log('Word mistake count:', wordTotalMistakeCount);
-    console.log('Word stroke count:', wordTotalStrokeCount);
-    if (wordTotalMistakeCount < wordTotalStrokeCount*0.2+1) {
-        correctAnswers++;
-        isCorrect = true;
-    }
-
-    if(correctAnswers == 2){
-
-    }
-
-    userAnswers.push({
-        english: characterData.english,
-        pinyin: characterData.pinyin,
-        correctCharacter: shuffledWords[currentIndex],
-        isCorrect: isCorrect
-    });
-    totalAnswered++;
-
-    //++;
-    numFinished = 0;
-    skipState = 1;
-    skipBtn.textContent = 'Next';
-     
-    if(!pinyinLabel.classList.contains('active')){
-        pinyinLabel.classList.add('active');
-    }
-    
-    setTimeout(() => {
-        //showWord();
-        //skipState = 1;
-        //skipBtn.textContent = 'Next';
-        
-        drawingArea.addEventListener('click', handleAreaClick);
-        
-        currentWriters.forEach(writer => {
-            // writer.showOutline();
-        });
-    }, 200);
-}
 
 function showResults() {
     document.getElementById('test-container').style.display = 'none';

@@ -904,6 +904,8 @@ class HanziPlotter {
     }
 
     helpMode(){
+        if(this.quizComplete)
+            return;
         this.demoMode = true;
 
         let oalpha = 0.5;
@@ -1232,7 +1234,7 @@ class HanziPlotter {
             
             const underlay = Math.max(.35, Math.min(progress*4, 0.35))
             this.clearBg();
-            // this.draw({ progress: 1, clearbg: false, onDrawComplete: null, alpha: underlay });
+            this.draw({ progress: 1, clearbg: false, onDrawComplete: null, alpha: underlay });
             this.draw({ progress: progress, clearbg: false, onDrawComplete: null, alpha: 1 });
             if (progress < 1) {
                 this.animationFrame = requestAnimationFrame(animate);
