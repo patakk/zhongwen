@@ -286,14 +286,14 @@ function maybeLoadRenderAndThenShow(character, dir=0, force_unlock=false){
         renderCard(data);
         displayCard(true, true);
         unlocked = true;
-        let nextcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(window['loadedCard'].character) + 1;
-        let prevcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(window['loadedCard'].character) - 1;
-        nextcharidx = nextcharidx % wordlists_words[currentWordlist].length;
-        prevcharidx = (prevcharidx + wordlists_words[currentWordlist].length) % wordlists_words[currentWordlist].length;
-        let nextchar = wordlists_words[currentWordlist][nextcharidx].character;
-        let prevchar = wordlists_words[currentWordlist][prevcharidx].character;
-        loadCard(nextchar, false, 'nextLoadedCard');
-        loadCard(prevchar, false, 'prevLoadedCard');
+        // let nextcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(window['loadedCard'].character) + 1;
+        // let prevcharidx = wordlists_words[currentWordlist].map(word => word.character).indexOf(window['loadedCard'].character) - 1;
+        // nextcharidx = nextcharidx % wordlists_words[currentWordlist].length;
+        // prevcharidx = (prevcharidx + wordlists_words[currentWordlist].length) % wordlists_words[currentWordlist].length;
+        // let nextchar = wordlists_words[currentWordlist][nextcharidx].character;
+        // let prevchar = wordlists_words[currentWordlist][prevcharidx].character;
+        // loadCard(nextchar, false, 'nextLoadedCard');
+        // loadCard(prevchar, false, 'prevLoadedCard');
         // recordView(character);
     })
     .catch(error => {

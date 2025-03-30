@@ -160,6 +160,12 @@ function createPlotters(data){
             size = 122;
         }
     }
+    console.log("size", size);
+    console.log("size", size);
+    console.log("size", size);
+    console.log("size", size);
+    console.log("size", size);
+    console.log("size", size);
     let colors = ["#151511aa", "#151511aa", "#151511aa"];
     if(isDarkMode){
         colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
