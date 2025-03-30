@@ -575,10 +575,10 @@ and (orientation: landscape) {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 3em;
     margin-bottom: 10px;
+    text-decoration: underline;
 }
 
 #title:hover {
-    text-decoration: underline;
 }
 
 #title_word_count {
