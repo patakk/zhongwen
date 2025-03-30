@@ -8,11 +8,12 @@ body {
     margin: 0px;
     background-color: var(--background-color);
     color: var(--text-color);
+    overflow: hidden;
 }
 
 
 html {
-    overflow-y: scroll;
+    overflow-y: hidden;
     overflow-x: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
