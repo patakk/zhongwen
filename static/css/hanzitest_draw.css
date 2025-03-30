@@ -111,6 +111,16 @@ html::-webkit-scrollbar {
 }
 
 
+@media screen and (max-width: 768px) {
+    .writing-btns:hover {
+        background-color: var(--dimmest-background-color);
+    }
+
+    .writing-btns:active {
+        background-color: var(--background-color);
+    }
+}
+
 
 #progress {
     margin-top: 20px;
