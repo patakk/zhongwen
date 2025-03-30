@@ -280,16 +280,17 @@ h1 {
     background-color: #353535;
 }
 
+
 .options-container {
     display: none;
     position: absolute;
-    top: 100%;
+    top: 2em;
     left: 0;
     right: 0;
     background-color: white;
-    border: none;
-    max-height: 400px;
+    border: 2px solid #ccc;
     font-size: 1em;
+    max-height: 400px;
     overflow-y: auto;
     z-index: 1000;
     scrollbar-width: none; 
