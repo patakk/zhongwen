@@ -165,8 +165,8 @@ def main_card_data(character):
 
     return {
         "character": character,
-        "pinyin": simple_info['pinyin'],
-        "english": simple_info['english'],
+        "pinyin": simple_info.get('pinyin', get_pinyin(character)),
+        "english": simple_info.get('english', 'N/A'),
         "examples": examples,
         "is_last": is_last,
         "html": "IMPLEMENT ME", #data.get('examples', ''),
