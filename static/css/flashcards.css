@@ -64,9 +64,17 @@
     font-family: "Helvetica", serif;
     font-weight: bold;
     background-color: transparent;
+    text-decoration: underline;
 }
 
 @media (max-width: 768px) {
+    
+    #deckSubmenuName {
+        font-size: 2em;
+        left: 50%;
+        width: 90%;
+        max-width: 90%;
+    }
     
     .has-submenu > span {
         background-image: none;
