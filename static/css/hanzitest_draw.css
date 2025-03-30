@@ -105,12 +105,10 @@ html::-webkit-scrollbar {
 
 .writing-btns {
     margin-top: 10px;
-    width: 30%;
+    width: 20%;
     max-width: 150px;
     box-sizing: border-box;
 }
-
-
 
 
 
