@@ -51,7 +51,7 @@ html::-webkit-scrollbar {
     margin-bottom: 10px;
 }
 
-#skip-btn, #help-btn, #restart-btn, #end-btn {
+.writing-btns {
     padding: 10px 20px;
     font-size: 16px;
     background-color: white;
@@ -60,7 +60,7 @@ html::-webkit-scrollbar {
     cursor: pointer;
 }
 
-#skip-btn.darkmode, #help-btn.darkmode, #restart-btn.darkmode, #end-btn.darkmode {
+.writing-btns.darkmode {
     background-color: rgb(14, 14, 14);
     color: rgb(243, 243, 243);
     border: 2px solid white;
@@ -71,29 +71,31 @@ html::-webkit-scrollbar {
 }
 
 #buttons {
-    /* display: flex;
+    display: flex;
     justify-content: space-between;
-    gap: 10px;
+    padding: 10px;
+    max-width: 500px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    /* gap: 10px;
     width: 600px;
     margin-top: 10px;
     margin-left: auto;
     margin-right: auto; */
 }
 
-#skip-btn {
+
+.writing-btns {
     margin-top: 10px;
-    width: 150px;
+    width: 33%;
+    max-width: 150px;
+    box-sizing: border-box;
 }
 
-#help-btn {
-    margin-top: 10px;
-    width: 150px;
-}
 
-#end-btn {
-    margin-top: 10px;
-    width: 150px;
-}
+
+
 
 #progress {
     margin-top: 20px;
