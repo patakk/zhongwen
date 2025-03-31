@@ -328,7 +328,6 @@ function showResults() {
         `;
         answerTableBody.appendChild(row);
     });
-    confirmDarkmode();
 }
 
 function restart(){
