@@ -423,7 +423,9 @@ function initSearch(){
     query = params.get('query');
     let hanzi = params.get('character');
     document.getElementById('searchQuery').value = query;
-    handleSearch(null, query);
+    if(query){
+        handleSearch(null, query);
+    }
 
     const pinyinElement = document.getElementById('flashcard_pinyin');
     pinyinElement.addEventListener('click', function() {
