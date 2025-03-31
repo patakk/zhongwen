@@ -160,12 +160,6 @@ function createPlotters(data){
             size = 122;
         }
     }
-    console.log("size", size);
-    console.log("size", size);
-    console.log("size", size);
-    console.log("size", size);
-    console.log("size", size);
-    console.log("size", size);
     let colors = ["#151511aa", "#151511aa", "#151511aa"];
     if(isDarkMode){
         colors = ["#e5ddedaa", "#e5ddedaa", "#e5ddedaa"];
@@ -808,7 +802,6 @@ function populateCardSets() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    setupAddToDeck();
 });
 
 function setupAddToDeck(){
@@ -2464,7 +2457,6 @@ function renderCard(data) {
             currentWriters.push(writer);
         });
     }
-    confirmDarkmode();
     currentCharacter = data.character;
     // try
 
@@ -2532,3 +2524,18 @@ function displayCard(showAnswer=true, showPinyin=true) {
 }
 
 
+
+setupAddToDeck();
+
+try{
+    activeCharacter = characterdata.character;
+    characterdata.plotters = createPlotters(characterdata);
+    loadedCard = characterdata;
+    renderCard(characterdata);
+    currentGridPlotters = characterdata.plotters;
+    displayCard(true, true);
+    cardVisible = true;
+    scrollToTop(document.getElementById('flashcard_container'));
+}
+catch(e){
+}

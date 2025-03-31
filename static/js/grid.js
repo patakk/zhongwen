@@ -666,7 +666,6 @@ function showAfterLoad(data){
     displayCard(true, true);
     cardVisible = true;
 
-
     // data.plotters = createPlotters(data);
     // window['loadedCard'] = data;
     // renderCard(data);
@@ -750,7 +749,7 @@ function hideInfo(gridItem) {
 
 
 // document.getElementById('deck-select').addEventListener('change', function(event) {
-//     changeDeck(event.target.value);
+//     gridChangeDeck(event.target.value);
 //     this.blur(); // Remove focus from the dropdown after selection
 // });
 
@@ -797,7 +796,7 @@ function isMobileOrTablet() {
 }
 
 
-function changeDeck(deck) {
+function gridChangeDeck(deck) {
     currentDeck = deck;
     currentData = inputdecks[currentDeck].chars;
     const grid = document.getElementById('character-grid');
@@ -806,7 +805,6 @@ function changeDeck(deck) {
     newUrl.searchParams.set('wordlist', deck);
     history.pushState({}, '', newUrl);
     console.log('changing deck to', deck);
-    console.log(currentData);
     drawBothLayouts(currentData);
     window.scrollTo(0, 0);
     document.getElementById('deckSubmenu').classList.remove('active');
@@ -959,7 +957,7 @@ document.addEventListener('keyup', function(event) {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+function initGridPage() {
     const characterDiv = document.getElementById('flashcard_character');
     const plotterDiv = document.getElementById('flashcard_plotter');
 
@@ -998,7 +996,6 @@ document.addEventListener('DOMContentLoaded', function() {
         history.pushState({}, '', newUrl);
     }
     currentData = inputdecks[currentDeck].chars;
-    confirmDarkmode();
     
     drawBothLayouts(currentData);
     document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
@@ -1025,7 +1022,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             e.stopPropagation();
             const selectedDeck = this.dataset.deck;
-            changeDeck(selectedDeck);
+            gridChangeDeck(selectedDeck);
             document.querySelectorAll('.deck-change').forEach(opt => opt.classList.remove('selected-option'));
             this.classList.add('selected-option');
         });
@@ -1053,16 +1050,11 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleGridList();
     });
     
-    if(characterdata){
-        activeCharacter = characterdata.character;
-        showAfterLoad(characterdata);
-        
-        // let overlay = document.getElementById('flashcard_overlay');
-        // let currentColor = getColorByTime(overlaycolors);
-        // overlay.style.backgroundColor = currentColor;
-        
-        scrollToTop(document.getElementById('flashcard_container'));
-    }
+    // if(characterdata){
+    //     activeCharacter = characterdata.character;
+    //     showAfterLoad(characterdata);
+    //     scrollToTop(document.getElementById('flashcard_container'));
+    // }
 
     // if there is a query parameter for togglign the list grid, apply it
     const urlParams = new URLSearchParams(window.location.search);
@@ -1070,7 +1062,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if(list === 'true'){
         toggleGridList();
     }
-});
+}
+
 
 let currentToggleFont = 0;
 function changeFont(font) {
@@ -1263,3 +1256,6 @@ function updateFontFamily(fontFamily) {
 //         overlay.style.display = 'none';
 //     }
 // });
+
+
+initGridPage();

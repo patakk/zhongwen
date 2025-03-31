@@ -1,5 +1,4 @@
 
-let currentFont = 'Noto Sans Mono';
 
 
 function changeDeck(deck, func=null) {
