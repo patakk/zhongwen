@@ -95,10 +95,7 @@ def handle_500(error):
     return "Something went wrong, please try again later.", 500
 
 
-from backend.db.extensions import db
 from backend.db.models import User
-from backend.db.models import WordEntry
-from backend.db.models import WordList
 
 
 @app.route('/get_card_data')
