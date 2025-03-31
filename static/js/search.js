@@ -130,6 +130,34 @@ function showAfterLoad(data){
     cardVisible = true;
 }
 
+async function handleQuery(){
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('query');
+
+    if (query) {
+        const query = document.getElementById('searchQuery').value;
+        try {
+            const response = await fetch('./search_results', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: query })
+            });
+
+            const resp = await response.json();
+            showSearchTime(resp.search_time);
+
+            console.log(resp.results, resp.query);
+            updateSearchResults(resp.results, resp.query);
+            window.history.pushState({}, '', `?query=${query}`);
+            
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 });
 
@@ -218,6 +246,8 @@ function maybeLoadRenderAndThenShow(character, dir=0, force_unlock=false){
     }
     donefirst = true;
     unlocked = true;
+
+    console.log("maybeLoadRenderAndThenShow", character, dir);
 
     let url = new URL(window.location);
     url.searchParams.set('character', character);
@@ -382,3 +412,28 @@ document.addEventListener('keydown', function(event) {
         }
     }
 });
+
+
+function initSearch(){
+    if(searchTimeIn){
+        // showSearchTime(searchTimeIn);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    query = params.get('query');
+    let hanzi = params.get('character');
+    document.getElementById('searchQuery').value = query;
+    handleSearch(null, query);
+
+    const pinyinElement = document.getElementById('flashcard_pinyin');
+    pinyinElement.addEventListener('click', function() {
+        playHanziAudio();
+    });
+
+    if(hanzi){
+        maybeLoadRenderAndThenShow(hanzi)
+        scrollToTop(document.getElementById('flashcard_container'));
+    }
+}
+
+initSearch();

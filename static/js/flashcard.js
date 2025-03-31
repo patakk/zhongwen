@@ -1489,6 +1489,7 @@ function renderCard(data) {
     rawLabel.style.opacity = '0.6';
     const exLabel = document.createElement('div');
     exLabel.innerHTML = `Examples including ${data.character} ↓`;
+    exLabel.id = 'examples-label';
     exLabel.style.marginTop = '2em';
     exLabel.style.marginBottom = '1em';
     exLabel.style.opacity = '0.6';

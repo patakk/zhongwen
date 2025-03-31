@@ -1078,17 +1078,23 @@ input[type="checkbox"].darkmode:checked::after {
     animation: fallAndRotate 0.35s ease-in forwards;
 }
 
+
+#examples-label {
+    display: none;  /* until I fix loading */
+}
+
 #mainExamplesContainer {
     background-color: var(--dimmer-background-color);
     padding: 1em;
+    display: none;  /* until I fix loading */
 }
+
 
 #mainExamples {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-}   
-
+}  
 .mainExampleEnglish {
     opacity: 0.6;
     font-size: 0.9em;

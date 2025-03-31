@@ -33,6 +33,67 @@
             text-decoration: none;
         }
     </style>
+    
+    <script >
+        function toAccentedPinyin(input) {
+            const toneMap = {
+                '1': 'āēīōūǖ',
+                '2': 'áéíóúǘ',
+                '3': 'ǎěǐǒǔǚ',
+                '4': 'àèìòùǜ',
+                '5': 'aeiouü'
+            };
+            
+            function applyToneMark(syllable, tone) {
+                if (!tone) return syllable;
+                
+                const vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
+                let syllableLower = syllable.toLowerCase();
+                
+                if (syllableLower.includes('a')) {
+                    let index = syllableLower.indexOf('a');
+                    let result = syllable.split('');
+                    result[index] = toneMap[tone][0];
+                    return result.join('');
+                }
+                
+                if (syllableLower.includes('e')) {
+                    let index = syllableLower.indexOf('e');
+                    let result = syllable.split('');
+                    result[index] = toneMap[tone][1];
+                    return result.join('');
+                }
+                
+                if (syllableLower.includes('ou')) {
+                    let index = syllableLower.indexOf('o');
+                    let result = syllable.split('');
+                    result[index] = toneMap[tone][3];
+                    return result.join('');
+                }
+                
+                for (let i = syllableLower.length - 1; i >= 0; i--) {
+                    let char = syllableLower[i];
+                    let vowelIndex = vowels.indexOf(char);
+                    if (vowelIndex !== -1) {
+                        let result = syllable.split('');
+                        result[i] = toneMap[tone][vowelIndex];
+                        return result.join('');
+                    }
+                }
+                
+                return syllable;
+            }
+        
+            let result = input.replace(/\[([a-z]+)([1-5])?\]/gi, (match, syllable, tone) => {
+                return '[' + applyToneMark(syllable, tone) + ']';
+            });
+            
+            result = result.replace(/\b([a-z]+)([1-5])?\b/gi, (match, syllable, tone) => {
+                return applyToneMark(syllable, tone);
+            });
+            
+            return result;
+        }</script>
 </head>
 
 {% if darkmode %}
@@ -68,15 +129,15 @@
     <script src="{{ url_for('static', filename='js/hamburger.js') }}" async></script>
     <script src="{{ url_for('static', filename='js/customback.js') }}" async></script>
     <script src="{{ url_for('static', filename='js/flashcard.js') }}" async></script>
-    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}" async></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}" async></script>
 
     <script>
         const username = {{ username | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
         const characterdata = {{ character | tojson | safe }};
         const results = {{ results | tojson | safe }};
-        const query = {{ query | tojson | safe }};
+        let  query = {{ query | tojson | safe }};
         const searchTimeIn = {{ search_time | tojson | safe }};
 
 
@@ -86,45 +147,38 @@
 
         document.addEventListener('DOMContentLoaded', function() {
 
-            if(searchTimeIn){
-                // showSearchTime(searchTimeIn);
-            }
-
-            document.getElementById('searchQuery').value = query;
-            updateSearchResults(results, query);
-
-            getFont();
-
-            const pinyinElement = document.getElementById('flashcard_pinyin');
-            pinyinElement.addEventListener('click', function() {
-                playHanziAudio();
-            });
-
-            if(characterdata){
-                showAfterLoad(characterdata);
-                scrollToTop(document.getElementById('flashcard_container'));
-            }
+            // initSearch();
         });
 
         
-        async function handleSearch(event) {
-            event.preventDefault(); // Prevent regular form submission
+        async function handleSearch(event, iquery) {
+            if(event){
+                event.preventDefault(); // Prevent regular form submission
+            }
             
             const query = document.getElementById('searchQuery').value;
+            let usedQuery = query;
+            if(iquery){
+                usedQuery = iquery;
+            }
             try {
                 const response = await fetch('./search_results', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ query: query })
+                    body: JSON.stringify({ query: usedQuery })
                 });
 
                 const resp = await response.json();
                 showSearchTime(resp.search_time);
 
                 updateSearchResults(resp.results, resp.query);
-                window.history.pushState({}, '', `?query=${query}`);
+                const currentUrl = new URL(window.location.href);
+                const currentParams = new URLSearchParams(currentUrl.search);
+                currentParams.set('query', usedQuery);
+                currentUrl.search = currentParams.toString();
+                window.history.pushState({}, '', currentUrl.toString());
                 
             } catch (error) {
                 console.error('Error:', error);
