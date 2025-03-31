@@ -391,6 +391,21 @@ def flashcards():
     return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=cc, wordlist=querydeck, decknames_sorted_with_name=decknames_sorted_with_name)
 
 
+
+@app.route('/get_cc')
+@session_required
+@timing_decorator
+def get_cc():
+    username = session.get('username')
+    custom_wordlists = db_get_user_wordlists(username)
+    cc = {
+        **custom_wordlists,
+        **CARDDECKS_W_PINYIN
+    }
+    return jsonify(cc)
+
+
+
 @app.route('/grid', methods=['GET'])
 @session_required
 @timing_decorator
@@ -402,16 +417,33 @@ def grid():
     logger.info(f"Query deck: {querydeck}")
 
     username = session.get('username')
-    custom_wordlists = db_get_user_wordlists(username)
-    custom_deck_names = list(custom_wordlists.keys())
     cc = {
-        **custom_wordlists,
-        **CARDDECKS_W_PINYIN
+        # **custom_wordlists,
+        # **CARDDECKS_W_PINYIN
+    }
+
+    cc = {
+        'hsk1': {
+            'name': 'HSK 1',
+            'chars': {
+                "我": {'character': "我", 'pinyin': ["wǒ"], 'english': ["I"]},
+                "你": {'character': "你", 'pinyin': ["nǐ"], 'english': ["you"]},
+                "他": {'character': "他", 'pinyin': ["tā"], 'english': ["he"]},
+                "她": {'character': "她", 'pinyin': ["tā"], 'english': ["she"]},
+                "它": {'character': "它", 'pinyin': ["tā"], 'english': ["it"]},
+                "是": {'character': "是", 'pinyin': ["fhì"], 'english': ["is"]},
+                "不": {'character': "不", 'pinyin': ["bù"], 'english': ["not"]},
+            }
+        }
     }
 
     user_wordlists = db_get_word_list_names_only(username)
-    for wl in custom_wordlists:
-        DECKNAMES[wl] = custom_wordlists[wl]['name']
+    if user_wordlists:
+        user_wordlists = {wl: wl for wl in user_wordlists}
+    for wl in user_wordlists:
+        DECKNAMES[wl] = user_wordlists[wl]
+
+
     if user_wordlists:
         user_wordlists = {wl: wl for wl in user_wordlists}
         hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
@@ -424,14 +456,8 @@ def grid():
     decknames_sorted_with_name = {deck: DECKNAMES[deck] for deck in decknames_sorted}
 
     
-    for d in cc:
-        cc[d]['chars'] = get_chars_info(cc[d]['chars'])
-
-    if not character:
-        return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=None, decks=cc, inputdeck=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
-    main_data = main_card_data(character)
-    main_data['chars_breakdown'] = breakdown_chars(character)
-    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], character=main_data, decks=cc, inputdeck=querydeck, custom_deck_names=custom_deck_names, decknames_sorted_with_name=decknames_sorted_with_name)
+    # main_data['chars_breakdown'] = breakdown_chars(character)
+    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], inputdeck=querydeck, inputedeckdata=cc, custom_deck_names=user_wordlists, decknames_sorted_with_name=decknames_sorted_with_name)
 
 from backend.routes.puzzles import get_common_context
 

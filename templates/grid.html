@@ -44,7 +44,7 @@
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
     <link  rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
     <!-- <link  rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_expanded.css') }}"> -->
-    <script src="{{ url_for('static', filename='js/plotter_better.js') }}" ></script>
+    <script src="{{ url_for('static', filename='js/plotter_better.js') }}" async></script>
     <style id="dynamic-styles">
         
     </style>
@@ -155,8 +155,8 @@
     <div class="has-submenu" id="deckMenu">
         <span class="submenuName" id="deckSubmenuName">sets</span>
         <ul class="gridSubmenu" id="deckSubmenu">
-            {% for key, deck in decks.items() %}
-                <li class="menu-option-parent"><a class="deck-option deck-change" data-deck="{{ key }}">{{ deck.name }}</a></li>
+            {% for key, deck in decknames_sorted_with_name.items() %}
+                <li class="menu-option-parent"><a class="deck-option deck-change" data-deck="{{ key }}">{{ deck }}</a></li>
             {% endfor %}
         </ul>
     </div>
@@ -184,9 +184,7 @@
     <div id="pinyin-hover-box" style="display: none;"></div>
 
     <script>
-        const characterdata = {{ character | tojson | safe }};
-        const inputdecks = {{ decks | tojson | safe }};       
-
+        let inputdecks = {{ inputedeckdata | tojson | safe }};
         let inputdeck = {{ inputdeck | tojson | safe }};
         let isDarkMode = {{ darkmode | tojson | safe }};
         const username = {{ username | tojson | safe }};
@@ -218,8 +216,8 @@
     <script src="{{ url_for('static', filename='js/hamburger.js') }}" async></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}" async></script>
     <!-- <script src="{{ url_for('static', filename='js/customback.js') }}"></script> -->
-    <script src="{{ url_for('static', filename='js/flashcard.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/grid.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/flashcard.js') }}" async></script>
+    <script src="{{ url_for('static', filename='js/grid.js') }}" async></script>
     <!-- <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script> -->
 </body>
 </html>

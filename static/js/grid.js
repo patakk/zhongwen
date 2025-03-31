@@ -447,6 +447,9 @@ function updateCounterTitle(){
         currentDeck = inputdeck;
         inputdeck = null;
     }
+
+    console.log(currentDeck);
+    console.log(inputdecks[currentDeck]);
     document.getElementById('title').textContent = `${inputdecks[currentDeck].name}`;  
     document.getElementById('title_word_count').textContent = `(${deckLength} words)`;  
 }
@@ -957,6 +960,25 @@ document.addEventListener('keyup', function(event) {
     }
 });
 
+// fetch to get new input decks
+async function getInputDecks(func=null) {
+    const response = await fetch('./get_cc', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    inputdecks = data;
+    if(func){
+        func();
+    }
+
+}
+
 function initGridPage() {
     const characterDiv = document.getElementById('flashcard_character');
     const plotterDiv = document.getElementById('flashcard_plotter');
@@ -982,7 +1004,7 @@ function initGridPage() {
         }
     });
 
-
+    let prevDeck = currentDeck;
     if (inputdeck) {
         currentDeck = inputdeck;
     }
@@ -990,14 +1012,15 @@ function initGridPage() {
     if(inputdecks[currentDeck]){
     }
     else{
-        currentDeck = 'hsk1';
+        const urlParams = new URLSearchParams(window.location.search);
+        currentDeck = urlParams.get('wordlist') || 'hsk1';
         const newUrl = new URL(window.location);
         newUrl.searchParams.set('wordlist', currentDeck);
         history.pushState({}, '', newUrl);
     }
     currentData = inputdecks[currentDeck].chars;
     
-    drawBothLayouts(currentData);
+    // drawBothLayouts(currentData);
     document.querySelectorAll('.deck-option').forEach(opt => opt.classList.remove('selected-option'));
     document.querySelector(`.deck-option[data-deck="${currentDeck}"]`).classList.add('selected-option');
 
@@ -1062,6 +1085,10 @@ function initGridPage() {
     if(list === 'true'){
         toggleGridList();
     }
+
+    if(prevDeck !== currentDeck || currentDeck === 'hsk1'){
+    }
+    gridChangeDeck(currentDeck);
 }
 
 
@@ -1257,5 +1284,9 @@ function updateFontFamily(fontFamily) {
 //     }
 // });
 
-
-initGridPage();
+const urlParams = new URLSearchParams(window.location.search);
+currentDeck = urlParams.get('wordlist') || 'hsk1';
+if(currentDeck === 'hsk1'){
+    initGridPage();
+}
+getInputDecks(initGridPage);
