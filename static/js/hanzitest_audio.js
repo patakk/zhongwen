@@ -6,23 +6,21 @@ const resultsDiv = document.getElementById('results');
 const scoreSpan = document.getElementById('score');
 const accuracySpan = document.getElementById('accuracy');
 const restartBtn = document.getElementById('restart-btn');
-const revealBtn = document.getElementById('reveal-btn');
+// const revealBtn = document.getElementById('reveal-btn');
 
 let currentIndex = 0;
 let correctAnswers = 0;
 let shuffledCharacters = [];
 let userAnswers = [];
 const answerTableBody = document.getElementById('answer-table-body');
-const NUM_QUESTIONS = 3*2*4; // Change this to set the number of questions
+const NUM_QUESTIONS = 6; // Change this to set the number of questions
 
 
 const deckNameElement = document.getElementById('deck-name');
-const fontNameElement = document.getElementById('font-name');
 const selectedDeckElement = document.getElementById('selected-deck');
 const selectedFontElement = document.getElementById('selected-font');
 const dropdownToggle = document.getElementById('dropdown-toggle');
 const deckOptionsElement = document.getElementById('deck-options');
-const fontOptionsElement = document.getElementById('font-options');
 
   
 deckNameElement.onclick = () => {
@@ -32,16 +30,6 @@ deckOptionsElement.style.display = deckOptionsElement.style.display === 'none' ?
 document.addEventListener('click', (event) => {
 if (!event.target.closest('.deck-dropdown')) {
     deckOptionsElement.style.display = 'none';
-}
-});
-
-fontNameElement.onclick = () => {
-fontOptionsElement.style.display = fontOptionsElement.style.display === 'none' ? 'block' : 'none';
-};
-
-document.addEventListener('click', (event) => {
-if (!event.target.closest('.font-dropdown')) {
-    fontOptionsElement.style.display = 'none';
 }
 });
 
@@ -71,7 +59,6 @@ function setupCharacters() {
     correctAnswers = 0;
     userAnswers = [];
     resultsDiv.style.display = 'none';
-    document.getElementById('test-container').style.display = 'block';
 }
 
 
@@ -145,17 +132,9 @@ function scrollToTop() {
     }, 100);
 }
 
-textInput.addEventListener('input', (e) => {
-    // if (e.key === 'Enter' && textInput.value.trim() !== '') {
-    //     checkAnswer();
-    // }
-    // scrollToTop();
-
-    // find first input with incorrect answer
-});
 
 restartBtn.addEventListener('click', init);
-revealBtn.addEventListener('click', revealAnswers);
+// revealBtn.addEventListener('click', revealAnswers);
 
 let allinputs = [];
 let inputsbyhanzi = {};
@@ -308,7 +287,7 @@ function populateGrid() {
                 e.target.dataset.correct = true;
                 correctAnswers++;
                 if(correctAnswers == Math.min(NUM_QUESTIONS, allhanzi.length)){
-                    revealBtn.classList.add("hidden");
+                    // revealBtn.classList.add("hidden");
                     restartBtn.innerHTML = "Restart Test " + '<i class="fa-solid fa-vial-circle-check"></i>';
                     restartBtn.classList.remove("hidden");
                     console.log("finished");
@@ -428,7 +407,7 @@ function populateGrid() {
 }
 
 function revealAnswers(){
-    revealBtn.classList.add("hidden");
+    // revealBtn.classList.add("hidden");
     restartBtn.innerHTML = "Restart Test " + '<i class="fa-solid fa-poo"></i>';
     restartBtn.classList.remove("hidden");
     allinputs.forEach(input => {
@@ -482,8 +461,30 @@ function playTwang() {
     source.start(0);
 }
 
-async function loadNewWords(func=null){
-    fetch(`../api/get_random_characters`, {
+async function playSilentTwang(){
+    await twangPromise;
+
+    const source = audioContext.createBufferSource();
+    source.buffer = twangBuffer;
+
+    const randomFreq = 440;
+    lastPlayedFrequency = randomFreq;
+    const originalFreq = 440;
+    source.playbackRate.value = randomFreq / originalFreq;
+
+    source.connect(audioContext.destination);
+    source.start(0);
+    // lower volume
+    // reset volume
+}
+
+// Global variables for the matching game
+let selectedAudioIndex = null;
+let matchedPairs = 0;
+let totalPairs = 0;
+
+async function loadNewWords(func=null) {
+    fetch(`../api/get_random_characters_with_audio`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -498,7 +499,28 @@ async function loadNewWords(func=null){
     })
     .then(data => {
         currentcharacters = data;
-        if(func != null){
+        
+        // Process the audio data for each character
+        currentcharacters.forEach(character => {
+            if (character.audio) {
+                // Convert base64 back to binary audio data
+                const audioData = atob(character.audio);
+                // Create a Uint8Array from the binary string
+                const arrayBuffer = new Uint8Array(audioData.length);
+                for (let i = 0; i < audioData.length; i++) {
+                    arrayBuffer[i] = audioData.charCodeAt(i);
+                }
+                // Create a Blob from the Uint8Array
+                const audioBlob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
+                // Create a URL for the Blob
+                character.audioUrl = URL.createObjectURL(audioBlob);
+            }
+        });
+        
+        // Initialize the matching game
+        initAudioMatchGame();
+        
+        if(func != null) {
             func();
         }
     })
@@ -506,6 +528,168 @@ async function loadNewWords(func=null){
         console.error('There was a problem getting new words:', error);
     });
 }
+
+// Function to play audio for a character
+
+let isFirst = true;
+
+function playAudio(character) {
+    if (character.audioUrl) {
+        const audio = new Audio(character.audioUrl);
+
+        if(!isFirst){
+            audio.play().catch(e => console.error("Error playing audio:", e));
+        }
+        else{
+            isFirst = false;
+            // play it, immediately sotp it and then play again
+            audio.play().then(() => {
+                setTimeout(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    setTimeout(() => {
+                        audio.play().catch(e => console.error("Error playing audio:", e));
+                    }, 350);
+                }, 50);
+            }).catch(e => console.error("Error playing audio:", e));
+            
+        }
+    }
+}
+
+// Initialize the audio matching game
+function initAudioMatchGame() {
+    const audioColumn = document.getElementById('audio-column');
+    const wordColumn = document.getElementById('word-column');
+    const resultMessage = document.getElementById('result-message');
+    
+    // Clear previous content
+    audioColumn.innerHTML = '';
+    wordColumn.innerHTML = '';
+    resultMessage.textContent = '';
+    
+    // Reset game state
+    selectedAudioIndex = null;
+    matchedPairs = 0;
+    
+    // Use the first NUM_QUESTIONS characters with audio
+    const charactersWithAudio = currentcharacters.filter(char => char.audioUrl);
+    totalPairs = Math.min(NUM_QUESTIONS, charactersWithAudio.length);
+    const gameCharacters = charactersWithAudio.slice(0, totalPairs);
+    
+    // Create shuffled array for word buttons
+    const shuffledIndices = [...Array(totalPairs).keys()];
+    shuffleArray(shuffledIndices);
+    
+    // Create audio buttons
+    gameCharacters.forEach((character, index) => {
+        const audioButton = document.createElement('div');
+        audioButton.className = 'audio-button';
+        audioButton.innerHTML = `<i class="fa-solid fa-volume-low"></i>`;
+        audioButton.dataset.index = index;
+        
+        // Add dark mode class if needed
+        if (isDarkMode) {
+            audioButton.classList.add('darkmode');
+        }
+        
+        audioButton.addEventListener('click', () => {
+            // Don't allow clicking on already matched buttons
+            if (audioButton.classList.contains('matched')) {
+                return;
+            }
+            
+            // Play the audio
+            playAudio(character);
+            
+            // Reset previously selected audio button
+            document.querySelectorAll('.audio-button.selected').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Mark this as selected
+            audioButton.classList.add('selected');
+            selectedAudioIndex = index;
+        });
+        
+        audioColumn.appendChild(audioButton);
+    });
+    
+    // Create word buttons with shuffled order
+    shuffledIndices.forEach(originalIndex => {
+        const character = gameCharacters[originalIndex];
+        const wordButton = document.createElement('div');
+        wordButton.className = 'word-button';
+        wordButton.textContent = character.character;
+        wordButton.dataset.index = originalIndex;
+        
+        // Add dark mode class if needed
+        if (isDarkMode) {
+            wordButton.classList.add('darkmode');
+        }
+        
+        wordButton.addEventListener('click', () => {
+            // Don't allow clicking on already matched buttons
+            if (wordButton.classList.contains('matched')) {
+                return;
+            }
+            
+            // If no audio is selected, do nothing
+            if (selectedAudioIndex === null) {
+                return;
+            }
+            
+            const wordIndex = parseInt(wordButton.dataset.index);
+            
+            // Check if it's a match
+            if (wordIndex === selectedAudioIndex) {
+                // Mark both as matched
+                wordButton.classList.add('matched');
+                document.querySelector(`.audio-button[data-index="${selectedAudioIndex}"]`).classList.add('matched');
+                
+                // Reset selection
+                selectedAudioIndex = null;
+                
+                // Update matched count
+                matchedPairs++;
+                
+                // Show success message
+                resultMessage.textContent = 'Correct! 👍';
+                resultMessage.classList.remove('incorrectAudio');
+                resultMessage.classList.add('correctAudio');
+                
+                // Check if all pairs are matched
+                if (matchedPairs === totalPairs) {
+                    setTimeout(() => {
+                        resultMessage.textContent = 'All pairs matched! Great job! 🎉';
+                        restartBtn.classList.remove("hidden");
+                        startConfetti();
+                    }, 500);
+                }
+                
+                // Play success sound
+                playTwang();
+            } else {
+                // Show incorrect animation
+                wordButton.classList.add('incorrect');
+                setTimeout(() => {
+                    wordButton.classList.remove('incorrect');
+                }, 500);
+                
+                // Show error message
+                resultMessage.textContent = 'Try again 🤔';
+                resultMessage.classList.remove('correctAudio');
+                resultMessage.classList.add('incorrectAudio');
+            }
+        });
+        
+        wordColumn.appendChild(wordButton);
+    });
+}
+
+
+// Example of how to play the audio for a character
+
 
 function selectDeck(deck) {
     inputdeck = deck;
@@ -587,9 +771,7 @@ function init(){
 }
 
 function showQuestions(){
-    let inputfield = document.getElementById('text-input');
-    inputfield.focus();
-    revealBtn.classList.remove("hidden");
+    // revealBtn.classList.remove("hidden");
     restartBtn.classList.add("hidden");
     setupCharacters();
 
@@ -603,26 +785,20 @@ function showQuestions(){
         }
     );
 
-    populateGrid();
-            
-    let firstIncorrectInput = allinputs.find(input => input.dataset.correct === 'false');
-    characterDisplay.textContent = firstIncorrectInput.dataset.hanzi;
-    curentHanzi = firstIncorrectInput.dataset.hanzi;
-
-    inputsbyhanzi[curentHanzi].classList.add("editing");
-    inputsbyhanzi[curentHanzi].parentNode.classList.add("editing");
-
-    setTimeout(() => inputsbyhanzi[curentHanzi].focus(), 333);
     selectFont(fontList[0]);
 }
 
+
+let twangPromise;
+
 document.addEventListener('DOMContentLoaded', () => {
-    fetchTwang();
+    twangPromise = fetchTwang();
     document.getElementById('brain').onclick = () => {
         playTwang();
         startConfetti();
     };
     populateDropdown();
+    // playSilentTwang();
 });
 
 

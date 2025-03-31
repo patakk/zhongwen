@@ -4,6 +4,7 @@ import logging
 import random
 import re
 import os
+import base64
 from urllib.parse import unquote
 
 from flask import Blueprint, jsonify, request, send_file, session
@@ -28,6 +29,8 @@ from backend.db.extensions import db
 from backend.common import CARDDECKS
 from backend.common import DECKNAMES
 from backend.common import CARDDECKS_W_PINYIN
+from backend.common import get_combined_audio
+from backend.common import audio_mappings
 
 from backend.common import get_tatoeba_page
 from backend.common import get_char_info
@@ -38,9 +41,6 @@ from backend.db.models import User, WordList
 logger = logging.getLogger(__name__)
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
-
-with open("data/audio_mappings.json", "r", encoding="utf-8") as f:
-    audio_mappings = json.load(f)
 
 
 @api_bp.route("/rename_wordlist", methods=["POST"])
@@ -487,34 +487,15 @@ def get_audio():
     characters = request.args.get("chars", "")
     if not characters:
         return "No characters provided", 400
-
-    audio_chunks = []
-    for char in characters:
-        if char in audio_mappings and "audio" in audio_mappings[char]:
-            file_name = audio_mappings[char]["audio"]
-            file_path = os.path.join("..", "chinese_audio_clips", file_name)
-            file_path2 = os.path.join("chinese_audio_clips", file_name)
-            if os.path.exists(file_path):
-                with open(file_path, "rb") as f:
-                    audio_chunks.append(f.read())
-            elif os.path.exists(file_path2):
-                with open(file_path2, "rb") as f:
-                    audio_chunks.append(f.read())
-            else:
-                # print(f"Audio file not found for character: {char}")
-                pass
-        else:
-            # print(f"No audio mapping found for character: {char}")
-            pass
-
-    if not audio_chunks:
+    
+    combined_audio = get_combined_audio(characters)
+    
+    if not combined_audio:
         return "No audio found for the provided characters", 404
-
-    combined_audio = b"".join(audio_chunks)
-
+    
     buffer = io.BytesIO(combined_audio)
     buffer.seek(0)
-
+    
     return send_file(buffer, mimetype="audio/mpeg")
 
 
@@ -602,6 +583,74 @@ def get_random_characters():
     random_chars = random_chars[:num]
     characters_data = get_chars_info(random_chars)
     return jsonify(characters_data)
+
+
+
+def get_combined_audio(characters):
+    audio_chunks = []
+    for char in characters:
+        if char in audio_mappings and "audio" in audio_mappings[char]:
+            file_name = audio_mappings[char]["audio"]
+            file_path = os.path.join("..", "chinese_audio_clips", file_name)
+            file_path2 = os.path.join("chinese_audio_clips", file_name)
+            
+            if os.path.exists(file_path):
+                with open(file_path, "rb") as f:
+                    audio_chunks.append(f.read())
+            elif os.path.exists(file_path2):
+                with open(file_path2, "rb") as f:
+                    audio_chunks.append(f.read())
+            # else:
+            #     # print(f"Audio file not found for character: {char}")
+            #     pass
+        # else:
+        #     # print(f"No audio mapping found for character: {char}")
+        #     pass
+    
+    return b"".join(audio_chunks) if audio_chunks else b""
+
+@api_bp.route("/get_random_characters_with_audio", methods=["POST"])
+@session_required
+@timing_decorator
+def get_random_characters_with_audio():
+    username = session.get('username')
+    
+    custom_wordlists = db_get_user_wordlists(username)
+    cd = {
+        **custom_wordlists,
+        **CARDDECKS
+    }
+
+    data = request.get_json()
+    deck = data.get("wordlist")
+    num = int(data.get("num", 24))
+    random_chars = cd[deck]['chars']
+    random.shuffle(random_chars)
+    random_chars = random_chars[:num]
+    characters_data = get_chars_info(random_chars)
+
+    # Create a list of dictionaries with character and audio data
+    result = []
+    for char_info in characters_data:
+        # If char_info is already a dictionary, use it as is; otherwise create a new dictionary
+        if isinstance(char_info, dict):
+            char_dict = char_info
+        else:
+            # Assuming char_info is the character itself if it's not a dictionary
+            char_dict = {'character': char_info}
+        
+        # Add audio data
+        audio_data = get_combined_audio(char_dict['character'])
+        if audio_data:
+            char_dict['audio'] = base64.b64encode(audio_data).decode('utf-8')
+        else:
+            char_dict['audio'] = None
+            
+        result.append(char_dict)
+
+    return jsonify(result)
+
+
 
 import time
 # char_decomp_info

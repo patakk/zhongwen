@@ -15,6 +15,33 @@ dictionary = HanziDictionary()
 
 # from .flashcard_app import init_flashcard_app, get_flashcard_app
 
+with open("data/audio_mappings.json", "r", encoding="utf-8") as f:
+    audio_mappings = json.load(f)
+
+
+def get_combined_audio(characters):
+    audio_chunks = []
+    for char in characters:
+        if char in audio_mappings and "audio" in audio_mappings[char]:
+            file_name = audio_mappings[char]["audio"]
+            file_path = os.path.join("..", "chinese_audio_clips", file_name)
+            file_path2 = os.path.join("chinese_audio_clips", file_name)
+            
+            if os.path.exists(file_path):
+                with open(file_path, "rb") as f:
+                    audio_chunks.append(f.read())
+            elif os.path.exists(file_path2):
+                with open(file_path2, "rb") as f:
+                    audio_chunks.append(f.read())
+            # else:
+            #     # print(f"Audio file not found for character: {char}")
+            #     pass
+        # else:
+        #     # print(f"No audio mapping found for character: {char}")
+        #     pass
+    
+    return b"".join(audio_chunks) if audio_chunks else b""
+
 
 def load_secrets(secrets_file):
     secrets = {}

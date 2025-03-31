@@ -95,6 +95,16 @@ def hanzitest_table():
     return render_template("puzzles/hanzitest_table.html", **context)
 
 
+@puzzles_bp.route("/hanzitest_audio")
+@session_required
+@timing_decorator
+def hanzitest_audio():
+    context = get_common_context()
+    
+    add_sorted_decknames_to_context(session.get('username'), context)
+    return render_template("puzzles/hanzitest_audio.html", **context)
+
+
 @puzzles_bp.route("/hanzitest_draw")
 @session_required
 @timing_decorator
