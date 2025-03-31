@@ -22,6 +22,7 @@ import requests
 from backend.decorators import session_required
 from backend.decorators import hard_session_required
 from backend.decorators import timing_decorator
+from backend.db.models import User
 from backend.db.ops import db_user_exists
 from backend.db.ops import db_authenticate_user
 from backend.db.ops import db_create_user
@@ -95,7 +96,6 @@ def handle_500(error):
     return "Something went wrong, please try again later.", 500
 
 
-from backend.db.models import User
 
 
 @app.route('/get_card_data')
