@@ -30,7 +30,6 @@ data/anthropic_2.json
 data/new_translations.json
 data/decompose_cache.json
 data/chars_cache.json
-data/chars_cache2.json
 data/words_cache.json
 data/strokes_cache.json
 
