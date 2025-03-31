@@ -47,6 +47,8 @@ from backend.common import auth_keys
 from backend.routes.manage import validate_password
 
 lemmatizer = WordNetLemmatizer()
+ # very important to run it one time to load the model for all workers
+lemmatizer.lemmatize('jeans')
 
 import json
 import os
@@ -818,7 +820,7 @@ def move_tone_number_to_end(pinyin):
 def normalize_query(text):
     text = text.lower()
     text = text.strip(string.punctuation)
-    # text = lemmatizer.lemmatize(text)
+    text = lemmatizer.lemmatize(text)
     return text
 
 def get_search_results(query):
