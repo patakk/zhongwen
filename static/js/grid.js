@@ -1068,10 +1068,13 @@ function initGridPage() {
         playHanziAudio();
     });
     
-    const title = document.getElementById('title');
-    title.addEventListener('click', function() {
-        toggleGridList();
-    });
+    if(addedtooglelistlistneer === false){
+        const title = document.getElementById('title');
+        title.addEventListener('click', function() {
+            toggleGridList();
+        });
+        addedtooglelistlistneer = true;
+    }
     
     // if(characterdata){
     //     activeCharacter = characterdata.character;
@@ -1090,6 +1093,8 @@ function initGridPage() {
     }
     gridChangeDeck(currentDeck);
 }
+
+let addedtooglelistlistneer = false;
 
 
 let currentToggleFont = 0;

@@ -457,7 +457,7 @@ def grid():
 
     
     # main_data['chars_breakdown'] = breakdown_chars(character)
-    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], inputdeck=querydeck, inputedeckdata=cc, custom_deck_names=user_wordlists, decknames_sorted_with_name=decknames_sorted_with_name)
+    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], inputdeck=querydeck, inputedeckdata=cc, custom_deck_names=[user_wordlists[k] for k in user_wordlists], decknames_sorted_with_name=decknames_sorted_with_name)
 
 from backend.routes.puzzles import get_common_context
 
