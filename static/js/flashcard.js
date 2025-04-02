@@ -550,6 +550,7 @@ function setupCloseButton(){
 let prefetchedPlotters = null;
 
 function loadRenderDisplay(character) {
+    let messageElement = document.getElementById('message');
     messageElement.textContent = 'Loading...';
     fetch(`./get_card_data?character=${encodeURIComponent(character)}`)
         .then(response => {
@@ -2539,3 +2540,7 @@ try{
 }
 catch(e){
 }
+
+const urlParams_ = new URLSearchParams(window.location.search);
+const query_ = urlParams_.get('character');
+loadRenderDisplay(query_);
