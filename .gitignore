@@ -19,6 +19,11 @@ alter_db.py
 migrations/versions/
 fire
 
+extract_fontawesome.py
+original_font_awesome_data.js
+original_fontawesome_brands_data.js
+original_fontawesome_icons_data.js
+
 user_progress/
 user_strokes/
 audio_files/
