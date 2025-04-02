@@ -2543,4 +2543,6 @@ catch(e){
 
 const urlParams_ = new URLSearchParams(window.location.search);
 const query_ = urlParams_.get('character');
-loadRenderDisplay(query_);
+if(query_){
+    loadRenderDisplay(query_);
+}
