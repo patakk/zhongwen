@@ -398,6 +398,8 @@ def flashcards():
 def get_cc():
     username = session.get('username')
     custom_wordlists = db_get_user_wordlists(username)
+    for wl in custom_wordlists:
+        custom_wordlists[wl]['chars'] = {char: get_char_info(char) for char in custom_wordlists[wl]['chars']}
     cc = {
         **custom_wordlists,
         **CARDDECKS_W_PINYIN

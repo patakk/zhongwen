@@ -448,8 +448,6 @@ function updateCounterTitle(){
         inputdeck = null;
     }
 
-    console.log(currentDeck);
-    console.log(inputdecks[currentDeck]);
     document.getElementById('title').textContent = `${inputdecks[currentDeck].name}`;  
     document.getElementById('title_word_count').textContent = `(${deckLength} words)`;  
 }
