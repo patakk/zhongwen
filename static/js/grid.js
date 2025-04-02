@@ -1081,9 +1081,12 @@ function initGridPage() {
     //     showAfterLoad(characterdata);
     //     scrollToTop(document.getElementById('flashcard_container'));
     // }
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('character');
+    loadRenderDisplay(query);
 
     // if there is a query parameter for togglign the list grid, apply it
-    const urlParams = new URLSearchParams(window.location.search);
     const list = urlParams.get('list');
     if(list === 'true'){
         toggleGridList();
