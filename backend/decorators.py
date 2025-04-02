@@ -50,7 +50,7 @@ def session_required(func):
         if "darkmode" not in session:
             session["darkmode"] = False
         if "username" not in session:
-            session["username"] = "tempuser"
+            session["username"] = None
 
         username = session.get('username')
         if username:

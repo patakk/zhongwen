@@ -309,7 +309,7 @@ body {
     background-color: black;
     color: white;
 }
-
+/* 
 .has-submenu:hover > span::after {
     content: '';
     position: absolute;
@@ -319,7 +319,7 @@ body {
     height: 100%;
     background-color: rgba(255, 14, 14, 0);
     z-index: 1;
-}
+} */
 
 h1 {
     text-align: center;
@@ -830,8 +830,8 @@ and (orientation: landscape) {
 }
 
 #deckMenu, #fontMenu {
-    top: 3em;
-    left: 1em;
+    top: 4em;
+    right: 1em;
     position: fixed;
     box-sizing: border-box;
     z-index: 3;
@@ -843,7 +843,7 @@ and (orientation: landscape) {
 }
 
 #fontMenu {
-    top: 5em;
+    top: 6em;
 }
 
 

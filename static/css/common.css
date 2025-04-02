@@ -262,7 +262,8 @@ a {
 #deckSubmenu, #fontSubmenu {
     display: none;
     position: absolute;
-    left: 0px;
+    left: auto;
+    right: 0px;
     top: 32px;
     background-color: var(--background-color);
     border: var(--simple-border);

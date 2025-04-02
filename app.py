@@ -437,7 +437,9 @@ def grid():
         }
     }
 
-    user_wordlists = db_get_word_list_names_only(username)
+    user_wordlists = []
+    if username:
+        user_wordlists = db_get_word_list_names_only(username)
     if user_wordlists:
         user_wordlists = {wl: wl for wl in user_wordlists}
     for wl in user_wordlists:
