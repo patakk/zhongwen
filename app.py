@@ -47,7 +47,7 @@ from backend.common import get_chars_info
 from backend.common import dictionary
 from backend.common import auth_keys
 from backend.routes.manage import validate_password
-from rapidfuzz import process as fuzz_process
+# from rapidfuzz import process as fuzz_process
 
 lemmatizer = WordNetLemmatizer()
  # very important to run it one time to load the model for all workers
@@ -710,16 +710,16 @@ def normalize_query(text):
     return text
 
 
-fuzzy_pinyin_choices = list(dictionary.pinyin_index_toneless.keys())
-fuzzy_english_choices = list(dictionary.english_index.keys())
+# fuzzy_pinyin_choices = list(dictionary.pinyin_index_toneless.keys())
+# fuzzy_english_choices = list(dictionary.english_index.keys())
 
-def fuzzy_pinyin_search(query, limit=5):
-    results = fuzz_process.extract(query, fuzzy_pinyin_choices, limit=limit)
-    return [key for key, score, _ in sorted(results, key=lambda x: x[1], reverse=True) if score > 70]
+# def fuzzy_pinyin_search(query, limit=5):
+#     results = fuzz_process.extract(query, fuzzy_pinyin_choices, limit=limit)
+#     return [key for key, score, _ in sorted(results, key=lambda x: x[1], reverse=True) if score > 70]
 
-def fuzzy_english_search(query, limit=5):
-    results = fuzz_process.extract(query, fuzzy_english_choices, limit=limit)
-    return [key for key, score, _ in sorted(results, key=lambda x: x[1], reverse=True) if score > 70]
+# def fuzzy_english_search(query, limit=5):
+#     results = fuzz_process.extract(query, fuzzy_english_choices, limit=limit)
+#     return [key for key, score, _ in sorted(results, key=lambda x: x[1], reverse=True) if score > 70]
 
 
 def get_search_results(query):
@@ -780,11 +780,11 @@ def get_search_results(query):
             original_query = query
             query = normalize_query(query)
             res = dictionary.search_by_english(query)
-            if len(res) == 0:
-                fquery = fuzzy_english_search(query)
-                if fquery:
-                    query = fquery[0]
-                    res = dictionary.search_by_english(query)
+            # if len(res) == 0:
+            #     fquery = fuzzy_english_search(query)
+            #     if fquery:
+            #         query = fquery[0]
+            #         res = dictionary.search_by_english(query)
             for r in res:
                 dd = dictionary.definition_lookup(r)
                 for idx, d in enumerate(dd): # here i take into account the order of the definitions
