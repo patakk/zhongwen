@@ -39,6 +39,7 @@ from backend.common import CARDDECKS_W_PINYIN
 from backend.common import DECKNAMES
 from backend.common import STROKES_CACHE
 from backend.common import get_tatoeba_page
+from backend.common import send_bot_notification
 
 from backend.common import get_pinyin
 from backend.common import get_char_info
@@ -80,8 +81,8 @@ logger = logging.getLogger(__name__)
 logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
 
 
-stroke_jsons = glob.glob('static/strokes_data/*.json')
-stroke_chars = set([os.path.basename(j).split('.')[0] for j in stroke_jsons])
+# stroke_jsons = glob.glob('static/strokes_data/*.json')
+# stroke_chars = set([os.path.basename(j).split('.')[0] for j in stroke_jsons])
 
 
 def breakdown_chars(word):
@@ -318,6 +319,13 @@ def register():
             session['username'] = username
             session['current_card'] = None
             session['authenticated'] = True
+
+
+            if len(email) > 0:
+                message = f"New user created: {username}. Email: {email}."
+            else:
+                message = f"New user created: {username}. No email provided."
+            send_bot_notification(message)
             
             logger.info(f"New user registered successfully: {username}")
             flash('Account created successfully!', 'success')

@@ -15,7 +15,7 @@ from backend.decorators import timing_decorator
 from backend.decorators import hard_session_required
 from backend.db.ops import db_update_or_create_note
 from backend.db.ops import db_add_words_to_set
-from backend.db.ops import db_create_set
+from backend.db.ops import db_create_word_list
 from backend.db.ops import db_add_words_to_set
 from backend.db.ops import db_get_user_wordlists
 from backend.db.ops import db_rename_word_list
@@ -37,6 +37,7 @@ from backend.common import get_char_info
 from backend.common import get_chars_info
 from backend.common import char_decomp_info
 from backend.db.models import User, WordList
+from backend.common import send_bot_notification
 
 logger = logging.getLogger(__name__)
 
@@ -75,9 +76,10 @@ def create_wordlist():
         return jsonify({"error": "Missing required fields"}), 400
     name = data["name"]
     username = session.get("username")
-    result = db_create_set(username, name)
+    result = db_create_word_list(username, name)
     if result:
         print(f"Word list '{name}' created successfully")
+        send_bot_notification(f"Word list '{name}' created by user '{username}'")
         return jsonify({"message": f"Word list '{name}' created successfully"})
     print(f"Word list creation failed")
     return jsonify({"error": "Word list creation failed"}), 500

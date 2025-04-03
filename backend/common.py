@@ -1,10 +1,15 @@
 import json
 import random
+import requests
 import os
 from datetime import datetime, timezone
 import re
 import jieba.posseg as pseg
 from hanziconv import HanziConv
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 # from hanzipy.decomposer import HanziDecomposer
 from hanzipy.dictionary import HanziDictionary
@@ -91,6 +96,26 @@ DECKNAMES = {
 pos_map = {
     'n': 'noun', 'nr': 'proper noun', 'ns': 'place noun', 'nt': 'temporal noun', 'nz': 'other noun', 'v': 'verb', 'a': 'adjective', 'ad': 'adverb', 'an': 'prenoun', 'ag': 'adjective-adverb', 'al': 'adjective-numeral', 'b': 'other', 'c': 'complement', 'd': 'adverb', 'e': 'exclamation', 'f': 'surname', 'g': 'morpheme', 'h': 'prefix', 'i': 'idiom', 'j': 'abbreviation', 'k': 'suffix', 'l': 'temporary word', 'm': 'number', 'ng': 'gender noun', 'nx': 'kernel noun', 'o': 'onomatopoeia', 'p': 'preposition', 'q': 'classifier', 'r': 'pronoun', 'u': 'auxiliary', 'v': 'verb', 'vd': 'verb-auxiliary', 'vg': 'verb-object', 'vn': 'pronoun-verb', 'w': 'punctuation', 'x': 'non-lexeme', 'y': 'language-particle', 'z': 'state-particle'
 }
+
+def send_bot_notification(message):
+    telegram_api = auth_keys.get("TELEGRAM_BOT_KEY")
+    chat_id = auth_keys.get("TELEGRAM_CHAT_ID")
+    if not telegram_api or not chat_id:
+        return
+    url = f"https://api.telegram.org/bot{telegram_api}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": message,
+    }
+    try:
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            logger.info("Notification sent successfully.")
+        else:
+            logger.error(f"Failed to send notification: {response.status_code}")
+    except requests.RequestException as e:
+        logger.error(f"Error sending notification: {e}")
+
 
 
 

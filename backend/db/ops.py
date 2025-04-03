@@ -1,4 +1,5 @@
 import logging
+import requests
 from urllib.parse import unquote
 import copy
 from sqlalchemy.exc import SQLAlchemyError
@@ -182,13 +183,13 @@ def db_get_word_list(username, wordlist_name="Learning set"):
         name=wordlist_name
     ).first()
     if not wordlist:
-        new_wordlist = db_create_set(username, wordlist_name)
+        new_wordlist = db_create_word_list(username, wordlist_name)
         words = WordEntry.query.filter_by(list_id=new_wordlist.id).all()
         return words
     words = WordEntry.query.filter_by(list_id=wordlist.id).all()
     return [word.word for word in words]
 
-def db_create_set(username, name):
+def db_create_word_list(username, name):
     user = User.query.filter_by(username=username).first()
     new_set = WordList(name=name, user=user)
     db.session.add(new_set)
@@ -196,24 +197,16 @@ def db_create_set(username, name):
     return new_set
 
 
-def db_get_user_wordlists(username, pinyin=False, english=False):
+def db_get_user_wordlists(username):
     custom_wordlists = {}
     if username and username != 'tempuser':
         wordlists = db_get_all_words_by_list_as_dict(username)
-        if pinyin or english:
-            custom_wordlists = {
-                key: {
-                    'name': key,
-                    'chars': get_chars_info(wordlists[key], pinyin=pinyin, english=english)
-                } for key in wordlists
-            }
-        else:
-            custom_wordlists = {
-                key: {
-                    'name': key,
-                    'chars': wordlists[key]
-                } for key in wordlists
-            }
+        custom_wordlists = {
+            key: {
+                'name': key,
+                'chars': get_chars_info(wordlists[key])
+            } for key in wordlists
+        }
     return custom_wordlists
 
 

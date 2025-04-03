@@ -497,8 +497,7 @@
     <script src="{{ url_for('static', filename='js/darkmode.js') }}" async></script>
     
     <script>
-        
-        if(username === 'tempuser'){
+        if(username === null){
             document.getElementById('progressUrl').innerHTML = `<span class="homeLink">login</span> <i class="fa-solid fa-person-through-window"></i>`
             document.getElementById('progressUrl').href = "{{ url_for('login') }}";
         }
