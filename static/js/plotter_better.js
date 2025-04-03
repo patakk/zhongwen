@@ -1528,7 +1528,7 @@ class HanziPlotter {
     async loadStrokeData(onReady=null) {
         try {
             this.originalStrokes = undefined;
-            const response = await fetch(`/static/strokes_data/${this.character}.json`);
+            const response = await fetch(`/api/getStrokes/${this.character}`);
             if (!response.ok) {
                 console.log('Strokes doesn\'t exist, will be rendered using text.', this.character);  
                 return;

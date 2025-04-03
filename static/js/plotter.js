@@ -822,7 +822,7 @@ class HanziPlotter {
 
     async loadStrokeData() {
         try {
-            const response = await fetch(`/static/strokes_data/${this.char}.json`);
+            const response = await fetch(`/api/getStrokes/${this.char}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }

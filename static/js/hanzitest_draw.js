@@ -383,7 +383,7 @@ function createHanziWriters(characters) {
             highlightOnComplete: true,
             highlightCompleteColor: '#77FFAA',
             charDataLoader: function(char) {
-                return fetch(`/static/strokes_data/${char}.json`)
+                return fetch(`/api/getStrokes/${charcharacter}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');

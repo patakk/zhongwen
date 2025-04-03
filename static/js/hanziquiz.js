@@ -464,7 +464,7 @@ let workingPlotter = null;
 
 async function loadStrokeData(character, onLoad=null) {
     try {
-        const response = await fetch(`/static/strokes_data/${character}.json`);
+        const response = await fetch(`/api/getStrokes/${character}`);
         if (!response.ok) {
             console.log('Network response was not ok for character:', character);  
             return;

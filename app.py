@@ -44,14 +44,10 @@ from backend.common import send_bot_notification
 from backend.common import get_pinyin
 from backend.common import get_char_info
 from backend.common import get_chars_info
-from backend.common import dictionary
 from backend.common import auth_keys
 from backend.routes.manage import validate_password
 # from rapidfuzz import process as fuzz_process
 
-lemmatizer = WordNetLemmatizer()
- # very important to run it one time to load the model for all workers
-lemmatizer.lemmatize('jeans')
 
 import json
 import os
@@ -70,14 +66,7 @@ limiter = Limiter(
     app=app,
 )
 
-
-log_file = 'zhongwen.log'
-if os.path.exists('/home/patakk/logs'):
-    log_file = '/home/patakk/logs/zhongwen.log'
-
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    filename=log_file)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
 
@@ -686,9 +675,6 @@ def remove_tones(pinyin):
 def remove_all_numbers(pinyin):
     return re.sub(r'\d', '', pinyin)
 
-from collections import Counter
-
-
 
 @app.route('/deviceinfo')
 def deviceinfo():
@@ -703,11 +689,6 @@ def move_tone_number_to_end(pinyin):
     return ''.join([char for char in pinyin if char not in '1234']) + ''.join([char for char in pinyin if char in '1234'])
 
    
-def normalize_query(text):
-    text = text.lower()
-    text = text.strip(string.punctuation)
-    text = lemmatizer.lemmatize(text)
-    return text
 
 
 # fuzzy_pinyin_choices = list(dictionary.pinyin_index_toneless.keys())
@@ -723,92 +704,16 @@ def normalize_query(text):
 
 
 def get_search_results(query):
-
-    query = query.strip().lower()
-    results = []
-
-    only_hanzi = all(regex.match(r'\p{Han}', char) for char in query if char.strip())
-    #only_latin = all(regex.match(r'\p{Latin}', char) for char in query if char.strip())
-    #only_latin_with_numbers = any(char.isdigit() for char in query) and all(regex.match(r'[\p{Latin}0-9]', char) for char in query if char.strip())
-
-    if only_hanzi:
-        # definition = dictionary.definition_lookup(query)
-        # for d in definition:
-        #     results.append({'hanzi': d['simplified'], 'pinyin': get_pinyin(d['simplified']), 'english': d['definition'], 'match_type': 'hanzi'})
-        exact_matches = []
-        other_matches = []
-        res = dictionary.get_examples(query)
-        for fr in res:
-            for idx, r in enumerate(res[fr]):
-                if r['simplified'] == query:
-                    exact_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
-                elif r['traditional'] == query:
-                    exact_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
-                else:
-                    if query == HanziConv.toSimplified(query):
-                        other_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
-                    else:
-                        other_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
-
-        for r in other_matches:
-            for hskl in range(1, 7):
-                if r['hanzi'] in CARDDECKS[f'hsk{hskl}']['chars']:
-                    r['hsklevel'] = hskl
-        other_matches = sorted(other_matches, key=lambda x: (x.get('hsklevel', 7), x.get('order', 0)))
-        results += exact_matches + other_matches
-
-    else:
-        res = dictionary.search_by_pinyin(query)
-        hard_results = []
-        for r in res:
-            dd = dictionary.definition_lookup(r)
-            for idx, d in enumerate(dd):
-                order = idx
-                piny_removed = remove_tones(d['pinyin'].lower())
-                piny_removed_numbers = remove_all_numbers(d['pinyin'].lower())
-                if d and query in piny_removed:
-                    if 'surname' in d['definition']:
-                        order = 1000
-                    hard_results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': order})
-                if d and query in piny_removed_numbers:
-                    if 'surname' in d['definition']:
-                        order = 1000
-                    results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': order})
-        if len(results) == 0:
-            results = hard_results
-        if len(results) == 0:
-            original_query = query
-            query = normalize_query(query)
-            res = dictionary.search_by_english(query)
-            # if len(res) == 0:
-            #     fquery = fuzzy_english_search(query)
-            #     if fquery:
-            #         query = fquery[0]
-            #         res = dictionary.search_by_english(query)
-            for r in res:
-                dd = dictionary.definition_lookup(r)
-                for idx, d in enumerate(dd): # here i take into account the order of the definitions
-                    if d and query in d['definition'].lower():
-                        results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': idx})
-            qwords = query.split(" ") 
-            if len(qwords) > 1:
-                fresults = []
-                for r in results:
-                    definition = r['english'].lower()
-                    if all(qw in definition for qw in qwords):
-                        if r not in fresults:
-                            fresults.append(r)
-                def order_key(r):
-                    definition = r['english']
-                    indices = [definition.find(qw) for qw in qwords]
-                    return [i if i != -1 else float('inf') for i in indices]  # Handle missing words
-                results = sorted(fresults, key=order_key)
-        for r in results:
-            for hskl in range(1, 7):
-                if r['hanzi'] in CARDDECKS[f'hsk{hskl}']['chars']:
-                    r['hsklevel'] = hskl
-        results = sorted(results, key=lambda x: (x.get('hsklevel', 7), x.get('order', 0)))
-    return results
+    url = "http://127.0.0.1:8001/search"
+    headers = {"X-API-Key": auth_keys.get('ZHONGWEN_SEARCH_KEY', '')}
+    params = {"query": query}
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error querying search endpoint: {e}")
+        return {"error": str(e)}
 
 @app.route('/search', methods=['GET', 'POST'])
 @timing_decorator

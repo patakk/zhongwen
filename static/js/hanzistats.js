@@ -196,7 +196,7 @@ function createInvisibleHanziWriter(char, func) {
           console.log('Oh No! Something went wrong :(');
         },
         charDataLoader: function(char) {
-            return fetch(`/static/strokes_data/${char}.json`)
+            return fetch(`/api/getStrokes/${char}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');

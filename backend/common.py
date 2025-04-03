@@ -9,14 +9,14 @@ from hanziconv import HanziConv
 
 import logging
 
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # from hanzipy.decomposer import HanziDecomposer
-from hanzipy.dictionary import HanziDictionary
 from pypinyin import lazy_pinyin, Style
 
 # decomposer = HanziDecomposer()
-dictionary = HanziDictionary()
 
 # from .flashcard_app import init_flashcard_app, get_flashcard_app
 

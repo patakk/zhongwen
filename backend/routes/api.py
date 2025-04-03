@@ -24,9 +24,9 @@ from backend.db.ops import db_get_stroke_data_for_character
 from backend.db.ops import db_remove_word_from_set
 
 from backend.db.models import Card, UserNotes
-from backend.db.extensions import db
 
 from backend.common import CARDDECKS
+from backend.common import STROKES_CACHE
 from backend.common import DECKNAMES
 from backend.common import CARDDECKS_W_PINYIN
 from backend.common import get_combined_audio
@@ -221,39 +221,6 @@ def load_deck():
     return jsonify(characters_data)
 
 
-@api_bp.route('/storeNotesVisibility', methods=['POST'])
-@session_required
-def store_notes_visibility():
-    try:
-        data = request.get_json()
-        if not data or 'character' not in data or 'is_public' not in data:
-            return jsonify({'error': 'Missing required fields'}), 400
-
-        character = data['character']
-        is_public = data['is_public']
-        username = session.get('username')
-
-        card = Card.query.filter_by(character=character).first()
-        if not card:
-            return jsonify({'success': True, 'message': 'Character not found'})
-
-        user_note = UserNotes.query.filter_by(
-            username=username,
-            card_id=card.id
-        ).first()
-
-        if not user_note:
-            return jsonify({'success': True, 'message': 'Note not found'})
-
-        user_note.is_public = is_public
-        db.session.commit()
-
-        return jsonify({'success': True, 'message': 'Visibility updated successfully'})
-    #except Exception as e:
-    except:
-        db.session.rollback()
-        #return jsonify({'error': str(e)}), 500
-        return jsonify({'error': 'error'}), 500
 
 
 @api_bp.route('/storeNotes', methods=['POST'])
@@ -504,6 +471,13 @@ def get_audio():
 # @api_bp.route("/debug")
 # def debug():
 #     return jsonify({"debug": flashcard_app.debug})
+
+@api_bp.route("/getStrokes/<character>")
+@session_required
+@timing_decorator
+def get_strokes(character):
+    strokes = STROKES_CACHE.get(character)
+    return jsonify(strokes)
 
 
 @api_bp.route("/save_stroke_data", methods=["POST"])
