@@ -47,6 +47,7 @@ from backend.common import get_chars_info
 from backend.common import dictionary
 from backend.common import auth_keys
 from backend.routes.manage import validate_password
+from rapidfuzz import process as fuzz_process
 
 lemmatizer = WordNetLemmatizer()
  # very important to run it one time to load the model for all workers
@@ -665,123 +666,10 @@ def get_translations(lines):
     return translations
     
 
-@app.route('/storeConvertedText', methods=['POST'])
-@session_required
-def store_converted_text():
-    data = request.get_json()
-    text = data.get('text', '')
-    
-    lines = text.split('\n')
-    translations = get_translations(lines)
-    # transPerLine = {l: t for l, t in zip(lines, translations)}
-
-    old_string = db_get_user_string(session['username'])
-    old_charset = get_charset(old_string)
-    new_charset = get_charset(text)
-    needed_chars = new_charset - old_charset
-    char_data = {char : {'strokes': STROKES_CACHE[char], 'pinyin': get_pinyin(char)} for char in needed_chars}
-    
-    success, message = db_store_user_string(session['username'], text)
-    return jsonify({"status": "success" if success else "error", 'message': message, 'dataPerCharacter': char_data, 'transPerLine': translations})
-
-from flask import Response
-with open('data/examples.json', 'r', encoding='utf-8') as f:
-    parsed_data = json.load(f)
-
-with open('data/example_lists.json', 'r', encoding='utf-8') as f:
-    example_lists_j = json.load(f)
-example_lists = {}
-for puri in example_lists_j:
-    cat = puri.split('_')[0]
-    if cat not in example_lists:
-        example_lists[cat] = []
-    example_lists[cat].append({'title': example_lists_j[puri]['english'][0], 'uri': puri})
-
-
 @app.errorhandler(404)
 def page_not_found(e):
     return '', 404
 
-
-@app.route('/examples')
-@session_required
-@timing_decorator
-def examples():
-    categories = {
-        'vocabulary': list(parsed_data['vocabulary'].keys()),
-        'examples': list(parsed_data['examples'].keys())
-    }
-    return render_template('examples.html', categories=categories)
-
-@app.route('/lists')
-@session_required
-@timing_decorator
-def lists():
-    uri = request.args.get('uri')
-    return render_template('lists.html', darkmode=session['darkmode'], categories=example_lists, initial_uri=uri, decks=DECKS_INFO, username=session['username'])
-
-@app.route('/kongzi')
-@session_required
-@timing_decorator
-def kongzi():
-    uri = request.args.get('uri')
-    return render_template('kongzi.html',  decks=DECKS_INFO, username=session['username'])
-
-
-
-@app.route('/examples/<category>/<subcategory>')
-@session_required
-@timing_decorator
-def examples_category(category, subcategory):
-    category = unquote(category)
-    subcategory = unquote(subcategory)
-    if category not in parsed_data or subcategory not in parsed_data[category]:
-        return "Category not found", 404
-    translations = parsed_data[category][subcategory]
-    return render_template('examples_category.html', category=category, subcategory=subcategory, translations=translations)
-
-# story_files = glob.glob('data/stories/*.json')
-
-# with open('data/xiao_mei_story.json', 'r', encoding='utf-8') as f:
-#     stories_data = json.load(f)
-
-# def extract_sort_key(uri):
-#     parts = uri.split('_', 1)
-#     return int(parts[0]) if parts[0].isdigit() else float('inf')
-
-# stories_list = sorted(
-#     [{'title': stories_data[u]['description'], 'uri': u} for u in stories_data],
-#     key=lambda x: extract_sort_key(x['uri'])
-# )
-
-
-'''
-'''
-
-def extract_sort_key(uri):
-    parts = uri.split('_', 1)
-    return int(parts[0]) if parts[0].isdigit() else float('inf')
-
-story_files = glob.glob('data/stories/*.json')
-story_files = sorted(story_files)[::-1]
-all_stories = {}
-
-for story_file in story_files:
-    with open(story_file, 'r', encoding='utf-8') as f:
-        story_opened = json.load(f)
-    chapters_data = story_opened["chapters"]
-    story_name = story_opened["name"]
-    
-    chapters_list = sorted(
-        [{'title': chapters_data[u]['description'], 'uri': u} for u in chapters_data],
-        key=lambda x: extract_sort_key(x['uri'])
-    )
-    
-    all_stories[story_name] = {
-        'chapters_list': chapters_list,
-        'chapters_data': chapters_data
-    }
-stories_names = list(all_stories.keys())
 
 
 # @app.route('/stories')
@@ -791,15 +679,6 @@ stories_names = list(all_stories.keys())
 # def stories(uri=None):
 #     return render_template('stories.html', stories=stories_list, initial_uri=uri)
 
-
-@app.route('/get_lists_data/<uri>')
-@session_required
-@timing_decorator
-def get_lists_data(uri):
-    if uri in example_lists_j:
-        return jsonify(example_lists_j[uri])
-    return jsonify({"error": "Story not found"}), 404
-
 import re
 def remove_tones(pinyin):
     return re.sub(r'[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]', lambda m: 'aeiouü'['āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'.index(m.group()) // 4], pinyin)
@@ -807,36 +686,8 @@ def remove_tones(pinyin):
 def remove_all_numbers(pinyin):
     return re.sub(r'\d', '', pinyin)
 
-def convert_numerical_tones(pinyin):
-    tone_marks = {
-        'a': ['ā', 'á', 'ǎ', 'à', 'a'],
-        'e': ['ē', 'é', 'ě', 'è', 'e'],
-        'i': ['ī', 'í', 'ǐ', 'ì', 'i'],
-        'o': ['ō', 'ó', 'ǒ', 'ò', 'o'],
-        'u': ['ū', 'ú', 'ǔ', 'ù', 'u'],
-        'ü': ['ǖ', 'ǘ', 'ǚ', 'ǜ', 'ü']
-    }
-    
-    def replace_tone(match):
-        vowel, tone = match.groups()
-        if vowel.lower() in tone_marks:
-            return tone_marks[vowel.lower()][int(tone) - 1]
-        return vowel
-    
-    return re.sub(r'([aeiouü])([\d])', replace_tone, pinyin)
-
 from collections import Counter
 
-def fuzzy_match(query, text):
-    query_chars = Counter(query.lower())
-    text_chars = Counter(text.lower())
-    return all(query_chars[char] <= text_chars[char] for char in query_chars)
-
-def fuzzy_sort_key(query, text):
-    query = query.lower()
-    text = text.lower()
-    order_score = sum(text.index(char) for char in query if char in text)
-    return order_score
 
 
 @app.route('/deviceinfo')
@@ -858,7 +709,21 @@ def normalize_query(text):
     text = lemmatizer.lemmatize(text)
     return text
 
+
+fuzzy_pinyin_choices = list(dictionary.pinyin_index_toneless.keys())
+fuzzy_english_choices = list(dictionary.english_index.keys())
+
+def fuzzy_pinyin_search(query, limit=5):
+    results = fuzz_process.extract(query, fuzzy_pinyin_choices, limit=limit)
+    return [key for key, score, _ in sorted(results, key=lambda x: x[1], reverse=True) if score > 70]
+
+def fuzzy_english_search(query, limit=5):
+    results = fuzz_process.extract(query, fuzzy_english_choices, limit=limit)
+    return [key for key, score, _ in sorted(results, key=lambda x: x[1], reverse=True) if score > 70]
+
+
 def get_search_results(query):
+
     query = query.strip().lower()
     results = []
 
@@ -912,8 +777,14 @@ def get_search_results(query):
         if len(results) == 0:
             results = hard_results
         if len(results) == 0:
+            original_query = query
             query = normalize_query(query)
             res = dictionary.search_by_english(query)
+            if len(res) == 0:
+                fquery = fuzzy_english_search(query)
+                if fquery:
+                    query = fquery[0]
+                    res = dictionary.search_by_english(query)
             for r in res:
                 dd = dictionary.definition_lookup(r)
                 for idx, d in enumerate(dd): # here i take into account the order of the definitions
@@ -959,6 +830,7 @@ def search():
 
 
 @app.route('/search_results', methods=['POST'])
+@limiter.limit("1 per second")
 @timing_decorator
 @session_required
 def search_results():

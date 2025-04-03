@@ -14,3 +14,5 @@ hanziconv
 flask-wtf
 nltk
 flask-dance
+rapidfuzz
+
