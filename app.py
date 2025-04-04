@@ -270,14 +270,6 @@ def register():
         forwarded_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
         email = request.form.get('email', '').strip().lower()
 
-        ip_info = {
-            'remote_addr': request.remote_addr,
-            'x_forwarded_for': request.headers.get('X-Forwarded-For', ''),
-            'x_real_ip': request.headers.get('X-Real-IP', ''),
-            'environ_remote_addr': request.environ.get('REMOTE_ADDR', '')
-        }
-        print(f"IP information: {ip_info}")
-        
         settings = {
             'darkmode': session.get('darkmode', False),
             'deck': session.get('deck', 'hsk1'),
@@ -291,13 +283,13 @@ def register():
         if db_user_exists(username):
             flash('Username unavailable', 'error')
             logger.warning(f"Registration attempt with existing username: {username}")
+            session['authenticated'] = False
             return redirect(url_for('register'))
         
-        print('ip:', forwarded_ip)
         if email:
             if "testguru" in email:
-                log_message = f"BLOCKED REGISTRATION: IP={forwarded_ip} EMAIL={email}"
-                spam_logger.warning(log_message)  # Logs to /var/log/flask-antispam/flask-antispam.log
+                log_message = f"BLOCKED REGISTRATION [IP={forwarded_ip}] [EMAIL={email}]"
+                spam_logger.warning(log_message)  # Logs to /home/patakk/logs/flask-antispam.log
                 return "Blocked registration attempt", 403
             
             existing_email_user = User.query.filter_by(email=email).first()
@@ -315,7 +307,7 @@ def register():
             flash(msg, 'error')
             return redirect(url_for('register'))
         
-        if True:
+        try:
             user = db_create_user(
                 username=username,
                 password=password,
@@ -339,7 +331,7 @@ def register():
             
             logger.info(f"New user registered successfully: {username}")
             return redirect(url_for('home'))
-        else:
+        except:
             flash('Error creating account', 'error')
             logger.error(f"Registration error: {str(e)}")
             return redirect(url_for('register'))

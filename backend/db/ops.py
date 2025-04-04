@@ -66,7 +66,7 @@ def db_create_user(
 
     if len(email) > 0:
         token = user.generate_email_verification_token()
-        verification_link = url_for('home', token=token, _external=True)
+        verification_link = url_for('manage.verify_email', token=token, _external=True)
         
         msg = Message('Verify Your Email',
                         recipients=[email])

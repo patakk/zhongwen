@@ -6,6 +6,9 @@ manage_bp = Blueprint("manage", __name__, url_prefix="/manage")
 
 from flask import request, redirect, url_for, flash
 
+import logging
+logger = logging.getLogger(__name__)
+
 from backend.db.models import User
 from backend.db.extensions import db, mail
 from backend.decorators import session_required
@@ -111,9 +114,9 @@ def verify_email(token):
         user.email_verified = True
         user.email_verification_token = None
         db.session.commit()
-        flash('Email verified successfully!', 'success')
+        logger.info(f"User {user.username} verified their email.")
     else:
-        flash('Invalid or expired verification link', 'danger')
+        logger.info(f"User tried to verify email with invalid token: {token}")
     return redirect(url_for('home'))
 
 
