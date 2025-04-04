@@ -729,7 +729,7 @@
                 <!-- <p>Due cards: {{ duecards }}</p> -->
             <!-- <p>Learning cards: {{ learningcards }}</p> -->
             <!-- <p>Learned cards: {{ learnedcards }}</p> -->
-            <table>
+            <table id="wordlist-table">
                 <tr>
                     <th class="tooltip-header" data-tooltip="The Chinese character being learned">Characters</th>
                     <th class="tooltip-header varvar" data-tooltip="Current learning stage of the character (%)">Learned</th>
@@ -738,32 +738,7 @@
                     <th class="tooltip-header varvar" data-tooltip="Total number of incorrect answers for this character">Incorrect</th>
                     <th class="tooltip-header varvar" data-tooltip="Scheduled date and time for the next review">Next Review</th>
                 </tr>
-                    {% for stat in progress_stats %}
-                        <tr class="stat-row" data-character='{{ stat.character }}'>    
-
-                        <td style="text-align: left;" class="character" data-character='{{ stat.character }}'  data-pinyin='{{ stat.pinyin }}'>
-                            <a>{{ stat.character }}</a>
-                        </td>
-                        <td class="varvar" style="text-align: right;">{{ '{:.1f}'.format(stat.box/6*100) }}%</td>
-                        <!-- <td style="text-align: right;">
-                            {{ '{:.2f}'.format(stat.difficulty) if stat.difficulty is not none else '/' }}
-                        </td> -->
-                        <td class="varvar"  style="text-align: right;">{{ stat.streak }}</td>
-                        <td class="varvar"  style="text-align: right;">{{ stat.num_incorrect }}</td>
-                            {% if stat.is_due == 1 %}
-                            <td style="text-align: right;" class="varvar next-review-date">DUE</td>
-                            {% else %}
-                                {% if stat.next_review is not none %}
-                                    <td style="text-align: right;" class="varvar next-review-date">{{ stat.next_review }}</td>
-                                {% else %}
-                                    <td style="text-align: right;" class="varvar">/</td>
-                                {% endif %}
-                            {% endif %}
-                        <td class="remove-card" data-tooltip="Remove from learning" data-charater="{{ stat.character }}" >             
-                            <i class="fas fa-xmark"></i>
-                        </td>
-                    </tr>
-                    {% endfor %}
+                   
             </table>
         </div>
     </div>

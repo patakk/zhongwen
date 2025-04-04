@@ -144,13 +144,15 @@ def get_progress_data_for_chars():
 @session_required
 def add_word_to_learning():
     data = request.get_json()
-    print(data)
     if not data or "word" not in data:
         return jsonify({"error": "Missing required fields"}), 400
     word = data["word"]
 
     words = re.split(r'[^\u4e00-\u9fff]+', word)
     words = [w for w in words if w and len(w) <= 6]
+    words = [w for w in words if re.match(r'^[\u4e00-\u9fff]+$', w)]
+    words = [w for w in words if w]
+    words = list(set(words))
     
     if not words:
         return jsonify({"error": "No valid Chinese words found in input"}), 400

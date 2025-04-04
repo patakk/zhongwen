@@ -146,6 +146,7 @@ def account():
         for w in wordlists_words[wl]:
             nww.append(get_char_info(w))
         wordlists_words[wl] = nww
+    print(wordlists_words)
 
     google_id = User.query.filter_by(username=username).first().google_id
     profile_pic = User.query.filter_by(username=username).first().profile_pic

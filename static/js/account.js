@@ -1,13 +1,28 @@
 let addWordsInput = document.getElementById('newWords');
 
 function addToTable(progressRows) {
-    let tableBody = document.querySelector("table tbody");
+    let tableBody = document.getElementById("wordlist-table");
     let hoverBox = document.getElementById('pinyin-hover-box');
     
+    progressRows.sort((a, b) => {
+        if(a.character === null || a.character === undefined){
+            return 0;
+        }
+        if(b.character === null || b.character === undefined){
+            return 0;
+        }
+        const pinyinA = a.pinyin[0].toLowerCase();
+        const pinyinB = b.pinyin[0].toLowerCase();
+        if (pinyinA < pinyinB) return -1;
+        if (pinyinA > pinyinB) return 1;
+        return 0;
+    });
+console.log(progressRows)
     progressRows.forEach((stat, idx) => {
         if (document.querySelector(`tr[data-character="${stat.character}"]`)) {
-            return; // Skip if character already exists
+            return;
         }
+        // skip if stat is empty dictionary
 
         let row = document.createElement("tr");
 
@@ -207,7 +222,7 @@ function removeWordlist(wordlist){
         delete wordlists_words[currentWordlist];
         currentWordlist = Object.keys(wordlists_words)[0];
         dropdownTrigger.innerHTML = currentWordlist + " <i class='fa-solid fa-caret-right'></i>";
-        let tableBody = document.querySelector("table tbody");
+        let tableBody = document.getElementById("wordlist-table");
         tableBody.innerHTML = "";
         reworkUrls();
         populateDropdown();
@@ -467,6 +482,8 @@ const addWordInstructions = `
     <p>Any text that has Chinese words sepparated in some way.</p>
     <p>Words will be parsed and added to the current list and will be visible in the table bellow.</p>
 `;
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
     const tooltipHeaders = document.querySelectorAll('.tooltip-header');
