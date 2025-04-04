@@ -45,7 +45,7 @@ FLASK_CONFIG = {
     'PERMANENT_SESSION_LIFETIME': timedelta(days=30),
     'SQLALCHEMY_DATABASE_URI': 'sqlite:////home/patakk/zhongweb_db/flashcards.db',
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-    'APPLICATION_ROOT': BASE_DIR.replace('/backend', ''),
+    'APPLICATION_ROOT': '/',
 }
 
 
