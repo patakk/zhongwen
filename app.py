@@ -364,7 +364,7 @@ def flashcards():
 
     username = session.get('username')
 
-    custom_wordlists = db_get_user_wordlists(username)
+    custom_wordlists = db_get_user_wordlists(username, with_data=False)
     cc = {
         **custom_wordlists,
         **CARDDECKS

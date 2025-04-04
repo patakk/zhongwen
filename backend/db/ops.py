@@ -197,14 +197,14 @@ def db_create_word_list(username, name):
     return new_set
 
 
-def db_get_user_wordlists(username):
+def db_get_user_wordlists(username, with_data=True):
     custom_wordlists = {}
     if username and username != 'tempuser':
         wordlists = db_get_all_words_by_list_as_dict(username)
         custom_wordlists = {
             key: {
                 'name': key,
-                'chars': get_chars_info(wordlists[key])
+                'chars': get_chars_info(wordlists[key]) if with_data else wordlists[key],
             } for key in wordlists
         }
     return custom_wordlists
@@ -398,9 +398,6 @@ def db_update_or_create_note(username, word, notes, is_public=False):
         db.session.rollback()
         return False, f"Error saving note: {str(e)}"
 
-def db_load_user_value(username, key):
-    data = db_load_user_progress(username)
-    return data.get(key)
 
 def db_store_user_string(username, content):
     try:

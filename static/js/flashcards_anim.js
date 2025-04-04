@@ -418,7 +418,7 @@ function cloneWordInfo(wordInfo) {
 
 function getNewWord() {
     let chars = inputdecks[inputdeck].chars;
-
+    console.log(inputdecks)
     if(currentWord === ''){
         //currentWord = chars[Math.floor(Math.random() * chars.length)];
         currentWord = chars[currentIndexInDeck];

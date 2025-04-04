@@ -353,7 +353,7 @@ def setdarkmode():
     else:
         session["darkmode"] = False
     return jsonify(
-        {"message": "darkmode changed successfully to " + str(session["darkmode"])}
+        {"message": "darkmode changed successfully to " + str(session.get("darkmode"))}
     )
 
 
@@ -361,7 +361,7 @@ def setdarkmode():
 @session_required
 @timing_decorator
 def getdarkmode():
-    return jsonify({"darkmode": session["darkmode"]})
+    return jsonify({"darkmode": session.get("darkmode")})
 
 
 @api_bp.route("/get_font")
@@ -545,7 +545,7 @@ def character_animation(character):
 def get_random_characters():
     username = session.get('username')
     
-    custom_wordlists = db_get_user_wordlists(username)
+    custom_wordlists = db_get_user_wordlists(username, with_data=False)
     cd = {
         **custom_wordlists,
         **CARDDECKS

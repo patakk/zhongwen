@@ -22,8 +22,8 @@ FLATTENED_Q = sorted(all_chars)
 
 def get_common_context():
     return {
-        "darkmode": session["darkmode"],
-        "username": session["username"],
+        "darkmode": session.get("darkmode", False),
+        "username": session.get("username"),
         "wordlist": "hsk1",
     }
 
