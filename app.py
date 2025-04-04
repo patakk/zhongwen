@@ -68,9 +68,17 @@ limiter = Limiter(
 )
 
 
+log_dir = "/home/patakk/logs"
+log_file = os.path.join(log_dir, "flask-antispam.log")
+spam_logger = logging.getLogger("flask-antispam")
+spam_logger.setLevel(logging.WARNING)
+spam_file_handler = logging.FileHandler(log_file)
+spam_file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
+spam_logger.addHandler(spam_file_handler)
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
 
 
@@ -259,7 +267,16 @@ def register():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
         confirm_password = request.form.get('confirm_password', '')
-        email = request.form.get('email', '').strip()
+        forwarded_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        email = request.form.get('email', '').strip().lower()
+
+        ip_info = {
+            'remote_addr': request.remote_addr,
+            'x_forwarded_for': request.headers.get('X-Forwarded-For', ''),
+            'x_real_ip': request.headers.get('X-Real-IP', ''),
+            'environ_remote_addr': request.environ.get('REMOTE_ADDR', '')
+        }
+        print(f"IP information: {ip_info}")
         
         settings = {
             'darkmode': session.get('darkmode', False),
@@ -267,36 +284,37 @@ def register():
             'font': session.get('font', 'Noto Sans Mono')
         }
         
-        # Check if passwords match
         if password != confirm_password:
             flash('Passwords do not match', 'error')
             return redirect(url_for('register'))
         
-        # Check username availability
         if db_user_exists(username):
             flash('Username unavailable', 'error')
             logger.warning(f"Registration attempt with existing username: {username}")
             return redirect(url_for('register'))
         
-        # Add email uniqueness check
-        if email:  # Only check if email is provided
+        print('ip:', forwarded_ip)
+        if email:
+            if "testguru" in email:
+                log_message = f"BLOCKED REGISTRATION: IP={forwarded_ip} EMAIL={email}"
+                spam_logger.warning(log_message)  # Logs to /var/log/flask-antispam/flask-antispam.log
+                return "Blocked registration attempt", 403
+            
             existing_email_user = User.query.filter_by(email=email).first()
             if existing_email_user:
-                # Check if it's a Google account
                 if existing_email_user.google_id:
                     flash('This email is already linked to a Google account. Please sign in with Google.', 'error')
                 else:
                     flash('This email is already registered. Please log in or use a different email.', 'error')
                 logger.warning(f"Registration attempt with existing email: {email}")
                 return redirect(url_for('register'))
+
         
-        # Validate password
         is_valid, msg = validate_password(password)
         if not is_valid:
             flash(msg, 'error')
             return redirect(url_for('register'))
         
-        # Create user
         if True:
             user = db_create_user(
                 username=username,
