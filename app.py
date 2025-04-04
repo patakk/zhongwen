@@ -40,6 +40,7 @@ from backend.common import DECKNAMES
 from backend.common import STROKES_CACHE
 from backend.common import get_tatoeba_page
 from backend.common import send_bot_notification
+from backend.common import default_darkmode
 
 from backend.common import get_pinyin
 from backend.common import get_char_info
@@ -141,7 +142,7 @@ def account():
     google_id = User.query.filter_by(username=username).first().google_id
     profile_pic = User.query.filter_by(username=username).first().profile_pic
 
-    return render_template('account.html', darkmode=session['darkmode'], username=session.get('username'), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(username), wordlists_words=wordlists_words, google_id=google_id, profile_pic=profile_pic)
+    return render_template('account.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(username), wordlists_words=wordlists_words, google_id=google_id, profile_pic=profile_pic)
 
 
 def main_card_data(character):
@@ -193,7 +194,7 @@ def hanziviz():
         if 'hsk' in key:
             for character in CARDDECKS[key]:
                 characters[character] = CARDDECKS[key][character]
-    return render_template('hanziviz.html', darkmode=session['darkmode'], characters=characters)
+    return render_template('hanziviz.html', darkmode=session.get('darkmode', default_darkmode), characters=characters)
 
 
 # @app.route('/check_session')
@@ -212,7 +213,6 @@ def get_crunch():
 
 @limiter.limit("25 per minute")
 @app.route('/login', methods=['GET', 'POST'])
-@timing_decorator
 def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
@@ -253,7 +253,7 @@ def login():
 
 @limiter.limit("25 per minute")
 @app.route('/register', methods=['GET', 'POST'])
-@timing_decorator
+@session_required
 def register():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
@@ -297,7 +297,7 @@ def register():
             return redirect(url_for('register'))
         
         # Create user
-        try:
+        if True:
             user = db_create_user(
                 username=username,
                 password=password,
@@ -320,9 +320,8 @@ def register():
             send_bot_notification(message)
             
             logger.info(f"New user registered successfully: {username}")
-            flash('Account created successfully!', 'success')
             return redirect(url_for('home'))
-        except Exception as e:
+        else:
             flash('Error creating account', 'error')
             logger.error(f"Registration error: {str(e)}")
             return redirect(url_for('register'))
@@ -333,6 +332,7 @@ def register():
 
 
 @app.route('/logout')
+@session_required
 def logout():
    session.clear()  # This clears everything in the session, including flash messages
    return redirect(url_for('home'))
@@ -340,26 +340,23 @@ def logout():
 
 @app.route('/')
 @session_required
-@timing_decorator
 def home():
-    return render_template('home.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO)
+    print(session.get('username'))
+    return render_template('home.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=DECKS_INFO)
 
 # New route for the welcome page
 @app.route('/welcome')
 @session_required
-@timing_decorator
 def welcome():
-    return render_template('welcome.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO)
+    return render_template('welcome.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=DECKS_INFO)
 
 @app.route('/pageinfo')
 @session_required
-@timing_decorator
 def pageinfo():
-    return render_template('pageinfo.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO)
+    return render_template('pageinfo.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=DECKS_INFO)
 
 @app.route('/flashcards', methods=['GET'])
 @session_required
-@timing_decorator
 def flashcards():
     querydeck = request.args.get('wordlist')
     if not querydeck:
@@ -388,7 +385,7 @@ def flashcards():
         decknames_sorted = list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
     decknames_sorted_with_name = {deck: DECKNAMES[deck] for deck in decknames_sorted}
 
-    return render_template('flashcards.html', darkmode=session['darkmode'], username=session['username'], decks=cc, wordlist=querydeck, decknames_sorted_with_name=decknames_sorted_with_name)
+    return render_template('flashcards.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=cc, wordlist=querydeck, decknames_sorted_with_name=decknames_sorted_with_name)
 
 
 
@@ -461,7 +458,7 @@ def grid():
 
     
     # main_data['chars_breakdown'] = breakdown_chars(character)
-    return render_template('grid.html', username=session['username'], darkmode=session['darkmode'], inputdeck=querydeck, inputedeckdata=cc, custom_deck_names=[user_wordlists[k] for k in user_wordlists], decknames_sorted_with_name=decknames_sorted_with_name)
+    return render_template('grid.html', username=session.get('username'), darkmode=session.get('darkmode', default_darkmode), inputdeck=querydeck, inputedeckdata=cc, custom_deck_names=[user_wordlists[k] for k in user_wordlists], decknames_sorted_with_name=decknames_sorted_with_name)
 
 from backend.routes.puzzles import get_common_context
 
@@ -488,12 +485,12 @@ def hanziwriting():
 # @session_required
 # @timing_decorator
 # def convert():
-#     return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, wordlist=session['deck'])
+#     return render_template('convert.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, wordlist=session['deck'])
 
 @app.route('/convert2')
 @session_required
 def convert2():
-    return render_template('convert2.html', darkmode=session['darkmode'], username=session['username'], convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, wordlist=session['deck'])
+    return render_template('convert2.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, wordlist=session['deck'])
 
 @app.route('/convert3')
 @session_required
@@ -506,7 +503,7 @@ def convert3():
     lines = convertedText.split('\n')
     translations = get_translations(lines)
 
-    return render_template('convert3.html', darkmode=session['darkmode'], username=session['username'], convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
+    return render_template('convert3.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
 
 @app.route('/convert')
 @session_required
@@ -519,7 +516,7 @@ def convert():
     lines = convertedText.split('\n')
     translations = get_translations(lines)
 
-    return render_template('convert.html', darkmode=session['darkmode'], username=session['username'], convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
+    return render_template('convert.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
 
 
 
@@ -540,7 +537,7 @@ def stories():
     char_data = {char : {'strokes': STROKES_CACHE[char], 'chardata': get_char_info(char)} for char in chars}
     word_data = {word: get_char_info(word) for word in words}
     all_chapters = [[chapter['title'] for chapter in all_stories[story_name]['chapters_list']] for story_name in stories_names]
-    return render_template('stories.html', darkmode=session['darkmode'], chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session['username'], dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], word_data=word_data, custom_deck_names=db_get_word_list_names_only(username))
+    return render_template('stories.html', darkmode=session.get('darkmode', default_darkmode), chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session.get('username'), dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], word_data=word_data, custom_deck_names=db_get_word_list_names_only(username))
 
 @app.route('/get_story/<int:story_index>/<int:chapter_index>')
 @session_required
@@ -733,7 +730,7 @@ def search():
         main_data = main_card_data(character)
         main_data['chars_breakdown'] = breakdown_chars(character)
     search_time = time.time() - start_time
-    return render_template('search.html', results=results, query=query, darkmode=session['darkmode'], decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(session.get('username')), username=session['username'], character=main_data, search_time=search_time)
+    return render_template('search.html', results=results, query=query, darkmode=session.get('darkmode', default_darkmode), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(session.get('username')), username=session.get('username'), character=main_data, search_time=search_time)
 
 
 @app.route('/search_results', methods=['POST'])
@@ -756,7 +753,7 @@ def search_results():
 # @hard_session_required
 def hanzi_strokes_history():
     strokes_per_character = db_get_all_stroke_data(session['username'])
-    return render_template('hanzistats.html', darkmode=session['darkmode'], username=session['username'], decks=DECKS_INFO, strokes_per_character=strokes_per_character)
+    return render_template('hanzistats.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=DECKS_INFO, strokes_per_character=strokes_per_character)
 
 @app.route('/hanzi_strokes_charlist')
 @session_required
@@ -781,7 +778,7 @@ def strokerender():
 #     # Get user strokes
 #     user_strokes = get_user_strokes(session['username'])
     
-#     return render_template('book1.html', images=images, user_strokes=user_strokes, username=session['username'], decks=DECKS_INFO)
+#     return render_template('book1.html', images=images, user_strokes=user_strokes, username=session.get('username'), decks=DECKS_INFO)
 
 # @app.route('/save_stroke', methods=['POST'])
 # @session_required

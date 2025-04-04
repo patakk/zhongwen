@@ -8,6 +8,7 @@ from backend.db.models import WordEntry
 from backend.db.models import WordList
 from backend.common import auth_keys
 # 1. The Flask-Dance blueprint for OAuth
+
 google_oauth_bp = make_google_blueprint(
     client_id=auth_keys.get("GOOGLE_OAUTH_CLIENT_ID"),
     client_secret=auth_keys.get("GOOGLE_OAUTH_CLIENT_SECRET"),

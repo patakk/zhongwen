@@ -34,6 +34,7 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+
 FLASK_CONFIG = {
     'SECRET_KEY': auth_keys.get("FLASK_SECRET_KEY"),
     'SESSION_TYPE': 'sqlalchemy',
@@ -44,7 +45,7 @@ FLASK_CONFIG = {
     'PERMANENT_SESSION_LIFETIME': timedelta(days=30),
     'SQLALCHEMY_DATABASE_URI': 'sqlite:////home/patakk/zhongweb_db/flashcards.db',
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-    'APPLICATION_ROOT': os.path.join(BASE_DIR, '..'),
+    'APPLICATION_ROOT': BASE_DIR.replace('/backend', ''),
 }
 
 
