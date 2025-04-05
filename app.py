@@ -146,7 +146,6 @@ def account():
         for w in wordlists_words[wl]:
             nww.append(get_char_info(w))
         wordlists_words[wl] = nww
-    print(wordlists_words)
 
     google_id = User.query.filter_by(username=username).first().google_id
     profile_pic = User.query.filter_by(username=username).first().profile_pic
@@ -352,7 +351,6 @@ def logout():
 @app.route('/')
 @session_required
 def home():
-    print(session.get('username'))
     return render_template('home.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=DECKS_INFO)
 
 # New route for the welcome page

@@ -140,7 +140,6 @@ class FlashcardApp:
         current_time = datetime.now(timezone.utc)
 
         uprogress = db_load_user_progress(username)
-        print(uprogress)
         learning_cards = db_load_user_value(username, "learning_cards") or []
         for character in learning_cards:
             character_progress = uprogress["progress"].get(character, {})
