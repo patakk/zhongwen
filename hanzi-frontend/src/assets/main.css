@@ -1,0 +1,28 @@
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+  --font-family: 'Arial', sans-serif;
+  --font-size: 16px;
+  --border-radius: 4px;
+  --spacing-unit: 8px;
+}
+
+/* Use the variables throughout your styles */
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  color: var(--primary-color);
+}
+
+button {
+  background-color: var(--primary-color);
+  color: white;
+  padding: var(--spacing-unit) var(--spacing-unit * 2);
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+}

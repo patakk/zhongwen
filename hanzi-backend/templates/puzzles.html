@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>puzzles</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icons/zi.ico') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <style>
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        * {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: 600;
+            font-family: "Noto Sans Mono", monospace;
+            font-weight: 400;
+        }
+
+        ::selection {
+            background-color: rgb(255, 66, 28);
+        }
+        
+
+        body {
+            font-style: normal;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--background-color);
+        }
+        .home-container {
+            border: 2px dashed black;
+            padding: 40px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: black;
+            text-align: center;
+        }
+        .link-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .puzzle-link {
+            width: 300px;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: white;
+            color: black;
+            border: 2px solid black;
+            text-decoration: none;
+            text-align: center;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        .puzzle-link:hover {
+            background-color: rgb(31, 31, 31);
+            color: white;
+        }
+        ::selection {
+            background-color: rgb(31, 31, 31);
+            color: white;
+        }
+
+        
+
+        @media screen and (max-width: 768px) {
+            .home-container {
+                /* height: 60%; */
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            .puzzle-link {
+                width: 200px;
+                padding: 10px;
+                margin: 4px 0;
+                background-color: white;
+                color: black;
+                border: 2px solid black;
+                text-decoration: none;
+                text-align: center;
+                font-size: 14px;
+                
+            }
+        }
+
+        .toggle-title {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            height: 1.5em; /* Adjust this value as needed */
+            line-height: 1.5;
+            overflow: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: 600;
+        }
+
+        .toggle-title.darkmode {
+            color: rgb(226, 226, 226);
+        }
+
+        /* Ensure consistent width */
+        .toggle-title::before {
+            content: attr(data-cn);
+            visibility: hidden;
+            height: 0;
+            position: absolute;
+            white-space: nowrap;
+        }
+
+        /* For better font rendering */
+        .toggle-title {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .darkmode {
+            border-color: rgb(128, 128, 128);
+        }
+
+        .puzzle-link.darkmode {
+            color: rgb(226, 226, 226);
+            background-color: rgb(26, 26, 26);
+        }
+
+        .puzzle-link.darkmode:hover {
+            color: rgb(226, 208, 208);
+            background-color: rgb(55, 55, 55);
+        }
+
+        #backLink {
+            position: absolute;
+            top: 1em;
+            left: 1em;
+            font-size: 1em;
+            color: var(--text-color);
+            text-decoration: none;
+            z-index: 11000;
+        }
+    </style>
+</head>
+
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
+<body>
+{% endif %}
+<a href="{{ url_for('home') }}" id="backLink">&lt;&lt; home</a>
+    
+    {% include 'menu.html' %}
+
+
+    <div class="home-container">
+        <h1 class="toggle-title" data-cn="谜题" data-en="Puzzles">Puzzles</h1>
+        <div class="link-container">
+            <!-- <a href="{{ url_for('puzzles.hanzitest_fillin') }}">fill in</a> -->
+            <!-- <a href="{{ url_for('puzzles.hanzitest_pinyin') }}" class="puzzle-link">📝 Pinyin Input</a> -->
+            <!-- <a href="{{ url_for('puzzles.hanzitest_choices') }}" class="puzzle-link"><i class="fas fa-check-square"></i> Pinyin Choice</a> -->
+            <a href="{{ url_for('puzzles.hanzitest_table') }}" class="puzzle-link"><i class="fas fa-keyboard"></i> Type Pinyin</a>
+            <a href="{{ url_for('puzzles.hanzitest_choices') }}" class="puzzle-link"><i class="fas fa-tasks"></i> Choose Pinyin</a>
+            <a href="{{ url_for('puzzles.hanzitest_audio') }}" class="puzzle-link"><i class="fas fa-tasks"></i> Match Audio To Hanzi</a>
+            <!-- <a href="{{ url_for('puzzles.hanzitest_draw') }}" class="puzzle-link"><i class="fas fa-pen-fancy"></i> Write Hanzi</a> -->
+
+            
+        </div>
+    </div>
+
+    <script>
+        const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}" async></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}" async></script>
+    <script>
+        
+
+        function adjustHeight() {
+            var vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        window.addEventListener('resize', adjustHeight);
+        window.addEventListener('orientationchange', adjustHeight);
+        adjustHeight();
+
+        window.addEventListener('resize', adjustHeight);
+        window.addEventListener('orientationchange', adjustHeight);
+        adjustHeight();
+        
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const title = document.querySelector('.toggle-title');
+            let isEnglish = true;
+
+            function toggleTitle() {
+                isEnglish = !isEnglish;
+                title.textContent = isEnglish ? title.dataset.en : title.dataset.cn;
+                title.style.fontWeight = isEnglish ? '600' : '400';
+            }
+
+            // For desktop
+            title.addEventListener('mouseenter', toggleTitle);
+            title.addEventListener('mouseleave', toggleTitle);
+
+            // For mobile
+            title.addEventListener('click', function(e) {
+                // Prevent double-triggering on desktop
+                if (e.pointerType !== 'mouse') {
+                    toggleTitle();
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>

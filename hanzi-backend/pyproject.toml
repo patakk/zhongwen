@@ -1,0 +1,15 @@
+[project]
+name = "your-project"
+version = "1.0.0"
+description = "Your project description"
+dependencies = [
+    "flask>=2.0.0",
+    "sqlalchemy>=1.4.0",
+]
+
+[tool.pylint]
+disable = [
+    "missing-docstring",
+    "invalid-name",
+]
+
