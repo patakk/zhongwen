@@ -1,17 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('@/assets/fonts/JetBrainsMono-Regular.woff2') format('woff2'),
+       url('@/assets/fonts/JetBrainsMono-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('@/assets/fonts/JetBrainsMono-Bold.woff2') format('woff2'),
+       url('@/assets/fonts/JetBrainsMono-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
 :root {
-  --primary-color: #3498db;
+  --page-background: rgb(255, 255, 255);
+  --dim-background: rgb(252, 252, 252);
+  --overlay-background: rgba(0, 0, 0, 0.5);
+  --primary-color: #000000;
+  --dim-primary-color: #d4d4d4;
   --secondary-color: #2ecc71;
-  --font-family: 'Arial', sans-serif;
+  --font-family: 'JetBrains Mono', monospace;
   --font-size: 16px;
-  --border-radius: 4px;
+  --border-radius: 0px;
   --spacing-unit: 8px;
 }
 
-/* Use the variables throughout your styles */
+[data-theme="dark"] {
+  --overlay-background: rgba(0, 0, 0, 0.5);
+  --page-background: rgb(10, 10, 10);
+  --dim-background: rgb(15, 15, 15);
+  --primary-color: #f8f8f8;
+  --dim-primary-color: #c0c0c0;
+  --secondary-color: #b39cc9;
+}
+
+* {
+  /* transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; */
+}
+
 body {
   font-family: var(--font-family);
   font-size: var(--font-size);
   color: var(--primary-color);
+  background-color: var(--page-background);
 }
 
 button {

@@ -6,7 +6,12 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig({
   server: {
-    hmr: true, 
+    watch: {
+      usePolling: true
+    },
+    hmr: {
+      overlay: true
+    }
   },
   plugins: [
     vue(),
