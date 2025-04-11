@@ -17,11 +17,9 @@
 }
 
 :root {
-  --page-background: rgb(255, 255, 255);
-  --dim-background: rgb(252, 252, 252);
+  --bg: rgb(255, 255, 255);
+  --fg: rgb(0, 0, 0);
   --overlay-background: rgba(0, 0, 0, 0.5);
-  --primary-color: #000000;
-  --dim-primary-color: #d4d4d4;
   --secondary-color: #2ecc71;
   --font-family: 'JetBrains Mono', monospace;
   --font-size: 16px;
@@ -30,11 +28,9 @@
 }
 
 [data-theme="dark"] {
+  --bg: rgb(0, 0, 0);
+  --fg: rgb(255, 255, 255);
   --overlay-background: rgba(0, 0, 0, 0.5);
-  --page-background: rgb(10, 10, 10);
-  --dim-background: rgb(15, 15, 15);
-  --primary-color: #f8f8f8;
-  --dim-primary-color: #c0c0c0;
   --secondary-color: #b39cc9;
 }
 
@@ -45,12 +41,12 @@
 body {
   font-family: var(--font-family);
   font-size: var(--font-size);
-  color: var(--primary-color);
-  background-color: var(--page-background);
+  color: var(--fg);
+  background-color: var(--bg);
 }
 
 button {
-  background-color: var(--primary-color);
+  background-color: var(--fg);
   color: white;
   padding: var(--spacing-unit) var(--spacing-unit * 2);
   border-radius: var(--border-radius);

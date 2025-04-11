@@ -184,7 +184,7 @@ export default {
 }
 
 .grid-item {
-  background: var(--dim-background);
+  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 50%);
   padding: 12px;
   border-radius: 1px;
   text-align: center;

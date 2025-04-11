@@ -154,8 +154,8 @@ export default {
   width: 34%;
   height: 90vh;
   max-height: 90vh;
-  border: 2px dashed var(--primary-color);
-  background: var(--page-background);
+  border: 2px dashed var(--fg);
+  background: var(--bg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -193,7 +193,7 @@ export default {
 
 
 .breakdown-section {
-  border-top: 1px solid var(--primary-color);
+  border-top: 1px solid var(--fg);
   padding-top: 1.5rem;
   width: 100%;
 }
@@ -209,15 +209,17 @@ export default {
 
 .tab-btn {
   padding: 0.5rem 1rem;
-  border: 2px solid var(--primary-color);
+  border: 2px solid var(--fg);
   background: none;
+  border-radius: 2px;
   cursor: pointer;
   color: var(--primary-primary);
   white-space: nowrap;
-  opacity: .5;
+  opacity: .35;
 }
 
 .tab-btn.active {
+  border: 2px solid var(--fg);
   opacity: 1;
 }
 
@@ -228,8 +230,8 @@ export default {
 }
 
 .detail-group {
-  background: var(--bg-secondary);
-  padding: 1rem;
+  background: color-mix(in oklab, var(--fg) 3%, var(--bg) 50%);
+  padding: 0.25rem .5rem;
   width: 100%;
   box-sizing: border-box;
 }
@@ -246,13 +248,13 @@ export default {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--primary-color);
+  border: 1px solid var(--fg);
   transition: all 0.2s ease;
 }
 
 .radical:hover {
-  border-color: var(--primary-color);
-  background: var(--bg-primary);
+  border-color: var(--fg);
+  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 }
 
 .radical-char {
@@ -263,8 +265,9 @@ export default {
   display: grid;
   gap: 0.75rem;
   width: 100%;
-  border: 2px dashed var(--secondary-color);
-  padding: 1rem;
+  border: 2px dashed color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  background: color-mix(in oklab, var(--fg) 7%, var(--bg) 50%);
+  padding: 0;
   box-sizing: border-box;
   margin: 0; 
 }
@@ -274,14 +277,13 @@ export default {
   grid-template-columns: minmax(auto, max-content) minmax(auto, max-content) 1fr; /* Change this */
   gap: 1rem;
   align-items: center;
-  padding: 0.5rem;
-  transition: background-color 0.2s ease;
+  padding: 0.15rem 0.5rem;
   width: 100%;
   box-sizing: border-box;
 }
 
 .example-word:hover {
-  background: var(--bg-secondary);
+  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 }
 
 .example-word .chinese {

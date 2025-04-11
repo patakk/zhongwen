@@ -41,8 +41,6 @@
     display: flex;
     justify-content: space-between;
     cursor: pointer;
-    padding: 0.5rem;
-    background-color: var(--dim-background);
     border-radius: 4px;
 }
 .section-header h4 {
