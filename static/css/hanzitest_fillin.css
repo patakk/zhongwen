@@ -1,0 +1,183 @@
+* {
+    font-family: 'Noto Sans Mono', monospace;
+}
+
+body {
+    font-family: 'Noto Sans Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+#test-container {
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+#example-display {
+    font-size: 24px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+#example-display .chinese {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+#example-display .chinese q {
+}
+
+#example-display .pinyin {
+    font-size: 18px;
+    color: #000000;
+    margin-top: 10px;
+}
+
+#example-display .pinyin q {
+}
+
+#proposal-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.proposal-option {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.proposal-option:hover {
+    background-color: #f0f0f0;
+}
+
+.proposal-option:active {
+    background-color: #e0e0e0;
+}
+
+#restart-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#progress {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+#results {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#deck-name {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#answer-table-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+#answer-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid #303030;
+}
+
+#answer-table td {
+    padding: 8px;
+    border: 2px solid #444444;
+}
+
+.correct-row {
+    background-color: #d4edda;
+}
+
+.incorrect-row {
+    background-color: #f8d7da;
+}
+
+
+@media screen and (max-width: 767px) {
+    #test-container {
+        width: 95%;
+    }
+
+    h2 {
+        margin-top: 10px;
+    }
+
+    #title {
+        margin-top: 40px;
+    }
+
+    h1 {
+        font-size: 33px;
+        margin-bottom: 4px;
+        margin-top: 34px;
+    }
+    
+    #deck-name {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    #answer-table-container {
+        max-height: 70vh;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        width: 100%;
+    }
+
+    #answer-table-container::-webkit-scrollbar { 
+        width: 0;
+        height: 0;
+    }
+
+    .proposal-option {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    #example-display {
+        font-size: 20px;
+    }
+
+    #example-display .chinese {
+        font-size: 24px;
+    }
+
+    #example-display .pinyin {
+        font-size: 16px;
+    }
+
+    #results {
+        text-align: center;
+        margin: 0 30px;
+    }
+}
+
+
+.hamburger.darkmode span {
+    background-color: rgb(222,222,222);
+}

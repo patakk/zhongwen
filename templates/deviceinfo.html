@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Information</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            background-color: white;
+            color: black;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            border-bottom: 2px solid black;
+            padding-bottom: 10px;
+        }
+        .info-group {
+            margin-bottom: 20px;
+            border: 1px solid black;
+            padding: 10px;
+        }
+        .info-item {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Device Information</h1>
+
+    <div class="info-group">
+        <h2>Screen Dimensions</h2>
+        <div class="info-item" id="screenWidth"></div>
+        <div class="info-item" id="screenHeight"></div>
+        <div class="info-item" id="windowWidth"></div>
+        <div class="info-item" id="windowHeight"></div>
+        <div class="info-item" id="devicePixelRatio"></div>
+    </div>
+
+    <div class="info-group">
+        <h2>Device Type</h2>
+        <div class="info-item" id="deviceType"></div>
+        <div class="info-item" id="orientation"></div>
+    </div>
+
+    <div class="info-group">
+        <h2>User Agent</h2>
+        <div class="info-item" id="userAgent"></div>
+    </div>
+
+    <script>
+        function updateInfo() {
+            const ua = navigator.userAgent;
+            let deviceType = 'Unknown';
+            if (ua.includes('iPhone')) {
+                deviceType = 'iPhone';
+            } else if (ua.includes('iPad')) {
+                deviceType = 'iPad';
+            } else if (ua.includes('Android')) {
+                deviceType = 'Android Device';
+            } else if (ua.includes('Windows')) {
+                deviceType = 'Windows Device';
+            } else if (ua.includes('Mac')) {
+                deviceType = 'Mac Device';
+            }
+
+            document.getElementById('screenWidth').textContent = `Screen Width: ${screen.width}px`;
+            document.getElementById('screenHeight').textContent = `Screen Height: ${screen.height}px`;
+            document.getElementById('windowWidth').textContent = `Window Width: ${window.innerWidth}px`;
+            document.getElementById('windowHeight').textContent = `Window Height: ${window.innerHeight}px`;
+            document.getElementById('devicePixelRatio').textContent = `Device Pixel Ratio: ${window.devicePixelRatio}`;
+            document.getElementById('orientation').textContent = `Orientation: ${window.innerHeight > window.innerWidth ? 'Portrait' : 'Landscape'}`;
+            document.getElementById('userAgent').textContent = `User Agent: ${ua}`;
+            document.getElementById('deviceType').textContent = `Device Type: ${deviceType}`;
+        }
+    
+        // Update info initially and on resize
+        updateInfo();
+        window.addEventListener('resize', updateInfo);
+    </script>
+    
+</body>
+</html>

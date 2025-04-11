@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>welcome</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+        
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Noto Sans Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--background-color);
+            font-size: 16px;
+        }
+
+        .container {
+            width: 60%;
+            max-width: 1200px;
+            background-color: var(--background-color);
+            padding: 2rem;
+            border: 2px dashed var(--border-color);
+            overflow-y: auto;
+            max-height: 90vh;
+            scrollbar-width: none;
+            /* For Firefox */
+            -ms-overflow-style: none;
+            /* For Internet Explorer and Edge */
+        }
+
+        .container::-webkit-scrollbar {
+            display: none;
+            /* For Chrome, Safari, and Opera */
+        }
+
+        h1 {
+            font-family: 'Noto Sans Mono', monospace;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: var(--text-color);
+            font-size: 2em;
+            margin-top: 0;
+        }
+
+
+        li:not(:last-child) {
+            margin-bottom: 0px;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: white;
+            color: black;
+            text-decoration: none;
+            border: 2px solid black;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background-color: black;
+            color: white;
+        }
+
+        .flashcard-guide {
+            background-color: var(--dimmer-background-color);
+            border: 2px solid var(--border-color);
+            border: none;
+            padding: 10px;
+            width: 80%;
+            margin: 20px auto;
+            opacity: 0.8;
+        }
+
+        .smallh{
+            opacity: 0.65;
+        }
+
+        .flashcard-guide li:not(:last-child) {
+            margin-bottom: 4px;
+        }
+
+        .flashcard-guide h4,
+        .flashcard-guide h5 {
+            margin-top: 0;
+        }
+
+        .flashcard-guide ul {
+            /* padding-left: 20px; */
+        }
+
+        ul {
+            list-style-type: none;
+            /* padding-left: 1.5em; */
+        }
+
+        .subheader {
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+
+        @media (max-width: 784px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                width: 95%;
+                height: 100%;
+                border: none;
+                max-height: none;
+                padding: 1rem;
+                margin: auto;
+                margin-top: 2em;
+            }
+
+            .btn {
+                padding: 8px 16px;
+            }
+
+            .flashcard-guide {
+                width: 100%;
+                /* border: 2px solid #000000; */
+                padding: 1em;
+                margin: 5px auto;
+                margin-bottom: 14px;
+            }
+
+            .flashcard-guide ul {
+                padding-left: 5px;
+            }
+
+            ul {
+                padding-left: 0em;
+            }
+
+        }
+
+        @media screen and (max-width: 1000px) and (orientation: portrait) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                width: 90%;
+                max-height: none;
+                padding: 1rem;
+                margin: auto;
+            }
+
+            .btn {
+                padding: 8px 16px;
+            }
+
+            .flashcard-guide {
+                /* width: 100%;
+                border: 2px solid #000000;
+                padding: 5px;
+                margin: 5px auto;
+                margin-bottom: 14px; */
+            }
+
+            .flashcard-guide ul {
+                padding-left: 5px;
+            }
+
+            ul {
+                padding-left: 0em;
+            }
+
+        }
+
+        .flashcard-toggle {
+            cursor: pointer;
+            color: #0066cc;
+            text-decoration: underline;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .flashcard-toggle:hover {
+            color: #004080;
+        }
+
+        .container * {
+            /* text-transform: lowercase; */
+        }
+
+
+        .container ul ul>li::before {
+            content: " ";
+        }
+
+        .container ul ul ul>li::before {
+            content: " ";
+        }
+
+
+        .smallh {}
+
+        p {
+            margin: 0;
+        }
+    </style>
+    <style>
+
+        .btn {
+            border: 2px dashed black;
+        }
+
+        .btn.darkmode {
+            border: 2px dashed rgb(197, 197, 197);
+            color: rgb(197, 197, 197);
+        }
+    </style>
+</head>
+
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
+<body>
+{% endif %}
+    
+    {% include 'menu.html' %}
+    <div class="container">
+        <div class="about-section">
+            <h1>About This Project</h2>
+            <p>
+                This is a personal learning tool I'm developing alongside my Mandarin Chinese 
+                studies. 
+                I've made it public hoping others might find it useful too, but please keep in mind that this is a work in progress and may contain errors or incomplete features. Your feedback and contributions are welcome!
+            </p>
+            </br>
+            <!-- <p>
+                Start <a class="links" href="{{ url_for('welcome') }}">here</a> to access the main features of the website.
+            </p> -->
+            </br>
+            <div class="contact-info">
+                <div>Contact:</div>
+                <ul>
+                    <li>Email: <a class="links" href="mailto:paolo@patakk.xyz">paolo@patakk.xyz</a></li>
+                    <li style="padding-top:5px;">Twitter: <a class="links" href="https://twitter.com/patakk" target="_blank">@patakk</a></li>
+                </ul>
+            </div>
+        </div>
+        </br>
+        <div class="attribution-section">
+            <h1>Licensing and Attribution</h1>
+            <ul>
+                <li> <div class="subheader">Data Sources and Licensing</div>
+                    <div class="flashcard-guide">
+                        <p>
+                            <span class="smallh">Chinese-English translations:</span></br>
+                            <p style="margin-left:20px;">CC-CEDICT database, licensed under a <a class="links" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>. <br> Dictionary operations perfomed using a modified version of the <a class="links" href="https://github.com/Synkied/hanzipy" target="_blank">hanzipy</a> library.</p>
+                            </br>
+                            <span class="smallh">Character animations and Hanzi writing:</span>
+                            <p style="margin-left:20px;">Custom implementation using data from <a class="links" href="https://github.com/chanind/hanzi-writer-data" target="_blank">hanzi-writer-data</a> and the <a class="links" href="https://github.com/skishore/makemeahanzi" target="_blank">Make Me A Hanzi project</a>, using Arphic Technology fonts under the <a class="links" href="{{ url_for('static', filename='licenses/ARPHICPL.TXT') }}" target="_blank">Arphic Public License</a>.</p>
+                            </br>
+                            <span class="smallh">Chinese-English examples:</span></br>
+                            <p style="margin-left:20px;">Provided by <a class="links" href="https://tatoeba.org" target="_blank">Tatoeba.org</a>, licensed under <a class="links" href="https://creativecommons.org/licenses/by/2.0/fr/" target="_blank">Creative Commons Attribution 2.0 FR</a>.</p>
+                        </p>
+                    </div>
+                </li>
+                
+                <!-- <li> <div class="subheader">Content Generation and Disclaimer</div>
+                    <div class="flashcard-guide">
+                        <p>
+                            Character descriptions and examples are generated using Claude AI by Anthropic. While we strive for accuracy, all content on this website is provided "as is" without warranty
+                            of any kind. Users are encouraged to independently verify information for their specific needs.
+                        </p>
+                        <p>
+                            By using this website, you acknowledge and accept these terms.
+                        </p>
+                    </div>
+                </li> -->
+                <li> <div class="subheader">Project License</div>
+                    <div class="flashcard-guide">
+                        <p>
+                            This project is available under the <a class="links" href="{{ url_for('static', filename='licenses/MIT-LICENSE.TXT') }}" target="_blank">MIT License</a>. You are free to use, modify, and distribute it, provided you include the original copyright notice and license terms.
+                        </p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- <ul class="disclaimer">
+            <li>
+                <p style="text-align: center;">By using this website, you acknowledge and accept all terms and conditions stated above.</p>
+            </li>
+        </ul> -->
+        <!-- <div class="btn-container"> <a href="{{ url_for('home') }}" class="btn">Back to Home</a> </div> -->
+    </div>
+    
+
+    <script>
+        const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}" async></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}" async></script>
+    <script>
+
+        function isIPhone() {
+            const ua = navigator.userAgent;
+            if (ua.includes('iPhone')) {
+                return true;
+            }
+            return false;
+        }
+
+        function isiPad() {
+            const ua = navigator.userAgent;
+            if (ua.includes('iPad')) {
+                return true;
+            }
+            return false;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // const guide = document.querySelector('.flashcard-guide');
+            // const pcGuide = document.getElementById('pc-guide');
+            // const mobileGuide = document.getElementById('mobile-guide');
+
+            // // Show/hide appropriate guide based on device
+            // if (isIPhone() || isiPad()) {
+            //     pcGuide.style.display = 'none';
+            // } else {
+            //     mobileGuide.style.display = 'none';
+            // }
+            // guide.style.display = 'block';
+        });
+    </script>
+    {% include 'kofi.html' %}
+
+</body>
+
+</html>

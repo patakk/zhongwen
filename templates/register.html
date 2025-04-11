@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <title>register</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icons/zi.ico') }}">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        ::selection {
+            background-color: rgb(255, 66, 28);
+        }
+
+        body {
+            font-family: "Nunito Sans", sans-serif;
+            font-family: "Crimson Pro", serif;
+            font-family: "Noto Sans Mono", monospace;
+            font-weight: 500;
+            font-style: normal;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+        }
+        .register-container {
+            border: 2px dashed black;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 80%;
+            max-height: 90%;
+            overflow-y: auto;
+            width: 400px;
+            overflow-x: hidden;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: black;
+            text-align: center;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 3em;
+            width: 300px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        input[type="email"],
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            min-width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 2px solid black;
+            font-size: 16px;
+            font-family: inherit;
+            font-weight: 500;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            padding: 10px;
+            background-color: white;
+            color: black;
+            border: 2px solid black;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: inherit;
+            font-weight: 500;
+        }
+        input[type="submit"]:hover {
+            background-color: black;
+            color: white;
+        }
+        input[type="email"]:focus,
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border: 2px solid #7100bd; 
+            border-radius: 0px;
+            outline: none;
+        }
+        ::selection {
+            background-color: black;
+            color: white;
+        }
+
+        @media screen and (max-width: 768px) {
+            .register-container {
+                border: 2px dashed black;
+                padding: 40px;
+                display: flex;
+                margin: 0;
+                border: none;
+                flex-direction: column;
+                align-items: center;
+                max-width: 100%;
+                max-height: 100%;
+                overflow-y: auto;
+                overflow-x: hidden;
+                overflow-y: hidden;
+            }
+        }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .password-container input {
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #555;
+        }
+
+        .toggle-password:hover {
+            color: #000;
+        }
+
+        .google-login {
+            text-align: center;
+        }
+
+        .google-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            color: #555;
+            text-decoration: none;
+            margin: 10px auto;
+            width: 80%;
+            max-width: 250px;
+            transition: background-color 0.3s;
+        }
+
+        .google-button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .google-button img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .login-link {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .login-link a {
+            color: #7100bd;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .password-match-indicator {
+            width: 100%;
+            font-size: 14px;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            color: #555;
+            transition: color 0.3s;
+        }
+
+        .password-match-indicator.match {
+            color: green;
+        }
+
+        .password-match-indicator.mismatch {
+            color: red;
+        }
+
+        .flash-message {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .flash-message.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .flash-message.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>Register</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+            <input type="text" name="username" placeholder="username" required autofocus>
+            
+            <div class="password-container">
+                <input type="password" name="password" id="password" placeholder="password" required>
+                <i class="toggle-password fas fa-eye-slash" onclick="togglePasswordVisibility('password', this)"></i>
+            </div>
+            
+            <div class="password-container">
+                <input type="password" name="confirm_password" id="confirm_password" placeholder="confirm password" required>
+                <i class="toggle-password fas fa-eye-slash" onclick="togglePasswordVisibility('confirm_password', this)"></i>
+            </div>
+            
+            <div class="password-match-indicator" id="passwordMatchIndicator"></div>
+            
+            <input type="email" name="email" placeholder="email (optional)">
+            
+            <input type="submit" value="Create Account">
+        </form>
+
+        <div class="google-login">
+            <p>or</p>
+            <a href="{{ url_for('google_auth.login') }}" class="google-button">
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+                <span>Sign up with Google</span>
+            </a>
+        </div>
+
+        <div class="login-link">
+            <div>Already have an account? <a href="{{ url_for('login') }}">Login</a></div>
+        </div>
+    </div>
+
+    <script>
+        function adjustHeight() {
+            var vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.addEventListener('resize', adjustHeight);
+            window.addEventListener('orientationchange', adjustHeight);
+            adjustHeight();
+            
+            // Password matching check
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirm_password');
+            const indicator = document.getElementById('passwordMatchIndicator');
+            
+            function checkPasswordMatch() {
+                if (confirmPassword.value === '') {
+                    indicator.textContent = '';
+                    indicator.className = 'password-match-indicator';
+                } else if (password.value === confirmPassword.value) {
+                    indicator.textContent = '✓ Passwords match';
+                    indicator.className = 'password-match-indicator match';
+                } else {
+                    indicator.textContent = '✗ Passwords do not match';
+                    indicator.className = 'password-match-indicator mismatch';
+                }
+            }
+            
+            password.addEventListener('input', checkPasswordMatch);
+            confirmPassword.addEventListener('input', checkPasswordMatch);
+            
+            // Form validation
+            document.getElementById('registerForm').addEventListener('submit', function(e) {
+                if (password.value !== confirmPassword.value) {
+                    e.preventDefault();
+                    alert('Passwords do not match!');
+                    confirmPassword.focus();
+                }
+            });
+        });
+
+        function togglePasswordVisibility(inputId, icon) {
+            const passwordInput = document.getElementById(inputId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        }
+    </script>
+</body>
+</html>
