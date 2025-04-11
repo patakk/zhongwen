@@ -293,6 +293,7 @@ def save_banned_ips():
 
 @app.before_request
 def check_banned_ip():
+    logger.warning(f"aaaaaaaaaaaa: {get_remote_address()}")
     if get_remote_address().strip() in banned_ips:
         logger.warning(f"Blocked access attempt from banned IP: {get_remote_address()}")
         abort(403)
@@ -563,81 +564,81 @@ def convert3():
 
     return render_template('convert3.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
 
-@app.route('/convert')
-@session_required
-def convert():
-    convertedText = db_get_user_string(session['username'])
-    chars = set(''.join(convertedText.split()))
-    chars = chars.intersection(stroke_chars)
-    char_data = {char : {'strokes': STROKES_CACHE[char], 'pinyin': get_pinyin(char)} for char in chars}
+# @app.route('/convert')
+# @session_required
+# def convert():
+#     convertedText = db_get_user_string(session['username'])
+#     chars = set(''.join(convertedText.split()))
+#     chars = chars.intersection(stroke_chars)
+#     char_data = {char : {'strokes': STROKES_CACHE[char], 'pinyin': get_pinyin(char)} for char in chars}
     
-    lines = convertedText.split('\n')
-    translations = get_translations(lines)
+#     lines = convertedText.split('\n')
+#     translations = get_translations(lines)
 
-    return render_template('convert.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
-
-
+#     return render_template('convert.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
 
 
-@app.route('/stories')
-@session_required
-@timing_decorator
-def stories():
-    username = session.get('username')
-    first_story = all_stories[stories_names[0]]
-    first_chapter = first_story['chapters_data'][first_story['chapters_list'][0]['uri']]
-    chars = set(''.join([''.join(ls) for ls in first_chapter['hanzi']]) + ''.join(first_chapter['name']))
-    words = []
-    for line in first_chapter['hanzi']:
-        words += line
-    words += first_chapter['name']
-    chars = chars.intersection(stroke_chars)
-    char_data = {char : {'strokes': STROKES_CACHE[char], 'chardata': get_char_info(char)} for char in chars}
-    word_data = {word: get_char_info(word) for word in words}
-    all_chapters = [[chapter['title'] for chapter in all_stories[story_name]['chapters_list']] for story_name in stories_names]
-    return render_template('stories.html', darkmode=session.get('darkmode', default_darkmode), chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session.get('username'), dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], word_data=word_data, custom_deck_names=db_get_word_list_names_only(username))
-
-@app.route('/get_story/<int:story_index>/<int:chapter_index>')
-@session_required
-@timing_decorator
-def get_story(story_index, chapter_index):
-    selected_story = all_stories[stories_names[story_index-1]]
-    chapter_list = selected_story['chapters_list']
-    chapter_data = selected_story['chapters_data']
-    if 1 <= chapter_index <= len(chapter_list):
-        chapter = chapter_data[chapter_list[chapter_index-1]['uri']]
-        chars = set(''.join([''.join(ls) for ls in chapter['hanzi']]) + ''.join(chapter['name']))
-        words = []
-        for line in chapter['hanzi']:
-            words += line
-        words += chapter['name']
-        chars = chars.intersection(stroke_chars)
-        char_data = {char: {'pinyin': get_pinyin(char)} for char in chars}
-        word_data = {word: get_char_info(word) for word in words}
-        return jsonify({
-            'chapter': chapter,
-            'char_data': char_data,
-            'word_data': word_data
-        })
-    else:
-        return jsonify({'error': 'Story index out of range'}), 404
 
 
-@app.route('/get_story_strokes/<int:story_index>/<int:chapter_index>')
-@session_required
-@timing_decorator
-def get_story_strokes(story_index, chapter_index):
-    selected_story = all_stories[stories_names[story_index-1]]
-    chapter_list = selected_story['chapters_list']
-    chapter_data = selected_story['chapters_data']
-    if 1 <= chapter_index <= len(chapter_list):
-        chapter = chapter_data[chapter_list[chapter_index-1]['uri']]
-        chars = set(''.join([''.join(ls) for ls in chapter['hanzi']]) + ''.join(chapter['name']))
-        chars = chars.intersection(stroke_chars)
-        stroke_data = {char: STROKES_CACHE[char] for char in chars}
-        return jsonify(stroke_data)
-    else:
-        return jsonify({'error': 'Story index out of range'}), 404
+# @app.route('/stories')
+# @session_required
+# @timing_decorator
+# def stories():
+#     username = session.get('username')
+#     first_story = all_stories[stories_names[0]]
+#     first_chapter = first_story['chapters_data'][first_story['chapters_list'][0]['uri']]
+#     chars = set(''.join([''.join(ls) for ls in first_chapter['hanzi']]) + ''.join(first_chapter['name']))
+#     words = []
+#     for line in first_chapter['hanzi']:
+#         words += line
+#     words += first_chapter['name']
+#     chars = chars.intersection(stroke_chars)
+#     char_data = {char : {'strokes': STROKES_CACHE[char], 'chardata': get_char_info(char)} for char in chars}
+#     word_data = {word: get_char_info(word) for word in words}
+#     all_chapters = [[chapter['title'] for chapter in all_stories[story_name]['chapters_list']] for story_name in stories_names]
+#     return render_template('stories.html', darkmode=session.get('darkmode', default_darkmode), chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session.get('username'), dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], word_data=word_data, custom_deck_names=db_get_word_list_names_only(username))
+
+# @app.route('/get_story/<int:story_index>/<int:chapter_index>')
+# @session_required
+# @timing_decorator
+# def get_story(story_index, chapter_index):
+#     selected_story = all_stories[stories_names[story_index-1]]
+#     chapter_list = selected_story['chapters_list']
+#     chapter_data = selected_story['chapters_data']
+#     if 1 <= chapter_index <= len(chapter_list):
+#         chapter = chapter_data[chapter_list[chapter_index-1]['uri']]
+#         chars = set(''.join([''.join(ls) for ls in chapter['hanzi']]) + ''.join(chapter['name']))
+#         words = []
+#         for line in chapter['hanzi']:
+#             words += line
+#         words += chapter['name']
+#         chars = chars.intersection(stroke_chars)
+#         char_data = {char: {'pinyin': get_pinyin(char)} for char in chars}
+#         word_data = {word: get_char_info(word) for word in words}
+#         return jsonify({
+#             'chapter': chapter,
+#             'char_data': char_data,
+#             'word_data': word_data
+#         })
+#     else:
+#         return jsonify({'error': 'Story index out of range'}), 404
+
+
+# @app.route('/get_story_strokes/<int:story_index>/<int:chapter_index>')
+# @session_required
+# @timing_decorator
+# def get_story_strokes(story_index, chapter_index):
+#     selected_story = all_stories[stories_names[story_index-1]]
+#     chapter_list = selected_story['chapters_list']
+#     chapter_data = selected_story['chapters_data']
+#     if 1 <= chapter_index <= len(chapter_list):
+#         chapter = chapter_data[chapter_list[chapter_index-1]['uri']]
+#         chars = set(''.join([''.join(ls) for ls in chapter['hanzi']]) + ''.join(chapter['name']))
+#         chars = chars.intersection(stroke_chars)
+#         stroke_data = {char: STROKES_CACHE[char] for char in chars}
+#         return jsonify(stroke_data)
+#     else:
+#         return jsonify({'error': 'Story index out of range'}), 404
 
 
 
