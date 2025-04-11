@@ -637,7 +637,6 @@ import time
 def get_char_decomp_info():
     data = request.get_json()
     characters = data.get("characters")
-    print("hello", characters)
     return jsonify(char_decomp_info(characters))
 
 

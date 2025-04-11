@@ -293,7 +293,6 @@ def save_banned_ips():
 
 @app.before_request
 def check_banned_ip():
-    logger.warning(f"aaaaaaaaaaaa: {get_remote_address()}")
     if get_remote_address().strip() in banned_ips:
         logger.warning(f"Blocked access attempt from banned IP: {get_remote_address()}")
         abort(403)
