@@ -12,7 +12,6 @@ import logging
 import random
 import json
 import string
-from nltk.stem import WordNetLemmatizer
 import regex
 import time
 import os
@@ -33,7 +32,6 @@ from backend.db.ops import db_get_user_string
 from backend.db.ops import db_get_all_words_by_list_as_dict
 from backend.db.ops import db_get_word_list_names_only
 from backend.db.ops import db_get_user_wordlists
-
 from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
 # from backend.common import CARDDECKS_W_PINYIN
@@ -71,7 +69,6 @@ def get_remote_address():
     if request.headers.get('X-Forwarded-For'):
         return request.headers.get('X-Forwarded-For').split(',')[0]
     return request.remote_addr
-
 
 
 limiter = Limiter(
@@ -296,7 +293,7 @@ def save_banned_ips():
 
 @app.before_request
 def check_banned_ip():
-    if get_remote_address() in banned_ips:
+    if get_remote_address().strip() in banned_ips:
         logger.warning(f"Blocked access attempt from banned IP: {get_remote_address()}")
         abort(403)
 

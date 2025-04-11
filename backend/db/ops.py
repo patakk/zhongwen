@@ -1,17 +1,12 @@
 import logging
-import requests
-from urllib.parse import unquote
-import copy
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm.attributes import flag_modified
-from flask import request, redirect, url_for, flash
+from flask import url_for, flash
 
-from flask_mail import Mail, Message
+from flask_mail import Message
 
 from backend.db.extensions import db, mail
 from backend.db.models import StrokeData, User, UserString, Card, UserNotes, WordList, WordEntry
 from backend.common import get_chars_info
-from backend.common import getshortdate
 
 logger = logging.getLogger(__name__)
 

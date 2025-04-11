@@ -20,8 +20,6 @@ from pypinyin import lazy_pinyin, Style
 
 # from .flashcard_app import init_flashcard_app, get_flashcard_app
 
-with open("data/audio_mappings.json", "r", encoding="utf-8") as f:
-    audio_mappings = json.load(f)
 
 
 def get_combined_audio(characters):
@@ -71,19 +69,35 @@ def get_pinyin(hanzi):
     return ' '.join(result)
 
 
-DATA_DIR = './data'
+DATA_DIR = '/home/patakk/zhongwen_data'
+print('loading CARDDECKS')
 CARDDECKS = json.load(open(os.path.join(DATA_DIR, "decks.json")))
+print('loading CHARS_CACHE')
 CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "chars_cache.json")))
+print('loading STROKES_CACHE')
 STROKES_CACHE = json.load(open(os.path.join(DATA_DIR, "strokes_cache.json")))
+print('loading WORDS_CACHE')
 WORDS_CACHE = json.load(open(os.path.join(DATA_DIR, "words_cache.json")))
+print('loading DECOMPOSE_CACHE')
 DECOMPOSE_CACHE = json.load(open(os.path.join(DATA_DIR, "decompose_cache.json")))
+print('loading ANTHROPIC_DATA')
 ANTHROPIC_DATA = json.load(open(os.path.join(DATA_DIR, "anthropic.json")))
+print('loading TATOEBA_DATA')
 TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_examples.json")))
+print('loading TATOEBA_MAP')
 TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_example_ids_by_char.json")))
+print('loading DECKS_INFO')
 DECKS_INFO = {key : CARDDECKS[key]["name"] for key in CARDDECKS}
+print('loading STROKE_COUNT')
 STROKE_COUNT = json.load(open(os.path.join(DATA_DIR, "stroke_count.json")))
+print('loading HANZI_DARKNESS_NOTO')
 HANZI_DARKNESS_NOTO = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_noto.json")))
+print('loading HANZI_DARKNESS_KAITI')
 HANZI_DARKNESS_KAITI = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_kaiti.json")))
+
+
+with open(os.path.join(DATA_DIR, "audio_mappings.json"), "r", encoding="utf-8") as f:
+    audio_mappings = json.load(f)
 
 default_darkmode = False
 

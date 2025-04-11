@@ -641,17 +641,11 @@ def get_char_decomp_info():
     return jsonify(char_decomp_info(characters))
 
 
-@api_bp.route("/get_all_stroke_data", methods=["GET"])
-@session_required
-def get_all_stroke_data():
-    username = session["username"]
-    return jsonify(get_all_stroke_data_(username))
+from backend.common import DATA_DIR
+with open(os.path.join(DATA_DIR, "examples.json"), "r", encoding="utf-8") as f:
+    examples_data = json.load(f)
 
-
-with open("data/examples.json", "r", encoding="utf-8") as f:
-    parsed_data = json.load(f)
-
-with open("data/stories.json", "r", encoding="utf-8") as f:
+with open(os.path.join(DATA_DIR, "stories.json"), "r", encoding="utf-8") as f:
     stories_data = json.load(f)
 
 
@@ -664,8 +658,8 @@ def get_examples_data(category, subcategory, chinese):
     chinese = unquote(chinese)
 
     logger.info(f"Category: {category}, Subcategory: {subcategory}, Chinese: {chinese}")
-    if category in parsed_data and subcategory in parsed_data[category]:
-        for item in parsed_data[category][subcategory]:
+    if category in examples_data and subcategory in examples_data[category]:
+        for item in examples_data[category][subcategory]:
             if item["chinese"] == chinese:
                 return jsonify(item)
     return jsonify({"error": "Translation not found"}), 404
