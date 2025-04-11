@@ -19,6 +19,10 @@ alter_db.py
 migrations/versions/
 fire
 
+research/
+hanzi-frontend/
+hanzi-backend/
+
 extract_fontawesome.py
 original_font_awesome_data.js
 original_fontawesome_brands_data.js
