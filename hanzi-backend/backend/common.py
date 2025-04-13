@@ -71,12 +71,12 @@ def get_pinyin(hanzi):
     return ' '.join(result)
 
 
-DATA_DIR = './data'
+DATA_DIR = '/home/patakk/zhongwen_data'
 CARDDECKS = json.load(open(os.path.join(DATA_DIR, "decks.json")))
-CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "caches", "chars_cache.json")))
-STROKES_CACHE = json.load(open(os.path.join(DATA_DIR, "caches", "strokes_cache.json")))
-WORDS_CACHE = json.load(open(os.path.join(DATA_DIR, "caches", "words_cache.json")))
-DECOMPOSE_CACHE = json.load(open(os.path.join(DATA_DIR, "caches", "decompose_cache.json")))
+CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "chars_cache.json")))
+STROKES_CACHE = json.load(open(os.path.join(DATA_DIR, "strokes_cache.json")))
+WORDS_CACHE = json.load(open(os.path.join(DATA_DIR, "words_cache.json")))
+DECOMPOSE_CACHE = json.load(open(os.path.join(DATA_DIR, "decompose_cache.json")))
 ANTHROPIC_DATA = json.load(open(os.path.join(DATA_DIR, "anthropic.json")))
 TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_examples.json")))
 TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_example_ids_by_char.json")))

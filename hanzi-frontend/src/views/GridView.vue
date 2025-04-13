@@ -14,30 +14,16 @@
         <div v-if="categoryName === selectedCategory" class="dictionary-category">
           <h2>{{ category.name || categoryName }}</h2>
           <div class="grid-container">
-            <div
-              v-for="(entry, charKey) in category.chars"
-              :key="charKey"
-              class="grid-item"
-              @mouseenter="startHoverTimer(entry.character)"
-              @mouseleave="clearHoverTimer(entry.character)"
-              @click="openPopup(entry.character)"
-            >
-              <div class="hanzi">{{ entry.character }}</div>
-              <div class="pinyin">{{ entry.pinyin.join(', ') }}</div>
-            </div>
+            <PreloadWrapper :character="entry.character" v-for="(entry, charKey) in category.chars" :key="charKey">
+              <div class="grid-item">
+                <div class="hanzi">{{ entry.character }}</div>
+                <div class="pinyin">{{ entry.pinyin.join(', ') }}</div>
+              </div>
+            </PreloadWrapper>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Popup component to show the card data -->
-    <PopupModal 
-      v-if="showPopup" 
-      :data="popupData" 
-      @close="closePopup"
-      @character-hover="handlePopupCharacterHover"
-      @character-click="handlePopupCharacterClick"
-    />
 
     <!-- Fallback message if no category is selected -->
     <div v-else>
@@ -46,119 +32,21 @@
   </div>
 </template>
 
-
 <script>
-import PopupModal from '../components/PopupModal.vue';
+import PreloadWrapper from '../components/PreloadWrapper.vue';
 
 export default {
   data() {
     return {
-      selectedCategory: null,
-      hoverTimers: new Map(),
-      popupData: null,
-      showPopup: false,
-      cardDataCache: new Map(), // Cache to store fetched card data
-      pendingFetch: null // To track ongoing fetch requests
+      selectedCategory: null
     };
   },
   components: {
-    PopupModal
+    PreloadWrapper
   },
   computed: {
     dictionaryData() {
       return this.$store.getters.getDictionaryData;
-    }
-  },
-  methods: {
-    startHoverTimer(character) {
-      this.clearHoverTimer(character);
-      const timer = setTimeout(() => {
-        this.preloadCardData(character);
-      }, 300);
-      
-      this.hoverTimers.set(character, timer);
-    },
-
-    clearHoverTimer(character) {
-      if (this.hoverTimers.has(character)) {
-        clearTimeout(this.hoverTimers.get(character));
-        this.hoverTimers.delete(character);
-      }
-    },
-    
-    beforeDestroy() {
-      this.hoverTimers.forEach(timer => clearTimeout(timer));
-      this.hoverTimers.clear();
-    },
-
-    handlePopupCharacterHover(character) {
-      this.startHoverTimer(character);
-    },
-
-    handlePopupCharacterClick(character) {
-      this.openPopup(character);
-    },
-
-    async preloadCardData(character) {
-      if (!this.cardDataCache.has(character)) {
-        await this.fetchCardData(character);
-      }
-    },
-
-    async fetchCardData(character) {
-      // If there's already a pending fetch for this character, return that promise
-      if (this.pendingFetch?.character === character) {
-        return this.pendingFetch.promise;
-      }
-
-      // Create new fetch promise
-      const fetchPromise = new Promise(async (resolve) => {
-        try {
-          const response = await fetch(`http://127.0.0.1:5117/get_card_data?character=${character}`);
-          const data = await response.json();
-          console.log(data);
-          if (data.chars_breakdown) {
-            this.cardDataCache.set(character, data);
-            resolve(data);
-          }
-        } catch (error) {
-          console.error("Error fetching card data:", error);
-          resolve(null);
-        }
-      });
-
-      // Store the pending fetch
-      this.pendingFetch = {
-        character,
-        promise: fetchPromise
-      };
-
-      // Wait for fetch to complete and clear pending fetch
-      await fetchPromise;
-      this.pendingFetch = null;
-
-      return fetchPromise;
-    },
-
-    async openPopup(character) {
-      // If data is in cache, use it immediately
-      if (this.cardDataCache.has(character)) {
-        this.popupData = this.cardDataCache.get(character);
-        this.showPopup = true;
-        return;
-      }
-
-      // If data is not in cache, fetch it
-      const data = await this.fetchCardData(character);
-      if (data) {
-        this.popupData = data;
-        this.showPopup = true;
-      }
-    },
-
-    closePopup() {
-      this.showPopup = false;
-      this.popupData = null;
     }
   }
 };
@@ -166,7 +54,6 @@ export default {
 
 <style scoped>
 /* Grid layout */
-
 .dictionary-category {
   display: flex;
   align-items: center;
@@ -176,7 +63,7 @@ export default {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 16px;
   padding: 16px;
   width: 100%;
@@ -193,7 +80,11 @@ export default {
 }
 
 .hanzi {
-  font-size: 2em;
+  font-size: 1.5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--primary-text);
 }
 
 .pinyin {
@@ -202,10 +93,16 @@ export default {
   left: 50%;
   top: 50%;
   transform: translateX(-50%) translateY(-50%);
+  background: color-mix(in oklab, var(--fg) 0%, var(--bg) 100%);
   visibility: hidden;
   vertical-align: center;
   opacity: 0;
+  padding: .25em .5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--primary-text);
+  z-index: 1;
 }
 
 .grid-item:hover .pinyin {
@@ -216,9 +113,6 @@ export default {
 .grid-item:hover .hanzi {
   visibility: hidden;
   opacity: 0;
-}
-
-.grid-item:hover {
 }
 
 select {

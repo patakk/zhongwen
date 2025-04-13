@@ -36,12 +36,12 @@
                   v-for="(word, index) in activeCharData.example_words" 
                   :key="index" 
                   class="example-word"
-                  @mouseenter="$emit('character-hover', word)"
-                  @mouseleave="$emit('character-hover', null)"
                 >
-                  <span class="chinese" @click="$emit('character-click', word)">{{ word }}</span>
-                  <span class="pinyin">{{ activeCharData.pinyin[index] }}</span>
-                  <span class="meaning">{{ activeCharData.english[index] }}</span>
+                  <slot name="example-word" :word="word" :index="index" :pinyin="activeCharData.pinyin[index]" :meaning="activeCharData.english[index]">
+                    <span class="chinese">{{ word }}</span>
+                    <span class="pinyin">{{ activeCharData.pinyin[index] }}</span>
+                    <span class="meaning">{{ activeCharData.english[index] }}</span>
+                  </slot>
                 </div>
               </div>
             </ExpandableExamples>
@@ -90,8 +90,8 @@ export default {
   components: {
     ExpandableExamples
   },
-  name: 'PopupModal',
-  emits: ['close', 'character-hover', 'character-click'],
+  name: 'CardModal',
+  emits: ['close'],
   data() {
     return {
       activeChar: null,
@@ -125,17 +125,13 @@ export default {
       if (event.key === 'Escape') {
         this.closeModal();
       }
-    },
-    clearHover() {
-      this.$emit('character-hover', null);
-    },
-    toggleExamples() {
-      this.isExamplesExpanded = !this.isExamplesExpanded;
     }
   }
 };
 </script>
+
 <style scoped>
+/* Copy all the styles from PopupModal.vue */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -147,13 +143,16 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  cursor: default;
 }
 
 .modal {
-  position: relative;
-  width: 34%;
-  height: 90vh;
-  max-height: 90vh;
+  position: fixed;
+  width: 50vw;
+  min-width: 400px;
+  max-width: 800px;
+  height: 80vh;
+  max-height: 80vh;
   border: 2px dashed var(--fg);
   background: var(--bg);
   display: flex;
@@ -162,18 +161,20 @@ export default {
   padding: 2rem;
   box-sizing: border-box;
   z-index: 1032;
-  font-family: var(--font-family);
+  font-family: 'Noto Sans Mono', monospace;
   font-weight: 400;
-  overflow-y: hidden;
-  overflow-y: visible;
-  overflow: visible;
-  -ms-overflow-style: none;
+  overflow-y: auto;
   overflow-x: hidden;
+  -ms-overflow-style: none;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  cursor: default;
 }
 
 .modal::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+  width: 0;
+  height: 0;
 }
 
 .main-word-section {
@@ -183,19 +184,30 @@ export default {
   flex-direction: column;
   align-items: center;
   width: 100%;
+  min-width: 0; /* Prevent flex item from overflowing */
 }
 
 .character {
-  font-size: 7em;
+  font-size: 6rem;
   margin-bottom: 0.5rem;
   line-height: 1;
+  width: 100%;
+  text-align: center;
 }
 
+.pinyin {
+  font-size: 1.2rem;
+}
+
+.english {
+  font-size: 1.2rem;
+}
 
 .breakdown-section {
   border-top: 1px solid var(--fg);
   padding-top: 1.5rem;
   width: 100%;
+  min-width: 0; /* Prevent flex item from overflowing */
 }
 
 .tabs {
@@ -205,9 +217,11 @@ export default {
   margin-bottom: 1rem;
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tab-btn {
+  font-size: 1rem;
   padding: 0.5rem 1rem;
   border: 2px solid var(--fg);
   background: none;
@@ -216,6 +230,7 @@ export default {
   color: var(--primary-primary);
   white-space: nowrap;
   opacity: .35;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
 }
 
 .tab-btn.active {
@@ -225,8 +240,9 @@ export default {
 
 .char-details {
   display: grid;
-  gap: 1.5rem;
+  gap: 0.6rem;
   width: 100%;
+  min-width: 0; /* Prevent grid from overflowing */
 }
 
 .detail-group {
@@ -234,6 +250,7 @@ export default {
   padding: 0.25rem .5rem;
   width: 100%;
   box-sizing: border-box;
+  min-width: 0; /* Prevent flex item from overflowing */
 }
 
 .components, .radicals {
@@ -241,6 +258,7 @@ export default {
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-top: 0.5rem;
+  width: 100%;
 }
 
 .radical {
@@ -250,6 +268,7 @@ export default {
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--fg);
   transition: all 0.2s ease;
+  flex-shrink: 0; /* Prevent radicals from shrinking */
 }
 
 .radical:hover {
@@ -263,23 +282,21 @@ export default {
 
 .example-words {
   display: grid;
-  gap: 0.75rem;
+  gap: 0rem;
   width: 100%;
-  border: 2px dashed color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
-  background: color-mix(in oklab, var(--fg) 7%, var(--bg) 50%);
-  padding: 0;
-  box-sizing: border-box;
-  margin: 0; 
+  min-width: 0; /* Prevent grid from overflowing */
 }
 
 .example-word {
   display: grid;
-  grid-template-columns: minmax(auto, max-content) minmax(auto, max-content) 1fr; /* Change this */
+  grid-template-columns: minmax(auto, max-content) minmax(auto, max-content) 1fr;
   gap: 1rem;
   align-items: center;
   padding: 0.15rem 0.5rem;
   width: 100%;
   box-sizing: border-box;
+  min-width: 0; /* Prevent grid from overflowing */
+  cursor: pointer;
 }
 
 .example-word:hover {
@@ -289,64 +306,65 @@ export default {
 .example-word .chinese {
   justify-self: start;
   white-space: nowrap;
-  font-size: 1em;
+  font-size: 1rem;
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-cursor: pointer;
 }
 
 .example-word .pinyin {
   justify-self: start;
   white-space: nowrap;
+  font-size: 0.9rem;
   opacity: 0.6;
 }
 
 .example-word .meaning {
   justify-self: start;
   text-align: left;
-  font-size: 1em;
+  font-size: 1rem;
   width: 100%;
   color: var(--text-primary);
   white-space: pre-wrap;
   word-wrap: break-word;
+  min-width: 0; /* Allow text to wrap */
 }
-
 
 .close-btn {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: var(--accent-color);
-  color: white;
+  background: none;
   border: none;
-  padding: 0.5rem;
+  font-size: 2rem;
   cursor: pointer;
-  font-size: 1rem;
-  transition: transform 0.2s ease;
+  color: var(--text-primary);
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  padding: 0.5rem;
+  line-height: 1;
 }
 
 .close-btn:hover {
-  transform: scale(1.1);
+  opacity: 1;
 }
 
 @media screen and (max-width: 768px) {
   .modal {
-    width: 90%;
-    max-height: 85vh;
+    width: 90vw;
     padding: 1rem;
   }
   
   .character {
-    font-size: 5em;
+    font-size: 4rem;
   }
   
-  .example-word {
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto;
+  .pinyin, .english {
+    font-size: 1rem;
   }
-  
-  .example-word .meaning {
-    grid-column: 1 / -1;
+}
+
+@media screen and (min-width: 1200px) {
+  .character {
+    font-size: 8rem;
   }
 }
 
@@ -354,4 +372,4 @@ h2, h3, h4 {
   margin: 0;
   color: var(--text-primary);
 }
-</style>
+</style> 
