@@ -99,7 +99,9 @@ logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
 def breakdown_chars(word):
     infos = {}
     for char in word:
-        infos[char] = get_char_info(char, full=True)
+        simplified = HanziConv.toSimplified(char)
+        infos[char] = get_char_info(simplified, full=True)
+        infos[char]['character'] = char
     return infos
 
 
@@ -230,43 +232,48 @@ def get_crunch():
     return send_file('data/crunch.mp3', mimetype='audio/mpeg')
 
 @limiter.limit("25 per minute")
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
+@session_required
 def login():
-    if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        password = request.form.get('password', '')
-        
-        settings = {
-            'darkmode': session.get('darkmode', False),
-            'deck': session.get('deck', 'hsk1'),
-            'font': session.get('font', 'Noto Sans Mono')
+    data = request.get_json()
+    if not data or 'username' not in data or 'password' not in data:
+        return jsonify({'error': 'Missing username or password'}), 400
+
+    username = data.get('username', '').strip()
+    password = data.get('password', '')
+
+    settings = {
+        'darkmode': session.get('darkmode', False),
+        'deck': session.get('deck', 'hsk1'),
+        'font': session.get('font', 'Noto Sans Mono')
+    }
+
+    try:
+        user, error = db_authenticate_user(username, password)
+        if error or not user:
+            return jsonify({'error': 'Invalid username or password'}), 401
+
+        session.clear()
+        session.permanent = True
+        session.update(settings)
+        session['user_id'] = user.id
+        session['username'] = username
+        session['current_card'] = None
+        session['authenticated'] = True
+
+        # Example: Add extra info about the user for frontend state
+        result = {
+            'authStatus': True,
+            'username': username,
+            'image': getattr(user, 'image', ''),           # if you store image
+            'profile': getattr(user, 'profile', {}),       # if you store profile info
+            'customDecks': getattr(user, 'custom_decks', [])
         }
-        
-        # Login
-        try:
-            user, error = db_authenticate_user(username, password)
-            if error:
-                flash('Invalid username or password', 'error')  # Generic error
-                logger.warning(f"Failed login attempt for username: {username}")
-                return redirect(url_for('login'))
-            
-            session.clear()
-            session.permanent = True
-            session.update(settings)
-            session['user_id'] = user.id
-            session['username'] = username
-            session['current_card'] = None
-            session['authenticated'] = True
-            
-            logger.info(f"Successful login for user: {username}")
-            return redirect(url_for('home'))
-            
-        except Exception as e:
-            flash('An error occurred', 'error')
-            logger.error(f"Login error: {str(e)}")
-            return redirect(url_for('login'))
-            
-    return render_template('login.html')
+        return jsonify(result), 200
+
+    except Exception as e:
+        logger.error(f"Login error: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 @app.route("/get_turnstile_key", methods=["GET"])
 def get_turnstile_key():
@@ -282,37 +289,50 @@ def verify_turnstile(token, remoteip):
     }
     r = requests.post('https://challenges.cloudflare.com/turnstile/v0/siteverify', data=payload)
     return r.json()
-
+from flask import request, jsonify, session, redirect, url_for, render_template
 
 @limiter.limit("25 per minute")
 @app.route('/register', methods=['GET', 'POST'])
-@session_required
 def register():
+    # Dual mode: JSON or classic form
     if request.method == 'POST':
-        token = request.form.get("cf-turnstile-response")
+        if request.is_json:
+            data = request.get_json()
+            username = data.get('username', '').strip()
+            email = data.get('email', '').strip().lower()
+            password = data.get('password', '')
+            confirm_password = data.get('confirm_password', '')
+            token = data.get('cf_turnstile_response', None)  # for future captcha support
+        else:
+            username = request.form.get('username', '').strip()
+            email = request.form.get('email', '').strip().lower()
+            password = request.form.get('password', '')
+            confirm_password = request.form.get('confirm_password', '')
+            token = request.form.get("cf-turnstile-response")
         forwarded_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
-        turnstile_result = verify_turnstile(token, forwarded_ip)
-        if not turnstile_result.get("success"):
-            return jsonify({"error": "Captcha failed"}), 400
-        
-        username = request.form.get('username', '').strip()
-        password = request.form.get('password', '')
-        confirm_password = request.form.get('confirm_password', '')
-        email = request.form.get('email', '').strip().lower()
+        # CAPTCHA - comment out or implement if needed for SPA
+        # turnstile_result = verify_turnstile(token, forwarded_ip)
+        # if token and not turnstile_result.get("success", True):
+        #     return jsonify({"error": "Captcha failed"}), 400
 
         settings = {
             'darkmode': session.get('darkmode', False),
             'deck': session.get('deck', 'hsk1'),
             'font': session.get('font', 'Noto Sans Mono')
         }
-        
+
+        # --- Validation ---
         if password != confirm_password:
-            flash('Passwords do not match', 'error')
-            return redirect(url_for('register'))
-        
+            error_msg = "Passwords do not match"
+            if request.is_json: return jsonify({"error": error_msg}), 400
+            flash(error_msg, "error")
+            return redirect(url_for("register"))
+
         if db_user_exists(username):
-            flash('Username unavailable', 'error')
+            error_msg = "Username unavailable"
+            if request.is_json: return jsonify({"error": error_msg}), 409
+            flash(error_msg, "error")
             logger.warning(f"Registration attempt with existing username: {username}")
             session['authenticated'] = False
             return redirect(url_for('register'))
@@ -320,31 +340,34 @@ def register():
         if email:
             if "testguru" in email:
                 log_message = f"BLOCKED REGISTRATION [IP={forwarded_ip}] [EMAIL={email}]"
-                spam_logger.warning(log_message)  # Logs to /home/patakk/logs/flask-antispam.log
-                return "Blocked registration attempt", 403
+                spam_logger.warning(log_message)
+                return jsonify({"error": "Email not allowed"}), 403 if request.is_json else ("Blocked registration attempt", 403)
             
             existing_email_user = User.query.filter_by(email=email).first()
             if existing_email_user:
                 if existing_email_user.google_id:
-                    flash('This email is already linked to a Google account. Please sign in with Google.', 'error')
+                    error_msg = "This email is already linked to a Google account. Please sign in with Google."
                 else:
-                    flash('This email is already registered. Please log in or use a different email.', 'error')
+                    error_msg = "This email is already registered. Please log in or use a different email."
+                if request.is_json: return jsonify({"error": error_msg}), 409
+                flash(error_msg, "error")
                 logger.warning(f"Registration attempt with existing email: {email}")
                 return redirect(url_for('register'))
 
-        
         is_valid, msg = validate_password(password)
         if not is_valid:
-            flash(msg, 'error')
-            return redirect(url_for('register'))
-        
+            if request.is_json: return jsonify({"error": msg}), 400
+            flash(msg, "error")
+            return redirect(url_for("register"))
+
+        # --- Create user ---
         try:
             user = db_create_user(
                 username=username,
                 password=password,
                 email=email,
             )
-            
+
             session.clear()
             session.permanent = True
             session.update(settings)
@@ -353,23 +376,40 @@ def register():
             session['current_card'] = None
             session['authenticated'] = True
 
-
+            # optionally: send email notification, etc
             if len(email) > 0:
                 message = f"New user created: {username}. Email: {email}."
             else:
                 message = f"New user created: {username}. No email provided."
             send_bot_notification(message)
-            
             logger.info(f"New user registered successfully: {username}")
+
+            # For SPA: return user info for Vuex store
+            result = {
+                'authStatus': True,
+                'username': username,
+                'image': getattr(user, 'profile_pic', ''),
+                'profile': {
+                    'email': user.email,
+                    'email_verified': getattr(user, 'email_verified', False)
+                    # Add more profile fields if needed
+                },
+                'customDecks': getattr(user, 'custom_decks', [])
+            }
+            if request.is_json:
+                return jsonify(result), 201
+
+            # Classic HTML fallback
             return redirect(url_for('home'))
-        except:
-            flash('Error creating account', 'error')
+        except Exception as e:
             logger.error(f"Registration error: {str(e)}")
+            if request.is_json:
+                return jsonify({'error': 'Error creating account'}), 500
+            flash('Error creating account', 'error')
             return redirect(url_for('register'))
-            
+
+    # GET to render classic page if user doesn't use SPA
     return render_template('register.html')
-
-
 
 
 @app.route('/logout')
@@ -451,6 +491,36 @@ def home():
     app_context = get_app_context()
     return render_template('index.html', **app_context)
 
+@app.route('/get_user_data')
+@session_required
+def get_user_data():
+    username = session.get('username')
+    if not username:
+        return jsonify({"authStatus": False}), 200
+    
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        session.clear()
+        return jsonify({"authStatus": False}), 200
+
+    # Use your get_app_context helper for decks/words if needed,
+    # but for login/account info, just send the basics:
+    result = {
+        "authStatus": True,
+        "username": user.username,
+        "image": user.profile_pic,
+        "profile": {
+            "email": user.email,
+            "email_verified": bool(getattr(user, "email_verified", False)),
+            "google_id": bool(user.google_id)   # just true/false for SPA UI
+        },
+        "customDecks": [
+            {"id": wl.id, "name": wl.name}
+            for wl in (user.word_lists or [])
+        ]
+    }
+    return jsonify(result)
+
 # @app.route('/')
 # @session_required
 # def index():
@@ -500,9 +570,11 @@ def flashcards():
     return render_template('flashcards.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=cc, wordlist=querydeck, decknames_sorted_with_name=decknames_sorted_with_name)
 
 
-@app.route('/get_custom_cc')
+@app.route('/get_custom_cc', methods=['POST'])
 @session_required
 def get_custom_cc():
+    if request.method == 'OPTIONS':
+        return '', 200
     username = session.get('username')
     custom_wordlists = db_get_user_wordlists(username)
     for wl in custom_wordlists:

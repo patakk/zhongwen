@@ -109,12 +109,11 @@ def login():
 
 # Link Google account route
 # Link Google account route
-@google_auth_bp.route("/link_account")
+@google_auth_bp.route("/link_account", methods=["POST"])
 def link_account():
-    print("Starting Google account linking process...")
     if 'user_id' not in session:
         flash("Please log in first", "error")
-        return redirect(url_for("login"))
+        return redirect(url_for("login"))   
     
     # Mark this as a linking flow
     session['linking_account'] = True
@@ -129,12 +128,14 @@ def authorized_handler():
     print("Google OAuth callback received")
     if not google.authorized:
         flash("Authentication failed", "error")
-        return redirect(url_for("login"))
+        #return redirect(url_for("login"))
+        return redirect('http://localhost:5173/')  
     
     resp = google.get("/oauth2/v2/userinfo")
     if not resp.ok:
         flash("Failed to get user info", "error")
-        return redirect(url_for("login"))
+        #return redirect(url_for("login"))
+        return redirect('http://localhost:5173/login')  
     
     google_info = resp.json()
     google_id = google_info["id"]
@@ -156,14 +157,16 @@ def authorized_handler():
         existing_google_user = User.query.filter_by(google_id=google_id).first()
         if existing_google_user and existing_google_user.id != user.id:
             flash("This Google account is already linked to another user account", "error")
-            return redirect(url_for("account"))
+            #return redirect(url_for("account"))
+            return redirect('http://localhost:5173/')  
         
         # Second check: Is this Google email already associated with another account?
         if google_email:
             existing_email_user = User.query.filter_by(email=google_email).first()
             if existing_email_user and existing_email_user.id != user.id:
                 flash("The email associated with this Google account is already used by another user account", "error")
-                return redirect(url_for("manage.account_management"))
+                #return redirect(url_for("manage.account_management"))
+                return redirect('http://localhost:5173/')  
         
         # Update current user
         user.google_id = google_id
@@ -176,7 +179,8 @@ def authorized_handler():
         db.session.commit()
         
         flash("Your account has been linked with Google!", "success")
-        return redirect(url_for("account"))
+        #return redirect(url_for("account"))
+        return redirect('http://localhost:5173/')  
 
     
     # NORMAL LOGIN FLOW
@@ -193,15 +197,16 @@ def authorized_handler():
     session['authenticated'] = True
     
     flash('Logged in successfully with Google!', 'success')
-    return redirect(url_for("home"))
+    #return redirect(url_for("home"))
+    return redirect('http://localhost:5173')  
 
 
 @google_auth_bp.route("/unlink_account", methods=["POST"])
 def unlink_account():
     if 'user_id' not in session:
         flash("Please log in first", "error")
-        return redirect(url_for("login"))
-    
+        return redirect('http://localhost:5173')  
+
     user = User.query.get(session['user_id'])
 
     user.google_id = None
@@ -218,22 +223,6 @@ def unlink_account():
     
     db.session.commit()
     
-    return redirect(url_for("manage.add_password"))
-    
-    # user.google_id = None
-    # user.oauth_token = None
-    # user.oauth_token_expiry = None
-    
-    # if user.email and user.email.endswith('@gmail.com'):
-    #     user.email = None
-    
-    # user.email_verified = False
-    
-    # if user.profile_pic and ('googleusercontent.com' in user.profile_pic or 'google.com' in user.profile_pic):
-    #     user.profile_pic = None
-    
-    # db.session.commit()
-    
-    # flash("Your Google account has been completely unlinked and all Google-related data has been removed from your profile.", "success")
-    # return redirect(url_for("account"))
+    # Return JSON response for easier handling in frontend
+    return {"message": "Successfully unlinked your Google account", "success": True}, 200
 

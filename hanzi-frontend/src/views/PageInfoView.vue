@@ -1,6 +1,17 @@
 <template>
+  <BasePage page_title="Info" /> 
   <div class="page-info">
     <h1>Chinese Language Learning</h1>
+    
+    <form @submit.prevent="goToSearch" class="search-form">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search for characters or words..."
+        class="search-input"
+      />
+      <button type="submit" class="search-button">Search</button>
+    </form>
     
     <div class="content">
       <section class="intro-section">
@@ -29,21 +40,21 @@
             <PreloadWrapper character="你好">
               <span class="chinese-word">你好</span>
             </PreloadWrapper>
-            <span class="pinyin">nǐ hǎo</span>
+            <span class="mpinyin">nǐ hǎo</span>
             <span class="meaning">Hello</span>
           </div>
           <div class="word-item">
             <PreloadWrapper character="谢谢">
               <span class="chinese-word">谢谢</span>
             </PreloadWrapper>
-            <span class="pinyin">xièxie</span>
+            <span class="mpinyin">xièxie</span>
             <span class="meaning">Thank you</span>
           </div>
           <div class="word-item">
             <PreloadWrapper character="再见">
               <span class="chinese-word">再见</span>
             </PreloadWrapper>
-            <span class="pinyin">zàijiàn</span>
+            <span class="mpinyin">zàijiàn</span>
             <span class="meaning">Goodbye</span>
           </div>
         </div>
@@ -75,12 +86,37 @@
 </template>
 
 <script>
-import PreloadWrapper from '../components/PreloadWrapper.vue'
+import PreloadWrapper from '../components/PreloadWrapper.vue';
+import BasePage from '../components/BasePage.vue';
 
 export default {
   name: 'PageInfoView',
   components: {
-    PreloadWrapper
+    PreloadWrapper,
+    BasePage
+  },
+  data() {
+    return {
+      searchQuery: ''
+    };
+  },
+  methods: {
+    goToSearch() {
+      // Start the search request immediately
+      const searchPromise = fetch('/api/search_results', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: this.searchQuery }),
+      });
+      
+      // Store the search promise in a global variable that SearchView can access
+      window.pendingSearchPromise = searchPromise;
+      
+      // Navigate to the search page with the query parameter
+      this.$router.push({ name: 'SearchPage', query: { q: this.searchQuery } });
+    }
   }
 }
 </script>
@@ -102,17 +138,17 @@ section {
   padding: 1.5rem;
   background: var(--bg-secondary);
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0px 16px color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
 }
 
 h1 {
-  color: var(--text-primary);
+  color: var(--fg);
   text-align: center;
   margin-bottom: 2rem;
 }
 
 h2 {
-  color: var(--text-primary);
+  color: var(--fg);
   margin-bottom: 1rem;
   font-size: 1.5rem;
 }
@@ -138,23 +174,25 @@ h2 {
 
 .chinese-word {
   font-size: 1.5em;
-  color: var(--text-primary);
+  color: var(--fg);
   cursor: pointer;
   margin-bottom: 0.5rem;
+  background-color: none;
+  padding: .125em 0.25em;
 }
 
 .chinese-word:hover {
-  color: var(--accent);
+  box-shadow: 0 0px 6px color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
 }
 
 .pinyin {
-  color: var(--text-secondary);
+  color: var(--fg);
   font-size: 0.9em;
   margin-bottom: 0.25rem;
 }
 
 .meaning {
-  color: var(--text-primary);
+  color: var(--fg);
   font-size: 0.9em;
 }
 
@@ -173,5 +211,39 @@ h2 {
 .translation {
   color: var(--text-secondary);
   font-style: italic;
+}
+
+.search-form {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--fg);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 1rem;
+  font-family: inherit;
+  border-radius: 0;
+}
+
+.search-button {
+  padding: 0.75rem 1.5rem;
+  background: var(--fg);
+  color: var(--bg);
+  border: 2px solid var(--fg);
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 0;
+}
+
+.search-button:hover {
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  color: color-mix(in oklab, var(--fg) 45%, var(--bg) 50%);
 }
 </style>

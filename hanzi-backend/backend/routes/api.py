@@ -40,7 +40,7 @@ from backend.common import send_bot_notification
 
 logger = logging.getLogger(__name__)
 
-api_bp = Blueprint("api", __name__, url_prefix="/api")
+api_bp = Blueprint("api", __name__, url_prefix="/")
 
 
 @api_bp.route("/rename_wordlist", methods=["POST"])
@@ -328,7 +328,6 @@ def get_characters_pinyinenglish():
 def get_all_chars_pinyinenglish():
     characters = {}
     for deck in CARDDECKS:
-        print(deck)
         for character in CARDDECKS[deck]["chars"]:
             characters[deck] = get_chars_info(CARDDECKS[deck]["chars"], pinyin=True)
     return jsonify(characters)
@@ -637,7 +636,6 @@ import time
 def get_char_decomp_info():
     data = request.get_json()
     characters = data.get("characters")
-    print("hello", characters)
     return jsonify(char_decomp_info(characters))
 
 

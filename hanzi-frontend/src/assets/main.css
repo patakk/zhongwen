@@ -1,41 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;500;600;700&display=swap');
 
-@font-face {
-  font-family: 'Noto Sans Mono';
-  src: url('@/assets/fonts/NotoSansMono-Regular.woff2') format('woff2'),
-       url('@/assets/fonts/NotoSansMono-Regular.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: 'Noto Sans Mono';
-  src: url('@/assets/fonts/NotoSansMono-Bold.woff2') format('woff2'),
-       url('@/assets/fonts/NotoSansMono-Bold.woff') format('woff');
-  font-weight: 700;
-  font-style: normal;
-}
 
 :root {
   --bg: rgb(255, 255, 255);
   --fg: rgb(0, 0, 0);
-  --overlay-background: rgba(0, 0, 0, 0.5);
-  --secondary-color: #2ecc71;
+  --overlay-background: rgba(255, 255, 255, 0.75);
+  --primary-color: #b39cc9;
+  --secondary-color: #c09cc9;
   --font-family: 'Noto Sans Mono', monospace;
+  /* --font-family: "ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important"; */
   --font-size: 16px;
   --border-radius: 0px;
   --spacing-unit: 8px;
 }
 
-[data-theme="dark"] {
-  --bg: rgb(0, 0, 0);
-  --fg: rgb(255, 255, 255);
-  --overlay-background: rgba(0, 0, 0, 0.5);
-  --secondary-color: #b39cc9;
+input[type="text"]:focus-visible {
+  outline-color: color-mix(in oklab, var(--fg) 26%, var(--bg) 26%);
 }
 
+
+[data-theme="dark"] {
+  --bg: rgb(12, 12, 12);
+  --fg: rgb(255, 255, 255);
+  --overlay-background: rgba(0, 0, 0, 0.5);
+  --primary-color: #b39cc9;
+  --secondary-color: #c09cc9;
+}
+
+::selection {
+  background: var(--secondary-color);
+  color: white;
+}
+
+select {
+  color: var(--fg);
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+}
+/*make sliders use fg bg*/
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  background: var(--bg);
+  border-radius: var(--border-radius);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: color-mix(in oklab, var(--fg) 55%, var(--bg) 50%);
+  border-radius: var(--border-radius);
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  background: color-mix(in oklab, var(--fg) 75%, var(--bg) 25%);
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb:active {
+  cursor: pointer;
+}
+
+
 * {
-  /* transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; */
+  font-family: var(--font-family);
 }
 
 body {
@@ -46,7 +71,7 @@ body {
 }
 
 button {
-  background-color: var(--fg);
+  background-color: transparent;
   color: white;
   padding: var(--spacing-unit) var(--spacing-unit * 2);
   border-radius: var(--border-radius);
@@ -55,5 +80,14 @@ button {
 }
 
 button:hover {
-  background-color: var(--secondary-color);
+}
+
+.theme-toggle{
+  font-size: large;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: transparent;
+  color: var(--fg);
+  padding: var(--spacing-unit);
 }

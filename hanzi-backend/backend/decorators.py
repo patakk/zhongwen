@@ -43,16 +43,16 @@ def hard_session_required(func):
 def session_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        # if "deck" not in session or session.get("deck") == "null":
-        #     session["deck"] = "hsk1"
-        # if "font" not in session:
-        #     session["font"] = "Noto Sans Mono"
-        # if "darkmode" not in session:
-        #     session["darkmode"] = False
-        # if "username" not in session:
-        #     session["username"] = None
+        if "deck" not in session or session.get("deck") == "null":
+            session["deck"] = "hsk1"
+        if "font" not in session:
+            session["font"] = "Noto Sans Mono"
+        if "darkmode" not in session:
+            session["darkmode"] = False
+        if "username" not in session:
+            session["username"] = None
 
-        # username = session.get('username')
+        username = session.get('username')
         # if username:
         #     user = User.query.filter_by(username=username).first()
         #     if user is None and username != 'tempuser':

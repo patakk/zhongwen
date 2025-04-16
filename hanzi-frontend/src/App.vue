@@ -10,6 +10,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+import { useStore } from "vuex";  // Import Vuex store
+
+const store = useStore()  // Access the Vuex store
 
 const theme = ref(localStorage.getItem('theme') || 'light')
 
@@ -20,7 +23,7 @@ const toggleTheme = () => {
 }
 
 onMounted(() => {
-  // Check system preference on first load
+  // Check system preference on first load if no theme is set in localStorage
   if (!localStorage.getItem('theme')) {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     theme.value = prefersDark ? 'dark' : 'light'
@@ -28,4 +31,8 @@ onMounted(() => {
   }
   document.documentElement.setAttribute('data-theme', theme.value)
 })
+
+  store.dispatch("fetchDictionaryData");
+  store.dispatch("fetchCustomDictionaryData");
+
 </script>

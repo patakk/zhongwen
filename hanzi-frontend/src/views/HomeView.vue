@@ -1,8 +1,10 @@
 <template>
-  <div>
-    <h1>Home</h1>
+  <BasePage page_title="Home" />
+  <div class="home-view">
     <nav>
-      <RouterLink to="/login">Login</RouterLink> |
+      <RouterLink v-if="authStatus" to="/account">Account</RouterLink> |
+      <RouterLink v-if="authStatus" to="/my-space">MySpace</RouterLink>
+      <RouterLink v-else to="/login">Login</RouterLink> |
       <RouterLink to="/grid">Grid</RouterLink> |
       <RouterLink to="/search">Search</RouterLink> |
       <RouterLink to="/flashcards">Flashcards</RouterLink> |
@@ -12,13 +14,40 @@
 </template>
 
 <script>
+
+import BasePage from '../components/BasePage.vue';
+
+
 export default {
   name: "HomeView",
   computed: {
+    authStatus() {
+      return this.$store.getters.getAuthStatus
+    }
   },
-  created() {
-    // Fetch dictionary data when the component is created
-    this.$store.dispatch("fetchDictionaryData");
-  }
-};
+  components: {
+    BasePage
+  },
+}
 </script>
+
+
+<style scoped>
+.home-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+}
+
+a {
+  color: var(--fg);
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+nav {
+}
+
+</style>

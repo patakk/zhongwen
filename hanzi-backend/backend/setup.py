@@ -2,6 +2,7 @@ from datetime import timedelta
 from flask import Flask
 import os
 from backend.db.extensions import db, migrate, mail
+from flask_cors import CORS
 
 import os
 
@@ -10,7 +11,6 @@ from backend.routes.api import api_bp
 from backend.routes.puzzles import puzzles_bp
 from backend.routes.manage import manage_bp
 from backend.common import auth_keys
-from flask_cors import CORS
 
 def load_secrets(secrets_file):
     secrets = {}
@@ -37,9 +37,9 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__)).split('/backend')[0]
 
 FLASK_CONFIG = {
     'SECRET_KEY': auth_keys.get("FLASK_SECRET_KEY"),
-    'SESSION_TYPE': 'sqlalchemy',
+    'SESSION_TYPE': 'filesystem',
     'SESSION_PERMANENT': True,
-    'SESSION_COOKIE_SECURE': True,
+    'SESSION_COOKIE_SECURE': False,
     'SESSION_COOKIE_HTTPONLY': True,
     'SESSION_COOKIE_SAMESITE': 'Lax',
     'PERMANENT_SESSION_LIFETIME': timedelta(days=30),
@@ -51,12 +51,20 @@ FLASK_CONFIG = {
 
 def create_app():
     app = Flask("hanzi_app")
-    CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
     app.config.update(FLASK_CONFIG)
-
     app.config["WTF_CSRF_SECRET_KEY"] = auth_keys.get("FLASK_SECRET_KEY")
     # csrf = CSRFProtect(app)
+
+    # Configure CORS to allow requests from the frontend
+    # CORS(app, resources={
+    #     r"/*": {
+    #         "origins": ["http://localhost:5173"],
+    #         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    #         "allow_headers": ["Content-Type", "Authorization"],
+    #         "supports_credentials": True  # Important for cookies/sessions
+    #     }
+    # })
 
     app.template_folder = os.path.join(BASE_DIR, 'templates')
     app.static_folder = os.path.join(BASE_DIR, 'static')
