@@ -7,23 +7,25 @@ import { toAccentedPinyin } from './helpers.js'
 import App from './App.vue'
 import router from './router'
 import store from './stores'
+//import './lib/fontawesome_unminified.js'; 
 
-// Hydrate from localStorage before mounting the app
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faSun, faMoon)
+
 store.dispatch('loadUserDataFromStorage')
   .then(() => {
-    // Optionally, try to fetch user from backend API if session/cookie exists (recommended)
-    // This will also refresh user data after Google OAuth redirect
     return store.dispatch('fetchUserData')
   })
   .catch(err => {
-    // Optionally log the error or ignore it
-    // If request fails, localStorage state will still be used
-    // console.error('Error during user data hydration:', err);
   })
   .finally(() => {
     const app = createApp(App)
 
-    app.use(createPinia()) // Only if you actually use Pinia stores elsewhere
+    app.component('font-awesome-icon', FontAwesomeIcon)
+    app.use(createPinia())
     app.use(store)
     app.use(router)
 

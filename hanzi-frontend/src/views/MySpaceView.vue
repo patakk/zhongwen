@@ -281,9 +281,10 @@
   
   select {
     padding: 0.5rem 0.75rem;
-    border: 2px solid var(--fg);
+    border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
     background: var(--bg);
     color: var(--fg);
+    box-sizing: border-box;
     font-family: inherit;
     /* border-radius: 6px; */
     cursor: pointer;
@@ -291,7 +292,6 @@
   
   select:hover,
   select:focus {
-    border-color: var(--accent);
     outline: none;
   }
   

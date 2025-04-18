@@ -175,7 +175,7 @@ function createPlotters(data){
                 lineThickness: 8*size/200,
                 jitterAmp: 0,
                 colors: colors,
-                lineType: "round",
+                lineType: "mitter",
                 showDiagonals: false,
                 showGrid: false,
                 useMask: true,

@@ -16,6 +16,15 @@
           </option>
         </select>
 
+        <!-- View Toggle -->
+        <label for="view-toggle">Display Mode:</label>
+        <button 
+          class="single-toggle-button" 
+          @click="isListView = !isListView"
+        >
+          {{ isListView ? 'Show Grid' : 'Show List' }}
+        </button>
+
         <!-- Font Selector -->
         <label for="font-select">Font:</label>
         <select v-model="selectedFont" id="font-select">
@@ -30,7 +39,7 @@
         <input
           type="range"
           min="0.6"
-          max="3"
+          max="2"
           step="0.1"
           :value="tempFontScale"
           @input="tempFontScale = parseFloat($event.target.value)"
@@ -42,7 +51,8 @@
       <main class="main-content">
         <div v-if="selectedCategory">
           <div class="dictionary-category">
-            <div class="grid-container" :style="{ gridTemplateColumns: `repeat(auto-fill, minmax(${fontScale*1.1*100}px, 1fr))`, fontSize: `${fontScale*1.1}em` }">
+            <!-- Grid View -->
+            <div v-if="!isListView" class="grid-container" :style="{ gridTemplateColumns: `repeat(auto-fill, minmax(${fontScale*1.1*100}px, 1fr))`, fontSize: `${fontScale*1.1}em` }">
               <PreloadWrapper 
                 v-for="(entry, index) in slicedChars.slice(0, visibleCount)" 
                 :key="entry.character" 
@@ -53,6 +63,25 @@
                     {{ entry.character }}
                   </div>
                   <div class="pinyin">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
+                </div>
+              </PreloadWrapper>
+            </div>
+            
+            <!-- List View -->
+            <div v-else class="list-container" :style="{fontSize: `${fontScale*1.1}em` }">
+              <PreloadWrapper
+                v-for="(entry, index) in slicedChars.slice(0, visibleCount)"
+                :key="entry.character"
+                :character="entry.character"
+              >
+                <div class="list-item">
+                  <div class="hanzipinyin">
+                    <div class="list-hanzi" :style="{ fontFamily: `'${selectedFont}'` }">
+                      {{ entry.character }}
+                    </div>
+                    <div class="list-pinyin">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
+                  </div>
+                  <div class="list-english">{{ entry.english.join(', ') }}</div>
                 </div>
               </PreloadWrapper>
             </div>
@@ -83,7 +112,8 @@ export default {
 
       selectedFont: 'Kaiti',
       fontScale: 1,         // ✅ Actual font scale, used in layout
-      tempFontScale: 1      // ✅ Temporary one used by slider
+      tempFontScale: 1,     // ✅ Temporary one used by slider
+      isListView: false     // ✅ Toggle between grid and list views
     };
   },
   components: {
@@ -253,7 +283,7 @@ html, body {
 }
 
 .pinyin {
-  font-size: 1.em; /* Scale font size directly */
+  font-size: 0.8em; /* Scale font size directly */
   color: var(--fg);
   opacity: 0;
   overflow: hidden;
@@ -268,6 +298,58 @@ html, body {
   opacity: 1;
 }
 
+.list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0rem;
+  width: 100%;
+}
+
+.list-item {
+  display: flex;
+  /* border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%); */
+  box-shadow: 0px -1.25px color-mix(in oklab, var(--fg) 10%, var(--bg) 10%);
+  padding: .25em;
+  font-family: inherit;
+  text-align: left;
+  background: var(--bg);
+  width: 100%;
+  cursor: pointer;
+  font-size: .75em;
+}
+
+.list-item:hover {
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+}
+
+.hanzipinyin {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 2;
+}
+
+.list-hanzi {
+  font-size: 1.75em;
+  padding-right: 1em;
+}
+
+.list-pinyin {
+  font-size: 1em;
+  font-style: italic;
+  color: var(--fg);
+  opacity: 0.4;
+}
+
+.list-english {
+  font-size: 1em;
+  color: var(--fg);
+  opacity: 0.6;
+  flex: 12;
+  align-self: center;
+}
+
 select {
   margin-bottom: 20px;
   padding: 5px;
@@ -278,7 +360,7 @@ select {
   width: 12%;
   box-sizing: border-box;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-  border-right: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
+  /* border-right: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%); */
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -289,9 +371,7 @@ select {
 
 .main-content {
   width: 88%;
-  padding: 2em;
-  padding-right: 4em;
-  padding-top: 0;
+  padding: 0em 3em 2em 1em;
   box-sizing: border-box;
   overflow-y: auto;
   height: 100%;  
@@ -309,6 +389,42 @@ label {
   display: block;
 }
 
+.toggle-container {
+  display: flex;
+  gap: 0.5em;
+}
+
+.toggle-button {
+  flex: 1;
+  padding: 0.5em;
+  text-align: center;
+  border: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.toggle-button.active {
+  background: color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
+  font-weight: bold;
+}
+
+.single-toggle-button {
+  display: block;
+  width: 100%;
+  padding: 0.5em;
+  margin-bottom: 1rem;
+  text-align: center;
+  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--fg);
+}
+
+.single-toggle-button:hover {
+  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+}
 
 </style>
 

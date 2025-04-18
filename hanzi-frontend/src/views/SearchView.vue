@@ -136,37 +136,6 @@ export default {
   padding: 2rem;
 }
 
-.search-form {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  width: 100%;
-  max-width: 600px;
-}
-
-.search-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
-  background: var(--bg);
-  color: var(--fg);
-  font-size: 1rem;
-  font-family: inherit;
-}
-
-.search-button {
-  padding: 0.75rem 1.5rem;
-  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-  color: var(--fg);
-  border: 2px solid color-mix(in oklab, var(--fg) 35%, var(--bg) 25%);
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.search-button:hover {
-  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
-  color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
-}
 
 .results {
   display: flex;

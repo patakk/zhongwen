@@ -13,7 +13,9 @@
       :data="popupData"
       :loading="loading"
       :visible="modalVisible"
+      :decompositionData="decompositionData"
       @close="closePopup"
+      @fetch-decomp-for-char="fetchCharDecompInfo"
     />
 
   </div>
@@ -47,6 +49,8 @@ export default {
       modalVisible: false,
       cardDataCache: new Map(),
       pendingFetch: null,
+      pendingDecompFetch: null,
+      decompositionData: null,
       loading: false,
     }
   },
@@ -146,6 +150,9 @@ export default {
         this.popupData = data;
       }
 
+      // Fetch and print character decomposition info
+      this.fetchCharDecompInfo(this.character);
+
       this.loading = false;
     },
     async handleExampleClick(word) {
@@ -177,6 +184,9 @@ export default {
     updatePopupData(word) {
       if (this.cardDataCache.has(word)) {
           this.popupData = this.cardDataCache.get(word)
+          
+          // Also fetch decomposition data for the new word
+          this.fetchCharDecompInfo(word);
 
         this.$nextTick(() => { 
             this.scrollToTopOfModal();
@@ -187,6 +197,10 @@ export default {
       this.fetchCardData(word).then((data) => {
         if (data) {
           this.popupData = data
+          
+          // Also fetch decomposition data for the new word
+          this.fetchCharDecompInfo(word);
+          
           this.$nextTick(() => { 
               this.scrollToTopOfModal();
           });
@@ -208,6 +222,63 @@ export default {
                 }, 0);
             }, 222);
         }
+    },
+    async fetchCharDecompInfo(input) {
+      // If there's already a pending decomp fetch for this input, return that promise
+      if (this.pendingDecompFetch?.character === input) {
+        return this.pendingDecompFetch.promise
+      }
+
+      // Create new fetch promise
+      const fetchPromise = new Promise(async (resolve) => {
+        try {
+          // Only send characters that are Han script
+          const characters = input.split('').filter(char => /\p{Script=Han}/u.test(char));
+          
+          if (characters.length === 0) {
+            this.decompositionData = null;
+            resolve(null);
+            return;
+          }
+          
+          // For debug - log what we're fetching
+          console.log('Fetching decomposition for character:', characters);
+          
+          const url = '/api/get_char_decomp_info';
+          const payload = { characters: characters }; // Send all characters at once
+          const options = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          };
+
+          const response = await fetch(url, options);
+          const data = await response.json();
+          console.log('Character decomposition info received:', data);
+          
+          // Set decomposition data directly
+          this.decompositionData = data;
+          
+          resolve(this.decompositionData);
+        } catch (error) {
+          console.error('Error fetching character decomposition info for:', input, error);
+          resolve(null);
+        }
+      });
+
+      // Store the pending decomp fetch
+      this.pendingDecompFetch = {
+        character: input,
+        promise: fetchPromise
+      }
+
+      // Wait for fetch to complete and clear pending fetch
+      await fetchPromise
+      this.pendingDecompFetch = null
+
+      return fetchPromise
     },
   },
   provide() {

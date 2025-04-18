@@ -188,4 +188,13 @@ def get_random_chars_from_deck(deck, n, function=False):
     return {c: get_char_info(c) for c in characters}
 
 def char_decomp_info(char):
+    # Handle the case where a list is passed
+    if isinstance(char, list):
+        # Process each character individually
+        result = {}
+        for c in char:
+            if c in DECOMPOSE_CACHE:
+                result[c] = DECOMPOSE_CACHE[c]
+        return result
+    # Handle the case where a single character is passed    
     return DECOMPOSE_CACHE.get(char, {})

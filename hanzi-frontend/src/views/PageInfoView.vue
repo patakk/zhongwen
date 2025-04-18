@@ -137,7 +137,7 @@ section {
   margin-bottom: 3rem;
   padding: 1.5rem;
   background: var(--bg-secondary);
-  border-radius: 12px;
+  border-radius: 1em;
   box-shadow: 0 0px 16px color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
 }
 
@@ -213,37 +213,5 @@ h2 {
   font-style: italic;
 }
 
-.search-form {
-  display: flex;
-  gap: 0.5rem;
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto 2rem auto;
-}
 
-.search-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border: 2px solid var(--fg);
-  background: var(--bg);
-  color: var(--fg);
-  font-size: 1rem;
-  font-family: inherit;
-  border-radius: 0;
-}
-
-.search-button {
-  padding: 0.75rem 1.5rem;
-  background: var(--fg);
-  color: var(--bg);
-  border: 2px solid var(--fg);
-  cursor: pointer;
-  font-family: inherit;
-  border-radius: 0;
-}
-
-.search-button:hover {
-  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  color: color-mix(in oklab, var(--fg) 45%, var(--bg) 50%);
-}
 </style>

@@ -42,9 +42,6 @@ export default {
   methods: {
     toggleExpanded() {
       this.isExpanded = !this.isExpanded;
-    },
-    collapse() {
-      this.isExpanded = false;
     }
   }
 }
@@ -59,7 +56,6 @@ export default {
   padding: 0.25rem 0.5rem;
   width: 100%;
   box-sizing: border-box;
-  font-size: 1rem;
   min-width: 0; /* Prevent flex item from overflowing */
 }
 .section-header {
@@ -82,7 +78,7 @@ export default {
   
   position: sticky;
   bottom: 0;
-  background-color: color-mix(in oklab, var(--fg) 0%, var(--bg) 100%);
+  background-color: color-mix(in oklab, var(--fg) 4%, var(--bg) 100%);
   z-index: 1;
   width: auto;
   justify-self: center;
@@ -91,7 +87,7 @@ export default {
 }
 
 body [data-theme="dark"] .expand-button {
-  background-color: color-mix(in oklab, var(--fg) 20%, var(--bg) 30%);
+  background-color: color-mix(in oklab, var(--fg) 10%, var(--bg) 30%);
 }
 
 body [data-theme="dark"] .expand-button:hover {
