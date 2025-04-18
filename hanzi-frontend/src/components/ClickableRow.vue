@@ -10,6 +10,8 @@
   </template>
   
   <script>
+  import { eventBus } from '../main.js'
+  
   export default {
     name: 'ClickableRow',
     props: {
@@ -50,6 +52,9 @@
       handleClick() {
         this.updatePopupData(this.word)
         this.$emit('example-clicked')
+        
+        // Emit an event to collapse all expandable examples
+        eventBus.emit('collapse-examples')
       }
     }
   }

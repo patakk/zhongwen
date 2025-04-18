@@ -25,6 +25,7 @@
   --overlay-background: rgba(255, 255, 255, 0.75);
   --primary-color: #b39cc9;
   --secondary-color: #c09cc9;
+  --dim-primary: #b789c733;
   --font-family: 'Noto Sans Mono', monospace;
   --font-family: 'SF Mono Regular', monospace;
   /* --font-family: "ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important"; */
@@ -44,6 +45,7 @@ input[type="text"]:focus-visible {
   --overlay-background: rgba(0, 0, 0, 0.5);
   --primary-color: #b39cc9;
   --secondary-color: #c09cc9;
+  --dim-primary: #b789c75e;
 }
 
 ::selection {

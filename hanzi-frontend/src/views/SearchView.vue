@@ -74,19 +74,36 @@ export default {
         this.doSearch();
       }
     }
+    
+    // Add event listener for the custom search event
+    window.addEventListener('perform-search', this.handleSearchEvent);
+  },
+  
+  beforeUnmount() {
+    // Clean up the event listener
+    window.removeEventListener('perform-search', this.handleSearchEvent);
   },
   methods: {
     async doSearch() {
-      const res = await fetch('/api/search_results', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: this.query }),
-      });
-      this.results = await res.json();
-      this.results = this.results.results;
-      console.log(this.results);
+      if (!this.query) return;
+      
+      this.isLoading = true;
+      try {
+        const res = await fetch('/api/search_results', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: this.query }),
+        });
+        const data = await res.json();
+        this.results = data.results;
+        console.log(this.results);
+      } catch (error) {
+        console.error("Error performing search:", error);
+      } finally {
+        this.isLoading = false;
+      }
     },
     highlightMatch(text) {
       if (!this.query) return text;
@@ -115,15 +132,18 @@ export default {
       let last = 0;
       for (const [start, end] of indices) {
         result += text.slice(last, start);
-        result += '<mark>' + text.slice(start, end) + '</mark>';
+        //result += '<mark>' + text.slice(start, end) + '</mark>';
+        result += '<span style="background-color: var(--dim-primary)">' + text.slice(start, end) + '</span>';
         last = end;
       }
       result += text.slice(last);
 
       return result;
-    }
-
-
+    },
+    handleSearchEvent(event) {
+      this.query = event.detail.query;
+      this.doSearch();
+    },
   },
 };
 </script>

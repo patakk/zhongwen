@@ -1,202 +1,190 @@
 <template>
   <div class="modal-overlay" v-if="visible" @click="closeModal">
+    
     <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <div>Loading...</div>
-    </div>
+        <div class="spinner"></div>
+        <div>Loading...</div>
+      </div>
     <div v-else class="modal card-modal" @click.stop>
       <button @click="closeModal" class="close-btn">×</button>
 
       <!-- ✅ Loading State -->
 
       <!-- ✅ Actual Modal Content -->
-      <!-- Main word section -->
-      <div class="main-word-section">
-        <div class="main-word">
-          <span
-            v-for="(char, index) in data.character.split('')"
-            :key="index"
-            class="main-word-char"
-            @click="setActiveChar(char)"
-          >
-            {{ char }}
-          </span>
-        </div>
-        <div class="minor-character">{{ data.character }}</div>
+        <!-- Main word section -->
+        <div class="main-word-section">
+          <div class="main-word">
+            <span
+              v-for="(char, index) in data.character.split('')"
+              :key="index"
+              class="main-word-char"
+              @click="setActiveChar(char)"
+            >
+              {{ char }}
+            </span>
+          </div>
+          <div class="minor-character">{{ data.character }}</div>
 
-        <!-- Check if there are multiple pronunciations -->
-        <div v-if="data.pinyin.length > 1" class="multi-pronunciation">
-          <div v-for="(pinyin, index) in data.pinyin" :key="index" class="pronunciation-item">
-            <div class="p-pinyin">{{ $toAccentedPinyin(pinyin) }}</div>
-            <div class="p-english">{{ data.english[index] }}</div>
+          <!-- Check if there are multiple pronunciations -->
+          <div v-if="data.pinyin.length > 1" class="multi-pronunciation">
+            <div v-for="(pinyin, index) in data.pinyin" :key="index" class="pronunciation-item">
+              <div class="p-pinyin">{{ $toAccentedPinyin(pinyin) }}</div>
+              <div class="p-english">{{ data.english[index] }}</div>
+            </div>
+          </div>
+
+          <!-- Single pronunciation -->
+          <div v-else>
+            <div class="main-pinyin">{{ $toAccentedPinyin(data.pinyin[0]) }}</div>
+            <div class="main-english">{{ data.english[0] }}</div>
           </div>
         </div>
 
-        <!-- Single pronunciation -->
-        <div v-else>
-          <div class="main-pinyin">{{ $toAccentedPinyin(data.pinyin[0]) }}</div>
-          <div class="main-english">{{ data.english[0] }}</div>
-        </div>
-      </div>
+        <!-- Character breakdown section -->
+        <div class="breakdown-section" v-if="data.chars_breakdown">
+          <h3 class="char-breakdown">Character Breakdown ↓</h3>
 
-      <!-- Character breakdown section -->
-      <div class="breakdown-section" v-if="data.chars_breakdown">
-        <!-- <h3 class="char-breakdown">Character Breakdown ↓</h3> -->
+          <!-- Tabs -->
+          <div class="tabs" v-if="validChars.length > 1">
+            <button
+              v-for="char in validChars"
+              :key="char"
+              :class="['tab-btn', { active: activeChar === char }]"
+              @click="activeChar = char"
+            >
+              {{ char }}
+            </button>
+          </div>
 
-        <!-- Tabs -->
-        <div class="tabs" v-if="validChars.length > 1">
-          <button
-            v-for="char in validChars"
-            :key="char"
-            :class="['tab-btn', { active: activeChar === char }]"
-            @click="activeChar = char"
-          >
-            {{ char }}
-          </button>
-        </div>
+          <!-- Tab content -->
+          <div class="tab-content" v-if="activeCharData">
+            <div class="char-details">
+              <div class="freq-trad-anim">
+                <div class="freq-trad">
+                  <div class="detail-group">
+                    <span class="basic-label">Frequency rank:</span> {{ activeCharData.rank }}
+                  </div>
+                  <div class="detail-group">
+                    <span class="basic-label">Pinyin:</span> {{ $toAccentedPinyin(activeCharData.main_word_pinyin[0]) }}
+                  </div>
 
-        <!-- Tab content -->
-        <div class="tab-content" v-if="activeCharData">
-          <div class="char-details">
-            <div class="freq-trad-anim">
-              <div class="freq-trad">
-                <div class="detail-group">
-                  <span class="basic-label">Frequency rank:</span> {{ activeCharData.rank }}
-                </div>
-                <div class="detail-group">
-                  <span class="basic-label">Pinyin:</span>
-                  {{ $toAccentedPinyin(activeCharData.main_word_pinyin[0]) }}
-                </div>
+                  <div v-if="activeChar !== activeCharData.traditional" class="detail-group">
+                      <span class="basic-label">Traditional: </span>
+                      <span
+                        class="trad-simple"
+                      >
+                        {{ activeCharData.traditional }}
+                      </span>
+                  </div>
 
-                <div v-if="activeChar !== activeCharData.traditional" class="detail-group">
-                  <span class="basic-label">Traditional: </span>
-                  <span
-                    class="trad-simple hoverable"
-                    @mouseenter="startHoverTimer(activeCharData.traditional)"
-                    @mouseleave="clearHoverTimer"
-                    @click="updateModalContent(activeCharData.traditional)"
-                  >
-                    {{ activeCharData.traditional }}
-                  </span>
-                </div>
-
-                <div v-if="activeChar !== activeCharData.simplified" class="detail-group">
-                  <span class="basic-label">Simplified: </span>
-                  <span
-                    class="trad-simple hoverable"
-                    @mouseenter="startHoverTimer(activeCharData.simplified)"
-                    @mouseleave="clearHoverTimer"
-                    @click="updateModalContent(activeCharData.simplified)"
-                    >{{ activeCharData.simplified }}</span
-                  >
-                </div>
-
-                <div class="detail-group radicals-group">
-                  <span class="basic-label">Radicals: </span>
-                  <div class="radicals">
+                  <div v-if="activeChar !== activeCharData.simplified" class="detail-group">
+                    <span class="basic-label">Simplified: </span>
                     <span
-                      v-for="(meaning, char) in activeCharData.radicals"
-                      :key="char"
-                      class="radical"
-                    >
-                      <span class="radical-char">{{ char }}</span>
-                      <span class="radical-meaning">{{ meaning }}</span>
-                    </span>
+                      class="trad-simple"
+                    >{{ activeCharData.simplified }}</span>
+                  </div>
+
+                  <div class="detail-group radicals-group">
+                    <span class="basic-label">Radicals: </span>
+                    <div class="radicals">
+                      <span
+                        v-for="(meaning, char) in activeCharData.radicals"
+                        :key="char"
+                        class="radical"
+                      >
+                        <span class="radical-char">{{ char }}</span>
+                        <span class="radical-meaning">{{ meaning }}</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="hanzi-anim">
-                <AnimatedHanzi
-                  :character="activeCharData.character"
-                  :animatable="true"
-                  :drawThin="false"
-                  :animSpeed="0.1"
-                />
-              </div>
-            </div>
-
-            <ExpandableExamples title="Related words">
-              <template v-slot:afew="slotProps">
-                <div class="example-words">
-                  <ClickableRow
-                    v-for="(word, index) in activeCharData.example_words.slice(0, 5)"
-                    :key="index"
-                    :word="word"
-                    :class="{ therest: !slotProps.isExpanded }"
-                  >
-                    <template #default>
-                      <div class="example-chinese-pinyin">
-                        <span class="example-chinese">{{ word }}</span>
-                        <span class="example-pinyin">
-                          {{ $toAccentedPinyin(activeCharData.pinyin[index]) }}
-                        </span>
-                      </div>
-                      <span class="example-meaning">{{ activeCharData.english[index] }}</span>
-                    </template>
-                  </ClickableRow>
+                <div class="hanzi-anim">
+                  <AnimatedHanzi 
+                    :character="activeCharData.character"
+                    :animatable="true" 
+                    :drawThin="false" 
+                    :animSpeed="0.1"
+                  />
                 </div>
-              </template>
-
-              <template v-slot:therest="slotProps">
-                <div class="example-words">
-                  <ClickableRow
-                    v-for="(word, index) in activeCharData.example_words.slice(5)"
-                    :key="index + 5"
-                    :word="word"
-                    class="therest"
-                  >
-                    <template #default>
-                      <div class="example-chinese-pinyin">
-                        <span class="example-chinese">{{ word }}</span>
-                        <span class="example-pinyin">
-                          {{ $toAccentedPinyin(activeCharData.pinyin[index + 5]) }}
-                        </span>
-                      </div>
-                      <span class="example-meaning">{{ activeCharData.english[index + 5] }}</span>
-                    </template>
-                  </ClickableRow>
-                </div>
-              </template>
-            </ExpandableExamples>
-
-            <!-- <div class="detail-group">
-              <div class="components">
-                <span v-for="comp in activeCharData.main_components" :key="comp">
-                  {{ comp }}
-                </span>
               </div>
-            </div> -->
-            <h4>Components: <span class="componentsLab">{{ activeCharData.main_components.join(', ') }}</span></h4>
 
-            <!-- Character Decomposition Section -->
-              <div
-              class="decomp-section"
-              v-if="decompositionData && activeChar && decompositionData[activeChar]"
-            >
+              <ExpandableExamples title="Related words">
+                <template v-slot:afew="slotProps">
+                  <div class="example-words">
+                    <ClickableRow
+                      v-for="(word, index) in activeCharData.example_words.slice(0, 5)"
+                      :key="index"
+                      :word="word"
+                      :class="{ therest: !slotProps.isExpanded }"
+                    >
+                      <template #default>
+                        <div class="example-chinese-pinyin">
+                          <span class="example-chinese">{{ word }}</span>
+                          <span class="example-pinyin">
+                            {{ $toAccentedPinyin(activeCharData.pinyin[index]) }}
+                          </span>
+                        </div>
+                        <span class="example-meaning">{{ activeCharData.english[index] }}</span>
+                      </template>
+                    </ClickableRow>
+                  </div>
+                </template>
+
+                <template v-slot:therest="slotProps">
+                  <div class="example-words">
+                    <ClickableRow
+                      v-for="(word, index) in activeCharData.example_words.slice(5)"
+                      :key="index + 5"
+                      :word="word"
+                      class="therest"
+                    >
+                      <template #default>
+                        <div class="example-chinese-pinyin">
+                          <span class="example-chinese">{{ word }}</span>
+                          <span class="example-pinyin">
+                            {{ $toAccentedPinyin(activeCharData.pinyin[index + 5]) }}
+                          </span>
+                        </div>
+                        <span class="example-meaning">{{ activeCharData.english[index + 5] }}</span>
+                      </template>
+                    </ClickableRow>
+                  </div>
+                </template>
+              </ExpandableExamples>
+
+              <div class="detail-group" v-if="activeCharData.main_components">
+                <div class="medium-label">Components</div class="medium-label">
+                <!-- <div class="components">
+                  <span v-for="comp in activeCharData.main_components" :key="comp">
+                    {{ comp }}
+                  </span>
+                </div> -->
+              </div>
+              
+              <!-- Character Decomposition Section -->
+              <div class="detail-group decomp-section" v-if="currentDecompositionData && currentDecompositionData[activeChar]">
                 <div class="decomposition-items">
-                  <!-- Each component in the active character -->
-                  <div
-                    v-for="(charArray, component) in decompositionData[activeChar]"
-                    :key="component"
-                    class="decomp-group"
-                  >
-                  <div class="decomp-component"><div class="decomp-component-hanzi">{{ component }}</div> <div class="decomp-component-label">present in:</div></div>
+                  <div v-for="(componentArray, componentName) in currentDecompositionData[activeChar]" :key="componentName" class="decomp-group">
+                    <div class="decomp-component">{{ componentName }}:</div>
                     <div class="decomp-chars">
-                      <span
-                        v-for="char in charArray"
+                      <span 
+                        v-for="char in componentArray" 
                         :key="char"
-                        class="decomp-char"
+                        :character="char"
+                        @mouseenter="startHoverTimer(char)"
+                        @mouseleave="clearHoverTimer"
                         @click="updateModalContent(char)"
+                        class="decomp-char"
                       >
                         {{ char }}
                       </span>
                     </div>
                   </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
   </div>
@@ -211,26 +199,26 @@ export default {
   props: {
     data: {
       type: Object,
-      default: null, // allow null while loading
+      default: null // allow null while loading
     },
     visible: {
       type: Boolean,
-      default: false,
+      default: false
     },
     loading: {
       type: Boolean,
-      default: false,
+      default: false
     },
     decompositionData: {
       type: Object,
-      default: null,
-    },
+      default: null
+    }
   },
   inject: ['updatePopupData', 'preloadCardDataForWord'],
   components: {
     ExpandableExamples,
     ClickableRow,
-    AnimatedHanzi,
+    AnimatedHanzi
   },
   name: 'CardModal',
   emits: ['close', 'fetch-decomp-for-char'],
@@ -239,28 +227,30 @@ export default {
       activeChar: null,
       hoverTimer: null,
       hoverWord: null,
-      currentDecompositionData: null,
+      currentDecompositionData: null
     }
   },
   computed: {
     validChars() {
       if (!this.data || !this.data.character) return []
-      return this.data.character.split('').filter((char) => /\p{Script=Han}/u.test(char))
+      return this.data.character.split('').filter(char => /\p{Script=Han}/u.test(char))
     },
     activeCharData() {
-      if (!this.data || !this.data.chars_breakdown) return null
-      const charToShow = this.activeChar || this.validChars[0]
-      const breakdown = this.data.chars_breakdown[charToShow]
-      const goodindices = []
-      const shortindices = []
-      breakdown.example_words.forEach((word, index) => {
+      if (!this.data || !this.data.chars_breakdown) return null;
+      const charToShow = this.activeChar || this.validChars[0];
+      const breakdown = this.data.chars_breakdown[charToShow];
+      const goodindices = [];
+      const shortindices = [];
+      if(breakdown.example_words){
+        breakdown.example_words.forEach((word, index) => {
         if (word.length > 1) {
-          goodindices.push(index)
+          goodindices.push(index);
         }
         if (word.length === 1) {
-          shortindices.push(index)
+          shortindices.push(index);
         }
-      })
+      });
+      }
 
       return {
         ...breakdown,
@@ -269,11 +259,11 @@ export default {
         english: breakdown.english.filter((_, index) => goodindices.includes(index)),
         main_word_pinyin: breakdown.pinyin.filter((_, index) => shortindices.includes(index)),
         main_word_english: breakdown.english.filter((_, index) => shortindices.includes(index)),
-      }
+      };
     },
     isVisible() {
       return this.visible
-    },
+    }
   },
   watch: {
     visible: {
@@ -284,7 +274,7 @@ export default {
           document.body.classList.remove('modal-open')
         }
       },
-      immediate: true,
+      immediate: true
     },
     data: {
       handler(newData) {
@@ -292,7 +282,7 @@ export default {
           this.activeChar = this.validChars[0]
         }
       },
-      immediate: true,
+      immediate: true
     },
     activeChar: {
       handler(newChar) {
@@ -301,27 +291,27 @@ export default {
           if (typeof this.decompositionData === 'object') {
             if (this.decompositionData[newChar]) {
               // Only show decomposition for the active character
-              this.currentDecompositionData = this.decompositionData
+              this.currentDecompositionData = this.decompositionData;
             } else {
               // If we don't have data for this specific character, fetch it
-              this.$emit('fetch-decomp-for-char', newChar)
+              this.$emit('fetch-decomp-for-char', newChar);
             }
           }
         }
       },
-      immediate: true,
+      immediate: true
     },
     decompositionData: {
       handler(newData) {
         if (newData && this.activeChar) {
           // Update currentDecompositionData when decompositionData changes
           if (typeof newData === 'object') {
-            this.currentDecompositionData = newData
+            this.currentDecompositionData = newData;
           }
         }
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   mounted() {
     window.addEventListener('keydown', this.handleEscKey)
@@ -335,46 +325,53 @@ export default {
   },
   methods: {
     closeModal() {
-      this.$emit('close')
+      this.$emit('close');
     },
     handleEscKey(event) {
       if (event.key === 'Escape') {
-        this.closeModal()
+        this.closeModal();
       }
     },
     startHoverTimer(word) {
-      this.clearHoverTimer()
-      this.hoverWord = word
+      this.clearHoverTimer();
+      this.hoverWord = word;
       this.hoverTimer = setTimeout(() => {
-        this.preloadData()
-      }, 300)
+        this.preloadData();
+      }, 300);
     },
     clearHoverTimer() {
       if (this.hoverTimer) {
-        clearTimeout(this.hoverTimer)
-        this.hoverTimer = null
+        clearTimeout(this.hoverTimer);
+        this.hoverTimer = null;
       }
-      this.hoverWord = null
+      this.hoverWord = null;
     },
     async preloadData() {
       if (this.hoverWord) {
-        await this.preloadCardDataForWord(this.hoverWord)
+        await this.preloadCardDataForWord(this.hoverWord);
       }
     },
     updateModalContent(word) {
-      this.clearHoverTimer()
-      this.updatePopupData(word)
+      this.clearHoverTimer();
+      this.updatePopupData(word);
     },
     setActiveChar(char) {
       if (this.validChars.includes(char)) {
-        this.activeChar = char // Set the active character
+        this.activeChar = char; // Set the active character
       }
     },
-  },
+  }
 }
 </script>
 
 <style scoped>
+
+.medium-label {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -412,11 +409,6 @@ export default {
   z-index: 1;
   cursor: default;
 }
-
-.componentsLab {
-  font-weight: 600;
-}
-
 
 .modal {
   position: fixed;
@@ -496,7 +488,7 @@ export default {
 .multi-pronunciation {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: .25rem;
   margin-top: 1em;
   width: 100%;
   text-align: left;
@@ -519,12 +511,13 @@ export default {
   border-bottom: none;
 }
 
+
 .p-pinyin {
   font-size: 1.2rem;
 }
 
 .p-english {
-  font-size: 0.8rem;
+  font-size: .8rem;
   padding: 0em 2em;
   opacity: 0.6;
   font-style: italic;
@@ -572,20 +565,21 @@ export default {
   box-sizing: border-box;
 }
 
+
 .example-chinese {
   font-size: 1.45rem;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
 }
 
 .example-pinyin {
-  font-size: 0.85rem;
+  font-size: .85rem;
   opacity: 0.6;
 }
 
 .example-meaning {
-  font-size: 0.85rem;
+  font-size: .85rem;
   width: 100%;
-  opacity: 0.6;
+  opacity: .6;
   max-width: 100%;
   transition: color 0.2s ease;
   overflow-wrap: anywhere;
@@ -594,6 +588,7 @@ export default {
   overflow: hidden;
   box-sizing: border-box;
 }
+
 
 .example-word-content:hover > .example-chinese {
 }
@@ -610,7 +605,6 @@ export default {
 }
 
 .trad-simple:hover {
-  cursor: pointer;
   /* text-decoration: underline; */
 }
 
@@ -640,7 +634,7 @@ export default {
   padding: 0.5rem 1rem;
   border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
   cursor: pointer;
-  font-family: 'Noto Serif SC';
+  font-family: "Noto Serif SC";
   font-weight: 400;
   color: var(--primary-primary);
   white-space: nowrap;
@@ -663,7 +657,7 @@ export default {
   display: grid;
   gap: 0.6rem;
   width: 100%;
-  min-width: 0;
+  min-width: 0; 
 }
 
 .detail-group {
@@ -671,7 +665,7 @@ export default {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  height: 4em;
+  height: 3em;
   box-sizing: border-box;
   font-size: 1rem;
   min-width: 0;
@@ -722,7 +716,7 @@ export default {
   display: inline-flex;
   flex-wrap: wrap;
   margin-top: 0.5rem;
-  gap: 0.5rem;
+  gap: .5rem;
 }
 
 .radicals {
@@ -733,9 +727,8 @@ export default {
   align-items: center;
   font-size: 1em;
   padding: 0.2rem 0.75rem;
-  transition: all 0.2s ease;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  flex-shrink: 0;
+  flex-shrink: 0; 
 }
 
 .radical:hover {
@@ -744,7 +737,7 @@ export default {
 }
 
 .radical-char {
-  padding-right: 0.5em;
+  padding-right: .5em;
 }
 
 .basic-label {
@@ -752,14 +745,16 @@ export default {
   opacity: 0.5;
 }
 
+
 .char-breakdown {
   font-size: 1.25rem;
   font-weight: normal;
   margin: 0;
-  opacity: 0.75;
-  margin-bottom: 0.5em;
+  opacity: .75;
+  margin-bottom: .5em;
   text-decoration: dotted;
 }
+
 
 .close-btn {
   position: absolute;
@@ -784,8 +779,7 @@ export default {
   height: auto !important;
   margin-top: 1rem !important;
   padding: 1rem !important;
-  border: 2px dashed color-mix(in oklab, var(--fg) 15%, var(--bg) 50%) !important;
-  background-color: color-mix(in oklab, var(--fg) 2%, var(--bg) 98%);
+  border: 2px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%) !important;
 }
 
 .decomposition-items {
@@ -802,26 +796,10 @@ export default {
 }
 
 .decomp-component {
-  display: inline;
-  display: inline-block;
-  font-size: .8em;
+  font-size: 1.2rem;
   font-weight: normal;
   color: var(--fg);
   margin-bottom: 0.5rem;
-}
-
-.decomp-component-hanzi {
-  display: inline;
-  display: inline-block;
-  font-size: 1.5em;
-  opacity: 1;
-}
-
-.decomp-component-label {
-  display: inline;
-  display: inline-block;
-  opacity: 1;
-  opacity: .5;
 }
 
 .decomp-chars {
@@ -835,13 +813,16 @@ export default {
   font-size: 1.5rem;
   padding: 0.3rem 0.7rem;
   background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 92%);
-  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
+  /* border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%); */
+  /* border-radius: 4px; */
   cursor: pointer;
+  transition: all 0.2s ease;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
 }
 
 .decomp-char:hover {
-  background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 85%);
+  /* background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 85%);
+  transform: scale(1.1); */
 }
 
 @media screen and (max-width: 768px) {
@@ -871,7 +852,9 @@ h3,
 h4 {
   margin: 0;
   color: var(--text-primary);
+  font-size: 1.5rem;
 }
+
 
 @media (max-width: 1024px) {
   .modal {
@@ -882,6 +865,8 @@ h4 {
     padding: 1rem;
   }
 }
+
+
 </style>
 
 <!-- Add this unscoped style block -->

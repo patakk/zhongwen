@@ -102,20 +102,20 @@ export default {
   },
   methods: {
     goToSearch() {
-      // Start the search request immediately
-      const searchPromise = fetch('/api/search_results', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: this.searchQuery }),
+      // Navigate to the search page with the query parameter immediately
+      this.$router.push({ 
+        name: 'SearchPage', 
+        query: { q: this.searchQuery },
+        params: { skipFetch: true } // Signal that we're handling the fetch
       });
       
-      // Store the search promise in a global variable that SearchView can access
-      window.pendingSearchPromise = searchPromise;
-      
-      // Navigate to the search page with the query parameter
-      this.$router.push({ name: 'SearchPage', query: { q: this.searchQuery } });
+      // After navigation, trigger the search from the search page
+      this.$nextTick(() => {
+        const searchEvent = new CustomEvent('perform-search', { 
+          detail: { query: this.searchQuery } 
+        });
+        window.dispatchEvent(searchEvent);
+      });
     }
   }
 }

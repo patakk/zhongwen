@@ -13,6 +13,31 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
 
+// Create a global event bus
+export const eventBus = {
+  listeners: {},
+  on(event, callback) {
+    if (!this.listeners[event]) {
+      this.listeners[event] = [];
+    }
+    this.listeners[event].push(callback);
+  },
+  emit(event, data) {
+    if (this.listeners[event]) {
+      this.listeners[event].forEach(callback => callback(data));
+    }
+  },
+  off(event, callback) {
+    if (this.listeners[event]) {
+      if (callback) {
+        this.listeners[event] = this.listeners[event].filter(cb => cb !== callback);
+      } else {
+        delete this.listeners[event];
+      }
+    }
+  }
+};
+
 library.add(faSun, faMoon)
 
 store.dispatch('loadUserDataFromStorage')

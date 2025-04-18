@@ -138,6 +138,12 @@ export default {
         isAnyModalOpen = true;
       }
 
+      // Emit an event to collapse all expandable examples
+      import('../main.js').then(module => {
+        const { eventBus } = module;
+        eventBus.emit('collapse-examples');
+      });
+
       let data;
 
       if (this.cardDataCache.has(this.character)) {
@@ -208,20 +214,16 @@ export default {
       })
     },
     scrollToTopOfModal() {
-        const modal = document.querySelector('.card-modal');
-        if (!modal) return;
-        // scroll to card modal to its top
-        
-        function scrollToTop(element, func=null) {
-            setTimeout(() => {
-                element.scrollTo(0, 1);
-                if(func)
-                    func();
-                setTimeout(() => {
-                    element.scrollTo(0, 0);
-                }, 0);
-            }, 222);
-        }
+      const modal = document.querySelector('.card-modal');
+      if (!modal) return;
+      
+      // Immediate scroll to top
+      modal.scrollTop = 0;
+      
+      // Add a backup scroll after a slight delay to ensure it takes effect
+      setTimeout(() => {
+        modal.scrollTop = 0;
+      }, 50);
     },
     async fetchCharDecompInfo(input) {
       // If there's already a pending decomp fetch for this input, return that promise

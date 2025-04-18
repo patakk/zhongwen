@@ -33,26 +33,28 @@
           <option value="Noto Serif SC">Noto Serif</option>
         </select>
 
-
         <!-- Font Scale Slider -->
-        <label for="font-scale">Font Scale:</label>
-        <input
-          type="range"
-          min="0.6"
-          max="2"
-          step="0.1"
-          :value="tempFontScale"
-          @input="tempFontScale = parseFloat($event.target.value)"
-          @change="applyFontScale"
-        />
-        <div>{{ tempFontScale }}x</div>
+        <div class="slider-group">
+          <!-- <label for="font-scale">Font Scale: {{ previewFontScale.toFixed(2) }}x</label> -->
+          <label for="font-scale">Font Scale</label>
+          <input
+            type="range"
+            id="font-scale"
+            min="0"
+            max="1"
+            step="0.01"
+            v-model="tempSliderValue"
+            @input="updateTempSliderValue"
+            @change="applySliderValue"
+          />
+        </div>
       </div>
 
       <main class="main-content">
         <div v-if="selectedCategory">
           <div class="dictionary-category">
             <!-- Grid View -->
-            <div v-if="!isListView" class="grid-container" :style="{ gridTemplateColumns: `repeat(auto-fill, minmax(${fontScale*1.1*100}px, 1fr))`, fontSize: `${fontScale*1.1}em` }">
+            <div v-if="!isListView" class="grid-container" :style="{ gridTemplateColumns: `repeat(auto-fill, minmax(${calculatedFontScale*1.1*100}px, 1fr))`, fontSize: `${calculatedFontScale*1.1}em` }">
               <PreloadWrapper 
                 v-for="(entry, index) in slicedChars.slice(0, visibleCount)" 
                 :key="entry.character" 
@@ -68,7 +70,7 @@
             </div>
             
             <!-- List View -->
-            <div v-else class="list-container" :style="{fontSize: `${fontScale*1.1}em` }">
+            <div v-else class="list-container" :style="{fontSize: `${calculatedFontScale*1.1}em` }">
               <PreloadWrapper
                 v-for="(entry, index) in slicedChars.slice(0, visibleCount)"
                 :key="entry.character"
@@ -111,9 +113,16 @@ export default {
       hoveredItem: null,
 
       selectedFont: 'Kaiti',
-      fontScale: 1,         // ✅ Actual font scale, used in layout
-      tempFontScale: 1,     // ✅ Temporary one used by slider
-      isListView: false     // ✅ Toggle between grid and list views
+      fontScale: 1,         // Actual font scale used in layout
+      sliderValue: 0.5/1.84,     // Raw slider value (0-1) before any transformations
+      tempSliderValue: 0.5/1.84, // Temporary value used during sliding
+      fontExponent: 2,      // Fixed exponent for non-linear scaling (quadratic)
+      
+      // Font scale limits
+      minFontScale: 0.6,
+      maxFontScale: 6,
+
+      isListView: false
     };
   },
   components: {
@@ -133,11 +142,41 @@ export default {
 
       const chars = this.dictionaryData[this.selectedCategory].chars || {};
       return Object.values(chars);
+    },
+    // Calculate the actual font scale from the slider value
+    calculatedFontScale() {
+      // Apply the exponent transformation to the slider value
+      const transformedValue = Math.pow(this.sliderValue, this.fontExponent);
+      // Map from 0-1 range to minFontScale-maxFontScale range
+      return transformedValue * (this.maxFontScale - this.minFontScale) + this.minFontScale;
+    },
+    // Preview scale during slider movement
+    previewFontScale() {
+      // Apply the exponent transformation to the temporary slider value
+      const transformedValue = Math.pow(this.tempSliderValue, this.fontExponent);
+      // Map from 0-1 range to minFontScale-maxFontScale range
+      return transformedValue * (this.maxFontScale - this.minFontScale) + this.minFontScale;
     }
   },
   methods: {
     applyFontScale() {
-      this.fontScale = this.tempFontScale;
+      this.fontScale = this.calculatedFontScale;
+    },
+    updateFontScaleFromNormalized(normalizedValue) {
+      // Store the raw slider value (0-1) directly
+      this.sliderValue = normalizedValue;
+      // The fontScale will be calculated via the computed property
+    },
+    updateTempSliderValue(event) {
+      // This updates the temporary value during sliding
+      this.tempSliderValue = parseFloat(event.target.value);
+      // This doesn't affect the actual fontScale, only the preview display
+    },
+    applySliderValue() {
+      // Apply the final value when the slider is released
+      this.sliderValue = this.tempSliderValue;
+      // The calculatedFontScale computed property will update, 
+      // and the watcher will apply it to fontScale
     },
     loadMore() {
       this.visibleCount += defaultVisibleCount;
@@ -157,12 +196,28 @@ export default {
         this.selectedCategory = wordlist;
         this.localPageTitle = this.dictionaryData[wordlist].name || wordlist;
       }
+    },
+    // New method to update URL query parameter when category changes
+    updateUrlQuery(category) {
+      if (category) {
+        // Update URL without refreshing the page
+        this.$router.push({
+          query: { ...this.$route.query, wordlist: category }
+        }).catch(err => {
+          // Ignore duplicate navigation errors
+          if (err.name !== 'NavigationDuplicated') {
+            throw err;
+          }
+        });
+      }
     }
   },
   watch: {
-    selectedCategory() {
+    selectedCategory(newCategory) {
       this.visibleCount = defaultVisibleCount; 
       this.$nextTick(this.loadMore);
+      // Update URL when category changes
+      this.updateUrlQuery(newCategory);
     },
     // Add a watcher for route changes to handle direct URL navigation
     '$route.query': {
@@ -177,9 +232,17 @@ export default {
         this.checkQueryParams();
       },
       immediate: true
+    },
+    // Watch calculatedFontScale and apply it to fontScale
+    calculatedFontScale: {
+      handler(newValue) {
+        this.fontScale = newValue;
+      },
+      immediate: true
     }
   },
   mounted() {
+    this.tempSliderValue = this.sliderValue; // Initialize temp value
     this.checkQueryParams();
     this.$nextTick(this.loadMore);
   }
@@ -246,7 +309,7 @@ html, body {
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 1em;
+  gap: .5rem;
   width: 100%;
   box-sizing: border-box;
 }

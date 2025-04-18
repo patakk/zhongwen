@@ -1,7 +1,7 @@
 <template>
   <div class="examples-group">
     <div class="section-header">
-      <h4>{{ title }}</h4>
+      <div class="medium-label">{{ title }}</div>
     </div>
 
     <!-- Always visible portion -->
@@ -26,6 +26,8 @@
 
 
 <script>
+import { eventBus } from '../main.js'
+
 export default {
   props: {
     title: String,
@@ -39,9 +41,20 @@ export default {
       isExpanded: this.defaultExpanded
     }
   },
+  created() {
+    // Listen for the collapse event
+    eventBus.on('collapse-examples', this.setCollapse);
+  },
+  beforeUnmount() {
+    // Clean up event listener
+    eventBus.off('collapse-examples', this.setCollapse);
+  },
   methods: {
     toggleExpanded() {
       this.isExpanded = !this.isExpanded;
+    },
+    setCollapse() {
+      this.isExpanded = false;
     }
   }
 }
@@ -58,6 +71,14 @@ export default {
   box-sizing: border-box;
   min-width: 0; /* Prevent flex item from overflowing */
 }
+
+
+.medium-label {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;
