@@ -417,6 +417,10 @@ export default {
   height: 90vh;
   max-height: 90vh;
   border: 2px dashed var(--fg);
+  border: 4px solid var(--fg);
+  box-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
+  box-shadow: 5px 5px 2px 2px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
+  box-shadow: 14px 10px 0px 0px var(--fg);
   background: var(--bg);
   display: flex;
   flex-direction: column;
@@ -433,6 +437,7 @@ export default {
   transform: translate(-50%, -50%);
   cursor: default;
 }
+
 
 .modal::-webkit-scrollbar {
   width: 0;
