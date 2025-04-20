@@ -1,4 +1,6 @@
 import string
+import json
+import os
 import re
 import regex
 from flask import Flask, request, jsonify
@@ -24,7 +26,11 @@ limiter = Limiter(
 )
 
 
-dictionary = HanziDictionary()
+
+DATA_DIR = '/home/patakk/zhongwen_data'
+indices_cache = json.load(open(os.path.join(DATA_DIR, "indices_cache.json")))
+
+dictionary = HanziDictionary(indices_cache=indices_cache)
 
 def load_secrets(secrets_file):
     secrets = {}

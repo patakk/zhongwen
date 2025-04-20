@@ -26,8 +26,6 @@
 
 
 <script>
-import { eventBus } from '../main.js'
-
 export default {
   props: {
     title: String,
@@ -40,14 +38,6 @@ export default {
     return {
       isExpanded: this.defaultExpanded
     }
-  },
-  created() {
-    // Listen for the collapse event
-    eventBus.on('collapse-examples', this.setCollapse);
-  },
-  beforeUnmount() {
-    // Clean up event listener
-    eventBus.off('collapse-examples', this.setCollapse);
   },
   methods: {
     toggleExpanded() {
@@ -66,7 +56,6 @@ export default {
   background: none !important;
   display: flex;
   flex-direction: column;
-  padding: 0.25rem 0.5rem;
   width: 100%;
   box-sizing: border-box;
   min-width: 0; /* Prevent flex item from overflowing */

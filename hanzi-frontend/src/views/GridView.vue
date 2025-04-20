@@ -61,14 +61,20 @@
         <div v-if="selectedCategory">
           <div class="dictionary-category">
             <!-- Grid View -->
-            <div v-if="!isListView" class="grid-container" :style="{ gridTemplateColumns: `repeat(auto-fill, minmax(${fontScale*1.1*100}px, 1fr))`, fontSize: `${fontScale*1.1}em` }">
+            <div v-if="!isListView" class="grid-container" :style="{ 
+              gridTemplateColumns: `repeat(auto-fill, minmax(${fontScale*1.1*100}px, 1fr))`, 
+              fontSize: `${fontScale*1.1}em` 
+            }">
               <PreloadWrapper 
                 v-for="(entry, index) in visibleChars" 
                 :key="entry.character" 
                 :character="entry.character"
               >
                 <div class="grid-item">
-                  <div class="hanzi" :style="{ fontFamily: `'${selectedFont}'` }">
+                  <div class="hanzi" :style="{ 
+                    fontFamily: `'${selectedFont}'`,
+                    transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none'
+                  }">
                     {{ entry.character }}
                   </div>
                   <div class="pinyin">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
@@ -85,7 +91,10 @@
               >
                 <div class="list-item">
                   <div class="hanzipinyin">
-                    <div class="list-hanzi" :style="{ fontFamily: `'${selectedFont}'` }">
+                    <div class="list-hanzi" :style="{ 
+                      fontFamily: `'${selectedFont}'`,
+                      transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none'
+                    }">
                       {{ entry.character }}
                     </div>
                     <div class="list-pinyin">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
@@ -211,6 +220,24 @@ export default {
         this.selectedCategory = wordlist;
         this.localPageTitle = this.dictionaryData[wordlist].name || wordlist;
       }
+      
+      // Check for word parameter to open modal
+      const word = this.$route.query.word;
+      if (word) {
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+        console.log('Opening character modal for:', word);
+      }
     },
     // New method to update the URL when the category changes
     updateUrlWithCategory(category) {
@@ -239,6 +266,12 @@ export default {
         event.preventDefault();
         this.toggleSidebar();
       }
+    },
+    
+    // Method to open character modal when word is in URL
+    openCharacterModal(character) {
+      // Find the PreloadWrapper component with the matching character
+
     }
   },
   watch: {

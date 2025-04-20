@@ -78,11 +78,16 @@
             <div class="char-details">
               <div class="freq-trad-anim">
                 <div class="freq-trad">
-                  <div class="detail-group">
+                  <!-- <div class="detail-group">
                     <span class="basic-label">Frequency rank:</span> {{ activeCharData.rank }}
+                  </div> -->
+                  <div class="detail-group">
+                    <!-- <span class="basic-label">Pinyin:</span> {{ $toAccentedPinyin(activeCharData.main_word_pinyin[0]) }} -->
+                    <span class="basic-label">Pinyin:</span> {{ activeCharData.main_word_pinyin.map((word) => $toAccentedPinyin(word)) }}
                   </div>
                   <div class="detail-group">
-                    <span class="basic-label">Pinyin:</span> {{ $toAccentedPinyin(activeCharData.main_word_pinyin[0]) }}
+                    <!-- <span class="basic-label">Pinyin:</span> {{ $toAccentedPinyin(activeCharData.main_word_english[0]) }} -->
+                    <span class="basic-label">Meaning:</span> {{ activeCharData.main_word_english.map((word) => $toAccentedPinyin(word)) }}
                   </div>
 
                   <div v-if="activeChar !== activeCharData.traditional" class="detail-group">
@@ -171,17 +176,11 @@
                 </template>
               </ExpandableExamples>
 
-              <div class="detail-group" v-if="activeCharData.main_components">
+              <div v-if="activeCharData.main_components">
                 <div class="medium-label">Components</div class="medium-label">
-                <!-- <div class="components">
-                  <span v-for="comp in activeCharData.main_components" :key="comp">
-                    {{ comp }}
-                  </span>
-                </div> -->
-              </div>
               
               <!-- Character Decomposition Section -->
-              <div class="detail-group decomp-section" v-if="currentDecompositionData && currentDecompositionData[activeChar]">
+              <div class="decomp-section" v-if="currentDecompositionData && currentDecompositionData[activeChar]">
                 <div class="decomposition-items">
                   <div v-for="(componentArray, componentName) in currentDecompositionData[activeChar]" :key="componentName" class="decomp-group">
                     <div class="decomp-component">{{ componentName }}:</div>
@@ -202,6 +201,8 @@
                   </div>
                 </div>
               </div>
+            </div>
+              
             </div>
           </div>
       </div>
@@ -385,7 +386,21 @@ export default {
       return null;
     },
     closeModal() {
+      // Remove the word parameter from the URL when closing the modal
+      this.updateUrlWithoutWord();
       this.$emit('close');
+    },
+    // Helper method to remove the word parameter from the URL
+    updateUrlWithoutWord() {
+      const query = { ...this.$route.query };
+      delete query.word;
+      
+      this.$router.replace({ query }).catch(err => {
+        // Ignore navigation duplicate errors
+        if (err.name !== 'NavigationDuplicated') {
+          throw err;
+        }
+      });
     },
     handleEscKey(event) {
       if (event.key === 'Escape') {

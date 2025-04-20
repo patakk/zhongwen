@@ -127,39 +127,56 @@ export default {
       return fetchPromise
     },
     async openPopup() {
+      // Prevent opening multiple times
       if (this.modalVisible) return;
 
       this.modalVisible = true;
       this.popupData = null;
       this.loading = true;
 
+      // Update URL with the word parameter
+      this.updateUrlWithWord(this.character);
+
       if (!isAnyModalOpen) {
         document.body.classList.add('modal-open');
         isAnyModalOpen = true;
       }
 
-      // Emit an event to collapse all expandable examples
-      import('../main.js').then(module => {
-        const { eventBus } = module;
-        eventBus.emit('collapse-examples');
+      try {
+        let data;
+
+        if (this.cardDataCache.has(this.character)) {
+          data = this.cardDataCache.get(this.character);
+        } else {
+          data = await this.fetchCardData(this.character);
+        }
+
+        if (data) {
+          this.popupData = data;
+        }
+
+        // Fetch and print character decomposition info
+        this.fetchCharDecompInfo(this.character);
+      } catch (error) {
+        console.error('Error opening popup:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    // Helper method to update URL with the word parameter
+    updateUrlWithWord(word) {
+      // Use the router to update URL without reloading the page
+      this.$router.replace({ 
+        query: { 
+          ...this.$route.query, 
+          word: word 
+        }
+      }).catch(err => {
+        // Ignore navigation duplicate errors
+        if (err.name !== 'NavigationDuplicated') {
+          throw err;
+        }
       });
-
-      let data;
-
-      if (this.cardDataCache.has(this.character)) {
-        data = this.cardDataCache.get(this.character);
-      } else {
-        data = await this.fetchCardData(this.character);
-      }
-
-      if (data) {
-        this.popupData = data;
-      }
-
-      // Fetch and print character decomposition info
-      this.fetchCharDecompInfo(this.character);
-
-      this.loading = false;
     },
     async handleExampleClick(word) {
       // If data is in cache, use it immediately
@@ -214,16 +231,20 @@ export default {
       })
     },
     scrollToTopOfModal() {
-      const modal = document.querySelector('.card-modal');
-      if (!modal) return;
-      
-      // Immediate scroll to top
-      modal.scrollTop = 0;
-      
-      // Add a backup scroll after a slight delay to ensure it takes effect
-      setTimeout(() => {
-        modal.scrollTop = 0;
-      }, 50);
+        const modal = document.querySelector('.card-modal');
+        if (!modal) return;
+        // scroll to card modal to its top
+        
+        function scrollToTop(element, func=null) {
+            setTimeout(() => {
+                element.scrollTo(0, 1);
+                if(func)
+                    func();
+                setTimeout(() => {
+                    element.scrollTo(0, 0);
+                }, 0);
+            }, 222);
+        }
     },
     async fetchCharDecompInfo(input) {
       // If there's already a pending decomp fetch for this input, return that promise
@@ -244,24 +265,31 @@ export default {
           }
           
           // For debug - log what we're fetching
-          console.log('Fetching decomposition for character:', characters);
+          console.log('Fetching decomposition for character:', characters[0]);
           
-          const url = '/api/get_char_decomp_info';
-          const payload = { characters: characters }; // Send all characters at once
-          const options = {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-          };
+          // Only send one character at a time to avoid unhashable list errors
+          for (const char of characters) {
+            const url = '/api/get_char_decomp_info';
+            const payload = { characters: char }; // Send a single character
+            const options = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(payload),
+            };
 
-          const response = await fetch(url, options);
-          const data = await response.json();
-          console.log('Character decomposition info received:', data);
-          
-          // Set decomposition data directly
-          this.decompositionData = data;
+            const response = await fetch(url, options);
+            const data = await response.json();
+            console.log('Character decomposition info received:', data);
+            
+            // Merge with existing decomposition data
+            if (this.decompositionData) {
+              this.decompositionData = { ...this.decompositionData, ...data };
+            } else {
+              this.decompositionData = data;
+            }
+          }
           
           resolve(this.decompositionData);
         } catch (error) {
