@@ -15,6 +15,10 @@ export default defineComponent({
       type: String,
       required: true
     },
+    strokes: {
+      type: Object,
+      default: () => ({})
+    },
     animatable: {
       type: Boolean,
       default: true
@@ -72,12 +76,16 @@ export default defineComponent({
       if (plotter.value) {
         plotter.value.destroyy();
         plotter.value = null;
-      }
+      } 
 
       const isDarkMode = currentTheme.value === 'dark';
       
       // Create new plotter
+      let medians = props.strokes.medians || [];
+      let masks = props.strokes.strokes || [];
       plotter.value = new HanziPlotter({
+        strokes: medians,
+        masks: masks,
         character: props.character,
         canvas: canvas,
         dimension: canvas.width,
@@ -149,7 +157,15 @@ export default defineComponent({
     });
 
     // Watch for character changes
-    watch(() => props.character, () => {
+    watch(() => props.character, async () => {
+      
+      if (plotter.value) {
+        if (props.animatable && hanziCanvas.value) {
+          hanziCanvas.value.removeEventListener('click', animateCharacter);
+        }
+        plotter.value.destroyy();
+      }
+      
       initPlotter();
     });
 

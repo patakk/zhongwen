@@ -162,7 +162,8 @@ def get_tatoeba_page(character, page):
 
 def get_char_info(character, full=False):
     if full:
-        return CHARS_CACHE.get(character, {})
+        char_info = CHARS_CACHE.get(character, {})
+        return char_info
     return WORDS_CACHE.get(character, {'character': character, 'pinyin': ['N/A'], 'english': ['N/A']})
 
 def getshortdate():

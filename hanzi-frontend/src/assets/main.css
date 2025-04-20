@@ -22,6 +22,7 @@
 :root {
   --bg: rgb(255, 255, 255);
   --fg: rgb(0, 0, 0);
+  --fg-dim: rgb(19, 19, 19);
   --overlay-background: rgba(255, 255, 255, 0.75);
   --primary-color: #b39cc9;
   --secondary-color: #c09cc9;
@@ -42,6 +43,7 @@ input[type="text"]:focus-visible {
 [data-theme="dark"] {
   --bg: rgb(12, 12, 12);
   --fg: rgb(255, 255, 255);
+  --fg-dim: rgb(129, 129, 129);
   --overlay-background: rgba(0, 0, 0, 0.5);
   --primary-color: #b39cc9;
   --secondary-color: #c09cc9;

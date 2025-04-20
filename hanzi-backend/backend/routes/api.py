@@ -147,11 +147,10 @@ def add_word_to_learning():
         return jsonify({"error": "Missing required fields"}), 400
     word = data["word"]
 
-    words = re.split(r'[^\u4e00-\u9fff]+', word)
-    words = [w for w in words if w and len(w) <= 6]
-    words = [w for w in words if re.match(r'^[\u4e00-\u9fff]+$', w)]
+    words = word.split(";")
+    words = [w.strip() for w in words]
     words = [w for w in words if w]
-    words = list(set(words))
+
     
     if not words:
         return jsonify({"error": "No valid Chinese words found in input"}), 400
@@ -476,8 +475,16 @@ def get_audio():
 @session_required
 @timing_decorator
 def get_strokes(character):
-    strokes = STROKES_CACHE.get(character)
-    return jsonify(strokes)
+    if len(character) == 1:
+        strokes = STROKES_CACHE.get(character)
+        return jsonify(strokes)
+    else:
+        strokesPerChar = {}
+        for char in character:
+            strokes = STROKES_CACHE.get(char)
+            if strokes:
+                strokesPerChar[char] = strokes
+        return jsonify(strokesPerChar)
 
 
 @api_bp.route("/save_stroke_data", methods=["POST"])

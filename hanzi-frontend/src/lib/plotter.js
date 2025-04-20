@@ -638,6 +638,9 @@ export default class HanziPlotter {
         this.canvas.removeEventListener('click', this.startAnimation);
         this.isDestroyed = true;
         // check event listeners
+        cancelAnimationFrame(this.animationFrame);
+        this.animationFrame = null;
+        this.isAnimating = false;
         //remove all click event listeners on canvas
 
     }
@@ -1213,8 +1216,120 @@ export default class HanziPlotter {
         this.startAnimation();
     }
 
-    startAnimation() {
-        // check if no a real number
+    async startAnimationOld() {
+        if (this.isAnimating) return; // Prevent multiple calls
+        this.isAnimating = true;
+    
+        for (let i = 0; i < this.originalStrokes.length; i++) {
+            console.log(`Stroke ${i + 1} completed`);
+            await this.animateSingleStroke(i);
+            // Wait 400ms after each stroke
+            await new Promise(resolve => setTimeout(resolve, 400));
+        }
+    
+        this.isAnimating = false;
+    }
+    
+    animateSingleStroke(index) {
+        return new Promise(resolve => {
+            const stroke = this.originalStrokes[index];
+            const numPoints = stroke.length;
+            const duration = numPoints / this.speed; // duration in ms
+            console.log(duration)
+    
+            const startTime = Date.now();
+    
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+    
+                this.clearBg();
+                this.draw({ progress: 1, clearbg: false, alpha: 0.35 }); // draw completed strokes with some alpha
+                this.drawStroke(stroke, progress);
+    
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    resolve();
+                }
+            };
+    
+            animate();
+        });
+    }
+
+    async startAnimation() {
+        await this.loadPromise;
+      
+        let workingStrokes = this.originalStrokes?.map(stroke =>
+          stroke.map(({ x, y }) => ({ x, y }))
+        );
+      
+        let strokes = this.applyJitter(workingStrokes, this.jitterAmp);
+      
+        this.ctx.save();
+        this.ctx.lineCap = this.lineType;
+        this.ctx.lineJoin = this.lineType;
+        this.ctx.globalCompositeOperation = this.blendMode;
+        this.ctx.strokeStyle = this.colors[0];
+        this.ctx.lineWidth = this.useMask
+          ? this.lineThickness * 3
+          : this.lineThickness * 1.24;
+      
+        this.clearBg();
+      
+        const numStrokes = this.originalStrokes.length;
+        this.isAnimating = true;
+      
+        // Helper function to animate a single stroke from 0 to 1
+        const animateStroke = (strokeIndex) =>
+          new Promise(resolve => {
+            let startTime = null;
+
+            let progressDuration = 10 * strokes[strokeIndex].length;
+      
+            const animate = timestamp => {
+              if (!startTime) startTime = timestamp;
+              const elapsed = timestamp - startTime;
+              let progress = Math.min(elapsed / progressDuration, 1);
+      
+              this.clearBg();
+              this.draw({ progress: 1, clearbg: false, alpha: 0.35 });
+              this.drawPartial(strokes, strokeIndex, progress, 1);
+      
+              if (progress < 1) {
+                if(!this.isAnimating){
+                  return;
+                }
+                this.animationFrame = requestAnimationFrame(animate);
+              } else {
+
+                resolve();
+              }
+            };
+      
+            if(!this.isAnimating){
+                return;
+              }
+            this.animationFrame = requestAnimationFrame(animate);
+          });
+      
+        for (let currentStrokeIndex = 0; currentStrokeIndex < numStrokes; currentStrokeIndex++) {
+          // Animate current stroke over 600ms (adjust as needed)
+          if(!this.isAnimating){
+            return;
+          }
+          await animateStroke(currentStrokeIndex);
+          // Wait 400ms delay before next stroke
+          await new Promise(r => setTimeout(r, 160));
+        }
+      
+        this.stopAnimation();
+        this.ctx.restore();
+      }
+      
+
+    async startAnimationOOld() {    
         if(this.isQuizing){
             return;
         }
@@ -1225,7 +1340,9 @@ export default class HanziPlotter {
         this.startTime = Date.now();
         let numPoints = 0;
         this.originalStrokes.forEach(stroke => numPoints += stroke.length);
-        const duration = numPoints / this.speed; // duration in milliseconds
+        const duration = numPoints / this.speed;
+        let framenum = 0;
+        let delay = 600;
         const animate = () => {
             if (!this.isAnimating) return;
             const elapsed = Date.now() - this.startTime;
@@ -1235,13 +1352,15 @@ export default class HanziPlotter {
             this.clearBg();
             this.draw({ progress: 1, clearbg: false, onDrawComplete: null, alpha: underlay });
             this.draw({ progress: progress, clearbg: false, onDrawComplete: null, alpha: 1 });
+
             if (progress < 1) {
+                // this.animationFrame = requestAnimationFrame(animate);
                 this.animationFrame = requestAnimationFrame(animate);
             } else {
                 this.stopAnimation();
             }
+            framenum++;
         };
-    
         this.animationFrame = requestAnimationFrame(animate);
     }
 
@@ -1337,20 +1456,13 @@ export default class HanziPlotter {
             d = i;
             currentStrokeProgress = 1;
         }
-
     
         let strokes = this.applyJitter(workingStrokes, this.jitterAmp);
         this.ctx.save();
         this.ctx.lineCap = this.lineType;
         this.ctx.lineJoin = this.lineType;
-        if(this.colors[0]){
-            this.ctx.strokeStyle = this.colors[0];
-            this.ctx.lineWidth = this.lineThickness*2;
-        }
         this.ctx.globalAlpha = alpha;
         this.ctx.globalCompositeOperation = this.blendMode;
-        
-        // this.jitteredStrokes = this.applyJitter(workingStrokes, this.jitterAmp);
         if(this.colors[0]){
             this.ctx.strokeStyle = this.colors[0];
             if(isDarkMode){

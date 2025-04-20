@@ -5,8 +5,25 @@
         <div class="spinner"></div>
         <div>Loading...</div>
       </div>
-    <div v-else class="modal card-modal" @click.stop>
+    <div v-else class="modal card-modal" @click.stop="handleModalClick">
       <button @click="closeModal" class="close-btn">×</button>
+
+      <!-- Add to wordlist dropdown button -->
+      <div v-if="isLoggedIn" class="wordlist-dropdown">
+        <button @click.stop="toggleWordlistDropdown" class="wordlist-btn">
+          <span class="plus-icon">+</span> Add to list
+        </button>
+        <div v-if="showWordlistDropdown" class="dropdown-content" @click.stop>
+          <div v-if="customWordlists.length === 0" class="no-lists">No custom wordlists available</div>
+          <div v-else>
+            <div v-for="wordlist in customWordlists" :key="wordlist.id" 
+                class="wordlist-item"
+                @click.stop="addWordToList(wordlist.name)">
+              {{ wordlist.name }}
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- ✅ Loading State -->
 
@@ -102,6 +119,7 @@
                 <div class="hanzi-anim">
                   <AnimatedHanzi 
                     :character="activeCharData.character"
+                    :strokes="activeCharData.strokes"
                     :animatable="true" 
                     :drawThin="false" 
                     :animSpeed="0.1"
@@ -172,6 +190,7 @@
                         v-for="char in componentArray" 
                         :key="char"
                         :character="char"
+                        :strokes="getCharStrokes(char)"
                         @mouseenter="startHoverTimer(char)"
                         @mouseleave="clearHoverTimer"
                         @click="updateModalContent(char)"
@@ -194,6 +213,7 @@
 import ExpandableExamples from './ExpandableExamples.vue'
 import ClickableRow from './ClickableRow.vue'
 import AnimatedHanzi from './AnimatedHanzi.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -227,10 +247,19 @@ export default {
       activeChar: null,
       hoverTimer: null,
       hoverWord: null,
-      currentDecompositionData: null
+      currentDecompositionData: null,
+      strokesPerChar: null,
+      showWordlistDropdown: false,
+      addingToList: false, // Flag to track when we're adding a word to a list
+      notificationMessage: '', // For showing success/error messages
+      notificationVisible: false, // Control notification visibility
     }
   },
   computed: {
+    ...mapGetters({
+      isLoggedIn: 'isLoggedIn',
+      customWordlists: 'getCustomDecks'
+    }),
     validChars() {
       if (!this.data || !this.data.character) return []
       return this.data.character.split('').filter(char => /\p{Script=Han}/u.test(char))
@@ -318,12 +347,43 @@ export default {
     if (this.visible) {
       document.body.classList.add('modal-open')
     }
+    // Add event listener to close dropdown when clicking outside
+    document.addEventListener('click', this.handleOutsideClick)
+    // this.loadStrokesData(this.data.character, () => {
+      // this.$emit('fetch-decomp-for-char', this.data.character);
+    // });
   },
   beforeDestroy() {
     window.removeEventListener('keydown', this.handleEscKey)
+    // Remove the document click event listener
+    document.removeEventListener('click', this.handleOutsideClick)
     document.body.classList.remove('modal-open')
   },
   methods: {
+    async loadStrokesData(characters, onReady=null) {
+        try {
+            const response = await fetch(`/api/getStrokes/${characters}`);
+            if (!response.ok) {
+                console.log('Strokes doesn\'t exist, will be rendered using text.', this.character);  
+                return;
+            }
+            const data = await response.json();
+            this.strokesPerChar = data.strokes;
+
+            if(onReady){
+                onReady();
+            }
+        } catch (error) {
+            console.error('Error loading character data:', error);
+            throw error;
+        }
+    },
+    getCharStrokes(char) {
+      if (this.strokesPerChar && this.strokesPerChar[char]) {
+        return this.strokesPerChar[char];
+      }
+      return null;
+    },
     closeModal() {
       this.$emit('close');
     },
@@ -358,6 +418,114 @@ export default {
     setActiveChar(char) {
       if (this.validChars.includes(char)) {
         this.activeChar = char; // Set the active character
+      }
+    },
+    toggleWordlistDropdown() {
+      this.showWordlistDropdown = !this.showWordlistDropdown;
+    },
+    addWordToList(setName) {
+      this.addingToList = true;
+      this.showWordlistDropdown = false;
+      
+      // Get the character/word to add
+      const word = this.data.character;
+      
+      // Send request to the backend API
+      fetch("/api/add_word_to_learning", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ word: word, set_name: setName})
+      })
+      .then(response => response.json())
+      .then(data => {
+        this.addingToList = false;
+        
+        // Update the Vuex store to show the word immediately in wordlists
+        this.$store.dispatch('addWordToCustomDeck', {
+          word: word,
+          setName: setName,
+          wordData: {
+            pinyin: this.data.pinyin,
+            english: this.data.english,
+            character: this.data.character
+          }
+        });
+        
+        this.showNotification(`Added "${word}" to "${setName}" list`, 'success');
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        this.addingToList = false;
+        this.showNotification(`Error adding word: ${error.message}`, 'error');
+      });
+    },
+    showNotification(message, type = 'success') {
+      // Create a notification element
+      const notification = document.createElement('div');
+      notification.className = `card-modal-notification ${type}`;
+      notification.textContent = message;
+      notification.style.position = 'fixed';
+      notification.style.top = '20px';
+      notification.style.left = '20px';
+      notification.style.backgroundColor = type === 'success' ? 'var(--green-notif, #4caf50)' : '#f44336';
+      notification.style.color = 'white';
+      notification.style.padding = '10px 15px';
+      notification.style.borderRadius = '4px';
+      notification.style.zIndex = '10000';  // Ensure it's on top of everything
+      notification.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
+      
+      // Add animation manually
+      notification.style.animation = 'fadeInOut 3s ease forwards';
+      
+      // Add to document body instead of modal
+      document.body.appendChild(notification);
+      
+      // Remove after a few seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 3000);
+    },
+    highlightItem(itemId) {
+      const item = this.$el.querySelector(`[data-id="${itemId}"]`);
+      if (item) {
+        item.style.backgroundColor = 'var(--primary-color-hover)';
+      }
+    },
+    unhighlightItem(itemId) {
+      const item = this.$el.querySelector(`[data-id="${itemId}"]`);
+      if (item) {
+        item.style.backgroundColor = '';
+      }
+    },
+    handleOutsideClick(event) {
+      // Check if the dropdown is open and if the click is outside the dropdown element itself
+      if (this.showWordlistDropdown) {
+        const dropdownButton = this.$el.querySelector('.wordlist-btn');
+        const dropdownContent = this.$el.querySelector('.dropdown-content');
+        
+        // Close dropdown if click is outside both the dropdown button and its content
+        if (
+          (!dropdownButton || !dropdownButton.contains(event.target)) && 
+          (!dropdownContent || !dropdownContent.contains(event.target))
+        ) {
+          this.showWordlistDropdown = false;
+        }
+      }
+    },
+    handleModalClick(event) {
+      // Only close the dropdown if we're clicking on the modal itself
+      // and not on the dropdown button or dropdown content
+      const dropdownButton = this.$el.querySelector('.wordlist-btn');
+      const dropdownContent = this.$el.querySelector('.dropdown-content');
+      
+      if (this.showWordlistDropdown &&
+          dropdownButton && !dropdownButton.contains(event.target) &&
+          dropdownContent && !dropdownContent.contains(event.target)) {
+        this.showWordlistDropdown = false;
       }
     },
   }
@@ -417,7 +585,7 @@ export default {
   height: 90vh;
   max-height: 90vh;
   border: 2px dashed var(--fg);
-  border: 4px solid var(--fg);
+  border: 4px solid var(--fg-dim);
   box-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
   box-shadow: 5px 5px 2px 2px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
   box-shadow: 14px 10px 0px 0px var(--fg);
@@ -436,6 +604,10 @@ export default {
   top: 50%;
   transform: translate(-50%, -50%);
   cursor: default;
+}
+
+.modal {
+  box-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
 }
 
 
@@ -828,6 +1000,91 @@ export default {
 .decomp-char:hover {
   /* background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 85%);
   transform: scale(1.1); */
+}
+
+.wordlist-dropdown {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+
+.wordlist-btn {
+  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  color: var(--fg);
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: .9rem;
+  cursor: pointer;
+}
+
+.wordlist-btn:hover {
+  background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
+}
+
+.plus-icon {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 2.5rem;
+  left: 0;
+  background-color: var(--bg);
+  border: 1px solid var(--fg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.wordlist-item {
+  font-size: .9rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
+}
+
+.wordlist-item:hover {
+  background-color: var(--primary-color);
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.no-lists {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Add notification styles */
+.card-modal-notification {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  animation: fadeInOut 3s ease forwards;
+}
+
+.card-modal-notification.success {
+  background-color: var(--green-notif, #4caf50);
+  color: white;
+}
+
+.card-modal-notification.error {
+  background-color: #f44336;
+  color: white;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
 }
 
 @media screen and (max-width: 768px) {

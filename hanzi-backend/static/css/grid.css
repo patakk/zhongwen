@@ -63,6 +63,7 @@ body {
 .grid-container {
     max-width: 80%;
     width: 100%;
+    background-color: color-mix(in oklab, var(--bg) 25%, var(--bg) 100%);
 }
 
 .grid {

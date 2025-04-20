@@ -34,6 +34,7 @@ export default {
 
 <style scoped>
 .home-view {
+  margin: 2em;
   display: flex;
   flex-direction: column;
   align-items: center;

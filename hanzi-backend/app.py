@@ -101,6 +101,7 @@ def breakdown_chars(word):
     for char in word:
         simplified = HanziConv.toSimplified(char)
         infos[char] = get_char_info(simplified, full=True)
+        infos[char]['strokes'] = STROKES_CACHE.get(char)
         infos[char]['character'] = char
     return infos
 

@@ -22,6 +22,22 @@
             </select>
           </div>
         </div>
+        
+        <!-- Add Wordlist Management Controls -->
+        <div class="wordlist-management">
+          <button @click="showCreateWordlistModal = true" class="action-button create-button">
+            Create New Wordlist
+          </button>
+          
+          <div v-if="selectedWordlist" class="wordlist-actions">
+            <button @click="showRenameWordlistModal = true" class="action-button rename-button">
+              Rename Wordlist
+            </button>
+            <button @click="confirmRemoveWordlist" class="action-button delete-button">
+              Delete Wordlist
+            </button>
+          </div>
+        </div>
   
         <div v-if="loading" class="loading">Loading wordlist...</div>
   
@@ -102,6 +118,52 @@
         </div>
       </div>
     </div>
+    
+    <!-- Create Wordlist Modal -->
+    <div v-if="showCreateWordlistModal" class="modal-overlay" @click="closeCreateModal">
+      <div class="modal-content" @click.stop>
+        <h3>Create New Wordlist</h3>
+        <div class="modal-form">
+          <label for="new-wordlist-name">Wordlist Name:</label>
+          <input 
+            id="new-wordlist-name" 
+            v-model="newWordlistName" 
+            placeholder="Enter wordlist name"
+            @keyup.enter="createWordlist"
+            @keyup.esc="closeCreateModal"
+            ref="createModalInput"
+            autocomplete="off"
+          />
+        </div>
+        <div class="modal-buttons">
+          <button @click="closeCreateModal" class="cancel-button">Cancel</button>
+          <button @click="createWordlist" class="confirm-button">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rename Wordlist Modal -->
+    <div v-if="showRenameWordlistModal" class="modal-overlay" @click="closeRenameModal">
+      <div class="modal-content" @click.stop>
+        <h3>Rename Wordlist</h3>
+        <div class="modal-form">
+          <label for="rename-wordlist">New Name:</label>
+          <input 
+            id="rename-wordlist" 
+            v-model="newWordlistName" 
+            placeholder="Enter new name"
+            @keyup.enter="renameWordlist"
+            @keyup.esc="closeRenameModal"
+            ref="renameModalInput"
+            autocomplete="off"
+          />
+        </div>
+        <div class="modal-buttons">
+          <button @click="closeRenameModal" class="cancel-button">Cancel</button>
+          <button @click="renameWordlist" class="confirm-button">Rename</button>
+        </div>
+      </div>
+    </div>
   </template>
   
   <script>
@@ -123,6 +185,10 @@
         wordlistDescription: 'A curated list of useful vocabulary.',
         wordlistCreatedDate: '2024-01-15',
         wordlistTags: ['Beginner', 'HSK1', 'Favorites'],
+        // For modals and wordlist management
+        showCreateWordlistModal: false,
+        showRenameWordlistModal: false,
+        newWordlistName: '',
       };
     },
     computed: {
@@ -140,6 +206,16 @@
         this.wordlistCreatedDate = '2024-01-15'; // static for now
         this.wordlistTags = ['ExampleTag1', 'ExampleTag2'];
       },
+      showCreateWordlistModal(newVal) {
+        if (newVal) {
+          this.newWordlistName = '';
+        }
+      },
+      showRenameWordlistModal(newVal) {
+        if (newVal) {
+          this.newWordlistName = this.selectedWordlist;
+        }
+      }
     },
     mounted() {
       if (this.customDecks && this.customDecks.length > 0) {
@@ -238,6 +314,146 @@
             console.error('Error removing word:', error);
             this.loadWordlistWords();
           });
+      },
+
+      // New methods for wordlist management
+      createWordlist() {
+        if (!this.newWordlistName || this.newWordlistName.trim() === '') {
+          alert('Please enter a valid wordlist name');
+          return;
+        }
+
+        const name = this.newWordlistName.trim();
+        
+        // Optimistic update - add to store first
+        this.$store.dispatch('createWordlist', { name });
+        
+        // Close modal and reset
+        this.showCreateWordlistModal = false;
+        this.newWordlistName = '';
+        
+        // Select the new wordlist
+        this.selectedWordlist = name;
+        
+        // Explicitly reset the words array for the new wordlist
+        this.words = [];
+        
+        // Send to backend
+        fetch('./api/create_wordlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name }),
+        })
+        .catch((error) => {
+          console.error('Error creating wordlist:', error);
+          // If there's an error, refresh data to get the correct state
+          this.$store.dispatch('fetchUserData')
+            .then(() => this.$store.dispatch('fetchCustomDictionaryData'));
+        });
+      },
+      
+      renameWordlist() {
+        if (!this.newWordlistName || this.newWordlistName.trim() === '') {
+          alert('Please enter a valid wordlist name');
+          return;
+        }
+
+        if (!this.selectedWordlist) {
+          alert('Please select a wordlist first');
+          return;
+        }
+
+        const oldName = this.selectedWordlist;
+        const newName = this.newWordlistName.trim();
+        
+        if (oldName === newName) {
+          this.showRenameWordlistModal = false;
+          return;
+        }
+        
+        // Optimistic update - update store first
+        this.$store.dispatch('renameWordlist', { 
+          oldName, 
+          newName 
+        });
+        
+        // Update selected wordlist
+        this.selectedWordlist = newName;
+        
+        // Close modal and reset
+        this.showRenameWordlistModal = false;
+        this.newWordlistName = '';
+        
+        // Send to backend
+        fetch("/api/rename_wordlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ 
+            name: oldName, 
+            newname: newName 
+          })
+        })
+        .catch((error) => {
+          console.error('Error renaming wordlist:', error);
+          // If there's an error, refresh data to get the correct state
+          this.$store.dispatch('fetchUserData')
+            .then(() => this.$store.dispatch('fetchCustomDictionaryData'));
+        });
+      },
+      
+      confirmRemoveWordlist() {
+        if (!this.selectedWordlist) {
+          alert('Please select a wordlist first');
+          return;
+        }
+        
+        if (!confirm(`Are you sure you want to delete "${this.selectedWordlist}"?`)) {
+          return;
+        }
+        
+        const wordlistToRemove = this.selectedWordlist;
+        
+        // Optimistic update - remove from store first
+        this.$store.dispatch('removeWordlist', { name: wordlistToRemove });
+        
+        // Update selection
+        if (this.customDecks && this.customDecks.length > 0) {
+          this.selectedWordlist = this.customDecks[0].name;
+          this.loadWordlistWords();
+        } else {
+          this.selectedWordlist = '';
+          this.words = [];
+        }
+        
+        // Send to backend
+        fetch("/api/remove_wordlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name: wordlistToRemove })
+        })
+        .catch((error) => {
+          console.error('Error removing wordlist:', error);
+          // If there's an error, refresh data to get the correct state
+          this.$store.dispatch('fetchUserData')
+            .then(() => this.$store.dispatch('fetchCustomDictionaryData'));
+        });
+      },
+
+      // New methods for modal management
+      closeCreateModal() {
+        this.showCreateWordlistModal = false;
+        this.newWordlistName = '';
+      },
+      
+      closeRenameModal() {
+        this.showRenameWordlistModal = false;
+        this.newWordlistName = '';
       },
     },
   };
@@ -435,5 +651,115 @@
   .remove-button:hover {
     opacity: 1;
     /* background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%); */
+  }
+
+  /* New styles for wordlist management */
+  .wordlist-management {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .wordlist-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .action-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 2px 4px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  }
+  
+  .create-button {
+    background: color-mix(in oklab, var(--fg) 10%, var(--bg) 50%);
+    color: var(--fg);
+  }
+  
+  .rename-button:hover,
+  .create-button:hover {
+    background: color-mix(in oklab, var(--fg) 30%, var(--bg) 50%);
+    color: var(--fg);
+  }
+  
+  /* Specific styles for the delete wordlist button */
+  .wordlist-actions .delete-button {
+    background: var(--bg);
+    color: var(--fg);
+    position: static;
+    opacity: 1;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  }
+  
+  .wordlist-actions .delete-button:hover {
+    background: color-mix(in oklab, var(--fg) 70%, var(--bg) 50%);
+    color: var(--bg);
+  }
+  
+  /* Modal styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: color-mix(in oklab, var(--bg) 10%, var(--bg) 80%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+  
+  .modal-content {
+    background: var(--bg-alt);
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+  }
+  
+  .modal-form {
+    margin: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .modal-form input {
+    padding: 0.5rem;
+    border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    background: var(--bg);
+    color: var(--fg);
+    font-family: inherit;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .cancel-button, 
+  .confirm-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .cancel-button {
+    background: var(--bg);
+    color: var(--fg);
+  }
+  
+  .confirm-button {
+    background: var(--accent-dark);
+    color: var(--bg);
   }
   </style>

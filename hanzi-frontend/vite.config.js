@@ -14,14 +14,18 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:5117',
-        changeOrigin: true,
+        changeOrigin: true, 
         rewrite: (path) => path.replace(/^\/api/, '')
       },
       '/login': {
         target: 'http://localhost:5117',
         changeOrigin: true,
       }
-    }
+    },
+    allowedHosts: [
+      'localhost',
+      'e4c2-86-33-89-246.ngrok-free.app'
+    ],
   },
   plugins: [
     vue(),

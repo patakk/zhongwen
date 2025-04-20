@@ -1,7 +1,7 @@
 <template>
   <BasePage page_title="Info" /> 
   <div class="page-info">
-    <h1>Chinese Language Learning</h1>
+    <div class="infoTitle">Chinese Language Learning</div>
     
     <form @submit.prevent="goToSearch" class="search-form">
       <input
@@ -102,20 +102,20 @@ export default {
   },
   methods: {
     goToSearch() {
-      // Navigate to the search page with the query parameter immediately
-      this.$router.push({ 
-        name: 'SearchPage', 
-        query: { q: this.searchQuery },
-        params: { skipFetch: true } // Signal that we're handling the fetch
+      // Start the search request immediately
+      const searchPromise = fetch('/api/search_results', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: this.searchQuery }),
       });
       
-      // After navigation, trigger the search from the search page
-      this.$nextTick(() => {
-        const searchEvent = new CustomEvent('perform-search', { 
-          detail: { query: this.searchQuery } 
-        });
-        window.dispatchEvent(searchEvent);
-      });
+      // Store the search promise in a global variable that SearchView can access
+      window.pendingSearchPromise = searchPromise;
+      
+      // Navigate to the search page with the query parameter
+      this.$router.push({ name: 'SearchPage', query: { q: this.searchQuery } });
     }
   }
 }
@@ -141,9 +141,11 @@ section {
   box-shadow: 0 0px 16px color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
 }
 
-h1 {
+.infoTitle {
   color: var(--fg);
   text-align: center;
+  font-size: 2em;
+  font-weight: bold;
   margin-bottom: 2rem;
 }
 

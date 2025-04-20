@@ -4,7 +4,7 @@
     <BasePage :page_title="localPageTitle" />
 
     <div class="page-layout">
-      <div class="leftbar">
+      <div class="leftbar" :class="{ 'leftbar-hidden': !sidebarVisible }">
         <h2>Settings</h2>
 
         <!-- Dictionary Selector -->
@@ -20,7 +20,7 @@
         <label for="view-toggle">Display Mode:</label>
         <button 
           class="single-toggle-button" 
-          @click="isListView = !isListView"
+          @click="toggleView"
         >
           {{ isListView ? 'Show Grid' : 'Show List' }}
         </button>
@@ -33,30 +33,37 @@
           <option value="Noto Serif SC">Noto Serif</option>
         </select>
 
-        <!-- Font Scale Slider -->
-        <div class="slider-group">
-          <!-- <label for="font-scale">Font Scale: {{ previewFontScale.toFixed(2) }}x</label> -->
-          <label for="font-scale">Font Scale</label>
-          <input
-            type="range"
-            id="font-scale"
-            min="0"
-            max="1"
-            step="0.01"
-            v-model="tempSliderValue"
-            @input="updateTempSliderValue"
-            @change="applySliderValue"
-          />
+        <!-- Font Size Buttons (replacing the slider) -->
+        <label>Font Size:</label>
+        <div class="font-size-buttons">
+          <button 
+            class="size-button" 
+            @click="setFontSize(0.75)"
+          >
+            <span class="size-icon">小</span>
+          </button>
+          <button 
+            class="size-button" 
+            @click="setFontSize(1.0)"
+          >
+            <span class="size-icon">中</span>
+          </button>
+          <button 
+            class="size-button" 
+            @click="setFontSize(2.0)"
+          >
+            <span class="size-icon">大</span>
+          </button>
         </div>
       </div>
 
-      <main class="main-content">
+      <main class="main-content" :class="{ 'main-content-expanded': !sidebarVisible }">
         <div v-if="selectedCategory">
           <div class="dictionary-category">
             <!-- Grid View -->
-            <div v-if="!isListView" class="grid-container" :style="{ gridTemplateColumns: `repeat(auto-fill, minmax(${calculatedFontScale*1.1*100}px, 1fr))`, fontSize: `${calculatedFontScale*1.1}em` }">
+            <div v-if="!isListView" class="grid-container" :style="{ gridTemplateColumns: `repeat(auto-fill, minmax(${fontScale*1.1*100}px, 1fr))`, fontSize: `${fontScale*1.1}em` }">
               <PreloadWrapper 
-                v-for="(entry, index) in slicedChars.slice(0, visibleCount)" 
+                v-for="(entry, index) in visibleChars" 
                 :key="entry.character" 
                 :character="entry.character"
               >
@@ -70,9 +77,9 @@
             </div>
             
             <!-- List View -->
-            <div v-else class="list-container" :style="{fontSize: `${calculatedFontScale*1.1}em` }">
+            <div v-else class="list-container" :style="{fontSize: `${fontScale*1.1}em` }">
               <PreloadWrapper
-                v-for="(entry, index) in slicedChars.slice(0, visibleCount)"
+                v-for="(entry, index) in visibleChars"
                 :key="entry.character"
                 :character="entry.character"
               >
@@ -109,20 +116,15 @@ export default {
     return {
       selectedCategory: null,
       localPageTitle: 'Grid',
-      visibleCount: 180,
+      visibleCount: defaultVisibleCount,
       hoveredItem: null,
 
       selectedFont: 'Kaiti',
-      fontScale: 1,         // Actual font scale used in layout
-      sliderValue: 0.5/1.84,     // Raw slider value (0-1) before any transformations
-      tempSliderValue: 0.5/1.84, // Temporary value used during sliding
-      fontExponent: 2,      // Fixed exponent for non-linear scaling (quadratic)
-      
-      // Font scale limits
-      minFontScale: 0.6,
-      maxFontScale: 6,
-
-      isListView: false
+      fontScale: 1,         // ✅ Actual font scale, used in layout
+      tempFontScale: 1,     // ✅ Temporary one used by slider
+      isListView: false,    // ✅ Toggle between grid and list views
+      reloading: false,     // Flag to track view switching reloading
+      sidebarVisible: true  // Flag to toggle sidebar visibility
     };
   },
   components: {
@@ -131,11 +133,31 @@ export default {
   },
   computed: {
     dictionaryData() {
-      if (this.$store.getters.getDictionaryData) {
-        this.selectedCategory = 'hsk1';
-        this.localPageTitle = this.$store.getters.getDictionaryData.hsk1.name || 'hsk1';
+      // Get dictionary data from store
+      const data = this.$store.getters.getDictionaryData;
+      
+      // If we have data but no category selected yet, check URL or set default
+      if (data && !this.selectedCategory) {
+        // Only set default if no category is already selected (from URL or otherwise)
+        const wordlist = this.$route.query.wordlist;
+        if (wordlist && data[wordlist]) {
+          // Use URL parameter if available
+          this.selectedCategory = wordlist;
+          this.localPageTitle = data[wordlist].name || wordlist;
+        } else {
+          // Otherwise use default
+          this.selectedCategory = 'hsk1';
+          this.localPageTitle = data.hsk1?.name || 'HSK1';
+        }
+      } else if (data && this.selectedCategory) {
+        // Update page title whenever the dictionary data changes
+        // This ensures renamed wordlists are reflected
+        if (data[this.selectedCategory]) {
+          this.localPageTitle = data[this.selectedCategory].name || this.selectedCategory;
+        }
       }
-      return this.$store.getters.getDictionaryData;
+      
+      return data || {};
     },
     slicedChars() {
       if (!this.selectedCategory) return [];
@@ -143,50 +165,43 @@ export default {
       const chars = this.dictionaryData[this.selectedCategory].chars || {};
       return Object.values(chars);
     },
-    // Calculate the actual font scale from the slider value
-    calculatedFontScale() {
-      // Apply the exponent transformation to the slider value
-      const transformedValue = Math.pow(this.sliderValue, this.fontExponent);
-      // Map from 0-1 range to minFontScale-maxFontScale range
-      return transformedValue * (this.maxFontScale - this.minFontScale) + this.minFontScale;
-    },
-    // Preview scale during slider movement
-    previewFontScale() {
-      // Apply the exponent transformation to the temporary slider value
-      const transformedValue = Math.pow(this.tempSliderValue, this.fontExponent);
-      // Map from 0-1 range to minFontScale-maxFontScale range
-      return transformedValue * (this.maxFontScale - this.minFontScale) + this.minFontScale;
+    visibleChars() {
+      return this.slicedChars.slice(0, this.visibleCount);
     }
   },
   methods: {
     applyFontScale() {
-      this.fontScale = this.calculatedFontScale;
+      this.fontScale = this.tempFontScale;
     },
-    updateFontScaleFromNormalized(normalizedValue) {
-      // Store the raw slider value (0-1) directly
-      this.sliderValue = normalizedValue;
-      // The fontScale will be calculated via the computed property
-    },
-    updateTempSliderValue(event) {
-      // This updates the temporary value during sliding
-      this.tempSliderValue = parseFloat(event.target.value);
-      // This doesn't affect the actual fontScale, only the preview display
-    },
-    applySliderValue() {
-      // Apply the final value when the slider is released
-      this.sliderValue = this.tempSliderValue;
-      // The calculatedFontScale computed property will update, 
-      // and the watcher will apply it to fontScale
+    setFontSize(size) {
+      this.reloading = true;          // Start reloading process
+      this.visibleCount = defaultVisibleCount; // Reset visible count
+      this.fontScale = size;
+      this.tempFontScale = size; // Keep them in sync
+      
+      // Use the same chunk-loading optimization as dictionary changes
+      this.$nextTick(() => {
+        this.loadMore();  // Start incremental loading
+      });
     },
     loadMore() {
       this.visibleCount += defaultVisibleCount;
       if (this.visibleCount >= this.slicedChars.length) {
         this.visibleCount = this.slicedChars.length;
+        this.reloading = false; // Done reloading
       }
       this.$nextTick(() => {
         if (this.visibleCount < this.slicedChars.length) {
           setTimeout(this.loadMore, 100); 
         }
+      });
+    },
+    toggleView() {
+      this.reloading = true;          // Start reloading
+      this.visibleCount = defaultVisibleCount; // Reset visible count
+      this.isListView = !this.isListView;
+      this.$nextTick(() => {
+        this.loadMore();  // Start incremental loading
       });
     },
     // New method to check for query parameters and update the selected category
@@ -197,27 +212,40 @@ export default {
         this.localPageTitle = this.dictionaryData[wordlist].name || wordlist;
       }
     },
-    // New method to update URL query parameter when category changes
-    updateUrlQuery(category) {
-      if (category) {
-        // Update URL without refreshing the page
-        this.$router.push({
-          query: { ...this.$route.query, wordlist: category }
-        }).catch(err => {
-          // Ignore duplicate navigation errors
-          if (err.name !== 'NavigationDuplicated') {
-            throw err;
-          }
-        });
+    // New method to update the URL when the category changes
+    updateUrlWithCategory(category) {
+      // Update URL without reloading the page
+      this.$router.replace({ 
+        query: { 
+          ...this.$route.query, 
+          wordlist: category 
+        }
+      }).catch(err => {
+        // Ignore navigation duplicate errors
+        if (err.name !== 'NavigationDuplicated') {
+          throw err;
+        }
+      });
+    },
+    // New method to toggle sidebar visibility
+    toggleSidebar() {
+      this.sidebarVisible = !this.sidebarVisible;
+    },
+    
+    // Handle key down events to detect Tab key
+    handleKeyDown(event) {
+      // Only respond to Tab key, and prevent default behavior
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        this.toggleSidebar();
       }
     }
   },
   watch: {
-    selectedCategory(newCategory) {
+    selectedCategory() {
       this.visibleCount = defaultVisibleCount; 
+      this.updateUrlWithCategory(this.selectedCategory);
       this.$nextTick(this.loadMore);
-      // Update URL when category changes
-      this.updateUrlQuery(newCategory);
     },
     // Add a watcher for route changes to handle direct URL navigation
     '$route.query': {
@@ -232,19 +260,19 @@ export default {
         this.checkQueryParams();
       },
       immediate: true
-    },
-    // Watch calculatedFontScale and apply it to fontScale
-    calculatedFontScale: {
-      handler(newValue) {
-        this.fontScale = newValue;
-      },
-      immediate: true
     }
   },
   mounted() {
-    this.tempSliderValue = this.sliderValue; // Initialize temp value
+    // Check for URL parameters first when component mounts
     this.checkQueryParams();
+    // Then start loading characters incrementally
     this.$nextTick(this.loadMore);
+    // Add event listener for keydown events
+    window.addEventListener('keydown', this.handleKeyDown);
+  },
+  beforeUnmount() {
+    // Remove event listener for keydown events
+    window.removeEventListener('keydown', this.handleKeyDown);
   }
 };
 </script>
@@ -297,7 +325,7 @@ html, body {
   flex: 1;
   overflow: hidden;
   height: 100%;
-  margin: 1em;
+  margin: 2em;
 }
 
 .dictionary-category {
@@ -309,7 +337,7 @@ html, body {
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: .5rem;
+  gap: .5em;
   width: 100%;
   box-sizing: border-box;
 }
@@ -430,14 +458,26 @@ select {
   height: 100%;
   overflow: hidden;
   padding: 1em;
+  transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+}
+
+.leftbar-hidden {
+  width: 0;
+  padding: 0;
+  opacity: 0;
 }
 
 .main-content {
   width: 88%;
-  padding: 0em 3em 2em 1em;
+  padding: 0em 2em 2em 2em;
   box-sizing: border-box;
   overflow-y: auto;
   height: 100%;  
+  transition: width 0.3s ease;
+}
+
+.main-content-expanded {
+  width: 100%;
 }
 
 select, input[type="range"] {
@@ -487,6 +527,42 @@ label {
 
 .single-toggle-button:hover {
   background: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+}
+
+.font-size-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.size-button {
+  flex: 1;
+  padding: 0.5em;
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--fg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.size-button:hover {
+  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+}
+
+.size-button.active {
+  background: color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
+}
+
+.size-icon {
+  display: block;
+}
+
+
+.size-icon {
+  font-size: 1.4em;
 }
 
 </style>
