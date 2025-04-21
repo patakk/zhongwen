@@ -51,17 +51,18 @@
           </div>
   
           <div v-else>
-            <!-- Dummy info panel -->
+            <!-- Info panel -->
             <div class="wordlist-info">
-              <p><strong>Description:</strong> {{ wordlistDescription }}</p>
-              <p><strong>Created:</strong> {{ wordlistCreatedDate }}</p>
+              <!-- Display Description -->
+              <div class="description-section">
+                <p><strong>Description:</strong></p>
+                <p class="description-text">{{ currentWordlistDescription || 'No description yet.' }}</p>
+                <button @click="openEditDescriptionModal" class="edit-description-button" title="Edit Description">
+                  <font-awesome-icon :icon="['fas', 'pencil']" />
+                </button>
+              </div>
+              <p><strong>Created:</strong> {{ currentWordlistCreatedAt ? formatDate(currentWordlistCreatedAt) : 'N/A' }}</p>
               <p><strong>Number of Words:</strong> {{ words.length }}</p>
-              <p>
-                <strong>Tags:</strong>
-                <span v-for="tag in wordlistTags" :key="tag" class="tag">
-                  {{ tag }}
-                </span>
-              </p>
             </div>
   
             <!-- Navigation buttons -->
@@ -164,6 +165,44 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirmModal" class="modal-overlay" @click="closeDeleteConfirmModal">
+      <div class="modal-content" @click.stop>
+        <h3>Confirm Deletion</h3>
+        <div class="modal-message">
+          <p>Are you sure you want to delete the wordlist "{{ selectedWordlist }}"?</p>
+          <p>This action cannot be undone.</p>
+        </div>
+        <div class="modal-buttons">
+          <button @click="closeDeleteConfirmModal" class="cancel-button">Cancel</button>
+          <button @click="deleteWordlistConfirmed" class="confirm-button delete-confirm-button">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Description Modal -->
+    <div v-if="showEditDescriptionModal" class="modal-overlay" @click="closeEditDescriptionModal">
+      <div class="modal-content" @click.stop>
+        <h3>Edit Wordlist Description</h3>
+        <div class="modal-form">
+          <label for="edit-wordlist-description">Description:</label>
+          <textarea
+            id="edit-wordlist-description"
+            v-model="newWordlistDescription"
+            placeholder="Enter description (max 500 characters)"
+            rows="4"
+            maxlength="500"
+            @keyup.esc="closeEditDescriptionModal"
+            ref="editDescriptionInput"
+          ></textarea>
+        </div>
+        <div class="modal-buttons">
+          <button @click="closeEditDescriptionModal" class="cancel-button">Cancel</button>
+          <button @click="saveWordlistDescription" class="confirm-button">Save</button>
+        </div>
+      </div>
+    </div>
   </template>
   
   <script>
@@ -181,49 +220,75 @@
         selectedWordlist: '',
         words: [],
         loading: false,
-        // Dummy data for future fields
-        wordlistDescription: 'A curated list of useful vocabulary.',
-        wordlistCreatedDate: '2024-01-15',
-        wordlistTags: ['Beginner', 'HSK1', 'Favorites'],
         // For modals and wordlist management
         showCreateWordlistModal: false,
         showRenameWordlistModal: false,
+        showDeleteConfirmModal: false,
+        showEditDescriptionModal: false, // Added for description modal
         newWordlistName: '',
+        newWordlistDescription: '', // Added for description editing
       };
     },
     computed: {
       customDecks() {
-        return this.$store.getters.getCustomDecks;
+        return this.$store.getters.getCustomDecks; // Use the original getter
       },
-      customDecksData() {
+      customDictionaryData() {
         return this.$store.getters.getCustomDictionaryData;
+      },
+      currentWordlistData() {
+        if (!this.selectedWordlist || !this.customDecks) return null;
+        return this.customDecks.find(deck => deck.name === this.selectedWordlist);
+      },
+      currentWordlistDescription() {
+        return this.currentWordlistData?.description || '';
+      },
+      currentWordlistCreatedAt() {
+        return this.currentWordlistData?.timestamp || null;
       },
     },
     watch: {
       selectedWordlist(newVal) {
-        // Reset dummy info on wordlist change (could be dynamic later)
-        this.wordlistDescription = `Description for "${newVal}"`;
-        this.wordlistCreatedDate = '2024-01-15'; // static for now
-        this.wordlistTags = ['ExampleTag1', 'ExampleTag2'];
+        // Existing logic to load words remains (implicitly handled by @change on select)
+        this.loadWordlistWords(); 
       },
       showCreateWordlistModal(newVal) {
         if (newVal) {
           this.newWordlistName = '';
+          this.$nextTick(() => {
+            this.$refs.createModalInput?.focus();
+          });
         }
       },
       showRenameWordlistModal(newVal) {
         if (newVal) {
           this.newWordlistName = this.selectedWordlist;
+          this.$nextTick(() => {
+            this.$refs.renameModalInput?.focus();
+          });
+        }
+      },
+      showEditDescriptionModal(newVal) {
+        if (newVal) {
+          this.newWordlistDescription = this.currentWordlistDescription;
+          this.$nextTick(() => {
+            this.$refs.editDescriptionInput?.focus();
+          });
         }
       }
     },
     mounted() {
+      // Debug logging of wordlists
+      console.log("MySpaceView - Available wordlists (customDecks):", this.customDecks);
+      console.log("MySpaceView - Custom dictionary data:", this.customDictionaryData);
+      
+      // Make sure we have wordlist data by dispatching fetchUserData if needed
       if (this.customDecks && this.customDecks.length > 0) {
         this.selectedWordlist = this.customDecks[0].name;
-  
+        
         if (
-          this.customDecksData &&
-          this.customDecksData[this.selectedWordlist]
+          this.customDictionaryData &&
+          this.customDictionaryData[this.selectedWordlist]
         ) {
           this.loadWordlistWords();
         } else {
@@ -239,33 +304,17 @@
               this.loading = false;
             });
         }
-      } else {
-        this.loading = true;
-        this.$store
-          .dispatch('fetchUserData')
-          .then(() => this.$store.dispatch('fetchCustomDictionaryData'))
-          .then(() => {
-            this.loading = false;
-            if (this.customDecks && this.customDecks.length > 0) {
-              this.selectedWordlist = this.customDecks[0].name;
-              this.loadWordlistWords();
-            }
-          })
-          .catch((err) => {
-            console.error('Error loading user or dictionary data:', err);
-            this.loading = false;
-          });
       }
     },
     methods: {
       loadWordlistWords() {
         try {
           if (
-            this.customDecksData &&
+            this.customDictionaryData &&
             this.selectedWordlist &&
-            this.customDecksData[this.selectedWordlist]
+            this.customDictionaryData[this.selectedWordlist]
           ) {
-            const charsData = this.customDecksData[this.selectedWordlist].chars;
+            const charsData = this.customDictionaryData[this.selectedWordlist].chars;
   
             if (charsData) {
               this.words = Object.entries(charsData).map(([character, data]) => ({
@@ -411,15 +460,17 @@
           return;
         }
         
-        if (!confirm(`Are you sure you want to delete "${this.selectedWordlist}"?`)) {
-          return;
-        }
-        
+        this.showDeleteConfirmModal = true;
+      },
+
+      deleteWordlistConfirmed() {
         const wordlistToRemove = this.selectedWordlist;
-        
+
+        this.closeDeleteConfirmModal();
+
         // Optimistic update - remove from store first
         this.$store.dispatch('removeWordlist', { name: wordlistToRemove });
-        
+
         // Update selection
         if (this.customDecks && this.customDecks.length > 0) {
           this.selectedWordlist = this.customDecks[0].name;
@@ -428,7 +479,7 @@
           this.selectedWordlist = '';
           this.words = [];
         }
-        
+
         // Send to backend
         fetch("/api/remove_wordlist", {
           method: "POST",
@@ -454,6 +505,72 @@
       closeRenameModal() {
         this.showRenameWordlistModal = false;
         this.newWordlistName = '';
+      },
+
+      closeDeleteConfirmModal() {
+        this.showDeleteConfirmModal = false;
+      },
+
+      // Methods for description editing
+      openEditDescriptionModal() {
+        if (!this.selectedWordlist) return;
+        this.showEditDescriptionModal = true;
+      },
+
+      closeEditDescriptionModal() {
+        this.showEditDescriptionModal = false;
+        this.newWordlistDescription = ''; // Reset on close
+      },
+
+      saveWordlistDescription() {
+        if (!this.selectedWordlist) return;
+
+        const descriptionToSave = this.newWordlistDescription.trim();
+        
+        // Optimistic update in the store
+        this.$store.dispatch('updateWordlistDescription', {
+          name: this.selectedWordlist,
+          description: descriptionToSave,
+        });
+
+        // Close modal
+        this.closeEditDescriptionModal();
+
+        // Send to backend
+        fetch("/api/update_wordlist_description", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ 
+            name: this.selectedWordlist, 
+            description: descriptionToSave 
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            console.error('Error updating description on backend');
+            // Revert optimistic update or show error message
+            // For simplicity, we might just refetch data
+            this.$store.dispatch('fetchUserData'); 
+          }
+        })
+        .catch((error) => {
+          console.error('Error saving wordlist description:', error);
+          // Revert or show error
+          this.$store.dispatch('fetchUserData');
+        });
+      },
+
+      formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        try {
+          const options = { year: 'numeric', month: 'long', day: 'numeric' };
+          return new Date(dateString).toLocaleDateString(undefined, options);
+        } catch (e) {
+          console.error("Error formatting date:", e);
+          return dateString; // Fallback to original string
+        }
       },
     },
   };
@@ -525,21 +642,42 @@
     font-size: 0.95rem;
     color: var(--fg);
     line-height: 1.4;
+    position: relative; /* Needed for absolute positioning of edit button */
   }
   
   .wordlist-info p {
     margin: 0.3rem 0;
   }
-  
-  .tag {
-    display: inline-block;
-    background: var(--accent);
-    color: var(--bg);
-    padding: 0.15rem 0.5rem;
-    margin-right: 0.4rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    user-select: none;
+
+  .description-section {
+    position: relative;
+    padding-right: 30px; /* Space for the edit button */
+    margin-bottom: 0.5rem;
+  }
+
+  .description-text {
+    white-space: pre-wrap; /* Preserve line breaks */
+    word-break: break-word;
+    color: var(--fg);
+    opacity: 0.85;
+    margin-top: 0.2rem;
+  }
+
+  .edit-description-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--fg);
+    opacity: 0.5;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.2rem;
+  }
+
+  .edit-description-button:hover {
+    opacity: 1;
   }
   
   .nav-buttons {
@@ -559,7 +697,6 @@
   }
   
   .nav-button:hover {
-    background: var(--accent-dark);
     box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
     color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
   }
@@ -573,7 +710,7 @@
   }
   
   .word-item {
-    border: 2px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 12%);
+    border: 2px solid color-mix(in oklab, var(--fg) 22%, var(--bg) 12%);
     background: var(--bg);
     align-items: stretch;
     width: 100%;
@@ -738,6 +875,16 @@
     color: var(--fg);
     font-family: inherit;
   }
+
+  .modal-form textarea {
+    padding: 0.5rem;
+    border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    background: var(--bg);
+    color: var(--fg);
+    font-family: inherit;
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 80px;
+  }
   
   .modal-buttons {
     display: flex;
@@ -759,7 +906,26 @@
   }
   
   .confirm-button {
-    background: var(--accent-dark);
-    color: var(--bg);
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  .modal-message {
+    margin: 1.5rem 0;
+    color: var(--fg);
+    line-height: 1.5;
+  }
+
+  .modal-message p {
+      margin-bottom: .5rem;
+  }
+
+  .delete-confirm-button {
+    background: var(--danger-color, #dc3545);
+    color: #fff;
+  }
+
+  .delete-confirm-button:hover {
+    background: color-mix(in oklab, var(--danger-color, #dc3545) 80%, black 20%);
   }
   </style>

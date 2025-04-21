@@ -33,6 +33,7 @@
   --font-size: 16px;
   --border-radius: 0px;
   --spacing-unit: 8px;
+  --danger-color: #dc3545;
 }
 
 input[type="text"]:focus-visible {

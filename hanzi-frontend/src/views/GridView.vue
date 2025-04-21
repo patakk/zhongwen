@@ -73,7 +73,8 @@
                 <div class="grid-item">
                   <div class="hanzi" :style="{ 
                     fontFamily: `'${selectedFont}'`,
-                    transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none'
+                    transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none',
+                    fontWeight: selectedFont === 'Noto Serif SC' ? 500 : 400
                   }">
                     {{ entry.character }}
                   </div>
@@ -93,7 +94,8 @@
                   <div class="hanzipinyin">
                     <div class="list-hanzi" :style="{ 
                       fontFamily: `'${selectedFont}'`,
-                      transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none'
+                      transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none',
+                      fontWeight: selectedFont === 'Noto Serif SC' ? 600 : 400
                     }">
                       {{ entry.character }}
                     </div>
@@ -127,13 +129,14 @@ export default {
       localPageTitle: 'Grid',
       visibleCount: defaultVisibleCount,
       hoveredItem: null,
-
       selectedFont: 'Kaiti',
       fontScale: 1,         // ✅ Actual font scale, used in layout
       tempFontScale: 1,     // ✅ Temporary one used by slider
       isListView: false,    // ✅ Toggle between grid and list views
       reloading: false,     // Flag to track view switching reloading
-      sidebarVisible: true  // Flag to toggle sidebar visibility
+      sidebarVisible: true, // Flag to toggle sidebar visibility
+      waitingForDictData: true, // Flag to track if we're waiting for dictionary data
+      attemptedCategory: null // Store the attempted category from URL
     };
   },
   components: {
@@ -144,35 +147,86 @@ export default {
     dictionaryData() {
       // Get dictionary data from store
       const data = this.$store.getters.getDictionaryData;
+      // Get custom dictionary data
+      const customData = this.$store.getters.getCustomDictionaryData;
       
-      // If we have data but no category selected yet, check URL or set default
-      if (data && !this.selectedCategory) {
-        // Only set default if no category is already selected (from URL or otherwise)
-        const wordlist = this.$route.query.wordlist;
-        if (wordlist && data[wordlist]) {
-          // Use URL parameter if available
-          this.selectedCategory = wordlist;
-          this.localPageTitle = data[wordlist].name || wordlist;
-        } else {
-          // Otherwise use default
-          this.selectedCategory = 'hsk1';
-          this.localPageTitle = data.hsk1?.name || 'HSK1';
-        }
-      } else if (data && this.selectedCategory) {
-        // Update page title whenever the dictionary data changes
-        // This ensures renamed wordlists are reflected
-        if (data[this.selectedCategory]) {
-          this.localPageTitle = data[this.selectedCategory].name || this.selectedCategory;
+      if (data) {
+        // Mark that we have dictionary data
+        this.waitingForDictData = false;
+        
+        // Handle category selection once data is loaded
+        if (!this.selectedCategory) {
+          // Try to use the category from URL
+          const wordlist = this.$route.query.wordlist;
+          
+          if (wordlist && data[wordlist]) {
+            // Set category and title if wordlist exists in data
+            this.selectedCategory = wordlist;
+            this.localPageTitle = data[wordlist].name || wordlist;
+            this.attemptedCategory = null; // Clear the attempted category
+          } else if (this.attemptedCategory && customData && customData[this.attemptedCategory]) {
+            // If we previously attempted to load a custom category and now it's available
+            this.selectedCategory = this.attemptedCategory;
+            this.localPageTitle = customData[this.attemptedCategory].name || this.attemptedCategory;
+            this.attemptedCategory = null; // Clear the attempted category
+          } else if (wordlist && !data[wordlist]) {
+            // If wordlist specified but not found in current data, store it as attempted category
+            // It might be a custom deck that hasn't loaded yet
+            this.attemptedCategory = wordlist;
+            
+            // Don't default to HSK1 yet, wait for custom data to load
+            if (customData && Object.keys(customData).length > 0) {
+              // We already have custom data but the wordlist is not there, so default to HSK1
+              this.selectedCategory = 'hsk1';
+              this.localPageTitle = data.hsk1?.name || 'HSK1';
+            }
+          } else if (!wordlist) {
+            // No wordlist in URL, default to HSK1
+            this.selectedCategory = 'hsk1';
+            this.localPageTitle = data.hsk1?.name || 'HSK1';
+          }
+        } else if (this.selectedCategory) {
+          // Update page title whenever the dictionary data changes
+          if (data[this.selectedCategory]) {
+            this.localPageTitle = data[this.selectedCategory].name || this.selectedCategory;
+          } else if (customData && customData[this.selectedCategory]) {
+            this.localPageTitle = customData[this.selectedCategory].name || this.selectedCategory;
+          }
         }
       }
       
       return data || {};
     },
+    customDictionaryData() {
+      // Get custom dictionary data from store and handle potential custom category loading
+      const customData = this.$store.getters.getCustomDictionaryData;
+      
+      if (customData && this.attemptedCategory && customData[this.attemptedCategory]) {
+        // If our attempted category is now available in the custom data
+        this.selectedCategory = this.attemptedCategory;
+        this.localPageTitle = customData[this.attemptedCategory].name || this.attemptedCategory;
+        this.attemptedCategory = null; // Clear the attempted category
+        this.waitingForDictData = false;
+      }
+      
+      return customData || {};
+    },
     slicedChars() {
       if (!this.selectedCategory) return [];
 
-      const chars = this.dictionaryData[this.selectedCategory].chars || {};
-      return Object.values(chars);
+      const standard = this.dictionaryData[this.selectedCategory]?.chars || {};
+      const custom = this.customDictionaryData[this.selectedCategory]?.chars || {};
+
+      // First check if it's in the standard dictionary
+      if (Object.keys(standard).length > 0) {
+        return Object.values(standard);
+      }
+      // Then check if it's in the custom dictionary
+      else if (Object.keys(custom).length > 0) {
+        return Object.values(custom);
+      }
+      
+      return [];
     },
     visibleChars() {
       return this.slicedChars.slice(0, this.visibleCount);
@@ -213,7 +267,13 @@ export default {
         this.loadMore();  // Start incremental loading
       });
     },
-    // New method to check for query parameters and update the selected category
+    // Method to open character modal when word is in URL
+    openCharacterModal(character) {
+      if (character) {
+        this.$store.dispatch('cardModal/showCardModal', character);
+      }
+    },
+    // New improved method to check for word parameter
     checkQueryParams() {
       const wordlist = this.$route.query.wordlist;
       if (wordlist && this.dictionaryData && this.dictionaryData[wordlist]) {
@@ -221,23 +281,9 @@ export default {
         this.localPageTitle = this.dictionaryData[wordlist].name || wordlist;
       }
       
-      // Check for word parameter to open modal
-      const word = this.$route.query.word;
-      if (word) {
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-        console.log('Opening character modal for:', word);
-      }
+      // Skip opening the modal directly from here - let the store handle it
+      // This prevents duplicate modal opening when multiple components detect
+      // the URL parameter change
     },
     // New method to update the URL when the category changes
     updateUrlWithCategory(category) {
@@ -266,12 +312,6 @@ export default {
         event.preventDefault();
         this.toggleSidebar();
       }
-    },
-    
-    // Method to open character modal when word is in URL
-    openCharacterModal(character) {
-      // Find the PreloadWrapper component with the matching character
-
     }
   },
   watch: {

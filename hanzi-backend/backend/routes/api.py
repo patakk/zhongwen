@@ -22,6 +22,8 @@ from backend.db.ops import db_rename_word_list
 from backend.db.ops import db_delete_word_list
 from backend.db.ops import db_get_stroke_data_for_character
 from backend.db.ops import db_remove_word_from_set
+from backend.db.ops import db_update_wordlist_description
+from backend.db.ops import db_get_all_stroke_data
 
 from backend.db.models import Card, UserNotes
 
@@ -40,7 +42,7 @@ from backend.common import send_bot_notification
 
 logger = logging.getLogger(__name__)
 
-api_bp = Blueprint("api", __name__, url_prefix="/")
+api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 
 @api_bp.route("/rename_wordlist", methods=["POST"])
@@ -82,6 +84,28 @@ def create_wordlist():
         return jsonify({"message": f"Word list '{name}' created successfully"})
     print(f"Word list creation failed")
     return jsonify({"error": "Word list creation failed"}), 500
+
+# New endpoint to update wordlist description
+@api_bp.route("/update_wordlist_description", methods=["POST"])
+@session_required
+def update_wordlist_description():
+    data = request.get_json()
+    if not data or "name" not in data or "description" not in data:
+        return jsonify({"error": "Missing required fields (name, description)"}), 400
+    
+    name = data["name"]
+    description = data["description"]
+    username = session.get("username")
+    
+    success = db_update_wordlist_description(username, name, description)
+    
+    if success:
+        print(f"Description updated for word list '{name}'")
+        return jsonify({"message": f"Description for word list '{name}' updated successfully"})
+    else:
+        print(f"Failed to update description for word list '{name}' (not found or permission issue)")
+        return jsonify({"error": "Failed to update description. Word list not found or permission denied."}), 404
+
 
 @api_bp.route("/get_examples_page", methods=["POST"])
 @session_required
@@ -650,8 +674,8 @@ def get_char_decomp_info():
 @api_bp.route("/get_all_stroke_data", methods=["GET"])
 @session_required
 def get_all_stroke_data():
-    username = session["username"]
-    return jsonify(get_all_stroke_data_(username))
+    username = session.get("username")
+    return jsonify(db_get_all_stroke_data(username))
 
 
 with open("data/examples.json", "r", encoding="utf-8") as f:

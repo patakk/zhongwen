@@ -85,6 +85,26 @@ def db_create_user(
 
     return user
 
+def db_delete_user(username):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return
+    if user.notes:
+        for note in user.notes:
+            db.session.delete(note)
+    if user.user_string:
+        db.session.delete(user.user_string)
+    if user.stroke_entries:
+        for entry in user.stroke_entries:
+            db.session.delete(entry)
+    if user.word_lists:
+        for word_list in user.word_lists:
+            db.session.delete(word_list)
+    db.session.delete(user)
+    db.session.commit()
+    return True
+
+
 
 def db_user_exists(username):
     return User.query.filter_by(username=username).first() is not None
@@ -123,6 +143,28 @@ def db_delete_word_list(username, name):
     db.session.delete(word_list)
     db.session.commit()
     return True
+
+def db_update_wordlist_description(username, list_name, description):
+    """Updates the description of a specific word list for a user."""
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        logger.error(f"User not found: {username}")
+        return False
+
+    word_list = WordList.query.filter_by(user_id=user.id, name=list_name).first()
+    if not word_list:
+        logger.error(f"Word list '{list_name}' not found for user '{username}'")
+        return False
+
+    try:
+        word_list.description = description
+        db.session.commit()
+        logger.info(f"Description updated for word list '{list_name}' for user '{username}'")
+        return True
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error updating description for word list '{list_name}': {e}")
+        return False
 
 def db_rename_word_list(username, current_name, new_name):
     user = User.query.filter_by(username=username).first()
@@ -189,8 +231,12 @@ def db_get_word_list(username, wordlist_name="Learning set"):
     words = WordEntry.query.filter_by(list_id=wordlist.id).all()
     return [word.word for word in words]
 
+
 def db_create_word_list(username, name):
     user = User.query.filter_by(username=username).first()
+    #
+    #created_at = db.Column(DateTime(timezone=True), server_default=func.now())
+    #description = db.Column(db.String(500), nullable=True)
     new_set = WordList(name=name, user=user)
     db.session.add(new_set)
     db.session.commit()
@@ -200,12 +246,22 @@ def db_create_word_list(username, name):
 def db_get_user_wordlists(username, with_data=True):
     custom_wordlists = {}
     if username and username != 'tempuser':
-        wordlists = db_get_all_words_by_list_as_dict(username)
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return None
+        wordlists = WordList.query.filter_by(user_id=user.id).all()
+        result = {}
+        if with_data:
+            for word_list in wordlists:
+                words = WordEntry.query.filter_by(list_id=word_list.id).all()
+                result[word_list.name] = [word.word for word in words]
         custom_wordlists = {
-            key: {
-                'name': key,
-                'chars': get_chars_info(wordlists[key]) if with_data else wordlists[key],
-            } for key in wordlists
+            word_list.name: {
+                'name': word_list.name,
+                'timestamp': word_list.timestamp,
+                'description': word_list.description,
+                'chars': get_chars_info(result[word_list.name]) if with_data else None,
+            } for word_list in wordlists
         }
     return custom_wordlists
 

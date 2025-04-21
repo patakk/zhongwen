@@ -5,17 +5,35 @@
       <font-awesome-icon :icon="['fas', 'sun']" v-else />
     </button>
     <router-view />
+    <GlobalCardModal />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import GlobalCardModal from './components/GlobalCardModal.vue';
 
-import { useStore } from "vuex";  // Import Vuex store
-
-const store = useStore()  // Access the Vuex store
+const store = useStore()
+const router = useRouter()
 
 const theme = ref(localStorage.getItem('theme') || 'light')
+
+// Create a watcher for route changes to close the modal when navigating
+watch(
+  () => router.currentRoute.value.path,
+  (newPath, oldPath) => {
+    // Only close the modal if we're actually changing paths (not just query params)
+    if (newPath !== oldPath) {
+      // Check if modal is visible before trying to close it
+      if (store.getters['cardModal/isCardModalVisible']) {
+        console.log('Route changed, closing modal', newPath, oldPath);
+        store.dispatch('cardModal/hideCardModal');
+      }
+    }
+  }
+);
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
@@ -32,7 +50,7 @@ const toggleTheme = () => {
   }, 200) // Match the duration of the animation
 }
 
-onMounted(() => {
+onMounted(async () => {
   // Check system preference on first load if no theme is set in localStorage
   if (!localStorage.getItem('theme')) {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -40,10 +58,27 @@ onMounted(() => {
     localStorage.setItem('theme', theme.value)
   }
   document.documentElement.setAttribute('data-theme', theme.value)
-})
+  
+  // Load dictionary data
+  await Promise.all([
+    store.dispatch("fetchDictionaryData"),
+    store.dispatch("fetchCustomDictionaryData")
+  ]);
 
-store.dispatch("fetchDictionaryData");
-store.dispatch("fetchCustomDictionaryData");
+  console.log("done")
+  console.log("done")
+  console.log("done")
+  console.log("done")
+  console.log("done")
+  console.log("done")
+  
+  // Wait for the next tick to ensure the router and store are fully initialized
+  nextTick(() => {
+    console.log('App mounted, checking for word parameter');
+    // Check for word parameter in URL on initial load
+    store.dispatch("cardModal/checkForWordParameter");
+  });
+})
 </script>
 
 <style>

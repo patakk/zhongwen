@@ -5,7 +5,7 @@ from backend.db.extensions import db
 import secrets
 
 
-from sqlalchemy import LargeBinary
+from sqlalchemy import LargeBinary, DateTime, func
 import pickle
 
 
@@ -63,6 +63,8 @@ class WordList(db.Model):
     name = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     words = db.relationship("WordEntry", backref="list", lazy=True, cascade="all, delete-orphan")
+    timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+    description = db.Column(db.String(500), nullable=True)
 
 
 class WordEntry(db.Model):

@@ -206,24 +206,28 @@ def add_user(username, password, email):
 @click.argument("username", required=False)
 def list_word_lists(username=None):
     """List all word lists, optionally filtered by username."""
+    query = WordList.query.options(db.joinedload(WordList.user))  # Eager load user
+
     if username:
         user = User.query.filter_by(username=username).first()
         if not user:
             click.echo(f"User {username} not found.")
             return
-        word_lists = WordList.query.filter_by(user_id=user.id).all()
+        query = query.filter(WordList.user_id == user.id)
         click.echo(f"\nWord lists for user {username}:")
     else:
-        word_lists = WordList.query.all()
         click.echo("\nAll word lists:")
+    
+    word_lists = query.order_by(WordList.user_id, WordList.id).all()
     
     if not word_lists:
         click.echo("No word lists found.")
         return
     
     for wl in word_lists:
-        user = User.query.get(wl.user_id)
-        click.echo(f"List ID: {wl.id}, Name: {wl.name}, Owner: {user.username}, Words: {len(wl.words)}")
+        created_at_str = wl.created_at.strftime('%Y-%m-%d %H:%M:%S') if wl.created_at else 'N/A'
+        description_str = f'"{wl.description}"' if wl.description else 'None'
+        click.echo(f"- ID: {wl.id}, Name: \"{wl.name}\", Owner: {wl.user.username}, Words: {len(wl.words)}, Created: {created_at_str}, Desc: {description_str}")
 
 # List words in a word list
 @app.cli.command("list-words")
@@ -363,6 +367,20 @@ def delete_word_list(list_id):
     db.session.commit()
     click.echo(f"Deleted word list '{list_name}' (ID: {list_id}) belonging to user {user.username}")
 
+# Update word list description
+@app.cli.command("set-list-description")
+@click.argument("list_id", type=int)
+@click.argument("description")
+def set_list_description(list_id, description):
+    """Set or update the description for a specific word list."""
+    word_list = WordList.query.get(list_id)
+    if not word_list:
+        click.echo(f"Word list with ID {list_id} not found.")
+        return
+    
+    word_list.description = description
+    db.session.commit()
+    click.echo(f"Description for word list '{word_list.name}' (ID: {list_id}) updated.")
 
 
 '''
@@ -414,4 +432,7 @@ flask --app migrations.py stroke-stats --character "好"
 
 # Delete a word list
 flask --app migrations.py delete-word-list 5
+
+# Update word list description
+flask --app migrations.py set-list-description 5 "My favorite HSK1 words"
 '''

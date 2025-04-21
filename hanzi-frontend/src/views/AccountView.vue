@@ -42,7 +42,7 @@
   <script setup>
   import BasePage from '../components/BasePage.vue'
   import LogoutButton from '../components/LogoutButton.vue'
-  import { computed } from 'vue'
+  import { computed, onMounted } from 'vue'
   import { useStore } from 'vuex'
   import { useRouter } from 'vue-router'
   
@@ -52,18 +52,35 @@
   const loggedIn = computed(() => store.getters.getAuthStatus)
   const username = computed(() => store.getters.getUsername)
   const profile = computed(() => store.getters.getProfile)
-  const image = computed(() => store.getters.getImage)
+  const image = computed(() => {
+    // First try to get the image from the top-level image field
+    const topLevelImage = store.getters.getImage
+    // Then check for profile_pic in the user data
+    if (!topLevelImage && profile.value?.profile_pic) {
+      return profile.value.profile_pic
+    }
+    return topLevelImage
+  })
   
   // Profile fields
   const email = computed(() => profile.value?.email || '')
   const emailVerified = computed(() => profile.value?.email_verified || false)
   
-  // Google linked (google_id set in backend, fetch in profile if needed)
-  const googleLinked = computed(() => !!profile.value?.google_id)
+  // Google linked - check if google_id exists in the profile
+  const googleLinked = computed(() => {
+    return !!profile.value?.google_id
+  })
 
   // set computed
   const authStatus = computed(() => store.getters.getAuthStatus)
-  
+
+  onMounted(() => {
+    // Refresh user data when component mounts to ensure we have the latest
+    store.dispatch('fetchUserData')
+    console.log('AccountView mounted, profile:', profile.value)
+    console.log('Google linked?', googleLinked.value)
+    console.log('Image:', image.value)
+  })
   
   async function logout() {
     loading.value = true

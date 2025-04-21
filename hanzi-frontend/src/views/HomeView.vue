@@ -2,7 +2,8 @@
   <BasePage page_title="Home" />
   <div class="home-view">
     <nav>
-      <RouterLink v-if="authStatus" to="/account">Account</RouterLink> |
+      <RouterLink v-if="authStatus" to="/account">Account</RouterLink><span v-if="authStatus"> | </span>
+      <RouterLink v-else="authStatus" to="/register">Register</RouterLink><span v-if="!authStatus"> | </span>
       <RouterLink v-if="authStatus" to="/my-space">MySpace</RouterLink>
       <RouterLink v-else to="/login">Login</RouterLink> |
       <RouterLink to="/grid">Grid</RouterLink> |

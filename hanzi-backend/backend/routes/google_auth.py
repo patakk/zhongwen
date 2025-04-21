@@ -7,7 +7,22 @@ from backend.db.models import User
 from backend.db.models import WordEntry
 from backend.db.models import WordList
 from backend.common import auth_keys
+import os
 # 1. The Flask-Dance blueprint for OAuth
+
+
+# get env var to see if PROD is true
+DOMAIN = 'http://localhost:5172'
+PROD_MODE = False
+if os.getenv('PROD') == 'true':
+    DOMAIN = auth_keys['PROD_DOMAIN']
+    PROD_MODE = True
+
+if PROD_MODE:
+    print("Running in production mode")
+else:
+    print("Running in development mode")
+print("Domain set to:", DOMAIN)
 
 google_oauth_bp = make_google_blueprint(
     client_id=auth_keys.get("GOOGLE_OAUTH_CLIENT_ID"),
@@ -20,7 +35,7 @@ google_oauth_bp = make_google_blueprint(
     redirect_to="google_auth.authorized_handler"
 )
 
-google_auth_bp = Blueprint('google_auth', __name__, url_prefix='/google_auth')
+google_auth_bp = Blueprint('google_auth', __name__, url_prefix='/api/google_auth')
 
 def create_or_get_google_user(google_info):
     """Create a new user from Google info or get existing user, with email matching"""
@@ -129,13 +144,13 @@ def authorized_handler():
     if not google.authorized:
         flash("Authentication failed", "error")
         #return redirect(url_for("login"))
-        return redirect('http://localhost:5173/')  
+        return redirect(f'{DOMAIN}/')  
     
     resp = google.get("/oauth2/v2/userinfo")
     if not resp.ok:
         flash("Failed to get user info", "error")
         #return redirect(url_for("login"))
-        return redirect('http://localhost:5173/login')  
+        return redirect(f'{DOMAIN}/login')  
     
     google_info = resp.json()
     google_id = google_info["id"]
@@ -156,17 +171,17 @@ def authorized_handler():
         # First check: Is this Google account already linked to another account?
         existing_google_user = User.query.filter_by(google_id=google_id).first()
         if existing_google_user and existing_google_user.id != user.id:
-            flash("This Google account is already linked to another user account", "error")
+            print("This Google account is already linked to another user account")
             #return redirect(url_for("account"))
-            return redirect('http://localhost:5173/')  
+            return redirect(f'{DOMAIN}/')  
         
         # Second check: Is this Google email already associated with another account?
         if google_email:
             existing_email_user = User.query.filter_by(email=google_email).first()
             if existing_email_user and existing_email_user.id != user.id:
-                flash("The email associated with this Google account is already used by another user account", "error")
+                print("The email associated with this Google account is already used by another user account")
                 #return redirect(url_for("manage.account_management"))
-                return redirect('http://localhost:5173/')  
+                return redirect(f'{DOMAIN}/')  
         
         # Update current user
         user.google_id = google_id
@@ -178,9 +193,9 @@ def authorized_handler():
 
         db.session.commit()
         
-        flash("Your account has been linked with Google!", "success")
+        print("Your account has been linked with Google!")
         #return redirect(url_for("account"))
-        return redirect('http://localhost:5173/')  
+        return redirect(f'{DOMAIN}/')  
 
     
     # NORMAL LOGIN FLOW
@@ -198,31 +213,41 @@ def authorized_handler():
     
     flash('Logged in successfully with Google!', 'success')
     #return redirect(url_for("home"))
-    return redirect('http://localhost:5173')  
+    return redirect(f'{DOMAIN}')  
 
 
 @google_auth_bp.route("/unlink_account", methods=["POST"])
 def unlink_account():
     if 'user_id' not in session:
-        flash("Please log in first", "error")
-        return redirect('http://localhost:5173')  
+        print("Please log in first", "error")
+        return redirect(f'{DOMAIN}')
 
     user = User.query.get(session['user_id'])
 
+    if not user.google_id:
+        print("No linked Google account found", "error")
+        return {"message": "No linked Google account to unlink", "success": False}, 400
+
+    # Unlink Google account data
     user.google_id = None
     user.oauth_token = None
     user.oauth_token_expiry = None
-    
-    if user.email and user.email.endswith('@gmail.com'):
-        user.email = None
-    
+
+    # Clear email only if it was linked via Google (indicated by google_id)
+    user.email = None
     user.email_verified = False
-    
+
+    # Clear profile picture if it is from Google
     if user.profile_pic and ('googleusercontent.com' in user.profile_pic or 'google.com' in user.profile_pic):
         user.profile_pic = None
-    
-    db.session.commit()
-    
-    # Return JSON response for easier handling in frontend
-    return {"message": "Successfully unlinked your Google account", "success": True}, 200
 
+    db.session.commit()
+
+    print("Unlinked Google account successfully")
+    print('print db data to check')
+    print(user.google_id)
+    print(user.email)
+    print(user.profile_pic)
+    print(user.email_verified)
+
+    return {"message": "Successfully unlinked your Google account", "success": True}, 200

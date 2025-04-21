@@ -32,6 +32,7 @@ from backend.db.ops import db_get_user_string
 from backend.db.ops import db_get_all_words_by_list_as_dict
 from backend.db.ops import db_get_word_list_names_only
 from backend.db.ops import db_get_user_wordlists
+from backend.db.ops import db_delete_user
 
 from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
@@ -113,7 +114,7 @@ def handle_500(error):
 
 
 
-@app.route('/get_card_data')
+@app.route('/api/get_card_data')
 @session_required
 def get_card_data():
     character = request.args.get('character')
@@ -125,6 +126,8 @@ def get_card_data():
 
 @app.before_request
 def before_request():
+    if request.path.startswith('/static/'):
+        return
     if request.path.startswith('/static/'):
         return
 
@@ -144,26 +147,6 @@ from collections import defaultdict
 
 
     
-
-@app.route('/account')
-@hard_session_required
-def account():
-    username = request.args.get('user', session.get('username'))
-
-    if not username:
-        return "User or deck not specified", 400
-
-    wordlists_words = db_get_all_words_by_list_as_dict(username) or {}
-    for wl in wordlists_words:
-        nww = []
-        for w in wordlists_words[wl]:
-            nww.append(get_char_info(w))
-        wordlists_words[wl] = nww
-
-    google_id = User.query.filter_by(username=username).first().google_id
-    profile_pic = User.query.filter_by(username=username).first().profile_pic
-
-    return render_template('account.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(username), wordlists_words=wordlists_words, google_id=google_id, profile_pic=profile_pic)
 
 
 def main_card_data(character):
@@ -233,7 +216,7 @@ def get_crunch():
     return send_file('data/crunch.mp3', mimetype='audio/mpeg')
 
 @limiter.limit("25 per minute")
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 @session_required
 def login():
     data = request.get_json()
@@ -292,8 +275,17 @@ def verify_turnstile(token, remoteip):
     return r.json()
 from flask import request, jsonify, session, redirect, url_for, render_template
 
+
+@app.route('/api/delete-account', methods=['GET', 'POST'])
+@session_required
+def delete_account():
+    """Delete a user and all their associated data."""
+    username = session['username']
+    db_delete_user(username)
+    return jsonify({"message": "Account deleted successfully"}), 200
+
 @limiter.limit("25 per minute")
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/api/register', methods=['GET', 'POST'])
 def register():
     # Dual mode: JSON or classic form
     if request.method == 'POST':
@@ -413,7 +405,7 @@ def register():
     return render_template('register.html')
 
 
-@app.route('/logout')
+@app.route('/api/logout')
 @session_required
 def logout():
    session.clear()  # This clears everything in the session, including flash messages
@@ -443,6 +435,25 @@ def get_app_context():
         }
     }
 
+
+
+    user_wordlists_data = []
+    if username:
+        user_wordlists_data = db_get_user_wordlists(username, with_data=False)
+
+    custom_decks_data = []
+    if user_wordlists_data:
+        custom_decks_data = [
+            {
+                'name': user_wordlists_data.get(wl, {}).get('name', wl),
+                'description': user_wordlists_data.get(wl, {}).get('description', ''),
+                'timestamp': user_wordlists_data.get(wl, {}).get('timestamp', ''),
+            }
+            for wl in user_wordlists_data
+        ]
+
+
+    
     user_wordlists = []
     if username:
         user_wordlists = db_get_word_list_names_only(username)
@@ -451,12 +462,12 @@ def get_app_context():
     for wl in user_wordlists:
         DECKNAMES[wl] = user_wordlists[wl]
 
-    wordlists_words = db_get_all_words_by_list_as_dict(username) or {}
-    for wl in wordlists_words:
-        nww = []
-        for w in wordlists_words[wl]:
-            nww.append(get_char_info(w))
-        wordlists_words[wl] = nww
+    # wordlists_words = db_get_all_words_by_list_as_dict(username) or {}
+    # for wl in wordlists_words:
+    #     nww = []
+    #     for w in wordlists_words[wl]:
+    #         nww.append(get_char_info(w))
+    #     wordlists_words[wl] = nww
 
     if user_wordlists:
         user_wordlists = {wl: wl for wl in user_wordlists}
@@ -479,113 +490,47 @@ def get_app_context():
         "wordlist": "hsk1",
         "inputdeck": querydeck,
         "inputedeckdata": cc,
-        "custom_deck_names": [user_wordlists[k] for k in user_wordlists],
+        "custom_deck_names": custom_decks_data,
         "decknames_sorted_with_name": decknames_sorted_with_name,
         "google_id": google_id,
         "profile_pic": profile_pic,
-        "wordlists_words": wordlists_words,
+        # "wordlists_words": wordlists_words,
     }
 
 @app.route('/')
 @session_required
 def home():
-    app_context = get_app_context()
-    return render_template('index.html', **app_context)
+    return send_file('static/dist/index.html')
 
-@app.route('/get_user_data')
+@app.route('/api/get_user_data')
 @session_required
 def get_user_data():
-    username = session.get('username')
-    if not username:
-        return jsonify({"authStatus": False}), 200
-    
-    user = User.query.filter_by(username=username).first()
-    if not user:
-        session.clear()
-        return jsonify({"authStatus": False}), 200
+    context = get_app_context()
+    username = context.get("username")
+    return jsonify({
+        "username": username,
+        "darkmode": context["darkmode"],
+        "google_id": context["google_id"],
+        "profile_pic": context["profile_pic"],
+        "custom_deck_names": context["custom_deck_names"],
+        "authStatus": bool(username)
+    })
 
-    # Use your get_app_context helper for decks/words if needed,
-    # but for login/account info, just send the basics:
-    result = {
-        "authStatus": True,
-        "username": user.username,
-        "image": user.profile_pic,
-        "profile": {
-            "email": user.email,
-            "email_verified": bool(getattr(user, "email_verified", False)),
-            "google_id": bool(user.google_id)   # just true/false for SPA UI
-        },
-        "customDecks": [
-            {"id": wl.id, "name": wl.name}
-            for wl in (user.word_lists or [])
-        ]
-    }
-    return jsonify(result)
-
-# @app.route('/')
-# @session_required
-# def index():
-#     return send_file('static/index.html')
-
-# New route for the welcome page
-@app.route('/welcome')
-@session_required
-def welcome():
-    return render_template('welcome.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=DECKS_INFO)
-
-@app.route('/pageinfo')
-@session_required
-def pageinfo():
-    return render_template('pageinfo.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=DECKS_INFO)
-
-@app.route('/flashcards', methods=['GET'])
-@session_required
-def flashcards():
-    querydeck = request.args.get('wordlist')
-    if not querydeck:
-        querydeck = 'hsk1'
-
-    username = session.get('username')
-
-    custom_wordlists = db_get_user_wordlists(username, with_data=False)
-    cc = {
-        **custom_wordlists,
-        **CARDDECKS
-    }
-
-    for wl in custom_wordlists:
-        DECKNAMES[wl] = custom_wordlists[wl]['name']
-
-    user_wordlists = db_get_word_list_names_only(username)
-    if user_wordlists:
-        user_wordlists = {wl: wl for wl in user_wordlists}
-        hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
-        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
-        decknames_sorted = list(sorted(user_wordlists.keys())) + list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
-    else:
-        hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
-        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
-        decknames_sorted = list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
-    decknames_sorted_with_name = {deck: DECKNAMES[deck] for deck in decknames_sorted}
-
-    return render_template('flashcards.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=cc, wordlist=querydeck, decknames_sorted_with_name=decknames_sorted_with_name)
-
-
-@app.route('/get_custom_cc', methods=['POST'])
+@app.route('/api/get_custom_cc', methods=['POST'])
 @session_required
 def get_custom_cc():
     if request.method == 'OPTIONS':
         return '', 200
     username = session.get('username')
-    custom_wordlists = db_get_user_wordlists(username)
+    custom_wordlists = db_get_user_wordlists(username, with_data=True)
+    cc = {}
     for wl in custom_wordlists:
-        custom_wordlists[wl]['chars'] = {
-            char: get_char_info(char) for char in custom_wordlists[wl]['chars']
-        }
-    return jsonify(custom_wordlists)
+        cc[wl] = {}
+        cc[wl]['chars'] = custom_wordlists[wl]['chars']
+    return jsonify(cc)
 
 
-@app.route("/get_static_cc")
+@app.route("/api/get_static_cc")
 def get_static_cc():
     json_path = os.path.join(app.static_folder, "json", "carddecks_w_pinyin.json")
     response = send_file(json_path)
@@ -594,52 +539,6 @@ def get_static_cc():
 
 
 
-@app.route('/grid', methods=['GET'])
-@session_required
-@timing_decorator
-def grid():
-    querydeck = request.args.get('wordlist')
-    if not querydeck:
-        querydeck = 'hsk1'
-    logger.info(f"Query deck: {querydeck}")
-
-    username = session.get('username')
-
-    cc = {
-        'hsk1': {
-            'name': 'HSK 1',
-            'chars': {
-                "我": {'character': "我", 'pinyin': ["wǒ"], 'english': ["I"]},
-                "你": {'character': "你", 'pinyin': ["nǐ"], 'english': ["you"]},
-                "他": {'character': "他", 'pinyin': ["tā"], 'english': ["he"]},
-                "她": {'character': "她", 'pinyin': ["tā"], 'english': ["she"]},
-                "它": {'character': "它", 'pinyin': ["tā"], 'english': ["it"]},
-                "是": {'character': "是", 'pinyin': ["fhì"], 'english': ["is"]},
-                "不": {'character': "不", 'pinyin': ["bù"], 'english': ["not"]},
-            }
-        }
-    }
-
-    user_wordlists = []
-    if username:
-        user_wordlists = db_get_word_list_names_only(username)
-    if user_wordlists:
-        user_wordlists = {wl: wl for wl in user_wordlists}
-    for wl in user_wordlists:
-        DECKNAMES[wl] = user_wordlists[wl]
-
-    if user_wordlists:
-        user_wordlists = {wl: wl for wl in user_wordlists}
-        hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
-        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k and k not in user_wordlists]
-        decknames_sorted = list(sorted(user_wordlists.keys())) + list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
-    else:
-        hsk_keys = [k for k in DECKNAMES.keys() if 'hsk' in k]
-        nonhsk_keys = [k for k in DECKNAMES.keys() if 'hsk' not in k]
-        decknames_sorted = list(sorted(hsk_keys)) + list(sorted(nonhsk_keys))
-    decknames_sorted_with_name = {deck: DECKNAMES[deck] for deck in decknames_sorted}
-
-    return render_template('grid.html', username=session.get('username'), darkmode=session.get('darkmode', default_darkmode), inputdeck=querydeck, inputedeckdata=cc, custom_deck_names=[user_wordlists[k] for k in user_wordlists], decknames_sorted_with_name=decknames_sorted_with_name)
 
 from backend.routes.puzzles import get_common_context
 
@@ -895,26 +794,8 @@ def get_search_results(query):
         print(f"Error querying search endpoint: {e}")
         return {"error": str(e)}
 
-@app.route('/search', methods=['GET', 'POST'])
-@timing_decorator
-@session_required
-def search():
-    query = request.args.get('query')
-    character = request.args.get('character')
-    results = []
-    main_data = None
 
-    start_time = time.time()
-    if query:
-        results = get_search_results(query)
-    if character:
-        main_data = main_card_data(character)
-        main_data['chars_breakdown'] = breakdown_chars(character)
-    search_time = time.time() - start_time
-    return render_template('search.html', results=results, query=query, darkmode=session.get('darkmode', default_darkmode), decks=DECKS_INFO, custom_deck_names=db_get_word_list_names_only(session.get('username')), username=session.get('username'), character=main_data, search_time=search_time)
-
-
-@app.route('/search_results', methods=['POST'])
+@app.route('/api/search_results', methods=['POST'])
 @limiter.limit("1 per second")
 @timing_decorator
 @session_required
@@ -980,7 +861,7 @@ def strokerender():
     
 #     user_strokes = {}
 #     for canvas_folder in os.listdir(strokes_path):
-#         canvas_path = os.path.join(strokes_path, canvas_folder)
+#         canvas_path = os.path.join(canvas_folder)
 #         if os.path.isdir(canvas_path):
 #             user_strokes[canvas_folder] = []
 #             for stroke_file in os.listdir(canvas_path):
@@ -996,6 +877,12 @@ def strokerender():
 #     stroke_file = f'{strokes_path}/stroke_{int(time.time() * 1000)}.json'
 #     with open(stroke_file, 'w') as f:
 #         json.dump(stroke, f)
+
+@app.route('/<path:path>')
+def catch_all(path):
+    """Serve the Vue app for any routes not explicitly defined, enabling client-side routing."""
+    # This serves your Vue app's entry point for any route that isn't explicitly defined
+    return send_file('static/dist/index.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5117, debug=True)

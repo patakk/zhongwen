@@ -80,6 +80,9 @@ export default defineComponent({
 
       const isDarkMode = currentTheme.value === 'dark';
       
+      if (!props.strokes || !props.strokes.medians || !props.strokes.strokes) {
+        return;
+      }
       // Create new plotter
       let medians = props.strokes.medians || [];
       let masks = props.strokes.strokes || [];
