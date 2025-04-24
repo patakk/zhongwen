@@ -677,27 +677,27 @@ def get_all_stroke_data():
     return jsonify(db_get_all_stroke_data(username))
 
 
-with open("data/examples.json", "r", encoding="utf-8") as f:
-    parsed_data = json.load(f)
+# with open("data/examples.json", "r", encoding="utf-8") as f:
+#     parsed_data = json.load(f)
 
-with open("data/stories.json", "r", encoding="utf-8") as f:
-    stories_data = json.load(f)
+# with open("data/stories.json", "r", encoding="utf-8") as f:
+#     stories_data = json.load(f)
 
 
-@api_bp.route("/get_examples_data/<category>/<subcategory>/<chinese>")
-@session_required
-@timing_decorator
-def get_examples_data(category, subcategory, chinese):
-    category = unquote(category)
-    subcategory = unquote(subcategory)
-    chinese = unquote(chinese)
+# @api_bp.route("/get_examples_data/<category>/<subcategory>/<chinese>")
+# @session_required
+# @timing_decorator
+# def get_examples_data(category, subcategory, chinese):
+#     category = unquote(category)
+#     subcategory = unquote(subcategory)
+#     chinese = unquote(chinese)
 
-    logger.info(f"Category: {category}, Subcategory: {subcategory}, Chinese: {chinese}")
-    if category in parsed_data and subcategory in parsed_data[category]:
-        for item in parsed_data[category][subcategory]:
-            if item["chinese"] == chinese:
-                return jsonify(item)
-    return jsonify({"error": "Translation not found"}), 404
+#     logger.info(f"Category: {category}, Subcategory: {subcategory}, Chinese: {chinese}")
+#     if category in parsed_data and subcategory in parsed_data[category]:
+#         for item in parsed_data[category][subcategory]:
+#             if item["chinese"] == chinese:
+#                 return jsonify(item)
+#     return jsonify({"error": "Translation not found"}), 404
 
 
 @api_bp.route("/get_stories_data/<uri>")
