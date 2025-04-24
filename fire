@@ -1,5 +1,8 @@
 #!/usr/bin/bash
 
+cd hanzi-frontend
+npm run build
+
 if [ $# -eq 1 ]; then
     echo "$1" > version
     commit_message="$1"

@@ -4,7 +4,7 @@
     <div id="flashcard_container">
       <div id="flashcard" ref="flashcard" @click="revealOrNew">
         <div class="top-buttons">
-          <div id="deckMenu">
+          <div id="deckMenu" @click.stop>
             <div id="deckSubmenuName" @click="isSubmenuOpen = !isSubmenuOpen">{{ currentDeckName }}</div>
             <div id="deckSubmenu" :class="{ active: isSubmenuOpen }">
               <div 
@@ -89,7 +89,7 @@ export default {
       // Combine static and custom dictionary data
       const staticData = this.$store.getters.getDictionaryData || {};
       const customData = this.$store.getters.getCustomDictionaryData || {};
-      
+
       // Return combined dictionary data
       return { ...staticData, ...customData };
     }
@@ -185,7 +185,7 @@ export default {
       this.canvas.style.width = "100%";
       this.canvas.style.width = flashcardElement.offsetWidth + 'px';
       this.canvas.style.height = flashcardElement.offsetWidth * 0.25 + 'px';
-      this.canvas.style.top = flashcardElement.offsetWidth * 0.05 + 'px';
+      this.canvas.style.top = flashcardElement.offsetWidth * 0.45 + 'px';
       this.canvas.style.left = '0';
       this.canvas.className = "plotter";
       
@@ -753,9 +753,15 @@ export default {
       
       if (!chars.length) return;
 
+      // Select a random character from the deck
+      const getRandomChar = () => {
+        const randomIndex = Math.floor(Math.random() * chars.length);
+        return chars[randomIndex];
+      };
+
       if (this.currentWord === '') {
-        // Get the first word
-        this.currentWord = chars[this.currentIndexInDeck];
+        // Get the first word (random)
+        this.currentWord = getRandomChar();
         
         const data = await this.getPinyinEnglishFor(this.currentWord);
         this.currentWordInfo.character = this.currentWord;
@@ -772,28 +778,10 @@ export default {
         this.interpolateCards();
       }
 
-      this.currentIndexInDeck++;
-
-      if (this.currentIndexInDeck >= chars.length) {
-        this.currentIndexInDeck = 0;
-        this.shuffleDeck();
-        chars = Array.isArray(this.decks[this.currentDeck].chars) 
-          ? this.decks[this.currentDeck].chars 
-          : Object.keys(this.decks[this.currentDeck].chars);
-        
-        this.nextWord = chars[this.currentIndexInDeck];
-        
-        // Make sure next word isn't the same as current
-        while (this.nextWord === this.currentWord && chars.length > 1) {
-          this.shuffleDeck();
-          chars = Array.isArray(this.decks[this.currentDeck].chars) 
-            ? this.decks[this.currentDeck].chars 
-            : Object.keys(this.decks[this.currentDeck].chars);
-          
-          this.nextWord = chars[this.currentIndexInDeck];
-        }
-      } else {
-        this.nextWord = chars[this.currentIndexInDeck];
+      // Select next word randomly, ensuring it's not the same as current word
+      this.nextWord = getRandomChar();
+      while (this.nextWord === this.currentWord && chars.length > 1) {
+        this.nextWord = getRandomChar();
       }
 
       const nextData = await this.getPinyinEnglishFor(this.nextWord);
@@ -886,12 +874,26 @@ html, body {
 
 [data-theme='light'] {
   --card-shadow: 14px 10px 0px 0px var(--fg);
+  --decks-shadow: 7px 6px 0px 0px var(--fg);
   --card-border: 2px solid color-mix(in oklab, var(--fg) 46%, var(--bg) 35%);
 }
 
 [data-theme='dark'] {
   --card-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
+  --decks-shadow: 5px 5px 16px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
 }
+
+@media (max-width: 784px) {
+
+    [data-theme='light'] {
+  --card-shadow: 7px 5px 0px 0px var(--fg);
+  }
+
+  [data-theme='dark'] {
+  --card-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
+}
+}
+
 </style>
 
 <style scoped>
@@ -916,8 +918,6 @@ html, body {
 #flashcard_container {
   width: 100%;
   max-width: 800px;
-  height: 800px;
-  max-height: 100vh;
   margin: 0 auto;
   perspective: 1000px;
 }
@@ -925,7 +925,8 @@ html, body {
 #flashcard {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 16em);
+  max-height: 800px;
   cursor: pointer;
   transform-style: preserve-3d;
   box-shadow: var(--card-shadow);
@@ -937,11 +938,10 @@ html, body {
 }
 
 .top-buttons {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
   z-index: 10;
-  height: 50px; /* Fixed height for the top section */
+  box-sizing: border-box;
+  padding: 1em;
+  flex: 0.1;
 }
 
 #deckMenu {
@@ -949,7 +949,6 @@ html, body {
   cursor: pointer;
   user-select: none;
   border-radius: 5px;
-  padding: 5px 10px;
   background-color: var(--btn-bg);
   color: var(--btn-fg);
   transition: background-color 0.3s;
@@ -963,10 +962,9 @@ html, body {
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: 2px solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
+  background-color: var(--bg);
+  box-shadow: var(--decks-shadow);
   padding: 5px 0;
   margin-top: 5px;
   z-index: 20;
@@ -984,7 +982,7 @@ html, body {
 }
 
 .deck-change:hover {
-  background-color: var(--hover-bg);
+  background-color: color-mix(in oklab, var(--fg) 6%, var(--bg) 75%);
 }
 
 .selected-option {
@@ -992,11 +990,9 @@ html, body {
 }
 
 .hanzi {
-  position: absolute;
   top: 50px; /* Position right below the top buttons */
   left: 0;
   right: 0;
-  height: calc(100% - 150px); /* Give fixed height: total - (top buttons + answer section) */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1009,8 +1005,8 @@ html, body {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20px;
-  text-align: bottom;
+  padding: 2em 1em;
+  text-align: center;
   background-color: rgba(var(--answer-bg-rgb), 0.05);
   border-top: 1px solid rgba(var(--answer-border-rgb), 0.2);
   transition: opacity 0.3s;
@@ -1028,7 +1024,7 @@ html, body {
 
 .english {
   font-size: 1.2em;
-  color: var(--secondary-text);
+  opacity: .6;
 }
 
 canvas.plotter {
@@ -1038,30 +1034,14 @@ canvas.plotter {
   z-index: 1;
 }
 
-/* Dark mode variables */
-:root {
-  --card-bg: white;
-  --btn-bg: #f0f0f0;
-  --btn-fg: #333;
-  --btn-hover-bg: #e0e0e0;
-  --border-color: #ddd;
-  --hover-bg: #f5f5f5;
-  --selected-bg: #e8e8e8;
-  --secondary-text: #555;
-  --answer-bg-rgb: 0, 0, 0;
-  --answer-border-rgb: 0, 0, 0;
+
+@media (max-width: 784px) {
+  #flashcard_container {
+    width: 90vw;
+    margin: 0 auto;
+    perspective: 1000px;
+  }
+
 }
 
-[data-theme='dark'] {
-  --card-bg: #2a2a2a;
-  --btn-bg: #3a3a3a;
-  --btn-fg: #f0f0f0;
-  --btn-hover-bg: #444;
-  --border-color: #444;
-  --hover-bg: #333;
-  --selected-bg: #444;
-  --secondary-text: #bbb;
-  --answer-bg-rgb: 255, 255, 255;
-  --answer-border-rgb: 255, 255, 255;
-}
 </style>

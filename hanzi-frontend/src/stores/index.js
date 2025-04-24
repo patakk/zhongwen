@@ -329,6 +329,11 @@ const store = createStore({
           body: JSON.stringify({})
         })
         const data = await response.json()
+        for (const key in data) {
+          if (!data[key].name) {
+            data[key].name = key
+          }
+        }
         commit('combineDictionaryData', data)
       } catch (error) {
         console.error("Error fetching dictionary data:", error)
