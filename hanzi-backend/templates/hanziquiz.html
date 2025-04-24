@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/hanzi-writer-custom.js') }}"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hanzi</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icons/fa-pen-fancy.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hanzitest_draw.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
+    <script src="{{ url_for('static', filename='js/plotter_better.js') }}"></script>
+    <style id="dynamic-styles">
+        
+    </style>
+    <style>
+        #drawing-area {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #backLink {
+            position: absolute;
+            top: 1em;
+            left: 1em;
+            font-size: 1em;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+    </style>
+</head>
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
+<body>
+{% endif %}
+    <a href="{{ url_for('home') }}" id="backLink">&lt;&lt; home</a>
+    <h1 class="title">Test your pinyin <a href="{{ url_for('hanzi_strokes_history') }}" style="text-decoration: none;"><i class="fas fa-pen-fancy"></i></a></h1>
+    <div class="custom-dropdown">
+        <div id="deck-name"><div id="deck-name-label">Current Deck:</div> <div id="selected-deck">Select a deck</div></div>
+        <div id="deck-options" class="options-container"></div>
+    </div>
+
+    
+    {% include 'menu.html' %}
+    
+    <div id="test-container">
+        <div id="pinyin-display"></div>
+        <div id="english-display"></div>
+        <div id="drawing-area"></div>
+        <div id="buttons">
+            <button id="end-btn" class="writing-btns"><i class="fa-solid fa-backward-step"></i></button>
+            <button id="help-btn" class="writing-btns"><i class="fa-regular fa-eye"></i></button>
+            <button id="skip-btn" class="writing-btns"><i class="fa-solid fa-eye"></i></button>
+        </div>
+        <div id="progress"></div>
+    </div>
+
+    <div id="results" style="display: none;">
+        <h2>Test Results</h2>
+        <p>Score: <span id="score"></span></p>
+        <p>Accuracy: <span id="accuracy"></span></p>
+        <p>Stroke accuracy: <span id="stroke_accuracy"></span></p>
+        <div id="answer-table-container">
+            <table id="answer-table">
+                <tr style="font-weight: bold;">
+                    <td>Character</td>
+                    <td>Pinyin</td>
+                    <td>English</td>
+                </tr>
+                <tbody id="answer-table-body">
+                </tbody>
+            </table>
+        </div>
+        <button id="restart-btn" class="writing-btns">Restart Test</button>
+    </div>
+    <div id="confetti-container"></div>
+
+    <script>
+        
+        let currentcharacters = {};
+        let inputdeck = {{ wordlist | tojson | safe }};
+        let decknames = {{ decknames | tojson | safe }};
+        const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
+        let decknames_sorted = {{ decknames_sorted | tojson | safe }};
+        
+
+        function isIPhone(){
+            const ua = navigator.userAgent;
+            if (ua.includes('iPhone')) {
+                return true;
+            }
+            return false;
+        }
+
+        function isiPad(){
+            const ua = navigator.userAgent;
+            if (ua.includes('iPad')) {
+                return true;
+            }
+            return false;
+        }
+    </script>
+    <script >
+        function toAccentedPinyin(input) {
+            const toneMap = {
+                '1': 'āēīōūǖ',
+                '2': 'áéíóúǘ',
+                '3': 'ǎěǐǒǔǚ',
+                '4': 'àèìòùǜ',
+                '5': 'aeiouü'
+            };
+            
+            function applyToneMark(syllable, tone) {
+                if (!tone) return syllable;
+                
+                const vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
+                let syllableLower = syllable.toLowerCase();
+                
+                if (syllableLower.includes('a')) {
+                    let index = syllableLower.indexOf('a');
+                    let result = syllable.split('');
+                    result[index] = toneMap[tone][0];
+                    return result.join('');
+                }
+                
+                if (syllableLower.includes('e')) {
+                    let index = syllableLower.indexOf('e');
+                    let result = syllable.split('');
+                    result[index] = toneMap[tone][1];
+                    return result.join('');
+                }
+                
+                if (syllableLower.includes('ou')) {
+                    let index = syllableLower.indexOf('o');
+                    let result = syllable.split('');
+                    result[index] = toneMap[tone][3];
+                    return result.join('');
+                }
+                
+                for (let i = syllableLower.length - 1; i >= 0; i--) {
+                    let char = syllableLower[i];
+                    let vowelIndex = vowels.indexOf(char);
+                    if (vowelIndex !== -1) {
+                        let result = syllable.split('');
+                        result[i] = toneMap[tone][vowelIndex];
+                        return result.join('');
+                    }
+                }
+                
+                return syllable;
+            }
+        
+            let result = input.replace(/\[([a-z]+)([1-5])?\]/gi, (match, syllable, tone) => {
+                return '[' + applyToneMark(syllable, tone) + ']';
+            });
+            
+            result = result.replace(/\b([a-z]+)([1-5])?\b/gi, (match, syllable, tone) => {
+                return applyToneMark(syllable, tone);
+            });
+            
+            return result;
+        }</script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}" async></script>
+    <script src="{{ url_for('static', filename='js/hanziquiz.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}" async></script>
+    <script src="{{ url_for('static', filename='js/fontawesome.js') }}" async></script>
+</body>
+</html>

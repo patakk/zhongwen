@@ -1,0 +1,948 @@
+<template>
+    <BasePage page_title="My Space" />
+    <div class="myspace-view" v-if="loggedIn">
+      <div class="wordlist-container">
+        <div class="wordlist-header">
+          <h2>My Wordlists</h2>
+  
+          <div class="wordlist-selector">
+            <label for="wordlist-select" class="wordlist-label">Select Wordlist:</label>
+            <select
+              id="wordlist-select"
+              v-model="selectedWordlist"
+              @change="loadWordlistWords"
+            >
+              <option
+                v-for="list in customDecks"
+                :key="list.name"
+                :value="list.name"
+              >
+                {{ list.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Add Wordlist Management Controls -->
+        <div class="wordlist-management">
+          <button @click="showCreateWordlistModal = true" class="action-button create-button">
+            Create New Wordlist
+          </button>
+          
+          <div v-if="selectedWordlist" class="wordlist-actions">
+            <button @click="showRenameWordlistModal = true" class="action-button rename-button">
+              Rename Wordlist
+            </button>
+            <button @click="confirmRemoveWordlist" class="action-button delete-button">
+              Delete Wordlist
+            </button>
+          </div>
+        </div>
+  
+        <div v-if="loading" class="loading">Loading wordlist...</div>
+  
+        <div v-else-if="!selectedWordlist" class="empty-list">
+          <p>Please select a wordlist from the dropdown above.</p>
+        </div>
+  
+        <div v-else>
+          <div v-if="words.length === 0" class="empty-list">
+            <p>This wordlist is empty. Add words from the Search or Grid views.</p>
+          </div>
+  
+          <div v-else>
+            <!-- Info panel -->
+            <div class="wordlist-info">
+              <!-- Display Description -->
+              <div class="description-section">
+                <p>
+                  <strong>Description:</strong>
+                  <button @click="openEditDescriptionModal" class="edit-description-button" title="Edit Description">
+                    <font-awesome-icon :icon="['fas', 'pencil']" />
+                  </button>
+                </p>
+                <p class="description-text">{{ currentWordlistDescription || 'No description yet.' }}</p>
+              </div>
+              <p><strong>Created:</strong> {{ currentWordlistCreatedAt ? formatDate(currentWordlistCreatedAt) : 'N/A' }}</p>
+              <p><strong>Number of Words:</strong> {{ words.length }}</p>
+            </div>
+  
+            <!-- Navigation buttons -->
+            <div class="nav-buttons">
+              <router-link
+                :to="{
+                  path: '/flashcards',
+                  query: { wordlist: selectedWordlist }
+                }"
+                class="nav-button"
+                title="Go to Flashcards"
+              >
+                flashcards
+              </router-link>
+              <router-link
+                :to="{
+                  path: '/grid',
+                  query: { wordlist: selectedWordlist }
+                }"
+                class="nav-button"
+                title="Go to Grid View"
+              >
+                grid view
+              </router-link>
+            </div>
+  
+            <!-- Word list -->
+            <div class="word-list">
+                <PreloadWrapper :character="word.character"
+                    v-for="word in words"
+                    :key="word.character"
+                    class="word-item"
+                    :title="word.english[0]"
+                >
+                    <div class="word-cell">
+                        <div class="hanzipinyin">
+                        <div class="word-hanzi">{{ word.character }}</div>
+                        <div class="word-pinyin">
+                            {{ $toAccentedPinyin(word.pinyin[0]) }}
+                        </div>
+                        </div>
+                        <div class="word-english">{{ word.english[0] }}</div>
+                        <button
+                            class="remove-button"
+                            @click.stop="removeWord(word.character)"
+                            title="Remove from wordlist"
+                            >
+                            ✕
+                        </button>
+                    </div>
+                </PreloadWrapper>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="myspace-view">
+      <p>Redirecting to login page...</p>
+    </div>
+
+    <!-- Create Wordlist Modal -->
+    <div v-if="showCreateWordlistModal" class="modal-overlay" @click="closeCreateModal">
+      <div class="modal-content" @click.stop>
+        <h3>Create New Wordlist</h3>
+        <div class="modal-form">
+          <label for="new-wordlist-name">Wordlist Name:</label>
+          <input 
+            id="new-wordlist-name" 
+            v-model="newWordlistName" 
+            placeholder="Enter wordlist name"
+            @keyup.enter="createWordlist"
+            @keyup.esc="closeCreateModal"
+            ref="createModalInput"
+            autocomplete="off"
+          />
+        </div>
+        <div class="modal-buttons">
+          <button @click="closeCreateModal" class="cancel-button">Cancel</button>
+          <button @click="createWordlist" class="confirm-button">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rename Wordlist Modal -->
+    <div v-if="showRenameWordlistModal" class="modal-overlay" @click="closeRenameModal">
+      <div class="modal-content" @click.stop>
+        <h3>Rename Wordlist</h3>
+        <div class="modal-form">
+          <label for="rename-wordlist">New Name:</label>
+          <input 
+            id="rename-wordlist" 
+            v-model="newWordlistName" 
+            placeholder="Enter new name"
+            @keyup.enter="renameWordlist"
+            @keyup.esc="closeRenameModal"
+            ref="renameModalInput"
+            autocomplete="off"
+          />
+        </div>
+        <div class="modal-buttons">
+          <button @click="closeRenameModal" class="cancel-button">Cancel</button>
+          <button @click="renameWordlist" class="confirm-button">Rename</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirmModal" class="modal-overlay" @click="closeDeleteConfirmModal">
+      <div class="modal-content" @click.stop>
+        <h3>Confirm Deletion</h3>
+        <div class="modal-message">
+          <p>Are you sure you want to delete the wordlist "{{ selectedWordlist }}"?</p>
+          <p>This action cannot be undone.</p>
+        </div>
+        <div class="modal-buttons">
+          <button @click="closeDeleteConfirmModal" class="cancel-button">Cancel</button>
+          <button @click="deleteWordlistConfirmed" class="confirm-button delete-confirm-button">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Description Modal -->
+    <div v-if="showEditDescriptionModal" class="modal-overlay" @click="closeEditDescriptionModal">
+      <div class="modal-content" @click.stop>
+        <h3>Edit Wordlist Description</h3>
+        <div class="modal-form">
+          <label for="edit-wordlist-description">Description:</label>
+          <textarea
+            id="edit-wordlist-description"
+            v-model="newWordlistDescription"
+            placeholder="Enter description (max 500 characters)"
+            rows="4"
+            maxlength="500"
+            @keyup.esc="closeEditDescriptionModal"
+            ref="editDescriptionInput"
+          ></textarea>
+        </div>
+        <div class="modal-buttons">
+          <button @click="closeEditDescriptionModal" class="cancel-button">Cancel</button>
+          <button @click="saveWordlistDescription" class="confirm-button">Save</button>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  <script>
+  import BasePage from '../components/BasePage.vue';
+  import PreloadWrapper from '../components/PreloadWrapper.vue';
+  
+  export default {
+    name: 'MySpaceView',
+    components: {
+      BasePage,
+      PreloadWrapper,
+    },
+    data() {
+      return {
+        selectedWordlist: '',
+        words: [],
+        loading: false,
+        // For modals and wordlist management
+        showCreateWordlistModal: false,
+        showRenameWordlistModal: false,
+        showDeleteConfirmModal: false,
+        showEditDescriptionModal: false, // Added for description modal
+        newWordlistName: '',
+        newWordlistDescription: '', // Added for description editing
+      };
+    },
+    computed: {
+      loggedIn() {
+        return this.$store.getters.getAuthStatus;
+      },
+      customDecks() {
+        return this.$store.getters.getCustomDecks; // Use the original getter
+      },
+      customDictionaryData() {
+        return this.$store.getters.getCustomDictionaryData;
+      },
+      currentWordlistData() {
+        if (!this.selectedWordlist || !this.customDecks) return null;
+        return this.customDecks.find(deck => deck.name === this.selectedWordlist);
+      },
+      currentWordlistDescription() {
+        return this.currentWordlistData?.description || '';
+      },
+      currentWordlistCreatedAt() {
+        return this.currentWordlistData?.timestamp || null;
+      },
+    },
+    watch: {
+      selectedWordlist(newVal) {
+        // Existing logic to load words remains (implicitly handled by @change on select)
+        this.loadWordlistWords(); 
+      },
+      showCreateWordlistModal(newVal) {
+        if (newVal) {
+          this.newWordlistName = '';
+          this.$nextTick(() => {
+            this.$refs.createModalInput?.focus();
+          });
+        }
+      },
+      showRenameWordlistModal(newVal) {
+        if (newVal) {
+          this.newWordlistName = this.selectedWordlist;
+          this.$nextTick(() => {
+            this.$refs.renameModalInput?.focus();
+          });
+        }
+      },
+      showEditDescriptionModal(newVal) {
+        if (newVal) {
+          this.newWordlistDescription = this.currentWordlistDescription;
+          this.$nextTick(() => {
+            this.$refs.editDescriptionInput?.focus();
+          });
+        }
+      }
+    },
+    mounted() {
+      // Check authentication status and redirect if not logged in
+      if (!this.loggedIn) {
+        this.$router.push('/login');
+        return;
+      }
+      
+      // Debug logging of wordlists
+      console.log("MySpaceView - Available wordlists (customDecks):", this.customDecks);
+      console.log("MySpaceView - Custom dictionary data:", this.customDictionaryData);
+      
+      // Make sure we have wordlist data by dispatching fetchUserData if needed
+      if (this.customDecks && this.customDecks.length > 0) {
+        this.selectedWordlist = this.customDecks[0].name;
+        
+        if (
+          this.customDictionaryData &&
+          this.customDictionaryData[this.selectedWordlist]
+        ) {
+          this.loadWordlistWords();
+        } else {
+          this.loading = true;
+          this.$store
+            .dispatch('fetchCustomDictionaryData')
+            .then(() => {
+              this.loading = false;
+              this.loadWordlistWords();
+            })
+            .catch((err) => {
+              console.error('Error loading custom dictionary data:', err);
+              this.loading = false;
+            });
+        }
+      }
+    },
+    methods: {
+      loadWordlistWords() {
+        try {
+          if (
+            this.customDictionaryData &&
+            this.selectedWordlist &&
+            this.customDictionaryData[this.selectedWordlist]
+          ) {
+            const charsData = this.customDictionaryData[this.selectedWordlist].chars;
+  
+            if (charsData) {
+              this.words = Object.entries(charsData).map(([character, data]) => ({
+                character,
+                ...data,
+              }));
+            } else {
+              this.words = [];
+            }
+          } else {
+            this.words = [];
+          }
+        } catch (error) {
+          console.error('Error loading wordlist words:', error);
+          this.words = [];
+        }
+      },
+  
+      removeWord(character) {
+        if (!this.selectedWordlist) return;
+  
+        this.words = this.words.filter((word) => word.character !== character);
+  
+        this.$store.dispatch('removeWordFromCustomDeck', {
+          character,
+          selectedWordlist: this.selectedWordlist,
+        });
+  
+        fetch('/api/remove_word_from_learning', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            character,
+            set_name: this.selectedWordlist,
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              console.error('Failed to remove word');
+              this.loadWordlistWords();
+            }
+          })
+          .catch((error) => {
+            console.error('Error removing word:', error);
+            this.loadWordlistWords();
+          });
+      },
+
+      // New methods for wordlist management
+      createWordlist() {
+        if (!this.newWordlistName || this.newWordlistName.trim() === '') {
+          alert('Please enter a valid wordlist name');
+          return;
+        }
+
+        const name = this.newWordlistName.trim();
+        
+        // Optimistic update - add to store first
+        this.$store.dispatch('createWordlist', { name });
+        
+        // Close modal and reset
+        this.showCreateWordlistModal = false;
+        this.newWordlistName = '';
+        
+        // Select the new wordlist
+        this.selectedWordlist = name;
+        
+        // Explicitly reset the words array for the new wordlist
+        this.words = [];
+        
+        // Send to backend
+        fetch('./api/create_wordlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name }),
+        })
+        .catch((error) => {
+          console.error('Error creating wordlist:', error);
+          // If there's an error, refresh data to get the correct state
+          this.$store.dispatch('fetchUserData')
+            .then(() => this.$store.dispatch('fetchCustomDictionaryData'));
+        });
+      },
+      
+      renameWordlist() {
+        if (!this.newWordlistName || this.newWordlistName.trim() === '') {
+          alert('Please enter a valid wordlist name');
+          return;
+        }
+
+        if (!this.selectedWordlist) {
+          alert('Please select a wordlist first');
+          return;
+        }
+
+        const oldName = this.selectedWordlist;
+        const newName = this.newWordlistName.trim();
+        
+        if (oldName === newName) {
+          this.showRenameWordlistModal = false;
+          return;
+        }
+        
+        // Optimistic update - update store first
+        this.$store.dispatch('renameWordlist', { 
+          oldName, 
+          newName 
+        });
+        
+        // Update selected wordlist
+        this.selectedWordlist = newName;
+        
+        // Close modal and reset
+        this.showRenameWordlistModal = false;
+        this.newWordlistName = '';
+        
+        // Send to backend
+        fetch("/api/rename_wordlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ 
+            name: oldName, 
+            newname: newName 
+          })
+        })
+        .catch((error) => {
+          console.error('Error renaming wordlist:', error);
+          // If there's an error, refresh data to get the correct state
+          this.$store.dispatch('fetchUserData')
+            .then(() => this.$store.dispatch('fetchCustomDictionaryData'));
+        });
+      },
+      
+      confirmRemoveWordlist() {
+        if (!this.selectedWordlist) {
+          alert('Please select a wordlist first');
+          return;
+        }
+        
+        this.showDeleteConfirmModal = true;
+      },
+
+      deleteWordlistConfirmed() {
+        const wordlistToRemove = this.selectedWordlist;
+
+        this.closeDeleteConfirmModal();
+
+        // Optimistic update - remove from store first
+        this.$store.dispatch('removeWordlist', { name: wordlistToRemove });
+
+        // Update selection
+        if (this.customDecks && this.customDecks.length > 0) {
+          this.selectedWordlist = this.customDecks[0].name;
+          this.loadWordlistWords();
+        } else {
+          this.selectedWordlist = '';
+          this.words = [];
+        }
+
+        // Send to backend
+        fetch("/api/remove_wordlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name: wordlistToRemove })
+        })
+        .catch((error) => {
+          console.error('Error removing wordlist:', error);
+          // If there's an error, refresh data to get the correct state
+          this.$store.dispatch('fetchUserData')
+            .then(() => this.$store.dispatch('fetchCustomDictionaryData'));
+        });
+      },
+
+      // New methods for modal management
+      closeCreateModal() {
+        this.showCreateWordlistModal = false;
+        this.newWordlistName = '';
+      },
+      
+      closeRenameModal() {
+        this.showRenameWordlistModal = false;
+        this.newWordlistName = '';
+      },
+
+      closeDeleteConfirmModal() {
+        this.showDeleteConfirmModal = false;
+      },
+
+      // Methods for description editing
+      openEditDescriptionModal() {
+        if (!this.selectedWordlist) return;
+        this.showEditDescriptionModal = true;
+      },
+
+      closeEditDescriptionModal() {
+        this.showEditDescriptionModal = false;
+        this.newWordlistDescription = ''; // Reset on close
+      },
+
+      saveWordlistDescription() {
+        if (!this.selectedWordlist) return;
+
+        const descriptionToSave = this.newWordlistDescription.trim();
+        
+        // Optimistic update in the store
+        this.$store.dispatch('updateWordlistDescription', {
+          name: this.selectedWordlist,
+          description: descriptionToSave,
+        });
+
+        // Close modal
+        this.closeEditDescriptionModal();
+
+        // Send to backend
+        fetch("/api/update_wordlist_description", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ 
+            name: this.selectedWordlist, 
+            description: descriptionToSave 
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            console.error('Error updating description on backend');
+            // Revert optimistic update or show error message
+            // For simplicity, we might just refetch data
+            this.$store.dispatch('fetchUserData'); 
+          }
+        })
+        .catch((error) => {
+          console.error('Error saving wordlist description:', error);
+          // Revert or show error
+          this.$store.dispatch('fetchUserData');
+        });
+      },
+
+      formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        try {
+          const options = { year: 'numeric', month: 'long', day: 'numeric' };
+          return new Date(dateString).toLocaleDateString(undefined, options);
+        } catch (e) {
+          console.error("Error formatting date:", e);
+          return dateString; // Fallback to original string
+        }
+      },
+    },
+  };
+  </script>
+  
+  <style scoped>
+  .myspace-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    background: var(--bg);
+    min-height: 100vh;
+  }
+  
+  .wordlist-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--bg-alt);
+    /* border-radius: 12px; */
+    box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+  
+  .wordlist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+.wordlist-label{
+  flex: 1;
+}
+
+  .wordlist-selector {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 0.5rem;
+  }
+
+  #wordlist-select {
+    overflow: hidden;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+  
+  select {
+    padding: 0.5rem 0.75rem;
+    border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    background: var(--bg);
+    color: var(--fg);
+    box-sizing: border-box;
+    font-family: inherit;
+    /* border-radius: 6px; */
+    cursor: pointer;
+  }
+  
+  select:hover,
+  select:focus {
+    outline: none;
+  }
+  
+  .loading,
+  .empty-list {
+    text-align: center;
+    padding: 2rem;
+    color: var(--fg);
+    opacity: 0.7;
+    font-style: italic;
+  }
+  
+  .wordlist-info {
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    color: var(--fg);
+    line-height: 1.4;
+    position: relative; /* Needed for absolute positioning of edit button */
+  }
+  
+  .wordlist-info p {
+    margin: 0.3rem 0;
+  }
+
+  .description-section {
+    position: relative;
+    padding-right: 30px; /* Space for the edit button */
+    margin-bottom: 0.5rem;
+  }
+
+  .description-text {
+    white-space: pre-wrap; /* Preserve line breaks */
+    word-break: break-word;
+    color: var(--fg);
+    opacity: 0.85;
+    margin-top: 0.2rem;
+  }
+
+  .edit-description-button {
+    /* position: absolute;
+    top: 0;
+    right: 0; */
+    background: none;
+    border: none;
+    color: var(--fg);
+    opacity: 0.5;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.2rem;
+  }
+
+  .edit-description-button:hover {
+    opacity: 1;
+  }
+  
+  .nav-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .nav-button {
+    background: var(--bg);
+    color: color-mix(in oklab, var(--fg) 100%, var(--bg) 50%);
+    padding: 0.5rem 1.2rem;
+    /* border-radius: 8px; */
+    text-decoration: none;
+    user-select: none;
+    box-shadow: 0 2px 6px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  }
+  
+  .nav-button:hover {
+    box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+    color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
+  }
+  
+  .word-list {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+  
+  .word-item {
+    border: 2px solid color-mix(in oklab, var(--fg) 22%, var(--bg) 12%);
+    background: var(--bg);
+    align-items: stretch;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .word-item:hover {
+    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  }
+  
+  .word-cell {
+    width: 100%;
+    display: flex;
+    padding: .3rem;
+    cursor: pointer;
+    user-select: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+  }
+  
+  .hanzipinyin {
+    display: flex;
+    flex-direction: column;
+    width: 110px;
+    min-width: 110px;
+    margin-right: 1rem;
+    user-select: text;
+  }
+  
+  .word-hanzi {
+    font-size: 1.7rem;
+    font-family: Kaiti, serif;
+    user-select: text;
+  }
+  
+  .word-pinyin {
+    font-size: .8em;
+    font-style: italic;
+    color: var(--fg);
+    opacity: 0.6;
+    user-select: text;
+  }
+  
+  .word-english {
+    font-size: .8em;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    user-select: text;
+  }
+  
+  .remove-button {
+    background: transparent;
+    border: none;
+    color: var(--fg);
+    opacity: 0.35;
+    padding: 0 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    margin-left: auto;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s, background-color 0.2s;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: auto;
+  }
+  
+  .remove-button:hover {
+    opacity: 1;
+    /* background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%); */
+  }
+
+  /* New styles for wordlist management */
+  .wordlist-management {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .wordlist-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .action-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 2px 4px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  }
+  
+  .create-button {
+    background: color-mix(in oklab, var(--fg) 10%, var(--bg) 50%);
+    color: var(--fg);
+  }
+  
+  .rename-button:hover,
+  .create-button:hover,
+  .delete-button:hover {
+    background: color-mix(in oklab, var(--fg) 30%, var(--bg) 50%);
+    color: var(--fg);
+  }
+  
+  
+  
+  /* Modal styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: color-mix(in oklab, var(--bg) 10%, var(--bg) 80%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+  
+  .modal-content {
+    background: var(--bg-alt);
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+  }
+  
+  .modal-form {
+    margin: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .modal-form input {
+    padding: 0.5rem;
+    border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    background: var(--bg);
+    color: var(--fg);
+    font-family: inherit;
+  }
+
+  .modal-form textarea {
+    padding: 0.5rem;
+    border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    background: var(--bg);
+    color: var(--fg);
+    font-family: inherit;
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 80px;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .cancel-button, 
+  .confirm-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .cancel-button {
+    background: var(--bg);
+    color: var(--fg);
+  }
+  
+  .confirm-button {
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  .modal-message {
+    margin: 1.5rem 0;
+    color: var(--fg);
+    line-height: 1.5;
+  }
+
+  .modal-message p {
+      margin-bottom: .5rem;
+  }
+
+  .delete-confirm-button {
+    background: var(--danger-color, #dc3545);
+    color: #fff;
+  }
+
+  .delete-confirm-button:hover {
+    background: color-mix(in oklab, var(--danger-color, #dc3545) 80%, black 20%);
+  }
+  </style>

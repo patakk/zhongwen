@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>welcome</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icons/zi.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Noto Sans Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--background-color);
+            font-size: 16px;
+        }
+        .container {
+            width: 60%;
+            max-width: 800px;
+            background-color: var(--background-color);
+            padding: 2rem;
+            border: var(--dimmer-border);
+            overflow-y: auto;
+            max-height: 90vh;
+            scrollbar-width: none; /* For Firefox */
+            -ms-overflow-style: none; /* For Internet Explorer and Edge */
+        }
+        .container::-webkit-scrollbar {
+            display: none; /* For Chrome, Safari, and Opera */
+        }
+        h1 {
+            font-family: 'Noto Sans Mono', monospace;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 2em;
+            margin-top: 0;
+        }
+        li:not(:last-child) {
+            margin-bottom: 0px;
+        }
+
+
+        .btn-container {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border: var(--simple-borer);
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: var(--text-color);
+            color: var(--background-color);
+        }
+        
+        a {
+            color: var(--text-color);
+            text-decoration: none;
+            background-color: #var(--dimmer-background);
+            padding: 1px 2px;
+        }
+
+        a:hover {
+            background-color: #ff0000;
+            color: #f7f7f7;
+        }
+        
+        .flashcard-guide {
+            background-color: var(--dimmer-background-color);
+            border: var(--simple-border);
+            padding: 10px;
+            width: 80%;
+            margin: 20px auto;
+        }
+        
+        .flashcard-guide li:not(:last-child) {
+            margin-bottom: 0px;
+        }
+
+        .flashcard-guide h4, .flashcard-guide h5 {
+            margin-top: 0;
+        }
+
+        .flashcard-guide ul {
+            padding-left: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 1.5em;
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                padding: 0;
+                font-size: 14px;
+            }
+            .container {
+                width: 95%;
+                height: 80vh; /* Set height to 80% of viewport height on mobile */
+                max-height: none; /* Remove max-height constraint */
+                padding: 1rem;
+                margin: auto; /* Center the container vertically */
+            }
+            h1 {
+                font-size: 1.6em;
+            }
+            .btn {
+                padding: 8px 16px;
+            }
+
+            .flashcard-guide {
+                width: 100%;
+                padding: 5px;
+                margin: 5px auto;
+                margin-bottom: 14px;
+            }
+
+            .flashcard-guide ul {
+                padding-left: 5px;
+            }
+
+            ul {
+                padding-left: 0em;
+            }
+
+        }
+        .flashcard-toggle {
+            cursor: pointer;
+            color: #0066cc;
+            text-decoration: underline;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .flashcard-toggle:hover {
+            color: #004080;
+        }
+
+        .container * {
+            text-transform: lowercase;
+        }
+
+        a, h1 {
+            text-transform: none;
+        }
+
+        .container ul ul > li::before {
+            content: "▪ ";
+        }
+
+        .container ul ul ul > li::before {
+            content: "• ";
+        }
+
+        a.darkmode {
+            color: rgb(212, 212, 212);
+            background-color: #2e2e2e;
+        }
+
+        a.darkmode:hover {
+            background-color: #ff0000;
+            color: var;
+        }
+    </style>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+
+    <style>
+
+        .btn {
+            border: 2px dashed black;
+        }
+
+        .btn.darkmode {
+            border: 2px dashed rgb(197, 197, 197);
+            color: rgb(197, 197, 197);
+        }
+    </style>
+</head>
+{% if darkmode %}
+<body class="darkmode">
+{% else %}
+<body>
+{% endif %}
+   
+    {% include 'menu.html' %}
+    
+    <div class="container">
+        {% if session['username'] != 'tempuser' %}
+            <h1>Welcome {{ session['username'] }}!</h1>
+        {% else %}
+            <h1>Welcome!</h1>
+        {% endif %}
+        <p>here's a quick guide to get you started:</p>
+        <ul>
+            <li>
+                <a href="{{ url_for('grid') }}">Hanzi Grid</a> - preview characters and their descriptions
+                <div class="flashcard-guide">
+                    <div>
+                        <div class="pc-guide">
+                            <ul>
+                                <li>Clicking on the title toggles between grid and list view.</li>
+                                <li>If you start typing, what you type will be searched, and filtered results will be shown</li>
+                                <ul>
+                                    <li>Both pinyin and english queries are supported.</li>
+                                    <li>Press <strong>Space</strong> to clear the filter.</li>
+                                </ul>
+                            </ul>
+                        </div>
+                        <div class="mobile-guide">
+                            <ul>
+                                <li>Tapping on the title toggles between grid and list view.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <!-- <li>
+                <a href="{{ url_for('search') }}">Search</a> - find words (english/hanzi/pinyin supported)
+                <div class="flashcard-guide">
+                    <div>
+                        <ul>
+                            <li>The following pinyin formats are supported:</li>
+                            <ul>
+                                <li>tone numbers (e.g. 'ni3 hao3', or ni3 ha3o)</li>
+                                <li>tone marks (e.g. 'nǐ hǎo')</li>
+                                <li>no tones (e.g. 'ni hao')</li>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+            </li> -->
+            <li>
+                <a href="{{ url_for('flashcards') }}">Flashcards</a> - learn characters using spaced repetition
+                <div class="flashcard-guide">
+                    <div class="pc-guide">
+                        <ul>
+                            <li>Using keys</li>
+                            <ul>
+                                <li>Press any key to reveal the answer.</li>
+                                <li>Press <strong>Space</strong> again to mark as correct.</li>
+                                <li>Press <strong>X</strong> to mark as incorrect.</li>
+                            </ul>
+                            <li>Using cursor</li>
+                            <ul>
+                                <li>Click once to reveal the answer</li>
+                                <li>Click and hold right side of the flashcard for correct, left side for incorrect.</li>
+                            </ul>
+                        </ul>
+                    </div>
+                    <div class="mobile-guide">
+                        <ul>
+                            <li><strong>Tap</strong> to reveal the answer.</li>
+                            <li>Swipe <strong>right</strong> to mark as correct.</li>
+                            <li>Swipe <strong>left</strong> to mark as incorrect.</li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            
+            <!-- <li>
+                <a href="{{ url_for('lists') }}">Example Lists</a> - learn grammar and characters in context
+            </li> -->
+            
+            <li>
+                <a href="{{ url_for('hanziwriting') }}">Practice 汉字</a> - practice writing characters
+            </li>
+        </ul>
+        <div class="btn-container">
+            <a href="{{ url_for('home') }}" class="btn">Start Learning</a>
+        </div>
+    </div>
+    
+
+    <script>
+        const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    <script>
+        
+        function isIPhone(){
+            const ua = navigator.userAgent;
+            if (ua.includes('iPhone')) {
+                return true;
+            }
+            return false;
+        }
+
+        function isiPad(){
+            const ua = navigator.userAgent;
+            if (ua.includes('iPad')) {
+                return true;
+            }
+            return false;
+        }
+
+        function reset(){
+            const guide = document.querySelector('.flashcard-guide');
+            const pcGuides = document.querySelectorAll('.pc-guide');
+            const mobileGuides = document.querySelectorAll('.mobile-guide');
+
+            pcGuides.forEach(pcGuide => {
+                if (isIPhone() || isiPad()) {
+                    pcGuide.style.display = 'none';
+                } else {
+                    pcGuide.style.display = 'block';
+                }
+            });
+
+            mobileGuides.forEach(mobileGuide => {
+                if (isIPhone() || isiPad()) {
+                    mobileGuide.style.display = 'block';
+                } else {
+                    mobileGuide.style.display = 'none';
+                }
+            });
+
+            guide.style.display = 'block';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            reset();
+        });
+
+        window.addEventListener('resize', function() {
+            reset();
+        });
+    </script>
+</body>
+</html>

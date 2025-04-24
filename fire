@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+
+if [ $# -eq 1 ]; then
+    echo "$1" > version
+    commit_message="$1"
+else
+    commit_message="fix"
+fi
+
+git add .
+
+if git diff --cached --quiet; then
+    echo "No changes to commit."
+else
+    git commit -m "$commit_message"
+    
+    if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
+        git push
+    else
+        echo "No changes to push."
+    fi
+fi

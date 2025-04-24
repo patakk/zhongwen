@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lists</title>
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/lists.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/hamburger.css') }}">
+</head>
+<body>
+    
+    <script src="{{ url_for('static', filename='js/customback.js') }}"></script>
+    
+    <div class="hamburger" id="hamburgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            
+            <li id="loginMenuItem"><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="has-submenu">
+                <span>Hanzi Grid</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="{{ url_for('grid') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                        {% endfor %}
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <span>Flashcards</span>
+                <ul class="submenu">
+                    {% for key, deck in decks.items() %}
+                        <li><a href="{{ url_for('flashcards') }}?deck={{ key }}">{{ deck.name }}</a></li>
+                        {% endfor %}
+                </ul>
+            </li>
+            <!-- <li class="has-submenu">
+                <span>Fonts</span>
+                <ul class="submenu">
+                    <li><a href="#" class="font-change" data-font="Noto Sans Mono">Noto Sans Mono</a></li>
+                    <li><a href="#" class="font-change" data-font="Noto Serif SC">Noto Serif SC</a></li>
+                    <li><a href="#" class="font-change" data-font="Kaiti">Kaiti</a></li>
+                </ul>
+            </li> -->
+            <li class="has-submenu">
+                <span>Stuff</span>
+                <ul class="submenu">
+                    <li><a href="{{ url_for('search') }}">Search</a></li>
+                    <li><a href="{{ url_for('convert') }}">Convert to strokes</a></li>
+                    <li><a href="{{ url_for('stories') }}">Stories</a></li>
+                    <!-- <li><a href="{{ url_for('lists') }}">Example Lists</a></li> -->
+                    <li><a href="{{ url_for('puzzles.puzzles') }}">Puzzles</a></li>
+                    <li><a href="{{ url_for('hanziwriting') }}">Practice 汉字</a></li>
+                    <li><a href="{{ url_for('pageinfo') }}">Info</a></li>
+                </ul>
+            </li>
+            <li><span id="darkmode-toggle" >Toggle darkmode</span></li>
+            <li><a href="{{ url_for('logout') }}" id="logoutButton">Logout</a></li>
+        </ul>
+    </div>
+
+    
+    
+    <div id="flashcard_overlay">
+        <div id="flashcard_container">
+            <div class="title-container hanzi-row-container" data-index="title">
+                <div class="title"></div>
+            </div>
+            <div class="character"></div>
+        </div>
+        <div id="hover-box">
+            <div class="pinyin"></div>
+            <div class="english"></div>
+        </div>
+    </div>
+    
+    <script>
+        const username = {{ username | tojson | safe }};
+        let isDarkMode = {{ darkmode | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/hamburger.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lists.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/contextmenu.js') }}"></script>
+
+    <div class="container">
+        <h1>Lists</h1>
+        
+        {% for category, items in categories.items() %}
+        <h2>{{ category|capitalize }}</h2>
+        <ul>
+            {% for item in items %}
+            <li onclick="loadStory('{{ item.uri }}')" class="listlist" uri-index="{{ item.uri }}">
+                <span class="list-item">
+                    {{ item.title }}
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialUri = urlParams.get('uri') || '{{ initial_uri }}';
+            if (initialUri && initialUri !== 'None' && initialUri.trim() !== '') {
+                console.log('Initial URI:', initialUri);
+                loadStory(initialUri);
+            }
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+
+</body>
+</html>
+

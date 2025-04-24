@@ -1,0 +1,138 @@
+
+
+html, body {
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box; /* Add this line */
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+    overflow-y: scroll; /* Enable vertical scrolling */
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS devices */
+    
+    -webkit-user-select: none;  /* Safari */
+    -ms-user-select: none;      /* IE 10 and IE 11 */
+    user-select: none;  
+}
+
+
+::selection {
+}
+
+
+body {
+    font-style: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+
+.home-container {
+    border: var(--dimmer-border);
+    padding: 40px 80px;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90%;
+    max-height: 90%;
+    margin: auto 0;
+    justify-content: center;
+    overflow-y: none;
+    overflow-x: none;
+}
+
+#homeTitle {
+    font-size: 4.5em;
+    margin-bottom: 20px;
+    font-family: "Noto Serif SC", serif;
+    font-display: swap;
+    color: var(--text-color);
+    font-weight: bold;
+    text-align: center;
+}
+.link-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.mainlink {
+    color: var(--text-color);
+    width: 200px;
+    padding: 10px;
+    margin: 10px 0;
+    border: var(--simple-border);
+    text-decoration: none;
+    font-family: inherit;
+    /* Add these properties */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.mainlink i {
+    margin-left: 10px;
+}
+.mainlink:hover {
+    color: rgb(255, 255, 255);
+}
+::selection {
+    color: rgb(255, 255, 255);
+}
+
+
+.home-container a:hover {
+    color: var(--text-color);
+    background-color: var(--home-link-bg-color);
+}
+
+.home-container.darkmode {
+}
+
+::selection.darkmode {
+    color: rgb(14, 14, 14);
+}
+
+#homeTitle {
+    color: rgb(14, 14, 14);
+}
+
+#homeTitle.darkmode {
+    color: rgb(255, 255, 255);
+}
+
+
+@media screen and (max-width: 768px) {
+    .home-container {
+        /* height: 60%; */
+        padding: 30px;
+    }
+
+    .home-container a {
+        width: 200px;
+        padding: 10px;
+        margin: 4px 0;
+        text-decoration: none;
+        text-align: center;
+        font-size: 1em;
+        
+    }
+    
+}
+
+.homeLink {
+    flex: 1;
+    text-align: left;
+    font-family: "Martian Mono", monospace;
+    font-size: .9em;
+    font-weight: 300;
+}
