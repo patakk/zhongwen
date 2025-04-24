@@ -64,13 +64,6 @@ onMounted(async () => {
     store.dispatch("fetchDictionaryData"),
     store.dispatch("fetchCustomDictionaryData")
   ]);
-
-  console.log("done")
-  console.log("done")
-  console.log("done")
-  console.log("done")
-  console.log("done")
-  console.log("done")
   
   // Wait for the next tick to ensure the router and store are fully initialized
   nextTick(() => {

@@ -21,9 +21,19 @@
       </div>
     </form>
 
-    <!-- Optional extra Register button -->
+    <!-- Register button -->
     <button @click="handleRegister" :disabled="loading" class="register-button">
       Register
+    </button>
+
+    <div class="google-divider">
+      <span>or</span>
+    </div>
+
+
+    <button @click="loginWithGoogle" class="google-login">
+      <img class="google-logo" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg" alt="Google" width="20" style="vertical-align:middle; margin-right:8px;">
+      Continue with Google
     </button>
 
     <div v-if="error" class="error">{{ error }}</div>
@@ -84,35 +94,85 @@ async function handleRegister() {
     loading.value = false
   }
 }
+
+
+const loginWithGoogle = () => {
+  window.location.href = '/api/google_auth/login'
+}
+
 </script>
 
 <style scoped>
 .register-container {
   max-width: 400px;
   margin: 2rem auto;
+  color: var(--fg);
   padding: 2rem;
   border: 1px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   border-radius: 8px;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  box-sizing: border-box;
 }
+
 input {
   display: block;
   width: 100%;
   margin-bottom: 1rem;
   padding: .5rem;
-  box-sizing: border-box;
+  color: var(--fg);
+  outline: none;
+  border: 1px solid color-mix(in oklab, var(--fg) 35%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 2%, var(--bg) 100%);
 }
+
+input:focus {
+  border: 1px solid color-mix(in oklab, var(--fg) 100%, var(--bg) 100%);
+}
+
+
 button {
   padding: .5rem 1rem;
   margin-top: 1rem;
 }
-.register-button {
+button {
   width: 100%;
-  background: color-mix(in oklab, var(--fg) 2%, var(--bg) 100%);
-  border: 1px solid color-mix(in oklab, var(--fg) 7%, var(--bg) 100%);
+  color: var(--fg);
+  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
+  border: 2px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
+}
+button:hover {
+  background: color-mix(in oklab, var(--fg) 42%, var(--bg) 40%);
 }
 .error {
   color: #d33;
   margin-top: 1rem;
+}
+
+.google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: color-mix(in oklab, var(--fg) 1%, var(--bg) 100%);
+  border: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
+  color: var(--fg);
+  padding: .5rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.google-button:hover {
+  background: color-mix(in oklab, var(--fg) 8%, var(--bg) 100%);
+}
+
+.google-icon {
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: 0.8em;
 }
 </style>

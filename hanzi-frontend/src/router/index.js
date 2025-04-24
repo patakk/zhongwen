@@ -4,6 +4,7 @@ import Login from '../views/LoginView.vue'
 import Register from '../views/RegisterView.vue'
 import Account from '../views/AccountView.vue'
 import DeleteAccount from '../views/DeleteAccountView.vue'
+import About from '../views/AboutView.vue'
 
 import Grid from '../views/GridView.vue'
 import Search from '../views/SearchView.vue'
@@ -17,6 +18,7 @@ const routes = [
   { path: '/register', component: Register },
   { path: '/account', component: Account },
   { path: '/delete-account', component: DeleteAccount },
+  { path: '/about', component: About },
 
   { path: '/grid', component: Grid },
   { path: '/search', name: 'SearchPage', component: Search },

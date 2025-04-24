@@ -1,12 +1,12 @@
 <template>
     <BasePage page_title="My Space" />
-    <div class="myspace-view">
+    <div class="myspace-view" v-if="loggedIn">
       <div class="wordlist-container">
         <div class="wordlist-header">
           <h2>My Wordlists</h2>
   
           <div class="wordlist-selector">
-            <label for="wordlist-select">Select Wordlist:</label>
+            <label for="wordlist-select" class="wordlist-label">Select Wordlist:</label>
             <select
               id="wordlist-select"
               v-model="selectedWordlist"
@@ -55,11 +55,13 @@
             <div class="wordlist-info">
               <!-- Display Description -->
               <div class="description-section">
-                <p><strong>Description:</strong></p>
+                <p>
+                  <strong>Description:</strong>
+                  <button @click="openEditDescriptionModal" class="edit-description-button" title="Edit Description">
+                    <font-awesome-icon :icon="['fas', 'pencil']" />
+                  </button>
+                </p>
                 <p class="description-text">{{ currentWordlistDescription || 'No description yet.' }}</p>
-                <button @click="openEditDescriptionModal" class="edit-description-button" title="Edit Description">
-                  <font-awesome-icon :icon="['fas', 'pencil']" />
-                </button>
               </div>
               <p><strong>Created:</strong> {{ currentWordlistCreatedAt ? formatDate(currentWordlistCreatedAt) : 'N/A' }}</p>
               <p><strong>Number of Words:</strong> {{ words.length }}</p>
@@ -119,7 +121,10 @@
         </div>
       </div>
     </div>
-    
+    <div v-else class="myspace-view">
+      <p>Redirecting to login page...</p>
+    </div>
+
     <!-- Create Wordlist Modal -->
     <div v-if="showCreateWordlistModal" class="modal-overlay" @click="closeCreateModal">
       <div class="modal-content" @click.stop>
@@ -230,6 +235,9 @@
       };
     },
     computed: {
+      loggedIn() {
+        return this.$store.getters.getAuthStatus;
+      },
       customDecks() {
         return this.$store.getters.getCustomDecks; // Use the original getter
       },
@@ -278,6 +286,12 @@
       }
     },
     mounted() {
+      // Check authentication status and redirect if not logged in
+      if (!this.loggedIn) {
+        this.$router.push('/login');
+        return;
+      }
+      
       // Debug logging of wordlists
       console.log("MySpaceView - Available wordlists (customDecks):", this.customDecks);
       console.log("MySpaceView - Custom dictionary data:", this.customDictionaryData);
@@ -606,10 +620,25 @@
     gap: 1rem;
   }
   
+.wordlist-label{
+  flex: 1;
+}
+
   .wordlist-selector {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     gap: 0.5rem;
+  }
+
+  #wordlist-select {
+    overflow: hidden;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    flex: 1;
   }
   
   select {
@@ -664,9 +693,9 @@
   }
 
   .edit-description-button {
-    position: absolute;
+    /* position: absolute;
     top: 0;
-    right: 0;
+    right: 0; */
     background: none;
     border: none;
     color: var(--fg);
@@ -820,25 +849,13 @@
   }
   
   .rename-button:hover,
-  .create-button:hover {
+  .create-button:hover,
+  .delete-button:hover {
     background: color-mix(in oklab, var(--fg) 30%, var(--bg) 50%);
     color: var(--fg);
   }
   
-  /* Specific styles for the delete wordlist button */
-  .wordlist-actions .delete-button {
-    background: var(--bg);
-    color: var(--fg);
-    position: static;
-    opacity: 1;
-    padding: 0.5rem 1rem;
-    box-shadow: 0 2px 4px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
-  }
   
-  .wordlist-actions .delete-button:hover {
-    background: color-mix(in oklab, var(--fg) 70%, var(--bg) 50%);
-    color: var(--bg);
-  }
   
   /* Modal styles */
   .modal-overlay {

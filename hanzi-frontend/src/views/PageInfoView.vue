@@ -184,7 +184,7 @@ h2 {
 }
 
 .chinese-word:hover {
-  box-shadow: 0 0px 6px color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+  box-shadow: 0 0px 9px color-mix(in oklab, var(--fg) 30%, var(--bg) 50%);
 }
 
 .pinyin {

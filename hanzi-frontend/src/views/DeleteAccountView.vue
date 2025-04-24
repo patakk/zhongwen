@@ -32,15 +32,20 @@
     loading.value = true
     error.value = ''
     try {
-      const res = await fetch('http://localhost:5117/manage/delete-account', {
+      // Update API endpoint to match the one in manage.py
+      const res = await fetch('/api/delete-account', {
         method: 'POST',
         credentials: 'include',
       })
+      
       if (res.ok) {
-        store.dispatch('logout')
-        router.push('/')
+        // Immediately redirect to home page
+        window.location.href = '/'
+        // No need to dispatch logout since the session is cleared server-side
+        // and the page refresh will reset the app state
       } else {
-        error.value = 'Failed to delete account.'
+        const data = await res.json()
+        error.value = data.message || 'Failed to delete account.'
       }
     } catch (e) {
       error.value = e.message || 'An error occurred.'

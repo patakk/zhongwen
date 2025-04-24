@@ -30,7 +30,7 @@
   <style scoped>
   .logout-btn {
     padding: .4rem 1.2rem;
-    background: #e74c3c;
+    background: #e73c3c;
     color: #fff;
     border: none;
     cursor: pointer;

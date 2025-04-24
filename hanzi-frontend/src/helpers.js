@@ -1,4 +1,7 @@
 export function toAccentedPinyin(input) {
+
+    if (!input) return input;
+
     const toneMap = {
         '1': 'āēīōūǖ',
         '2': 'áéíóúǘ',

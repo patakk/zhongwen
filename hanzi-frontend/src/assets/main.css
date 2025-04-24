@@ -25,16 +25,38 @@
   --fg-dim: rgb(19, 19, 19);
   --overlay-background: rgba(255, 255, 255, 0.75);
   --primary-color: #b39cc9;
-  --secondary-color: #c09cc9;
+  --pinyin-color: #8d67b0;
+  --secondary-color: #d31500;
   --dim-primary: #b789c733;
-  --font-family: 'Noto Sans Mono', monospace;
   --font-family: 'SF Mono Regular', monospace;
   /* --font-family: "ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important"; */
   --font-size: 16px;
   --border-radius: 0px;
   --spacing-unit: 8px;
-  --danger-color: #dc3545;
+  --danger-color: #dc3535;
+  --first-t: #257e9e;
+  --second-t: #937600;
+  --third-t: #7226a8;
+  --fourth-t: rgb(187, 52, 34);
+  --neutral-t: #90addd;
 }
+
+.pinyin-first {
+  color: var(--first-t);
+}
+.pinyin-second {
+  color: var(--second-t);
+}
+.pinyin-third {
+  color: var(--third-t);
+}
+.pinyin-fourth {
+  color: var(--fourth-t);
+}
+.pinyin-neutral {
+  color: var(--neutral-t);
+}
+
 
 input[type="text"]:focus-visible {
   outline-color: color-mix(in oklab, var(--fg) 26%, var(--bg) 26%);
@@ -45,6 +67,11 @@ input[type="text"]:focus-visible {
   --bg: rgb(12, 12, 12);
   --fg: rgb(255, 255, 255);
   --fg-dim: rgb(129, 129, 129);
+  --pinyin-color: #b39cc9;
+  --first-t: #6a95a5;
+  --second-t: #9f9111;
+  --third-t: #8a72af;
+  --fourth-t: #ca5b78;
   --overlay-background: rgba(0, 0, 0, 0.5);
   --primary-color: #b39cc9;
   --secondary-color: #c09cc9;
@@ -99,12 +126,12 @@ body {
 }
 
 button {
-  background-color: transparent;
+  /* background-color: transparent;
   color: white;
   padding: var(--spacing-unit) var(--spacing-unit * 2);
   border-radius: var(--border-radius);
   border: none;
-  cursor: pointer;
+  cursor: pointer; */
 }
 
 button:hover {
@@ -123,8 +150,8 @@ button:hover {
   font-size: 1.5em;
   cursor: pointer;
   transform: translate(-50%, -50%);
-  left: .75em;
-  top: .75em;
+  left: 1em;
+  top: 1em;
 }
 
 .theme-toggle {
@@ -133,6 +160,51 @@ button:hover {
 
 [data-theme="dark"] .theme-toggle {
   color: #e2cdec;
+}
+
+.google-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in oklab, var(--fg) 2%, var(--bg) 100%);
+  color: var(--google-color);
+  border: 1px solid var(--google-color);
+  cursor: pointer;
+  margin: 0;
+}
+
+button.google-login {
+  margin-top: 1rem;
+}
+
+.google-login:hover {
+  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 60%);
+  color: var(--fg);
+}
+
+.google-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin-top: 1.5rem;
+  margin-bottom: .5rem;
+  color: color-mix(in oklab, var(--fg) 60%, var(--bg) 100%);
+}
+
+.google-divider::before,
+.google-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+}
+
+.google-divider span {
+  padding: 0 1rem;
+  font-size: 0.9em;
+}
+
+[data-theme="dark"] .google-logo {
+  filter: invert(1);
 }
 
 /* @keyframes spin {

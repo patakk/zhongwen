@@ -19,18 +19,25 @@
   };
   </script>
 
-<style scoped>
+<style>
+
+[data-theme='light'] {
+  --h1-border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+}
+
+[data-theme='dark'] {
+  --h1-border: 2px solid color-mix(in oklab, var(--fg) 30%, var(--bg) 50%);
+}
+
 h1 {
     font-size: 3em;
     margin: 0;
-    /* padding: 1em 1em .5em 1em;
-    margin-bottom: .5em; */
     padding: 1em 0em 1em 0em;
     width: 100%;
     text-align: center;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
-    border-bottom: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    border-bottom: var(--h1-border);
 }
 
 </style>

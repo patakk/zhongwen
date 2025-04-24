@@ -205,9 +205,10 @@ const store = createStore({
     dictionaryData: null,
     authStatus: false,
     username: '',
-    profile: {},
+    profile: {}, // Object holding detailed user profile info
     customDecks: [],
     image: '',
+    loading: false, // Add loading state for API requests
   },
   mutations: {
     setDictionaryData(state, data) {
@@ -222,17 +223,26 @@ const store = createStore({
         state.dictionaryData = data
       }
     },
+    SET_LOADING(state, isLoading) {
+      state.loading = isLoading;
+    },
     setUserData(state, payload) {
-      state.authStatus  = Boolean(payload.authStatus)
-      state.username    = payload.username    || ''
-      // Create a profile object that includes google_id and profile_pic
-      state.profile     = {
-        ...(payload.profile || {}),
+      state.authStatus  = Boolean(payload.authStatus);
+      state.username    = payload.username || '';
+      state.customDecks = payload.custom_deck_names || [];
+      state.image       = payload.profile_pic || payload.image || '';
+
+      // Set complete profile data
+      state.profile = {
         google_id: payload.google_id || null,
-        profile_pic: payload.profile_pic || null
-      }
-      state.customDecks = payload.custom_deck_names || []
-      state.image       = payload.profile_pic || payload.image || ''
+        profile_pic: payload.profile_pic || null,
+        email: payload.email || null,
+        email_verified: payload.email_verified || false,
+        has_password: payload.has_password || false // Add password status
+      };
+
+      // Log the profile state after update for debugging
+      console.log("Vuex setUserData - Assigned new state.profile:", JSON.stringify(state.profile));
     },
     clearUserData(state) {
       state.authStatus  = false
@@ -324,15 +334,27 @@ const store = createStore({
         console.error("Error fetching dictionary data:", error)
       }
     },
-    async fetchUserData({ commit, dispatch }) {
+    async fetchUserData({ commit, state }) {
+      if (state.loading) return; // Prevent duplicate requests
+      
+      commit('SET_LOADING', true);
       try {
         const response = await fetch('/api/get_user_data')
         const userData = await response.json()
         console.log("Fetched user data:", userData)
         commit('setUserData', userData)
-        dispatch('saveUserDataToStorage')
+        commit('SET_LOADING', false);
+        
+        if (userData && userData.authStatus) {
+          // Save to localStorage for persistence
+          localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
+        } else {
+          // Clear localStorage if not authenticated
+          localStorage.removeItem(USER_STORAGE_KEY);
+        }
       } catch (error) {
         console.error("Error fetching user data:", error)
+        commit('SET_LOADING', false);
       }
     },
     removeWordFromCustomDeck({ state, commit }, { character, selectedWordlist }) {
@@ -399,15 +421,20 @@ const store = createStore({
       const toStore = {
         authStatus:  state.authStatus,
         username:    state.username,
-        profile:     state.profile,
+        // Ensure profile in storage also reflects the structure used by components
+        profile:     state.profile, 
         customDecks: state.customDecks,
-        image:       state.image
+        image:       state.image,
+        // Add email/verified to top level if needed for direct access from storage?
+        // For now, keep them within profile in storage as components access via profile getter
+        // email: state.profile.email, 
+        // email_verified: state.profile.email_verified
       }
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(toStore))
     },
     logout({ commit }) {
       commit('clearUserData')
-      localStorage.removeItem(USER_STORAGE_KEY)
+      localStorage.removeItem(USER_STORAGE_KEY) // Clear storage on logout
     },
     createWordlist({ commit, state }, { name }) {
       // Create empty deck structure
@@ -468,8 +495,11 @@ const store = createStore({
     getAuthStatus:     (state) => state.authStatus,
     getUsername:       (state) => state.username,
     getProfile:        (state) => state.profile,
+    getHasPassword:    (state) => state.profile?.has_password || false, // Add getter for password status
+    getGoogleLinked:   (state) => !!state.profile?.google_id, // Add getter for google link status
     getCustomDecks:    (state) => state.customDecks,
     getImage:          (state) => state.image || state.profile?.profile_pic || '',
+    getIsLoading:      (state) => state.loading,
     isLoggedIn:        (state) => !!state.authStatus && !!state.username
   }
 })

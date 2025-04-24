@@ -1,27 +1,22 @@
-from flask import Blueprint, redirect, url_for, session, flash, request, render_template
+from flask import Blueprint, redirect, url_for, session, flash, request, render_template, jsonify
 from flask_dance.contrib.google import make_google_blueprint, google
 import secrets
+from sqlalchemy.exc import SQLAlchemyError
+from flask_mail import Message
 
 from backend.db.extensions import db
 from backend.db.models import User
 from backend.db.models import WordEntry
 from backend.db.models import WordList
+from backend.common import config
 from backend.common import auth_keys
+from backend.decorators import hard_session_required
+from backend.common import DOMAIN
+from backend.routes.manage import validate_password  # Import validation function
 import os
 # 1. The Flask-Dance blueprint for OAuth
 
 
-# get env var to see if PROD is true
-DOMAIN = 'http://localhost:5172'
-PROD_MODE = False
-if os.getenv('PROD') == 'true':
-    DOMAIN = auth_keys['PROD_DOMAIN']
-    PROD_MODE = True
-
-if PROD_MODE:
-    print("Running in production mode")
-else:
-    print("Running in development mode")
 print("Domain set to:", DOMAIN)
 
 google_oauth_bp = make_google_blueprint(
@@ -49,34 +44,72 @@ def create_or_get_google_user(google_info):
         print(f"Existing Google user found: {user.username} (ID: {user.id})")
         return user
     
-    # 2. Check if a user exists with the same email address AND doesn't have a Google ID yet
+    # 2. Check if a user exists with the same email address
     if email:
         email_user = User.query.filter_by(email=email).first()
-        if email_user and not email_user.google_id:  # Only link if no Google ID yet
-            print(f"Found existing user with matching email: {email_user.username} (ID: {email_user.id})")
-            print(f"Automatically linking Google account to this user")
-            
-            # Link the Google account to this existing user
-            email_user.google_id = google_id
-            email_user.email_verified = True  # Mark email as verified since Google verified it
-            
-            # Optionally update profile pic if user doesn't have one
-            if google_info.get("picture"):
-                email_user.profile_pic = google_info.get("picture")
-                
-            db.session.commit()
-            
-            # Flash message to inform user (will appear after redirect)
-            flash("We noticed you already have an account with this email. We've linked your Google account for easier login!", "success")
-            
-            return email_user
-        elif email_user and email_user.google_id:
-            # User has this email but with a different Google account - this shouldn't normally happen
-            # but could if they've deleted and recreated their Google account
-            print(f"User with this email already exists and has a different Google ID")
-    
-    # 3. If no existing user found, create a new one
-    print(f"Creating new Google user...")
+
+        if email_user:
+            # Scenario A: Email exists, is verified, and has no Google ID yet -> Link it
+            if email_user.email_verified and not email_user.google_id:
+                print(f"Found existing user with matching VERIFIED email: {email_user.username} (ID: {email_user.id})")
+                print(f"Automatically linking Google account to this user")
+                email_user.google_id = google_id
+                # Email already verified, no need to change email_verified status
+                if google_info.get("picture") and not email_user.profile_pic: # Only update pic if they don't have one
+                    email_user.profile_pic = google_info.get("picture")
+                try:
+                    db.session.commit()
+                    flash("We noticed you already have an account with this email. We've linked your Google account for easier login!", "success")
+                    return email_user
+                except SQLAlchemyError as e:
+                    db.session.rollback()
+                    print(f"Error linking Google ID to verified email user {email_user.username}: {e}")
+                    flash("An error occurred while linking your Google account. Please try again.", "error")
+                    return None # Indicate failure
+
+            # Scenario B: Email exists, but is NOT verified and has no Google ID
+            # -> Remove email from this user, let new Google user be created.
+            elif not email_user.email_verified and not email_user.google_id:
+                print(f"Found existing user {email_user.username} (ID: {email_user.id}) with matching UNVERIFIED email.")
+                print(f"Removing email from this user to allow new Google account creation.")
+                try:
+                    email_user.email = None
+                    # email_verified remains False implicitly
+                    db.session.commit()
+                    print(f"Email removed from user {email_user.username}.")
+                    # DO NOT return email_user. Proceed to create a new user below.
+                except SQLAlchemyError as e:
+                    db.session.rollback()
+                    print(f"Error removing email from user {email_user.username}: {e}")
+                    flash("An error occurred while preparing your account. Please try again.", "error")
+                    # Prevent proceeding to creation if email removal failed
+                    return None
+
+            # Scenario C: Email exists and already has a Google ID (should match the incoming one if it's the same user)
+            # This case is technically handled by the initial google_id check, but we add a log here for clarity.
+            elif email_user.google_id == google_id:
+                 print(f"User with this email already linked to this Google ID (ID: {email_user.id}). Proceeding with login.")
+                 # No changes needed, user already exists and is correctly linked.
+                 # The function will return this user shortly if the initial google_id check didn't already catch it.
+                 # This path might be redundant depending on exact flow but safe to have.
+                 return email_user # Return the user found by email, which matches the google_id
+
+            # Scenario D: Email exists but is linked to a DIFFERENT Google ID
+            elif email_user.google_id and email_user.google_id != google_id:
+                # This is problematic. The email is verified (implicitly or explicitly)
+                # and associated with a different Google account.
+                # We cannot link this new Google account. Block the login.
+                print(f"Error: User with email {email} exists but is linked to a different Google ID.")
+                flash("This email address is already associated with a different Google account.", "error")
+                # We need to prevent login here. Returning None or raising an exception
+                # might be options, but redirecting seems clearest for the user flow.
+                # However, this function's primary role is user retrieval/creation.
+                # Let the calling function handle the redirect/error message based on None return.
+                return None # Indicate failure to the calling function
+
+
+    # 3. If no existing user found by google_id OR if the only email match was unverified (and email removed), create a new one
+    print(f"Creating new Google user for email {email}...")
     username = email.split("@")[0] if email else f"google_user_{google_id[:8]}"
     
     # Check if username exists, adjust if needed
@@ -87,40 +120,51 @@ def create_or_get_google_user(google_info):
 
     user = User(
         username=username,
-        email=email,
-        email_verified=True,
+        email=email, # Assign the email to the new user
+        email_verified=True, # Mark as verified because it's from Google
         google_id=google_id,
         profile_pic=google_info.get("picture")
     )
-    user.set_password(secrets.token_urlsafe(16))
+    user.set_password(secrets.token_urlsafe(16)) # Set a random password
     
-    db.session.add(user)
-    db.session.commit()
-    print(f"New user created: {user.username} (ID: {user.id})")
-    
-    # Create default word list
     try:
-        new_list = WordList(name="Learning list (default)", user=user)
-        db.session.add(new_list)
+        db.session.add(user)
         db.session.commit()
-        print(f"Created default word list (ID: {new_list.id})")
-        
-        new_entry = WordEntry(word="你好", list=new_list)
-        db.session.add(new_entry)
-        db.session.commit()
-        print(f"Added default word entry to list")
-    except Exception as e:
-        print(f"Error creating word list: {e}")
+        print(f"New user created: {user.username} (ID: {user.id}) with email {user.email}")
+
+        # Create default word list
+        try:
+            new_list = WordList(name="Learning list (default)", user=user)
+            db.session.add(new_list)
+            db.session.commit()
+            print(f"Created default word list (ID: {new_list.id})")
+            
+            new_entry = WordEntry(word="你好", list=new_list)
+            db.session.add(new_entry)
+            db.session.commit()
+            print(f"Added default word entry to list")
+        except Exception as e:
+            print(f"Error creating word list/entry: {e}")
+            # Don't rollback user creation, just log the wordlist error
+            # db.session.rollback() # Avoid rolling back user creation
+
+        return user
+    except SQLAlchemyError as e:
         db.session.rollback()
-    
-    return user
+        print(f"Error creating new Google user: {e}")
+        # Check if the error is specifically about the email constraint (shouldn't happen if removal worked)
+        if 'UNIQUE constraint failed: user.email' in str(e):
+             flash("This email address seems to be in use, but we couldn't resolve the conflict. Please contact support.", "error")
+        else:
+             flash("An error occurred during account creation. Please try again.", "error")
+        return None
 
 
 # 1. Initial login route - user clicks this to start Google login
 @google_auth_bp.route("/login")
 def login():
     # Redirect to Google OAuth
-    return redirect(url_for("google.login"))
+    return redirect("/login/google")
 
 # Link Google account route
 # Link Google account route
@@ -128,14 +172,14 @@ def login():
 def link_account():
     if 'user_id' not in session:
         flash("Please log in first", "error")
-        return redirect(url_for("login"))   
+        return redirect(f'{DOMAIN}/login')   
     
     # Mark this as a linking flow
     session['linking_account'] = True
     session['linking_user_id'] = session['user_id']
     
     # Redirect to Google OAuth - this will come back to /authorized
-    return redirect(url_for("google.login"))
+    return redirect("/login/google")
 
 # Callback route - where Google redirects after authentication
 @google_auth_bp.route("/authorized_handler")
@@ -155,7 +199,6 @@ def authorized_handler():
     google_info = resp.json()
     google_id = google_info["id"]
     
-    # CHECK IF WE'RE LINKING ACCOUNTS
     # CHECK IF WE'RE LINKING ACCOUNTS
     if session.get('linking_account') and 'linking_user_id' in session:
         print("Processing account linking flow...")
@@ -197,12 +240,16 @@ def authorized_handler():
         #return redirect(url_for("account"))
         return redirect(f'{DOMAIN}/')  
 
-    
     # NORMAL LOGIN FLOW
     print("Processing normal login flow...")
     # Use helper function to create or get user
     user = create_or_get_google_user(google_info)
-    
+
+    # Handle case where create_or_get_google_user indicated an error (e.g., email conflict)
+    if user is None:
+        # Flash message was likely set within create_or_get_google_user
+        return redirect(f'{DOMAIN}/login') # Redirect to login page with error flash
+
     # Log them in
     session.clear()
     session.permanent = True
@@ -213,17 +260,76 @@ def authorized_handler():
     
     flash('Logged in successfully with Google!', 'success')
     #return redirect(url_for("home"))
-    return redirect(f'{DOMAIN}')  
+    return redirect(f'{DOMAIN}')
+
+
+@google_auth_bp.route("/unlink_and_set_password", methods=["POST"])
+@hard_session_required
+def unlink_and_set_password():
+    if 'user_id' not in session:
+        return jsonify({"message": "Authentication required", "success": False}), 401
+
+    user = User.query.get(session['user_id'])
+    if not user:
+        return jsonify({"message": "User not found", "success": False}), 404
+
+    if not user.google_id:
+        return jsonify({"message": "Google account not linked", "success": False}), 400
+
+    data = request.get_json()
+    new_password = data.get('new_password')
+    confirm_password = data.get('confirm_password')
+
+    if not new_password or not confirm_password:
+        return jsonify({"message": "Password fields are required", "success": False}), 400
+
+    if new_password != confirm_password:
+        return jsonify({"message": "Passwords do not match", "success": False}), 400
+
+    is_valid, msg = validate_password(new_password)
+    if not is_valid:
+        return jsonify({"message": msg, "success": False}), 400
+
+    try:
+        # Set the new password
+        user.set_password(new_password)
+
+        # Unlink Google account data and clear email
+        user.google_id = None
+        # Also clear email since it was obtained through Google
+        user.email = None
+        user.email_verified = False
+        # Clear Google profile picture as well
+        if user.profile_pic and ('googleusercontent.com' in user.profile_pic or 'google.com' in user.profile_pic):
+            user.profile_pic = None
+
+        db.session.commit()
+        print(f"User {user.username} unlinked Google, set password, and cleared email.")
+        return jsonify({"message": "Successfully unlinked Google account and set password. Your email has been removed.", "success": True}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error during unlink_and_set_password for user {user.username}: {e}")
+        return jsonify({"message": "An internal error occurred.", "success": False}), 500
 
 
 @google_auth_bp.route("/unlink_account", methods=["POST"])
 def unlink_account():
+    # This is the existing unlink endpoint - add a check to prevent unlinking if no password exists
     if 'user_id' not in session:
         print("Please log in first", "error")
-        return redirect(f'{DOMAIN}')
+        return jsonify({"message": "Authentication required", "success": False}), 401
 
     user = User.query.get(session['user_id'])
+    if not user:
+        print("User not found", "error")
+        return jsonify({"message": "User not found", "success": False}), 404
 
+    # ADD CHECK: Prevent unlinking if no password exists via this old route
+    if not user.password_hash and user.google_id:
+        return jsonify({"message": "Please set a password to unlink your Google account.", "success": False}), 400
+
+    # Original unlink logic below
     if not user.google_id:
         print("No linked Google account found", "error")
         return {"message": "No linked Google account to unlink", "success": False}, 400

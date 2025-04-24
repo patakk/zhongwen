@@ -17,7 +17,7 @@ export default defineConfig(({ command }) => {
           target: 'http://localhost:5117',
           changeOrigin: true, 
         },
-        '/login': {
+        '/login/google': {
           target: 'http://localhost:5117',
           changeOrigin: true,
         }
@@ -26,6 +26,7 @@ export default defineConfig(({ command }) => {
         'localhost',
         'e4c2-86-33-89-246.ngrok-free.app'
       ],
+      port: 5888
     },
     plugins: [
       vue(),

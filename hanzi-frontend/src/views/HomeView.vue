@@ -10,6 +10,7 @@
       <RouterLink to="/search">Search</RouterLink> |
       <RouterLink to="/flashcards">Flashcards</RouterLink> |
       <RouterLink to="/page-info">Page Info</RouterLink>
+      <RouterLink to="/about">About</RouterLink>
     </nav>
   </div>
 </template>

@@ -77,6 +77,12 @@ def search():
     logger.debug(f"Query: {query}")
     only_hanzi = all(regex.match(r'\p{Han}', char) for char in query if char.strip())
     if only_hanzi:
+        
+        
+        definition_results = dictionary.definition_lookup(query)
+        for idx, d in enumerate(definition_results):
+            results.append({'hanzi': d['simplified'], 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'hanzi', 'order': idx})
+
         exact_matches = []
         other_matches = []
         res = dictionary.get_examples(query)
@@ -91,7 +97,8 @@ def search():
                         other_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
                     else:
                         other_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
-        results += exact_matches + other_matches
+
+        results += other_matches
     else:
         res = dictionary.search_by_pinyin(query)
         hard_results = []

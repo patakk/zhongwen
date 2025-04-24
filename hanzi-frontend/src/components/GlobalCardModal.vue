@@ -8,7 +8,7 @@
       
       <div v-else class="modal card-modal" @click.stop="handleModalClick">
         <button @click="closeModal" class="close-btn">×</button>
-
+        
         <!-- Add to wordlist dropdown button -->
         <div v-if="isLoggedIn" class="wordlist-dropdown">
           <button @click.stop="toggleWordlistDropdown" class="wordlist-btn">
@@ -40,19 +40,56 @@
             </span>
           </div>
           <div class="minor-character">{{ cardData.character }}</div>
+          
+          <div class="main-pinyin">{{ $toAccentedPinyin(cardData.pinyin[0]) }}</div>
+          <div class="main-english">{{ cardData.english[0] }}</div>
 
-          <!-- Check if there are multiple pronunciations -->
-          <div v-if="cardData.pinyin.length > 1" class="multi-pronunciation">
-            <div v-for="(pinyin, index) in cardData.pinyin" :key="index" class="pronunciation-item">
-              <div class="p-pinyin">{{ $toAccentedPinyin(pinyin) }}</div>
-              <div class="p-english">{{ cardData.english[index] }}</div>
+          <!-- Concept toggle buttons with dropdown functionality -->
+          <div class="concepts-container">
+            <div class="concept-toggle" @click="toggleConcepts('related')" :class="{ 'active': showRelatedConcepts }">
+              <span class="concept-label">related concepts</span>
+            </div>
+            
+            <div class="concept-toggle" @click="toggleConcepts('opposite')" :class="{ 'active': showOppositeConcepts }">
+              <span class="concept-label">opposite concepts</span>
             </div>
           </div>
 
-          <!-- Single pronunciation -->
-          <div v-else>
-            <div class="main-pinyin">{{ $toAccentedPinyin(cardData.pinyin[0]) }}</div>
-            <div class="main-english">{{ cardData.english[0] }}</div>
+          <!-- Concept content containers -->
+          <div v-if="showRelatedConcepts" class="concept-content related-content">
+            <div v-if="formattedSimilars.length === 0" class="no-concepts">
+              No related concepts available
+            </div>
+            <div v-else class="concept-items">
+              <div 
+                v-for="(item, index) in formattedSimilars" 
+                :key="index" 
+                class="concept-item"
+                @click="updateModalContent(item.character)"
+              >
+                <div class="concept-character">{{ item.character }}</div>
+                <div class="concept-pinyin">{{ item.pinyin && item.pinyin.length > 0 ? $toAccentedPinyin(item.pinyin[0]) : '' }}</div>
+                <div class="concept-english">{{ item.english && item.english.length > 0 ? item.english[0].split('/')[0] : '' }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div v-if="showOppositeConcepts" class="concept-content opposite-content">
+            <div v-if="formattedOpposites.length === 0" class="no-concepts">
+              No opposite concepts available
+            </div>
+            <div v-else class="concept-items">
+              <div 
+                v-for="(item, index) in formattedOpposites" 
+                :key="index" 
+                class="concept-item"
+                @click="updateModalContent(item.character)"
+              >
+                <div class="concept-character">{{ item.character }}</div>
+                <div class="concept-pinyin">{{ item.pinyin && item.pinyin.length > 0 ? $toAccentedPinyin(item.pinyin[0]) : '' }}</div>
+                <div class="concept-english">{{ item.english && item.english.length > 0 ? item.english[0].split('/')[0] : '' }}</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -77,11 +114,18 @@
             <div class="char-details">
               <div class="freq-trad-anim">
                 <div class="freq-trad">
-                  <div class="detail-group">
-                    <span class="basic-label">Pinyin:</span> {{ activeCharData.main_word_pinyin.map((word) => $toAccentedPinyin(word)) }}
-                  </div>
-                  <div class="detail-group">
-                    <span class="basic-label">Meaning:</span> {{ activeCharData.main_word_english.map((word) => $toAccentedPinyin(word)) }}
+                  <!-- Replace the separate pinyin and meaning sections with a combined section -->
+                  <div class="detail-group pinyin-meaning-group">
+                    <span class="basic-label">Pronunciation & Meaning:</span>
+                    <div class="pinyin-meaning-pairs">
+                      <div v-for="(pinyin, index) in activeCharData.main_word_pinyin" :key="index" class="pinyin-meaning-pair">
+                        <div class="pm-pinyin" :class="getToneClass(pinyin)"><span class="pinyinshadow">{{ $toAccentedPinyin(pinyin) }}</span></div>
+                        <div class="pm-meaning">{{ activeCharData.main_word_english[index] || '' }}</div>
+                      </div>
+                      <div v-if="activeCharData.main_word_pinyin.length === 0" class="no-pinyin-meaning">
+                        No pronunciation data available
+                      </div>
+                    </div>
                   </div>
 
                   <div v-if="activeChar !== activeCharData.traditional" class="detail-group">
@@ -120,7 +164,7 @@
                 </div>
               </div>
 
-              <ExpandableExamples title="Related words">
+              <ExpandableExamples title="Words containing this character">
                 <template v-slot:afew="slotProps">
                   <div class="example-words">
                     <ClickableRow
@@ -207,6 +251,12 @@
         </div>
       </div>
     </div>
+    <ToastNotification
+      v-model:visible="notificationVisible"
+      :message="notificationMessage"
+      :type="notificationType"
+      position="bottom-right"
+    />
   </div>
 </template>
 
@@ -214,13 +264,15 @@
 import ExpandableExamples from './ExpandableExamples.vue'
 import ClickableRow from './ClickableRow.vue'
 import AnimatedHanzi from './AnimatedHanzi.vue'
+import ToastNotification from './ToastNotification.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
     ExpandableExamples,
     ClickableRow,
-    AnimatedHanzi
+    AnimatedHanzi,
+    ToastNotification
   },
   name: 'GlobalCardModal',
   data() {
@@ -232,6 +284,9 @@ export default {
       addingToList: false,
       notificationMessage: '',
       notificationVisible: false,
+      notificationType: 'success',
+      showRelatedConcepts: false,
+      showOppositeConcepts: false,
     }
   },
   provide() {
@@ -254,21 +309,75 @@ export default {
       if (!this.cardData || !this.cardData.character) return []
       return this.cardData.character.split('').filter(char => /\p{Script=Han}/u.test(char))
     },
-    // Debug computed property to log decomposition data
-    debugDecompData() {
-      if (this.activeChar) {
-        console.log('==================== DEBUG INFO ====================');
-        console.log('Component activeChar:', this.activeChar);
-        console.log('Component decompositionData:', this.decompositionData);
-        
-        if (this.decompositionData) {
-          console.log(`Does decompositionData have key "${this.activeChar}"?`, this.activeChar in this.decompositionData);
-          console.log(`Data for activeChar (${this.activeChar}):`, this.decompositionData[this.activeChar]);
+    // Format similar concepts for display
+    formattedSimilars() {
+      if (!this.cardData || !this.cardData.similars) return [];
+      
+      const result = [];
+      const similars = this.cardData.similars;
+      
+      // Process the entire array of similar items
+      if (Array.isArray(similars)) {
+        for (let item of similars) {
+          if (typeof item === 'string') {
+            // Handle string items
+            result.push({
+              character: item,
+              pinyin: [],
+              english: []
+            });
+          } else if (typeof item === 'object') {
+            // For objects, process ALL character keys
+            const charKeys = Object.keys(item);
+            for (let charKey of charKeys) {
+              if (item[charKey]) {
+                result.push({
+                  character: charKey,
+                  pinyin: item[charKey].pinyin || [],
+                  english: item[charKey].english || []
+                });
+              }
+            }
+          }
         }
-        
-        console.log('==================== END DEBUG ====================');
       }
-      return true;
+      
+      return result;
+    },
+    // Format opposite concepts for display
+    formattedOpposites() {
+      if (!this.cardData || !this.cardData.opposites) return [];
+      
+      const result = [];
+      const opposites = this.cardData.opposites;
+      
+      // Process the entire array of opposite items
+      if (Array.isArray(opposites)) {
+        for (let item of opposites) {
+          if (typeof item === 'string') {
+            // Handle string items
+            result.push({
+              character: item,
+              pinyin: [],
+              english: []
+            });
+          } else if (typeof item === 'object') {
+            // For objects, process ALL character keys
+            const charKeys = Object.keys(item);
+            for (let charKey of charKeys) {
+              if (item[charKey]) {
+                result.push({
+                  character: charKey,
+                  pinyin: item[charKey].pinyin || [],
+                  english: item[charKey].english || []
+                });
+              }
+            }
+          }
+        }
+      }
+      
+      return result;
     },
     activeCharData() {
       if (!this.cardData || !this.cardData.chars_breakdown) return null;
@@ -310,6 +419,10 @@ export default {
           }
         } else {
           document.body.classList.remove('modal-open');
+          
+          // Reset toast notification state when modal closes
+          this.notificationVisible = false;
+          this.notificationMessage = '';
         }
       },
       immediate: true
@@ -318,6 +431,10 @@ export default {
       handler(newData) {
         if (newData && this.validChars.length > 0) {
           this.activeChar = this.validChars[0];
+          
+          // Reset concept sections when new card data is loaded
+          this.showRelatedConcepts = false;
+          this.showOppositeConcepts = false;
         }
       }
     },
@@ -346,10 +463,12 @@ export default {
     console.log("GlobalCardModal - Is user logged in?", this.isLoggedIn);
     
     window.addEventListener('keydown', this.handleEscKey);
+    window.addEventListener('keydown', this.handleDebugKey); // Add the debug key handler
     document.addEventListener('click', this.handleOutsideClick);
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleEscKey);
+    window.removeEventListener('keydown', this.handleDebugKey); // Remove the debug key handler
     document.removeEventListener('click', this.handleOutsideClick);
     
     if (this.isVisible) {
@@ -363,6 +482,19 @@ export default {
       fetchCardData: 'cardModal/fetchCardData'
       // Removed fetchDecompositionData to prevent direct calls
     }),
+    // Add a new method to determine tone class
+    getToneClass(pinyin) {
+      if (!pinyin) return 'pinyin-neutral';
+      
+      // Check for tone numbers in the original pinyin
+      if (pinyin.includes('1')) return 'pinyin-first';
+      if (pinyin.includes('2')) return 'pinyin-second';
+      if (pinyin.includes('3')) return 'pinyin-third';
+      if (pinyin.includes('4')) return 'pinyin-fourth';
+      
+      // If no tone number is found, it's a neutral tone
+      return 'pinyin-neutral';
+    },
     closeModal() {
       this.hideCardModal();
       this.showWordlistDropdown = false;
@@ -371,6 +503,22 @@ export default {
       if (event.key === 'Escape' && this.isVisible) {
         this.closeModal();
       }
+    },
+    handleDebugKey(event) {
+      if (event.key === 'd') {
+        this.debugCardData();
+      }
+    },
+    // Debug function to log card data to console
+    debugCardData() {
+      console.log('===== CARD DATA DEBUG =====');
+      console.log('Card Data:', JSON.stringify(this.cardData, null, 2));
+      console.log('Active Char Data:', JSON.stringify(this.activeCharData, null, 2));
+      console.log('Decomposition Data:', JSON.stringify(this.decompositionData, null, 2));
+      console.log('Current Character:', this.currentCharacter);
+      console.log('Valid Chars:', this.validChars);
+      console.log('Active Char:', this.activeChar);
+      this.showNotification('Card data logged to console. Press F12 to view.', 'info');
     },
     startHoverTimer(word) {
       this.clearHoverTimer();
@@ -469,32 +617,9 @@ export default {
       });
     },
     showNotification(message, type = 'success') {
-      // Create a notification element
-      const notification = document.createElement('div');
-      notification.className = `card-modal-notification ${type}`;
-      notification.textContent = message;
-      notification.style.position = 'fixed';
-      notification.style.top = '20px';
-      notification.style.left = '20px';
-      notification.style.backgroundColor = type === 'success' ? 'var(--green-notif, #4caf50)' : '#f44336';
-      notification.style.color = 'white';
-      notification.style.padding = '10px 15px';
-      notification.style.borderRadius = '4px';
-      notification.style.zIndex = '10000';
-      notification.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
-      
-      // Add animation manually
-      notification.style.animation = 'fadeInOut 3s ease forwards';
-      
-      // Add to document body
-      document.body.appendChild(notification);
-      
-      // Remove after a few seconds
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 3000);
+      this.notificationMessage = message;
+      this.notificationType = type;
+      this.notificationVisible = true;
     },
     handleOutsideClick(event) {
       // Check if the dropdown is open and if the click is outside the dropdown element itself
@@ -544,10 +669,32 @@ export default {
       
       console.log(`No decomposition data found directly for ${character}`);
       return components;
+    },
+    toggleConcepts(type) {
+      if (type === 'related') {
+        this.showRelatedConcepts = !this.showRelatedConcepts;
+        this.showOppositeConcepts = false;
+      } else if (type === 'opposite') {
+        this.showOppositeConcepts = !this.showOppositeConcepts;
+        this.showRelatedConcepts = false;
+      }
     }
   }
 }
 </script>
+
+<style>
+
+[data-theme='light'] {
+  --card-shadow: 14px 10px 0px 0px var(--fg);
+}
+
+[data-theme='dark'] {
+  --card-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
+}
+
+
+</style>
 
 <style scoped>
 .global-modal-container {
@@ -601,15 +748,14 @@ export default {
 
 .modal {
   position: fixed;
-  width: 34vw;
-  max-width: 34vw;
   height: 90vh;
   max-height: 90vh;
+  /* width: 34vw;
+  max-width: 34vw; */
+  aspect-ratio: .75;
   border: 2px dashed var(--fg);
   border: 4px solid var(--fg-dim);
-  box-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
-  box-shadow: 5px 5px 2px 2px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
-  box-shadow: 14px 10px 0px 0px var(--fg);
+  box-shadow: var(--card-shadow);
   background: var(--bg);
   display: flex;
   flex-direction: column;
@@ -835,11 +981,12 @@ export default {
 }
 
 .detail-group {
-  padding: 0rem 1rem;
+  padding: 1rem;
   display: flex;
   justify-content: space-between;
   width: 100%;
-  height: 3em;
+  height: 4rem;
+  min-height: 4rem;
   box-sizing: border-box;
   font-size: 1rem;
   min-width: 0;
@@ -848,6 +995,7 @@ export default {
 
 .radicals-group {
   height: auto;
+
 }
 
 .detail-group:last-child {
@@ -864,12 +1012,11 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 2;
-  justify-self: flex-start;
   background-color: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
   height: 100%;
-  justify-content: space-around;
+  justify-self: flex-start;
   align-items: center;
-  justify-content: space-around;
+  /* justify-content: space-around; */
 }
 
 .hanzi-anim {
@@ -881,8 +1028,8 @@ export default {
 }
 
 .anim-character {
-  font-size: 12rem;
-  font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
+  /* font-size: 12rem;
+  font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体'; */
 }
 
 .radicals {
@@ -1057,6 +1204,142 @@ export default {
   color: var(--text-primary);
 }
 
+.pinyin-meaning-group {
+  height: auto;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.pinyin-meaning-pairs {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.pinyin-meaning-pair {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  background-color: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
+}
+
+.pm-pinyin {
+  font-size: 1.2rem;
+  font-weight: 500;
+  min-width: 5rem;
+  /* color: var(--pinyin-color); */
+}
+
+.pinyinshadow{
+
+}
+
+.pm-meaning {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.no-pinyin-meaning {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 0.5rem;
+}
+
+.concepts-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.concept-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease;
+}
+
+.concept-toggle.active {
+  /* background-color: var(--primary-color); */
+  background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  color: var(--fg);
+}
+
+.concept-bookmark {
+  font-size: 1.2rem;
+}
+
+.concept-label {
+  font-size: 1rem;
+}
+
+.concept-content {
+  margin-top: 1rem;
+}
+
+.related-content,
+.opposite-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.no-concepts {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.concept-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.concept-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.concept-item:hover {
+  background-color: var(--primary-color);
+  color: var(--fg);
+}
+
+.concept-character {
+  font-size: 1.5rem;
+  font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
+}
+
+.concept-pinyin {
+  font-size: 1rem;
+  opacity: 0.6;
+}
+
+.concept-english {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {
   .modal {
@@ -1065,7 +1348,8 @@ export default {
   }
 
   .main-word {
-    font-size: 5rem;
+    font-size: 8rem;
+    margin-top: 3rem;
   }
 
   .main-pinyin,
@@ -1090,35 +1374,6 @@ export default {
 </style>
 
 <style>
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(20px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-20px); }
-}
-
-.card-modal-notification {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  padding: 10px 15px;
-  border-radius: 4px;
-  font-size: 14px;
-  z-index: 10000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  animation: fadeInOut 3s ease forwards;
-}
-
-.card-modal-notification.success {
-  background-color: var(--green-notif, #4caf50);
-  color: white;
-}
-
-.card-modal-notification.error {
-  background-color: #f44336;
-  color: white;
-}
 
 body.modal-open {
   overflow: hidden;

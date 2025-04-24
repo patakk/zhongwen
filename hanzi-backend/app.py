@@ -36,19 +36,19 @@ from backend.db.ops import db_delete_user
 
 from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
-# from backend.common import CARDDECKS_W_PINYIN
 from backend.common import DECKNAMES
 from backend.common import STROKES_CACHE
+from backend.common import RELATED_CONCEPTS
+from backend.common import OPPOSITE_CONCEPTS
 from backend.common import get_tatoeba_page
 from backend.common import send_bot_notification
 from backend.common import default_darkmode
-
 from backend.common import get_pinyin
 from backend.common import get_char_info
 from backend.common import get_chars_info
 from backend.common import auth_keys
+from backend.common import AUDIO_MAPPINGS
 from backend.routes.manage import validate_password
-# from rapidfuzz import process as fuzz_process
 
 from flask import send_file
 
@@ -131,7 +131,7 @@ def before_request():
     if request.path.startswith('/static/'):
         return
 
-@app.route('/get_simple_char_data')
+@app.route('/api/get_simple_char_data')
 @session_required
 def get_simple_char_data():
     character = request.args.get('character')
@@ -165,6 +165,8 @@ def main_card_data(character):
         "pinyin": simple_info.get('pinyin', get_pinyin(character)),
         "english": simple_info.get('english', 'N/A'),
         "examples": examples,
+        "similars": [{word: get_char_info(word) for word in RELATED_CONCEPTS.get(character, [])}],
+        "opposites": [{word: get_char_info(word) for word in OPPOSITE_CONCEPTS.get(character, [])}],
         "is_last": is_last,
         "html": "IMPLEMENT ME", #data.get('examples', ''),
     }
@@ -276,14 +278,6 @@ def verify_turnstile(token, remoteip):
 from flask import request, jsonify, session, redirect, url_for, render_template
 
 
-@app.route('/api/delete-account', methods=['GET', 'POST'])
-@session_required
-def delete_account():
-    """Delete a user and all their associated data."""
-    username = session['username']
-    db_delete_user(username)
-    return jsonify({"message": "Account deleted successfully"}), 200
-
 @limiter.limit("25 per minute")
 @app.route('/api/register', methods=['GET', 'POST'])
 def register():
@@ -377,17 +371,15 @@ def register():
             send_bot_notification(message)
             logger.info(f"New user registered successfully: {username}")
 
-            # For SPA: return user info for Vuex store
             result = {
                 'authStatus': True,
                 'username': username,
                 'image': getattr(user, 'profile_pic', ''),
-                'profile': {
-                    'email': user.email,
-                    'email_verified': getattr(user, 'email_verified', False)
-                    # Add more profile fields if needed
-                },
-                'customDecks': getattr(user, 'custom_decks', [])
+                'email': user.email,
+                'email_verified': getattr(user, 'email_verified', False),
+                'google_id': getattr(user, 'google_id', None),
+                'profile_pic': getattr(user, 'profile_pic', None),
+                'custom_deck_names': getattr(user, 'custom_decks', []),
             }
             if request.is_json:
                 return jsonify(result), 201
@@ -505,16 +497,45 @@ def home():
 @app.route('/api/get_user_data')
 @session_required
 def get_user_data():
-    context = get_app_context()
-    username = context.get("username")
-    return jsonify({
-        "username": username,
-        "darkmode": context["darkmode"],
-        "google_id": context["google_id"],
-        "profile_pic": context["profile_pic"],
-        "custom_deck_names": context["custom_deck_names"],
-        "authStatus": bool(username)
-    })
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({})
+
+    user = User.query.get(user_id)
+    if not user:
+        # User not found in DB (potentially deleted), clear session
+        session.clear()
+        return jsonify({'authStatus': False}) # Indicate logged out
+
+    username = user.username
+    user_wordlists_data = []
+    if username:
+        user_wordlists_data = db_get_user_wordlists(username, with_data=False)
+    custom_decks_data = []
+    if user_wordlists_data:
+        custom_decks_data = [
+            {
+                'name': user_wordlists_data.get(wl, {}).get('name', wl),
+                'description': user_wordlists_data.get(wl, {}).get('description', ''),
+                'timestamp': user_wordlists_data.get(wl, {}).get('timestamp', ''),
+            }
+            for wl in user_wordlists_data
+        ]
+
+    # User exists, return their data
+    user_data = {
+        'authStatus': True,
+        'username': user.username,
+        'google_id': user.google_id,
+        'profile_pic': user.profile_pic,
+        'email': user.email,
+        'email_verified': user.email_verified,
+        'has_password': user.password_hash is not None, 
+        "custom_deck_names": custom_decks_data,
+
+    }
+    return jsonify(user_data)
+
 
 @app.route('/api/get_custom_cc', methods=['POST'])
 @session_required

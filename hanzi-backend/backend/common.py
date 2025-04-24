@@ -3,9 +3,14 @@ import random
 import requests
 import os
 from datetime import datetime, timezone
+import yaml
 import re
 import jieba.posseg as pseg
 from hanziconv import HanziConv
+from backend.setup import config
+from backend.setup import auth_keys
+from backend.setup import BASE_DIR
+from backend.setup import DOMAIN
 
 import logging
 
@@ -20,58 +25,10 @@ from pypinyin import lazy_pinyin, Style
 
 # from .flashcard_app import init_flashcard_app, get_flashcard_app
 
-with open("data/audio_mappings.json", "r", encoding="utf-8") as f:
-    audio_mappings = json.load(f)
+# Load configuration and secrets
 
-
-def get_combined_audio(characters):
-    audio_chunks = []
-    for char in characters:
-        if char in audio_mappings and "audio" in audio_mappings[char]:
-            file_name = audio_mappings[char]["audio"]
-            file_path = os.path.join("..", "chinese_audio_clips", file_name)
-            file_path2 = os.path.join("chinese_audio_clips", file_name)
-            
-            if os.path.exists(file_path):
-                with open(file_path, "rb") as f:
-                    audio_chunks.append(f.read())
-            elif os.path.exists(file_path2):
-                with open(file_path2, "rb") as f:
-                    audio_chunks.append(f.read())
-            # else:
-            #     # print(f"Audio file not found for character: {char}")
-            #     pass
-        # else:
-        #     # print(f"No audio mapping found for character: {char}")
-        #     pass
-    
-    return b"".join(audio_chunks) if audio_chunks else b""
-
-
-def load_secrets(secrets_file):
-    secrets = {}
-    try:
-        with open(secrets_file, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                if '=' in line:
-                    key, value = line.split('=', 1)
-                    secrets[key.strip()] = value.strip()
-    except Exception as e:
-        print(f"Warning: Could not load secrets file: {e}")
-    return secrets
-
-auth_keys = load_secrets('/home/patakk/.zhongweb-secrets')
-
-
-def get_pinyin(hanzi):
-    result = lazy_pinyin(hanzi, style=Style.TONE)
-    return ' '.join(result)
-
-
-DATA_DIR = '/home/patakk/zhongwen_data'
+# Constants using data_dir from config
+DATA_DIR = config['paths']['data_dir']
 CARDDECKS = json.load(open(os.path.join(DATA_DIR, "decks.json")))
 CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "chars_cache.json")))
 STROKES_CACHE = json.load(open(os.path.join(DATA_DIR, "strokes_cache.json")))
@@ -80,10 +37,13 @@ DECOMPOSE_CACHE = json.load(open(os.path.join(DATA_DIR, "decompose_cache.json"))
 ANTHROPIC_DATA = json.load(open(os.path.join(DATA_DIR, "anthropic.json")))
 TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_examples.json")))
 TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_example_ids_by_char.json")))
+AUDIO_MAPPINGS = json.load(open(os.path.join(DATA_DIR, "audio_mappings.json")))
 DECKS_INFO = {key : CARDDECKS[key]["name"] for key in CARDDECKS}
 STROKE_COUNT = json.load(open(os.path.join(DATA_DIR, "stroke_count.json")))
 HANZI_DARKNESS_NOTO = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_noto.json")))
 HANZI_DARKNESS_KAITI = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_kaiti.json")))
+RELATED_CONCEPTS = json.load(open(os.path.join(DATA_DIR, "related_cache.json")))
+OPPOSITE_CONCEPTS = json.load(open(os.path.join(DATA_DIR, "opposites_cache.json")))
 
 default_darkmode = False
 
@@ -100,25 +60,16 @@ pos_map = {
 
 
 def send_bot_notification(message):
-    telegram_api = auth_keys.get("TELEGRAM_BOT_KEY")
-    chat_id = auth_keys.get("TELEGRAM_CHAT_ID")
-    if not telegram_api or not chat_id:
-        return
-    url = f"https://api.telegram.org/bot{telegram_api}/sendMessage"
-    payload = {
-        "chat_id": chat_id,
-        "text": message,
-    }
+    """Send notification through configured channels"""
     try:
-        response = requests.post(url, json=payload)
-        if response.status_code == 200:
-            logger.info("Notification sent successfully.")
-        else:
-            logger.error(f"Failed to send notification: {response.status_code}")
-    except requests.RequestException as e:
+        logger.info(f"Notification: {message}")
+        # Add implementation for your notification system here
+    except Exception as e:
         logger.error(f"Error sending notification: {e}")
 
-
+def get_pinyin(hanzi):
+    result = lazy_pinyin(hanzi, style=Style.TONE)
+    return ' '.join(result)
 
 
 def get_tatoeba_page(character, page):
@@ -186,7 +137,7 @@ def get_random_chars_from_deck(deck, n, function=False):
     characters = CARDDECKS[deck]["chars"]
     random.shuffle(characters)
     characters = characters[:n]
-    return {c: get_char_info(c) for c in characters}
+    return get_chars_info(characters)
 
 def char_decomp_info(char):
     # Handle the case where a list is passed

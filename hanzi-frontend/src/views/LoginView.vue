@@ -17,7 +17,10 @@
       Login
     </button>
 
-    <hr />
+    
+    <div class="google-divider">
+      <span>or</span>
+    </div>
 
     <button @click="loginWithGoogle" class="google-login">
       <img class="google-logo" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg" alt="Google" width="20" style="vertical-align:middle; margin-right:8px;">
@@ -74,12 +77,27 @@ const handleLogin = async () => {
 const loginWithGoogle = () => {
   window.location.href = '/api/google_auth/login'
 }
+
 </script>
+
+<style>
+
+[data-theme='light'] {
+  --google-color: color-mix(in oklab, var(--fg) 57%, var(--bg) 100%);
+  --bgc-color: color-mix(in oklab, var(--fg) 37%, var(--bg) 100%);
+}
+
+[data-theme='dark'] {
+  --google-color: color-mix(in oklab, var(--fg) 77%, var(--bg) 50%);
+  --bgc-color: color-mix(in oklab, var(--fg) 47%, var(--bg) 100%);
+}
+</style>
 
 <style scoped>
 .login-container {
-  max-width: 380px;
+  max-width: 400px;
   margin: 2rem auto;
+  color: var(--fg);
   padding: 2rem;
   border: 1px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   border-radius: 8px;
@@ -95,7 +113,10 @@ input {
   width: 100%;
   margin-bottom: 1rem;
   padding: .5rem;
-  box-sizing: border-box;
+  color: var(--fg);
+  outline: none;
+  border: 1px solid color-mix(in oklab, var(--fg) 35%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 2%, var(--bg) 100%);
 }
 
 hr {
@@ -107,36 +128,22 @@ hr {
 button {
   padding: .5rem 1rem;
   margin-top: 1rem;
+  cursor: pointer;
 }
-.login-button {
+button {
   width: 100%;
   color: var(--fg);
-  background: color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
   border: 2px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
 }
-.login-button:hover {
-  background: color-mix(in oklab, var(--fg) 22%, var(--bg) 100%);
-}
-.google-login {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: color-mix(in oklab, var(--fg) 2%, var(--bg) 100%);
-  color: color-mix(in oklab, var(--fg) 57%, var(--bg) 100%);
-  border: 1px solid color-mix(in oklab, var(--fg) 22%, var(--bg) 100%);
-  border-radius: 4px;
-  cursor: pointer;
-  margin: 0;
+button:hover {
+  background: color-mix(in oklab, var(--fg) 42%, var(--bg) 40%);
 }
 .error {
   color: #d33;
   margin-top: 1rem;
 }
 
-
-body [data-theme="dark"] .google-logo {
-  filter: invert(1);
-}
 
 @media (max-aspect-ratio: 1/1) {
   .login-container {

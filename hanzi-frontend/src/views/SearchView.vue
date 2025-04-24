@@ -10,7 +10,10 @@
       />
       <button type="submit" class="search-button">Search</button>
     </form>
-    <div class="results">
+    <div v-if="isLoading" class="loading-indicator">
+      searching...
+    </div>
+    <div v-else class="results">
       <PreloadWrapper
         v-for="(result, index) in results"
         :key="index"
@@ -41,6 +44,7 @@ export default {
     return {
       query: '',
       results: [],
+      isLoading: false,
     };
   },
   created() {
@@ -74,20 +78,12 @@ export default {
         this.doSearch();
       }
     }
-    
-    // Add event listener for the custom search event
-    window.addEventListener('perform-search', this.handleSearchEvent);
-  },
-  
-  beforeUnmount() {
-    // Clean up the event listener
-    window.removeEventListener('perform-search', this.handleSearchEvent);
   },
   methods: {
     async doSearch() {
-      if (!this.query) return;
-      
       this.isLoading = true;
+      this.results = [];  // Clear current results immediately
+      
       try {
         const res = await fetch('/api/search_results', {
           method: 'POST',
@@ -100,7 +96,7 @@ export default {
         this.results = data.results;
         console.log(this.results);
       } catch (error) {
-        console.error("Error performing search:", error);
+        console.error("Error during search:", error);
       } finally {
         this.isLoading = false;
       }
@@ -132,18 +128,14 @@ export default {
       let last = 0;
       for (const [start, end] of indices) {
         result += text.slice(last, start);
-        //result += '<mark>' + text.slice(start, end) + '</mark>';
-        result += '<span style="background-color: var(--dim-primary)">' + text.slice(start, end) + '</span>';
+        // result += '<mark>' + text.slice(start, end) + '</mark>';
+        result += text.slice(start, end);
         last = end;
       }
       result += text.slice(last);
 
       return result;
-    },
-    handleSearchEvent(event) {
-      this.query = event.detail.query;
-      this.doSearch();
-    },
+    }
   },
 };
 </script>
@@ -156,6 +148,12 @@ export default {
   padding: 2rem;
 }
 
+.loading-indicator {
+  margin-top: 2rem;
+  font-size: 1.5rem;
+  color: var(--fg);
+  opacity: 0.8;
+}
 
 .results {
   display: flex;
@@ -167,7 +165,6 @@ export default {
   max-width: 1500px;
 }
 
-
 .result-cell {
   border: 2px solid color-mix(in oklab, var(--fg) 35%, var(--bg) 50%);
   padding: .5rem;
@@ -177,7 +174,6 @@ export default {
   width: 100%;
   display: flex;
 }
-
 
 .result-cell:hover {
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
@@ -208,6 +204,5 @@ export default {
   color: var(--fg);
   flex: 12;
 }
-
 </style>
 

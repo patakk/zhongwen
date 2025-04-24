@@ -1,11 +1,19 @@
 <template>
-  <div class="app-wrapper">
 
     <BasePage :page_title="localPageTitle" />
 
     <div class="page-layout">
+      <!-- Mobile leftbar toggle button -->
+      <button v-if="!sidebarVisible" class="leftbar-toggle" @click="toggleSidebar">
+        <span class="toggle-icon">▶</span>
+        <span class="toggle-text">Settings</span>
+      </button>
+
       <div class="leftbar" :class="{ 'leftbar-hidden': !sidebarVisible }">
-        <h2>Settings</h2>
+        <div class="leftbar-header">
+          <h2>Settings</h2>
+          <button v-if="sidebarVisible" class="close-button" @click="toggleSidebar">×</button>
+        </div>
 
         <!-- Dictionary Selector -->
         <label for="dictionary-select">Choose a Dictionary:</label>
@@ -57,7 +65,10 @@
         </div>
       </div>
 
+      <div v-if="sidebarVisible" class="overlay" @click="closeSidebar"></div>
+
       <main class="main-content" :class="{ 'main-content-expanded': !sidebarVisible }">
+        
         <div v-if="selectedCategory">
           <div class="dictionary-category">
             <!-- Grid View -->
@@ -112,7 +123,6 @@
         </div>
       </main>
     </div>
-</div>
 </template>
 
 
@@ -134,7 +144,7 @@ export default {
       tempFontScale: 1,     // ✅ Temporary one used by slider
       isListView: false,    // ✅ Toggle between grid and list views
       reloading: false,     // Flag to track view switching reloading
-      sidebarVisible: true, // Flag to toggle sidebar visibility
+      sidebarVisible: window.innerWidth > 1024, // Default to closed on mobile
       waitingForDictData: true, // Flag to track if we're waiting for dictionary data
       attemptedCategory: null // Store the attempted category from URL
     };
@@ -304,6 +314,12 @@ export default {
     toggleSidebar() {
       this.sidebarVisible = !this.sidebarVisible;
     },
+    // Method to close the sidebar
+    closeSidebar() {
+      if (this.sidebarVisible) {
+        this.sidebarVisible = false;
+      }
+    },
     
     // Handle key down events to detect Tab key
     handleKeyDown(event) {
@@ -410,14 +426,14 @@ html, body {
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: .5em;
+  gap: 1.5em;
   width: 100%;
   box-sizing: border-box;
 }
 
 .grid-item {
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  padding: 0.35em;
+  padding: 0.55em;
   aspect-ratio: 4;
   border-radius: 1px;
   text-align: center;
@@ -540,9 +556,48 @@ select {
   opacity: 0;
 }
 
+.leftbar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.leftbar-toggle {
+  position: fixed;
+  top: 4.5em;
+  left: 1em;
+  z-index: 5;
+  border-radius: 4px;
+  padding: 0.5em 1em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  cursor: pointer;
+  color: var(--fg);
+}
+
+.toggle-icon {
+  font-size: 1.2em;
+  display: inline-block;
+}
+
+.toggle-text {
+  font-size: 1em;
+  display: inline-block;
+}
+
 .main-content {
   width: 88%;
-  padding: 0em 2em 2em 2em;
+  padding: 0em 2.5em 2em 2em;
   box-sizing: border-box;
   overflow-y: auto;
   height: 100%;  
@@ -551,6 +606,11 @@ select {
 
 .main-content-expanded {
   width: 100%;
+}
+
+.mobile-title {
+  font-size: 1.2em;
+  font-weight: bold;
 }
 
 select, input[type="range"] {
@@ -638,5 +698,95 @@ label {
   font-size: 1.4em;
 }
 
+@media (max-width: 1024px) {
+  .page-layout {
+    flex-direction: column;
+    margin: 1em;
+  }
+
+  .leftbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80% !important; /* Override default width */
+    max-width: 300px;
+    height: 100vh;
+    z-index: 30;
+    padding: 1em;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .leftbar-hidden {
+    transform: translateX(-100%);
+    width: 0 !important;
+  }
+
+  .leftbar-toggle {
+    position: fixed;
+    top: 12.5em;
+    left: 1em;
+    border-radius: 4px;
+    padding: 0.5em 1em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+    border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+    cursor: pointer;
+    color: var(--fg);
+  }
+
+
+  .main-content {
+    width: 100% !important;
+    padding: 0.5em;
+    margin-top: 3em; /* Space for the fixed settings toggle */
+  }
+
+  .grid-container {
+    gap: 0.8em;
+  }
+
+  .grid-item {
+    aspect-ratio: 3;
+  }
+
+  /* Add overlay for mobile */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 25;
+    display: none;
+  }
+
+  .leftbar:not(.leftbar-hidden) + .overlay {
+    display: block;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)) !important;
+    gap: 0.5em;
+  }
+
+  .grid-item {
+    aspect-ratio: 2.5;
+  }
+
+  .list-item {
+    flex-direction: column;
+    gap: 0.5em;
+  }
+
+  .list-english {
+    align-self: flex-start;
+  }
+}
 </style>
 

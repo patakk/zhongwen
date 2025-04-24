@@ -7,6 +7,10 @@ let prevWordInfo = {};
 let lineWidth = 6;
 let lineType = 'round';
 
+let canvas = document.createElement('canvas');
+let ctx = canvas.getContext('2d');
+let currentIndexInDeck = 0;
+
 async function getPinyinEnglishFor(word) {
 
     let promises = [];
@@ -649,6 +653,7 @@ function shuffleArray(array) {
     return array;
 }
 
+
 document.addEventListener('DOMContentLoaded', function() {
     currentFont = 'Noto Sans';
 
@@ -674,8 +679,6 @@ document.addEventListener('DOMContentLoaded', function() {
     handleTopLeftButtons();
 });
 
-let canvas = document.createElement('canvas');
-let ctx = canvas.getContext('2d');
 
 
 function setupCanvas(){
@@ -705,7 +708,6 @@ function setupCanvas(){
     hanziContainer.appendChild(canvas);
 }
 
-let currentIndexInDeck = 0;
 
 function handleTopLeftButtons() {
 

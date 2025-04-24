@@ -30,8 +30,7 @@ from backend.db.models import Card, UserNotes
 from backend.common import CARDDECKS
 from backend.common import STROKES_CACHE
 from backend.common import DECKNAMES
-from backend.common import get_combined_audio
-from backend.common import audio_mappings
+from backend.common import AUDIO_MAPPINGS
 
 from backend.common import get_tatoeba_page
 from backend.common import get_char_info
@@ -596,8 +595,8 @@ def get_random_characters():
 def get_combined_audio(characters):
     audio_chunks = []
     for char in characters:
-        if char in audio_mappings and "audio" in audio_mappings[char]:
-            file_name = audio_mappings[char]["audio"]
+        if char in AUDIO_MAPPINGS and "audio" in AUDIO_MAPPINGS[char]:
+            file_name = AUDIO_MAPPINGS[char]["audio"]
             file_path = os.path.join("..", "chinese_audio_clips", file_name)
             file_path2 = os.path.join("chinese_audio_clips", file_name)
             

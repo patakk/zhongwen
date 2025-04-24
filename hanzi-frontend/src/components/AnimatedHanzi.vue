@@ -69,8 +69,8 @@ export default defineComponent({
       }
 
       // Set canvas dimensions
-      canvas.width = 400;
-      canvas.height = 400;
+      canvas.width = 800;
+      canvas.height = 800;
 
       // Clean up previous plotter
       if (plotter.value) {
@@ -192,7 +192,8 @@ export default defineComponent({
 
 .anim-character {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   cursor: pointer;
+  align-self: flex-start;
 }
 </style>
