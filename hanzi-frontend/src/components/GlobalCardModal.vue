@@ -1244,6 +1244,7 @@ export default {
   font-style: italic;
   white-space: wrap;
   overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 .no-pinyin-meaning {
