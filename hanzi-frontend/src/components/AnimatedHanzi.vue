@@ -119,7 +119,16 @@ export default defineComponent({
 
     // Handle click animation
     const animateCharacter = () => {
-      plotter.value?.startAnimation();
+      if (plotter.value?.isAnimating) {
+        // Stop the current animation before starting a new one
+        plotter.value.stopAnimation();
+        // Small delay to ensure cleanup is complete
+        setTimeout(() => {
+          plotter.value.startAnimation();
+        }, 50);
+      } else {
+        plotter.value?.startAnimation();
+      }
     };
 
     // Setup theme observer
