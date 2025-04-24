@@ -1,5 +1,5 @@
 <template>
-  <BasePage page_title="Home" />
+  <BasePage page_title="Homeeee" />
   <div class="home-view">
     <nav>
       <RouterLink v-if="authStatus" to="/account">Account</RouterLink><span v-if="authStatus"> | </span>
