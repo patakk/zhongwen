@@ -98,7 +98,7 @@
           <h3 class="char-breakdown">Character Breakdown ↓</h3>
 
           <!-- Tabs -->
-          <div class="tabs" v-if="validChars.length > 1">
+          <!-- <div class="tabs" v-if="validChars.length > 1">
             <button
               v-for="char in validChars"
               :key="char"
@@ -107,7 +107,7 @@
             >
               {{ char }}
             </button>
-          </div>
+          </div> -->
 
           <!-- Tab content -->
           <div class="tab-content" v-if="activeCharData">
@@ -1230,7 +1230,7 @@ export default {
 .pm-pinyin {
   font-size: 1.2rem;
   font-weight: 500;
-  min-width: 5rem;
+  /* min-width: 5rem; */
   /* color: var(--pinyin-color); */
 }
 
@@ -1242,6 +1242,8 @@ export default {
   font-size: 0.9rem;
   color: var(--text-secondary);
   font-style: italic;
+  white-space: wrap;
+  overflow-wrap: break-word;
 }
 
 .no-pinyin-meaning {
