@@ -179,18 +179,20 @@ export default {
         }
       }
       
+      let maxWidth = flashcardElement.offsetWidth;
+      let width = maxWidth * .8;
       // Set canvas size
-      this.canvas.width = flashcardElement.offsetWidth * 2;
-      this.canvas.height = flashcardElement.offsetWidth * 0.25 * 2;
+      this.canvas.width = width * 2;
+      this.canvas.height = width / 2 * 2;
       this.canvas.style.width = "100%";
-      this.canvas.style.width = flashcardElement.offsetWidth + 'px';
-      this.canvas.style.height = flashcardElement.offsetWidth * 0.25 + 'px';
-      this.canvas.style.top = flashcardElement.offsetWidth * 0.45 + 'px';
+      this.canvas.style.width = width + 'px';
+      this.canvas.style.height = width / 2 + 'px';
+      // this.canvas.style.backgroundColor = '#100';
       this.canvas.style.left = '0';
       this.canvas.className = "plotter";
       
       // Set line width based on canvas size
-      this.lineWidth = flashcardElement.offsetWidth * 0.025;
+      this.lineWidth = width * 0.025;
     },
     setupThemeObserver() {
       // Watch for theme attribute changes on document element
@@ -542,36 +544,57 @@ export default {
 
       const cx = this.canvas.width / 2;
       const cy = this.canvas.height / 2;
-      const charwidth = this.canvas.height;
-      const charheight = this.canvas.height;
+      
+      let charwidth1 = this.canvas.height;
+      let charheight1 = this.canvas.height;
+      
+      let charwidth2 = this.canvas.height;
+      let charheight2 = this.canvas.height;
+
+      if(numchars1 == 3){
+        charwidth1 = this.canvas.width/3;
+        charheight1 = this.canvas.width/3;
+      }
+      else if(numchars1 == 4){
+        charwidth1 = this.canvas.width/4;
+        charheight1 = this.canvas.width/4;
+      }
+      if(numchars2 == 3){
+        charwidth2 = this.canvas.width/3;
+        charheight2 = this.canvas.width/3;
+      }
+      else if(numchars2 == 4){
+        charwidth2 = this.canvas.width/4;
+        charheight2 = this.canvas.width/4;
+      }
 
       const opa = 1;
       if (numchars1 === numchars2) {
         for (let idx = 0; idx < numchars1; idx++) {
-          let x0 = cx - (numchars1 * charwidth) / 2 + idx * charwidth;
-          let y0 = cy - charheight / 2;
+          let x0 = cx - (numchars1 * charwidth1) / 2 + idx * charwidth1;
+          let y0 = cy - charheight1 / 2;
           x0 = Math.round(x0);
           y0 = Math.round(y0);
-          this.cross(x0, y0, charwidth, charheight, opa);
+          this.cross(x0, y0, charwidth1, charheight1, opa);
         }
       } else {
         for (let idx = 0; idx < numchars1; idx++) {
-          let x0 = cx - (numchars1 * charwidth) / 2 + idx * charwidth;
-          let y0 = cy - charheight / 2;
+          let x0 = cx - (numchars1 * charwidth1) / 2 + idx * charwidth1;
+          let y0 = cy - charheight1 / 2;
           x0 = Math.round(x0);
           y0 = Math.round(y0);
           let opacity = 1 - progress;
           opacity *= opa;
-          this.cross(x0, y0, charwidth, charheight, opacity);
+          this.cross(x0, y0, charwidth1, charheight1, opacity);
         }
         for (let idx = 0; idx < numchars2; idx++) {
-          let x0 = cx - (numchars2 * charwidth) / 2 + idx * charwidth;
-          let y0 = cy - charheight / 2;
+          let x0 = cx - (numchars2 * charwidth2) / 2 + idx * charwidth2;
+          let y0 = cy - charheight2 / 2;
           x0 = Math.round(x0);
           y0 = Math.round(y0);
           let opacity = progress;
           opacity *= opa;
-          this.cross(x0, y0, charwidth, charheight, opacity);
+          this.cross(x0, y0, charwidth2, charheight2, opacity);
         }
       }
 
@@ -583,8 +606,17 @@ export default {
       const numchars = this.currentWordInfo.strokes.length;
       this.drawbg(0, numchars, numchars);
       
-      const charwidth = this.canvas.height;
-      const charheight = this.canvas.height;
+      let charwidth = this.canvas.height;
+      let charheight = this.canvas.height;
+
+      if(numchars == 3){
+        charwidth = this.canvas.width/3;
+        charheight = this.canvas.width/3;
+      }
+      else if(numchars == 4){
+        charwidth = this.canvas.width/4;
+        charheight = this.canvas.width/4;
+      }
       
       this.currentWordInfo.strokes.forEach((charstrokes, idx) => {
         const cx = this.canvas.width / 2 - (numchars * charwidth) / 2 + idx * charwidth;
@@ -614,8 +646,17 @@ export default {
       if (!this.currentWordInfo.strokes || !this.currentWordInfo.strokes.length) return;
       
       const numchars = this.currentWordInfo.strokes.length;
-      const charwidth = this.canvas.height;
-      const charheight = this.canvas.height;
+      let charwidth = this.canvas.height;
+      let charheight = this.canvas.height;
+      
+      if(numchars == 3){
+        charwidth = this.canvas.width/3;
+        charheight = this.canvas.width/3;
+      }
+      else if(numchars == 4){
+        charwidth = this.canvas.width/4;
+        charheight = this.canvas.width/4;
+      }
       
       this.currentWordInfo.strokes.forEach((charstrokes, idx) => {
         const cx = this.canvas.width / 2 - (numchars * charwidth) / 2 + idx * charwidth;
@@ -626,9 +667,9 @@ export default {
           this.drawMask(
             maskregion, 
             mask, 
-            cx / this.canvas.height * 1000 + charstrokes.strokes.offsetX, 
-            cy / this.canvas.height * 1000 + charstrokes.strokes.offsetY, 
-            this.canvas.height
+            cx / charheight * 1000 + charstrokes.strokes.offsetX, 
+            cy / charheight * 1000 + charstrokes.strokes.offsetY, 
+            charheight
           );
           
           this.ctx.fillStyle = this.isDarkMode ? 'rgba(255,255,255,1)' : 'rgba(0,0,0,1)';
@@ -659,18 +700,40 @@ export default {
 
         const numchars1 = this.prevWordInfo.strokes.length;
         const numchars2 = this.currentWordInfo.strokes.length;
-        const charwidth = this.canvas.height;
-        const charheight = this.canvas.height;
 
         this.drawbg(progress, numchars1, numchars2);
 
         const numchars = Math.max(numchars1, numchars2);
 
+        let charwidth1 = this.canvas.height;
+        let charheight1 = this.canvas.height;
+        
+        let charwidth2 = this.canvas.height;
+        let charheight2 = this.canvas.height;
+
+        if(numchars1 == 3){
+          charwidth1 = this.canvas.width/3;
+          charheight1 = this.canvas.width/3;
+        }
+        else if(numchars1 == 4){
+          charwidth1 = this.canvas.width/4;
+          charheight1 = this.canvas.width/4;
+        }
+        if(numchars2 == 3){
+          charwidth2 = this.canvas.width/3;
+          charheight2 = this.canvas.width/3;
+        }
+        else if(numchars2 == 4){
+          charwidth2 = this.canvas.width/4;
+          charheight2 = this.canvas.width/4;
+        }    
+
+
         for (let idx = 0; idx < numchars; idx++) {
-          const cx1 = this.canvas.width / 2 - (numchars1 * charwidth) / 2 + Math.min(idx, numchars1 - 1) * charwidth;
-          const cy1 = this.canvas.height / 2 - charheight / 2;
-          const cx2 = this.canvas.width / 2 - (numchars2 * charwidth) / 2 + Math.min(idx, numchars2 - 1) * charwidth;
-          const cy2 = this.canvas.height / 2 - charheight / 2;
+          const cx1 = this.canvas.width / 2 - (numchars1 * charwidth1) / 2 + Math.min(idx, numchars1 - 1) * charwidth1;
+          const cy1 = this.canvas.height / 2 - charheight1 / 2;
+          const cx2 = this.canvas.width / 2 - (numchars2 * charwidth2) / 2 + Math.min(idx, numchars2 - 1) * charwidth2;
+          const cy2 = this.canvas.height / 2 - charheight2 / 2;
 
           const charstrokes1 = this.prevWordInfo.strokes[Math.min(idx, numchars1 - 1)].strokes.fstrokes;
           const charstrokes2 = this.currentWordInfo.strokes[Math.min(idx, numchars2 - 1)].strokes.fstrokes;
@@ -681,21 +744,21 @@ export default {
             const stroke2 = charstrokes2[charstrokeidx % charstrokes2.length];
             const resampledStroke1 = this.resamplePolyline(stroke1, stroke2.length);
             
-            const x0 = cx1 + resampledStroke1[0].x * charwidth + (cx2 + stroke2[0].x * charwidth - resampledStroke1[0].x * charwidth - cx1) * usedprogress;
-            const y0 = cy1 + resampledStroke1[0].y * charheight + (cy2 + stroke2[0].y * charheight - resampledStroke1[0].y * charheight - cy1) * usedprogress;
+            const x0 = cx1 + resampledStroke1[0].x * charwidth1 + (cx2 + stroke2[0].x * charwidth2 - resampledStroke1[0].x * charwidth1 - cx1) * usedprogress;
+            const y0 = cy1 + resampledStroke1[0].y * charheight1 + (cy2 + stroke2[0].y * charheight2 - resampledStroke1[0].y * charheight1 - cy1) * usedprogress;
             
             this.ctx.moveTo(x0, y0);
             this.ctx.beginPath();
             
             for (let i = 1; i < resampledStroke1.length; i++) {
               const popo = this.power(i / resampledStroke1.length, 2.5) * 0.3;
-              const x = cx1 + resampledStroke1[i].x * charwidth + (cx2 + stroke2[i].x * charwidth - resampledStroke1[i].x * charwidth - cx1) * Math.min(1, Math.max(0, usedprogress - popo));
-              const y = cy1 + resampledStroke1[i].y * charheight + (cy2 + stroke2[i].y * charheight - resampledStroke1[i].y * charheight - cy1) * Math.min(1, Math.max(0, usedprogress - popo));
+              const x = cx1 + resampledStroke1[i].x * charwidth1 + (cx2 + stroke2[i].x * charwidth2 - resampledStroke1[i].x * charwidth1 - cx1) * Math.min(1, Math.max(0, usedprogress - popo));
+              const y = cy1 + resampledStroke1[i].y * charheight1 + (cy2 + stroke2[i].y * charheight2 - resampledStroke1[i].y * charheight1 - cy1) * Math.min(1, Math.max(0, usedprogress - popo));
               this.ctx.lineTo(x, y);
             }
 
             const saw = (1 - 2 * Math.abs(0.5 - progress));
-            this.lineWidth = this.$refs.flashcard.offsetWidth * 0.035 * (0.7 + 0.3 * saw * saw * saw);
+            this.lineWidth = charheight1*0.05 * (0.7 + 0.3 * saw * saw * saw);
 
             let lightness = this.isDarkMode ? 1 : 0;
 
