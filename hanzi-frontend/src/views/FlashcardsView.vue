@@ -1072,7 +1072,7 @@ html, body {
   text-align: center;
   background-color: rgba(var(--answer-bg-rgb), 0.05);
   border-top: 1px solid rgba(var(--answer-border-rgb), 0.2);
-  transition: opacity 0.3s;
+  /* transition: opacity 0.3s; */
   z-index: 10;
 }
 
