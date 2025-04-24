@@ -723,7 +723,7 @@ label {
 
   .leftbar-toggle {
     position: fixed;
-    top: 12.5em;
+    top: 4em;
     left: 1em;
     border-radius: 4px;
     padding: 0.5em 1em;
