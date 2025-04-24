@@ -139,7 +139,7 @@ export default {
       localPageTitle: 'Grid',
       visibleCount: defaultVisibleCount,
       hoveredItem: null,
-      selectedFont: 'Kaiti',
+      selectedFont: 'Noto Sans SC',
       fontScale: 1,         // ✅ Actual font scale, used in layout
       tempFontScale: 1,     // ✅ Temporary one used by slider
       isListView: false,    // ✅ Toggle between grid and list views
