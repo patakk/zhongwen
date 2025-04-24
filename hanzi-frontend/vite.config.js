@@ -40,7 +40,7 @@ export default defineConfig(({ command }) => {
   }
 
   if (command === 'build') {
-    config.base = '/static/dist/'
+    config.base = '/'
   }
 
   return config
