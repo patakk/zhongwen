@@ -1394,11 +1394,11 @@ export default {
 
 @media screen and (max-width: 768px) {
     .modal {
-      width: 100vw;
-      max-width: 100vw;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      max-height: 100%;
       padding: 3rem 1rem 1rem 1rem;
-      height: 100vh;
-      max-height: 100vh;
     }
     
     .wordlist-dropdown {
