@@ -230,4 +230,5 @@ input.search-input {
   flex: 1;
   min-width: 200px; /* This ensures the input doesn't get too narrow before wrapping */
 }
+
 </style>

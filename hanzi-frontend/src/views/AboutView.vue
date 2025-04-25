@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="attribution-section">
-      <h1>Licensing and Attribution</h1>
+      <div class="licensing">Licensing and Attribution</div>
       <ul>
         <li>
           <div class="subheader">Data Sources and Licensing</div>
@@ -212,5 +212,16 @@ ul {
   ul {
     padding-left: 0em;
   }
+}
+
+.licensing {
+  border: 0;
+  border-top: 2px solid color-mix(in oklab, var(--fg) 11%, var(--bg) 11%);
+  font-size: 2em;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  margin-top: 1em;
+  padding-top: .5em;
 }
 </style>
