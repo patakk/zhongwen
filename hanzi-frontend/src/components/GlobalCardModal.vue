@@ -1177,7 +1177,7 @@ export default {
 }
 
 .wordlist-dropdown {
-  position: absolute;
+  position: fixed;
   top: 1rem;
   left: 1rem;
 }
@@ -1385,6 +1385,13 @@ export default {
     border: none;
   }
 
+  .wordlist-dropdown {
+      position: fixed;
+      top: 3em;
+      left: 1rem;
+    }
+}
+
 @media screen and (max-width: 768px) {
     .modal {
       width: 100vw;
@@ -1395,7 +1402,7 @@ export default {
     }
     
     .wordlist-dropdown {
-      position: absolute;
+      position: fixed;
       top: 3em;
       left: 1rem;
     }
@@ -1409,7 +1416,6 @@ export default {
     .main-english {
       font-size: 1rem;
     }
-  }
 
   .freq-trad-anim {
     flex-direction: column;
@@ -1433,7 +1439,6 @@ export default {
     position: relative;
     overflow: visible;
   }
-
 }
 
 /* X centering element */
