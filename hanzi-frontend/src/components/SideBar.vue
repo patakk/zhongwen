@@ -3,7 +3,7 @@
     <div class="sidebar-container" :class="{ 'sidebar-open': isOpen }">
       <button v-if="!isOpen" class="sidebar-toggle" @click.stop="toggleSidebar">
           <span class="toggle-icon">◀</span>
-          <span class="toggle-text">Menu</span>
+          <span class="toggle-text">◀</span>
       </button>
 
       <div v-if="isOpen" class="sidebar" @click.stop>
@@ -174,11 +174,10 @@ export default {
 
   .sidebar-toggle {
     position: fixed;
-    top: 1rem;
-    right: 1rem;
+    top: .5rem;
+    right: .5rem;
     height: auto;
     padding: 0.5rem 1rem;
-    border-radius: 4px;
     z-index: 35;
   }
 

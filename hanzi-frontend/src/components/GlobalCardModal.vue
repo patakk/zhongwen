@@ -7,7 +7,6 @@
       </div>
       
       <div v-else class="modal card-modal" @click.stop="handleModalClick">
-        <button @click="closeModal" class="close-btn">×</button>
         
         <!-- Add to wordlist dropdown button -->
         <div v-if="isLoggedIn" class="wordlist-dropdown">
@@ -251,6 +250,10 @@
         </div>
       </div>
     </div>
+    
+    <!-- Fixed position close button at bottom right -->
+    <button @click="closeModal" class="close-btn fixed-close"><span class="x-centered">×</span></button>
+    
     <ToastNotification
       v-model:visible="notificationVisible"
       :message="notificationMessage"
@@ -1079,22 +1082,39 @@ export default {
 }
 
 .close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  color: var(--text-primary);
-  opacity: 0.5;
-  transition: opacity 0.2s;
-  padding: 0.5rem;
-  line-height: 1;
 }
 
 .close-btn:hover {
   opacity: 1;
+}
+
+/* Fixed position close button for thumb accessibility */
+.fixed-close {
+  font-size: 2rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 50%;
+
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  box-shadow: 0 4px 8px rgba(124, 98, 98, 0.2);
+  opacity: 0.8;
+  z-index: 30;
+  line-height: 0;
+  padding: 0;
+}
+
+.fixed-close:hover {
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 .decomp-section {
@@ -1355,24 +1375,6 @@ export default {
   font-style: italic;
 }
 
-/* Responsive adjustments */
-@media screen and (max-width: 768px) {
-  .modal {
-    width: 90vw;
-    padding: 1rem;
-  }
-
-  .main-word {
-    font-size: 8rem;
-    margin-top: 3rem;
-  }
-
-  .main-pinyin,
-  .main-english {
-    font-size: 1rem;
-  }
-}
-
 @media (max-width: 1024px) {
   .modal {
     width: 95vw;
@@ -1383,9 +1385,45 @@ export default {
     border: none;
   }
 
+  @media screen and (max-width: 768px) {
+    .modal {
+      width: 100vw;
+      max-width: 100vw;
+      padding: 3rem 1rem 1rem 1rem;
+      height: 100vh;
+      max-height: 100vh;
+    }
+    
+    .wordlist-dropdown {
+      position: absolute;
+      top: 3em;
+      left: 1rem;
+    }
+
+    .main-word {
+      font-size: 8rem;
+      margin-top: 3rem;
+    }
+
+    .main-pinyin,
+    .main-english {
+      font-size: 1rem;
+    }
+  }
+
   .freq-trad-anim {
     flex-direction: column;
   }
+}
+
+/* X centering element */
+.x-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  margin-bottom: 3px; /* Fine-tune vertical positioning */
 }
 </style>
 
