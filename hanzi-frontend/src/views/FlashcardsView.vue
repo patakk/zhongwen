@@ -988,7 +988,7 @@ html, body {
 #flashcard {
   position: relative;
   width: 100%;
-  height: calc(100vh - 16em);
+  height: 100vh;
   max-height: 800px;
   cursor: pointer;
   transform-style: preserve-3d;
@@ -1109,6 +1109,15 @@ canvas.plotter {
   .answer {
     position: absolute;
     font-size: .76em;
+  }
+
+  .flashcards-view {
+    margin-top: 1em;
+  }
+
+  
+  #flashcard {
+    height: 70vh;
   }
 }
 
