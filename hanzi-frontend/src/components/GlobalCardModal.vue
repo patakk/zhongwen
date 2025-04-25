@@ -11,7 +11,7 @@
         <!-- Add to wordlist dropdown button -->
         <div v-if="isLoggedIn" class="wordlist-dropdown">
           <button @click.stop="toggleWordlistDropdown" class="wordlist-btn">
-            <span class="plus-icon">+</span> Add to list
+            <span class="plus-icon">+</span>
           </button>
           <div v-if="showWordlistDropdown" class="dropdown-content" @click.stop>
             <div v-if="!isLoggedIn" class="no-lists">Please log in to add words to lists</div>
@@ -1166,7 +1166,6 @@ export default {
 
 .plus-icon {
   font-size: 1.2rem;
-  margin-right: 0.5rem;
 }
 
 .dropdown-content {

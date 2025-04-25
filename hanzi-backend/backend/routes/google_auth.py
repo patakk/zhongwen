@@ -134,7 +134,7 @@ def create_or_get_google_user(google_info):
 
         # Create default word list
         try:
-            new_list = WordList(name="Learning list (default)", user=user)
+            new_list = WordList(name="Learning", user=user)
             db.session.add(new_list)
             db.session.commit()
             print(f"Created default word list (ID: {new_list.id})")
