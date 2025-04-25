@@ -1382,7 +1382,6 @@ export default {
     height: 80vh;
     max-height: 80vh;
     padding: 1rem;
-    border: none;
   }
 
   .wordlist-dropdown {
@@ -1397,6 +1396,10 @@ export default {
       width: 100%;
       max-width: 100%;
       height: 100%;
+      top: 0;
+      left: 0;
+      transform: translate(0%, 0%);
+      position: absolute;
       max-height: 100%;
       padding: 3rem 1rem 1rem 1rem;
     }
