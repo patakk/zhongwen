@@ -481,6 +481,292 @@ async function loadStrokeData(character, onLoad=null) {
     }
 }
 
+function startUserDrawing(e) {
+    if (!this.isQuizing) return;
+    if (this.isAnimatingStroke) return;
+    if (this.isAnimatingInterp) return;
+
+    this.mouseDownWhileQuizing = true;
+    
+    this.isDrawing = true;
+    this.currentStroke = [];
+    
+    const rect = this.canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+    const y = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+    
+    this.lastX = x;
+    this.lastY = y;
+    
+    this.currentStroke.push({ x, y });
+    this.drawUserStrokes();
+}
+
+function userStrokeMove(e) {
+    if (!this.isDrawing || !this.isQuizing) return;
+    
+    const rect = this.canvas.getBoundingClientRect();
+    const rawX = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+    const rawY = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+    
+    // Apply simple smoothing formula
+    const x = this.lastX + (rawX - this.lastX) * this.easingFactor;
+    const y = this.lastY + (rawY - this.lastY) * this.easingFactor;
+    
+    // Update last position
+    this.lastX = x;
+    this.lastY = y;
+    
+    this.currentStroke.push({ x, y });
+    this.drawUserStrokes();
+}
+
+function compareToReal(userStroke, realStroke) {
+    const scaledRealStroke = realStroke.map(pt => ({
+        x: pt.x / 1000,
+        y: pt.y / 1000,
+    }));
+    const scaledUserStroke = userStroke.map(pt => ({
+        x: pt.x / writerSize,
+        y: pt.y / writerSize,
+    }));
+
+    // Get the vector from the first to the last point for both strokes
+    const realVector = {
+        x: scaledRealStroke[scaledRealStroke.length - 1].x - scaledRealStroke[0].x,
+        y: scaledRealStroke[scaledRealStroke.length - 1].y - scaledRealStroke[0].y
+    };
+
+    const userVector = {
+        x: scaledUserStroke[scaledUserStroke.length - 1].x - scaledUserStroke[0].x,
+        y: scaledUserStroke[scaledUserStroke.length - 1].y - scaledUserStroke[0].y
+    };
+
+    // Normalize the vectors
+    const normalize = (vector) => {
+        const length = Math.hypot(vector.x, vector.y);
+        return { x: vector.x / length, y: vector.y / length };
+    };
+
+    const normalizedRealVector = normalize(realVector);
+    const normalizedUserVector = normalize(userVector);
+
+    const dotProduct = normalizedRealVector.x * normalizedUserVector.x + normalizedRealVector.y * normalizedUserVector.y;
+
+    // Check if the first points are relatively close
+    const distFirst = Math.hypot(scaledUserStroke[0].x - scaledRealStroke[0].x, scaledUserStroke[0].y - scaledRealStroke[0].y);
+    const firstPointThreshold = 0.35;
+
+    // Check if the length of the user stroke is within reasonable threshold of the real stroke
+    const realLength = Math.hypot(realVector.x, realVector.y);
+    const userLength = Math.hypot(userVector.x, userVector.y);
+    const lengthThreshold = 0.5; // 50% difference allowed
+
+    const lengthRatio = Math.abs(userLength - realLength) / realLength;
+
+    const threshold = 0.8; // Cosine similarity threshold for direction comparison
+
+    if(realLength < 0.16)
+        return dotProduct > threshold && distFirst < firstPointThreshold;
+    
+    return dotProduct > threshold && distFirst < firstPointThreshold && lengthRatio < lengthThreshold;
+}
+
+function userStrokeEnded() {
+    if (!this.isDrawing || !this.isQuizing) return;
+    if (this.userStrokes.length >= this.strokes.length) return;
+
+    this.isDrawing = false;
+    if (this.currentStroke && this.currentStroke.length > 0) {
+        const isGoodMatch = compareToReal(this.currentStroke, this.strokes[this.userStrokes.length]);
+        
+        // Provide feedback based on match
+        if (isGoodMatch) {
+            console.log("Good stroke!");
+            
+            let resampled = resamplePolyline(this.currentStroke, this.strokes[this.userStrokes.length].length);
+            this.userStrokes.push(resampled);
+            this.strokeAttempts = 0;
+            
+            // Update streak count for correct strokes
+            streakCount++;
+            if (streakCount > 0 && streakCount % streakIncrement === 0) {
+                confetti(streakCount);
+            }
+        } else if (this.strokeAttempts < 2) {
+            console.log("Try again");
+            this.strokeAttempts++;
+            streakCount = 0;
+        } else {
+            console.log("Demoing stroke");
+            this.strokeAttempts++;
+            this.startStrokeAnimation();
+            this.isAnimatingStroke = true;
+            streakCount = 0;
+        }
+        
+        // Check if quiz is complete
+        if (this.userStrokes.length === this.strokes.length) {
+            console.log("Quiz complete!");
+            this.quizComplete = true;
+            this.clearBg();
+            this.demoMode = false;
+            cancelAnimationFrame(this.demoAnimationFrame);
+            this.startInterpol();
+            this.onCompleteQuiz({'strokes': this.userStrokes, 'character': this.character});
+        }
+        this.currentStroke = null;
+    }
+    if(!this.quizComplete){
+        this.drawUserStrokes();
+    }
+}
+
+function startStrokeAnimation() {
+    if(!this.isQuizing){
+        return;
+    }
+    this.isAnimatingStroke = true;
+    this.strokeStartTime = Date.now();
+    let numPoints = this.strokes[this.userStrokes.length].length;
+    const duration = numPoints / this.speed * 1; // duration in milliseconds
+    const animate = () => {
+
+        const elapsed = Date.now() - this.strokeStartTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        this.clearBg();
+        this.drawUserStrokes();
+
+        this.ctx.save();
+        this.ctx.lineCap = this.lineType;
+        this.ctx.lineJoin = this.lineType;
+        this.ctx.strokeStyle = this.colors[0];
+        this.ctx.lineWidth = this.lineThickness * 1.24;
+        if(isDarkMode){
+            this.ctx.strokeStyle = this.colors[1];
+        }
+        this.drawStroke(this.strokes[this.userStrokes.length], progress);
+
+        this.ctx.restore();
+
+        if (progress < 1) {
+            this.strokeAnimationFrame = requestAnimationFrame(animate);
+        } else {
+            cancelAnimationFrame(this.strokeAnimationFrame);
+            this.clearBg();
+            this.isAnimatingStroke = false;
+            this.drawUserStrokes(false);
+        }
+    };
+    
+    this.clearBg();
+    this.strokeAnimationFrame = requestAnimationFrame(animate);
+}
+
+// Implement a function to draw a stroke with progress
+function drawStroke(stroke, progress = 1, smooth = false, alpha=1) {
+    if (!stroke || stroke.length < 2) return;
+
+    // Ensure progress is between 0 and 1
+    progress = Math.min(1, Math.max(0, progress));
+
+    this.ctx.beginPath();
+
+    const scaledStroke = stroke.map(pt => ({
+        x: pt.x * this.dimension / 1000,
+        y: pt.y * this.dimension / 1000
+    }));
+
+    // Calculate total distance and the target length based on progress
+    let totalDistance = 0;
+    let segmentLengths = [0];
+
+    // Calculate segment lengths
+    for (let i = 1; i < scaledStroke.length; i++) {
+        const dx = scaledStroke[i].x - scaledStroke[i - 1].x;
+        const dy = scaledStroke[i].y - scaledStroke[i - 1].y;
+        totalDistance += Math.sqrt(dx * dx + dy * dy);
+        segmentLengths.push(totalDistance);
+    }
+
+    const targetLength = progress * totalDistance;
+
+    // Draw the stroke up to the target length
+    this.ctx.moveTo(scaledStroke[0].x, scaledStroke[0].y);
+
+    let accumulatedLength = 0;
+    for (let i = 1; i < scaledStroke.length; i++) {
+        const p1 = scaledStroke[i - 1];
+        const p2 = scaledStroke[i];
+        const segmentDistance = segmentLengths[i] - segmentLengths[i - 1];
+
+        accumulatedLength += segmentDistance;
+
+        // Check if we've reached or surpassed the target length
+        if (accumulatedLength >= targetLength) {
+            // Interpolate the position on this segment based on progress
+            const remainingLength = targetLength - (accumulatedLength - segmentDistance);
+            const ratio = remainingLength / segmentDistance;
+
+            const x = p1.x + (p2.x - p1.x) * ratio;
+            const y = p1.y + (p2.y - p1.y) * ratio;
+
+            this.ctx.lineTo(x, y);
+            break;
+        } else {
+            // Draw the entire segment as a straight line
+            this.ctx.lineTo(p2.x, p2.y);
+        }
+    }
+
+    this.ctx.stroke();
+}
+
+// Start interpolation animation to show transition between user's stroke and correct stroke
+function startInterpol(){
+    this.isAnimatingInterp = true;
+    
+    // Resample user strokes to match the number of points in the reference strokes
+    let resampleUserStrokes = this.userStrokes;
+
+    let factor = 0.0;
+    let frame = 0.0;
+
+    const aanim = () => {
+        frame++;
+        factor = .5 + Math.cos(frame / 50 * Math.PI) * 0.5;
+        let interpolatedStrokes = this.strokes.map((stroke, sidx) => {
+            let interpolated = stroke.map((point, pidx) => {
+                let userPoint = resampleUserStrokes[sidx][pidx];
+                return {
+                    x: userPoint.x * factor * 1000 / this.dimension + point.x * (1 - factor),
+                    y: userPoint.y * factor * 1000 / this.dimension + point.y * (1 - factor),
+                };
+            });
+            return interpolated;
+        });
+
+        let interlength = interpolatedStrokes.reduce((total, stroke) => {
+            return total + this.getStrokeLength(stroke);
+        }, 0);
+
+        this.draw({ progress: 1, clearbg: true, onDrawComplete: null, alpha: 1, strokes_in: interpolatedStrokes, strokes_in_length: interlength });
+        this.interpAnimFrame = requestAnimationFrame(aanim);
+
+       if(frame==50){
+            cancelAnimationFrame(this.interpAnimFrame);
+            this.clearBg();
+            this.isAnimatingInterp = false;
+        }
+       if(frame==40){
+            this.isQuizing = false;
+        }
+    }
+
+    aanim();
+}
+
 function createHanziWriters(characters) {
 
     // drawingArea.innerHTML = '';
@@ -509,6 +795,16 @@ function createHanziWriters(characters) {
         clearBackground: false,
         canvas: mainCanvas,
     });
+    
+    // Assign methods to the plotter object
+    workingPlotter.startUserDrawing = startUserDrawing;
+    workingPlotter.userStrokeMove = userStrokeMove;
+    workingPlotter.userStrokeEnded = userStrokeEnded;
+    workingPlotter.startStrokeAnimation = startStrokeAnimation;
+    workingPlotter.drawStroke = drawStroke;
+    workingPlotter.startInterpol = startInterpol;
+    workingPlotter.compareToReal = compareToReal;
+    
     workingPlotter.quiz({
         onComplete: (userData) => {
             let userStrokes = userData.strokes;
@@ -539,16 +835,47 @@ function createHanziWriters(characters) {
                 strokes: normalizedUserStrokes,
             };
             saveData(data);
-
         },
     });
+    
+    // Add event listeners for user interaction
+    mainCanvas.addEventListener('mousedown', workingPlotter.startUserDrawing.bind(workingPlotter));
+    mainCanvas.addEventListener('mousemove', workingPlotter.userStrokeMove.bind(workingPlotter));
+    mainCanvas.addEventListener('mouseup', workingPlotter.userStrokeEnded.bind(workingPlotter));
+    mainCanvas.addEventListener('mouseout', workingPlotter.userStrokeEnded.bind(workingPlotter));
+    
+    // Add touch events
+    mainCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        mainCanvas.dispatchEvent(mouseEvent);
+    });
+    
+    mainCanvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        mainCanvas.dispatchEvent(mouseEvent);
+    });
+    
+    mainCanvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        const mouseEvent = new MouseEvent('mouseup', {});
+        mainCanvas.dispatchEvent(mouseEvent);
+    });
+    
     currentWriters = [workingPlotter];
 
     let nextChar = shuffledWords[(currentIndex + 1) % shuffledWords.length][0];
     loadStrokeData(nextChar);
-   
 }
-
 
 function saveData(data) {
     fetch('./api/save_stroke_data', {

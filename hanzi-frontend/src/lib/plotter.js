@@ -593,6 +593,7 @@ export default class HanziPlotter {
         if (this.strokes_) {
             this.processStrokes(this.strokes_);
             this.processMasks(this.masks_);
+            this.setupDrawingEvents();
             this.isAnimating = false;
             this.isAnimatingStroke = false;
             this.isAnimatingInterp = false;
@@ -651,7 +652,7 @@ export default class HanziPlotter {
         this.canvas.addEventListener('mousemove', this.userStrokeMove.bind(this));
         this.canvas.addEventListener('mouseup', this.userStrokeEnded.bind(this));
         this.canvas.addEventListener('mouseout', this.userStrokeEnded.bind(this));
-        
+
         // Touch events
         this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this));
         this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this));
@@ -1638,6 +1639,7 @@ export default class HanziPlotter {
     
     
     async loadStrokeData(onReady=null) {
+        console.log('onReady');
         try {
             this.originalStrokes = undefined;
             const response = await fetch(`/api/getStrokes/${this.character}`);

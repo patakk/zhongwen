@@ -32,7 +32,7 @@ export default defineComponent({
       default: 0.07
     }
   },
-  setup(props) {
+  setup(props, { expose }) {
     const hanziCanvas = ref(null);
     const plotter = ref(null);
     const observer = ref(null);
@@ -81,8 +81,12 @@ export default defineComponent({
       const isDarkMode = currentTheme.value === 'dark';
       
       if (!props.strokes || !props.strokes.medians || !props.strokes.strokes) {
+        console.error("No stroke data provided for character:", props.character);
         return;
       }
+      
+      console.log("Creating plotter for:", props.character, "with strokes:", props.strokes.medians?.length);
+      
       // Create new plotter
       let medians = props.strokes.medians || [];
       let masks = props.strokes.strokes || [];
@@ -95,7 +99,6 @@ export default defineComponent({
         speed: props.animSpeed,
         lineThickness: props.drawThin ? 1 : 8 * canvas.width / 200,
         colors: getThemeColors(isDarkMode),
-        clickAnimation: props.animatable,
         showDiagonals: true,
         showGrid: true,
         useMask: true,
@@ -170,7 +173,7 @@ export default defineComponent({
 
     // Watch for character changes
     watch(() => props.character, async () => {
-      
+      console.log("Character changed to:", props.character);
       if (plotter.value) {
         if (props.animatable && hanziCanvas.value) {
           hanziCanvas.value.removeEventListener('click', animateCharacter);
@@ -180,10 +183,22 @@ export default defineComponent({
       
       initPlotter();
     });
+    
+    // Watch for stroke data changes
+    watch(() => props.strokes, () => {
+      console.log("Stroke data updated for", props.character);
+      if (plotter.value && props.strokes && props.strokes.medians) {
+        initPlotter();
+      }
+    }, { deep: true });
+
+    // Expose the plotter to the parent component
+    expose({ plotter: () => plotter.value });
 
     return {
       hanziCanvas,
-      animateCharacter
+      animateCharacter,
+      plotter
     };
   }
 });

@@ -9,6 +9,7 @@ import About from '../views/AboutView.vue'
 import Grid from '../views/GridView.vue'
 import Search from '../views/SearchView.vue'
 import Flashcards from '../views/FlashcardsView.vue'
+import HanziPractice from '../views/HanziPracticeView.vue'
 import PageInfo from '../views/PageInfoView.vue'
 import MyLists from '../views/MySpaceView.vue'
 
@@ -23,6 +24,7 @@ const routes = [
   { path: '/grid', component: Grid },
   { path: '/search', name: 'SearchPage', component: Search },
   { path: '/flashcards', component: Flashcards },
+  { path: '/practice', component: HanziPractice },
   { path: '/page-info', component: PageInfo },
   { path: '/my-lists', component: MyLists },
   { path: '/:pathMatch(.*)*', component: Home } 

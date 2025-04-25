@@ -1,8 +1,7 @@
 <template>
-    <div @click="handleBasepageClick" style="cursor: pointer; text-decoration: underline;">
+    <div @click="handleBasepageClick" class="grid-header">
         <BasePage 
           :page_title="localPageTitle" 
-          style="cursor: pointer;"
         />
     </div>
 
@@ -411,6 +410,10 @@ html, body {
   overflow: hidden;
 }
 
+.grid-header {
+  cursor: pointer;
+  text-decoration: underline;
+}
 
 .page-layout {
   display: flex;
