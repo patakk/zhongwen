@@ -11,9 +11,9 @@ import store from './stores'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSun, faMoon, faPencil } from '@fortawesome/free-solid-svg-icons'
+import { faSun, faMoon, faPencil, faBars } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faSun, faMoon, faPencil)
+library.add(faSun, faMoon, faPencil, faBars)
 
 store.dispatch('loadUserDataFromStorage')
   .then(() => {

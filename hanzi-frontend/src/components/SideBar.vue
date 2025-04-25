@@ -2,8 +2,9 @@
   <div>
     <div class="sidebar-container" :class="{ 'sidebar-open': isOpen }">
       <button v-if="!isOpen" class="sidebar-toggle" @click.stop="toggleSidebar">
-          <span class="toggle-icon">◀</span>
-          <span class="toggle-text">◀</span>
+          <!-- <span class="toggle-icon">◀</span>
+          <span class="toggle-text">◀</span> -->
+          <font-awesome-icon :icon="['fas', 'bars']" />
       </button>
 
       <div v-if="isOpen" class="sidebar" @click.stop>
@@ -173,12 +174,32 @@ export default {
   }
 
   .sidebar-toggle {
+    /* position: fixed;
+    display: block;
+    font-size: 1.5rem;
+    top: .5em;
+    right: .5em;
+    width: 1.5em;
+    height: 1.5em;
+    background: none;
+    box-sizing: content-box;
+    padding: 0em;
+    z-index: 35; */
+
+    
+    width: 1.5em;
+    height: 1.5em;
+    color: var(--fg);
     position: fixed;
-    top: .5rem;
-    right: .5rem;
-    height: auto;
-    padding: 0.5rem 1rem;
-    z-index: 35;
+    padding: var(--spacing-unit);
+    z-index: 1000;
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    transform: translate(50%, -50%);
+    right: 1em;
+    top: 1em;
   }
 
   .toggle-icon {

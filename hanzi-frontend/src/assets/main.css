@@ -141,8 +141,6 @@ button:hover {
   color: var(--fg);
   position: fixed;
   padding: var(--spacing-unit);
-  top: 0px;
-  left: 0px;
   z-index: 1000;
   background: none;
   border: none;
