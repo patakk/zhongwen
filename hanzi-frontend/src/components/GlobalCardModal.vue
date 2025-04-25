@@ -810,10 +810,13 @@ export default {
   font-size: 1rem;
   box-sizing: border-box;
   overflow-wrap: break-word;
-  white-space: pre-wrap;
   width: 100%;
   margin-top: 1em;
   opacity: 0.6;
+  
+  white-space: wrap;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 .multi-pronunciation {
