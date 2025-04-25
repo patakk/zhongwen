@@ -1385,7 +1385,7 @@ export default {
     border: none;
   }
 
-  @media screen and (max-width: 768px) {
+@media screen and (max-width: 768px) {
     .modal {
       width: 100vw;
       max-width: 100vw;
@@ -1414,6 +1414,26 @@ export default {
   .freq-trad-anim {
     flex-direction: column;
   }
+  
+  .tab-btn {
+    font-size: 1rem;
+    border: none;
+    padding: 0.25rem .5rem;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-bottom: 2px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+    position: relative;
+    overflow: visible;
+  }
+
 }
 
 /* X centering element */
