@@ -2,7 +2,6 @@
     <BasePage page_title="Account" />
 
     <div class="account-container" v-if="loggedIn">
-      <h2>Account Info</h2>
       <div class="profile-info-grid">
         <div class="profile-row">
           <div class="profile-label">Username:</div>
@@ -868,6 +867,32 @@ h2 {
 }
 .modal-message strong {
     color: var(--danger-color, #dc3545);
+}
+
+@media (max-width: 768px) {
+  
+  .account-container {
+    max-width: 600px;
+    margin: 1rem auto;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: none;
+  }
+
+  .profile-row {
+    border-bottom: 2px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+    padding-bottom: 1rem;
+  }
+
+  .account-actions {
+    border-bottom: 2px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+    padding-bottom: 1rem;
+  }
+  
+  .logout-btn {
+    flex: 1;
+  }
 }
 
 </style>

@@ -1,7 +1,7 @@
 <template>
   <BasePage page_title="Register" />
 
-  <div class="register-container">
+  <div class="loginregister-container">
     <form @submit.prevent="handleRegister">
       <div>
         <label for="username">Username:</label>
@@ -103,22 +103,6 @@ const loginWithGoogle = () => {
 </script>
 
 <style scoped>
-.register-container {
-  max-width: 400px;
-  margin: 2rem auto;
-  color: var(--fg);
-  padding: 2rem;
-  border: 1px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-  border-radius: 8px;
-  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
 input {
   display: block;
   width: 100%;
@@ -128,6 +112,7 @@ input {
   outline: none;
   border: 1px solid color-mix(in oklab, var(--fg) 35%, var(--bg) 100%);
   background: color-mix(in oklab, var(--fg) 2%, var(--bg) 100%);
+  box-sizing: border-box;
 }
 
 input:focus {
@@ -175,4 +160,5 @@ button:hover {
   height: 1.2em;
   margin-right: 0.8em;
 }
+
 </style>

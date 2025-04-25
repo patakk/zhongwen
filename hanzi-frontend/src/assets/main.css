@@ -89,15 +89,25 @@ input[type="text"]:focus-visible {
 }
 
 
+.loginregister-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  color: var(--fg);
+  padding: 2rem;
+  border: 1px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
 @media (max-width: 1024px) {
 
-  /* [data-theme='light'] {
-    --card-shadow: 14px 10px 0px 0px var(--fg);
+  .loginregister-container {
+    margin: 2em;
   }
-
-  [data-theme='dark'] {
-    --card-shadow: 5px 5px 13px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
-  } */
 }
 
 ::selection {

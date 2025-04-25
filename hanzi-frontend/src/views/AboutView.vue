@@ -2,11 +2,11 @@
   <BasePage page_title="About" />
   <div class="container">
     <div class="about-section">
-      <p>
+      <div>
         This is a personal learning tool I'm developing alongside my Mandarin Chinese 
         studies. 
         I've made it public hoping others might find it useful too, but please keep in mind that this is a work in progress and may contain errors or incomplete features. Your feedback and contributions are welcome!
-      </p>
+      </div>
       <br />
       <p>
         <!-- Start <router-link class="links" to="/">here</router-link> to access the main features of the website. -->
@@ -79,20 +79,22 @@ export default {
   box-sizing: border-box;
 }
 
+.about-section {
+  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 80%);
+  padding: 1rem;
+
+}
+
 .container {
   width: 60%;
   max-width: 1200px;
   padding: 2rem;
-  overflow-y: auto;
-  max-height: 90vh;
   margin: 2em auto;
   scrollbar-width: none; /* For Firefox */
-  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 80%);
-  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  /* background: color-mix(in oklab, var(--fg) 5%, var(--bg) 80%); */
 }
 
 .container::-webkit-scrollbar {
-  display: none; /* For Chrome, Safari, and Opera */
 }
 
 h1 {
@@ -188,8 +190,8 @@ ul {
     border: none;
     max-height: none;
     padding: 1rem;
-    margin: auto;
     margin-top: 2em;
+    margin-bottom: 12em;
   }
 
   .btn {
