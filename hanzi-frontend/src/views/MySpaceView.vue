@@ -654,6 +654,7 @@
     box-sizing: border-box;
     text-overflow: ellipsis;
     flex: 1;
+    min-width: 0; /* Allow select to shrink below its content width */
   }
   
   select {
@@ -665,6 +666,10 @@
     font-family: inherit;
     /* border-radius: 6px; */
     cursor: pointer;
+    width: 100%; /* Ensure select uses full width of container */
+    -webkit-appearance: none; /* Remove default styling on iOS */
+    -moz-appearance: none;
+    appearance: none;
   }
   
   /* Additional responsive adjustments */
@@ -676,6 +681,14 @@
     
     .wordlist-selector {
       width: 100%;
+    }
+    
+    #wordlist-select {
+      width: 100%;
+    }
+    
+    select {
+      border-radius: 0; /* Ensure no rounding on mobile */
     }
     
     .wordlist-management {

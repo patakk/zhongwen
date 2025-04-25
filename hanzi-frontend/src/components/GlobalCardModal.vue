@@ -1381,7 +1381,7 @@ export default {
     }
 
     .main-word {
-      font-size: 8rem;
+      font-size: 5rem;
       margin-top: 3rem;
     }
 
