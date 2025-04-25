@@ -26,7 +26,7 @@
         </nav>
       </div>
     </div>
-    <div v-if="isOpen" class="overlay" @click="closeSidebar"></div>
+    <div v-if="isOpen" class="overlay" @click.stop="closeSidebar"></div>
   </div>
 </template>
 
@@ -96,7 +96,7 @@ export default {
 
 .sidebar-open .sidebar {
   border-left: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
-  width: 400px;
+  width: 200px;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
 }
 

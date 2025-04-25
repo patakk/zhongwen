@@ -25,8 +25,7 @@ const routes = [
   { path: '/flashcards', component: Flashcards },
   { path: '/page-info', component: PageInfo },
   { path: '/my-lists', component: MyLists },
-  // Optionally, a catch-all for 404s:
-  { path: '/:pathMatch(.*)*', component: Home }  // or NotFoundView
+  { path: '/:pathMatch(.*)*', component: Home } 
 ]
 
 const router = createRouter({

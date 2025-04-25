@@ -2,15 +2,12 @@
   <BasePage page_title="Homeeee" />
   <div class="home-view">
     <nav>
-      <RouterLink v-if="authStatus" to="/account">Account</RouterLink><span v-if="authStatus"> | </span>
-      <RouterLink v-else="authStatus" to="/register">Register</RouterLink><span v-if="!authStatus"> | </span>
+      <RouterLink v-if="!authStatus" to="/register">Register</RouterLink><span v-if="!authStatus"> | </span>
       <RouterLink v-if="authStatus" to="/my-lists">My Lists</RouterLink>
-      <RouterLink v-else to="/login">Login</RouterLink> |
+      <RouterLink v-if="!authStatus" to="/login">Login</RouterLink> |
       <RouterLink to="/grid">Grid</RouterLink> |
-      <RouterLink to="/search">Search</RouterLink> |
       <RouterLink to="/flashcards">Flashcards</RouterLink> |
-      <RouterLink to="/page-info">Page Info</RouterLink> |
-      <RouterLink to="/about">About</RouterLink>
+      <RouterLink v-if="authStatus" to="/account">Account</RouterLink>
     </nav>
   </div>
 </template>
@@ -41,7 +38,6 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  height: 100vh;
 }
 
 a {

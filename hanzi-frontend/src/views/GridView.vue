@@ -7,11 +7,11 @@
     </div>
 
     <div class="page-layout">
-      <div class="leftbar" :class="{ 'leftbar-hidden': !sidebarVisible }">
+      <div class="leftbar" :class="{ 'leftbar-hidden': !leftbarVisible }">
         <div class="tab-keyboard-shortcut">[Tab]</div>
         <div class="leftbar-header">
           <h2>Settings</h2>
-          <button v-if="sidebarVisible" class="close-button" @click="toggleSidebar">×</button>
+          <button v-if="leftbarVisible" class="close-button" @click="toggleLeftbar">×</button>
         </div>
 
         <!-- Dictionary Selector -->
@@ -64,9 +64,9 @@
         </div>
       </div>
 
-      <div v-if="sidebarVisible" class="overlay" @click="closeSidebar"></div>
+      <div v-if="leftbarVisible" class="overlay" @click="closeSidebar"></div>
 
-      <main class="main-content" :class="{ 'main-content-expanded': !sidebarVisible }">
+      <main class="main-content" :class="{ 'main-content-expanded': !leftbarVisible }">
         
         <div v-if="selectedCategory">
           <div class="dictionary-category">
@@ -143,7 +143,7 @@ export default {
       tempFontScale: 1,     // ✅ Temporary one used by slider
       isListView: false,    // ✅ Toggle between grid and list views
       reloading: false,     // Flag to track view switching reloading
-      sidebarVisible: window.innerWidth > 1024, // Default to closed on mobile
+      leftbarVisible: window.innerWidth > 1024, // Default to closed on mobile
       waitingForDictData: true, // Flag to track if we're waiting for dictionary data
       attemptedCategory: null // Store the attempted category from URL
     };
@@ -244,7 +244,7 @@ export default {
   methods: {
     // New method to handle click on BasePage component
     handleBasepageClick() {
-      this.toggleSidebar();
+      this.toggleLeftbar();
     },
     applyFontScale() {
       this.fontScale = this.tempFontScale;
@@ -314,13 +314,13 @@ export default {
       });
     },
     // New method to toggle sidebar visibility
-    toggleSidebar() {
-      this.sidebarVisible = !this.sidebarVisible;
+    toggleLeftbar() {
+      this.leftbarVisible = !this.leftbarVisible;
     },
     // Method to close the sidebar
     closeSidebar() {
-      if (this.sidebarVisible) {
-        this.sidebarVisible = false;
+      if (this.leftbarVisible) {
+        this.leftbarVisible = false;
       }
     },
     
@@ -329,7 +329,7 @@ export default {
       // Only respond to Tab key, and prevent default behavior
       if (event.key === 'Tab') {
         event.preventDefault();
-        this.toggleSidebar();
+        this.toggleLeftbar();
       }
     }
   },
@@ -550,7 +550,7 @@ select {
   height: 100%;
   overflow: hidden;
   padding: 1em;
-  transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+  /* transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease; */
   position: relative; /* Add relative positioning to contain the Tab indicator */
 }
 
@@ -616,7 +616,7 @@ select {
   box-sizing: border-box;
   overflow-y: auto;
   height: 100%;  
-  transition: width 0.3s ease;
+  /* transition: width 0.3s ease; */
 }
 
 .main-content-expanded {
