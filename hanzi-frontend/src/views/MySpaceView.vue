@@ -826,7 +826,6 @@
   
   .word-english {
     font-size: .8em;
-    padding-right: 3em;
     flex: 1;
     display: flex;
     align-items: center;
