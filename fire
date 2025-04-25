@@ -10,7 +10,9 @@ else
     commit_message="fix"
 fi
 
+cd ..
 git add .
+git status --porcelain
 
 if git diff --cached --quiet; then
     echo "No changes to commit."

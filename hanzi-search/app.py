@@ -25,8 +25,6 @@ limiter = Limiter(
     app=app,
 )
 
-
-
 DATA_DIR = '/home/patakk/zhongwen_data'
 indices_cache = json.load(open(os.path.join(DATA_DIR, "indices_cache.json")))
 
