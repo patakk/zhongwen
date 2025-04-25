@@ -190,7 +190,7 @@ ul {
     border: none;
     max-height: none;
     padding: 1rem;
-    margin-top: 2em;
+    margin-top: 1em;
     margin-bottom: 12em;
   }
 
