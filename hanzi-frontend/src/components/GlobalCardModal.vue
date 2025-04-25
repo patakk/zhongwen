@@ -969,7 +969,7 @@ export default {
   padding: 0.5rem 1rem;
   border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
   cursor: pointer;
-  font-family: "Noto Serif SC";
+  font-family: "Noto Sans SC";
   font-weight: 400;
   color: var(--primary-primary);
   white-space: nowrap;
