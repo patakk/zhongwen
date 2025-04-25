@@ -15,7 +15,7 @@
           </template>
           <template v-else>
             <RouterLink to="/account" class="sidebar-link">Account</RouterLink>
-            <RouterLink to="/my-space" class="sidebar-link">My Space</RouterLink>
+            <RouterLink to="/my-lists" class="sidebar-link">My Lists</RouterLink>
           </template>
           <RouterLink to="/grid" class="sidebar-link">Grid</RouterLink>
           <RouterLink to="/search" class="sidebar-link">Search</RouterLink>

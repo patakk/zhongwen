@@ -7,10 +7,10 @@
       <input
         v-model="searchQuery"
         type="text"
-        placeholder="Search for characters or words..."
+        placeholder="search for words or characters..."
         class="search-input"
       />
-      <button type="submit" class="search-button">Search</button>
+      <button type="submit" class="search-button">search</button>
     </form>
     
     <div class="content">

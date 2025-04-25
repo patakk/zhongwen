@@ -10,7 +10,7 @@ import Grid from '../views/GridView.vue'
 import Search from '../views/SearchView.vue'
 import Flashcards from '../views/FlashcardsView.vue'
 import PageInfo from '../views/PageInfoView.vue'
-import MySpace from '../views/MySpaceView.vue'
+import MyLists from '../views/MySpaceView.vue'
 
 const routes = [
   { path: '/', component: Home },
@@ -24,7 +24,7 @@ const routes = [
   { path: '/search', name: 'SearchPage', component: Search },
   { path: '/flashcards', component: Flashcards },
   { path: '/page-info', component: PageInfo },
-  { path: '/my-space', component: MySpace },
+  { path: '/my-lists', component: MyLists },
   // Optionally, a catch-all for 404s:
   { path: '/:pathMatch(.*)*', component: Home }  // or NotFoundView
 ]

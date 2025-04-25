@@ -5,7 +5,7 @@
       <input
         v-model="query"
         type="text"
-        placeholder="Enter search term"
+        placeholder="enter search term"
         class="search-input"
       />
       <button type="submit" class="search-button">Search</button>

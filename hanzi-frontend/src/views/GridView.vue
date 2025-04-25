@@ -1,5 +1,5 @@
 <template>
-    <div @click="handleBasepageClick" style="cursor: pointer;">
+    <div @click="handleBasepageClick" style="cursor: pointer; text-decoration: underline;">
         <BasePage 
           :page_title="localPageTitle" 
           style="cursor: pointer;"
