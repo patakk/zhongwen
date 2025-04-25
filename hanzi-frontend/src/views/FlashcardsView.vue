@@ -1117,7 +1117,7 @@ canvas.plotter {
 
   
   #flashcard {
-    height: 70vh;
+    height: 50vh;
   }
 }
 
