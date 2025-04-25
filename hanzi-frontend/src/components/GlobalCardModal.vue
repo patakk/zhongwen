@@ -98,7 +98,7 @@
           <h3 class="char-breakdown">Character Breakdown ↓</h3>
 
           <!-- Tabs -->
-          <!-- <div class="tabs" v-if="validChars.length > 1">
+          <div class="tabs" v-if="validChars.length > 1">
             <button
               v-for="char in validChars"
               :key="char"
@@ -107,7 +107,7 @@
             >
               {{ char }}
             </button>
-          </div> -->
+          </div>
 
           <!-- Tab content -->
           <div class="tab-content" v-if="activeCharData">
@@ -1381,7 +1381,6 @@ export default {
     max-height: 80vh;
     padding: 1rem;
     border: none;
-    box-shadow: var(--card-shadow);
   }
 
   .freq-trad-anim {
