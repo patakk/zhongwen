@@ -1065,6 +1065,7 @@ html, body {
 
 .answer {
   position: absolute;
+  font-size: 1em;
   bottom: 0;
   left: 0;
   right: 0;
@@ -1105,6 +1106,10 @@ canvas.plotter {
     perspective: 1000px;
   }
 
+  .answer {
+    position: absolute;
+    font-size: .76em;
+  }
 }
 
 </style>

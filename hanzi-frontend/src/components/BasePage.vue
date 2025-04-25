@@ -1,7 +1,7 @@
 <template>
     <SideBar />
     <h1>{{ page_title }}</h1> <!-- change this label per file -->
-  </template>
+</template>
   
   <script>
   import SideBar from '../components/SideBar.vue';
@@ -39,5 +39,12 @@ h1 {
     font-family: Arial, Helvetica, sans-serif;
     border-bottom: var(--h1-border);
 }
+
+@media (max-width: 784px) {
+  h1 {
+    font-size: 2em;
+  }
+}
+
 
 </style>
