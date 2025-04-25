@@ -25,7 +25,7 @@
         </div>
         <div class="answer" :class="{ inactive: !revealed }">
           <div class="pinyin">{{ singlePinyin }}</div>
-          <div class="english">{{ singleEnglish }}</div>
+          <div class="english">{{ singleEnglish.split("/")[0] }}</div>
         </div>
       </div>
     </div>
