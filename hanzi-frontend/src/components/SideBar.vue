@@ -196,7 +196,7 @@ export default {
     right: 0;
     height: 100vh;
     width: 80%;
-    max-width: 300px;
+    max-width: 150px;
     z-index: 30;
   }
 }

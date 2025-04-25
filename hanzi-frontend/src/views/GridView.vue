@@ -1,15 +1,14 @@
 <template>
-
-    <BasePage :page_title="localPageTitle" />
+    <div @click="handleBasepageClick" style="cursor: pointer;">
+        <BasePage 
+          :page_title="localPageTitle" 
+          style="cursor: pointer;"
+        />
+    </div>
 
     <div class="page-layout">
-      <!-- Mobile leftbar toggle button -->
-      <button v-if="!sidebarVisible" class="leftbar-toggle" @click="toggleSidebar">
-        <span class="toggle-icon">▶</span>
-        <span class="toggle-text">Settings</span>
-      </button>
-
       <div class="leftbar" :class="{ 'leftbar-hidden': !sidebarVisible }">
+        <div class="tab-keyboard-shortcut">[Tab]</div>
         <div class="leftbar-header">
           <h2>Settings</h2>
           <button v-if="sidebarVisible" class="close-button" @click="toggleSidebar">×</button>
@@ -46,7 +45,7 @@
         <div class="font-size-buttons">
           <button 
             class="size-button" 
-            @click="setFontSize(0.75)"
+            @click="setFontSize(0.6)"
           >
             <span class="size-icon">小</span>
           </button>
@@ -243,6 +242,10 @@ export default {
     }
   },
   methods: {
+    // New method to handle click on BasePage component
+    handleBasepageClick() {
+      this.toggleSidebar();
+    },
     applyFontScale() {
       this.fontScale = this.tempFontScale;
     },
@@ -548,6 +551,7 @@ select {
   overflow: hidden;
   padding: 1em;
   transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+  position: relative; /* Add relative positioning to contain the Tab indicator */
 }
 
 .leftbar-hidden {
@@ -556,10 +560,20 @@ select {
   opacity: 0;
 }
 
+.tab-keyboard-shortcut {
+  position: absolute;
+  top: .5em;
+  left: .5em;
+  font-size: 0.8em;
+  color: var(--fg);
+  opacity: 0.5;
+}
+
 .leftbar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .close-button {
@@ -567,14 +581,15 @@ select {
   border: none;
   font-size: 1.5em;
   cursor: pointer;
+  display: none;
 }
 
 .leftbar-toggle {
   position: fixed;
-  top: 4.5em;
-  left: 1em;
+  /* top: 4.5em;
+  left: 1em; */
+  left: 50%;
   z-index: 5;
-  border-radius: 4px;
   padding: 0.5em 1em;
   display: flex;
   align-items: center;
@@ -723,9 +738,9 @@ label {
 
   .leftbar-toggle {
     position: fixed;
-    top: 4em;
-    left: 1em;
-    border-radius: 4px;
+    top: 10em;
+    left: 50%;
+    transform: translateX(-50%);
     padding: 0.5em 1em;
     display: flex;
     align-items: center;
@@ -748,7 +763,7 @@ label {
   }
 
   .grid-item {
-    aspect-ratio: 3;
+    aspect-ratio: 4;
   }
 
   /* Add overlay for mobile */
@@ -766,17 +781,31 @@ label {
   .leftbar:not(.leftbar-hidden) + .overlay {
     display: block;
   }
+
+  
+  .hanzi {
+    font-size: 1em; /* Scale font size directly */
+  }
+
+  .pinyin {
+    font-size: 0.8em; /* Scale font size directly */
+    color: var(--fg);
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
 }
 
 /* Small mobile devices */
 @media (max-width: 480px) {
   .grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)) !important;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 2fr)) !important;
     gap: 0.5em;
   }
 
   .grid-item {
-    aspect-ratio: 2.5;
+    aspect-ratio: 4;
   }
 
   .list-item {

@@ -215,5 +215,17 @@ h2 {
   font-style: italic;
 }
 
+.search-form {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+  flex-wrap: wrap; /* Add this to make the form wrap on narrow screens */
+}
 
+input.search-input {
+  flex: 1;
+  min-width: 200px; /* This ensures the input doesn't get too narrow before wrapping */
+}
 </style>

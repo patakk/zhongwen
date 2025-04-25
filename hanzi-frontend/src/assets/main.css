@@ -246,6 +246,7 @@ button.google-login {
   color: var(--fg);
   font-size: 1rem;
   font-family: inherit;
+  min-width: 200px; /* Ensure input has a minimum width before wrapping */
 }
 
 .search-button {
@@ -255,6 +256,7 @@ button.google-login {
   border: 2px solid color-mix(in oklab, var(--fg) 35%, var(--bg) 25%);
   cursor: pointer;
   font-family: inherit;
+  width: auto; /* Ensure button takes only necessary width */
 }
 
 .search-button:hover {

@@ -146,6 +146,16 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 2rem;
+  flex-wrap: wrap;
+}
+
+.search-form {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+  flex-wrap: wrap; /* Add this line to make input and button wrap on narrow screens */
 }
 
 .loading-indicator {
@@ -204,5 +214,6 @@ export default {
   color: var(--fg);
   flex: 12;
 }
+
 </style>
 

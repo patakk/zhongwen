@@ -694,6 +694,18 @@ export default {
 }
 
 
+
+@media (max-width: 1024px) {
+
+  [data-theme='light'] {
+    --card-shadow: 14px 10px 0px 0px var(--fg);
+  }
+
+  [data-theme='dark'] {
+    --card-shadow: 5px 5px 13px 7px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
+  }
+}
+
 </style>
 
 <style scoped>
@@ -1363,11 +1375,13 @@ export default {
 
 @media (max-width: 1024px) {
   .modal {
-    width: 90vw;
-    max-width: 90vw;
+    width: 95vw;
+    max-width: 95vw;
     height: 80vh;
     max-height: 80vh;
     padding: 1rem;
+    border: none;
+    box-shadow: var(--card-shadow);
   }
 
   .freq-trad-anim {
