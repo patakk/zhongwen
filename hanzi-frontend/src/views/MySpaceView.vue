@@ -1,9 +1,9 @@
 <template>
-    <BasePage page_title="My Space" />
+    <BasePage page_title="My Lists" />
     <div class="myspace-view" v-if="loggedIn">
       <div class="wordlist-container">
         <div class="wordlist-header">
-          <h2>My Wordlists</h2>
+          <!-- <h2>My Wordlists</h2> -->
   
           <div class="wordlist-selector">
             <label for="wordlist-select" class="wordlist-label">Select Wordlist:</label>
@@ -101,10 +101,12 @@
                 >
                     <div class="word-cell">
                         <div class="hanzipinyin">
-                        <div class="word-hanzi">{{ word.character }}</div>
-                        <div class="word-pinyin">
-                            {{ $toAccentedPinyin(word.pinyin[0]) }}
-                        </div>
+                          <div class="word-hanzi">
+                            {{ word.character }}
+                          </div>
+                            <div class="word-pinyin">
+                                {{ $toAccentedPinyin(word.pinyin[0]) }}
+                            </div>
                         </div>
                         <div class="word-english">{{ word.english[0] }}</div>
                         <button
@@ -605,10 +607,23 @@
     max-width: 900px;
     margin: 0 auto;
     background: var(--bg-alt);
-    /* border-radius: 12px; */
     box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
     padding: 2rem;
     box-sizing: border-box;
+  }
+  
+  /* Responsive styling for mobile */
+  @media (max-width: 768px) {
+    .myspace-view {
+      padding: 0;
+    }
+    
+    .wordlist-container {
+      max-width: 100%;
+      box-shadow: none;
+      background: var(--bg);
+      padding: 1rem;
+    }
   }
   
   .wordlist-header {
@@ -650,6 +665,30 @@
     font-family: inherit;
     /* border-radius: 6px; */
     cursor: pointer;
+  }
+  
+  /* Additional responsive adjustments */
+  @media (max-width: 768px) {
+    .wordlist-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .wordlist-selector {
+      width: 100%;
+    }
+    
+    .wordlist-management {
+      flex-direction: column;
+    }
+    
+    .wordlist-actions {
+      width: 100%;
+    }
+    
+    .action-button {
+      flex: 1;
+    }
   }
   
   select:hover,
@@ -735,7 +774,6 @@
     flex-direction: column;
     gap: .5rem;
     overflow-y: auto;
-    padding-right: 0.5rem;
   }
   
   .word-item {
@@ -744,6 +782,7 @@
     align-items: stretch;
     width: 100%;
     box-sizing: border-box;
+    padding: .3rem;
   }
   
   .word-item:hover {
@@ -753,7 +792,7 @@
   .word-cell {
     width: 100%;
     display: flex;
-    padding: .3rem;
+    /* padding: .3rem; */
     cursor: pointer;
     user-select: none;
     flex-direction: row;
@@ -787,6 +826,7 @@
   
   .word-english {
     font-size: .8em;
+    padding-right: 3em;
     flex: 1;
     display: flex;
     align-items: center;
@@ -798,20 +838,22 @@
     background: transparent;
     border: none;
     color: var(--fg);
+    /* flex: 1; */
     opacity: 0.35;
     padding: 0 1rem;
     font-size: 1rem;
     cursor: pointer;
-    display: flex;
-    margin-left: auto;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s, background-color 0.2s;
-    position: absolute;
+    /* display: flex; */
+    /* margin-left: auto; */
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* transition: opacity 0.2s, background-color 0.2s; */
+    /* position: absolute; */
     right: 0;
     top: 0;
     bottom: 0;
     height: auto;
+    box-sizing: border-box;
   }
   
   .remove-button:hover {
