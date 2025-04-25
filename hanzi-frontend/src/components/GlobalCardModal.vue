@@ -1402,6 +1402,7 @@ export default {
       position: absolute;
       max-height: 100%;
       padding: 3rem 1rem 1rem 1rem;
+      border: none;
     }
     
     .wordlist-dropdown {
