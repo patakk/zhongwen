@@ -688,26 +688,6 @@ export default {
 
 <style>
 
-[data-theme='light'] {
-  --card-shadow: 14px 10px 0px 0px var(--fg);
-}
-
-[data-theme='dark'] {
-  --card-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
-}
-
-
-
-@media (max-width: 1024px) {
-
-  [data-theme='light'] {
-    --card-shadow: 14px 10px 0px 0px var(--fg);
-  }
-
-  [data-theme='dark'] {
-    --card-shadow: 5px 5px 13px 7px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
-  }
-}
 
 </style>
 
@@ -958,7 +938,7 @@ export default {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  border-bottom: 2px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  border-bottom: 1.5px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   position: relative;
   overflow: visible;
 }
@@ -967,23 +947,28 @@ export default {
   position: relative;
   font-size: 1.2rem;
   padding: 0.5rem 1rem;
-  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
+  /* border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%); */
+  border: none;
   cursor: pointer;
   font-family: "Noto Sans SC";
   font-weight: 400;
   color: var(--primary-primary);
   white-space: nowrap;
-  opacity: 0.35;
-  background: var(--bg);
+  opacity: 0.35; 
+  border: 1.5px solid #0000;
+  background: #0000;
   transform: translate(0, 2px);
   flex-shrink: 0;
   position: relative;
   z-index: 1;
+  border-bottom: none;
 }
 
 .tab-btn.active {
-  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
+  border: 1.5px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
+  background: var(--bg);
   opacity: 1;
+  transform: translate(0, 2px);
   z-index: 2;
   border-bottom: none;
 }
@@ -1090,31 +1075,12 @@ export default {
 
 /* Fixed position close button for thumb accessibility */
 .fixed-close {
-  font-size: 2rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 50%;
-
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  background-color: color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
-  width: 3.5rem;
-  height: 3.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  box-shadow: 0 4px 8px rgba(124, 98, 98, 0.2);
-  opacity: 0.8;
-  z-index: 30;
-  line-height: 0;
-  padding: 0;
+  display: none;
 }
 
 .fixed-close:hover {
-  opacity: 1;
-  transform: scale(1.05);
+  /* opacity: 1;
+  transform: scale(1.05); */
 }
 
 .decomp-section {
@@ -1315,7 +1281,7 @@ export default {
 }
 
 .concept-label {
-  font-size: 1rem;
+  font-size: .85rem;
 }
 
 .concept-content {
@@ -1443,12 +1409,37 @@ export default {
     position: relative;
     overflow: visible;
   }
+
+.fixed-close {
+  display: flex;
+  font-size: 2rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 50%;
+
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  width: 3.5rem;
+  height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  box-shadow: 0 4px 8px rgba(124, 98, 98, 0.2);
+  opacity: 0.8;
+  z-index: 30;
+  line-height: 0;
+  padding: 0;
+}
+
 }
 
 /* X centering element */
 .x-centered {
   display: flex;
   align-items: center;
+  color: var(--fg);
   justify-content: center;
   width: 100%;
   height: 100%;

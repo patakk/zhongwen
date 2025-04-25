@@ -935,28 +935,6 @@ html, body {
 #app {
 }
 
-[data-theme='light'] {
-  --card-shadow: 14px 10px 0px 0px var(--fg);
-  --decks-shadow: 7px 6px 0px 0px var(--fg);
-  --card-border: 2px solid color-mix(in oklab, var(--fg) 46%, var(--bg) 35%);
-}
-
-[data-theme='dark'] {
-  --card-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
-  --decks-shadow: 5px 5px 16px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
-}
-
-@media (max-width: 784px) {
-
-    [data-theme='light'] {
-  --card-shadow: 7px 5px 0px 0px var(--fg);
-  }
-
-  [data-theme='dark'] {
-  --card-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 26%, var(--bg) 35%);
-}
-}
-
 </style>
 
 <style scoped>

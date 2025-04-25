@@ -151,19 +151,19 @@ export default {
 }
 
 .toast-notification.success {
-  background-color: #2a9d8f;
+  background-color: var(--success-color);
 }
 
 .toast-notification.error {
-  background-color: var(--danger-color, #dc3545);
+  background-color: var(--danger-color);
 }
 
 .toast-notification.info {
-  background-color: var(--accent-color, #007bff);
+  background-color: var(--accent-color);
 }
 
 .toast-notification.warning {
-  background-color: #fd7e14;
+  background-color: var(--warning-color);
 }
 
 @keyframes toast-slide-in {

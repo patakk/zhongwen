@@ -38,6 +38,13 @@
   --third-t: #7226a8;
   --fourth-t: rgb(187, 52, 34);
   --neutral-t: #90addd;
+  --success-color: #54da92;
+  --danger-color: #dc3545;
+  --accent-color: #007bff;
+  --warning-color: #ffb70e;
+  --card-shadow: 14px 10px 0px 0px var(--fg);
+  --decks-shadow: 7px 6px 0px 0px var(--fg);
+  --card-border: 2px solid color-mix(in oklab, var(--fg) 46%, var(--bg) 35%);
 }
 
 .pinyin-first {
@@ -58,7 +65,7 @@
 
 
 input[type="text"]:focus-visible {
-  outline-color: color-mix(in oklab, var(--fg) 26%, var(--bg) 26%);
+  outline-color: color-mix(in oklab, var(--fg) 6%, var(--bg) 26%);
 }
 
 
@@ -75,6 +82,22 @@ input[type="text"]:focus-visible {
   --primary-color: #b39cc9;
   --secondary-color: #c09cc9;
   --dim-primary: #b789c75e;
+  --success-color: #45a270;
+  --card-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 11%, var(--bg) 5%);
+  /* --card-shadow: none; */
+  --decks-shadow: 5px 5px 16px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
+}
+
+
+@media (max-width: 1024px) {
+
+  /* [data-theme='light'] {
+    --card-shadow: 14px 10px 0px 0px var(--fg);
+  }
+
+  [data-theme='dark'] {
+    --card-shadow: 5px 5px 13px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
+  } */
 }
 
 ::selection {
