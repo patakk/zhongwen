@@ -751,11 +751,17 @@ label {
     color: var(--fg);
   }
 
+  .list-item {
+    padding: 0;
+    box-shadow: none;
+    border-bottom: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
+  }
+
 
   .main-content {
     width: 100% !important;
-    padding: 0.5em;
-    margin-top: 3em; /* Space for the fixed settings toggle */
+    padding: 0em;
+    margin-top: 1em;
   }
 
   .grid-container {
