@@ -239,8 +239,8 @@ export default defineComponent({
   methods: {
     getThemeColors(isDark) {
       return isDark 
-        ? ['#ffffffee', '#ffffffee', '#ff4405dd', '#b4ed8c'] 
-        : ['#000000ee', '#000000aa', '#ff4405dd', '#b4ed8c'];
+        ? ['#ffffffee', '#ffffffee', '#cdb3dfdd', '#cdb3df'] 
+        : ['#000000ee', '#000000aa', '#cdb3dfdd', '#cdb3df'];
     },
     
     initPlotter() {
@@ -453,6 +453,13 @@ export default defineComponent({
         const data = await response.json();
         this.currentPinyin = data.pinyin[0] || '';
         this.currentEnglish = data.english || [''];
+        // for currentEnglish[0] do a split with "/" and if truncacte if there are mroe than 5 parts
+        // also truncate parts that are longer than 20 characters
+        this.currentEnglish[0] = this.currentEnglish[0]
+          .split('/')
+          .slice(0, 5)
+          .map(part => part.length > 40 ? part.slice(0, 40) + '...' : part).join(' / ');
+        
       } catch (error) {
         console.error('Error fetching character info:', error);
         this.currentPinyin = '';
@@ -704,7 +711,7 @@ export default defineComponent({
 }
 
 .deck-selector {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .custom-dropdown {
@@ -716,11 +723,10 @@ export default defineComponent({
 }
 
 #selected-deck {
-  padding: 10px 15px;
   background-color: var(--btn-bg);
   color: var(--btn-fg);
   cursor: pointer;
-  font-size: 2em;
+  font-size: 1.5em;
   font-weight: bold;
   text-align: center;
   min-width: 200px;

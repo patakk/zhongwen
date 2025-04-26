@@ -996,7 +996,9 @@ export default class HanziPlotter {
             this.ctx.lineCap = this.lineType;
             this.ctx.lineJoin = this.lineType;
             this.ctx.strokeStyle = this.colors[0];
-            this.ctx.lineWidth = this.lineThickness * 1.64;
+            this.ctx.lineWidth = this.useMask
+              ? this.lineThickness * 3
+              : this.lineThickness * 1;
             if(isDarkMode){
                 this.ctx.strokeStyle = this.colors[1];
             }
@@ -1006,6 +1008,13 @@ export default class HanziPlotter {
     
                 if (stroke.length < 2) continue;
                 
+                if (this.useMask && this.masks_ && idx < this.masks_.length) {
+                    this.ctx.save();
+                    let maskregion = new Path2D();
+                    drawMask(maskregion, this.masks_[idx], this.offsetX, this.offsetY, this.dimension);
+                    this.ctx.clip(maskregion);
+                }
+                
                 this.ctx.beginPath();
                 this.ctx.moveTo(stroke[0].x/1000*this.dimension, stroke[0].y/1000*this.dimension);
                 
@@ -1014,6 +1023,10 @@ export default class HanziPlotter {
                 }
                 
                 this.ctx.stroke();
+                
+                if (this.useMask && this.masks_ && idx < this.masks_.length) {
+                    this.ctx.restore();
+                }
             }
             this.ctx.restore();
         }
@@ -1023,6 +1036,9 @@ export default class HanziPlotter {
             this.ctx.lineWidth = this.lineThickness * .5;
             this.ctx.lineWidth = this.lineThickness * 1.24;
             // this.ctx.globalAlpha = 0.6;
+            this.ctx.lineWidth = this.useMask
+            ? this.lineThickness * 3
+            : this.lineThickness * 1;
             if(isDarkMode){
                 this.ctx.strokeStyle = this.colors[1];
                 // this.ctx.globalAlpha = 0.64;
@@ -1034,6 +1050,13 @@ export default class HanziPlotter {
     
                 if (stroke.length < 2) continue;
                 
+                if (this.useMask && this.masks_ && idx < this.masks_.length) {
+                    this.ctx.save();
+                    let maskregion = new Path2D();
+                    drawMask(maskregion, this.masks_[idx], this.offsetX, this.offsetY, this.dimension);
+                    this.ctx.clip(maskregion);
+                }
+                
                 this.ctx.beginPath();
                 this.ctx.moveTo(stroke[0].x, stroke[0].y);
                 
@@ -1042,11 +1065,15 @@ export default class HanziPlotter {
                 }
                 
                 this.ctx.stroke();
+                
+                if (this.useMask && this.masks_ && idx < this.masks_.length) {
+                    this.ctx.restore();
+                }
             }
             this.ctx.restore();
         }
         
-        // Draw the current stroke being drawn
+        // Draw the current stroke being drawn - without masking
         if (this.currentStroke && this.currentStroke.length > 1 && this.quizComplete === false) {
             this.ctx.save();
             this.ctx.lineCap = this.lineType;
@@ -1057,6 +1084,8 @@ export default class HanziPlotter {
             }
             this.ctx.lineWidth = this.lineThickness * 1;
             this.ctx.lineWidth = this.lineThickness * 1.24;
+            
+            // No masking for current stroke being drawn
             this.ctx.beginPath();
             this.ctx.moveTo(this.currentStroke[0].x, this.currentStroke[0].y);
             
