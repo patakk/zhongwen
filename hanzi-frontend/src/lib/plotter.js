@@ -860,13 +860,13 @@ export default class HanziPlotter {
                 console.log("Good stroke!");
                 
                 let resampled = resamplePolyline(this.currentStroke, this.strokes[this.userStrokes.length].length);
-                this.userStrokes.push(resampled);
+                // this.userStrokes.push(resampled);
                 
-                // const scaledRealStroke = this.strokes[this.userStrokes.length].map(pt => ({
-                //     x: pt.x / 1000 * this.dimension,
-                //     y: pt.y / 1000 * this.dimension,
-                // }));
-                // this.userStrokes.push(scaledRealStroke);
+                const scaledRealStroke = this.strokes[this.userStrokes.length].map(pt => ({
+                    x: pt.x / 1000 * this.dimension,
+                    y: pt.y / 1000 * this.dimension,
+                }));
+                this.userStrokes.push(scaledRealStroke);
                 this.strokeAttempts = 0;
             } else if (this.strokeAttempts < 2) {
                 console.log("Try again");

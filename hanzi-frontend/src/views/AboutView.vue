@@ -8,9 +8,6 @@
         I've made it public hoping others might find it useful too, but please keep in mind that this is a work in progress and may contain errors or incomplete features. Your feedback and contributions are welcome!
       </div>
       <br />
-      <p>
-        <!-- Start <router-link class="links" to="/">here</router-link> to access the main features of the website. -->
-      </p>
       <br />
       <div class="contact-info">
         <div>Contact:</div>
@@ -26,7 +23,7 @@
         <li>
           <div class="subheader">Data Sources and Licensing</div>
           <div class="flashcard-guide">
-            <p>
+            <div>
               <span class="smallh">Chinese-English translations:</span><br />
               <p style="margin-left:20px;">CC-CEDICT database, licensed under a <a class="links" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>. <br> Dictionary operations perfomed using a modified version of the <a class="links" href="https://github.com/Synkied/hanzipy" target="_blank">hanzipy</a> library.</p>
               <br />
@@ -35,7 +32,7 @@
               <br />
               <span class="smallh">Chinese-English examples:</span><br />
               <p style="margin-left:20px;">Provided by <a class="links" href="https://tatoeba.org" target="_blank">Tatoeba.org</a>, licensed under <a class="links" href="https://creativecommons.org/licenses/by/2.0/fr/" target="_blank">Creative Commons Attribution 2.0 FR</a>.</p>
-            </p>
+            </div>
           </div>
         </li>
         
