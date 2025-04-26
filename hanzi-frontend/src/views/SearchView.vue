@@ -183,6 +183,7 @@ export default {
   background: var(--bg);
   width: 100%;
   display: flex;
+  box-sizing: border-box;
 }
 
 .result-cell:hover {
@@ -213,6 +214,16 @@ export default {
 .renglish {
   color: var(--fg);
   flex: 12;
+}
+
+@media (max-width: 600px) {
+  .result-cell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .search-view {
+    padding: 1rem;
+  }
 }
 
 </style>

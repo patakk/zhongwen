@@ -569,7 +569,7 @@ select {
   left: .5em;
   font-size: 0.8em;
   color: var(--fg);
-  opacity: 0;
+  opacity: .5;
 }
 
 .leftbar-header {
@@ -805,7 +805,7 @@ label {
   }
 
   .tab-keyboard-shortcut {
-    opacity: 0.5;
+    opacity: 0;
   }
 }
 
