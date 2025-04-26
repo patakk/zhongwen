@@ -276,7 +276,7 @@ export default defineComponent({
         showDiagonals: true,
         clickAnimation: false,
         showGrid: true,
-        useMask: false,
+        useMask: true,
         blendMode: 'normal',
         canvas: canvas
       });
