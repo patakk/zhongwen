@@ -14,8 +14,8 @@
     </form>
     
     <div class="content">
-      <section class="example-section">
-        <h2>My Random Words</h2> 
+      <div class="example-section">
+        <h2>Quick words</h2> 
         <div v-if="loading" class="loading-indicator">
           Loading random words...
         </div>
@@ -28,7 +28,7 @@
             <span class="meaning">{{ word.meaning }}</span>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   </div>
 </template>
@@ -235,7 +235,7 @@ export default {
   line-height: 1.6;
 }
 
-section {
+.example-section {
   margin-bottom: 3rem;
   padding: 1.5rem;
   background: var(--bg-secondary);
@@ -253,6 +253,7 @@ section {
 
 h2 {
   color: var(--fg);
+  margin-top: 0rem;
   margin-bottom: 1rem;
   font-size: 1.5rem;
 }

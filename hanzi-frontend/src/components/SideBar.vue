@@ -72,7 +72,7 @@ export default {
 <style scoped>
 
 .logout-btn {
-  margin-top: .5rem;
+  width: 100%;
 }
 
 .sidebar-container {
@@ -142,7 +142,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: .5em;
+  padding: .5em .5em .5em 0em;
   margin: 0;
   list-style: none;
   width: 100%;
