@@ -997,7 +997,7 @@ export default class HanziPlotter {
             this.ctx.lineJoin = this.lineType;
             this.ctx.strokeStyle = this.colors[0];
             this.ctx.lineWidth = this.useMask
-              ? this.lineThickness * 4
+              ? this.lineThickness * 6
               : this.lineThickness * 1;
             if(isDarkMode){
                 this.ctx.strokeStyle = this.colors[1];
@@ -1037,7 +1037,7 @@ export default class HanziPlotter {
             this.ctx.lineWidth = this.lineThickness * 1.24;
             // this.ctx.globalAlpha = 0.6;
             this.ctx.lineWidth = this.useMask
-            ? this.lineThickness * 4
+            ? this.lineThickness * 6
             : this.lineThickness * 1;
             if(isDarkMode){
                 this.ctx.strokeStyle = this.colors[1];
@@ -1083,7 +1083,7 @@ export default class HanziPlotter {
                 this.ctx.strokeStyle = this.colors[3];
             }
             this.ctx.lineWidth = this.lineThickness * 1;
-            this.ctx.lineWidth = this.lineThickness * 1.24;
+            this.ctx.lineWidth = this.lineThickness * 1;
             
             // No masking for current stroke being drawn
             this.ctx.beginPath();
@@ -1303,7 +1303,7 @@ export default class HanziPlotter {
         this.ctx.globalCompositeOperation = this.blendMode;
         this.ctx.strokeStyle = this.colors[0];
         this.ctx.lineWidth = this.useMask
-          ? this.lineThickness * 4
+          ? this.lineThickness * 6
           : this.lineThickness * 1.24;
       
         this.clearBg();
@@ -1500,7 +1500,7 @@ export default class HanziPlotter {
             }
             this.ctx.lineWidth = this.lineThickness * 1.24;
             if(this.useMask){
-                this.ctx.lineWidth = this.lineThickness*3;
+                this.ctx.lineWidth = this.lineThickness * 5;
             }
             this.drawPartial(strokes, d, currentStrokeProgress, alpha);
         }
