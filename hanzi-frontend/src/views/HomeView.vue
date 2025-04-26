@@ -179,7 +179,7 @@ export default {
           return {
             character: character,
             pinyin: this.$toAccentedPinyin(charInfo.pinyin ? charInfo.pinyin[0] : ''),
-            meaning: charInfo.english ? charInfo.english[0] : ''
+            meaning: charInfo.english ? charInfo.english[0].split("/").slice(0, 3).join("/") : ''
           };
         }
       }
@@ -198,7 +198,7 @@ export default {
           return {
             character: character,
             pinyin: this.$toAccentedPinyin(charInfo.pinyin ? charInfo.pinyin[0] : ''),
-            meaning: charInfo.english ? charInfo.english[0] : ''
+            meaning: charInfo.english ? charInfo.english[0].split("/").slice(0, 3).join("/") : ''
           };
         }
       }
