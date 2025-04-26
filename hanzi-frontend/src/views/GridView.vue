@@ -9,7 +9,7 @@
       <div class="leftbar" :class="{ 'leftbar-hidden': !leftbarVisible }">
         <div class="tab-keyboard-shortcut">[Tab]</div>
         <div class="leftbar-header">
-          <h2>Settings</h2>
+          <div class="leftbar-header-label">Settings</div>
           <button v-if="leftbarVisible" class="close-button" @click="toggleLeftbar">×</button>
         </div>
 
@@ -577,6 +577,13 @@ select {
   justify-content: space-between;
   align-items: center;
   position: relative;
+}
+
+.leftbar-header-label {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: var(--fg);
+  margin-top: 1.5em;
 }
 
 .close-button {
