@@ -1101,6 +1101,17 @@ canvas.plotter {
     margin-top: 1em;
   }
 
+  #selected-deck {
+    padding: 5px 11px;
+    font-size: 0.8em;
+    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+    color: var(--btn-fg);
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1em;
+    min-width: 200px;
+  }
   
   #flashcard {
     height: 50vh;
