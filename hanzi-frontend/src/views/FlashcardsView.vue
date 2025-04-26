@@ -1099,6 +1099,7 @@ canvas.plotter {
 
   .flashcards-view {
     margin-top: 1em;
+    padding: 1em;
   }
 
   #selected-deck {
