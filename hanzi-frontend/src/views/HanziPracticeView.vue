@@ -675,7 +675,7 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 20px;
+  padding: 2em;
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
@@ -690,7 +690,6 @@ export default defineComponent({
   border: var(--card-border);
   box-shadow: var(--card-shadow);
   box-sizing: border-box;
-  border-radius: 8px;
   padding: 1rem;
 }
 

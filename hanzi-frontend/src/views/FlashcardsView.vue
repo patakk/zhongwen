@@ -958,8 +958,8 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  margin-top: 3em;
+  padding: 2em;
+  margin: 0 auto;
   position: relative;
 }
 

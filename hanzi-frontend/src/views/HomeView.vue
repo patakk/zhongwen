@@ -239,7 +239,6 @@ section {
   margin-bottom: 3rem;
   padding: 1.5rem;
   background: var(--bg-secondary);
-  border-radius: 1em;
   box-shadow: var(--card-shadow);
   border: var(--card-border);
 }
