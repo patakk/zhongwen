@@ -63,7 +63,7 @@
         </div>
       </div>
 
-      <div v-if="leftbarVisible" class="overlay" @click="closeSidebar"></div>
+      <div v-if="leftbarVisible" class="overlay" @click="closeLeftbar"></div>
 
       <main class="main-content" :class="{ 'main-content-expanded': !leftbarVisible }">
         
@@ -317,7 +317,7 @@ export default {
       this.leftbarVisible = !this.leftbarVisible;
     },
     // Method to close the sidebar
-    closeSidebar() {
+    closeLeftbar() {
       if (this.leftbarVisible) {
         this.leftbarVisible = false;
       }
@@ -360,10 +360,16 @@ export default {
     this.$nextTick(this.loadMore);
     // Add event listener for keydown events
     window.addEventListener('keydown', this.handleKeyDown);
+    
+    // Add event listener for the sidebar opening event
+    document.addEventListener('sidebar-opened', this.closeLeftbar);
   },
   beforeUnmount() {
     // Remove event listener for keydown events
     window.removeEventListener('keydown', this.handleKeyDown);
+    
+    // Remove event listener for the sidebar opening event
+    document.removeEventListener('sidebar-opened', this.closeLeftbar);
   }
 };
 </script>

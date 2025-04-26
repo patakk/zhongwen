@@ -54,6 +54,10 @@ export default {
   methods: {
     toggleSidebar() {
       this.isOpen = !this.isOpen
+      if (this.isOpen) {
+        // Dispatch a custom event when sidebar is opened
+        document.dispatchEvent(new CustomEvent('sidebar-opened'))
+      }
     },
     closeSidebar() {
       this.isOpen = false
