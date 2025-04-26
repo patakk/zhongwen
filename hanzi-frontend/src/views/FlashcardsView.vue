@@ -946,6 +946,7 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: 2em;
+  box-sizing: border-box;
   margin: 0 auto;
   position: relative;
 }
@@ -969,6 +970,7 @@ html, body {
   border: var(--card-border);
   overflow: hidden;
   display: flex;
+  box-sizing: border-box;
   flex-direction: column;
 }
 
@@ -1085,7 +1087,7 @@ canvas.plotter {
 
 @media (max-width: 784px) {
   #flashcard_container {
-    width: 90vw;
+    width: 100%;
     margin: 0 auto;
     perspective: 1000px;
   }
