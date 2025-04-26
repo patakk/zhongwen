@@ -941,7 +941,7 @@ export default {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  border-bottom: 1.5px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  border-bottom: 1.5px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
   position: relative;
   overflow: visible;
 }
@@ -960,7 +960,7 @@ export default {
   opacity: 0.35; 
   border: 1.5px solid #0000;
   background: #0000;
-  transform: translate(0, 2px);
+  transform: translate(0, 1.5px);
   flex-shrink: 0;
   position: relative;
   z-index: 1;
@@ -971,7 +971,7 @@ export default {
   border: 1.5px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
   background: var(--bg);
   opacity: 1;
-  transform: translate(0, 2px);
+  transform: translate(0, 1.5px);
   z-index: 2;
   border-bottom: none;
 }
