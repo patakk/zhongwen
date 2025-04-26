@@ -1,5 +1,5 @@
 <template>
-  <BasePage page_title="Hanzi Practice" />
+  <BasePage page_title="Strokes Practice" />
   <div class="practice-view">
     <div class="practice-container">
       <div class="deck-selector">
@@ -36,7 +36,8 @@
               class="word-character"
               :class="{ 'current-character': index === charIterator % currentWord.length, 'dim-character': index !== charIterator % currentWord.length }"
             >
-              {{ index !== charIterator % currentWord.length ? char : '' }}
+              <span v-if="!skipState">{{ index !== charIterator % currentWord.length ? char : '' }}</span>
+              <span v-if="skipState">{{ char }}</span>
             </span>
           </div>
           
@@ -56,7 +57,7 @@
         </div>
 
         <div class="control-buttons">
-          <button id="nav-btn" @click="previousOrReset" class="btn nav-previous">
+          <button id="nav-btn" @click="previousCharacter" class="btn nav-previous">
             <i class="fa-solid fa-backward-step"></i> Previous
           </button>
           <button id="help-btn" v-if="!skipState" @click="showHelp" class="btn">
@@ -305,7 +306,7 @@ export default defineComponent({
       } else if (event.key === 's') {
         this.skipOrNext();
       } else if (event.key === 'p') {
-        this.previousOrReset();
+        this.previousCharacter();
       }
     },
     
@@ -571,33 +572,16 @@ export default defineComponent({
       }
     },
     
-    previousOrReset() {
-      // This method handles the secondary navigation button that changes based on context
-      if (this.skipState === 0) {
-        // Currently in draw mode - ALWAYS perform "Previous" action regardless of strokes
-        // Go to previous character
+    previousCharacter() {
         this.currentIndex--;
         
         if (this.currentIndex < 0) {
-          this.currentIndex = this.shuffledWords.length - 1;
-          if (this.charIterator > 0) {
+            this.currentIndex = this.shuffledWords.length - 1;
+            if (this.charIterator > 0) {
             this.charIterator--;
-          }
+            }
         }
-        
         this.showWord();
-      } else {
-        // Currently in answer mode - perform "Reset" action
-        // Reset current character for another try
-        this.skipState = 0;
-        this.showPinyin = false;
-        
-        // Restart the quiz in the plotter
-        if (this.plotter) {
-          this.plotter.stopAnimation();
-          this.plotter.restartQuiz();
-        }
-      }
     },
     
     contextAction() {
@@ -695,6 +679,7 @@ export default defineComponent({
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .practice-container {
@@ -704,9 +689,9 @@ export default defineComponent({
   background-color: var(--card-bg);
   border: var(--card-border);
   box-shadow: var(--card-shadow);
+  box-sizing: border-box;
   border-radius: 8px;
-  padding: 1.5rem;
-  margin-top: 2rem;
+  padding: 1rem;
 }
 
 .deck-selector {
@@ -717,16 +702,20 @@ export default defineComponent({
   position: relative;
   width: 100%;
   user-select: none;
+  display: flex;
+  justify-content: center;
 }
 
 #selected-deck {
   padding: 10px 15px;
   background-color: var(--btn-bg);
   color: var(--btn-fg);
-  border-radius: 5px;
   cursor: pointer;
+  font-size: 2em;
   font-weight: bold;
   text-align: center;
+  min-width: 200px;
+  text-decoration: underline;
 }
 
 #selected-deck:hover {
@@ -736,15 +725,14 @@ export default defineComponent({
 #deck-options {
   position: absolute;
   top: 100%;
-  left: 0;
   width: 100%;
+  max-width: 300px;
   max-height: 0;
   overflow: hidden;
   background-color: var(--bg);
-  border: 0;
-  border-radius: 5px;
+  border: 2px solid #0000;
   margin-top: 5px;
-  z-index: 100;
+  z-index: 1;
   transition: max-height 0.3s, border 0.3s;
 }
 
@@ -796,7 +784,8 @@ export default defineComponent({
 }
 
 .current-character {
-  border-bottom: 2px solid var(--accent-color);
+  /* border-bottom: 2px solid var(--accent-color); */
+  border-bottom: 2px solid var(--fg);
 }
 
 .dim-character {
@@ -821,7 +810,7 @@ export default defineComponent({
 
 .english-display {
   font-size: 1.1rem;
-  color: var(--fg-muted);
+  color: var(--fg);
   margin-bottom: 1rem;
   min-height: 1.6rem;
 }
@@ -873,9 +862,9 @@ export default defineComponent({
 }
 
 .action-reveal {
-  background-color: var(--accent-color);
+  /* background-color: var(--accent-color); */
     opacity: .9;
-  color: white;
+  color: var(--fg);
 }
 
 .action-reveal:hover {
@@ -883,9 +872,9 @@ export default defineComponent({
 }
 
 .action-next {
-  background-color: #4caf81;
-  background-color: var(--accent-color);
-  color: white;
+  /* background-color: #4caf81;
+  background-color: var(--accent-color); */
+  color: var(--fg);
     opacity: .9;
 }
 
@@ -895,10 +884,10 @@ export default defineComponent({
 
 /* Navigation button styles */
 .nav-previous {
-  background-color: #adadad;
-  background-color: var(--warning-color);
+  /* background-color: #adadad;
+  background-color: var(--warning-color); */
     opacity: .9;
-  color: white;
+  color: var(--fg);
 }
 
 .nav-previous:hover {
@@ -907,8 +896,8 @@ export default defineComponent({
 
 .nav-reset {
     opacity: .9;
-  background-color: var(--danger-color);
-  color: white;
+  /* background-color: var(--danger-color); */
+  color: var(--fg);
 }
 
 .nav-reset:hover {
@@ -923,7 +912,7 @@ export default defineComponent({
   padding-top: 1rem;
   border-top: 1px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 90%);
   font-size: 0.9rem;
-  color: var(--fg-muted);
+  color: var(--fg);
 }
 
 #confetti-container {
@@ -997,6 +986,46 @@ export default defineComponent({
   .btn {
     width: 100%;
     justify-content: center;
+  }
+}
+
+/* Enhanced responsive design for smaller screens */
+@media (max-width: 784px) {
+  .practice-view {
+    padding: 10px;
+    margin-top: 1rem;
+  }
+  
+  .practice-container {
+    width: 90vw;
+    border: none;
+    box-shadow: none;
+  }
+  
+  .full-word {
+    font-size: 1.7rem;
+  }
+  
+  .word-character {
+    width: 2.5rem;
+    height: 3rem;
+  }
+  
+  .pinyin-label {
+    font-size: 1rem;
+  }
+  
+  .english-display {
+    font-size: 0.9rem;
+  }
+  
+  .drawing-area {
+    max-width: none;
+    width: 90%;
+  }
+  
+  .progress-info {
+    font-size: 0.8rem;
   }
 }
 </style>
