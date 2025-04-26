@@ -1060,7 +1060,7 @@ html, body {
   background-color: rgba(var(--answer-bg-rgb), 0.05);
   border-top: 1px solid rgba(var(--answer-border-rgb), 0.2);
   /* transition: opacity 0.3s; */
-  z-index: 10;
+  z-index: 4;
 }
 
 .answer.inactive {
