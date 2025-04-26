@@ -47,6 +47,10 @@ export default {
     BasePage
   },
   data() {
+    // Get URL parameter first before setting default
+    const urlParams = new URLSearchParams(window.location.search);
+    const deckFromUrl = urlParams.get('wordlist');
+    
     return {
       canvas: null,
       ctx: null,
@@ -72,7 +76,7 @@ export default {
         strokes: []
       },
       currentIndexInDeck: 0,
-      currentDeck: 'hsk1',
+      currentDeck: deckFromUrl || 'hsk1', // Use URL param if available, otherwise default
       currentFont: 'Noto Sans',
       isSubmenuOpen: false,
       lineWidth: 6,
@@ -109,6 +113,13 @@ export default {
         
         // If we didn't have deck data before, initialize now
         if (Object.keys(this.decks).length > 0 && this.currentWord === '') {
+          // Check URL parameter first
+          const urlParams = new URLSearchParams(window.location.search);
+          const deck = urlParams.get('wordlist');
+          if (deck && this.decks[deck]) {
+            this.currentDeck = deck;
+          }
+          
           this.shuffleDeck();
           this.getNewWord();
         }

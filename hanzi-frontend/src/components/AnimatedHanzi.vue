@@ -117,6 +117,9 @@ export default defineComponent({
       // Add animation click handler if needed
       if (props.animatable) {
         canvas.addEventListener('click', animateCharacter);
+        if (isMobileDevice()) {
+          canvas.addEventListener('touchstart', animateCharacter);
+        }
       }
     };
 
@@ -154,6 +157,12 @@ export default defineComponent({
       });
     };
 
+    // Function to check if device is mobile
+    const isMobileDevice = () => {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    };
+
     // Lifecycle hooks
     onMounted(() => {
       initPlotter();
@@ -166,6 +175,7 @@ export default defineComponent({
       if (plotter.value) {
         if (props.animatable && hanziCanvas.value) {
           hanziCanvas.value.removeEventListener('click', animateCharacter);
+          hanziCanvas.value.removeEventListener('touchstart', animateCharacter);
         }
         plotter.value.destroyy();
       }
@@ -177,6 +187,7 @@ export default defineComponent({
       if (plotter.value) {
         if (props.animatable && hanziCanvas.value) {
           hanziCanvas.value.removeEventListener('click', animateCharacter);
+          hanziCanvas.value.removeEventListener('touchstart', animateCharacter);
         }
         plotter.value.destroyy();
       }

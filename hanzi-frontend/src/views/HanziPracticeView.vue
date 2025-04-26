@@ -99,9 +99,13 @@ export default defineComponent({
     BasePage
   },
   data() {
+    // Get URL parameter first before setting default
+    const urlParams = new URLSearchParams(window.location.search);
+    const deckFromUrl = urlParams.get('wordlist');
+    
     return {
       // Deck management
-      currentDeck: 'hsk1',
+      currentDeck: deckFromUrl || 'hsk1', // Use URL param if available, otherwise default
       decks: {},
       isDropdownOpen: false,
       
@@ -172,6 +176,12 @@ export default defineComponent({
         
         // If we have deck data, initialize
         if (Object.keys(this.decks).length > 0 && this.currentWord === '') {
+          // Check URL parameter first
+          const urlParams = new URLSearchParams(window.location.search);
+          const deck = urlParams.get('wordlist');
+          if (deck && this.decks[deck]) {
+            this.currentDeck = deck;
+          }
           this.loadNewWords();
         }
       },
