@@ -89,7 +89,7 @@ export default {
   width: 60%;
   max-width: 1200px;
   padding: 2rem;
-  margin: 1em auto;
+  margin: 0 auto;
   scrollbar-width: none; /* For Firefox */
   /* background: color-mix(in oklab, var(--fg) 5%, var(--bg) 80%); */
 }

@@ -608,6 +608,8 @@
     margin: 0 auto;
     background: var(--bg-alt);
     box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    box-shadow: var(--card-shadow);
+    border: var(--card-border);
     padding: 2rem;
     box-sizing: border-box;
   }

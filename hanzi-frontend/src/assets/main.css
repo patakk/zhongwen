@@ -42,9 +42,30 @@
   --danger-color: #dc3545;
   --accent-color: #007bff;
   --warning-color: #ffb70e;
-  --card-shadow: 14px 10px 0px 0px var(--fg);
   --decks-shadow: 7px 6px 0px 0px var(--fg);
+  --card-shadow: 10px 10px 0px 0px var(--fg);
   --card-border: 2px solid color-mix(in oklab, var(--fg) 46%, var(--bg) 35%);
+}
+
+
+[data-theme="dark"] {
+  --bg: rgb(12, 12, 12);
+  --fg: rgb(255, 255, 255);
+  --fg-dim: rgb(129, 129, 129);
+  --pinyin-color: #b39cc9;
+  --first-t: #6a95a5;
+  --second-t: #9f9111;
+  --third-t: #8a72af;
+  --fourth-t: #ca5b78;
+  --overlay-background: rgba(0, 0, 0, 0.5);
+  --primary-color: #b39cc9;
+  --secondary-color: #c09cc9;
+  --dim-primary: #b789c75e;
+  --success-color: #45a270;
+  --card-shadow-color: color-mix(in oklab, var(--primary-color) 4%, var(--bg) 5%);
+  --card-shadow: 5px 5px 26px 12px var(--card-shadow-color);
+  /* --card-shadow: none; */
+  --decks-shadow: 5px 5px 16px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
 }
 
 .pinyin-first {
@@ -66,26 +87,6 @@
 
 input[type="text"]:focus-visible {
   outline-color: color-mix(in oklab, var(--fg) 6%, var(--bg) 26%);
-}
-
-
-[data-theme="dark"] {
-  --bg: rgb(12, 12, 12);
-  --fg: rgb(255, 255, 255);
-  --fg-dim: rgb(129, 129, 129);
-  --pinyin-color: #b39cc9;
-  --first-t: #6a95a5;
-  --second-t: #9f9111;
-  --third-t: #8a72af;
-  --fourth-t: #ca5b78;
-  --overlay-background: rgba(0, 0, 0, 0.5);
-  --primary-color: #b39cc9;
-  --secondary-color: #c09cc9;
-  --dim-primary: #b789c75e;
-  --success-color: #45a270;
-  --card-shadow: 5px 5px 26px 12px color-mix(in oklab, var(--primary-color) 11%, var(--bg) 5%);
-  /* --card-shadow: none; */
-  --decks-shadow: 5px 5px 16px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
 }
 
 
