@@ -624,6 +624,7 @@
       max-width: 100%;
       box-shadow: none;
       background: var(--bg);
+      border: none;
       padding: 1rem;
     }
   }
