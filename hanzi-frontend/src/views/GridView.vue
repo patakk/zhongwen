@@ -565,6 +565,7 @@ select {
 }
 
 .leftbar-hidden {
+  min-width: 0;
   width: 0;
   padding: 0;
   opacity: 0;
