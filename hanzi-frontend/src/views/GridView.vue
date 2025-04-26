@@ -550,6 +550,7 @@ select {
 
 .leftbar {
   width: 12%;
+  min-width: 250px;
   box-sizing: border-box;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   /* border-right: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%); */
