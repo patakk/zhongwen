@@ -658,6 +658,8 @@
     text-overflow: ellipsis;
     flex: 1;
     min-width: 0; /* Allow select to shrink below its content width */
+    background-color: var(--accent-color);
+    color: #fff
   }
   
   select {

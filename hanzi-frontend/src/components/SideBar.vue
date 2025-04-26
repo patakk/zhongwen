@@ -22,7 +22,7 @@
           <RouterLink to="/search" class="sidebar-link">Search</RouterLink>
           <RouterLink to="/flashcards" class="sidebar-link">Flashcards</RouterLink>
           <RouterLink to="/practice" class="sidebar-link">Practice</RouterLink>
-          <RouterLink to="/page-info" class="sidebar-link">Page Info</RouterLink>
+          <!-- <RouterLink to="/page-info" class="sidebar-link">Page Info</RouterLink> -->
           <RouterLink to="/about" class="sidebar-link">About</RouterLink>
           <LogoutButton v-if="authStatus" />
         </nav>

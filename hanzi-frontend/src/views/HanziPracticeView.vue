@@ -240,7 +240,7 @@ export default defineComponent({
     getThemeColors(isDark) {
       return isDark 
         ? ['#ffffffee', '#ffffffee', '#cdb3dfdd', '#cdb3df'] 
-        : ['#000000ee', '#000000aa', '#cdb3dfdd', '#cdb3df'];
+        : ['#000000ee', '#00000077', '#cdb3dfdd', '#cdb3df'];
     },
     
     initPlotter() {
@@ -274,8 +274,8 @@ export default defineComponent({
         jitterAmp: 0,
         colors: this.getThemeColors(this.isDarkMode),
         showDiagonals: true,
+        showGrid: false,
         clickAnimation: false,
-        showGrid: true,
         useMask: true,
         blendMode: 'normal',
         canvas: canvas
@@ -835,8 +835,6 @@ export default defineComponent({
   max-width: 400px;
   aspect-ratio: 1;
   margin-bottom: 1.5rem;
-  border: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 85%);
-  border-radius: 5px;
   overflow: hidden;
 }
 

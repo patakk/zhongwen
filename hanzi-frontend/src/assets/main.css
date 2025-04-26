@@ -21,6 +21,7 @@
 
 :root {
   --bg: rgb(255, 255, 255);
+  --fg: rgb(254, 0, 0);
   --fg: rgb(0, 0, 0);
   --fg-dim: rgb(19, 19, 19);
   --overlay-background: rgba(255, 255, 255, 0.75);
