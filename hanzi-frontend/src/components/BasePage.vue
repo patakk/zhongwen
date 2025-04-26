@@ -30,19 +30,21 @@
 }
 
 h1 {
-    font-size: 3em;
-    margin: 0;
-    padding: 1em 0em 1em 0em;
-    width: 100%;
-    text-align: center;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-    border-bottom: var(--h1-border);
+  font-size: 3em;
+  margin: 0;
+  margin: 0;
+  padding: 1em 0em 1em 0em;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+  border-bottom: var(--h1-border);
 }
 
 @media (max-width: 784px) {
   h1 {
     font-size: 2em;
+    margin: 0;
   }
 }
 

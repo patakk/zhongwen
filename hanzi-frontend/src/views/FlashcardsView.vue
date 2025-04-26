@@ -228,6 +228,7 @@ export default {
         // Create separate promises for each character's stroke data
         const strokesPromises = [];
         for (const character of word) {
+          if (!this.isHanzi(character)) continue;
           strokesPromises.push(this.loadStrokeData(character));
         }
         
@@ -239,9 +240,14 @@ export default {
         return [{ pinyin: [], english: [] }, []];
       }
     },
+    isHanzi(char){
+      return /[\u4E00-\u9FFF]/.test(char);
+    },
     async loadStrokesAll(word) {
       const promises = [];
       for (const character of word) {
+        // skip if not hanzi char
+        if (!this.isHanzi(character)) continue;
         promises.push(this.loadStrokeData(character));
       }
       return Promise.all(promises);
@@ -259,6 +265,10 @@ export default {
         }
         
         const data = await response.json();
+        console.log(character);
+        console.log(data);
+        console.log(data);
+        console.log(data);
         return {
           strokes: this.processStrokes(data.medians),
           masks: data.strokes,
@@ -558,21 +568,13 @@ export default {
       let charwidth2 = this.canvas.height;
       let charheight2 = this.canvas.height;
 
-      if(numchars1 == 3){
-        charwidth1 = this.canvas.width/3;
-        charheight1 = this.canvas.width/3;
+      if(numchars1 > 1){
+        charwidth1 = this.canvas.width/numchars1;
+        charheight1 = this.canvas.width/numchars1;
       }
-      else if(numchars1 == 4){
-        charwidth1 = this.canvas.width/4;
-        charheight1 = this.canvas.width/4;
-      }
-      if(numchars2 == 3){
-        charwidth2 = this.canvas.width/3;
-        charheight2 = this.canvas.width/3;
-      }
-      else if(numchars2 == 4){
-        charwidth2 = this.canvas.width/4;
-        charheight2 = this.canvas.width/4;
+      if(numchars2 > 1){
+        charwidth2 = this.canvas.width/numchars2;
+        charheight2 = this.canvas.width/numchars2;
       }
 
       const opa = 1;
@@ -615,14 +617,10 @@ export default {
       
       let charwidth = this.canvas.height;
       let charheight = this.canvas.height;
-
-      if(numchars == 3){
-        charwidth = this.canvas.width/3;
-        charheight = this.canvas.width/3;
-      }
-      else if(numchars == 4){
-        charwidth = this.canvas.width/4;
-        charheight = this.canvas.width/4;
+      
+      if(numchars > 1){
+        charwidth = this.canvas.width/numchars;
+        charheight = this.canvas.width/numchars;
       }
       
       this.currentWordInfo.strokes.forEach((charstrokes, idx) => {
@@ -656,13 +654,9 @@ export default {
       let charwidth = this.canvas.height;
       let charheight = this.canvas.height;
       
-      if(numchars == 3){
-        charwidth = this.canvas.width/3;
-        charheight = this.canvas.width/3;
-      }
-      else if(numchars == 4){
-        charwidth = this.canvas.width/4;
-        charheight = this.canvas.width/4;
+      if(numchars > 1){
+        charwidth = this.canvas.width/numchars;
+        charheight = this.canvas.width/numchars;
       }
       
       this.currentWordInfo.strokes.forEach((charstrokes, idx) => {
@@ -718,22 +712,15 @@ export default {
         let charwidth2 = this.canvas.height;
         let charheight2 = this.canvas.height;
 
-        if(numchars1 == 3){
-          charwidth1 = this.canvas.width/3;
-          charheight1 = this.canvas.width/3;
+        
+        if(numchars1 > 1){
+          charwidth1 = this.canvas.width/numchars1;
+          charheight1 = this.canvas.width/numchars1;
         }
-        else if(numchars1 == 4){
-          charwidth1 = this.canvas.width/4;
-          charheight1 = this.canvas.width/4;
+        if(numchars2 > 1){
+          charwidth2 = this.canvas.width/numchars2;
+          charheight2 = this.canvas.width/numchars2;
         }
-        if(numchars2 == 3){
-          charwidth2 = this.canvas.width/3;
-          charheight2 = this.canvas.width/3;
-        }
-        else if(numchars2 == 4){
-          charwidth2 = this.canvas.width/4;
-          charheight2 = this.canvas.width/4;
-        }    
 
 
         for (let idx = 0; idx < numchars; idx++) {
