@@ -1,7 +1,7 @@
 <template>
   <BasePage page_title="Hanzi" /> 
   <div class="page-info">
-    <div class="infoTitle">Chinese Language Learning</div>
+    <!-- <div class="infoTitle">Chinese Language Learning</div> -->
     
     <form @submit.prevent="goToSearch" class="search-form">
       <input
