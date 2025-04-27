@@ -130,8 +130,8 @@ li:not(:last-child) {
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 80%);
   border: none;
   padding: 10px;
-  width: 90%;
-  margin: 20px auto;
+  width: 100%;
+  /* margin: 20px auto; */
   opacity: 0.8;
 }
 
@@ -155,7 +155,7 @@ li:not(:last-child) {
 
 ul {
   list-style-type: none;
-  /* padding-left: 1.5em; */
+  padding-left: 0;
 }
 
 .subheader {
@@ -181,7 +181,7 @@ ul {
   margin-top: 0.5rem;
 }
 
-@media (max-width: 784px) {
+@media (max-width: 1024px) {
   .container {
     width: 95%;
     height: 100%;
