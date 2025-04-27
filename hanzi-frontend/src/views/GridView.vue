@@ -318,7 +318,8 @@ export default {
     },
     // Method to close the sidebar
     closeLeftbar() {
-      if (this.leftbarVisible) {
+      // Only close the leftbar automatically if in mobile/vertical mode
+      if (this.leftbarVisible && window.innerWidth <= 1024) {
         this.leftbarVisible = false;
       }
     },
