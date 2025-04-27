@@ -48,14 +48,14 @@
             </p>
           </div>
         </li> -->
-        <li>
+        <!-- <li>
           <div class="subheader">Project License</div>
           <div class="flashcard-guide">
             <p>
               This project is available under the <a class="links" href="/licenses/MIT-LICENSE.TXT" target="_blank">MIT License</a>. You are free to use, modify, and distribute it, provided you include the original copyright notice and license terms.
             </p>
           </div>
-        </li>
+        </li> -->
       </ul>
     </div>
   </div>
