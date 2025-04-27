@@ -1131,7 +1131,8 @@ export default class HanziPlotter {
                 maxY = Math.max(maxY, point.y);
             });
         });
-        const offsetX = (1000 - (maxX - minX)) / 2 - minX;
+        // const offsetX = (1000 - (maxX - minX)) / 2 - minX;
+        const offsetX = 0;
         const offsetY = (1000 - (maxY - minY)) / 2 - minY;
         strokes = strokes.map(stroke => stroke.map(point => ({
             x: point.x + offsetX,
