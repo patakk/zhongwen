@@ -716,8 +716,13 @@
     text-overflow: ellipsis;
     flex: 1;
     min-width: 0; /* Allow select to shrink below its content width */
-    background-color: var(--accent-color);
-    color: #fff
+    background: linear-gradient(
+      to right,
+      color-mix(in oklab, var(--fg) 5%, var(--bg) 90%),
+      color-mix(in oklab, var(--fg) 3%, var(--bg) 90%)
+    );
+    background-color: var(--bg);
+    color: var(--fg);
   }
   
   select {
@@ -843,6 +848,11 @@
   .nav-button:hover {
     box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
     color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
+  }
+  
+  .download-button {
+    outline: none;
+    border: none;
   }
   
   .word-list {
