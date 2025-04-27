@@ -28,8 +28,8 @@
               <p style="margin-left:20px;">CC-CEDICT database, licensed under a <a class="links" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>. <br> Dictionary operations perfomed using a modified version of the <a class="links" href="https://github.com/Synkied/hanzipy" target="_blank">hanzipy</a> library.</p>
               <br />
               <span class="smallh">Character animations and Hanzi writing:</span>
-              <p style="margin-left:20px;">Custom implementation using data from <a class="links" href="https://github.com/chanind/hanzi-writer-data" target="_blank">hanzi-writer-data</a> and the <a class="links" href="https://github.com/skishore/makemeahanzi" target="_blank">Make Me A Hanzi project</a>, using Arphic Technology fonts under the <a class="links" href="/static/licenses/ARPHICPL.TXT" target="_blank">Arphic Public License</a>.</p>
-              <p style="margin-left:20px;">This project also uses a Rust library derived from Jordan Kiang's <a class="links" href="http://kiang.org/jordan/software/hanzilookup" target="_blank">HanziLookup</a>, licensed under <a class="links" href="http://www.gnu.org/copyleft/gpl.html" target="_blank">GNU LGPL</a>. The data is based on mmah.json (derived from Make Me a Hanzi's graphics.txt), encoding 9,507 characters with enhanced substroke data that includes normalized location information. This enables improved matching where substrokes in incorrect positions count for less. The Rust implementation loads this data from an embedded binary file, with each substroke represented by 3 bytes encoding direction, length, and position.</p>
+              <p style="margin-left:20px;">Custom implementation using data from <a class="links" href="https://github.com/chanind/hanzi-writer-data" target="_blank">hanzi-writer-data</a> and the <a class="links" href="https://github.com/skishore/makemeahanzi" target="_blank">Make Me A Hanzi project</a>, using Arphic Technology fonts under the <a class="links" href="/assets/licenses/ARPHICPL.TXT" target="_blank">Arphic Public License</a>.</p>
+              <p style="margin-left:20px;">This project also uses a Rust library by <a class="links" href="https://github.com/gugray">gugray</a>, </p>
               <br />
               <span class="smallh">Chinese-English examples:</span><br />
               <p style="margin-left:20px;">Provided by <a class="links" href="https://tatoeba.org" target="_blank">Tatoeba.org</a>, licensed under <a class="links" href="https://creativecommons.org/licenses/by/2.0/fr/" target="_blank">Creative Commons Attribution 2.0 FR</a>.</p>
@@ -52,7 +52,7 @@
           <div class="subheader">Project License</div>
           <div class="flashcard-guide">
             <p>
-              This project is available under the <a class="links" href="/static/licenses/MIT-LICENSE.TXT" target="_blank">MIT License</a>. You are free to use, modify, and distribute it, provided you include the original copyright notice and license terms.
+              This project is available under the <a class="links" href="/assets/licenses/MIT-LICENSE.TXT" target="_blank">MIT License</a>. You are free to use, modify, and distribute it, provided you include the original copyright notice and license terms.
             </p>
           </div>
         </li>
