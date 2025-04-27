@@ -354,6 +354,7 @@ input.search-input {
 .mpinyin {
   color: var(--fg);
   font-size: 0.9em;
+  opacity: .5;
   margin-bottom: 0.25rem;
 }
 
