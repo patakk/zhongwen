@@ -21,7 +21,7 @@
       <div class="licensing">Licensing and Attribution</div>
       <ul>
         <li>
-          <div class="subheader">Data Sources and Licensing</div>
+          <!-- <div class="subheader">Data Sources and Licensing</div> -->
           <div class="flashcard-guide">
             <div>
               <span class="smallh">Chinese-English translations:</span><br />
