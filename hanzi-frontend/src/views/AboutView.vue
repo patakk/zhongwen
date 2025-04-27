@@ -28,7 +28,7 @@
               <p style="margin-left:20px;">CC-CEDICT database, licensed under a <a class="links" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>. <br> Dictionary operations perfomed using a modified version of the <a class="links" href="https://github.com/Synkied/hanzipy" target="_blank">hanzipy</a> library.</p>
               <br />
               <span class="smallh">Character animations and Hanzi writing:</span>
-              <p style="margin-left:20px;">Custom implementation using data from <a class="links" href="https://github.com/chanind/hanzi-writer-data" target="_blank">hanzi-writer-data</a> and the <a class="links" href="https://github.com/skishore/makemeahanzi" target="_blank">Make Me A Hanzi project</a>, using Arphic Technology fonts under the <a class="links" href="/assets/licenses/ARPHICPL.TXT" target="_blank">Arphic Public License</a>.</p>
+              <p style="margin-left:20px;">Custom implementation using data from <a class="links" href="https://github.com/chanind/hanzi-writer-data" target="_blank">hanzi-writer-data</a> and the <a class="links" href="https://github.com/skishore/makemeahanzi" target="_blank">Make Me A Hanzi project</a>, using Arphic Technology fonts under the <a class="links" href="/licenses/ARPHICPL.TXT" target="_blank">Arphic Public License</a>.</p>
               <p style="margin-left:20px;">This project also uses a Rust library by <a class="links" href="https://github.com/gugray">gugray</a>, </p>
               <br />
               <span class="smallh">Chinese-English examples:</span><br />
@@ -52,7 +52,7 @@
           <div class="subheader">Project License</div>
           <div class="flashcard-guide">
             <p>
-              This project is available under the <a class="links" href="/assets/licenses/MIT-LICENSE.TXT" target="_blank">MIT License</a>. You are free to use, modify, and distribute it, provided you include the original copyright notice and license terms.
+              This project is available under the <a class="links" href="/licenses/MIT-LICENSE.TXT" target="_blank">MIT License</a>. You are free to use, modify, and distribute it, provided you include the original copyright notice and license terms.
             </p>
           </div>
         </li>
