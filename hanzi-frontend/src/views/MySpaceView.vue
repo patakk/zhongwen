@@ -89,6 +89,14 @@
               >
                 grid view
               </router-link>
+              <button
+                @click="downloadAnkiDeck"
+                class="nav-button download-button"
+                title="Download Anki Deck"
+                :disabled="words.length === 0"
+              >
+                download anki deck
+              </button>
             </div>
   
             <!-- Word list -->
@@ -587,6 +595,56 @@
           console.error("Error formatting date:", e);
           return dateString; // Fallback to original string
         }
+      },
+      
+      downloadAnkiDeck() {
+        if (!this.selectedWordlist || this.words.length === 0) {
+          alert('This wordlist is empty. Please add words before downloading an Anki deck.');
+          return;
+        }
+        
+        // Create a temporary link to download the file
+        const downloadLink = document.createElement('a');
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        
+        // Send request with proper JSON Content-Type
+        fetch('/api/get_anki_wordlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: this.selectedWordlist
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error downloading Anki deck');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          // Create a URL for the blob
+          const url = window.URL.createObjectURL(blob);
+          
+          // Set up the download link
+          downloadLink.href = url;
+          downloadLink.download = `${this.selectedWordlist}_anki_deck.apkg`;
+          
+          // Trigger the download
+          downloadLink.click();
+          
+          // Clean up
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(downloadLink);
+          
+          console.log(`Downloading Anki deck for wordlist: ${this.selectedWordlist}`);
+        })
+        .catch(error => {
+          console.error('Error downloading Anki deck:', error);
+          alert('Failed to download Anki deck. Please try again.');
+        });
       },
     },
   };

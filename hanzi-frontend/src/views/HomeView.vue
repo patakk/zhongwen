@@ -48,7 +48,8 @@ export default {
       searchQuery: '',
       randomWords: [],
       numRandomWords: 3,
-      loading: true
+      loading: true,
+      fetchInProgress: false
     };
   },
   computed: {
@@ -56,7 +57,14 @@ export default {
       // Combine static and custom dictionary data
       const staticData = this.$store.getters.getDictionaryData || {};
       const customData = this.$store.getters.getCustomDictionaryData || {};
+      const isLoading = this.$store.getters.isDictionaryLoading;
       return { ...staticData, ...customData };
+    },
+    isDictionaryLoading() {
+      return this.$store.getters.isDictionaryLoading;
+    },
+    dictionaryPromises() {
+      return this.$store.getters.getDictionaryPromises;
     }
   },
   watch: {
@@ -65,7 +73,7 @@ export default {
         // When store decks change and we have data available
         if (Object.keys(newDecks).length > 0) {
           this.loading = false;
-          // this.getRandomWords();
+          this.getRandomWords();
         }
       },
       deep: true,
@@ -73,24 +81,54 @@ export default {
     }
   },
   mounted() {
-    if (Object.keys(this.storeDecks).length > 0) {
-      this.loading = false;
-      this.getRandomWords();
-    } else {
-      // If no data in store, force fetch the data
+    // Check if we need to wait for dictionary data
+    if (this.isDictionaryLoading) {
+      console.log("Dictionary data is already being loaded, waiting for it to complete");
       this.loading = true;
       
-      // Dispatch both actions to fetch data (similar to MySpaceView)
+      // Wait for both promise types to complete (if they exist)
+      const promises = [];
+      if (this.dictionaryPromises.static) {
+        promises.push(this.dictionaryPromises.static);
+      }
+      if (this.dictionaryPromises.custom) {
+        promises.push(this.dictionaryPromises.custom);
+      }
+      
+      // Wait for all existing promises to complete
+      Promise.all(promises)
+        .then(() => {
+          this.loading = false;
+          this.getRandomWords();
+        })
+        .catch(error => {
+          console.error('Error waiting for dictionary data:', error);
+          this.loading = false;
+        });
+    } 
+    // If data is already loaded in store
+    else if (Object.keys(this.storeDecks).length > 0) {
+      console.log("Dictionary data already in store, using it directly");
+      this.loading = false;
+      this.getRandomWords();
+    } 
+    // If no data in store and no loading in progress, initiate loading
+    else {
+      console.log("No dictionary data and no loading in progress, initiating fetch");
+      this.loading = true;
+      
       Promise.all([
         this.$store.dispatch('fetchDictionaryData'),
         this.$store.dispatch('fetchCustomDictionaryData')
-      ]).then(() => {
-        this.loading = false;
-        this.getRandomWords();
-      }).catch(error => {
-        console.error('Error loading dictionary data:', error);
-        this.loading = false;
-      });
+      ])
+        .then(() => {
+          this.loading = false;
+          this.getRandomWords();
+        })
+        .catch(error => {
+          console.error('Error loading dictionary data:', error);
+          this.loading = false;
+        });
     }
   },
   methods: {

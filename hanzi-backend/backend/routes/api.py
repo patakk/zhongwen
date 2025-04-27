@@ -1,7 +1,9 @@
 import io
 import json
 import logging
+import genanki
 import random
+import zlib
 import re
 import os
 import base64
@@ -18,6 +20,7 @@ from backend.db.ops import db_add_words_to_set
 from backend.db.ops import db_create_word_list
 from backend.db.ops import db_add_words_to_set
 from backend.db.ops import db_get_user_wordlists
+from backend.db.ops import db_get_word_list
 from backend.db.ops import db_rename_word_list
 from backend.db.ops import db_delete_word_list
 from backend.db.ops import db_get_stroke_data_for_character
@@ -38,6 +41,7 @@ from backend.common import get_chars_info
 from backend.common import char_decomp_info
 from backend.db.models import User, WordList
 from backend.common import send_bot_notification
+from backend.anki import create_anki_from_wordlist
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +87,31 @@ def create_wordlist():
         return jsonify({"message": f"Word list '{name}' created successfully"})
     print(f"Word list creation failed")
     return jsonify({"error": "Word list creation failed"}), 500
+
+
+@api_bp.route("/get_anki_wordlist", methods=["POST"])
+@session_required
+def get_anki_wordlist():
+    def deterministic_id(name):
+        return zlib.crc32(name.encode('utf-8'))
+    data = request.get_json()
+    if not data or "name" not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+    deck_name = data["name"]
+    username = session.get("username")
+    wordlist = db_get_word_list(username, wordlist_name=deck_name)
+    if len(wordlist) == 0:
+        return jsonify({"error": "Word empty"}), 404
+    wordlist_data = [get_char_info(word) for word in wordlist]
+    deck_id = deterministic_id(username + deck_name)
+    anki_file = create_anki_from_wordlist(wordlist_data, deck_id, deck_name)
+    deck_name_low = re.sub(r"[^a-zA-Z0-9_]", "_", deck_name).lower()
+    return send_file(
+        anki_file,
+        as_attachment=True,
+        download_name=f'{deck_name_low}_anki_deck.apkg',
+        mimetype='application/octet-stream'
+    )
 
 # New endpoint to update wordlist description
 @api_bp.route("/update_wordlist_description", methods=["POST"])

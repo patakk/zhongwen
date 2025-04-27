@@ -15,20 +15,25 @@ import { faSun, faMoon, faPencil, faBars } from '@fortawesome/free-solid-svg-ico
 
 library.add(faSun, faMoon, faPencil, faBars)
 
-store.dispatch('loadUserDataFromStorage')
-  .then(() => {
-    return store.dispatch('fetchUserData')
-  })
-  .catch(err => {
-  })
-  .finally(() => {
-    const app = createApp(App)
+// Initialize these promises right away
+const userDataPromise = store.dispatch('loadUserDataFromStorage')
+  .then(() => store.dispatch('fetchUserData'))
+  .catch(err => console.error('Error loading user data:', err));
 
-    app.component('font-awesome-icon', FontAwesomeIcon)
-    app.use(createPinia())
-    app.use(store)
-    app.use(router)
+// Start dictionary data loading in the background
+const staticDictionaryPromise = store.dispatch('fetchDictionaryData');
+const customDictionaryPromise = store.dispatch('fetchCustomDictionaryData');
 
-    app.config.globalProperties.$toAccentedPinyin = toAccentedPinyin
-    app.mount('#app')
-  })
+// We'll proceed with app initialization without waiting for dictionary data to finish
+// The components will handle waiting for the dictionary data when needed
+userDataPromise.finally(() => {
+  const app = createApp(App)
+
+  app.component('font-awesome-icon', FontAwesomeIcon)
+  app.use(createPinia())
+  app.use(store)
+  app.use(router)
+
+  app.config.globalProperties.$toAccentedPinyin = toAccentedPinyin
+  app.mount('#app')
+})

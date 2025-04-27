@@ -209,6 +209,10 @@ const store = createStore({
     customDecks: [],
     image: '',
     loading: false, // Add loading state for API requests
+    dictionaryPromises: {
+      static: null,
+      custom: null
+    }, // Track loading promises
   },
   mutations: {
     setDictionaryData(state, data) {
@@ -311,33 +315,67 @@ const store = createStore({
     },
   },
   actions: {
-    async fetchDictionaryData({ commit }) {
-      try {
-        const response = await fetch('/api/get_static_cc')
-        const data = await response.json()
-        commit('setDictionaryData', data)
-      } catch (error) {
-        console.error("Error fetching dictionary data:", error)
+    async fetchDictionaryData({ commit, state }) {
+      // If we already have a promise in progress, return it instead of creating a new one
+      if (state.dictionaryPromises.static) {
+        return state.dictionaryPromises.static;
       }
-    },
-    async fetchCustomDictionaryData({ commit }) {
-      try {
-        const response = await fetch('/api/get_custom_cc', {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({})
-        })
-        const data = await response.json()
-        for (const key in data) {
-          if (!data[key].name) {
-            data[key].name = key
-          }
+
+      // Create a new promise and store it
+      const promise = (async () => {
+        try {
+          const response = await fetch('/api/get_static_cc')
+          const data = await response.json()
+          commit('setDictionaryData', data)
+          return data;
+        } catch (error) {
+          console.error("Error fetching dictionary data:", error)
+          throw error;
+        } finally {
+          // Clear the promise reference when done
+          state.dictionaryPromises.static = null;
         }
-        commit('combineDictionaryData', data)
-      } catch (error) {
-        console.error("Error fetching dictionary data:", error)
+      })();
+
+      // Store the promise in state
+      state.dictionaryPromises.static = promise;
+      return promise;
+    },
+    async fetchCustomDictionaryData({ commit, state }) {
+      // If we already have a promise in progress, return it instead of creating a new one
+      if (state.dictionaryPromises.custom) {
+        return state.dictionaryPromises.custom;
       }
+
+      // Create a new promise and store it
+      const promise = (async () => {
+        try {
+          const response = await fetch('/api/get_custom_cc', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          })
+          const data = await response.json()
+          for (const key in data) {
+            if (!data[key].name) {
+              data[key].name = key
+            }
+          }
+          commit('combineDictionaryData', data)
+          return data;
+        } catch (error) {
+          console.error("Error fetching dictionary data:", error)
+          throw error;
+        } finally {
+          // Clear the promise reference when done
+          state.dictionaryPromises.custom = null;
+        }
+      })();
+
+      // Store the promise in state
+      state.dictionaryPromises.custom = promise;
+      return promise;
     },
     async fetchUserData({ commit, state }) {
       if (state.loading) return; // Prevent duplicate requests
@@ -505,6 +543,11 @@ const store = createStore({
     getCustomDecks:    (state) => state.customDecks,
     getImage:          (state) => state.image || state.profile?.profile_pic || '',
     getIsLoading:      (state) => state.loading,
+    isDictionaryLoading: (state) => !!state.dictionaryPromises.static || !!state.dictionaryPromises.custom,
+    getDictionaryPromises: (state) => ({
+      static: state.dictionaryPromises.static,
+      custom: state.dictionaryPromises.custom
+    }),
     isLoggedIn:        (state) => !!state.authStatus && !!state.username
   }
 })
