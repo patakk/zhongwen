@@ -362,10 +362,14 @@ export default {
     }
     
     // Clean up HanziLookup when component is unmounted
-    if (window.HanziLookup) {
-      // Clear any cached data or references
-      delete window.HanziLookup._data.mmah;
-      delete window.HanziLookup._data.orig;
+    if (window.HanziLookup && window.HanziLookup._data) {
+      // Only attempt to delete data if it exists
+      if (window.HanziLookup._data.mmah) {
+        delete window.HanziLookup._data.mmah;
+      }
+      if (window.HanziLookup._data.orig) {
+        delete window.HanziLookup._data.orig;
+      }
     }
   }
 };
