@@ -324,9 +324,7 @@ export default {
           this.showNoResults();
         }
       } else {
-        // Show loading message if the library isn't ready yet
         this.isLoading = true;
-        // Check again in a moment to see if the library has loaded
         setTimeout(() => {
           if (!this.hanzilookupReady) {
             this.showNoResults();
