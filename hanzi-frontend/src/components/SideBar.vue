@@ -284,12 +284,18 @@ export default {
 .top-link {
   color: var(--fg);
   text-decoration: none;
-  font-size: 1.2em;
+  font-size: 1em;
+  padding: .2em .6em;
   white-space: nowrap;
+  border-radius: .2em;
+  background-color: color-mix(in oklab, var(--primary-color) 25%, var(--bg) 15%);
+  text-transform: lowercase;
 }
 
 .top-link:hover {
   text-decoration: underline;
+  transform: translateY(.05em);
+  transition: transform .1s ease;
 }
 
 @media (max-aspect-ratio: 1/1) or (max-width: 1024px) {
