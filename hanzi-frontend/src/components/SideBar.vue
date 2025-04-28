@@ -278,7 +278,7 @@ export default {
   align-items: center;
   background: none;
   gap: 2em;
-  margin: .5em;
+  margin: .25em;
 }
 
 .top-link {
