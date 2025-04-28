@@ -1,5 +1,5 @@
 <template>
-  <BasePage page_title=":)" /> 
+  <BasePage page_title="HanziLab" /> 
   <div class="page-info">
     <!-- <div class="infoTitle">Chinese Language Learning</div> -->
     

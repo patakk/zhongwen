@@ -3,7 +3,7 @@
   <div class="container">
     <div class="about-section">
       <div>
-        This is a personal learning tool I'm developing alongside my Mandarin Chinese 
+        HanziLab is a personal learning tool I'm developing alongside my Mandarin Chinese 
         studies. 
         I've made it public hoping others might find it useful too, but please keep in mind that this is a work in progress and may contain errors or incomplete features. Your feedback and contributions are welcome!
       </div>
