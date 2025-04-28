@@ -509,7 +509,7 @@ export default {
     },
     handleDebugKey(event) {
       if (event.key === 'd') {
-        this.debugCardData();
+        // this.debugCardData();
       }
     },
     // Debug function to log card data to console
