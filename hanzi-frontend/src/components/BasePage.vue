@@ -1,6 +1,8 @@
 <template>
-    <SideBar />
-    <h1>{{ page_title }}</h1> <!-- change this label per file -->
+    <SideBar id="mainsidebar" />
+    
+
+    <div id="maintitle">{{ page_title }}</div> <!-- change this label per file -->
 </template>
   
   <script>
@@ -29,11 +31,18 @@
   --h1-border: 2px solid color-mix(in oklab, var(--fg) 30%, var(--bg) 50%);
 }
 
-h1 {
+
+</style>
+
+<style scoped>
+
+
+#maintitle {
   font-size: 3em;
+  font-weight: bold;
   margin: 0;
   margin: 0;
-  padding: 1em 0em 1em 0em;
+  padding: 1.5em 0em 1em 0em;
   width: 100%;
   text-align: center;
   box-sizing: border-box;
@@ -42,9 +51,15 @@ h1 {
 }
 
 @media (max-width: 784px) {
-  h1 {
+  #maintitle {
     font-size: 2em;
     margin: 0;
+  }
+}
+
+@media (max-aspect-ratio: 1/1) or (max-width: 1024px) {
+  #maintitle {
+    padding: 1em 0em 1em 0em;
   }
 }
 

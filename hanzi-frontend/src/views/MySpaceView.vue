@@ -6,20 +6,28 @@
           <!-- <h2>My Wordlists</h2> -->
   
           <div class="wordlist-selector">
-            <label for="wordlist-select" class="wordlist-label">Select Wordlist:</label>
-            <select
-              id="wordlist-select"
-              v-model="selectedWordlist"
-              @change="loadWordlistWords"
-            >
-              <option
-                v-for="list in customDecks"
-                :key="list.name"
-                :value="list.name"
+            <div class="custom-dropdown">
+              <div 
+                id="selected-deck" 
+                @click="isDropdownOpen = !isDropdownOpen"
               >
-                {{ list.name }}
-              </option>
-            </select>
+                {{ selectedWordlist || 'Select a wordlist' }}
+              </div>
+              <div 
+                id="deck-options" 
+                :class="{ 'show': isDropdownOpen }"
+              >
+                <div 
+                  v-for="list in customDecks" 
+                  :key="list.name" 
+                  class="option"
+                  :class="{ 'selected': selectedWordlist === list.name }"
+                  @click="selectWordlist(list.name)"
+                >
+                  {{ list.name }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -242,6 +250,7 @@
         showEditDescriptionModal: false, // Added for description modal
         newWordlistName: '',
         newWordlistDescription: '', // Added for description editing
+        isDropdownOpen: false, // Added for dropdown control
       };
     },
     computed: {
@@ -301,6 +310,9 @@
         this.$router.push('/login');
         return;
       }
+      
+      // Set up document click listener for dropdown
+      document.addEventListener('click', this.handleOutsideClick);
       
       // Debug logging of wordlists
       console.log("MySpaceView - Available wordlists (customDecks):", this.customDecks);
@@ -646,6 +658,20 @@
           alert('Failed to download Anki deck. Please try again.');
         });
       },
+
+      // New method for custom dropdown
+      selectWordlist(name) {
+        this.selectedWordlist = name;
+        this.isDropdownOpen = false;
+        this.loadWordlistWords();
+      },
+      
+      // Method to handle clicks outside the dropdown
+      handleOutsideClick(event) {
+        if (!event.target.closest('.custom-dropdown')) {
+          this.isDropdownOpen = false;
+        }
+      },
     },
   };
   </script>
@@ -710,21 +736,65 @@
     gap: 0.5rem;
   }
 
-  #wordlist-select {
-    overflow: hidden;
-    box-sizing: border-box;
-    text-overflow: ellipsis;
-    flex: 1;
-    min-width: 0; /* Allow select to shrink below its content width */
-    background: linear-gradient(
-      to right,
-      color-mix(in oklab, var(--fg) 5%, var(--bg) 90%),
-      color-mix(in oklab, var(--fg) 3%, var(--bg) 90%)
-    );
-    background-color: var(--bg);
-    color: var(--fg);
+  /* Custom dropdown styles to match FlashcardsView */
+  .custom-dropdown {
+    position: relative;
+    width: 100%;
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
   }
-  
+
+  #selected-deck {
+    padding: 10px 15px;
+    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+    color: var(--btn-fg);
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    min-width: 200px;
+    width: 100%;
+  }
+
+  #selected-deck:hover {
+    background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 75%);
+  }
+
+  #deck-options {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    max-width: 300px;
+    max-height: 0;
+    overflow: hidden;
+    background-color: var(--bg);
+    border: 2px solid #0000;
+    margin-top: 5px;
+    z-index: 10;
+    transition: max-height 0.3s, border 0.3s;
+  }
+
+  #deck-options.show {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 2px solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
+  }
+
+  .option {
+    padding: 10px 15px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .option:hover {
+    background-color: color-mix(in oklab, var(--fg) 6%, var(--bg) 75%);
+  }
+
+  .option.selected {
+    background-color: var(--selected-bg);
+  }
+
   select {
     padding: 0.5rem 0.75rem;
     border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);

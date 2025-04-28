@@ -1033,7 +1033,6 @@ html, body {
   max-height: 300px;
   overflow-y: auto;
   border: 2px solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
-  box-shadow: var(--decks-shadow);
 }
 
 .option {

@@ -25,11 +25,33 @@
           <RouterLink to="/practice" class="sidebar-link">Practice</RouterLink>
           <!-- <RouterLink to="/page-info" class="sidebar-link">Page Info</RouterLink> -->
           <RouterLink to="/about" class="sidebar-link">About</RouterLink>
-          <LogoutButton v-if="authStatus" />
+          <!-- <LogoutButton v-if="authStatus" /> -->
         </nav>
       </div>
     </div>
     <div v-if="isOpen" class="overlay" @click.stop="closeSidebar"></div>
+    
+    <div class="topbar" :style="{ opacity: topbarOpacity }">
+      <div class="top-nav">
+        <RouterLink to="/" class="top-link">Home</RouterLink>
+        <template v-if="!authStatus">
+          <RouterLink to="/login" class="top-link">Login</RouterLink>
+          <RouterLink to="/register" class="top-link">Register</RouterLink>
+        </template>
+        <template v-else>
+          <RouterLink to="/account" class="top-link">Account</RouterLink>
+          <RouterLink to="/my-lists" class="top-link">My Lists</RouterLink>
+        </template>
+        <RouterLink to="/grid" class="top-link">Grid</RouterLink>
+        <RouterLink to="/search" class="top-link">Search</RouterLink>
+        <RouterLink to="/drawing" class="top-link">Draw Search</RouterLink>
+        <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
+        <RouterLink to="/practice" class="top-link">Practice</RouterLink>
+        <!-- <RouterLink to="/page-info" class="top-link">Page Info</RouterLink> -->
+        <RouterLink to="/about" class="top-link">About</RouterLink>
+        <!-- <LogoutButton v-if="authStatus" /> -->
+      </div>
+    </div>
   </div>
 </template>
 
@@ -44,7 +66,9 @@ export default {
   },
   data() {
     return {
-      isOpen: false
+      isOpen: false,
+      scrollPosition: 0,
+      topbarOpacity: 1
     }
   },
   computed: {
@@ -62,13 +86,32 @@ export default {
     },
     closeSidebar() {
       this.isOpen = false
+    },
+    handleScroll() {
+      // Get current scroll position
+      const currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop
+      
+      // Calculate opacity based on scroll position
+      // Fade starts at 50px and completes at 150px
+      if (currentScrollPosition < 50) {
+        this.topbarOpacity = 1
+      } else if (currentScrollPosition > 150) {
+        this.topbarOpacity = 0
+      } else {
+        this.topbarOpacity = 1 - (currentScrollPosition - 50) / 100
+      }
+      
+      // Update scroll position
+      this.scrollPosition = currentScrollPosition
     }
   },
   mounted() {
     document.addEventListener('click', this.closeSidebar)
+    window.addEventListener('scroll', this.handleScroll)
   },
   beforeUnmount() {
     document.removeEventListener('click', this.closeSidebar)
+    window.removeEventListener('scroll', this.handleScroll)
   }
 }
 </script>
@@ -85,7 +128,7 @@ export default {
   top: 0;
   right: 0;
   height: 100vh;
-  display: flex;
+  display: none;
   flex-direction: row;
   transition: transform .1s ease;
   border-left: 0;
@@ -174,24 +217,14 @@ export default {
 }
 
 /* Media query for vertical screens (assuming mobile devices) */
-@media (max-width: 1024px) {
+@media (max-aspect-ratio: 1/1) or (max-width: 1024px) {
+  /* @media (max-width: 1024px) { */
   .sidebar-container {
     height: auto;
+    display: flex;
   }
 
   .sidebar-toggle {
-    /* position: fixed;
-    display: block;
-    font-size: 1.5rem;
-    top: .5em;
-    right: .5em;
-    width: 1.5em;
-    height: 1.5em;
-    background: none;
-    box-sizing: content-box;
-    padding: 0em;
-    z-index: 35; */
-
     
     width: 1.5em;
     height: 1.5em;
@@ -203,7 +236,7 @@ export default {
     border: none;
     font-size: 1.5em;
     cursor: pointer;
-    transform: translate(50%, -50%);
+    transform: translate(20%, -50%);
     right: 1em;
     top: 1em;
   }
@@ -226,4 +259,48 @@ export default {
     z-index: 30;
   }
 }
+
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: none;
+  z-index: 555;
+  display: flex;
+  justify-content: center;
+}
+
+.top-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: none;
+  gap: 2em;
+  margin: .5em;
+}
+
+.top-link {
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 1.2em;
+  white-space: nowrap;
+}
+
+.top-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-aspect-ratio: 1/1) or (max-width: 1024px) {
+  .top-nav {
+    display: none;
+  }
+}
+
+@media (min-aspect-ratio: 1/1) {
+  /* #mainsidebar {
+    display: none;
+  } */
+} 
 </style>
