@@ -16,11 +16,11 @@
           </template>
           <template v-else>
             <RouterLink to="/account" class="sidebar-link">Account</RouterLink>
-            <RouterLink to="/my-lists" class="sidebar-link">My Lists</RouterLink>
+            <RouterLink to="/my-lists" class="sidebar-link">Lists</RouterLink>
           </template>
           <RouterLink to="/grid" class="sidebar-link">Grid</RouterLink>
           <RouterLink to="/search" class="sidebar-link">Search</RouterLink>
-          <RouterLink to="/drawing" class="sidebar-link">Draw Search</RouterLink>
+          <RouterLink to="/drawing" class="sidebar-link">Sketch Lookup</RouterLink>
           <RouterLink to="/flashcards" class="sidebar-link">Flashcards</RouterLink>
           <RouterLink to="/practice" class="sidebar-link">Practice</RouterLink>
           <!-- <RouterLink to="/page-info" class="sidebar-link">Page Info</RouterLink> -->
@@ -40,11 +40,11 @@
         </template>
         <template v-else>
           <RouterLink to="/account" class="top-link">Account</RouterLink>
-          <RouterLink to="/my-lists" class="top-link">My Lists</RouterLink>
+          <RouterLink to="/my-lists" class="top-link">Lists</RouterLink>
         </template>
         <RouterLink to="/grid" class="top-link">Grid</RouterLink>
         <RouterLink to="/search" class="top-link">Search</RouterLink>
-        <RouterLink to="/drawing" class="top-link">Draw Search</RouterLink>
+        <RouterLink to="/drawing" class="top-link">Sketch Lookup</RouterLink>
         <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
         <RouterLink to="/practice" class="top-link">Practice</RouterLink>
         <!-- <RouterLink to="/page-info" class="top-link">Page Info</RouterLink> -->
@@ -287,15 +287,21 @@ export default {
   font-size: 1em;
   padding: .2em .6em;
   white-space: nowrap;
-  border-radius: .2em;
-  background-color: color-mix(in oklab, var(--primary-color) 25%, var(--bg) 15%);
+  /* border-radius: .2em; */
+  background: none;
   text-transform: lowercase;
+  opacity: .6;
 }
 
 .top-link:hover {
-  text-decoration: underline;
-  transform: translateY(.05em);
-  transition: transform .1s ease;
+  background-color: color-mix(in oklab, var(--primary-color) 25%, var(--bg) 15%);
+  opacity: 1;
+}
+
+.top-link.router-link-active, .top-link.router-link-exact-active {
+  text-transform: uppercase;
+  background-color: color-mix(in oklab, var(--primary-color) 25%, var(--bg) 15%);
+  opacity: 1;
 }
 
 @media (max-aspect-ratio: 1/1) or (max-width: 1024px) {

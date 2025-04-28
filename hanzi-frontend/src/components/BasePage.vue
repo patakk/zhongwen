@@ -1,8 +1,7 @@
 <template>
     <SideBar id="mainsidebar" />
     
-
-    <div id="maintitle">{{ page_title }}</div> <!-- change this label per file -->
+    <div id="maintitle">{{ page_title }}</div> 
 </template>
   
   <script>
@@ -48,6 +47,7 @@
   box-sizing: border-box;
   font-family: Arial, Helvetica, sans-serif;
   border-bottom: var(--h1-border);
+  /* opacity: 0; */
 }
 
 @media (max-width: 784px) {

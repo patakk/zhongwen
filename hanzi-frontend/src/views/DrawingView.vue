@@ -1,5 +1,5 @@
 <template>
-  <BasePage page_title="Draw Search" />
+  <BasePage page_title="Handwritten Character Search" />
   <div class="drawing-view">
     <div class="drawing-container">
       <canvas 

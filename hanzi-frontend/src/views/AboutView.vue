@@ -217,9 +217,10 @@ ul {
   border-top: 2px solid color-mix(in oklab, var(--fg) 11%, var(--bg) 11%);
   font-size: 2em;
   text-align: center;
+  font-weight: bold;
   margin: 0;
   padding: 0;
   margin-top: 1em;
-  padding-top: .5em;
+  padding-top: 1em;
 }
 </style>

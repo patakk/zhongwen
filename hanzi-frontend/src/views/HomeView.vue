@@ -1,5 +1,5 @@
 <template>
-  <BasePage page_title="Hanzi" /> 
+  <BasePage page_title=":)" /> 
   <div class="page-info">
     <!-- <div class="infoTitle">Chinese Language Learning</div> -->
     
@@ -15,7 +15,7 @@
     
     <div class="content">
       <div class="example-section">
-        <h2>Quick words</h2> 
+        <h2>Random pick</h2> 
         <div v-if="loading" class="loading-indicator">
           Loading random words...
         </div>
