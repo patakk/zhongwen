@@ -651,7 +651,7 @@ export default {
             this.ctx.lineTo(x, y);
           }
           
-          this.ctx.lineWidth = this.lineWidth;
+          this.ctx.lineWidth = this.lineWidth*4;
           this.ctx.strokeStyle = this.isDarkMode ? 'white' : 'black';
           this.ctx.lineCap = this.lineType;
           this.ctx.lineJoin = this.lineType;
@@ -704,7 +704,7 @@ export default {
     
       let progress = 0;
       const animateFrame = () => {
-        progress += 0.035;
+        progress += 0.04;
         if (progress >= 1) {
           progress = 1;
         }
@@ -764,7 +764,7 @@ export default {
             }
 
             const saw = (1 - 2 * Math.abs(0.5 - progress));
-            this.lineWidth = charheight1*0.05 * (0.7 + 0.3 * saw * saw * saw);
+            this.lineWidth = Math.sqrt(charheight1)* (0.7 + 0.3 * saw * saw * saw) * 1.4;
 
             let lightness = this.isDarkMode ? 1 : 0;
 
@@ -777,6 +777,8 @@ export default {
             this.ctx.strokeStyle = `rgba(${lightness * 255},${lightness * 255},${lightness * 255},1)`;
             this.ctx.lineCap = 'mitter';
             this.ctx.lineJoin = 'mitter';
+            this.ctx.lineCap = 'round';
+            this.ctx.lineJoin = 'round';
             this.ctx.stroke();
           }
         }
@@ -792,7 +794,9 @@ export default {
     },
     redrawCurrentCard() {
       this.handleFont();
-      this.drawStrokes();
+      const numchars = this.currentWordInfo.strokes.length;
+      this.drawbg(0, numchars, numchars);
+      // this.drawStrokes();
       this.drawMasks();
     },
     handleFont() {

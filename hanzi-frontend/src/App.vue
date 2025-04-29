@@ -6,30 +6,46 @@
     </button>
     <router-view />
     <GlobalCardModal />
+    <BubbleTooltip 
+      :visible="$store.getters['bubbleTooltip/isBubbleVisible']"
+      :character="bubbleData.character"
+      :pinyin="bubbleData.pinyin"
+      :english="bubbleData.english"
+      :position="bubbleData.position"
+      :fontFamily="bubbleData.fontFamily"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import GlobalCardModal from './components/GlobalCardModal.vue';
+import BubbleTooltip from './components/BubbleTooltip.vue';
 
 const store = useStore()
 const router = useRouter()
 
 const theme = ref(localStorage.getItem('theme') || 'light')
+const bubbleData = computed(() => store.getters['bubbleTooltip/getBubbleData'])
 
-// Create a watcher for route changes to close the modal when navigating
+// Create a watcher for route changes to close the modal and bubble tooltip when navigating
 watch(
   () => router.currentRoute.value.path,
   (newPath, oldPath) => {
-    // Only close the modal if we're actually changing paths (not just query params)
+    // Only close UI elements if we're actually changing paths (not just query params)
     if (newPath !== oldPath) {
       // Check if modal is visible before trying to close it
       if (store.getters['cardModal/isCardModalVisible']) {
         console.log('Route changed, closing modal', newPath, oldPath);
         store.dispatch('cardModal/hideCardModal');
+      }
+      
+      // Hide bubble tooltip if visible
+      if (store.getters['bubbleTooltip/isBubbleVisible']) {
+        console.log('Route changed, hiding bubble tooltip');
+        store.dispatch('bubbleTooltip/hideBubble');
       }
     }
   }
@@ -69,7 +85,10 @@ onMounted(async () => {
   nextTick(() => {
     console.log('App mounted, checking for word parameter');
     // Check for word parameter in URL on initial load
-    store.dispatch("cardModal/checkForWordParameter");
+    // Only if we're not already on the /word/ route
+    if (!router.currentRoute.value.path.startsWith('/word/')) {
+      store.dispatch("cardModal/checkForWordParameter");
+    }
   });
 })
 </script>

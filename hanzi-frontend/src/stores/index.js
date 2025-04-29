@@ -38,25 +38,41 @@ const cardModalModule = {
   },
   actions: {
     async showCardModal({ commit, dispatch, state }, character) {
-      // Prevent redundant fetches if the modal is already showing this character
       if (state.visible && state.currentCharacter === character) {
         console.log('Modal already showing this character, skipping:', character);
         return;
       }
-      
-      commit('SHOW_CARD_MODAL', character);
-      
-      // Update URL with the word parameter
-      router.replace({ 
-        query: { 
-          ...router.currentRoute.value.query, 
-          word: character 
-        }
-      }).catch(err => {
-        if (err.name !== 'NavigationDuplicated') {
-          console.error(err);
-        }
-      });
+      // Only update URL with word parameter if we're not on the dedicated word page
+      if (!router.currentRoute.value.path.startsWith('/word/')) {
+        commit('SHOW_CARD_MODAL', character);
+        router.replace({ 
+          query: { 
+            ...router.currentRoute.value.query, 
+            word: character 
+          }
+        }).catch(err => {
+          if (err.name !== 'NavigationDuplicated') {
+            console.error(err);
+          }
+        });
+      }
+      else{
+
+        window.scrollTo({
+          top: 0,
+          left: 0,
+        });
+
+        router.replace({ 
+          params: { 
+            word: character 
+          }
+        }).catch(err => {
+          if (err.name !== 'NavigationDuplicated') {
+            console.error(err);
+          }
+        });
+      }
       
       // Check if we already have preloaded data
       if (state.preloadedData[character]) {
@@ -174,11 +190,13 @@ const cardModalModule = {
       // Get the current word parameter from the URL
       const word = router.currentRoute.value.query.word;
       
-      // Only proceed if we have a word parameter and the modal is not already visible
-      if (word && !state.visible) {
-        console.log('Found word parameter in URL:', word);
+      // Get the current route path
+      const currentPath = router.currentRoute.value.path;
+      
+      // Only proceed if we have a word parameter, the modal is not already visible, 
+      // AND we're not already on the /word/ route
+      if (word && !state.visible && !currentPath.startsWith('/word/')) {
         
-        // Directly show the card modal with the word from URL
         dispatch('showCardModal', word);
       }
     }
@@ -193,11 +211,56 @@ const cardModalModule = {
   }
 };
 
+// Create a module for bubble tooltip state
+const bubbleTooltipModule = {
+  namespaced: true,
+  state: {
+    visible: false,
+    character: '',
+    pinyin: '',
+    english: '',
+    position: { x: 0, y: 0 },
+    fontFamily: 'Noto Sans SC'
+  },
+  mutations: {
+    SHOW_BUBBLE(state, { character, pinyin, english, position, fontFamily }) {
+      state.visible = true;
+      state.character = character;
+      state.pinyin = pinyin;
+      state.english = english;
+      state.position = position;
+      state.fontFamily = fontFamily || 'Noto Sans SC';
+    },
+    HIDE_BUBBLE(state) {
+      state.visible = false;
+    }
+  },
+  actions: {
+    showBubble({ commit }, data) {
+      commit('SHOW_BUBBLE', data);
+    },
+    hideBubble({ commit }) {
+      commit('HIDE_BUBBLE');
+    }
+  },
+  getters: {
+    isBubbleVisible: state => state.visible,
+    getBubbleData: state => ({
+      character: state.character,
+      pinyin: state.pinyin,
+      english: state.english,
+      position: state.position,
+      fontFamily: state.fontFamily
+    })
+  }
+};
+
 const USER_STORAGE_KEY = 'userData';
 
 const store = createStore({
   modules: {
-    cardModal: cardModalModule
+    cardModal: cardModalModule,
+    bubbleTooltip: bubbleTooltipModule
   },
   state: {
     staticDictionaryData: null,

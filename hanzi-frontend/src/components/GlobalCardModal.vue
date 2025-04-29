@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isVisible" class="global-modal-container">
-    <div class="card-modal-overlay" @click="closeModal">
+  <div v-if="isVisible || pageMode" :class="['global-modal-container', { 'page-mode-container': pageMode }]">
+    <div :class="['card-modal-overlay', { 'page-mode-overlay': pageMode }]" @click="closeModal">
       <div v-if="isLoading" class="loading-state">
         <div class="spinner"></div>
         <div>Loading...</div>
@@ -251,8 +251,8 @@
       </div>
     </div>
     
-    <!-- Fixed position close button at bottom right -->
-    <button @click="closeModal" class="close-btn fixed-close"><span class="x-centered">×</span></button>
+    <!-- Fixed position close button at bottom right - only show in modal mode -->
+    <button v-if="!pageMode" @click="closeModal" class="close-btn fixed-close"><span class="x-centered">×</span></button>
     
     <ToastNotification
       v-model:visible="notificationVisible"
@@ -278,6 +278,16 @@ export default {
     ToastNotification
   },
   name: 'GlobalCardModal',
+  props: {
+    pageMode: {
+      type: Boolean,
+      default: false
+    },
+    forcedCharacter: {
+      type: String,
+      default: null
+    }
+  },
   data() {
     return {
       activeChar: null,
@@ -465,6 +475,11 @@ export default {
     console.log("GlobalCardModal - Available wordlists:", this.customWordlists);
     console.log("GlobalCardModal - Is user logged in?", this.isLoggedIn);
     
+    // If we're in page mode and have a forcedCharacter, show the modal with that character
+    if (this.pageMode && this.forcedCharacter) {
+      this.showCardModal(this.forcedCharacter);
+    }
+    
     window.addEventListener('keydown', this.handleEscKey);
     window.addEventListener('keydown', this.handleDebugKey); // Add the debug key handler
     document.addEventListener('click', this.handleOutsideClick);
@@ -562,6 +577,7 @@ export default {
       }
       
       // This will trigger fetchCardData, which will then fetch decomp data ONCE
+      
       this.showCardModal(word);
     },
     setActiveChar(char) {
@@ -745,8 +761,6 @@ export default {
   position: fixed;
   height: 90vh;
   max-height: 90vh;
-  /* width: 34vw;
-  max-width: 34vw; */
   aspect-ratio: .75;
   border: 2px dashed var(--fg);
   border: 4px solid var(--fg-dim);
@@ -1025,7 +1039,7 @@ export default {
 .hanzi-anim {
   flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
   line-height: 1;
 }

@@ -140,7 +140,7 @@ function drawBg(ctx, dbg1, dbg2, lineType, writerSize, colors) {
     ctx.lineWidth = Math.max(0.6, ctx.canvas.width / 128)*.6;
     ctx.strokeStyle = colors[1];
     ctx.strokeStyle = `rgba(${111},${111},${111}, .215)`;
-    ctx.strokeRect(2, 2, ctx.canvas.width-4, ctx.canvas.height-4);
+    //ctx.strokeRect(2, 2, ctx.canvas.width-4, ctx.canvas.height-4);
 
     if (dbg1) {
         ctx.save();

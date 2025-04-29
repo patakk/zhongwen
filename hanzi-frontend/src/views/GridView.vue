@@ -79,7 +79,11 @@
                 :key="entry.character" 
                 :character="entry.character"
               >
-                <div class="grid-item">
+                <div 
+                  class="grid-item"
+                  @mouseover="showBubble($event, entry)"
+                  @mouseout="hideBubble"
+                >
                   <div class="hanzi" :style="{ 
                     fontFamily: `'${selectedFont}'`,
                     transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none',
@@ -87,7 +91,6 @@
                   }">
                     {{ entry.character }}
                   </div>
-                  <div class="pinyin">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
                 </div>
               </PreloadWrapper>
             </div>
@@ -127,6 +130,7 @@
 <script>
 import PreloadWrapper from '../components/PreloadWrapper.vue';
 import BasePage from '../components/BasePage.vue';
+import { useStore } from 'vuex';
 
 const defaultVisibleCount = 180; // Default number of characters to show
 
@@ -241,6 +245,26 @@ export default {
     }
   },
   methods: {
+    // New methods for bubble tooltip
+    showBubble(event, entry) {
+      // Get pointer position
+      const x = event.clientX;
+      const y = event.clientY;
+      
+      // Show the bubble with character data
+      this.$store.dispatch('bubbleTooltip/showBubble', {
+        character: entry.character,
+        pinyin: this.$toAccentedPinyin(entry.pinyin.join(', ')),
+        english: entry.english.join(', '),
+        position: { x, y },
+        fontFamily: this.selectedFont
+      });
+    },
+    
+    hideBubble() {
+      this.$store.dispatch('bubbleTooltip/hideBubble');
+    },
+    
     // New method to handle click on BasePage component
     handleBasepageClick() {
       this.toggleLeftbar();
@@ -484,11 +508,11 @@ html, body {
 }
 
 .grid-item:hover .hanzi {
-  opacity: 0;
+  color: var(--primary-color);
 }
 
 .grid-item:hover .pinyin {
-  opacity: 1;
+  /* opacity: 1; */
 }
 
 .list-container {

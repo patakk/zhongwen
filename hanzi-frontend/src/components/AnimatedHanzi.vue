@@ -223,6 +223,7 @@ export default defineComponent({
   line-height: 1;
   width: 100%;
   height: 100%;
+  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
 }
 
 .anim-character {

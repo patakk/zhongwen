@@ -8,11 +8,12 @@ import About from '../views/AboutView.vue'
 
 import Grid from '../views/GridView.vue'
 import Search from '../views/SearchView.vue'
-import Drawing from '../views/DrawingView.vue'
+import Drawing from '../views/SearchDrawView.vue'
 import Flashcards from '../views/FlashcardsView.vue'
 import HanziPractice from '../views/HanziPracticeView.vue'
 import PageInfo from '../views/PageInfoView.vue'
 import MyLists from '../views/MySpaceView.vue'
+import WordView from '../views/WordView.vue'
 
 const routes = [
   { path: '/', component: Home },
@@ -29,6 +30,7 @@ const routes = [
   { path: '/practice', component: HanziPractice },
   { path: '/page-info', component: PageInfo },
   { path: '/my-lists', component: MyLists },
+  { path: '/word/:word', name: 'WordPage', component: WordView },
   { path: '/:pathMatch(.*)*', component: Home } 
 ]
 

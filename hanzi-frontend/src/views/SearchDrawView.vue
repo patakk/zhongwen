@@ -66,8 +66,8 @@ export default {
     this.initCanvas();
     this.loadHanziLookupScript();
     this.setupThemeObserver();
-    // Initialize dark mode state
     this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+    this.drawCanvasBg();
   },
   methods: {
     setupThemeObserver() {
@@ -144,17 +144,15 @@ export default {
       this.canvas = this.$refs.drawingCanvas;
       this.ctx = this.canvas.getContext('2d');
       
-      // Set canvas size to match container
       this.resizeCanvas();
       window.addEventListener('resize', this.resizeCanvas);
       
-      // Set up drawing properties
       this.ctx.lineJoin = 'round';
       this.ctx.lineCap = 'round';
       this.ctx.lineWidth = 8;
-      // Get current theme and set appropriate stroke color
       this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
       this.ctx.strokeStyle = this.isDarkMode ? '#fff' : '#000';
+
     },
     
     resizeCanvas() {
@@ -240,9 +238,23 @@ export default {
       // Add point to current stroke
       this.currentStroke.push({x, y});
     },
+
+    drawCanvasBg(){
+      this.ctx.strokeStyle = this.isDarkMode ? '#fff5' : '#0005';
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, 0);
+      this.ctx.lineTo(this.canvas.width, this.canvas.height);
+      this.ctx.moveTo(this.canvas.width, 0);
+      this.ctx.lineTo(0, this.canvas.height);
+      this.ctx.stroke();
+      this.ctx.closePath();
+    },
     
     clearCanvas() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.drawCanvasBg();
+
       this.strokes = [];
       this.currentStroke = [];
       this.results = [];
@@ -268,7 +280,7 @@ export default {
     redrawCanvas() {
       // Clear canvas
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      
+      this.drawCanvasBg();
       // Update stroke style before redrawing
       this.updateStrokeStyle();
       

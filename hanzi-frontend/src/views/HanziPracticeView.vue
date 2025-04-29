@@ -258,6 +258,7 @@ export default defineComponent({
       
       // Create canvas element
       const canvas = document.createElement('canvas');
+      canvas.id = 'plotter-canvas';
       const size = 800; // Standard size for the plotter
       canvas.width = size;
       canvas.height = size;
@@ -686,7 +687,17 @@ export default defineComponent({
 });
 </script>
 
+
+<style>
+#plotter-canvas {
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
+}
+</style>
+
 <style scoped>
+
+
 .practice-view {
   display: flex;
   flex-direction: column;
@@ -703,9 +714,9 @@ export default defineComponent({
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--card-bg);
+  /* background-color: var(--card-bg);
   border: var(--card-border);
-  box-shadow: var(--card-shadow);
+  box-shadow: var(--card-shadow); */
   box-sizing: border-box;
   padding: 1rem;
 }
@@ -731,6 +742,7 @@ export default defineComponent({
   text-align: center;
   min-width: 200px;
   text-decoration: underline;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 #selected-deck:hover {
@@ -811,7 +823,7 @@ export default defineComponent({
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
   min-height: 1.8rem;
-  opacity: 0;
+  /* opacity: 0; */
   transition: opacity 0.3s ease;
 }
 
@@ -835,7 +847,7 @@ export default defineComponent({
   max-width: 400px;
   aspect-ratio: 1;
   margin-bottom: 1.5rem;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .control-buttons {
@@ -843,7 +855,7 @@ export default defineComponent({
   justify-content: center;
   gap: 1rem;
   margin-bottom: 1rem;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
 }
 
 .btn {
@@ -987,34 +999,42 @@ export default defineComponent({
 }
 
 @media (max-width: 600px) {
+}
+
+/* Enhanced responsive design for smaller screens */
+@media (max-width: 784px) {
   .practice-container {
     padding: 1rem;
   }
   
   .control-buttons {
-    flex-direction: column;
+    /* flex-direction: column; */
     gap: 0.5rem;
   }
   
   .btn {
     width: 100%;
     justify-content: center;
+    /* font-size: 0.5rem; */
   }
-}
-
-/* Enhanced responsive design for smaller screens */
-@media (max-width: 784px) {
+  
   .practice-view {
-    padding: 10px;
+    padding: 0;
     margin-top: 1rem;
   }
   
   .practice-container {
-    width: 90vw;
+    width: 100%;
+    margin: 0;
+    padding: 0;
     border: none;
     box-shadow: none;
   }
   
+  .control-buttons {
+    font-size: 0.5rem;
+  }
+
   .full-word {
     font-size: 1.7rem;
   }
@@ -1025,11 +1045,15 @@ export default defineComponent({
   }
   
   .pinyin-label {
-    font-size: 1rem;
+    font-size: 1em;
   }
   
   .english-display {
-    font-size: 0.9rem;
+    font-size: 1em;
+    margin-bottom: 0;
+  }
+  
+  .word-display {
   }
   
   .drawing-area {
@@ -1039,6 +1063,7 @@ export default defineComponent({
   
   .progress-info {
     font-size: 0.8rem;
+    width: 90%;
   }
 }
 </style>
