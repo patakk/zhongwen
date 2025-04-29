@@ -61,9 +61,8 @@ export default {
   min-width: 150px;
   max-width: 300px;
   pointer-events: none;
-  /* Change positioning to follow the mouse cursor */
-  transform: translate(-15%, -111%); /* Offset 10px to the right of the cursor */
-  transition: opacity 0.2s;
+  /* Position above the grid item */
+  transform: translate(-50%, -100%);
   text-align: center;
 }
 

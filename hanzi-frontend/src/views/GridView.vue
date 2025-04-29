@@ -5,12 +5,21 @@
         />
     </div>
 
-    <div class="page-layout">
-      <div class="leftbar" :class="{ 'leftbar-hidden': !leftbarVisible }">
+    <!-- Toggle button for the leftbar -->
+    <button 
+      class="leftbar-toggle" 
+      @click="toggleLeftbar"
+      :class="{ 'leftbar-toggle-active': leftbarVisible }"
+    >
+      ≡
+    </button>
+
+    <!-- Floating leftbar, positioned outside the main flow -->
+    <div class="leftbar" :class="{ 'leftbar-hidden': !leftbarVisible }">
         <div class="tab-keyboard-shortcut">[Tab]</div>
         <div class="leftbar-header">
           <div class="leftbar-header-label">Settings</div>
-          <button v-if="leftbarVisible" class="close-button" @click="toggleLeftbar">×</button>
+          <button class="close-button" @click="toggleLeftbar">×</button>
         </div>
 
         <!-- Dictionary Selector -->
@@ -61,41 +70,85 @@
             <span class="size-icon">大</span>
           </button>
         </div>
-      </div>
-
-      <div v-if="leftbarVisible" class="overlay" @click="closeLeftbar"></div>
-
-      <main class="main-content" :class="{ 'main-content-expanded': !leftbarVisible }">
         
+        <!-- Grid Gap Size Options - only visible in grid mode -->
+        <template v-if="!isListView">
+          <label>Grid Gap Size:</label>
+          <div class="font-size-buttons">
+            <button 
+              class="size-button" 
+              :class="{ 'active': gridGapSize === '0' }"
+              @click="setGridGapSize('0')"
+            >
+              <span class="size-icon">□□</span>
+            </button>
+            <button 
+              class="size-button" 
+              :class="{ 'active': gridGapSize === '1em' }"
+              @click="setGridGapSize('1em')"
+            >
+              <span class="size-icon">□&nbsp;□</span>
+            </button>
+            <button 
+              class="size-button" 
+              :class="{ 'active': gridGapSize === '3em' }"
+              @click="setGridGapSize('3em')"
+            >
+              <span class="size-icon">□&nbsp;&nbsp;&nbsp;□</span>
+            </button>
+          </div>
+          
+          <!-- Grid Border Toggle - only visible in grid mode -->
+          <label>Grid Borders:</label>
+          <button 
+            class="single-toggle-button" 
+            @click="toggleGridBorders"
+          >
+            {{ showGridBorders ? 'Hide Borders' : 'Show Borders' }}
+          </button>
+        </template>
+    </div>
+
+    <!-- Background overlay when leftbar is visible -->
+    <div v-if="leftbarVisible" class="overlay" @click="closeLeftbar"></div>
+
+    <!-- Main content takes full width regardless of leftbar state -->
+      <div class="main-content">
         <div v-if="selectedCategory">
           <div class="dictionary-category">
-            <!-- Grid View -->
-            <div v-if="!isListView" class="grid-container" :style="{ 
-              gridTemplateColumns: `repeat(auto-fill, minmax(${fontScale*1.1*100}px, 1fr))`, 
-              fontSize: `${fontScale*1.1}em` 
-            }">
-              <PreloadWrapper 
+            <!-- Grid View with optimized event delegation -->
+            <div 
+              v-if="!isListView" 
+              class="grid-container" 
+              :style="{ 
+                gridTemplateColumns: `repeat(auto-fill, minmax(${fontScale*1.1*100}px, 1fr))`, 
+                fontSize: `${fontScale*1.1}em`,
+                gap: gridGapSize
+              }"
+              @mousemove="handleGridMouseMove"
+              @mouseleave="handleGridMouseLeave"
+            >
+              <div 
                 v-for="(entry, index) in visibleChars" 
-                :key="entry.character" 
-                :character="entry.character"
+                :key="entry.character"
+                class="grid-item"
+                :data-character="entry.character"
+                @click="handleGridItemClick(entry.character)"
+                :style="{ 
+                  border: showGridBorders ? '1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%)' : '1px solid #7770'
+                }"
               >
-                <div 
-                  class="grid-item"
-                  @mouseover="showBubble($event, entry)"
-                  @mouseout="hideBubble"
-                >
-                  <div class="hanzi" :style="{ 
-                    fontFamily: `'${selectedFont}'`,
-                    transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none',
-                    fontWeight: selectedFont === 'Noto Serif SC' ? 500 : 400
-                  }">
-                    {{ entry.character }}
-                  </div>
+                <div class="hanzi" :style="{ 
+                  fontFamily: `'${selectedFont}'`,
+                  transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none',
+                  fontWeight: selectedFont === 'Noto Serif SC' ? 500 : 400
+                }">
+                  {{ entry.character }}
                 </div>
-              </PreloadWrapper>
+              </div>
             </div>
             
-            <!-- List View -->
+            <!-- List View still using PreloadWrapper since performance is less critical -->
             <div v-else class="list-container" :style="{fontSize: `${fontScale*1.1}em` }">
               <PreloadWrapper
                 v-for="(entry, index) in visibleChars"
@@ -122,8 +175,7 @@
         <div v-else>
           <p>Please select a dictionary to view the characters.</p>
         </div>
-      </main>
-    </div>
+      </div>
 </template>
 
 
@@ -148,7 +200,16 @@ export default {
       reloading: false,     // Flag to track view switching reloading
       leftbarVisible: window.innerWidth > 1024, // Default to closed on mobile
       waitingForDictData: true, // Flag to track if we're waiting for dictionary data
-      attemptedCategory: null // Store the attempted category from URL
+      attemptedCategory: null, // Store the attempted category from URL
+      
+      // Grid specific options
+      gridGapSize: '0',     // Gap size for grid items: '0', '1em', or '3em'
+      showGridBorders: true, // Toggle for grid item borders
+      
+      // Add tracking for hover state and timers, similar to PreloadWrapper
+      currentHoveredCharacter: null,
+      hoverTimer: null,
+      preloadedCharacters: new Set() // Track which characters have been preloaded
     };
   },
   components: {
@@ -309,6 +370,95 @@ export default {
         this.$store.dispatch('cardModal/showCardModal', character);
       }
     },
+    
+    // Grid event delegation handlers
+    handleGridMouseMove(event) {
+      // Only show bubble on devices that support hover (non-touch devices)
+      if (window.matchMedia('(hover: hover)').matches) {
+        // Find the target grid item
+        const gridItem = event.target.closest('.grid-item');
+        if (!gridItem) return;
+        
+        const character = gridItem.dataset.character;
+        if (!character) return;
+        
+        // If we're already hovering this character, don't do anything
+        if (this.currentHoveredCharacter === character) {
+          return;
+        }
+        
+        // Clear any existing hover timer
+        if (this.hoverTimer) {
+          clearTimeout(this.hoverTimer);
+          this.hoverTimer = null;
+        }
+        
+        // Set the current hovered character
+        this.currentHoveredCharacter = character;
+        
+        // Find the entry for this character
+        const entry = this.visibleChars.find(entry => entry.character === character);
+        if (!entry) return;
+        
+        // Get the position of the grid item for fixed tooltip positioning
+        const rect = gridItem.getBoundingClientRect();
+        const x = rect.left + (rect.width / 2);
+        const y = rect.top;
+        
+        // Show the bubble tooltip immediately
+        this.showBubble({
+          clientX: x,
+          clientY: y
+        }, entry);
+      }
+      
+      // Always preload data regardless of device type
+      // (this happens after a short delay)
+      const gridItem = event.target.closest('.grid-item');
+      if (!gridItem) return;
+      
+      const character = gridItem.dataset.character;
+      if (!character) return;
+      
+      // Set the current hovered character for tracking
+      this.currentHoveredCharacter = character;
+      
+      // Clear any existing hover timer
+      if (this.hoverTimer) {
+        clearTimeout(this.hoverTimer);
+        this.hoverTimer = null;
+      }
+      
+      // Start a new hover timer with delay for preloading the card data only
+      this.hoverTimer = setTimeout(() => {
+        // Only preload if we haven't already preloaded this character in this session
+        if (!this.preloadedCharacters.has(character)) {
+          this.$store.dispatch('cardModal/preloadCardData', character);
+          this.preloadedCharacters.add(character);
+        }
+      }, 150); // Use the same delay as PreloadWrapper default for preloading
+    },
+    
+    handleGridMouseLeave() {
+      // Hide the bubble tooltip when leaving the grid
+      this.$store.dispatch('bubbleTooltip/hideBubble');
+      
+      // Clear any active hover timer
+      if (this.hoverTimer) {
+        clearTimeout(this.hoverTimer);
+        this.hoverTimer = null;
+      }
+      
+      // Reset current hovered character
+      this.currentHoveredCharacter = null;
+    },
+    
+    handleGridItemClick(character) {
+      if (!character) return;
+      
+      // Show the card modal using the same action as PreloadWrapper
+      this.$store.dispatch('cardModal/showCardModal', character);
+    },
     // New improved method to check for word parameter
     checkQueryParams() {
       const wordlist = this.$route.query.wordlist;
@@ -346,6 +496,30 @@ export default {
       if (this.leftbarVisible && window.innerWidth <= 1024) {
         this.leftbarVisible = false;
       }
+    },
+    
+    // Method to set grid gap size with optimized loading
+    setGridGapSize(size) {
+      this.reloading = true;          // Start reloading process
+      this.visibleCount = defaultVisibleCount; // Reset visible count
+      this.gridGapSize = size;
+      
+      // Use the same chunk-loading optimization as font size changes
+      this.$nextTick(() => {
+        this.loadMore();  // Start incremental loading
+      });
+    },
+    
+    // Method to toggle grid borders with optimized loading
+    toggleGridBorders() {
+      this.reloading = true;          // Start reloading process
+      this.visibleCount = defaultVisibleCount; // Reset visible count
+      this.showGridBorders = !this.showGridBorders;
+      
+      // Use the same chunk-loading optimization
+      this.$nextTick(() => {
+        this.loadMore();  // Start incremental loading
+      });
     },
     
     // Handle key down events to detect Tab key
@@ -452,6 +626,7 @@ html, body {
   overflow: hidden;
   height: 100%;
   margin: 2em;
+  gap: 1em;
 }
 
 .dictionary-category {
@@ -462,17 +637,14 @@ html, body {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 1.5em;
+  gap: 0;
   width: 100%;
   box-sizing: border-box;
 }
 
 .grid-item {
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  padding: 0.55em;
-  aspect-ratio: 4;
-  border-radius: 1px;
+  height: 3em;
   text-align: center;
   position: relative;
   cursor: pointer;
@@ -480,6 +652,11 @@ html, body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
+}
+
+.grid-item:hover {
+  border-radius: 0em;
 }
 
 
@@ -574,32 +751,40 @@ select {
 }
 
 .leftbar {
-  width: 12%;
-  min-width: 250px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 400px;
   box-sizing: border-box;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-  /* border-right: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%); */
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  height: 100%;
-  overflow: hidden;
+  height: 100vh;
+  overflow-y: auto;
   padding: 1em;
-  /* transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease; */
-  position: relative; /* Add relative positioning to contain the Tab indicator */
+  z-index: 30;
+  /* box-shadow: 0 0 20px color-mix(in oklab, var(--fg) 16%, var(--bg) 0%); */
+  border-right: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 10%);
 }
 
 .leftbar-hidden {
-  min-width: 0;
-  width: 0;
-  padding: 0;
-  opacity: 0;
+  transform: translateX(-100%);
+  box-shadow: none;
+}
+
+.main-content {
+  width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  height: 100%;
+  padding: 2em;
 }
 
 .tab-keyboard-shortcut {
   position: absolute;
   top: .5em;
-  left: .5em;
+  right: .5em;
   font-size: 0.8em;
   color: var(--fg);
   opacity: .5;
@@ -624,23 +809,32 @@ select {
   border: none;
   font-size: 1.5em;
   cursor: pointer;
-  display: none;
+  display: block;
+  color: var(--fg);
+  opacity: 0.7;
+}
+
+.close-button:hover {
+  opacity: 1;
 }
 
 .leftbar-toggle {
   position: fixed;
-  /* top: 4.5em;
-  left: 1em; */
-  left: 50%;
   z-index: 5;
-  padding: 0.5em 1em;
   display: flex;
   align-items: center;
-  gap: 0.5em;
-  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  text-align: center;
+  justify-content: center;
+  background: none;
+  outline: none;
+  border: none;
   cursor: pointer;
+  transform: translate(-50%, -50%);
   color: var(--fg);
+  font-size: 3em;
+  cursor: pointer;
+  left: 1.5rem;
+  top: 4rem;
 }
 
 .toggle-icon {
@@ -651,19 +845,6 @@ select {
 .toggle-text {
   font-size: 1em;
   display: inline-block;
-}
-
-.main-content {
-  width: 88%;
-  padding: 0em 2.5em 2em 2em;
-  box-sizing: border-box;
-  overflow-y: auto;
-  height: 100%;  
-  /* transition: width 0.3s ease; */
-}
-
-.main-content-expanded {
-  width: 100%;
 }
 
 .mobile-title {
@@ -780,7 +961,7 @@ label {
   }
 
   .leftbar-toggle {
-    position: fixed;
+    /* position: fixed;
     top: 10em;
     left: 50%;
     transform: translateX(-50%);
@@ -791,28 +972,30 @@ label {
     background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
     border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
     cursor: pointer;
-    color: var(--fg);
+    color: var(--fg); */
   }
 
   .list-item {
-    padding: 0;
+    padding: 1em 0;
     box-shadow: none;
     border-bottom: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
   }
 
 
   .main-content {
+    padding: 1em;
     width: 100% !important;
-    padding: 0em;
-    margin-top: 1em;
+    /* padding: 0em;
+    margin-top: 1em; */
   }
 
   .grid-container {
     gap: 0.8em;
   }
 
+  
   .grid-item {
-    aspect-ratio: 4;
+    height: 2em;
   }
 
   /* Add overlay for mobile */
@@ -829,6 +1012,7 @@ label {
 
   .leftbar:not(.leftbar-hidden) + .overlay {
     display: block;
+    opacity: 0;
   }
 
   
@@ -852,12 +1036,12 @@ label {
 /* Small mobile devices */
 @media (max-width: 480px) {
   .grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 2fr)) !important;
-    gap: 0.5em;
+    /* grid-template-columns: repeat(auto-fill, minmax(100px, 2fr)) !important; */
+    /* gap: 0.5em; */
   }
 
   .grid-item {
-    aspect-ratio: 4;
+    /* aspect-ratio: 4; */
   }
 
   .list-item {
