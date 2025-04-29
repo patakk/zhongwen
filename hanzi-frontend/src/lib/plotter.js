@@ -1220,10 +1220,8 @@ export default class HanziPlotter {
         this.clear();
 
         // draw black bg
-        if(!this.clearBackground){
-            this.ctx.fillStyle = isDarkMode ? '#212121' : '#f3f3f3';
+            this.ctx.fillStyle = this.colors[3];
             this.ctx.fillRect(0, 0, this.dimension, this.dimension);
-        }
         
         drawBg(this.ctx, this.showDiagonals, this.showGrid, this.lineType, this.dimension, this.colors);
 

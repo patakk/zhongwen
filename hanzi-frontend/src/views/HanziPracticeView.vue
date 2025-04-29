@@ -53,7 +53,7 @@
         </div>
 
         <div class="drawing-area" ref="drawingArea">
-          <!-- Canvas will be inserted here by HanziPlotter -->
+          <canvas id="plotter-canvas" ref="plotterCanvas"></canvas>
         </div>
 
         <div class="control-buttons">
@@ -239,8 +239,8 @@ export default defineComponent({
   methods: {
     getThemeColors(isDark) {
       return isDark 
-        ? ['#ffffffee', '#ffffffee', '#cdb3dfdd', '#cdb3df'] 
-        : ['#000000ee', '#00000077', '#cdb3dfdd', '#cdb3df'];
+        ? ['#ffffffee', '#ffffffee', '#cdb3dfdd', '#151515'] 
+        : ['#000000ee', '#00000077', '#cdb3dfdd', '#f3f3f3'];
     },
     
     initPlotter() {
@@ -250,33 +250,24 @@ export default defineComponent({
         this.plotter = null;
       }
       
-      const drawingArea = this.$refs.drawingArea;
-      if (!drawingArea) return;
+      const canvas = this.$refs.plotterCanvas;
+      if (!canvas) return;
+
+      canvas.width = 800;
+      canvas.height = 800;
       
-      // Clear any previous content
-      drawingArea.innerHTML = '';
-      
-      // Create canvas element
-      const canvas = document.createElement('canvas');
-      canvas.id = 'plotter-canvas';
-      const size = 800; // Standard size for the plotter
-      canvas.width = size;
-      canvas.height = size;
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
-      drawingArea.appendChild(canvas);
-      
-      // Initialize plotter
+      // Initialize plotter with the canvas from the template
       this.plotter = new HanziPlotter({
         character: this.currentCharacter,
-        dimension: size,
+        dimension: 800,
         speed: 0.075,
-        lineThickness: 8 * size / 200,
+        lineThickness: 8 * 800 / 200,
         jitterAmp: 0,
         colors: this.getThemeColors(this.isDarkMode),
         showDiagonals: true,
         showGrid: false,
         clickAnimation: false,
+        clearBackground: false,
         useMask: true,
         blendMode: 'normal',
         canvas: canvas
@@ -801,6 +792,15 @@ export default defineComponent({
   min-height: 3.5rem;
 }
 
+#plotter-canvas {
+  width: 100%;
+  height: 100%;
+  max-width: 400px;
+  max-height: 400px;
+  background-color: var(--bg);
+  box-shadow: var(--card-shadow);
+}
+
 .word-character {
   position: relative;
   width: 3rem;
@@ -1007,6 +1007,10 @@ export default defineComponent({
     padding: 1rem;
   }
   
+  .practice-area {
+    padding: 0em 1em;
+  }
+  
   .control-buttons {
     /* flex-direction: column; */
     gap: 0.5rem;
@@ -1057,8 +1061,6 @@ export default defineComponent({
   }
   
   .drawing-area {
-    max-width: none;
-    width: 90%;
   }
   
   .progress-info {
