@@ -267,7 +267,7 @@ export default defineComponent({
         showDiagonals: true,
         showGrid: false,
         clickAnimation: false,
-        clearBackground: false,
+        clearBackground: true,
         useMask: true,
         blendMode: 'normal',
         canvas: canvas
@@ -680,14 +680,13 @@ export default defineComponent({
 
 
 <style>
-#plotter-canvas {
-  border: var(--card-border);
-  box-shadow: var(--card-shadow);
-}
+
 </style>
 
 <style scoped>
 
+#plotter-canvas {
+}
 
 .practice-view {
   display: flex;
@@ -797,8 +796,10 @@ export default defineComponent({
   height: 100%;
   max-width: 400px;
   max-height: 400px;
-  background-color: var(--bg);
   box-shadow: var(--card-shadow);
+  
+  border: var(--card-border);
+  background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 0%);
 }
 
 .word-character {

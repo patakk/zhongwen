@@ -1220,8 +1220,10 @@ export default class HanziPlotter {
         this.clear();
 
         // draw black bg
+        if(!this.clearBackground){
             this.ctx.fillStyle = this.colors[3];
             this.ctx.fillRect(0, 0, this.dimension, this.dimension);
+        }
         
         drawBg(this.ctx, this.showDiagonals, this.showGrid, this.lineType, this.dimension, this.colors);
 
