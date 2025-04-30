@@ -3,7 +3,6 @@ import random
 
 from flask import Blueprint, jsonify, render_template, session
 
-from backend.decorators import session_required, timing_decorator
 from backend.common import get_chars_info
 from backend.db.ops import db_get_word_list_names_only
 
@@ -48,7 +47,6 @@ def add_sorted_decknames_to_context(username, context):
 
 @puzzles_bp.route("/")
 @session_required
-@timing_decorator
 def puzzles():
     #characters = dict(CARDDECKS[session["deck"]].items())
     context = get_common_context()
@@ -70,7 +68,6 @@ def puzzles():
 
 @puzzles_bp.route("/hanzitest_pinyin")
 @session_required
-@timing_decorator
 def hanzitest_pinyin():
     characters = dict(CARDDECKS[session["deck"]].items())
     context = get_common_context()
@@ -87,7 +84,6 @@ def get_random_chars_from_deck(deck, n, pinyin=False, english=False, function=Fa
 
 @puzzles_bp.route("/hanzitest_table")
 @session_required
-@timing_decorator
 def hanzitest_table():
     context = get_common_context()
     
@@ -97,7 +93,6 @@ def hanzitest_table():
 
 @puzzles_bp.route("/hanzitest_audio")
 @session_required
-@timing_decorator
 def hanzitest_audio():
     context = get_common_context()
     
@@ -107,7 +102,6 @@ def hanzitest_audio():
 
 @puzzles_bp.route("/hanzitest_draw")
 @session_required
-@timing_decorator
 def hanzitest_draw():
     context = get_common_context()
     add_sorted_decknames_to_context(session.get('username'), context)
@@ -117,7 +111,6 @@ def hanzitest_draw():
 
 @puzzles_bp.route("/hanzitest_choices")
 @session_required
-@timing_decorator
 def hanzitest_choices():
     context = get_common_context()
     add_sorted_decknames_to_context(session.get('username'), context)
@@ -126,7 +119,6 @@ def hanzitest_choices():
 
 @puzzles_bp.route("/hanzitest_fillin")
 @session_required
-@timing_decorator
 def hanzitest_fillin():
     if "fillin" not in session:
         session["fillin"] = json.load(

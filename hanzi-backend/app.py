@@ -21,7 +21,6 @@ import glob
 import requests
 from backend.decorators import session_required
 from backend.decorators import hard_session_required
-from backend.decorators import timing_decorator
 from backend.db.models import User
 from backend.db.ops import db_user_exists
 from backend.db.ops import db_authenticate_user
@@ -590,7 +589,6 @@ from backend.routes.puzzles import get_common_context
 '''
 @puzzles_bp.route("/hanzitest_pinyin")
 @session_required
-@timing_decorator
 def hanzitest_pinyin():
     characters = dict(CARDDECKS[session["deck"]].items())
     context = get_common_context()
@@ -608,7 +606,6 @@ def hanziwriting():
 
 # @app.route('/convert')
 # @session_required
-# @timing_decorator
 # def convert():
 #     return render_template('convert.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, wordlist=session['deck'])
 
@@ -648,7 +645,6 @@ def convert():
 
 @app.route('/stories')
 @session_required
-@timing_decorator
 def stories():
     username = session.get('username')
     first_story = all_stories[stories_names[0]]
@@ -666,7 +662,6 @@ def stories():
 
 @app.route('/get_story/<int:story_index>/<int:chapter_index>')
 @session_required
-@timing_decorator
 def get_story(story_index, chapter_index):
     selected_story = all_stories[stories_names[story_index-1]]
     chapter_list = selected_story['chapters_list']
@@ -692,7 +687,6 @@ def get_story(story_index, chapter_index):
 
 @app.route('/get_story_strokes/<int:story_index>/<int:chapter_index>')
 @session_required
-@timing_decorator
 def get_story_strokes(story_index, chapter_index):
     selected_story = all_stories[stories_names[story_index-1]]
     chapter_list = selected_story['chapters_list']
@@ -834,7 +828,6 @@ def get_search_results(query):
 
 @app.route('/api/search_results', methods=['POST'])
 @limiter.limit("1 per second")
-@timing_decorator
 @session_required
 def search_results():
     start_time = time.time()

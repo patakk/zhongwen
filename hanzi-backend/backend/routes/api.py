@@ -13,7 +13,6 @@ from flask import Blueprint, jsonify, request, send_file, session
 
 from backend.db.ops import db_add_stroke_data
 from backend.decorators import session_required
-from backend.decorators import timing_decorator
 from backend.decorators import hard_session_required
 from backend.db.ops import db_update_or_create_note
 from backend.db.ops import db_add_words_to_set
@@ -385,7 +384,6 @@ def get_all_chars_pinyinenglish():
 
 
 @api_bp.route("/change_font", methods=["POST"])
-@timing_decorator
 def change_font():
     session["font"] = request.args.get("font")
     logger.info(f"Font changed to {session['font']}")
@@ -394,7 +392,6 @@ def change_font():
 
 @api_bp.route("/setdarkmode", methods=["POST"])
 @session_required
-@timing_decorator
 def setdarkmode():
     darkmode = request.args.get("darkmode")
     if darkmode not in ["true", "false"]:
@@ -410,14 +407,12 @@ def setdarkmode():
 
 @api_bp.route("/getdarkmode", methods=["GET"])
 @session_required
-@timing_decorator
 def getdarkmode():
     return jsonify({"darkmode": session.get("darkmode")})
 
 
 @api_bp.route("/get_font")
 @session_required
-@timing_decorator
 def get_font():
     response = jsonify({"font": session.get("font", "Noto Sans SC")})
     logger.info(f"Current font: {session.get('font', 'Noto Sans SC')}")
@@ -425,7 +420,6 @@ def get_font():
 
 
 @api_bp.route("/change_deck", methods=["POST"])
-@timing_decorator
 def change_deck():
     session["deck"] = request.args.get("wordlist")
     return jsonify({"message": "Deck changed successfully"})
@@ -433,7 +427,6 @@ def change_deck():
 
 @api_bp.route("/get_deck")
 @session_required
-@timing_decorator
 def get_deck():
     logger.info(f"Current deck: {session['deck']}")
     return jsonify({"wordlist": session["deck"]})
@@ -525,7 +518,6 @@ def get_audio():
 
 @api_bp.route("/getStrokes/<character>")
 @session_required
-@timing_decorator
 def get_strokes(character):
     if len(character) == 1:
         strokes = STROKES_CACHE.get(character)
@@ -600,7 +592,6 @@ def character_animation(character):
 
 @api_bp.route("/get_random_characters", methods=["POST"])
 @session_required
-@timing_decorator
 def get_random_characters():
     username = session.get('username')
     
@@ -646,7 +637,6 @@ def get_combined_audio(characters):
 
 @api_bp.route("/get_random_characters_with_audio", methods=["POST"])
 @session_required
-@timing_decorator
 def get_random_characters_with_audio():
     username = session.get('username')
     
@@ -691,7 +681,6 @@ import time
 # char_decomp_info
 @api_bp.route("/get_char_decomp_info", methods=["POST"])
 @session_required
-@timing_decorator
 def get_char_decomp_info():
     data = request.get_json()
     characters = data.get("characters")
@@ -715,7 +704,6 @@ def get_all_stroke_data():
 
 # @api_bp.route("/get_examples_data/<category>/<subcategory>/<chinese>")
 # @session_required
-# @timing_decorator
 # def get_examples_data(category, subcategory, chinese):
 #     category = unquote(category)
 #     subcategory = unquote(subcategory)
@@ -731,7 +719,6 @@ def get_all_stroke_data():
 
 @api_bp.route("/get_stories_data/<uri>")
 @session_required
-@timing_decorator
 def get_stories_data(uri):
     if uri in stories_data:
         return jsonify(stories_data[uri])
@@ -745,7 +732,6 @@ def log_mobile_access():
 
 
 @api_bp.route("/record_answer")
-@timing_decorator
 @session_required
 def record_answer():
     character = request.args.get("character")
