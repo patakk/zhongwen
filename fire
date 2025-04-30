@@ -7,13 +7,6 @@ cd ..
 git add .
 git status --porcelain
 
-# if [ $# -eq 1 ]; then
-#     echo "$1" > version
-#     commit_message="$1"
-# else
-#     commit_message="fix"
-# fi
-
 if git diff --cached --quiet; then
     echo "No changes to commit."
 else
