@@ -198,7 +198,7 @@ export default {
       tempFontScale: 1,     // ✅ Temporary one used by slider
       isListView: false,    // ✅ Toggle between grid and list views
       reloading: false,     // Flag to track view switching reloading
-      leftbarVisible: window.innerWidth > 1024, // Default to closed on mobile
+      leftbarVisible: false, // Default to closed for all screen sizes
       waitingForDictData: true, // Flag to track if we're waiting for dictionary data
       attemptedCategory: null, // Store the attempted category from URL
       
@@ -766,6 +766,9 @@ select {
   z-index: 30;
   /* box-shadow: 0 0 20px color-mix(in oklab, var(--fg) 16%, var(--bg) 0%); */
   border-right: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 10%);
+  box-shadow: 0 0 20px color-mix(in oklab, var(--bg) 66%, #7770 0%);
+  box-shadow: 0 0 20px color-mix(in oklab, var(--fg) 66%, #7770 0%);
+  box-shadow: 20px 0 80px var(--bg);
 }
 
 .leftbar-hidden {

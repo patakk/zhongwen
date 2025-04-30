@@ -220,9 +220,10 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+  align-self: flex-start;
   line-height: 1;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
 }
 

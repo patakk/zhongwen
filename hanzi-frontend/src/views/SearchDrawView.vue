@@ -240,6 +240,7 @@ export default {
     },
 
     drawCanvasBg(){
+      this.ctx.save();
       this.ctx.strokeStyle = this.isDarkMode ? '#fff5' : '#0005';
       this.ctx.lineWidth = 1;
       this.ctx.beginPath();
@@ -249,6 +250,7 @@ export default {
       this.ctx.lineTo(0, this.canvas.height);
       this.ctx.stroke();
       this.ctx.closePath();
+      this.ctx.restore();
     },
     
     clearCanvas() {

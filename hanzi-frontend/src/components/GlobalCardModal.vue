@@ -927,7 +927,6 @@ export default {
   width: 100%;
   opacity: .6;
   max-width: 100%;
-  transition: color 0.2s ease;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
   align-self: flex-start;
@@ -1283,7 +1282,6 @@ export default {
   cursor: pointer;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
   border-radius: var(--border-radius);
-  transition: background-color 0.2s ease;
 }
 
 .concept-toggle.active {
