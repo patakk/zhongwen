@@ -1,0 +1,7 @@
+[tool.semantic_release]
+version_variable = "your_module/__init__.py:__version__"
+branch = "main"
+version_source = "tag"
+tag_format = "v{version}"
+upload_to_repository = false
+build_command = false
