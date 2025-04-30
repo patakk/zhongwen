@@ -1,15 +1,28 @@
-[project]
-name = "your-project"
-version = "1.0.0"
-description = "Your project description"
-dependencies = [
-    "flask>=2.0.0",
-    "sqlalchemy>=1.4.0",
-]
+[tool.poetry]
+name = "hanzi-backend"
+version = "0.1.0"
+description = "Flask backend for Hanzi app"
+authors = ["Paolo <paolo@patakk.xyz>"]
+package-mode = false
 
-[tool.pylint]
-disable = [
-    "missing-docstring",
-    "invalid-name",
-]
-
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "*"
+Flask-SQLAlchemy = "*"
+Flask-Limiter = "*"
+Flask-WTF = "*"
+Flask-Migrate = "*"
+flask-mail = "*"
+python-dateutil = "*"
+pypinyin = "*"
+Pillow = "*"
+requests = "*"
+regex = "*"
+jieba = "*"
+hanziconv = "*"
+nltk = "*"
+flask-dance = "*"
+rapidfuzz = "*"
+Flask-Session = "*"
+flask-cors = "*"
+genanki = "*"

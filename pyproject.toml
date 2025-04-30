@@ -1,7 +1,36 @@
+[tool.poetry]
+name = "hanzi-backend"
+version = "0.1.0"
+description = "Flask backend for Hanzi app"
+authors = ["Paolo <paolo@patakk.xyz>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "*"
+Flask-SQLAlchemy = "*"
+Flask-Limiter = "*"
+Flask-WTF = "*"
+Flask-Migrate = "*"
+flask-mail = "*"
+python-dateutil = "*"
+pypinyin = "*"
+Pillow = "*"
+requests = "*"
+regex = "*"
+jieba = "*"
+hanziconv = "*"
+nltk = "*"
+flask-dance = "*"
+rapidfuzz = "*"
+Flask-Session = "*"
+flask-cors = "*"
+genanki = "*"
+
 [tool.semantic_release]
-version_variable = "your_module/__init__.py:__version__"
-branch = "main"
+version_variable = "__version__.py:__version__"
+branch = "master"
 version_source = "tag"
 tag_format = "v{version}"
-upload_to_repository = false
-build_command = false
+upload_to_repository = "false"
+build_command = ""

@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "hanzi-search"
+version = "0.1.0"
+description = "Search backend for Hanzi app"
+authors = ["Paolo <paolo@patakk.xyz>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+hanzipy = { path = "../../hanzipy", develop = true }
+python = "^3.10"
+flask = "^2.3"
+Flask-SQLAlchemy = "^3.1"
+Flask-Limiter = "^3.4"
+Flask-WTF = "^1.2"
+Flask-Migrate = "^4.0"
+flask-mail = "^0.9"
+python-dateutil = "^2.8"
+pypinyin = "^0.48"
+Pillow = "^10.0"
+requests = "^2.31"
+regex = "^2023.12"
+jieba = "^0.42"
+hanziconv = "^0.3"
+nltk = "^3.8"
+flask-dance = "^7.0"
+rapidfuzz = "^3.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
