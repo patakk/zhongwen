@@ -1,20 +1,33 @@
 #!/usr/bin/bash
 
-cd hanzi-frontend
-npm run build
+commit_message="$1"
 
-cd ..
+# First commit (before build)
 git add .
 git status --porcelain
 
 if git diff --cached --quiet; then
-    echo "No changes to commit."
+    echo "No changes to commit (pre-build)."
 else
     git commit -m "$commit_message"
-    
-    if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
-        git push
-    else
-        echo "No changes to push."
-    fi
+fi
+
+# Build step
+cd hanzi-frontend
+npm run build
+cd ..
+
+# Second commit (build artifacts)
+git add .
+if git diff --cached --quiet; then
+    echo "No changes to commit (post-build)."
+else
+    git commit -m "chore: build"
+fi
+
+# Push if needed
+if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
+    git push
+else
+    echo "No changes to push."
 fi
