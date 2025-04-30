@@ -18,6 +18,7 @@ def timing_decorator(f):
         start_time = time.time()
         result = f(*args, **kwargs)
         processing_time = time.time() - start_time
+        logger.info(f"Function {f.__name__} took {processing_time:.2f} seconds")
         return result
     return wrap
 

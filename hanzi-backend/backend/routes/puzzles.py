@@ -2,7 +2,7 @@ import json
 import random
 
 from flask import Blueprint, jsonify, render_template, session
-
+from backend.decorators import session_required
 from backend.common import get_chars_info
 from backend.db.ops import db_get_word_list_names_only
 
