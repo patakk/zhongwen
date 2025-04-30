@@ -760,14 +760,6 @@ def page_not_found(e):
     return '', 404
 
 
-
-# @app.route('/stories')
-# @app.route('/stories/<uri>')
-# @session_required
-# @timing_decorator
-# def stories(uri=None):
-#     return render_template('stories.html', stories=stories_list, initial_uri=uri)
-
 import re
 def remove_tones(pinyin):
     return re.sub(r'[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]', lambda m: 'aeiouü'['āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'.index(m.group()) // 4], pinyin)
@@ -902,7 +894,6 @@ def strokerender():
 @app.route('/<path:path>')
 def catch_all(path):
     """Serve the Vue app for any routes not explicitly defined, enabling client-side routing."""
-    # This serves your Vue app's entry point for any route that isn't explicitly defined
     return send_file('static/dist/index.html')
 
 if __name__ == '__main__':

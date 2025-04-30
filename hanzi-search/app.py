@@ -30,6 +30,7 @@ indices_cache = json.load(open(os.path.join(DATA_DIR, "indices_cache.json")))
 
 dictionary = HanziDictionary(indices_cache=indices_cache)
 
+
 def load_secrets(secrets_file):
     secrets = {}
     try:
