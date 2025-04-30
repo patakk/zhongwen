@@ -134,6 +134,8 @@
                 class="grid-item"
                 :data-character="entry.character"
                 @click="handleGridItemClick(entry.character)"
+                @mouseenter="handleGridItemMouseEnter($event, entry)"
+                @mouseleave="handleGridItemMouseLeave"
                 :style="{ 
                   border: showGridBorders ? '1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%)' : '1px solid #7770'
                 }"
@@ -368,6 +370,54 @@ export default {
     openCharacterModal(character) {
       if (character) {
         this.$store.dispatch('cardModal/showCardModal', character);
+      }
+    },
+    
+    // Methods for individual grid item mouse events
+    handleGridItemMouseEnter(event, entry) {
+      // Only show bubble on devices that support hover
+      if (window.matchMedia('(hover: hover)').matches) {
+        const gridItem = event.target.closest('.grid-item');
+        if (!gridItem) return;
+        
+        // Clear any existing hover timer
+        if (this.hoverTimer) {
+          clearTimeout(this.hoverTimer);
+          this.hoverTimer = null;
+        }
+        
+        // Set the current hovered character
+        this.currentHoveredCharacter = entry.character;
+        
+        // Get the position of the grid item for fixed tooltip positioning
+        const rect = gridItem.getBoundingClientRect();
+        const x = rect.left + (rect.width / 2);
+        const y = rect.top;
+        
+        // Show the bubble tooltip immediately
+        this.showBubble({
+          clientX: x,
+          clientY: y
+        }, entry);
+        
+        // Start preloading
+        this.hoverTimer = setTimeout(() => {
+          if (!this.preloadedCharacters.has(entry.character)) {
+            this.$store.dispatch('cardModal/preloadCardData', entry.character);
+            this.preloadedCharacters.add(entry.character);
+          }
+        }, 150);
+      }
+    },
+    
+    handleGridItemMouseLeave() {
+      // Hide bubble immediately when leaving the grid item
+      this.hideBubble();
+      
+      // Clear any active hover timer
+      if (this.hoverTimer) {
+        clearTimeout(this.hoverTimer);
+        this.hoverTimer = null;
       }
     },
     
