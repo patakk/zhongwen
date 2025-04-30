@@ -15,25 +15,76 @@ import { faSun, faMoon, faPencil, faBars } from '@fortawesome/free-solid-svg-ico
 
 library.add(faSun, faMoon, faPencil, faBars)
 
-// Initialize these promises right away
-const userDataPromise = store.dispatch('loadUserDataFromStorage')
-  .then(() => store.dispatch('fetchUserData'))
-  .catch(err => console.error('Error loading user data:', err));
+// IMMEDIATELY clear login state on page load before checking backend
+console.log('Clearing login state on page load before checking backend');
+localStorage.removeItem('userData');
+store.dispatch('logout');
 
-// Start dictionary data loading in the background
-const staticDictionaryPromise = store.dispatch('fetchDictionaryData');
-const customDictionaryPromise = store.dispatch('fetchCustomDictionaryData');
+// Check if backend is available
+const checkBackendConnectivity = async () => {
+  try {
+    // Try a lightweight endpoint with a short timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    
+    const response = await fetch('/version', { 
+      method: 'GET',
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      console.warn('Backend unavailable (error response), keeping logout state');
+      return false;
+    }
+    
+    const text = await response.text();
+    if (!text) {
+      console.warn('Backend returned empty response, keeping logout state');
+      return false;
+    }
+    
+    console.log('Backend connection confirmed');
+    return true;
+  } catch (error) {
+    console.error('Error connecting to backend:', error);
+    return false;
+  }
+};
 
-// We'll proceed with app initialization without waiting for dictionary data to finish
-// The components will handle waiting for the dictionary data when needed
-userDataPromise.finally(() => {
+// Initialize app once we know the backend state
+const initApp = async () => {
+  const isConnected = await checkBackendConnectivity();
+  
+  if (isConnected) {
+    // Only try to restore user session if backend is definitely available
+    console.log('Backend available, attempting to restore session');
+    await store.dispatch('loadUserDataFromStorage');
+    await store.dispatch('fetchUserData').catch(err => {
+      console.error('Failed to fetch user data, keeping logout state', err);
+    });
+  } else {
+    console.log('App started with backend unavailable, maintaining logged out state');
+  }
+  
+  // Only start dictionary data loading if backend is available
+  if (isConnected) {
+    store.dispatch('fetchDictionaryData');
+    if (store.getters.isLoggedIn) {
+      store.dispatch('fetchCustomDictionaryData');
+    }
+  }
+  
+  // Create and mount the app
   const app = createApp(App)
-
   app.component('font-awesome-icon', FontAwesomeIcon)
   app.use(createPinia())
   app.use(store)
   app.use(router)
-
   app.config.globalProperties.$toAccentedPinyin = toAccentedPinyin
   app.mount('#app')
-})
+};
+
+// Start app initialization
+initApp();

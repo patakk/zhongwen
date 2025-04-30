@@ -51,6 +51,58 @@ watch(
   }
 );
 
+// Function to verify user on app load and page refreshes
+const verifyUserExists = async () => {
+  if (store.getters.isLoggedIn) {
+    try {
+      // Check if backend is available before trying to fetch user data
+      const backendAvailable = await checkBackendConnectivity();
+      if (!backendAvailable) {
+        console.warn('Backend unavailable during verification, logging out');
+        store.dispatch('logout');
+        return;
+      }
+      
+      // Fetch user data to verify user still exists in the database
+      await store.dispatch('fetchUserData');
+      
+      // If after fetchUserData the auth status is false, user no longer exists
+      if (!store.getters.getAuthStatus) {
+        console.warn('User session invalid, logging out after verification');
+        store.dispatch('logout');
+      }
+    } catch (error) {
+      console.error('Error verifying user:', error);
+      // On error, assume user session is invalid
+      store.dispatch('logout');
+    }
+  }
+};
+
+// Check if backend is available
+const checkBackendConnectivity = async () => {
+  try {
+    // Try a lightweight endpoint with a short timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    
+    const response = await fetch('/version', { 
+      method: 'GET',
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error connecting to backend:', error);
+    return false;
+  }
+};
+
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
   localStorage.setItem('theme', theme.value)
@@ -74,6 +126,9 @@ onMounted(async () => {
     localStorage.setItem('theme', theme.value)
   }
   document.documentElement.setAttribute('data-theme', theme.value)
+  
+  // Verify user exists in database on each app load/refresh
+  await verifyUserExists();
   
   // Load dictionary data
   await Promise.all([

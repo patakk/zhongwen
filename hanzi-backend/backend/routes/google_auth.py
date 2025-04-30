@@ -3,6 +3,7 @@ from flask_dance.contrib.google import make_google_blueprint, google
 import secrets
 from sqlalchemy.exc import SQLAlchemyError
 from flask_mail import Message
+from datetime import datetime
 
 from backend.db.extensions import db
 from backend.db.models import User
@@ -32,7 +33,7 @@ google_oauth_bp = make_google_blueprint(
 
 google_auth_bp = Blueprint('google_auth', __name__, url_prefix='/api/google_auth')
 
-def create_or_get_google_user(google_info):
+def create_or_get_google_user(google_info, initial_metainfo=None):
     """Create a new user from Google info or get existing user, with email matching"""
     google_id = google_info["id"]
     email = google_info.get("email")
@@ -117,13 +118,18 @@ def create_or_get_google_user(google_info):
     if existing_user:
         username = f"{username}_{secrets.token_hex(3)}"
     
+    # Initialize metainfo
+    metainfo = initial_metainfo or {}
+    # Add Google registration info to metainfo
+    metainfo['signup_date'] = datetime.now().isoformat()
 
     user = User(
         username=username,
         email=email, # Assign the email to the new user
         email_verified=True, # Mark as verified because it's from Google
         google_id=google_id,
-        profile_pic=google_info.get("picture")
+        profile_pic=google_info.get("picture"),
+        metainfo=metainfo
     )
     user.set_password(secrets.token_urlsafe(16)) # Set a random password
     

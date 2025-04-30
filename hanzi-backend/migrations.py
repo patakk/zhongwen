@@ -182,6 +182,8 @@ def add_user(username, password, email):
         return
 
     # Create new user
+    metainfo = {}
+    metainfo['signup_date'] = datetime.now().isoformat()
     user = User(username=username)
     user.set_password(password)
     if email:

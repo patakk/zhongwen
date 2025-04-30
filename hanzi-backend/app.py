@@ -542,13 +542,37 @@ def get_user_data():
 def get_custom_cc():
     if request.method == 'OPTIONS':
         return '', 200
+    
     username = session.get('username')
-    custom_wordlists = db_get_user_wordlists(username, with_data=True)
-    cc = {}
-    for wl in custom_wordlists:
-        cc[wl] = {}
-        cc[wl]['chars'] = custom_wordlists[wl]['chars']
-    return jsonify(cc)
+    if not username:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    # Check if user still exists in database
+    try:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            # User no longer exists in database, clear session and return error
+            session.clear()
+            return jsonify({'error': 'User account no longer exists', 'authStatus': False}), 401
+    except Exception as e:
+        session.clear()
+        logger.error(f"Error fetching user data: {str(e)}")
+        return jsonify({'error': 'User account no longer exists', 'authStatus': False}), 401
+
+    try:
+        custom_wordlists = db_get_user_wordlists(username, with_data=True)
+        cc = {}
+        for wl in custom_wordlists:
+            cc[wl] = {}
+            cc[wl]['chars'] = custom_wordlists[wl]['chars']
+        return jsonify(cc)
+    except Exception as e:
+        logger.error(f"Error fetching custom dictionary data: {str(e)}")
+        # If it's a database-related error about missing user data, clear session
+        if "no such table" in str(e) or "user" in str(e).lower():
+            session.clear()
+            return jsonify({'error': 'User data not found', 'authStatus': False}), 401
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 @app.route("/api/get_static_cc")

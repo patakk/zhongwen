@@ -404,7 +404,7 @@ const store = createStore({
       state.dictionaryPromises.static = promise;
       return promise;
     },
-    async fetchCustomDictionaryData({ commit, state }) {
+    async fetchCustomDictionaryData({ commit, state, dispatch }) {
       // If we already have a promise in progress, return it instead of creating a new one
       if (state.dictionaryPromises.custom) {
         return state.dictionaryPromises.custom;
@@ -419,17 +419,43 @@ const store = createStore({
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({})
           })
-          const data = await response.json()
+          
+          // Check if response is not OK (e.g., 401)
+          if (!response.ok) {
+            const data = await response.json();
+            
+            // If we get 'authStatus: false' from server, the user's account likely no longer exists
+            if (data.authStatus === false) {
+              console.warn("Server indicates user no longer exists, logging out");
+              dispatch('logout');
+              return {};
+            }
+            
+            throw new Error(data.error || `Server returned ${response.status}`);
+          }
+          
+          const data = await response.json();
           for (const key in data) {
             if (!data[key].name) {
-              data[key].name = key
+              data[key].name = key;
             }
           }
-          commit('combineDictionaryData', data)
+          commit('combineDictionaryData', data);
           return data;
         } catch (error) {
-          console.error("Error fetching dictionary data:", error)
-          throw error;
+          console.error("Error fetching custom dictionary data:", error);
+          
+          // If the error message indicates user issues, logout
+          if (error.message && (
+              error.message.includes("User account no longer exists") ||
+              error.message.includes("User data not found") ||
+              error.message.includes("Authentication expired")
+          )) {
+            console.warn("User session no longer valid, logging out");
+            dispatch('logout');
+          }
+          
+          return {};
         } finally {
           // Clear the promise reference when done
           state.dictionaryPromises.custom = null;
@@ -440,26 +466,50 @@ const store = createStore({
       state.dictionaryPromises.custom = promise;
       return promise;
     },
-    async fetchUserData({ commit, state }) {
+    async fetchUserData({ commit, state, dispatch }) {
       if (state.loading) return; // Prevent duplicate requests
       
       commit('SET_LOADING', true);
       try {
-        const response = await fetch('/api/get_user_data')
-        const userData = await response.json()
-        console.log("Fetched user data:", userData)
-        commit('setUserData', userData)
-        commit('SET_LOADING', false);
+        // Add a timeout to prevent hanging when backend is down
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
         
-        if (userData && userData.authStatus) {
-          // Save to localStorage for persistence
-          localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
-        } else {
-          // Clear localStorage if not authenticated
-          localStorage.removeItem(USER_STORAGE_KEY);
+        const response = await fetch('/api/get_user_data', {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId); // Clear timeout if request completes
+        
+        // If backend returns non-200 status, handle it as an error
+        if (!response.ok) {
+          throw new Error(`Server returned ${response.status}`);
         }
+        
+        const userData = await response.json();
+        console.log("Fetched user data:", userData);
+        
+        // If we got a response but authStatus is false, log the user out
+        if (!userData.authStatus) {
+          console.warn("Server returned non-authenticated status, logging out");
+          dispatch('logout');
+          commit('SET_LOADING', false);
+          return;
+        }
+        
+        commit('setUserData', userData);
+        
+        // Save to localStorage for persistence
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
       } catch (error) {
-        console.error("Error fetching user data:", error)
+        console.error("Error fetching user data:", error);
+        
+        // If it's a timeout or network error, log out the user
+        if (error.name === 'AbortError' || error.name === 'TypeError') {
+          console.warn("Backend connectivity issue, logging out user");
+          dispatch('logout');
+        }
+      } finally {
         commit('SET_LOADING', false);
       }
     },
@@ -539,8 +589,22 @@ const store = createStore({
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(toStore))
     },
     logout({ commit }) {
-      commit('clearUserData')
-      localStorage.removeItem(USER_STORAGE_KEY) // Clear storage on logout
+      console.log('Executing complete logout');
+      commit('clearUserData');
+      localStorage.removeItem(USER_STORAGE_KEY); // Clear storage on logout
+      
+      // Additional cleanup to ensure all user data is removed
+      sessionStorage.clear(); // Clear any session storage data
+      
+      // Clear any custom deck data that might be lingering
+      commit('combineDictionaryData', {}); 
+      
+      // Force a refresh of the view to ensure UI reflects logout state
+      setTimeout(() => {
+        if (router.currentRoute.value.meta.requiresAuth) {
+          router.push('/');
+        }
+      }, 0);
     },
     createWordlist({ commit, state }, { name }) {
       // Create empty deck structure

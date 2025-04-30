@@ -59,7 +59,7 @@ def hard_session_required(func):
             # Otherwise redirect to login page
             return redirect(url_for("login"))
             
-        # Update session metadata
+        # Update session metainfo
         session.modified = True
         return func(*args, **kwargs)
     return wrapper
@@ -84,8 +84,19 @@ def session_required(func):
 
         # If user claims to be logged in, verify they exist in the database
         if session.get('user_id') and session.get('username') and session.get('username') != 'tempuser':
-            user = User.query.get(session.get('user_id'))
-            if not user or user.username != session.get('username'):
+            try:
+                user = User.query.get(session.get('user_id'))
+                if not user or user.username != session.get('username'):
+                    logger.warning(f"User session ID {session.get('user_id')} (username: {session.get('username')}) not found in database, clearing session")
+                    session.clear()
+                    session["deck"] = "hsk1"
+                    session["font"] = "Noto Sans Mono"
+                    session["darkmode"] = False
+                    
+                    # If JSON API request, return 401
+                    if request.is_json or request.headers.get('Accept') == 'application/json':
+                        return jsonify({"message": "Authentication expired", "success": False}), 401
+            except:
                 logger.warning(f"User session ID {session.get('user_id')} (username: {session.get('username')}) not found in database, clearing session")
                 session.clear()
                 session["deck"] = "hsk1"
@@ -95,8 +106,7 @@ def session_required(func):
                 # If JSON API request, return 401
                 if request.is_json or request.headers.get('Accept') == 'application/json':
                     return jsonify({"message": "Authentication expired", "success": False}), 401
-                    
-        # Update session metadata
+        # Update session metainfo
         session.modified = True
         return func(*args, **kwargs)
     return wrapper

@@ -12,7 +12,6 @@
           <RouterLink to="/" class="sidebar-link">Home</RouterLink>
           <template v-if="!authStatus">
             <RouterLink to="/login" class="sidebar-link">Login</RouterLink>
-            <RouterLink to="/register" class="sidebar-link">Register</RouterLink>
           </template>
           <template v-else>
             <RouterLink to="/account" class="sidebar-link">Account</RouterLink>
@@ -36,7 +35,6 @@
         <RouterLink to="/" class="top-link">Home</RouterLink>
         <template v-if="!authStatus">
           <RouterLink to="/login" class="top-link">Login</RouterLink>
-          <RouterLink to="/register" class="top-link">Register</RouterLink>
         </template>
         <template v-else>
           <RouterLink to="/account" class="top-link">Account</RouterLink>

@@ -8,13 +8,15 @@
       
       <div v-else class="modal card-modal" @click.stop="handleModalClick">
         
-        <!-- Add to wordlist dropdown button -->
-        <div v-if="isLoggedIn" class="wordlist-dropdown">
+        <!-- Add to wordlist dropdown button - now shown to all users -->
+        <div class="wordlist-dropdown">
           <button @click.stop="toggleWordlistDropdown" class="wordlist-btn">
             <span class="plus-icon">+</span>
           </button>
           <div v-if="showWordlistDropdown" class="dropdown-content" @click.stop>
-            <div v-if="!isLoggedIn" class="no-lists">Please log in to add words to lists</div>
+            <div v-if="!isLoggedIn" class="no-lists">
+              Adding to custom wordlists is possible only upon <router-link to="/register" class="register-link">registration</router-link> or <router-link to="/login" class="register-link">login</router-link>.
+            </div>
             <div v-else-if="customWordlists && customWordlists.length === 0" class="no-lists">No custom wordlists available</div>
             <div v-else>
               <div v-for="wordlist in customWordlists" :key="wordlist.name" 
@@ -1208,6 +1210,14 @@ export default {
 
 .no-lists {
   color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 1em;
+  width: 200px;
+}
+
+.register-link {
+  color: var(--pinyin-color);
+  text-decoration: none;
   font-size: 0.9rem;
 }
 

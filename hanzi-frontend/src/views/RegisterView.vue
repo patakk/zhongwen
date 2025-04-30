@@ -8,7 +8,7 @@
         <input id="username" v-model="username" required autocomplete="username" />
       </div>
       <div>
-        <label for="email">Email (optional):</label>
+        <label for="email">Email <span style="font-size: .8em;">(optional, used for recovery):</span> </label>
         <input id="email" v-model="email" type="email" autocomplete="email" />
       </div>
       <div>
@@ -87,6 +87,8 @@ async function handleRegister() {
 
     store.commit('setUserData', data)
     await store.dispatch('saveUserDataToStorage')
+    // Fetch user data again to ensure all profile details are up-to-date
+    await store.dispatch('fetchUserData')
     router.push('/account')
   } catch (err) {
     error.value = err.message || 'Registration failed'
@@ -94,7 +96,6 @@ async function handleRegister() {
     loading.value = false
   }
 }
-
 
 const loginWithGoogle = () => {
   window.location.href = '/api/google_auth/login'

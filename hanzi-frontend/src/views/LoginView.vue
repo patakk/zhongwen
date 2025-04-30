@@ -16,7 +16,10 @@
     <button @click="handleLogin" :disabled="loading" class="login-button">
       Login
     </button>
-
+    
+    <div class="register-link">
+      Don't have an account? <RouterLink to="/register">Register</RouterLink>
+    </div>
     
     <div class="google-divider">
       <span>or</span>
@@ -62,9 +65,10 @@ const handleLogin = async () => {
 
     const data = await response.json()
     store.commit('setUserData', data)
-    store.dispatch('saveUserDataToStorage')
-    store.dispatch('fetchUserData')
-    store.dispatch('fetchCustomDictionaryData')
+    await store.dispatch('saveUserDataToStorage')
+    // Make sure to await fetchUserData to ensure profile data is completely up-to-date before navigation
+    await store.dispatch('fetchUserData')
+    await store.dispatch('fetchCustomDictionaryData')
 
     router.push('/')
   } catch (err) {
@@ -132,6 +136,53 @@ button:hover {
   margin-top: 1rem;
 }
 
+.register-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.register-link a {
+  color: var(--primary-color, #4285f4);
+  text-decoration: underline;
+}
+
+.register-link a:hover {
+  opacity: 0.8;
+}
+
+.google-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: var(--google-color);
+}
+
+.google-divider::before,
+.google-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--bgc-color);
+}
+
+.google-divider span {
+  padding: 0 10px;
+}
+
+.google-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  color: #757575;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+}
+
+.google-login:hover {
+  background-color: #f5f5f5;
+}
 
 @media (max-width: 768px) {
 }

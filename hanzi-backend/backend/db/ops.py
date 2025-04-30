@@ -5,7 +5,7 @@ import copy
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.attributes import flag_modified
 from flask import request, redirect, url_for, flash
-
+from datetime import datetime
 from flask_mail import Mail, Message
 
 from backend.db.extensions import db, mail
@@ -51,11 +51,18 @@ def db_create_user(
     username,
     password,  # New parameter
     email,  # New parameter
+    metainfo={},  # New parameter for metainfo
 ):
     user = User(username=username)
     user.set_password(password)
     if len(email) > 0:
         user.set_email(email, verified=False)
+    
+    # Initialize metainfo if provided
+    
+    metainfo['signup_date'] = datetime.now().isoformat()
+    if metainfo:
+        user.metainfo = metainfo
 
     new_set = WordList(name="Learning", user=user)
     new_entry = WordEntry(word="你好", list=new_set)
