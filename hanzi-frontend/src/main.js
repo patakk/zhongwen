@@ -71,6 +71,9 @@ const initApp = async () => {
   // Only start dictionary data loading if backend is available
   if (isConnected) {
     store.dispatch('fetchDictionaryData');
+    // Only fetch custom dictionary data if the user is logged in
+    // The store.getters.isLoggedIn check is redundant with our improved fetchCustomDictionaryData method,
+    // but we'll keep it here for clarity and to avoid the unnecessary function call
     if (store.getters.isLoggedIn) {
       store.dispatch('fetchCustomDictionaryData');
     }

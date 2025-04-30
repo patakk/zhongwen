@@ -404,7 +404,13 @@ const store = createStore({
       state.dictionaryPromises.static = promise;
       return promise;
     },
-    async fetchCustomDictionaryData({ commit, state, dispatch }) {
+    async fetchCustomDictionaryData({ commit, state, dispatch, getters }) {
+      // Don't make the request if user is not logged in
+      if (!getters.isLoggedIn) {
+        console.log("User not logged in, skipping custom dictionary fetch");
+        return Promise.resolve({});
+      }
+
       // If we already have a promise in progress, return it instead of creating a new one
       if (state.dictionaryPromises.custom) {
         return state.dictionaryPromises.custom;

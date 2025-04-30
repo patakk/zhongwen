@@ -113,7 +113,16 @@
     <div v-if="leftbarVisible" class="overlay" @click="closeLeftbar"></div>
 
     <!-- Main content takes full width regardless of leftbar state -->
-      <div class="main-content">
+      <div class="main-content" ref="mainContent" @scroll="handleScroll">
+        <!-- Scroll to top button - FIXED: changed showScrollTop to match data property -->
+        <button 
+          v-if="showScrollTop" 
+          @click="scrollToTop" 
+          class="scroll-to-top-button"
+          aria-label="Scroll to top"
+        >
+          ↑
+        </button>
         <div v-if="selectedCategory">
           <div class="dictionary-category">
             <!-- Grid View with optimized event delegation -->
@@ -211,7 +220,10 @@ export default {
       // Add tracking for hover state and timers, similar to PreloadWrapper
       currentHoveredCharacter: null,
       hoverTimer: null,
-      preloadedCharacters: new Set() // Track which characters have been preloaded
+      preloadedCharacters: new Set(), // Track which characters have been preloaded
+
+      // Scroll to top button visibility
+      showScrollTop: false  // Controls visibility of the scroll-to-top button
     };
   },
   components: {
@@ -579,6 +591,17 @@ export default {
         event.preventDefault();
         this.toggleLeftbar();
       }
+    },
+
+    // Method to scroll to top
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    // Method to handle scroll event
+    handleScroll() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      this.showScrollTop = scrollTop > 200;
     }
   },
   watch: {
@@ -612,6 +635,11 @@ export default {
     
     // Add event listener for the sidebar opening event
     document.addEventListener('sidebar-opened', this.closeLeftbar);
+    
+    // Use window scroll event instead of container scroll event
+    window.addEventListener('scroll', this.handleScroll);
+    // Initial check for scroll position
+    this.handleScroll();
   },
   beforeUnmount() {
     // Remove event listener for keydown events
@@ -619,6 +647,9 @@ export default {
     
     // Remove event listener for the sidebar opening event
     document.removeEventListener('sidebar-opened', this.closeLeftbar);
+    
+    // Remove window scroll event listener
+    window.removeEventListener('scroll', this.handleScroll);
   }
 };
 </script>
@@ -832,6 +863,35 @@ select {
   overflow-y: auto;
   height: 100%;
   padding: 2em;
+  position: relative;
+}
+
+.scroll-to-top-button {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--fg);
+  font-size: 2.1em;
+  padding: 0.5em;
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.scroll-to-top-button:hover {
+  background: color-mix(in oklab, var(--bg) 85%, var(--fg) 30%);
+  transform: translateY(-3px);
+  color: var(--fg);
 }
 
 .tab-keyboard-shortcut {
