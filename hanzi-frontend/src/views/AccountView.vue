@@ -663,8 +663,10 @@ h2 {
   background: var(--danger-color, #dc3545);
   color: #fff;
 }
+
 .delete-account-btn:hover {
   background: color-mix(in oklab, var(--danger-color, #dc3545) 80%, black 20%);
+  color: #fff;
 }
 
 .status-verified {
@@ -693,6 +695,29 @@ h2 {
   border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
 }
 
+
+[data-theme="theme1"] .btn {
+    box-shadow: none;
+    border: 3px solid black;
+    border-radius: 1em;
+    box-shadow: 4px 4px 0px 0px var(--fg);
+}
+  
+  [data-theme="theme1"] .btn:hover {
+    box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+    box-shadow: 2px 2px 0px 0px var(--fg);
+    transform: translate(2px, 2px);
+    color: var(--fg);
+  }
+  
+[data-theme="theme1"] .btn-danger:hover {
+  color: var(--bg);
+}
+
+[data-theme="theme1"] .btn-danger:hover {
+  color: var(--bg);
+}
+
 .btn-small {
   padding: .2rem .5rem;
   font-size: 0.8em;
@@ -705,20 +730,20 @@ h2 {
   margin-left: 0;
 }
 
-.btn-small:hover {
+/* .btn-small:hover {
   border: var(--thin-border-width) solid color-mix(in oklab, rgb(255, 0, 30) 90%, var(--bg) 100%);
   background-color: color-mix(in oklab, rgb(255, 0, 30) 60%, var(--bg) 100%);
-}
+} */
 
 
 .btn-change-username {
   border: var(--thin-border-width) solid color-mix(in oklab, var(--green-btn-clr) 70%, var(--bg) 100%);
   background-color: color-mix(in oklab, var(--green-btn-clr) 40%, var(--bg) 100%);
 }
-.btn-change-username:hover {
+/* .btn-change-username:hover {
   border: var(--thin-border-width) solid color-mix(in oklab, var(--green-btn-clr) 90%, var(--bg) 100%);
   background-color: color-mix(in oklab, var(--green-btn-clr) 60%, var(--bg) 100%);
-}
+} */
 
 .btn-danger {
   color: #fff;
@@ -726,9 +751,13 @@ h2 {
   border-color: var(--danger-color);
 }
 .btn-danger:hover {
+  color: #fff;
+  background: var(--danger-color);
+}
+/* .btn-danger:hover {
   background: color-mix(in oklab, var(--danger-color) 80%, black 20%);
   border-color: color-mix(in oklab, var(--danger-color) 80%, black 20%);
-}
+} */
 
 .google-btn {
   display: flex;

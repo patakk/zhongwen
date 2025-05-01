@@ -1025,13 +1025,20 @@ html, body {
   border: var(--thin-border-width) solid #0000;
   margin-top: 5px;
   z-index: 1;
-  transition: max-height 0.3s, border 0.3s;
+  /* transition: max-height 0.3s, border 0.3s; */
 }
 
 #deck-options.show {
   max-height: 300px;
   overflow-y: auto;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
+}
+
+[data-theme="theme1"] #deck-options.show {
+  box-shadow: none;
+  border: 3px solid var(--fg);
+  border-radius: 1em;
+  box-shadow: 4px 4px 0px 0px var(--fg);
 }
 
 .option {

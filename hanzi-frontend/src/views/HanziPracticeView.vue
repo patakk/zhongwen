@@ -57,18 +57,18 @@
         </div>
 
         <div class="control-buttons">
-          <button id="nav-btn" @click="previousCharacter" class="btn nav-previous">
-            <i class="fa-solid fa-backward-step"></i> Previous
+          <button @click="previousCharacter" class="btn nav-previous">
+            Previous
           </button>
-          <button id="help-btn" v-if="!skipState" @click="showHelp" class="btn">
-            <i class="fa-solid fa-lightbulb"></i> Help
+          <button  v-if="!skipState" @click="showHelp" class="btn nav-help">
+            Help
           </button>
           <button id="action-btn" @click="contextAction" class="btn primary-action"
             :class="{ 'action-reveal': !skipState, 'action-next': skipState }">
-            <i class="fa-solid" :class="actionIcon"></i> {{ actionText }}
+            {{ actionText }}
           </button>
-          <button id="clear-btn" @click="restartQuestion" class="btn">
-            <i class="fa-solid fa-eraser"></i> Clear
+          <button @click="restartQuestion" class="btn nav-restart">
+            Clear
           </button>
         </div>
 
@@ -753,13 +753,20 @@ export default defineComponent({
   border: var(--thin-border-width) solid #0000;
   margin-top: 5px;
   z-index: 1;
-  transition: max-height 0.3s, border 0.3s;
+  /* transition: max-height 0.3s, border 0.3s; */
 }
 
 #deck-options.show {
   max-height: 300px;
   overflow-y: auto;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
+}
+
+[data-theme="theme1"] #deck-options.show {
+  box-shadow: none;
+  border: 3px solid var(--fg);
+  border-radius: 1em;
+  box-shadow: 4px 4px 0px 0px var(--fg);
 }
 
 .option {
@@ -886,6 +893,37 @@ export default defineComponent({
   transform: translateY(1px);
 }
 
+
+[data-theme="theme1"] .btn {
+  box-shadow: none;
+  border: 3px solid var(--fg);
+  border-radius: 1em;
+  box-shadow: 4px 4px 0px 0px var(--fg);
+}
+  
+[data-theme="theme1"] .btn:hover {
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  box-shadow: 2px 2px 0px 0px var(--fg);
+  transform: translate(2px, 2px);
+  color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
+}
+
+[data-theme="theme1"] .nav-help {
+  background-color: var(--yellow);
+}
+
+[data-theme="theme1"] .primary-action {
+  background-color: var(--bluey);
+}
+
+[data-theme="theme1"] .nav-previous {
+  background-color: var(--green);
+}
+
+[data-theme="theme1"] .nav-restart {
+  background-color: var(--pink-strong);
+}
+
 /* Primary action button styles */
 .primary-action {
   min-width: 100px;
@@ -913,27 +951,6 @@ export default defineComponent({
     opacity: 1;
 }
 
-/* Navigation button styles */
-.nav-previous {
-  /* background-color: #adadad;
-  background-color: var(--warning-color); */
-    opacity: .9;
-  color: var(--fg);
-}
-
-.nav-previous:hover {
-    opacity: 1;
-}
-
-.nav-reset {
-    opacity: .9;
-  /* background-color: var(--danger-color); */
-  color: var(--fg);
-}
-
-.nav-reset:hover {
-    opacity: 1;
-}
 
 .progress-info {
   display: flex;

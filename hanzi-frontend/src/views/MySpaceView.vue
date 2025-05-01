@@ -778,7 +778,7 @@
     border: var(--thin-border-width) solid #0000;
     margin-top: 5px;
     z-index: 10;
-    transition: max-height 0.3s, border 0.3s;
+    /* transition: max-height 0.3s, border 0.3s; */
   }
 
   #deck-options.show {
@@ -786,6 +786,16 @@
     overflow-y: auto;
     border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
   }
+
+[data-theme="theme1"] #deck-options {
+}
+
+[data-theme="theme1"] #deck-options.show {
+  box-shadow: none;
+  border: 3px solid var(--fg);
+  border-radius: 1em;
+  box-shadow: 4px 4px 0px 0px var(--fg);
+}
 
   .option {
     padding: 10px 15px;
@@ -923,14 +933,14 @@
 
   [data-theme="theme1"] .nav-button {
     box-shadow: none;
-    border: 3px solid black;
+    border: 3px solid var(--fg);
     border-radius: 1em;
-    box-shadow: 4px 4px 0px 0px rgb(0, 0, 0);
+    box-shadow: 4px 4px 0px 0px var(--fg);
   }
   
   [data-theme="theme1"] .nav-button:hover {
     box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-    box-shadow: 2px 2px 0px 0px rgb(0, 0, 0);
+    box-shadow: 2px 2px 0px 0px var(--fg);
     transform: translate(2px, 2px);
     color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
   }
@@ -1060,24 +1070,25 @@
     box-shadow: 0 2px 4px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   }
 
+
   [data-theme="theme1"] .action-button {
-    box-shadow: none;
-    border: 3px solid black;
-    border-radius: 1em;
+      box-shadow: none;
+      border: 3px solid var(--fg);
+      border-radius: 1em;
+      box-shadow: 4px 4px 0px 0px var(--fg);
+  }
+    
+  [data-theme="theme1"] .action-button:hover {
+    box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+    box-shadow: 2px 2px 0px 0px var(--fg);
+    transform: translate(2px, 2px);
+    color: var(--fg);
   }
   
   .create-button {
     background: color-mix(in oklab, var(--fg) 10%, var(--bg) 50%);
     color: var(--fg);
   }
-  
-  .rename-button:hover,
-  .create-button:hover,
-  .delete-button:hover {
-    background: color-mix(in oklab, var(--fg) 30%, var(--bg) 50%);
-    color: var(--fg);
-  }
-  
   
   
   /* Modal styles */

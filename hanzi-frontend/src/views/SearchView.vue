@@ -192,7 +192,7 @@ export default {
 }
 
 [data-theme="theme1"] .result-cell {
-  border: 4px solid black;
+  border: 4px solid var(--fg);
   border-radius: 1rem;
 }
 
