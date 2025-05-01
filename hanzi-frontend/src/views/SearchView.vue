@@ -18,6 +18,7 @@
         v-for="(result, index) in results"
         :key="index"
         :character="result.hanzi"
+        :showBubbles="false"
       >
         <div class="result-cell">
           <div class="hanzipinyin">
@@ -94,7 +95,6 @@ export default {
         });
         const data = await res.json();
         this.results = data.results;
-        console.log(this.results);
       } catch (error) {
         console.error("Error during search:", error);
       } finally {
@@ -176,7 +176,7 @@ export default {
 }
 
 .result-cell {
-  border: 2px solid color-mix(in oklab, var(--fg) 35%, var(--bg) 50%);
+  border:var(--thin-border-width) solid color-mix(in oklab, var(--fg) 35%, var(--bg) 50%);
   padding: .5rem;
   font-family: inherit;
   text-align: left;
@@ -189,6 +189,11 @@ export default {
 .result-cell:hover {
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
   cursor: pointer;
+}
+
+[data-theme="theme1"] .result-cell {
+  border: 4px solid black;
+  border-radius: 1rem;
 }
 
 .hanzipinyin {

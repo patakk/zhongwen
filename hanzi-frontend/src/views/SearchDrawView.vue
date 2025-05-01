@@ -9,9 +9,6 @@
         @mousemove="draw"
         @mouseup="stopDrawing"
         @mouseleave="stopDrawing"
-        @touchstart="handleTouchStart"
-        @touchmove="handleTouchMove"
-        @touchend="stopDrawing"
       ></canvas>
       <div class="drawing-controls">
         <button @click="clearCanvas" class="control-button clear-button">Clear</button>
@@ -68,8 +65,20 @@ export default {
     this.setupThemeObserver();
     this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
     this.drawCanvasBg();
+    
+    // Add touch event listeners with passive option after mounting
+    this.setupTouchEvents();
   },
   methods: {
+    setupTouchEvents() {
+      // Remove inline touch event listeners and use AddEventListener with passive option
+      const canvas = this.$refs.drawingCanvas;
+      
+      canvas.addEventListener('touchstart', this.handleTouchStart, { passive: false });
+      canvas.addEventListener('touchmove', this.handleTouchMove, { passive: false });
+      canvas.addEventListener('touchend', this.stopDrawing, { passive: true });
+    },
+    
     setupThemeObserver() {
       // Watch for theme attribute changes on document element
       this.themeObserver = new MutationObserver((mutations) => {
@@ -77,7 +86,6 @@ export default {
           if (mutation.attributeName === 'data-theme') {
             // Update isDarkMode flag when theme changes
             this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-            console.log('Theme changed, isDarkMode:', this.isDarkMode);
             
             // Update stroke style based on theme
             this.updateStrokeStyle();
@@ -103,7 +111,6 @@ export default {
       script.src = '/lib/hanzilookup/hanzilookup.min.js';
       script.async = true;
       script.onload = () => {
-        console.log('HanziLookup script loaded');
         this.scriptLoaded = true;
         this.initHanziLookup();
       };
@@ -125,7 +132,6 @@ export default {
             // Mark as ready when both files are loaded
             if (loadedFiles === 2) {
               this.hanzilookupReady = true;
-              console.log('HanziLookup initialized successfully');
             }
           } else {
             console.error('Failed to load HanziLookup data file');
@@ -206,7 +212,7 @@ export default {
     },
     
     handleTouchStart(e) {
-      e.preventDefault();
+      e.preventDefault(); // Still need this to prevent unwanted behavior
       const touch = e.touches[0];
       const rect = this.canvas.getBoundingClientRect();
       const x = touch.clientX - rect.left;
@@ -220,7 +226,7 @@ export default {
     },
     
     handleTouchMove(e) {
-      e.preventDefault();
+      e.preventDefault(); // Still need this to prevent scrolling while drawing
       if (!this.isDrawing) return;
       
       const touch = e.touches[0];
@@ -368,6 +374,14 @@ export default {
   beforeUnmount() {
     window.removeEventListener('resize', this.resizeCanvas);
     
+    // Clean up touch event listeners
+    const canvas = this.$refs.drawingCanvas;
+    if (canvas) {
+      canvas.removeEventListener('touchstart', this.handleTouchStart);
+      canvas.removeEventListener('touchmove', this.handleTouchMove);
+      canvas.removeEventListener('touchend', this.stopDrawing);
+    }
+    
     // Clean up theme observer
     if (this.themeObserver) {
       this.themeObserver.disconnect();
@@ -405,6 +419,7 @@ export default {
   width: 100%;
   background-color: var(--bg);
   border: var(--card-border);
+  border-radius: var(--modal-border-radius, 0);
   box-shadow: var(--card-shadow);
   cursor: crosshair;
   touch-action: none; /* Prevents browser handling of touch events */
@@ -428,8 +443,23 @@ export default {
   transition: background-color 0.2s;
 }
 
+[data-theme="theme1"] .control-button {
+    box-shadow: none;
+    border: 3px solid black;
+    border-radius: 1em;
+    box-shadow: 4px 4px 0px 0px rgb(0, 0, 0);
+}
+
 .control-button:hover {
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+}
+
+[data-theme="theme1"] .control-button:hover {
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  box-shadow: 2px 2px 0px 0px rgb(0, 0, 0);
+  transform: translate(2px, 2px);
+  color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
 }
 
 .loading-indicator {

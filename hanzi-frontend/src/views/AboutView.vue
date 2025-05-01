@@ -22,7 +22,7 @@
       <ul>
         <li>
           <!-- <div class="subheader">Data Sources and Licensing</div> -->
-          <div class="flashcard-guide">
+          <div class="about-section">
             <div>
               <span class="smallh">Chinese-English translations:</span><br />
               <p style="margin-left:20px;">CC-CEDICT database, licensed under a <a class="links" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>. <br> Dictionary operations perfomed using a modified version of the <a class="links" href="https://github.com/Synkied/hanzipy" target="_blank">hanzipy</a> library.</p>
@@ -83,6 +83,13 @@ export default {
 
 }
 
+[data-theme="theme1"] .about-section {
+  box-shadow: var(--card-shadow);
+  background-color: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--modal-border-radius, 0);
+}
+
 .container {
   width: 60%;
   max-width: 1200px;
@@ -96,7 +103,7 @@ export default {
 }
 
 h1 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--second-font);
   color: var(--fg);
   font-size: 2em;
   margin-top: 0;
@@ -117,7 +124,7 @@ li:not(:last-child) {
   background-color: var(--bg);
   color: var(--fg);
   text-decoration: none;
-  border: 2px solid var(--fg);
+  border: var(--thin-border-width) solid var(--fg);
   font-weight: bold;
 }
 
@@ -167,7 +174,7 @@ ul {
 }
 
 .links {
-  color: var(--secondary-color);
+  color: var(--orange);
   text-decoration: none;
 }
 

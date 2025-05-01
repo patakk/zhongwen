@@ -137,7 +137,7 @@ function drawBg(ctx, dbg1, dbg2, lineType, writerSize, colors) {
         return;
     }
     ctx.save();
-    ctx.lineWidth = Math.max(0.6, ctx.canvas.width / 128)*.6;
+    ctx.lineWidth = Math.max(0.6, ctx.canvas.width / 128)*.6*3;
     ctx.strokeStyle = colors[1];
     ctx.strokeStyle = `rgba(${111},${111},${111}, .215)`;
     //ctx.strokeRect(2, 2, ctx.canvas.width-4, ctx.canvas.height-4);
@@ -654,14 +654,9 @@ export default class HanziPlotter {
         this.canvas.addEventListener('mouseout', this.userStrokeEnded.bind(this));
 
         // Touch events
-        this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this));
-        this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this));
-        this.canvas.addEventListener('touchend', this.handleTouchEnd.bind(this));
-    }
-
-    setState(state) {
-        console.log('Transitioning from', this.state, 'to', state);
-        
+        this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+        this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+        this.canvas.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
     }
 
     handleTouchStart(e) {
@@ -777,19 +772,16 @@ export default class HanziPlotter {
         const threshold = 0.8; // Cosine similarity threshold for direction comparison
 
         if(dotProduct < threshold){
-            console.log('dot product failed');
         }
         else{
         }
         if(distFirst > firstPointThreshold){
-            console.log('distFirst failed');
         }
         else{
         }
         if(realLength < 0.16)
             return dotProduct > threshold && distFirst < firstPointThreshold;
         if(lengthRatio > lengthThreshold){
-            console.log('lengthRatio failed');
         }
         return dotProduct > threshold && distFirst < firstPointThreshold && lengthRatio < lengthThreshold;
     }
@@ -857,7 +849,6 @@ export default class HanziPlotter {
             const isGoodMatch = this.compareToReal(this.currentStroke, this.strokes[this.userStrokes.length]);
             // Provide feedback based on match
             if (isGoodMatch) {
-                console.log("Good stroke!");
                 
                 let resampled = resamplePolyline(this.currentStroke, this.strokes[this.userStrokes.length].length);
                 // this.userStrokes.push(resampled);
@@ -869,10 +860,8 @@ export default class HanziPlotter {
                 this.userStrokes.push(scaledRealStroke);
                 this.strokeAttempts = 0;
             } else if (this.strokeAttempts < 2) {
-                console.log("Try again");
                 this.strokeAttempts++;
             } else {
-                console.log("Demoing stroke");
                 // You could show a hint or the correct stroke here
                 this.strokeAttempts++;
                 this.startStrokeAnimation();
@@ -881,7 +870,6 @@ export default class HanziPlotter {
             
             // Check if quiz is complete
             if (this.userStrokes.length === this.strokes.length) {
-                console.log("Quiz complete!");
                 // Handle quiz completion
                 this.quizComplete = true;
                 this.clearBg();
@@ -922,10 +910,6 @@ export default class HanziPlotter {
 
     startInterpol(){
         this.isAnimatingInterp = true;
-        console.log("this.userStrokes.length");
-        console.log("this.strokes.length");
-        console.log(this.userStrokes.length);
-        console.log(this.strokes.length);
         // let resampleUserStrokes = this.userStrokes.map((stroke, sidx) => {
         //         let numPts = this.strokes[sidx].length;
         //         return resamplePolyline(stroke, numPts);
@@ -1043,7 +1027,6 @@ export default class HanziPlotter {
                 this.ctx.strokeStyle = this.colors[1];
                 // this.ctx.globalAlpha = 0.64;
             }
-                console.log(this.colors[1]);
                 // replace alpha with 88
             for (let idx = 0; idx < this.userStrokes.length; idx++) {
                 const stroke = this.userStrokes[idx];
@@ -1252,7 +1235,6 @@ export default class HanziPlotter {
         this.isAnimating = true;
     
         for (let i = 0; i < this.originalStrokes.length; i++) {
-            console.log(`Stroke ${i + 1} completed`);
             await this.animateSingleStroke(i);
             // Wait 400ms after each stroke
             await new Promise(resolve => setTimeout(resolve, 400));
@@ -1266,7 +1248,6 @@ export default class HanziPlotter {
             const stroke = this.originalStrokes[index];
             const numPoints = stroke.length;
             const duration = numPoints / this.speed; // duration in ms
-            console.log(duration)
     
             const startTime = Date.now();
     
@@ -1669,12 +1650,10 @@ export default class HanziPlotter {
     
     
     async loadStrokeData(onReady=null) {
-        console.log('onReady');
         try {
             this.originalStrokes = undefined;
             const response = await fetch(`/api/getStrokes/${this.character}`);
             if (!response.ok) {
-                console.log('Strokes doesn\'t exist, will be rendered using text.', this.character);  
                 return;
             }
             const data = await response.json();

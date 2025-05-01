@@ -83,7 +83,6 @@ export default {
   mounted() {
     // Check if we need to wait for dictionary data
     if (this.isDictionaryLoading) {
-      console.log("Dictionary data is already being loaded, waiting for it to complete");
       this.loading = true;
       
       // Wait for both promise types to complete (if they exist)
@@ -108,13 +107,11 @@ export default {
     } 
     // If data is already loaded in store
     else if (Object.keys(this.storeDecks).length > 0) {
-      console.log("Dictionary data already in store, using it directly");
       this.loading = false;
       this.getRandomWords();
     } 
     // If no data in store and no loading in progress, initiate loading
     else {
-      console.log("No dictionary data and no loading in progress, initiating fetch");
       this.loading = true;
       
       Promise.all([
@@ -278,7 +275,8 @@ export default {
   padding: 1.5rem;
   background: var(--bg-secondary);
   box-shadow: var(--card-shadow);
-  border: var(--card-border);
+  border: var(--thin-border-width) solid var(--fg-dim);
+  border-radius: var(--modal-border-radius);
 }
 
 .infoTitle {

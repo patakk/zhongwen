@@ -129,7 +129,7 @@ button {
   width: 100%;
   color: var(--fg);
   background: color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
-  border: 2px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
 }
 button:hover {
   background: color-mix(in oklab, var(--fg) 42%, var(--bg) 40%);

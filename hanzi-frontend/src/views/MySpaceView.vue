@@ -114,6 +114,7 @@
                     :key="word.character"
                     class="word-item"
                     :title="word.english[0]"
+                    :showBubbles="false"
                 >
                     <div class="word-cell">
                         <div class="hanzipinyin">
@@ -315,8 +316,6 @@
       document.addEventListener('click', this.handleOutsideClick);
       
       // Debug logging of wordlists
-      console.log("MySpaceView - Available wordlists (customDecks):", this.customDecks);
-      console.log("MySpaceView - Custom dictionary data:", this.customDictionaryData);
       
       // Make sure we have wordlist data by dispatching fetchUserData if needed
       if (this.customDecks && this.customDecks.length > 0) {
@@ -651,7 +650,6 @@
           window.URL.revokeObjectURL(url);
           document.body.removeChild(downloadLink);
           
-          console.log(`Downloading Anki deck for wordlist: ${this.selectedWordlist}`);
         })
         .catch(error => {
           console.error('Error downloading Anki deck:', error);
@@ -693,9 +691,13 @@
     background: var(--bg-alt);
     box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
     box-shadow: var(--card-shadow);
-    border: var(--card-border);
+    border: var(--thin-border-width) solid var(--fg);
     padding: 2rem;
     box-sizing: border-box;
+  }
+
+  [data-theme="theme1"] .wordlist-container {
+    border-radius: 2em;
   }
   
   /* Responsive styling for mobile */
@@ -757,6 +759,10 @@
     width: 100%;
   }
 
+  [data-theme="theme1"] #selected-deck {
+    border-radius: 1em;
+  }
+
   #selected-deck:hover {
     background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 75%);
   }
@@ -769,7 +775,7 @@
     max-height: 0;
     overflow: hidden;
     background-color: var(--bg);
-    border: 2px solid #0000;
+    border: var(--thin-border-width) solid #0000;
     margin-top: 5px;
     z-index: 10;
     transition: max-height 0.3s, border 0.3s;
@@ -778,7 +784,7 @@
   #deck-options.show {
     max-height: 300px;
     overflow-y: auto;
-    border: 2px solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
+    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
   }
 
   .option {
@@ -797,7 +803,7 @@
 
   select {
     padding: 0.5rem 0.75rem;
-    border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
     background: var(--bg);
     color: var(--fg);
     box-sizing: border-box;
@@ -914,9 +920,18 @@
     user-select: none;
     box-shadow: 0 2px 6px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   }
+
+  [data-theme="theme1"] .nav-button {
+    box-shadow: none;
+    border: 3px solid black;
+    border-radius: 1em;
+    box-shadow: 4px 4px 0px 0px rgb(0, 0, 0);
+  }
   
-  .nav-button:hover {
+  [data-theme="theme1"] .nav-button:hover {
     box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+    box-shadow: 2px 2px 0px 0px rgb(0, 0, 0);
+    transform: translate(2px, 2px);
     color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
   }
   
@@ -933,12 +948,17 @@
   }
   
   .word-item {
-    border: 2px solid color-mix(in oklab, var(--fg) 22%, var(--bg) 12%);
+    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 22%, var(--bg) 12%);
     background: var(--bg);
     align-items: stretch;
     width: 100%;
     box-sizing: border-box;
     padding: .3rem;
+  }
+
+  [data-theme="theme1"] .word-item {
+    border: var(--thin-border-width) solid var(--pink-light);
+    border-radius: 1em;
   }
   
   .word-item:hover {
@@ -1038,6 +1058,12 @@
     cursor: pointer;
     font-family: inherit;
     box-shadow: 0 2px 4px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  }
+
+  [data-theme="theme1"] .action-button {
+    box-shadow: none;
+    border: 3px solid black;
+    border-radius: 1em;
   }
   
   .create-button {

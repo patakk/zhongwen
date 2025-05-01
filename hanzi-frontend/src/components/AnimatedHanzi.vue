@@ -85,7 +85,6 @@ export default defineComponent({
         return;
       }
       
-      console.log("Creating plotter for:", props.character, "with strokes:", props.strokes.medians?.length);
       
       // Create new plotter
       let medians = props.strokes.medians || [];
@@ -183,7 +182,6 @@ export default defineComponent({
 
     // Watch for character changes
     watch(() => props.character, async () => {
-      console.log("Character changed to:", props.character);
       if (plotter.value) {
         if (props.animatable && hanziCanvas.value) {
           hanziCanvas.value.removeEventListener('click', animateCharacter);
@@ -197,7 +195,6 @@ export default defineComponent({
     
     // Watch for stroke data changes
     watch(() => props.strokes, () => {
-      console.log("Stroke data updated for", props.character);
       if (plotter.value && props.strokes && props.strokes.medians) {
         initPlotter();
       }
@@ -224,7 +221,8 @@ export default defineComponent({
   line-height: 1;
   width: 100%;
   aspect-ratio: 1;
-  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  border: var(--thin-border-width) solid var(--animated-hanzi-border-color);
+  border-radius: var(--pinyin-meaning-group-border-radius, 0);
 }
 
 .anim-character {
@@ -232,5 +230,7 @@ export default defineComponent({
   aspect-ratio: 1;
   cursor: pointer;
   align-self: flex-start;
+  
+  border-radius: var(--pinyin-meaning-group-border-radius, 0);
 }
 </style>

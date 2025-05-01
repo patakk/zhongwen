@@ -29,7 +29,7 @@
 
       <div class="practice-area">
         <div class="word-display">
-          <div class="full-word">
+          <!-- <div class="full-word">
             <span 
               v-for="(char, index) in currentWord" 
               :key="index" 
@@ -39,7 +39,7 @@
               <span v-if="!skipState">{{ index !== charIterator % currentWord.length ? char : '' }}</span>
               <span v-if="skipState">{{ char }}</span>
             </span>
-          </div>
+          </div> -->
           
           <div class="pinyin-label" :class="{ 'active': showPinyin }">
             <span v-for="(word, index) in currentPinyin.split(' ')" :key="index" :class="{ 'dimmed': currentWord.split('')[index] !== currentWord[charIterator % currentWord.length] }">
@@ -155,9 +155,6 @@ export default defineComponent({
       const staticData = this.$store.getters.getDictionaryData || {};
       const customData = this.$store.getters.getCustomDictionaryData || {};
       return { ...staticData, ...customData };
-    },
-    isDarkMode() {
-      return document.documentElement.getAttribute('data-theme') === 'dark';
     },
     actionIcon() {
       return this.skipState ? 'fa-forward-step' : 'fa-eye';
@@ -465,7 +462,6 @@ export default defineComponent({
       // Set up event tracking for strokes
       this.plotter.quiz({
         onComplete: (data) => {
-          console.log('Quiz completed successfully!');
           this.handleQuizComplete(data);
         }
       });
@@ -524,7 +520,6 @@ export default defineComponent({
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        console.log('Stroke data saved successfully');
       })
       .catch(error => {
         console.error('There was a problem saving the data:', error);
@@ -605,7 +600,6 @@ export default defineComponent({
           if (mutation.attributeName === 'data-theme') {
             // Update isDarkMode flag when theme changes
             this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-            console.log('Theme changed, isDarkMode:', this.isDarkMode);
             
             // Update plotter with new theme colors if it exists
             if (this.plotter) {
@@ -681,6 +675,14 @@ export default defineComponent({
 
 <style>
 
+:root {
+  --plotter-bg: #dedede;
+}
+
+[data-theme="dark"] {
+  --plotter-bg: #000000;
+}
+
 </style>
 
 <style scoped>
@@ -708,7 +710,7 @@ export default defineComponent({
   border: var(--card-border);
   box-shadow: var(--card-shadow); */
   box-sizing: border-box;
-  padding: 1rem;
+  /* padding: 1rem; */
 }
 
 .deck-selector {
@@ -731,8 +733,9 @@ export default defineComponent({
   font-weight: bold;
   text-align: center;
   min-width: 200px;
+  margin-bottom: 1em;
   text-decoration: underline;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--second-font);
 }
 
 #selected-deck:hover {
@@ -747,7 +750,7 @@ export default defineComponent({
   max-height: 0;
   overflow: hidden;
   background-color: var(--bg);
-  border: 2px solid #0000;
+  border: var(--thin-border-width) solid #0000;
   margin-top: 5px;
   z-index: 1;
   transition: max-height 0.3s, border 0.3s;
@@ -756,7 +759,7 @@ export default defineComponent({
 #deck-options.show {
   max-height: 300px;
   overflow-y: auto;
-  border: 2px solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
 }
 
 .option {
@@ -799,7 +802,8 @@ export default defineComponent({
   box-shadow: var(--card-shadow);
   
   border: var(--card-border);
-  background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 0%);
+  border-radius: var(--modal-border-radius, 0);
+  background-color: var(--plotter-bg);
 }
 
 .word-character {
@@ -839,6 +843,7 @@ export default defineComponent({
 .english-display {
   font-size: 1.1rem;
   color: var(--fg);
+  opacity: 0.6;
   margin-bottom: 1rem;
   min-height: 1.6rem;
 }

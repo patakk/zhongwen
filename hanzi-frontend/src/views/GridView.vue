@@ -53,18 +53,21 @@
         <div class="font-size-buttons">
           <button 
             class="size-button" 
+            :class="{ 'active': fontScale === 0.6 }"
             @click="setFontSize(0.6)"
           >
             <span class="size-icon">小</span>
           </button>
           <button 
             class="size-button" 
+            :class="{ 'active': fontScale === 1.0 }"  
             @click="setFontSize(1.0)"
           >
             <span class="size-icon">中</span>
           </button>
           <button 
             class="size-button" 
+            :class="{ 'active': fontScale === 2.0 }"
             @click="setFontSize(2.0)"
           >
             <span class="size-icon">大</span>
@@ -77,8 +80,8 @@
           <div class="font-size-buttons">
             <button 
               class="size-button" 
-              :class="{ 'active': gridGapSize === '0' }"
-              @click="setGridGapSize('0')"
+              :class="{ 'active': gridGapSize === '0.25em' }"
+              @click="setGridGapSize('0.25em')"
             >
               <span class="size-icon">□□</span>
             </button>
@@ -146,7 +149,7 @@
                 @mouseenter="handleGridItemMouseEnter($event, entry)"
                 @mouseleave="handleGridItemMouseLeave"
                 :style="{ 
-                  border: showGridBorders ? '1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%)' : '1px solid #7770'
+                  border: showGridBorders ? 'var(--grid-item-border)' : 'var(--grid-item-border-transparent)'
                 }"
               >
                 <div class="hanzi" :style="{ 
@@ -165,6 +168,7 @@
                 v-for="(entry, index) in visibleChars"
                 :key="entry.character"
                 :character="entry.character"
+                :showBubbles="true"
               >
                 <div class="list-item">
                   <div class="hanzipinyin">
@@ -214,7 +218,7 @@ export default {
       attemptedCategory: null, // Store the attempted category from URL
       
       // Grid specific options
-      gridGapSize: '0',     // Gap size for grid items: '0', '1em', or '3em'
+      gridGapSize: '0.25em',     // Gap size for grid items: '0', '1em', or '3em'
       showGridBorders: true, // Toggle for grid item borders
       
       // Add tracking for hover state and timers, similar to PreloadWrapper
@@ -736,8 +740,11 @@ html, body {
   border: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
 }
 
+[data-theme="theme1"] .grid-item {
+  border-radius: 1em;
+}
+
 .grid-item:hover {
-  border-radius: 0em;
 }
 
 
@@ -846,7 +853,7 @@ select {
   padding: 1em;
   z-index: 30;
   /* box-shadow: 0 0 20px color-mix(in oklab, var(--fg) 16%, var(--bg) 0%); */
-  border-right: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 10%);
+  border-right: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 10%);
   box-shadow: 0 0 20px color-mix(in oklab, var(--bg) 66%, #7770 0%);
   box-shadow: 0 0 20px color-mix(in oklab, var(--fg) 66%, #7770 0%);
   box-shadow: 20px 0 80px var(--bg);
@@ -871,7 +878,7 @@ select {
   bottom: 1em;
   right: 1em;
   background: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
-  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
   cursor: pointer;
   font-family: inherit;
   color: var(--fg);
@@ -1003,7 +1010,7 @@ label {
   padding: 0.5em;
   margin-bottom: 1rem;
   text-align: center;
-  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
   cursor: pointer;
   font-family: inherit;
@@ -1024,7 +1031,7 @@ label {
   flex: 1;
   padding: 0.5em;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
   cursor: pointer;
   font-family: inherit;
   color: var(--fg);
@@ -1038,6 +1045,7 @@ label {
 }
 
 .size-button.active {
+  background: color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
   background: color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
 }
 
@@ -1083,7 +1091,7 @@ label {
     align-items: center;
     gap: 0.5em;
     background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-    border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
     cursor: pointer;
     color: var(--fg); */
   }

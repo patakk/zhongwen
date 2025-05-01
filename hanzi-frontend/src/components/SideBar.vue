@@ -20,7 +20,7 @@
           <RouterLink to="/grid" class="sidebar-link">Grid</RouterLink>
           <RouterLink to="/flashcards" class="sidebar-link">Flashcards</RouterLink>
           <RouterLink to="/practice" class="sidebar-link">Practice</RouterLink>
-          <RouterLink to="/drawing" class="sidebar-link">Sketch Lookup</RouterLink>
+          <RouterLink to="/sketch-lookup" class="sidebar-link">Sketch Lookup</RouterLink>
           <RouterLink to="/search" class="sidebar-link">Search</RouterLink>
           <!-- <RouterLink to="/page-info" class="sidebar-link">Page Info</RouterLink> -->
           <RouterLink to="/about" class="sidebar-link">About</RouterLink>
@@ -43,7 +43,7 @@
         <RouterLink to="/grid" class="top-link">Grid</RouterLink>
         <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
         <RouterLink to="/practice" class="top-link">Practice</RouterLink>
-        <RouterLink to="/drawing" class="top-link">Sketch Lookup</RouterLink>
+        <RouterLink to="/sketch-lookup" class="top-link">Sketch Lookup</RouterLink>
         <RouterLink to="/search" class="top-link">Search</RouterLink>
         <!-- <RouterLink to="/page-info" class="top-link">Page Info</RouterLink> -->
         <RouterLink to="/about" class="top-link">About</RouterLink>

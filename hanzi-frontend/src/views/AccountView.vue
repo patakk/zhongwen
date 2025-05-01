@@ -319,13 +319,11 @@ const authStatus = computed(() => store.getters.getAuthStatus)
 
 watch(() => route.path, (newPath) => {
   if (newPath === '/account') {
-    console.log(`AccountView - Route changed to ${newPath}, fetching user data.`);
     store.dispatch('fetchUserData');
   }
 });
 
 watch(profile, (newProfile) => {
-  console.log('AccountView - Store Profile Getter updated in watcher:', JSON.stringify(newProfile));
 }, { immediate: true, deep: true })
 
 onMounted(() => {
@@ -334,13 +332,9 @@ onMounted(() => {
     router.push('/login');
     return;
   }
-  console.log('AccountView - Component mounted, fetching user data.');
   if (!profile.value) {
       store.dispatch('fetchUserData');
   }
-  console.log('AccountView mounted, initial profile:', JSON.stringify(profile.value));
-  console.log('Google linked?', googleLinked.value)
-  console.log('Has password?', hasPassword.value)
 })
 
 function resetModalState() {
@@ -423,7 +417,6 @@ async function apiCall(url, options, successMessage) {
             throw new Error(data.message || `HTTP error ${response.status}`);
         }
 
-        // console.log(successMessage, data);
         // alert(data.message || successMessage);
         await store.dispatch('fetchUserData');
         return true;
@@ -515,7 +508,6 @@ async function submitUnlink() {
 
 async function linkGoogle() {
   try {
-    console.log("Linking Google account...");
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/api/google_auth/link_account';
@@ -600,7 +592,11 @@ h2 {
   padding: 2rem;
   border: 1px solid color-mix(in oklab, var(--fg) 2%, var(--bg) 100%);
   border-radius: 8px;
-  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);;
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+  border-radius: var(--modal-border-radius);
+  border: var(--thin-border-width) solid var(--fg-dim);
+  box-shadow: var(--card-shadow);
+
 }
 
 .profile-info-grid {
@@ -649,7 +645,7 @@ h2 {
 .danger-zone {
   margin-top: 2rem;
   padding: 1rem;
-  border: 2px dashed var(--danger-color, #dc3545);
+  border: var(--thin-border-width) dashed var(--danger-color, #dc3545);
   background: color-mix(in oklab, var(--danger-color, #dc3545) 5%, var(--bg) 100%);
 }
 
@@ -704,23 +700,23 @@ h2 {
   color: var(--fg);
   outline: none;
   cursor: pointer;
-  border: 2px solid color-mix(in oklab, rgb(255, 0, 30) 70%, var(--bg) 100%);
+  border: var(--thin-border-width) solid color-mix(in oklab, rgb(255, 0, 30) 70%, var(--bg) 100%);
   background-color: color-mix(in oklab, rgb(255, 0, 30) 40%, var(--bg) 100%);
   margin-left: 0;
 }
 
 .btn-small:hover {
-  border: 2px solid color-mix(in oklab, rgb(255, 0, 30) 90%, var(--bg) 100%);
+  border: var(--thin-border-width) solid color-mix(in oklab, rgb(255, 0, 30) 90%, var(--bg) 100%);
   background-color: color-mix(in oklab, rgb(255, 0, 30) 60%, var(--bg) 100%);
 }
 
 
 .btn-change-username {
-  border: 2px solid color-mix(in oklab, var(--green-btn-clr) 70%, var(--bg) 100%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--green-btn-clr) 70%, var(--bg) 100%);
   background-color: color-mix(in oklab, var(--green-btn-clr) 40%, var(--bg) 100%);
 }
 .btn-change-username:hover {
-  border: 2px solid color-mix(in oklab, var(--green-btn-clr) 90%, var(--bg) 100%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--green-btn-clr) 90%, var(--bg) 100%);
   background-color: color-mix(in oklab, var(--green-btn-clr) 60%, var(--bg) 100%);
 }
 

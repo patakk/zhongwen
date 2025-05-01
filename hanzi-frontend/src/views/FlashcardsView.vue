@@ -219,7 +219,6 @@ export default {
           if (mutation.attributeName === 'data-theme') {
             // Update isDarkMode flag when theme changes
             this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-            console.log('Theme changed, isDarkMode:', this.isDarkMode);
             
             // Redraw with new theme colors
             this.redrawCurrentCard();
@@ -267,7 +266,6 @@ export default {
       try {
         const response = await fetch(`/api/getStrokes/${character}`);
         if (!response.ok) {
-          console.log('Network response was not ok for character:', character);  
           return {
             strokes: { fstrokes: [], offsetX: 0, offsetY: 0 },
             masks: [],
@@ -276,10 +274,6 @@ export default {
         }
         
         const data = await response.json();
-        console.log(character);
-        console.log(data);
-        console.log(data);
-        console.log(data);
         return {
           strokes: this.processStrokes(data.medians),
           masks: data.strokes,
@@ -984,6 +978,7 @@ html, body {
   box-shadow: var(--card-shadow);
   background-color: var(--card-bg);
   border: var(--card-border);
+  border-radius: var(--modal-border-radius, 0);
   overflow: hidden;
   display: flex;
   box-sizing: border-box;
@@ -1027,7 +1022,7 @@ html, body {
   max-height: 0;
   overflow: hidden;
   background-color: var(--bg);
-  border: 2px solid #0000;
+  border: var(--thin-border-width) solid #0000;
   margin-top: 5px;
   z-index: 1;
   transition: max-height 0.3s, border 0.3s;
@@ -1036,7 +1031,7 @@ html, body {
 #deck-options.show {
   max-height: 300px;
   overflow-y: auto;
-  border: 2px solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
 }
 
 .option {

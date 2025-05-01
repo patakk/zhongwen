@@ -39,7 +39,6 @@ const cardModalModule = {
   actions: {
     async showCardModal({ commit, dispatch, state }, character) {
       if (state.visible && state.currentCharacter === character) {
-        console.log('Modal already showing this character, skipping:', character);
         return;
       }
       // Only update URL with word parameter if we're not on the dedicated word page
@@ -76,7 +75,6 @@ const cardModalModule = {
       
       // Check if we already have preloaded data
       if (state.preloadedData[character]) {
-        console.log('Using preloaded data for:', character);
         commit('SET_CARD_DATA', state.preloadedData[character]);
         
         // Always trigger decomposition data fetch
@@ -134,12 +132,10 @@ const cardModalModule = {
         );
         
         if (allCharsHaveData) {
-          console.log('Using cached decomposition data for:', character);
           return;
         }
       }
       
-      console.log('fetchDecompositionDataOnly called for:', character);
       
       try {
         // Send a single request for all Han characters in the word
@@ -153,7 +149,6 @@ const cardModalModule = {
           body: JSON.stringify(payload),
         };
 
-        console.log('Fetching decomposition data for characters:', hanCharacters.join(''));
         const response = await fetch(url, options);
         const data = await response.json();
         
@@ -309,7 +304,6 @@ const store = createStore({
       };
 
       // Log the profile state after update for debugging
-      console.log("Vuex setUserData - Assigned new state.profile:", JSON.stringify(state.profile));
     },
     clearUserData(state) {
       state.authStatus  = false
@@ -407,7 +401,6 @@ const store = createStore({
     async fetchCustomDictionaryData({ commit, state, dispatch, getters }) {
       // Don't make the request if user is not logged in
       if (!getters.isLoggedIn) {
-        console.log("User not logged in, skipping custom dictionary fetch");
         return Promise.resolve({});
       }
 
@@ -493,7 +486,6 @@ const store = createStore({
         }
         
         const userData = await response.json();
-        console.log("Fetched user data:", userData);
         
         // If we got a response but authStatus is false, log the user out
         if (!userData.authStatus) {
@@ -595,7 +587,6 @@ const store = createStore({
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(toStore))
     },
     logout({ commit }) {
-      console.log('Executing complete logout');
       commit('clearUserData');
       localStorage.removeItem(USER_STORAGE_KEY); // Clear storage on logout
       

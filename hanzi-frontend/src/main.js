@@ -11,12 +11,11 @@ import store from './stores'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSun, faMoon, faPencil, faBars } from '@fortawesome/free-solid-svg-icons'
+import { faSun, faMoon, faPencil, faBars, faPalette } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faSun, faMoon, faPencil, faBars)
+library.add(faSun, faMoon, faPencil, faBars, faPalette)
 
 // IMMEDIATELY clear login state on page load before checking backend
-console.log('Clearing login state on page load before checking backend');
 localStorage.removeItem('userData');
 store.dispatch('logout');
 
@@ -45,7 +44,6 @@ const checkBackendConnectivity = async () => {
       return false;
     }
     
-    console.log('Backend connection confirmed');
     return true;
   } catch (error) {
     console.error('Error connecting to backend:', error);
@@ -59,13 +57,11 @@ const initApp = async () => {
   
   if (isConnected) {
     // Only try to restore user session if backend is definitely available
-    console.log('Backend available, attempting to restore session');
     await store.dispatch('loadUserDataFromStorage');
     await store.dispatch('fetchUserData').catch(err => {
       console.error('Failed to fetch user data, keeping logout state', err);
     });
   } else {
-    console.log('App started with backend unavailable, maintaining logged out state');
   }
   
   // Only start dictionary data loading if backend is available

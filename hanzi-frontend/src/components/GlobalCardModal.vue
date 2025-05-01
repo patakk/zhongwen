@@ -10,10 +10,10 @@
         
         <!-- Add to wordlist dropdown button - now shown to all users -->
         <div class="wordlist-dropdown">
-          <button @click.stop="toggleWordlistDropdown" class="wordlist-btn">
+          <button @click.stop="toggleWordlistDropdown" class="wordlist-btn" ref="dropdownButton">
             <span class="plus-icon">+</span>
           </button>
-          <div v-if="showWordlistDropdown" class="dropdown-content" @click.stop>
+          <div v-if="showWordlistDropdown" class="dropdown-content" ref="dropdownContent" @click.stop>
             <div v-if="!isLoggedIn" class="no-lists">
               Adding to custom wordlists is possible only upon <router-link to="/register" class="register-link">registration</router-link> or <router-link to="/login" class="register-link">login</router-link>.
             </div>
@@ -23,6 +23,10 @@
                   class="wordlist-item"
                   @click.stop="addWordToList(wordlist.name)">
                 {{ wordlist.name }}
+              </div>
+              <!-- Add "Create New List" option at the bottom of dropdown -->
+              <div class="wordlist-item create-list-item" @click.stop="showCreateListModal = true">
+                <span class="create-icon">+</span> Create New List
               </div>
             </div>
           </div>
@@ -263,6 +267,29 @@
       position="bottom-right"
     />
   </div>
+
+  <!-- Add Create New List modal -->
+  <div v-if="showCreateListModal" class="create-list-modal-overlay" @click="closeCreateListModal">
+    <div class="create-list-modal-container" @click.stop>
+      <h3>Create New List</h3>
+      <div class="create-list-form">
+        <label for="new-list-name">List Name:</label>
+        <input 
+          id="new-list-name" 
+          v-model="newListName" 
+          placeholder="Enter list name"
+          @keyup.enter="createNewListAndAddWord"
+          @keyup.esc="closeCreateListModal"
+          ref="createListInput"
+          autocomplete="off"
+        />
+      </div>
+      <div class="create-list-buttons">
+        <button @click="closeCreateListModal" class="cancel-button">Cancel</button>
+        <button @click="createNewListAndAddWord" class="confirm-button">Create & Add Word</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -302,6 +329,8 @@ export default {
       notificationType: 'success',
       showRelatedConcepts: false,
       showOppositeConcepts: false,
+      showCreateListModal: false,
+      newListName: ''
     }
   },
   provide() {
@@ -463,8 +492,6 @@ export default {
     decompositionData: {
       handler(newData) {
         if (newData && this.activeChar) {
-          console.log('Decomposition data changed in watcher:', newData);
-          console.log('Current active char in watcher:', this.activeChar);
           // Force component update
           this.$forceUpdate();
         }
@@ -474,8 +501,6 @@ export default {
   },
   mounted() {
     // Debug logging of wordlists
-    console.log("GlobalCardModal - Available wordlists:", this.customWordlists);
-    console.log("GlobalCardModal - Is user logged in?", this.isLoggedIn);
     
     // If we're in page mode and have a forcedCharacter, show the modal with that character
     if (this.pageMode && this.forcedCharacter) {
@@ -519,6 +544,81 @@ export default {
       this.hideCardModal();
       this.showWordlistDropdown = false;
     },
+    closeCreateListModal() {
+      this.showCreateListModal = false;
+      this.newListName = '';
+    },
+    createNewListAndAddWord() {
+      if (!this.newListName.trim()) {
+        this.showNotification('Please enter a valid list name.', 'error');
+        return;
+      }
+
+      const name = this.newListName.trim();
+      const word = this.cardData.character;
+      
+      // First update the store (optimistic update)
+      this.$store.dispatch('createWordlist', { name });
+      
+      // Close the modal
+      this.closeCreateListModal();
+      
+      // Create the new list on the backend
+      fetch("./api/create_wordlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to create wordlist');
+        }
+        
+        // After list is created, add the word to it
+        return fetch("./api/add_word_to_learning", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ 
+            word: word, 
+            set_name: name 
+          })
+        });
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to add word to list');
+        }
+        
+        // Update store with the new word
+        this.$store.dispatch('addWordToCustomDeck', {
+          word: word,
+          setName: name,
+          wordData: {
+            pinyin: this.cardData.pinyin,
+            english: this.cardData.english,
+            character: this.cardData.character
+          }
+        });
+        
+        // Show success notification
+        this.showNotification(`Added "${word}" to new list "${name}"`, 'success');
+        
+        // Refresh custom dictionary data
+        this.$store.dispatch('fetchCustomDictionaryData');
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        this.showNotification(`Error: ${error.message}`, 'error');
+        
+        // If there's an error, refresh data to get the correct state
+        this.$store.dispatch('fetchUserData')
+          .then(() => this.$store.dispatch('fetchCustomDictionaryData'));
+      });
+    },
     handleEscKey(event) {
       if (event.key === 'Escape' && this.isVisible) {
         this.closeModal();
@@ -531,13 +631,6 @@ export default {
     },
     // Debug function to log card data to console
     debugCardData() {
-      console.log('===== CARD DATA DEBUG =====');
-      console.log('Card Data:', JSON.stringify(this.cardData, null, 2));
-      console.log('Active Char Data:', JSON.stringify(this.activeCharData, null, 2));
-      console.log('Decomposition Data:', JSON.stringify(this.decompositionData, null, 2));
-      console.log('Current Character:', this.currentCharacter);
-      console.log('Valid Chars:', this.validChars);
-      console.log('Active Char:', this.activeChar);
       this.showNotification('Card data logged to console. Press F12 to view.', 'info');
     },
     startHoverTimer(word) {
@@ -569,7 +662,6 @@ export default {
       
       // Don't call showCardModal if we're already showing this word
       if (this.isVisible && this.cardData && this.cardData.character === word) {
-        console.log('Already showing this word, skipping updateModalContent call:', word);
         
         // Just update the active character if needed
         if (this.validChars.includes(word) && this.activeChar !== word) {
@@ -589,11 +681,8 @@ export default {
       }
     },
     toggleWordlistDropdown() {
-      console.log("Toggling dropdown, current wordlists:", this.customWordlists);
-      console.log("Is user logged in?", this.isLoggedIn);
       if (this.isLoggedIn && (!this.customWordlists || this.customWordlists.length === 0)) {
         // If we're logged in but have no wordlists, try to fetch them
-        console.log("Attempting to fetch user data due to missing wordlists");
         this.$store.dispatch('fetchUserData')
           .then(() => this.$store.dispatch('fetchCustomDictionaryData'));
       }
@@ -645,8 +734,8 @@ export default {
     handleOutsideClick(event) {
       // Check if the dropdown is open and if the click is outside the dropdown element itself
       if (this.showWordlistDropdown) {
-        const dropdownButton = this.$el.querySelector('.wordlist-btn');
-        const dropdownContent = this.$el.querySelector('.dropdown-content');
+        const dropdownButton = this.$refs.dropdownButton;
+        const dropdownContent = this.$refs.dropdownContent;
         
         // Close dropdown if click is outside both the dropdown button and its content
         if (
@@ -660,8 +749,8 @@ export default {
     handleModalClick(event) {
       // Only close the dropdown if we're clicking on the modal itself
       // and not on the dropdown button or dropdown content
-      const dropdownButton = this.$el.querySelector('.wordlist-btn');
-      const dropdownContent = this.$el.querySelector('.dropdown-content');
+      const dropdownButton = this.$refs.dropdownButton;
+      const dropdownContent = this.$refs.dropdownContent;
       
       if (this.showWordlistDropdown &&
           dropdownButton && !dropdownButton.contains(event.target) &&
@@ -673,8 +762,6 @@ export default {
       // Extract the actual components from decompositionData
       if (!this.decompositionData) return [];
       
-      console.log('FULL DECOMPOSITION DATA:', JSON.stringify(this.decompositionData));
-      console.log('Looking for components for character:', character);
       
       // With the restructured data, we need to look for the character as a key first level
       // Then return all component keys under that character
@@ -688,7 +775,6 @@ export default {
         return Object.keys(this.decompositionData[character]);
       }
       
-      console.log(`No decomposition data found directly for ${character}`);
       return components;
     },
     toggleConcepts(type) {
@@ -764,10 +850,9 @@ export default {
   height: 90vh;
   max-height: 90vh;
   aspect-ratio: .75;
-  border: 2px dashed var(--fg);
-  border: 4px solid var(--fg-dim);
+  border: var(--modal-border-width) solid var(--fg-dim);
   box-shadow: var(--card-shadow);
-  background: var(--bg);
+  background: var(--modal-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -783,6 +868,7 @@ export default {
   transform: translate(-50%, -50%);
   cursor: default;
   scrollbar-width: none;
+  border-radius: var(--modal-border-radius);
 }
 
 .modal::-webkit-scrollbar {
@@ -882,6 +968,14 @@ export default {
   background-color: color-mix(in oklab, var(--fg) 2%, var(--bg) 90%);
 }
 
+[data-theme="theme1"] .example-words {
+  border-radius: var(--pinyin-meaning-group-border-radius, 0);
+  border-radius: 2em;
+  border: var(--pinyin-meaning-group-border);
+  padding: .5em;
+  box-sizing: border-box;
+}
+
 .example-word-content {
   display: flex;
   gap: 1rem;
@@ -956,16 +1050,20 @@ export default {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  border-bottom: 1.5px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
+  border-bottom: 3.5px solid color-mix(in oklab, var(--fg) 55%, var(--bg) 50%);
   position: relative;
   overflow: visible;
+}
+
+
+[data-theme="theme1"] .tabs {
+  border-bottom: 3.5px solid var(--black);
 }
 
 .tab-btn {
   position: relative;
   font-size: 1.2rem;
   padding: 0.5rem 1rem;
-  /* border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%); */
   border: none;
   cursor: pointer;
   font-family: "Noto Sans SC";
@@ -973,22 +1071,35 @@ export default {
   color: var(--primary-primary);
   white-space: nowrap;
   opacity: 0.35; 
-  border: 1.5px solid #0000;
+  border: 3.5px solid #0000;
   background: #0000;
-  transform: translate(0, 1.5px);
   flex-shrink: 0;
   position: relative;
   z-index: 1;
-  border-bottom: none;
+  border-bottom: 3.5px solid #0000;
+  transform: translate(0, 3.5px);
+}
+
+[data-theme="theme1"] .tab-btn {
+  border-radius: .5em .5em 0 0;
+  border: 3.5px solid #0000;
+  border-bottom: 3.5px solid #0000;
+  transform: translate(0, 3.5px);
 }
 
 .tab-btn.active {
-  border: 1.5px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 50%);
-  background: var(--bg);
+  border: 3.5px solid color-mix(in oklab, var(--fg) 55%, var(--bg) 50%);
+  background: var(--modal-bg);
   opacity: 1;
-  transform: translate(0, 1.5px);
   z-index: 2;
-  border-bottom: none;
+  transform: translate(0, 3.5px);
+  border-bottom: 3.5px solid #0000;
+}
+
+[data-theme="theme1"] .tab-btn.active {
+  border: 3.5px solid var(--black);
+  transform: translate(0, 3.5px);
+  border-bottom: 3.5px solid #0000;
 }
 
 .char-details {
@@ -1009,6 +1120,10 @@ export default {
   font-size: 1rem;
   min-width: 0;
   border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 15%);
+}
+
+[data-theme="theme1"] .detail-group {
+  /* border-bottom: 3px solid #5b849e; */
 }
 
 .radicals-group {
@@ -1034,8 +1149,16 @@ export default {
   height: 100%;
   justify-self: flex-start;
   align-items: center;
+  
+  border: var(--pinyin-meaning-group-border);
+  border-radius: var(--pinyin-meaning-group-border-radius, 0);
   /* justify-content: space-around; */
 }
+
+[data-theme="theme1"] .freq-trad {
+  /* background: rgb(219, 231, 222); */
+}
+
 
 .hanzi-anim {
   flex: 1;
@@ -1105,7 +1228,7 @@ export default {
   height: auto !important;
   margin-top: 1rem !important;
   padding: 1rem !important;
-  border: 2px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%) !important;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%) !important;
 }
 
 .decomposition-items {
@@ -1140,13 +1263,23 @@ export default {
   padding: 0.3rem 0.7rem;
   background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 92%);
   cursor: pointer;
-  transition: all 0.2s ease;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
 }
 
+[data-theme="theme1"] .decomp-section {
+  border-radius: 2em;
+  /* border: var(--thin-border-width) solid #ff7a49 !important; */
+}
+
+[data-theme="theme1"] .decomp-char {
+  border-radius: .5em;
+  border: 2px solid var(--animated-hanzi-border-color);
+}
+
+
 .decomp-char.current-char {
-  background-color: color-mix(in oklab, var(--primary-color) 30%, var(--bg) 70%);
-  font-weight: bold;
+  /* background-color: color-mix(in oklab, var(--primary-color) 30%, var(--bg) 70%);
+  font-weight: bold; */
 }
 
 .component-char {
@@ -1173,10 +1306,22 @@ export default {
   padding: 0.5rem 1rem;
   font-size: .9rem;
   cursor: pointer;
+  aspect-ratio: 1;
 }
 
 .wordlist-btn:hover {
   background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
+}
+
+[data-theme="theme1"] .wordlist-btn {
+  background-color: var(--orange);
+  color: var(--orange-dim);
+  border-radius: 1em;
+}
+
+[data-theme="theme1"] .wordlist-btn:hover {
+  color: var(--orange-dim);
+  opacity: 1;
 }
 
 .plus-icon {
@@ -1192,13 +1337,13 @@ export default {
   border-radius: var(--border-radius);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 10;
+  min-width: 200px;
 }
 
 .wordlist-item {
   font-size: .9rem;
   padding: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
   background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
 }
 
@@ -1206,6 +1351,37 @@ export default {
   background-color: var(--primary-color);
   color: var(--fg);
   font-weight: 500;
+}
+
+.create-list-item {
+  border-top: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+[data-theme="theme1"] .create-list-item {
+  border-bottom-left-radius: 1em;
+  border-bottom-right-radius: 1em;
+}
+
+.create-icon {
+  font-weight: bold;
+}
+
+[data-theme="theme1"] .dropdown-content {
+  border-radius: 1em;
+  border-width: 2px;
+}
+
+[data-theme="theme1"] .dropdown-content div:first-child {
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
+}
+
+[data-theme="theme1"] .wordlist-item {
+  /* border-radius: 1em; */
+  border-width: 2px;
 }
 
 .no-lists {
@@ -1231,6 +1407,9 @@ export default {
   height: auto;
   flex-direction: column;
   align-items: flex-start;
+/* 
+  border: var(--pinyin-meaning-group-border);
+  border-radius: var(--pinyin-meaning-group-border-radius, 0); */
 }
 
 .pinyin-meaning-pairs {
@@ -1247,8 +1426,9 @@ export default {
   align-items: center;
   padding: 0.25rem 0.5rem;
   border-radius: var(--border-radius);
-  background-color: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
+  background-color: transparent;
 }
+
 
 .pm-pinyin {
   font-size: 1.2rem;
@@ -1291,13 +1471,25 @@ export default {
   padding: 0.5rem 1rem;
   cursor: pointer;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  border-radius: var(--border-radius);
+}
+
+[data-theme="theme1"] .concept-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background-color: var(--orange);
+  color: var(--orange-dim);
+  border-radius: 1em;
 }
 
 .concept-toggle.active {
   /* background-color: var(--primary-color); */
   background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
-  color: var(--fg);
+  background-color: var(--orange);
+  color: var(--orange-dim);
+  color: var(--bg);
 }
 
 .concept-bookmark {
@@ -1341,7 +1533,6 @@ export default {
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 .concept-item:hover {
@@ -1363,6 +1554,61 @@ export default {
   font-size: 0.9rem;
   color: var(--text-secondary);
   font-style: italic;
+}
+
+.create-list-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: color-mix(in oklab, var(--bg) 10%, var(--bg) 80%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 430; /* Ensure modal appears above the card modal */
+}
+
+.create-list-modal-container {
+  background: var(--bg-alt);
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+}
+
+.create-list-form {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.create-list-form input {
+  padding: 0.5rem;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+}
+
+.create-list-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  background: none;
+}
+
+
+.cancel-button,
+.confirm-button {
+  border: none;
+  background: none;
+}
+
+.cancel-button:hover,
+.confirm-button:hover {
+  cursor: pointer;
 }
 
 @media (max-width: 1024px) {

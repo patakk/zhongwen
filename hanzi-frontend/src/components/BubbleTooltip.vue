@@ -54,8 +54,8 @@ export default {
   position: fixed;
   z-index: 9999;
   background: var(--bg);
-  border: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 10%);
-  border: 2px solid color-mix(in oklab, var(--fg) 55%, var(--bg) 10%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 10%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 55%, var(--bg) 10%);
   padding: .5em;
   box-shadow: 0 3px 8px color-mix(in oklab, var(--fg) 15%, #7770 10%);
   min-width: 150px;

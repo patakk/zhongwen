@@ -29,6 +29,10 @@ export default {
     preferDedicatedPage: {
       type: Boolean,
       default: false
+    },
+    showBubbles: {
+      type: Boolean,
+      default: false // Disable bubble tooltips by default
     }
   },
   data() {
@@ -53,8 +57,10 @@ export default {
       this.hoverTimer = setTimeout(() => {
         if (this.isHovering && this.lastMouseEvent) {
           this.preloadCardData();
-          // Show the bubble tooltip with the last known mouse position
-          this.showBubbleTooltip(this.lastMouseEvent);
+          // Only show the bubble tooltip if showBubbles prop is true
+          if (this.showBubbles) {
+            this.showBubbleTooltip(this.lastMouseEvent);
+          }
         }
       }, this.delay);
     },
@@ -69,20 +75,23 @@ export default {
       this.lastMouseEvent = null; // Clear the stored event
       this.clearHoverTimer();
       this.$emit('unhover', this.character);
-      // Hide the bubble tooltip
-      this.hideBubble();
+      // Only hide bubble if showBubbles is true
+      if (this.showBubbles) {
+        this.hideBubble();
+      }
     },
     handleMouseMove(event) {
       // Store the latest mouse event
       this.lastMouseEvent = event;
       
-      // Update bubble position on mouse move if we're hovering
-      if (this.isHovering && this.bubbleData) {
+      // Update bubble position on mouse move if we're hovering and showBubbles is true
+      if (this.isHovering && this.bubbleData && this.showBubbles) {
         this.showBubbleTooltip(event);
       }
     },
     showBubbleTooltip(event) {
-      if (!event) return; // Safety check
+      // Only proceed if showBubbles is true
+      if (!this.showBubbles || !event) return;
       
       // Get character data from store if available
       const dictionaryData = this.$store.getters.getDictionaryData || {};

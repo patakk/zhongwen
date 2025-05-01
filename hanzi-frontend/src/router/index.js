@@ -25,7 +25,7 @@ const routes = [
 
   { path: '/grid', component: Grid },
   { path: '/search', name: 'SearchPage', component: Search },
-  { path: '/drawing', name: 'DrawingPage', component: Drawing },
+  { path: '/sketch-lookup', name: 'DrawingPage', component: Drawing },
   { path: '/flashcards', component: Flashcards },
   { path: '/practice', component: HanziPractice },
   { path: '/page-info', component: PageInfo },

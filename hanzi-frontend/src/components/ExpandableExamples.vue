@@ -83,8 +83,6 @@ export default {
   text-align: center;
   padding: 0.5rem;
   margin: 1rem auto 0 auto;
-  /* background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%); */
-  /* border: 2px dashed color-mix(in oklab, var(--fg) 20%, var(--bg) 80%); */
   
   position: sticky;
   bottom: 0;

@@ -41,7 +41,6 @@ export default {
     try {
       // Check if dictionary data is currently loading or not loaded yet
       if (this.isDictionaryLoading || !this.$store.getters.getDictionaryData) {
-        console.log("Dictionary data is loading or not loaded yet, waiting for it...");
         
         // Collect all pending dictionary promises
         const promises = [];
