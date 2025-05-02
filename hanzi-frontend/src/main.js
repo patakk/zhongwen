@@ -78,12 +78,6 @@ const setupKofiWidget = () => {
     
     // Set correct visibility immediately
     updateKofiVisibility();
-    
-    // And again after a delay to ensure it sticks
-    setTimeout(updateKofiVisibility, 100);
-    setTimeout(updateKofiVisibility, 500); 
-    setTimeout(updateKofiVisibility, 1000);
-    setTimeout(updateKofiVisibility, 2000);
   });
 
   // Initialize Ko-fi if not already loaded
@@ -110,9 +104,6 @@ const setupKofiWidget = () => {
           // Update visibility based on current route
           updateKofiVisibility();
           
-          // And again after delays to make sure it sticks
-          setTimeout(updateKofiVisibility, 200);
-          setTimeout(updateKofiVisibility, 1000);
         } catch (e) {
           console.error('Failed to initialize Ko-fi widget:', e);
         }
@@ -128,11 +119,6 @@ const setupKofiWidget = () => {
   // Load Ko-fi widget once
   initKofi();
   
-  // Update visibility on page load
-  window.addEventListener('load', () => {
-    updateKofiVisibility();
-    setTimeout(updateKofiVisibility, 1000);
-  });
 };
 
 // Check if backend is available
