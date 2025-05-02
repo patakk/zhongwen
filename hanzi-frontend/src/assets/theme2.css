@@ -10,7 +10,7 @@
 	--modal-border-width: 8px;
 	--modal-border-radius: 2em;
 	--modal-bg: #1d1e20;
-	--animated-hanzi-border-color: #e8cda4;
+	--animated-hanzi-border-color: #4f4953;
 	--pinyin-meaning-group-border: var(--thin-border-width) solid var(--animated-hanzi-border-color);
 	--pinyin-meaning-group-border-radius: 2em;
 	--bg: hsl(140, 6%, 10%);
