@@ -49,11 +49,6 @@ const setupKofiWidget = () => {
         if (kofiElements.length > 0) {
           // Ko-fi widget found, update its visibility multiple times to ensure it sticks
           updateKofiVisibility();
-          
-          // Schedule multiple updates to ensure visibility state persists
-          setTimeout(updateKofiVisibility, 100);
-          setTimeout(updateKofiVisibility, 500);
-          setTimeout(updateKofiVisibility, 1000);
         }
       }
     }
@@ -72,10 +67,8 @@ const setupKofiWidget = () => {
   });
   
   router.afterEach((to) => {
-    console.log('Route changed to', to.path);
     
     // Set correct visibility immediately
-    updateKofiVisibility();
   });
 
   // Initialize Ko-fi if not already loaded
@@ -100,7 +93,6 @@ const setupKofiWidget = () => {
           });
           
           // Update visibility based on current route
-          updateKofiVisibility();
           
         } catch (e) {
           console.error('Failed to initialize Ko-fi widget:', e);
@@ -112,11 +104,8 @@ const setupKofiWidget = () => {
   };
 
   // Initial visibility update
-  updateKofiVisibility();
   
   // Load Ko-fi widget once
-  initKofi();
-  
 };
 
 // Check if backend is available

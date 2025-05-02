@@ -9,6 +9,8 @@
         Your feedback, suggestions and contributions are welcome!
       </div>
       <br />
+      <a href='https://ko-fi.com/U7U01BB9OI' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/brandasset/v2/kofi_symbol.png' border='0' alt='contribute' /></a>
+      <br />
       <br />
       <div class="contact-info">
         <div>Contact:</div>
@@ -60,19 +62,15 @@
       </ul>
     </div>
   </div>
-  <!-- Add KofiWidget component -->
-  <KofiWidget />
 </template>
 
 <script>
 import BasePage from '../components/BasePage.vue';
-import KofiWidget from '../components/KofiWidget.vue';
 
 export default {
   name: 'AboutView',
   components: {
-    BasePage,
-    KofiWidget
+    BasePage
   },
   mounted() {
     // Add about-page class to body when this component is mounted
