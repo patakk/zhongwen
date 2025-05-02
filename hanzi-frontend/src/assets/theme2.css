@@ -9,7 +9,7 @@
 	--thin-border-width: 4px;
 	--modal-border-width: 8px;
 	--modal-border-radius: 2em;
-	--modal-bg: #e1e6e0;
+	--modal-bg: #1d1e20;
 	--animated-hanzi-border-color: #e8cda4;
 	--pinyin-meaning-group-border: var(--thin-border-width) solid var(--animated-hanzi-border-color);
 	--pinyin-meaning-group-border-radius: 2em;
@@ -22,7 +22,7 @@
 }
 
 [data-theme="theme2"] .theme-toggle {
-	color: #f57b87;
+  color: #e2cdec;
 }
 
 [data-theme="theme2"] .search-input {

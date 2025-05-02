@@ -21,7 +21,7 @@
 }
 
 [data-theme="theme1"] .theme-toggle {
-	color: #f57b87;
+	color: var(--orangey);
 }
 
 [data-theme="theme1"] .search-input {
