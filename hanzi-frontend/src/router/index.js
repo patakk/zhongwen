@@ -14,6 +14,7 @@ import HanziPractice from '../views/HanziPracticeView.vue'
 import PageInfo from '../views/PageInfoView.vue'
 import MyLists from '../views/MySpaceView.vue'
 import WordView from '../views/WordView.vue'
+import HanziTree from '../views/HanziTree.vue'
 
 const routes = [
   { path: '/', component: Home },
@@ -26,6 +27,7 @@ const routes = [
   { path: '/grid', component: Grid },
   { path: '/search', name: 'SearchPage', component: Search },
   { path: '/sketch-lookup', name: 'DrawingPage', component: Drawing },
+  { path: '/hanzi-tree', component: HanziTree },
   { path: '/flashcards', component: Flashcards },
   { path: '/practice', component: HanziPractice },
   { path: '/page-info', component: PageInfo },

@@ -121,7 +121,7 @@ const cardModalModule = {
       const hanCharacters = character.split('').filter(char => /\p{Script=Han}/u.test(char));
       
       if (hanCharacters.length === 0) {
-        return;
+        return Promise.resolve(null);
       }
       
       // Don't refetch if we already have this character's decomposition data
@@ -132,33 +132,37 @@ const cardModalModule = {
         );
         
         if (allCharsHaveData) {
-          return;
+          return Promise.resolve(state.decompositionData);
         }
       }
       
-      
-      try {
-        // Send a single request for all Han characters in the word
-        const url = '/api/get_char_decomp_info';
-        const payload = { characters: hanCharacters }; // Send all characters at once
-        const options = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        };
+      return new Promise(async (resolve, reject) => {
+        try {
+          // Send a single request for all Han characters in the word
+          const url = '/api/get_char_decomp_info';
+          const payload = { characters: hanCharacters }; // Send all characters at once
+          const options = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          };
 
-        const response = await fetch(url, options);
-        const data = await response.json();
-        
-        // Only update the store if we actually got data
-        if (Object.keys(data).length > 0) {
-          commit('SET_DECOMPOSITION_DATA', data);
+          const response = await fetch(url, options);
+          const data = await response.json();
+          
+          // Only update the store if we actually got data
+          if (Object.keys(data).length > 0) {
+            commit('SET_DECOMPOSITION_DATA', data);
+          }
+          
+          resolve(data);
+        } catch (error) {
+          console.error('Error fetching decomposition data:', error);
+          reject(error);
         }
-      } catch (error) {
-        console.error('Error fetching decomposition data:', error);
-      }
+      });
     },
     async preloadCardData({ commit, state, dispatch }, character) {
       // Don't preload if we already have the data

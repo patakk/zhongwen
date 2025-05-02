@@ -21,6 +21,7 @@
           <RouterLink to="/flashcards" class="sidebar-link">Flashcards</RouterLink>
           <RouterLink to="/practice" class="sidebar-link">Practice</RouterLink>
           <RouterLink to="/sketch-lookup" class="sidebar-link">Sketch Lookup</RouterLink>
+          <RouterLink to="/hanzi-tree" class="sidebar-link">Hanzi Tree</RouterLink>
           <RouterLink to="/search" class="sidebar-link">Search</RouterLink>
           <!-- <RouterLink to="/page-info" class="sidebar-link">Page Info</RouterLink> -->
           <RouterLink to="/about" class="sidebar-link">About</RouterLink>
@@ -44,6 +45,7 @@
         <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
         <RouterLink to="/practice" class="top-link">Practice</RouterLink>
         <RouterLink to="/sketch-lookup" class="top-link">Sketch Lookup</RouterLink>
+        <RouterLink to="/hanzi-tree" class="top-link">Hanzi Tree</RouterLink>
         <RouterLink to="/search" class="top-link">Search</RouterLink>
         <!-- <RouterLink to="/page-info" class="top-link">Page Info</RouterLink> -->
         <RouterLink to="/about" class="top-link">About</RouterLink>

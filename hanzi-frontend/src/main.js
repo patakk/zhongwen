@@ -13,9 +13,9 @@ import store from './stores'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSun, faMoon, faPencil, faBars, faPalette, faArrowRotateRight, faPenFancy } from '@fortawesome/free-solid-svg-icons'
+import { faSun, faMoon, faPencil, faBars, faPalette, faArrowRotateRight, faPenFancy, faGear, faSquare } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faSun, faMoon, faPencil, faBars, faPalette, faArrowRotateRight, faPenFancy)
+library.add(faSun, faMoon, faPencil, faBars, faPalette, faArrowRotateRight, faPenFancy, faGear, faSquare)
 
 // IMMEDIATELY clear login state on page load before checking backend
 localStorage.removeItem('userData');

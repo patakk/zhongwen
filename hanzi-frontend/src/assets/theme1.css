@@ -530,12 +530,13 @@ opacity: 0.7;
 
 [data-theme="theme1"] .top-link:hover {
   opacity: .8;
-  background-color: var(--orangey) !important;
+  background-color: var(--bluey) !important;
 }
 
 [data-theme="theme1"] .top-link.router-link-active, .top-link.router-link-exact-active {
   text-transform: uppercase;
-  background-color: var(--orangey) !important;
+  /* background-color: var(--orangey) !important; */
+  background-color: var(--bluey) !important;
   opacity: 1;
   border: 2px solid var(--fg);
 }
@@ -644,4 +645,14 @@ opacity: 0.7;
 [data-theme="theme1"] .sidebar {
 	border-left: 3px solid var(--fg) !important;
     padding: .25em;
+}
+
+
+[data-theme="theme1"] .leftbar-toggle {
+	color: var(--pink-strong) !important;
+}
+
+[data-theme="theme1"] .leftbar {
+	border-color: var(--fg) !important;
+	box-shadow: none !important;
 }

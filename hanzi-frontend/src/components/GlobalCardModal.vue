@@ -176,7 +176,7 @@
                     :class="{ 'collapsed-words': !slotProps.isExpanded }"
                     >
                     <ClickableRow
-                      v-for="(word, index) in activeCharData.example_words.slice(0, 5)"
+                      v-for="(word, index) in activeCharData.example_words.slice(0, 3)"
                       :key="index"
                       :word="word"
                       :class="{ therest: !slotProps.isExpanded }"
@@ -217,45 +217,81 @@
               </ExpandableExamples>
 
               <!-- Components section - Formatted decomposition data -->
-              <div>
-                <div class="medium-label">Components</div>
-              
-                <!-- Show formatted decomposition data if available -->
-                <div class="decomp-section">
-                  <div class="decomposition-items">
-                    <!-- For Han characters, check if their components exist in decompositionData -->
-                    <div v-if="activeChar && decompositionData && decompositionData[activeChar]" 
-                         v-for="(charArray, component) in decompositionData[activeChar]" 
-                         :key="component" 
-                         class="decomp-group">
-                  <span class="component-char">{{ activeChar }}</span>
-                  <div class="decomp-component">
-                        <span class="component-label">↳</span>
-                        <span class="component-char">{{ component }}</span>
-                        <span class="component-label-2">↘</span>
+              <ExpandableExamples title="Components">
+                <template v-slot:afew="slotProps">
+                  <div class="decomp-section" :class="{ 'collapsed-section': !slotProps.isExpanded }" style="max-height: 200px; overflow: hidden;" v-if="!slotProps.isExpanded">
+                    <div class="decomposition-items">
+                      <!-- For Han characters, check if their components exist in decompositionData -->
+                      <div v-if="activeChar && decompositionData && decompositionData[activeChar]" 
+                          v-for="(charArray, component) in decompositionData[activeChar]" 
+                          :key="component" 
+                          class="decomp-group">
+                        <span class="component-char">{{ activeChar }}</span>
+                        <div class="decomp-component">
+                          <span class="component-label">↳</span>
+                          <span class="component-char">{{ component }}</span>
+                          <span class="component-label-2">↘</span>
+                        </div>
+                        <div class="decomp-chars">
+                          <span 
+                            v-for="char in charArray" 
+                            :key="char"
+                            @click="updateModalContent(char)"
+                            @mouseenter="startHoverTimer(char)"
+                            @mouseleave="clearHoverTimer"
+                            class="decomp-char"
+                            :class="{ 'current-char': char === activeChar }"
+                          >
+                            {{ char }}
+                          </span>
+                        </div>
                       </div>
-                      <div class="decomp-chars">
-                        <span 
-                          v-for="char in charArray" 
-                          :key="char"
-                          @click="updateModalContent(char)"
-                          @mouseenter="startHoverTimer(char)"
-                          @mouseleave="clearHoverTimer"
-                          class="decomp-char"
-                          :class="{ 'current-char': char === activeChar }"
-                        >
-                          {{ char }}
-                        </span>
+                      
+                      <!-- If no components found -->
+                      <div v-if="activeChar && (!decompositionData || !decompositionData[activeChar] || Object.keys(decompositionData[activeChar]).length === 0)" class="decomp-message">
+                        <p>No component data available for this character</p>
                       </div>
-                    </div>
-                    
-                    <!-- If no components found -->
-                    <div v-if="activeChar && (!decompositionData || !decompositionData[activeChar] || Object.keys(decompositionData[activeChar]).length === 0)" class="decomp-message">
-                      <p>No component data available for this character</p>
                     </div>
                   </div>
-                </div>
-              </div>
+                </template>
+                
+                <template v-slot:therest="slotProps">
+                  <div class="decomp-section">
+                    <div class="decomposition-items">
+                      <!-- For Han characters, check if their components exist in decompositionData -->
+                      <div v-if="activeChar && decompositionData && decompositionData[activeChar]" 
+                          v-for="(charArray, component) in decompositionData[activeChar]" 
+                          :key="component" 
+                          class="decomp-group">
+                        <span class="component-char">{{ activeChar }}</span>
+                        <div class="decomp-component">
+                          <span class="component-label">↳</span>
+                          <span class="component-char">{{ component }}</span>
+                          <span class="component-label-2">↘</span>
+                        </div>
+                        <div class="decomp-chars">
+                          <span 
+                            v-for="char in charArray" 
+                            :key="char"
+                            @click="updateModalContent(char)"
+                            @mouseenter="startHoverTimer(char)"
+                            @mouseleave="clearHoverTimer"
+                            class="decomp-char"
+                            :class="{ 'current-char': char === activeChar }"
+                          >
+                            {{ char }}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <!-- If no components found -->
+                      <div v-if="activeChar && (!decompositionData || !decompositionData[activeChar] || Object.keys(decompositionData[activeChar]).length === 0)" class="decomp-message">
+                        <p>No component data available for this character</p>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </ExpandableExamples>
             </div>
           </div>
         </div>

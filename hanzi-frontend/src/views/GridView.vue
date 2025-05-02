@@ -1,5 +1,5 @@
 <template>
-    <div @click="handleBasepageClick" class="grid-header">
+    <div @click="toggleView" class="grid-header">
         <BasePage 
           :page_title="localPageTitle" 
         />
@@ -11,7 +11,7 @@
       @click="toggleLeftbar"
       :class="{ 'leftbar-toggle-active': leftbarVisible }"
     >
-      ≡
+    <font-awesome-icon :icon="['fas', 'gear']" />
     </button>
 
     <!-- Floating leftbar, positioned outside the main flow -->
@@ -83,21 +83,21 @@
               :class="{ 'active': gridGapSize === '0.25em' }"
               @click="setGridGapSize('0.25em')"
             >
-              <span class="size-icon">□□</span>
+              <span class="gap-icon"><font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/><font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/></span>
             </button>
             <button 
               class="size-button" 
               :class="{ 'active': gridGapSize === '1em' }"
               @click="setGridGapSize('1em')"
             >
-              <span class="size-icon">□&nbsp;□</span>
+              <span class="gap-icon"><font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/>&nbsp;<font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/></span>
             </button>
             <button 
               class="size-button" 
               :class="{ 'active': gridGapSize === '3em' }"
               @click="setGridGapSize('3em')"
             >
-              <span class="size-icon">□&nbsp;&nbsp;&nbsp;□</span>
+              <span class="gap-icon"><font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/>&nbsp;&nbsp;&nbsp;<font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/></span>
             </button>
           </div>
           
@@ -168,7 +168,7 @@
                 v-for="(entry, index) in visibleChars"
                 :key="entry.character"
                 :character="entry.character"
-                :showBubbles="true"
+                :showBubbles="false"
               >
                 <div class="list-item">
                   <div class="hanzipinyin">
@@ -948,7 +948,7 @@ select {
   cursor: pointer;
   transform: translate(-50%, -50%);
   color: var(--fg);
-  font-size: 3em;
+  font-size: 1.7em;
   cursor: pointer;
   left: 1.5rem;
   top: 4rem;
@@ -1048,11 +1048,16 @@ label {
 
 .size-icon {
   display: block;
+  font-size: 1.4em;
 }
 
+.gap-icon {
+  display: block;
+  font-size: 1.2em;
+}
 
-.size-icon {
-  font-size: 1.4em;
+.gap-icon-item {
+  padding: .1em;
 }
 
 @media (max-width: 1024px) {
