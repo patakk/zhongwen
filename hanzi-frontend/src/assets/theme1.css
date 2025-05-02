@@ -381,8 +381,14 @@
 	border-radius: .65em;
     font-size: 1.5em;
     font-family: var(--second-font);
+    background: none !important;
     padding: .5em !important;
     margin: .5em !important;
+    text-decoration: underline;
+}
+
+[data-theme="theme1"] #selected-deck:hover {
+    background: rgb(232, 232, 232) !important;
 }
 
 
