@@ -36,10 +36,8 @@ const setupKofiWidget = () => {
     
     if (window.location.pathname === '/about') {
       style.textContent = '.floatingchat-container-wrap { display: block !important; }';
-      console.log('Ko-fi set to VISIBLE on about page');
     } else {
       style.textContent = '.floatingchat-container-wrap { display: none !important; }';
-      console.log('Ko-fi set to HIDDEN on page:', window.location.pathname);
     }
   };
 

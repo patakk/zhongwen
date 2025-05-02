@@ -787,7 +787,7 @@ export default {
       animateFrame();
     },
     redrawCurrentCard() {
-      this.handleFont();
+      // this.handleFont();
       const numchars = this.currentWordInfo.strokes.length;
       this.drawbg(0, numchars, numchars);
       // this.drawStrokes();
