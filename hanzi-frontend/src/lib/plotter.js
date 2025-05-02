@@ -132,12 +132,12 @@ var noiseSeed = function (seed) {
 };
 
 
-function drawBg(ctx, dbg1, dbg2, lineType, writerSize, colors) {
+function drawBg(ctx, dbg1, dbg2, lineType, writerSize, colors, gridThickness) {
     if (!dbg1 && !dbg2) {
         return;
     }
     ctx.save();
-    ctx.lineWidth = Math.max(0.6, ctx.canvas.width / 128)*.6*3;
+    ctx.lineWidth = Math.max(0.6, ctx.canvas.width / 128)*.6*gridThickness;
     ctx.strokeStyle = colors[1];
     ctx.strokeStyle = `rgba(${111},${111},${111}, .215)`;
     //ctx.strokeRect(2, 2, ctx.canvas.width-4, ctx.canvas.height-4);
@@ -155,7 +155,7 @@ function drawBg(ctx, dbg1, dbg2, lineType, writerSize, colors) {
         let q2 = (writerSize - q1*w) / (w-1);
         let qq2 = (writerSize*Math.sqrt(2) - q1*w) / (w-1);
         // ctx.setLineDash([d1, d2]);
-        ctx.strokeStyle = `rgba(${111},${111},${111}, .215)`;
+        ctx.strokeStyle = colors[1];
         // ctx.setLineDash([q1, qq2]);
         ctx.beginPath();
         ctx.moveTo(0, 0);
@@ -191,7 +191,7 @@ function drawBg(ctx, dbg1, dbg2, lineType, writerSize, colors) {
 
     if (dbg2) {
 
-        ctx.strokeStyle = colors[1];
+        ctx.strokeStyle = `rgba(${111},${111},${111}, .215)`;
         ctx.beginPath();
         ctx.lineCap = lineType;
         ctx.moveTo(ctx.canvas.width / 3, 0);
@@ -517,6 +517,7 @@ export default class HanziPlotter {
         dimension = 100,
         speed = 1,
         lineThickness = 2,
+        gridThickness = 1,
         jitterAmp = 0,
         colors = ['#0f0'],
         lineType = "round",
@@ -528,6 +529,7 @@ export default class HanziPlotter {
         useMask = false,
         canvas = null,
         blendMode = 'normal',
+        dontLoadIfMissing = false,
     }) {
         this.character = character;
         this.strokes_ = strokes;
@@ -536,13 +538,15 @@ export default class HanziPlotter {
         this.speed = speed;
         this.seed = Math.random() * 1000;
         this.lineThickness = lineThickness;
+        this.gridThickness = gridThickness;
         this.jitterAmp = jitterAmp;
         this.colors = colors;
         this.lineType = lineType;
         this.clickAnimation = clickAnimation;
+        this.dontLoadIfMissing = dontLoadIfMissing;
         this.strokeAttempts = 0;
         this.state = state;
-        this.clearBackground = clearBackground;
+        this.clearBackground = true;
         this.loadPromise = null;
         this.blendMode = blendMode;
 
@@ -568,13 +572,17 @@ export default class HanziPlotter {
         
         if(canvas){
             this.canvas = canvas;
+            this.canvas.width = this.dimension;
+            this.canvas.height = this.dimension;
+            // this.canvas.style.width = this.dimension/2 + 'px';
+            // this.canvas.style.height = this.dimension/2 + 'px';
             this.ctx = this.canvas.getContext('2d');
         }else{
             this.canvas = document.createElement('canvas');
             this.canvas.width = this.dimension;
             this.canvas.height = this.dimension;
-            this.canvas.style.width = this.dimension/2 + 'px';
-            this.canvas.style.height = this.dimension/2 + 'px';
+            // this.canvas.style.width = this.dimension/2 + 'px';
+            // this.canvas.style.height = this.dimension/2 + 'px';
             this.ctx = this.canvas.getContext('2d');
         }
         this.init();
@@ -600,7 +608,7 @@ export default class HanziPlotter {
             this.animationProgress = 0;
             this.animationFrame = null;
             this.loadPromise = Promise.resolve();
-        } else {
+        } else if(this.dontLoadIfMissing) {
             this.loadPromise = this.loadStrokeData(this.onDataReady.bind(this));
         }
     }   
@@ -636,14 +644,43 @@ export default class HanziPlotter {
     }
 
     destroyy() {
-        this.canvas.removeEventListener('click', this.startAnimation);
         this.isDestroyed = true;
-        // check event listeners
-        cancelAnimationFrame(this.animationFrame);
-        this.animationFrame = null;
-        this.isAnimating = false;
-        //remove all click event listeners on canvas
-
+        
+        // Cancel any ongoing animations
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+            this.animationFrame = null;
+        }
+        if (this.strokeAnimationFrame) {
+            cancelAnimationFrame(this.strokeAnimationFrame);
+            this.strokeAnimationFrame = null;
+        }
+        if (this.interpAnimFrame) {
+            cancelAnimationFrame(this.interpAnimFrame);
+            this.interpAnimFrame = null;
+        }
+        if (this.demoAnimationFrame) {
+            cancelAnimationFrame(this.demoAnimationFrame);
+            this.demoAnimationFrame = null;
+        }
+        
+        // Remove event listeners
+        if (this.canvas) {
+            this.canvas.removeEventListener('mousedown', this.startUserDrawing);
+            this.canvas.removeEventListener('mousemove', this.userStrokeMove);
+            this.canvas.removeEventListener('mouseup', this.userStrokeEnded);
+            this.canvas.removeEventListener('mouseout', this.userStrokeEnded);
+            this.canvas.removeEventListener('touchstart', this.handleTouchStart);
+            this.canvas.removeEventListener('touchmove', this.handleTouchMove);
+            this.canvas.removeEventListener('touchend', this.handleTouchEnd);
+            
+            if (this.clickListener) {
+                this.canvas.removeEventListener('click', this.clickListener);
+            }
+        }
+        
+        this.canvas = null;
+        this.ctx = null;
     }
 
     setupDrawingEvents() {
@@ -1159,6 +1196,10 @@ export default class HanziPlotter {
         this.colors = colors;
     }
 
+    setGridThickness(thickness) {
+        this.gridThickness = thickness;
+    }
+
     displayGrid() {
         this.showGrid = true;
     }
@@ -1207,8 +1248,7 @@ export default class HanziPlotter {
             this.ctx.fillStyle = this.colors[3];
             this.ctx.fillRect(0, 0, this.dimension, this.dimension);
         }
-        
-        drawBg(this.ctx, this.showDiagonals, this.showGrid, this.lineType, this.dimension, this.colors);
+        drawBg(this.ctx, this.showDiagonals, this.showGrid, this.lineType, this.dimension, this.colors, this.gridThickness);
 
         if(this.demoMode && !this.isAnimatingInterp){
             
@@ -1230,48 +1270,15 @@ export default class HanziPlotter {
         this.startAnimation();
     }
 
-    async startAnimationOld() {
-        if (this.isAnimating) return; // Prevent multiple calls
-        this.isAnimating = true;
-    
-        for (let i = 0; i < this.originalStrokes.length; i++) {
-            await this.animateSingleStroke(i);
-            // Wait 400ms after each stroke
-            await new Promise(resolve => setTimeout(resolve, 400));
-        }
-    
-        this.isAnimating = false;
-    }
-    
-    animateSingleStroke(index) {
-        return new Promise(resolve => {
-            const stroke = this.originalStrokes[index];
-            const numPoints = stroke.length;
-            const duration = numPoints / this.speed; // duration in ms
-    
-            const startTime = Date.now();
-    
-            const animate = () => {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-    
-                this.clearBg();
-                this.draw({ progress: 1, clearbg: false, alpha: 0.35 }); // draw completed strokes with some alpha
-                this.drawStroke(stroke, progress);
-    
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    resolve();
-                }
-            };
-    
-            animate();
-        });
-    }
-
     async startAnimation() {
         await this.loadPromise;
+        
+        // Set animation state flag
+        this.isAnimating = true;
+        
+        // Store a unique animation ID to track the current animation
+        const animationId = Math.random().toString(36).substring(2);
+        this.currentAnimationId = animationId;
       
         let workingStrokes = this.originalStrokes?.map(stroke =>
           stroke.map(({ x, y }) => ({ x, y }))
@@ -1291,16 +1298,20 @@ export default class HanziPlotter {
         this.clearBg();
       
         const numStrokes = this.originalStrokes.length;
-        this.isAnimating = true;
       
         // Helper function to animate a single stroke from 0 to 1
         const animateStroke = (strokeIndex) =>
           new Promise(resolve => {
             let startTime = null;
-
             let progressDuration = 10 * strokes[strokeIndex].length;
       
             const animate = timestamp => {
+              // Check if this animation was interrupted
+              if (this.currentAnimationId !== animationId || !this.isAnimating) {
+                resolve('interrupted');
+                return;
+              }
+
               if (!startTime) startTime = timestamp;
               const elapsed = timestamp - startTime;
               let progress = Math.min(elapsed / progressDuration, 1);
@@ -1310,101 +1321,92 @@ export default class HanziPlotter {
               this.drawPartial(strokes, strokeIndex, progress, 1);
       
               if (progress < 1) {
-                if(!this.isAnimating){
-                  return;
-                }
                 this.animationFrame = requestAnimationFrame(animate);
               } else {
-
-                resolve();
+                resolve('completed');
               }
             };
       
-            if(!this.isAnimating){
-                return;
-              }
             this.animationFrame = requestAnimationFrame(animate);
           });
       
         for (let currentStrokeIndex = 0; currentStrokeIndex < numStrokes; currentStrokeIndex++) {
-          // Animate current stroke over 600ms (adjust as needed)
-          if(!this.isAnimating){
-            return;
+          // Check if animation was interrupted before each stroke
+          if (this.currentAnimationId !== animationId || !this.isAnimating) {
+            break;
           }
-          await animateStroke(currentStrokeIndex);
-          // Wait 400ms delay before next stroke
-          await new Promise(r => setTimeout(r, 160));
+          
+          // Animate current stroke
+          const result = await animateStroke(currentStrokeIndex);
+          if (result === 'interrupted') {
+            break;
+          }
+          
+          // Wait between strokes, but make this interruptible
+          if (currentStrokeIndex < numStrokes - 1) {
+            const delayStart = Date.now();
+            const delayTime = 160; // 160ms delay
+
+            // Instead of a blocking timeout, use a loop that checks for interruptions
+            while (Date.now() - delayStart < delayTime) {
+              // Check if animation was interrupted during the delay
+              if (this.currentAnimationId !== animationId || !this.isAnimating) {
+                break;
+              }
+              // Small non-blocking delay
+              await new Promise(r => setTimeout(r, 10));
+            }
+            
+            // Check again after the delay loop
+            if (this.currentAnimationId !== animationId || !this.isAnimating) {
+              break;
+            }
+          }
         }
       
-        this.stopAnimation();
+        // Only clean up if this animation wasn't already stopped
+        if (this.currentAnimationId === animationId) {
+          this.stopAnimation();
+        }
+        
         this.ctx.restore();
       }
-      
-
-    async startAnimationOOld() {    
-        if(this.isQuizing){
-            return;
-        }
-        if(this.isDestroyed){
-            return;
-        }
-        this.isAnimating = true;
-        this.startTime = Date.now();
-        let numPoints = 0;
-        this.originalStrokes.forEach(stroke => numPoints += stroke.length);
-        const duration = numPoints / this.speed;
-        let framenum = 0;
-        let delay = 600;
-        const animate = () => {
-            if (!this.isAnimating) return;
-            const elapsed = Date.now() - this.startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            const underlay = Math.max(.35, Math.min(progress*4, 0.35))
-            this.clearBg();
-            this.draw({ progress: 1, clearbg: false, onDrawComplete: null, alpha: underlay });
-            this.draw({ progress: progress, clearbg: false, onDrawComplete: null, alpha: 1 });
-
-            if (progress < 1) {
-                // this.animationFrame = requestAnimationFrame(animate);
-                this.animationFrame = requestAnimationFrame(animate);
-            } else {
-                this.stopAnimation();
-            }
-            framenum++;
-        };
-        this.animationFrame = requestAnimationFrame(animate);
-    }
 
     stopAnimation() {
+        // Set all animation state flags to false first
         this.isAnimating = false;
+        this.isAnimatingStroke = false;
+        this.isAnimatingInterp = false;
+        
+        // Cancel all animation frames
         if (this.animationFrame) {
             cancelAnimationFrame(this.animationFrame);
             this.animationFrame = null;
         }
-        if(this.strokeAnimationFrame){
+        if (this.strokeAnimationFrame) {
             cancelAnimationFrame(this.strokeAnimationFrame);
-            this.clearBg();
-            this.isAnimatingStroke = false;
+            this.strokeAnimationFrame = null;
         }
-        if(this.interpAnimFrame){
+        if (this.interpAnimFrame) {
             cancelAnimationFrame(this.interpAnimFrame);
-            this.clearBg();
-            this.isAnimatingInterp = false;
+            this.interpAnimFrame = null;
         }
+        if (this.demoAnimationFrame) {
+            cancelAnimationFrame(this.demoAnimationFrame);
+            this.demoAnimationFrame = null;
+        }
+        
+        // Reset any ongoing animation state
+        this.strokeStartTime = null;
+        this.startTime = null;
+        this.currentAnimationId = null;
+        this.demoMode = false;
+        
+        // Generate a new seed for jitter to ensure visual difference when restarting
         this.seed = Math.random() * 1000;
-    }
-
-    async loadPinyinEnglish() {
-        try {
-            this.pinyinAndEnglish = await getPinyinEnglishFor(this.char);
-
-            if (this.pinyinAndEnglish && this.pinyinAndEnglish.pinyin) {
-                this.pinyinElement.textContent = this.pinyinAndEnglish.pinyin;
-            }
-        } catch (error) {
-            console.error('Error getting pinyin and English:', error);
-        }
+        
+        // Clear any background content that might be showing from another character
+        // this.clearBg();
     }
 
     async draw(config = {}) {

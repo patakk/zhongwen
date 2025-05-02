@@ -135,7 +135,7 @@ export default {
   mounted() {
     // Initialize
     this.setupCanvas();
-    this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+    this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark' || document.documentElement.getAttribute('data-theme') === 'theme2';
     
     // Set up theme change observer
     this.setupThemeObserver();
@@ -218,7 +218,7 @@ export default {
         mutations.forEach((mutation) => {
           if (mutation.attributeName === 'data-theme') {
             // Update isDarkMode flag when theme changes
-            this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark' || document.documentElement.getAttribute('data-theme') === 'theme2';
             
             // Redraw with new theme colors
             this.redrawCurrentCard();
@@ -1032,13 +1032,6 @@ html, body {
   max-height: 300px;
   overflow-y: auto;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
-}
-
-[data-theme="theme1"] #deck-options.show {
-  box-shadow: none;
-  border: 3px solid var(--fg);
-  border-radius: 1em;
-  box-shadow: 4px 4px 0px 0px var(--fg);
 }
 
 .option {

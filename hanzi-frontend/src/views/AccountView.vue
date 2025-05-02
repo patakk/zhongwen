@@ -696,27 +696,6 @@ h2 {
 }
 
 
-[data-theme="theme1"] .btn {
-    box-shadow: none;
-    border: 3px solid black;
-    border-radius: 1em;
-    box-shadow: 4px 4px 0px 0px var(--fg);
-}
-  
-  [data-theme="theme1"] .btn:hover {
-    box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-    box-shadow: 2px 2px 0px 0px var(--fg);
-    transform: translate(2px, 2px);
-    color: var(--fg);
-  }
-  
-[data-theme="theme1"] .btn-danger:hover {
-  color: var(--bg);
-}
-
-[data-theme="theme1"] .btn-danger:hover {
-  color: var(--bg);
-}
 
 .btn-small {
   padding: .2rem .5rem;
@@ -902,6 +881,7 @@ h2 {
     padding: 1rem;
     border: none;
     border-radius: 8px;
+    box-shadow: none !important;
     background: none;
   }
 

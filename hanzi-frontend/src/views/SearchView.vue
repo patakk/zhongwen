@@ -29,6 +29,16 @@
         </div>
       </PreloadWrapper>
     </div>
+    
+    <!-- Scroll to top button -->
+    <button 
+      v-if="showScrollTop" 
+      @click="scrollToTop" 
+      class="scroll-to-top-button"
+      aria-label="Scroll to top"
+    >
+      ↑
+    </button>
   </div>
 </template>
 
@@ -46,6 +56,7 @@ export default {
       query: '',
       results: [],
       isLoading: false,
+      showScrollTop: false, // New property for scroll-to-top button visibility
     };
   },
   created() {
@@ -79,6 +90,16 @@ export default {
         this.doSearch();
       }
     }
+  },
+  mounted() {
+    // Add event listener for scroll
+    window.addEventListener('scroll', this.handleScroll);
+    // Initial check for scroll position
+    this.handleScroll();
+  },
+  beforeUnmount() {
+    // Remove scroll event listener when component is unmounted
+    window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
     async doSearch() {
@@ -135,6 +156,16 @@ export default {
       result += text.slice(last);
 
       return result;
+    },
+    
+    // New methods for scroll to top functionality
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    
+    handleScroll() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      this.showScrollTop = scrollTop > 200;
     }
   },
 };
@@ -191,10 +222,6 @@ export default {
   cursor: pointer;
 }
 
-[data-theme="theme1"] .result-cell {
-  border: 4px solid var(--fg);
-  border-radius: 1rem;
-}
 
 .hanzipinyin {
   display: flex;
@@ -219,6 +246,9 @@ export default {
 .renglish {
   color: var(--fg);
   flex: 12;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 600px) {
@@ -231,5 +261,33 @@ export default {
   }
 }
 
+/* Scroll to top button styles */
+.scroll-to-top-button {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--fg);
+  font-size: 2.1em;
+  padding: 0.5em;
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.scroll-to-top-button:hover {
+  background: color-mix(in oklab, var(--bg) 85%, var(--fg) 30%);
+  transform: translateY(-3px);
+  color: var(--fg);
+}
 </style>
 

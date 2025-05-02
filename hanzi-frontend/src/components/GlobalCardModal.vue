@@ -171,7 +171,10 @@
 
               <ExpandableExamples title="Words containing this character">
                 <template v-slot:afew="slotProps">
-                  <div class="example-words">
+                    <div 
+                    class="example-words first-words" 
+                    :class="{ 'collapsed-words': !slotProps.isExpanded }"
+                    >
                     <ClickableRow
                       v-for="(word, index) in activeCharData.example_words.slice(0, 5)"
                       :key="index"
@@ -179,20 +182,20 @@
                       :class="{ therest: !slotProps.isExpanded }"
                     >
                       <template #default>
-                        <div class="example-chinese-pinyin">
-                          <span class="example-chinese">{{ word }}</span>
-                          <span class="example-pinyin">
-                            {{ $toAccentedPinyin(activeCharData.pinyin[index]) }}
-                          </span>
-                        </div>
-                        <span class="example-meaning">{{ activeCharData.english[index] }}</span>
+                      <div class="example-chinese-pinyin">
+                        <span class="example-chinese">{{ word }}</span>
+                        <span class="example-pinyin">
+                        {{ $toAccentedPinyin(activeCharData.pinyin[index]) }}
+                        </span>
+                      </div>
+                      <span class="example-meaning">{{ activeCharData.english[index] }}</span>
                       </template>
                     </ClickableRow>
-                  </div>
+                    </div>
                 </template>
 
                 <template v-slot:therest="slotProps">
-                  <div class="example-words">
+                  <div class="example-words rest-words">
                     <ClickableRow
                       v-for="(word, index) in activeCharData.example_words.slice(5)"
                       :key="index + 5"
@@ -225,9 +228,11 @@
                          v-for="(charArray, component) in decompositionData[activeChar]" 
                          :key="component" 
                          class="decomp-group">
-                      <div class="decomp-component">
+                  <span class="component-char">{{ activeChar }}</span>
+                  <div class="decomp-component">
+                        <span class="component-label">↳</span>
                         <span class="component-char">{{ component }}</span>
-                        <span class="component-label">component in {{ activeChar }}</span>
+                        <span class="component-label-2">↘</span>
                       </div>
                       <div class="decomp-chars">
                         <span 
@@ -964,20 +969,15 @@ export default {
   display: grid;
   gap: 0rem;
   width: 100%;
+  box-sizing: border-box;
   min-width: 0;
-  background-color: color-mix(in oklab, var(--fg) 2%, var(--bg) 90%);
+  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
 }
 
-[data-theme="theme1"] .example-words {
-  border-radius: var(--pinyin-meaning-group-border-radius, 0);
-  border-radius: 2em;
-  border: var(--pinyin-meaning-group-border);
-  padding: .5em;
-  box-sizing: border-box;
-}
 
 .example-word-content {
   display: flex;
+  box-sizing: border-box;
   gap: 1rem;
   align-items: center;
   flex-direction: row;
@@ -1056,10 +1056,6 @@ export default {
 }
 
 
-[data-theme="theme1"] .tabs {
-  border-bottom: 3.5px solid var(--black);
-}
-
 .tab-btn {
   position: relative;
   font-size: 1.2rem;
@@ -1080,12 +1076,6 @@ export default {
   transform: translate(0, 3.5px);
 }
 
-[data-theme="theme1"] .tab-btn {
-  border-radius: .5em .5em 0 0;
-  border: 3.5px solid #0000;
-  border-bottom: 3.5px solid #0000;
-  transform: translate(0, 3.5px);
-}
 
 .tab-btn.active {
   border: 3.5px solid color-mix(in oklab, var(--fg) 55%, var(--bg) 50%);
@@ -1096,11 +1086,6 @@ export default {
   border-bottom: 3.5px solid #0000;
 }
 
-[data-theme="theme1"] .tab-btn.active {
-  border: 3.5px solid var(--black);
-  transform: translate(0, 3.5px);
-  border-bottom: 3.5px solid #0000;
-}
 
 .char-details {
   display: grid;
@@ -1122,10 +1107,6 @@ export default {
   border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 15%);
 }
 
-[data-theme="theme1"] .detail-group {
-  /* border-bottom: 3px solid #5b849e; */
-}
-
 .radicals-group {
   height: auto;
 
@@ -1145,7 +1126,7 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 2;
-  background-color: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
+  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
   height: 100%;
   justify-self: flex-start;
   align-items: center;
@@ -1153,12 +1134,8 @@ export default {
   border: var(--pinyin-meaning-group-border);
   border-radius: var(--pinyin-meaning-group-border-radius, 0);
   /* justify-content: space-around; */
+  box-sizing: border-box;
 }
-
-[data-theme="theme1"] .freq-trad {
-  /* background: rgb(219, 231, 222); */
-}
-
 
 .hanzi-anim {
   flex: 1;
@@ -1166,11 +1143,13 @@ export default {
   justify-content: left;
   align-items: center;
   line-height: 1;
+  box-sizing: border-box;
 }
 
 .anim-character {
   /* font-size: 12rem;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体'; */
+  box-sizing: border-box;
 }
 
 .radicals {
@@ -1225,10 +1204,10 @@ export default {
 }
 
 .decomp-section {
-  height: auto !important;
-  margin-top: 1rem !important;
-  padding: 1rem !important;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%) !important;
+  height: auto;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 }
 
 .decomposition-items {
@@ -1261,19 +1240,9 @@ export default {
 .decomp-char {
   font-size: 1.5rem;
   padding: 0.3rem 0.7rem;
-  background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 92%);
+  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
   cursor: pointer;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
-}
-
-[data-theme="theme1"] .decomp-section {
-  border-radius: 2em;
-  /* border: var(--thin-border-width) solid #ff7a49 !important; */
-}
-
-[data-theme="theme1"] .decomp-char {
-  border-radius: .5em;
-  border: 2px solid var(--animated-hanzi-border-color);
 }
 
 
@@ -1289,8 +1258,18 @@ export default {
 }
 
 .component-label {
-  font-size: 0.9rem;
-  opacity: 0.6;
+  font-size: 1.8rem;
+  opacity: 0.36;
+  position: relative;
+  top: -.65rem;
+}
+
+.component-label-2 {
+  font-size: 1.8rem;
+  opacity: 0.36;
+  position: relative;
+  top: .6rem;
+  left: -.2em;
 }
 
 .wordlist-dropdown {
@@ -1313,16 +1292,6 @@ export default {
   background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
 }
 
-[data-theme="theme1"] .wordlist-btn {
-  background-color: var(--orange);
-  color: var(--orange-dim);
-  border-radius: 1em;
-}
-
-[data-theme="theme1"] .wordlist-btn:hover {
-  color: var(--orange-dim);
-  opacity: 1;
-}
 
 .plus-icon {
   font-size: 1.2rem;
@@ -1360,28 +1329,9 @@ export default {
   gap: 0.5rem;
 }
 
-[data-theme="theme1"] .create-list-item {
-  border-bottom-left-radius: 1em;
-  border-bottom-right-radius: 1em;
-}
 
 .create-icon {
   font-weight: bold;
-}
-
-[data-theme="theme1"] .dropdown-content {
-  border-radius: 1em;
-  border-width: 2px;
-}
-
-[data-theme="theme1"] .dropdown-content div:first-child {
-  border-top-left-radius: 1em;
-  border-top-right-radius: 1em;
-}
-
-[data-theme="theme1"] .wordlist-item {
-  /* border-radius: 1em; */
-  border-width: 2px;
 }
 
 .no-lists {
@@ -1471,17 +1421,6 @@ export default {
   padding: 0.5rem 1rem;
   cursor: pointer;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-}
-
-[data-theme="theme1"] .concept-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  background-color: var(--orange);
-  color: var(--orange-dim);
-  border-radius: 1em;
 }
 
 .concept-toggle.active {

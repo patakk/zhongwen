@@ -740,9 +740,6 @@ html, body {
   border: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
 }
 
-[data-theme="theme1"] .grid-item {
-  border-radius: 1em;
-}
 
 .grid-item:hover {
 }

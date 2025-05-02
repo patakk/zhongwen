@@ -20,7 +20,7 @@
           Loading random words...
         </div>
         <div v-else class="word-grid">
-          <div v-for="(word, index) in randomWords" :key="index" class="word-item">
+          <div v-for="(word, index) in randomWords" :key="index" class="home-word-item">
             <PreloadWrapper :character="word.character">
               <span class="chinese-word">{{ word.character }}</span>
             </PreloadWrapper>
@@ -301,7 +301,7 @@ h2 {
   margin-top: 1rem;
 }
 
-.word-item {
+.home-word-item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -347,6 +347,7 @@ h2 {
 input.search-input {
   flex: 1;
   min-width: 200px; /* This ensures the input doesn't get too narrow before wrapping */
+  
 }
 
 .mpinyin {

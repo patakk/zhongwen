@@ -696,9 +696,6 @@
     box-sizing: border-box;
   }
 
-  [data-theme="theme1"] .wordlist-container {
-    border-radius: 2em;
-  }
   
   /* Responsive styling for mobile */
   @media (max-width: 768px) {
@@ -759,10 +756,6 @@
     width: 100%;
   }
 
-  [data-theme="theme1"] #selected-deck {
-    border-radius: 1em;
-  }
-
   #selected-deck:hover {
     background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 75%);
   }
@@ -787,15 +780,6 @@
     border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
   }
 
-[data-theme="theme1"] #deck-options {
-}
-
-[data-theme="theme1"] #deck-options.show {
-  box-shadow: none;
-  border: 3px solid var(--fg);
-  border-radius: 1em;
-  box-shadow: 4px 4px 0px 0px var(--fg);
-}
 
   .option {
     padding: 10px 15px;
@@ -931,19 +915,6 @@
     box-shadow: 0 2px 6px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   }
 
-  [data-theme="theme1"] .nav-button {
-    box-shadow: none;
-    border: 3px solid var(--fg);
-    border-radius: 1em;
-    box-shadow: 4px 4px 0px 0px var(--fg);
-  }
-  
-  [data-theme="theme1"] .nav-button:hover {
-    box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-    box-shadow: 2px 2px 0px 0px var(--fg);
-    transform: translate(2px, 2px);
-    color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
-  }
   
   .download-button {
     outline: none;
@@ -966,10 +937,6 @@
     padding: .3rem;
   }
 
-  [data-theme="theme1"] .word-item {
-    border: var(--thin-border-width) solid var(--pink-light);
-    border-radius: 1em;
-  }
   
   .word-item:hover {
     background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
@@ -1071,20 +1038,6 @@
   }
 
 
-  [data-theme="theme1"] .action-button {
-      box-shadow: none;
-      border: 3px solid var(--fg);
-      border-radius: 1em;
-      box-shadow: 4px 4px 0px 0px var(--fg);
-  }
-    
-  [data-theme="theme1"] .action-button:hover {
-    box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-    box-shadow: 2px 2px 0px 0px var(--fg);
-    transform: translate(2px, 2px);
-    color: var(--fg);
-  }
-  
   .create-button {
     background: color-mix(in oklab, var(--fg) 10%, var(--bg) 50%);
     color: var(--fg);

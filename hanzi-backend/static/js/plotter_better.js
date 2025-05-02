@@ -1246,6 +1246,10 @@ class HanziPlotter {
             }
         };
     
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+            this.animationFrame = null;
+        }
         this.animationFrame = requestAnimationFrame(animate);
     }
 

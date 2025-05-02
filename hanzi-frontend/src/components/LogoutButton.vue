@@ -42,17 +42,4 @@
     cursor: not-allowed;
   }
   
-  [data-theme="theme1"] .logout-btn {
-      box-shadow: none;
-      border: 3px solid black;
-      border-radius: 1em;
-      box-shadow: 4px 4px 0px 0px rgb(0, 0, 0);
-    }
-    
-  [data-theme="theme1"] .logout-btn:hover {
-    box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-    box-shadow: 2px 2px 0px 0px var(--fg);
-    transform: translate(2px, 2px);
-    color: var(--bg);
-  }
   </style>

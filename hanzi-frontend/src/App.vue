@@ -2,7 +2,8 @@
   <div id="app" :data-theme="theme">
     <button class="theme-toggle" @click="toggleTheme">
       <font-awesome-icon :icon="['fas', 'moon']" v-if="theme === 'dark'" />
-      <font-awesome-icon :icon="['fas', 'palette']" v-else-if="theme === 'theme1'" />
+      <font-awesome-icon :icon="['fas', 'sun']" v-else-if="theme === 'theme1'" />
+      <font-awesome-icon :icon="['fas', 'moon']" v-else-if="theme === 'theme2'" />
       <font-awesome-icon :icon="['fas', 'sun']" v-else />
     </button>
     <router-view />
@@ -104,12 +105,14 @@ const checkBackendConnectivity = async () => {
 
 const toggleTheme = () => {
   // Cycle through three themes: theme1 -> light -> dark -> theme1
-  if (theme.value === 'theme1') {
+  if (theme.value === 'theme2') {
     theme.value = 'light'
   } else if (theme.value === 'light') {
     theme.value = 'dark'
-  } else {
+  } else if (theme.value === 'dark') {
     theme.value = 'theme1'
+  } else if (theme.value === 'theme1') {
+    theme.value = 'theme2'
   }
   
   localStorage.setItem('theme', theme.value)

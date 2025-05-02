@@ -248,7 +248,7 @@ export default {
     drawCanvasBg(){
       this.ctx.save();
       this.ctx.strokeStyle = this.isDarkMode ? '#fff5' : '#0005';
-      this.ctx.lineWidth = 1;
+      this.ctx.lineWidth = 3;
       this.ctx.beginPath();
       this.ctx.moveTo(0, 0);
       this.ctx.lineTo(this.canvas.width, this.canvas.height);
@@ -412,7 +412,7 @@ export default {
 .drawing-container {
   width: 100%;
   max-width: 400px;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .drawing-canvas {
@@ -422,7 +422,8 @@ export default {
   border-radius: var(--modal-border-radius, 0);
   box-shadow: var(--card-shadow);
   cursor: crosshair;
-  touch-action: none; /* Prevents browser handling of touch events */
+  touch-action: none;
+  box-sizing: border-box;
 }
 
 .drawing-controls {
@@ -443,24 +444,11 @@ export default {
   transition: background-color 0.2s;
 }
 
-[data-theme="theme1"] .control-button {
-    box-shadow: none;
-    border: 3px solid black;
-    border-radius: 1em;
-    box-shadow: 4px 4px 0px 0px var(--fg);
-}
 
 .control-button:hover {
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
 }
 
-[data-theme="theme1"] .control-button:hover {
-  background-color: var(--card-bg);
-  box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  box-shadow: 2px 2px 0px 0px var(--fg);
-  transform: translate(2px, 2px);
-  color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
-}
 
 .loading-indicator {
   margin-top: 2rem;

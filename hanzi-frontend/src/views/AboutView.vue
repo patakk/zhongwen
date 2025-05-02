@@ -82,14 +82,6 @@ export default {
   padding: 1rem;
 
 }
-
-[data-theme="theme1"] .about-section {
-  box-shadow: var(--card-shadow);
-  background-color: var(--card-bg);
-  border: var(--card-border);
-  border-radius: var(--modal-border-radius, 0);
-}
-
 .container {
   width: 60%;
   max-width: 1200px;

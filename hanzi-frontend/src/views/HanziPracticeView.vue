@@ -57,12 +57,27 @@
         </div>
 
         <div class="control-buttons">
-          <button @click="previousCharacter" class="btn nav-previous">
-            Previous
-          </button>
-          <button  v-if="!skipState" @click="showHelp" class="btn nav-help">
-            Help
-          </button>
+          <div v-if="!skipState">
+              <!-- <button :style="{ opacity: skipState ? 0 : 1 }" @click="showHelp" class="btn nav-help"> -->
+                <button :class="{ greyed: skipState }" @click="showHelp" class="btn nav-help">
+                Help
+                </button>
+              </div>
+              <div v-else>
+                <button :class="{ greyed: skipState }" @click="showHelp" class="btn nav-help">
+                Help
+                </button>
+         </div>
+          <div v-if="!skipState">
+            <button @click="previousCharacter" class="btn nav-previous">
+              Previous
+            </button>
+          </div>
+          <div v-else>
+            <button @click="previousCharacter" class="btn nav-previous">
+              Previous
+            </button>
+         </div>
           <button id="action-btn" @click="contextAction" class="btn primary-action"
             :class="{ 'action-reveal': !skipState, 'action-next': skipState }">
             {{ actionText }}
@@ -122,7 +137,8 @@ export default defineComponent({
         medians: [],
         strokes: []
       },
-      cachedStrokes: null,
+      cachedStrokes: null, 
+      strokeCache: {}, 
       
       // Practice state
       skipState: 0,
@@ -160,7 +176,7 @@ export default defineComponent({
       return this.skipState ? 'fa-forward-step' : 'fa-eye';
     },
     actionText() {
-      return this.skipState ? 'Next' : 'Show';
+      return this.skipState ? 'Next' : 'Reveal';
     },
     navIcon() {
       return this.skipState ? 'fa-rotate' : 'fa-backward-step';
@@ -190,7 +206,7 @@ export default defineComponent({
     isDarkMode() {
       if (this.plotter) {
         // Update plotter colors when theme changes
-        const colors = this.getThemeColors(this.isDarkMode);
+        const colors = this.getThemeColors(document.documentElement.getAttribute('data-theme'));
         this.plotter.setColors(colors);
       }
     }
@@ -234,10 +250,19 @@ export default defineComponent({
     }
   },
   methods: {
-    getThemeColors(isDark) {
-      return isDark 
-        ? ['#ffffffee', '#ffffffee', '#cdb3dfdd', '#151515'] 
-        : ['#000000ee', '#00000077', '#cdb3dfdd', '#f3f3f3'];
+    getThemeColors(theme) {
+      if(theme === 'dark') {
+        return ['#ffffffee', '#ffffffee', '#cdb3dfdd', '#151515'];
+      }
+      if(theme === 'light') {
+        return ['#000000ee', '#00000077', '#cdb3dfdd', '#f3f3f3'];
+      }
+      if(theme === 'theme1') {
+        return ['#000000ee', '#00000077', '#cdb3dfdd', '#f3f3f3'];
+      }
+      if(theme === 'theme2') {
+        return ['#000000ee', '#00000077', '#cdb3dfdd', '#f3f3f3'];
+      }
     },
     
     initPlotter() {
@@ -259,15 +284,17 @@ export default defineComponent({
         dimension: 800,
         speed: 0.075,
         lineThickness: 8 * 800 / 200,
+        gridThickness: 1,
         jitterAmp: 0,
-        colors: this.getThemeColors(this.isDarkMode),
+        colors: this.getThemeColors(document.documentElement.getAttribute('data-theme')),
         showDiagonals: true,
         showGrid: false,
         clickAnimation: false,
         clearBackground: true,
         useMask: true,
         blendMode: 'normal',
-        canvas: canvas
+        canvas: canvas,
+        dontLoadIfMissing: true,
       });
       
       // If we have stroke data, replace it in the plotter
@@ -375,21 +402,27 @@ export default defineComponent({
     
     async loadStrokeData(character, onLoad=null) {
       try {
-        // If we already have the character's stroke data cached, reuse it
-        if (this.cachedStrokes && this.cachedStrokes.character === character) {
+        // If we already have the character's stroke data cached, use it without any network request
+        if (this.strokeCache[character]) {
+          this.cachedStrokes = this.strokeCache[character];
           if (onLoad) onLoad();
           return;
         }
         
+        // Only make the API call if the character isn't in the cache
         const response = await fetch(`/api/getStrokes/${character}`);
+        
         if (!response.ok) {
           console.error('Network response was not ok for character:', character);  
           return;
         }
         
         const data = await response.json();
+        data.character = character;
+        
+        // Store in both the current cache and the multi-character cache
         this.cachedStrokes = data;
-        this.cachedStrokes.character = character;
+        this.strokeCache[character] = data;
         
         if (onLoad) {
           onLoad();
@@ -397,7 +430,7 @@ export default defineComponent({
       } catch (error) {
         console.error('Error loading character data:', error);
       }
-    },
+    },  
     
     async showWord() {
       this.showPinyin = false;
@@ -420,11 +453,20 @@ export default defineComponent({
         this.wordTotalStrokeCount = 0;
         this.skipState = 0;
         
-        // Load stroke data for current character
-        await this.loadStrokeData(this.currentCharacter, () => {
-          this.strokeData = this.cachedStrokes;
+        // PROBLEM IS HERE - We're loading the character even if it's already in the cache
+        // Using the cached data directly instead of calling loadStrokeData again
+        if (this.strokeCache[this.currentCharacter]) {
+          // Use cached data directly
+          this.strokeData = this.strokeCache[this.currentCharacter];
+          this.cachedStrokes = this.strokeData;
           this.initPlotter();
-        });
+        } else {
+          // Only load if not in cache
+          await this.loadStrokeData(this.currentCharacter, () => {
+            this.strokeData = this.strokeCache[this.currentCharacter];
+            this.initPlotter();
+          });
+        }
         
         // Preload next character's stroke data
         const nextIdx = (this.currentIndex + 1) % this.shuffledWords.length;
@@ -545,6 +587,11 @@ export default defineComponent({
     },
     
     skipOrNext() {
+      if (this.plotter && this.plotter.loadPromise && 
+        this.plotter.loadPromise instanceof Promise && 
+        this.plotter.loadPromise.isPending) {
+        return;
+    }
       if (this.skipState === 0) {
         // Currently in draw mode - perform "Show" action
         // Show the answer (give up)
@@ -570,6 +617,35 @@ export default defineComponent({
           // Wrap around to the beginning and increment the character iterator
           this.currentIndex = 0;
           this.charIterator++;
+        }
+        
+        // Ensure all animations are stopped before showing next word
+        if (this.plotter) {
+          this.plotter.stopAnimation();
+          this.plotter.demoMode = false;
+          this.plotter.isQuizing = false;
+          this.plotter.quizComplete = false;
+          this.plotter.isAnimating = false;
+          this.plotter.isAnimatingStroke = false;
+          this.plotter.isAnimatingInterp = false;
+          
+          // Cancel all animations explicitly
+          if (this.plotter.animationFrame) {
+            cancelAnimationFrame(this.plotter.animationFrame);
+            this.plotter.animationFrame = null;
+          }
+          if (this.plotter.strokeAnimationFrame) {
+            cancelAnimationFrame(this.plotter.strokeAnimationFrame);
+            this.plotter.strokeAnimationFrame = null;
+          }
+          if (this.plotter.interpAnimFrame) {
+            cancelAnimationFrame(this.plotter.interpAnimFrame);
+            this.plotter.interpAnimFrame = null;
+          }
+          if (this.plotter.demoAnimationFrame) {
+            cancelAnimationFrame(this.plotter.demoAnimationFrame);
+            this.plotter.demoAnimationFrame = null;
+          }
         }
         
         this.showWord();
@@ -603,7 +679,7 @@ export default defineComponent({
             
             // Update plotter with new theme colors if it exists
             if (this.plotter) {
-              const colors = this.getThemeColors(this.isDarkMode);
+              const colors = this.getThemeColors(document.documentElement.getAttribute('data-theme'));
               this.plotter.setColors(colors);
               
               // Instead of completely redrawing, just update the colors without showing the full character
@@ -762,12 +838,6 @@ export default defineComponent({
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
 }
 
-[data-theme="theme1"] #deck-options.show {
-  box-shadow: none;
-  border: 3px solid var(--fg);
-  border-radius: 1em;
-  box-shadow: 4px 4px 0px 0px var(--fg);
-}
 
 .option {
   padding: 10px 15px;
@@ -804,13 +874,12 @@ export default defineComponent({
 #plotter-canvas {
   width: 100%;
   height: 100%;
-  max-width: 400px;
-  max-height: 400px;
   box-shadow: var(--card-shadow);
   
   border: var(--card-border);
   border-radius: var(--modal-border-radius, 0);
   background-color: var(--plotter-bg);
+  box-sizing: border-box;
 }
 
 .word-character {
@@ -857,7 +926,7 @@ export default defineComponent({
 
 .drawing-area {
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   aspect-ratio: 1;
   margin-bottom: 1.5rem;
   /* overflow: hidden; */
@@ -881,7 +950,7 @@ export default defineComponent({
   align-items: center;
   gap: 0.5rem;
   font-weight: bold;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background-color 0.2s, transform 0.1s, box-shadow 0.1s;
 }
 
 .btn:hover {
@@ -894,35 +963,6 @@ export default defineComponent({
 }
 
 
-[data-theme="theme1"] .btn {
-  box-shadow: none;
-  border: 3px solid var(--fg);
-  border-radius: 1em;
-  box-shadow: 4px 4px 0px 0px var(--fg);
-}
-  
-[data-theme="theme1"] .btn:hover {
-  box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  box-shadow: 2px 2px 0px 0px var(--fg);
-  transform: translate(2px, 2px);
-  color: color-mix(in oklab, var(--fg) 100%, var(--bg) 0%);
-}
-
-[data-theme="theme1"] .nav-help {
-  background-color: var(--yellow);
-}
-
-[data-theme="theme1"] .primary-action {
-  background-color: var(--bluey);
-}
-
-[data-theme="theme1"] .nav-previous {
-  background-color: var(--green);
-}
-
-[data-theme="theme1"] .nav-restart {
-  background-color: var(--pink-strong);
-}
 
 /* Primary action button styles */
 .primary-action {

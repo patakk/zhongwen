@@ -144,7 +144,7 @@ export default {
 
 .sidebar-open .sidebar {
   border-left: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
-  width: 200px;
+  width: 250px;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
 }
 
@@ -253,7 +253,7 @@ export default {
     right: 0;
     height: 100vh;
     width: 80%;
-    max-width: 150px;
+    max-width: 250px;
     z-index: 30;
   }
 }

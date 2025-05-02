@@ -1,4 +1,6 @@
 import './assets/main.css'
+import './assets/theme1.css'
+import './assets/theme2.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia' // You can remove if not using Pinia
@@ -11,9 +13,9 @@ import store from './stores'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSun, faMoon, faPencil, faBars, faPalette } from '@fortawesome/free-solid-svg-icons'
+import { faSun, faMoon, faPencil, faBars, faPalette, faArrowRotateRight, faPenFancy } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faSun, faMoon, faPencil, faBars, faPalette)
+library.add(faSun, faMoon, faPencil, faBars, faPalette, faArrowRotateRight, faPenFancy)
 
 // IMMEDIATELY clear login state on page load before checking backend
 localStorage.removeItem('userData');
