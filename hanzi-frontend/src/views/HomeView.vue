@@ -21,7 +21,7 @@
         </div>
         <div v-else class="word-grid">
           <div v-for="(word, index) in randomWords" :key="index" class="home-word-item">
-            <PreloadWrapper :character="word.character">
+            <PreloadWrapper :character="word.character" class="chinese-word-wrapper">
               <span class="chinese-word">{{ word.character }}</span>
             </PreloadWrapper>
             <span class="mpinyin">{{ word.pinyin }}</span>
@@ -320,9 +320,8 @@ h2 {
 }
 
 .chinese-word:hover {
-  box-shadow: var(--card-shadow);
-  border: var(--card-border);
 }
+
 
 .pinyin {
   color: var(--fg);

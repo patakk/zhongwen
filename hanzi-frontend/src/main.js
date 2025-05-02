@@ -21,6 +21,120 @@ library.add(faSun, faMoon, faPencil, faBars, faPalette, faArrowRotateRight, faPe
 localStorage.removeItem('userData');
 store.dispatch('logout');
 
+// Router-based Ko-fi widget control
+const setupKofiWidget = () => {
+  // Add style to head to control Ko-fi widget visibility
+  const style = document.createElement('style');
+  style.id = 'kofi-style-control';
+  style.textContent = '.floatingchat-container-wrap { display: none !important; }';
+  document.head.appendChild(style);
+
+  // Function to update Ko-fi visibility based on route
+  const updateKofiVisibility = () => {
+    const style = document.getElementById('kofi-style-control');
+    if (!style) return;
+    
+    if (window.location.pathname === '/about') {
+      style.textContent = '.floatingchat-container-wrap { display: block !important; }';
+      console.log('Ko-fi set to VISIBLE on about page');
+    } else {
+      style.textContent = '.floatingchat-container-wrap { display: none !important; }';
+      console.log('Ko-fi set to HIDDEN on page:', window.location.pathname);
+    }
+  };
+
+  // Create a more aggressive observer to watch for the Ko-fi widget
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList' && mutation.addedNodes.length) {
+        const kofiElements = document.querySelectorAll('.floatingchat-container-wrap');
+        if (kofiElements.length > 0) {
+          // Ko-fi widget found, update its visibility multiple times to ensure it sticks
+          updateKofiVisibility();
+          
+          // Schedule multiple updates to ensure visibility state persists
+          setTimeout(updateKofiVisibility, 100);
+          setTimeout(updateKofiVisibility, 500);
+          setTimeout(updateKofiVisibility, 1000);
+        }
+      }
+    }
+  });
+  
+  observer.observe(document.body, { 
+    childList: true, 
+    subtree: true,
+    attributes: true
+  });
+
+  // Update visibility on route change BEFORE and AFTER navigation
+  router.beforeEach((to, from, next) => {
+    console.log('Route changing from', from.path, 'to', to.path);
+    next();
+  });
+  
+  router.afterEach((to) => {
+    console.log('Route changed to', to.path);
+    
+    // Set correct visibility immediately
+    updateKofiVisibility();
+    
+    // And again after a delay to ensure it sticks
+    setTimeout(updateKofiVisibility, 100);
+    setTimeout(updateKofiVisibility, 500); 
+    setTimeout(updateKofiVisibility, 1000);
+    setTimeout(updateKofiVisibility, 2000);
+  });
+
+  // Initialize Ko-fi if not already loaded
+  const initKofi = () => {
+    if (document.getElementById('kofi-widget-script')) return;
+    
+    const script = document.createElement('script');
+    script.id = 'kofi-widget-script';
+    script.src = 'https://storage.ko-fi.com/cdn/scripts/overlay-widget.js';
+    script.onload = () => {
+      if (!window.kofiWidgetOverlay) return;
+      
+      // Wait a bit before initializing to make sure everything is ready
+      setTimeout(() => {
+        try {
+          window.kofiWidgetOverlay.draw('patakk', {
+            'type': 'floating-chat',
+            'floating-chat.donateButton.text': 'Contribute',
+            'floating-chat.donateButton.background-color': '#222',
+            'floating-chat.donateButton.text-color': '#fff',
+            'floating-chat.donateButton.windowPosition': 'right'
+          });
+          
+          // Update visibility based on current route
+          updateKofiVisibility();
+          
+          // And again after delays to make sure it sticks
+          setTimeout(updateKofiVisibility, 200);
+          setTimeout(updateKofiVisibility, 1000);
+        } catch (e) {
+          console.error('Failed to initialize Ko-fi widget:', e);
+        }
+      }, 300);
+    };
+    
+    document.head.appendChild(script);
+  };
+
+  // Initial visibility update
+  updateKofiVisibility();
+  
+  // Load Ko-fi widget once
+  initKofi();
+  
+  // Update visibility on page load
+  window.addEventListener('load', () => {
+    updateKofiVisibility();
+    setTimeout(updateKofiVisibility, 1000);
+  });
+};
+
 // Check if backend is available
 const checkBackendConnectivity = async () => {
   try {
@@ -85,6 +199,9 @@ const initApp = async () => {
   app.use(router)
   app.config.globalProperties.$toAccentedPinyin = toAccentedPinyin
   app.mount('#app')
+  
+  // Set up Ko-fi widget after app is mounted
+  setupKofiWidget();
 };
 
 // Start app initialization

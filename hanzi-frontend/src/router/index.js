@@ -21,7 +21,7 @@ const routes = [
   { path: '/register', component: Register },
   { path: '/account', component: Account },
   { path: '/delete-account', component: DeleteAccount },
-  { path: '/about', component: About },
+  { path: '/about', name: 'About', component: About },
 
   { path: '/grid', component: Grid },
   { path: '/search', name: 'SearchPage', component: Search },

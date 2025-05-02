@@ -19,6 +19,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Neuething Sans Test';
+  src: url('https://assets.hanzi.abcrgb.xyz/NeuethingVariableTest-boldExpanded.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
   --bg: rgb(255, 255, 255);
   --fg: rgb(254, 0, 0);
@@ -32,7 +39,7 @@
   --font-family: 'SF Mono Regular', monospace;
   --second-font: "Archivo Black";
   --second-font: Arial, Helvetica, sans-serif;
-  
+
   --font-size: 16px;
   --border-radius: 0px;
   --spacing-unit: 8px;
@@ -198,6 +205,11 @@ body {
   font-size: var(--font-size);
   color: var(--fg);
   background-color: var(--bg);
+}
+
+/* Hide Ko-fi widget */
+body:not(.about-page) .floatingchat-container-wrap {
+  display: none !important;
 }
 
 button {

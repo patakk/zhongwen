@@ -132,6 +132,7 @@ export default defineComponent({
           isQuizMode.value = false;
           plotter.value.isQuizing = false;
           plotter.value.quizComplete = false;
+          
         }
         
         // Always stop animation first to ensure clean state
@@ -150,11 +151,18 @@ export default defineComponent({
           cancelAnimationFrame(plotter.value.interpAnimFrame);
           plotter.value.interpAnimFrame = null;
         }
+        if (plotter.value.demoAnimationFrame) {
+          cancelAnimationFrame(plotter.value.demoAnimationFrame);
+          plotter.value.demoAnimationFrame = null;
+        }
         
         // Reset animation state
         plotter.value.isAnimating = false;
         plotter.value.isAnimatingStroke = false;
         plotter.value.isAnimatingInterp = false;
+
+        // Clear the canvas before starting new animation to prevent any visual artifacts
+        plotter.value.clearBg();
 
         // Start new animation after ensuring everything is reset
         setTimeout(() => {

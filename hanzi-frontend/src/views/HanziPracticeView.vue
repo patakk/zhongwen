@@ -666,6 +666,17 @@ export default defineComponent({
     
     contextAction() {
       // This is the method for the primary "Show/Next" button
+      if (this.skipState === 0 && this.plotter && this.plotter.demoMode) {
+        // If in help mode animation (fade), cancel it first to prevent interference
+        this.plotter.demoMode = false;
+        if (this.plotter.demoAnimationFrame) {
+          cancelAnimationFrame(this.plotter.demoAnimationFrame);
+          this.plotter.demoAnimationFrame = null;
+        }
+        // Clear the canvas to prevent blitzing
+        this.plotter.clearBg();
+      }
+      
       this.skipOrNext();
     },
     
@@ -1082,7 +1093,7 @@ export default defineComponent({
   .btn {
     width: 100%;
     justify-content: center;
-    /* font-size: 0.5rem; */
+    font-size: 1.25em;
   }
   
   .practice-view {
@@ -1100,6 +1111,7 @@ export default defineComponent({
   
   .control-buttons {
     font-size: 0.5rem;
+    box-sizing: border-box;
   }
 
   .full-word {
