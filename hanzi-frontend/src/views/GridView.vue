@@ -948,7 +948,7 @@ select {
   cursor: pointer;
   transform: translate(-50%, -50%);
   color: var(--fg);
-  font-size: 1.7em;
+  font-size: 1.5em;
   cursor: pointer;
   left: 1.5rem;
   top: 4rem;

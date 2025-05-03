@@ -139,6 +139,7 @@ export default defineComponent({
       },
       cachedStrokes: null, 
       strokeCache: {}, 
+      charInfoCache: {}, // Add cache for character info
       
       // Practice state
       skipState: 0,
@@ -310,6 +311,49 @@ export default defineComponent({
       this.setupQuizMode();
     },
     
+    initPlotterWithExistingData() {
+      const canvas = this.$refs.plotterCanvas;
+      if (!canvas) return;
+
+      canvas.width = 800;
+      canvas.height = 800;
+
+      if (this.plotter) {
+        // Reuse the existing plotter, just replace strokes
+        this.plotter.replaceStrokes(
+          this.currentCharacter,
+          this.strokeData.medians,
+          this.strokeData.strokes
+        );
+      } else {
+        // Create a new plotter if one doesn't exist
+        this.plotter = new HanziPlotter({
+          character: '', // Use empty string to prevent auto-loading
+          dimension: 800,
+          speed: 0.075,
+          lineThickness: 8 * 800 / 200,
+          gridThickness: 1,
+          jitterAmp: 0,
+          colors: this.getThemeColors(document.documentElement.getAttribute('data-theme')),
+          showDiagonals: true,
+          showGrid: false,
+          clickAnimation: false,
+          clearBackground: true,
+          useMask: true,
+          blendMode: 'normal',
+          canvas: canvas,
+          dontLoadIfMissing: true,
+        });
+        this.plotter.replaceStrokes(
+          this.currentCharacter,
+          this.strokeData.medians,
+          this.strokeData.strokes
+        );
+      }
+      // Set up quiz mode
+      this.setupQuizMode();
+    },
+    
     loadDecksFromStore() {
       this.decks = this.storeDecks;
     },
@@ -400,38 +444,6 @@ export default defineComponent({
       this.showWord();
     },
     
-    async loadStrokeData(character, onLoad=null) {
-      try {
-        // If we already have the character's stroke data cached, use it without any network request
-        if (this.strokeCache[character]) {
-          this.cachedStrokes = this.strokeCache[character];
-          if (onLoad) onLoad();
-          return;
-        }
-        
-        // Only make the API call if the character isn't in the cache
-        const response = await fetch(`/api/getStrokes/${character}`);
-        
-        if (!response.ok) {
-          console.error('Network response was not ok for character:', character);  
-          return;
-        }
-        
-        const data = await response.json();
-        data.character = character;
-        
-        // Store in both the current cache and the multi-character cache
-        this.cachedStrokes = data;
-        this.strokeCache[character] = data;
-        
-        if (onLoad) {
-          onLoad();
-        }
-      } catch (error) {
-        console.error('Error loading character data:', error);
-      }
-    },  
-    
     async showWord() {
       this.showPinyin = false;
       
@@ -445,56 +457,80 @@ export default defineComponent({
         // Get character position in word
         this.currentCharacter = currentWord[this.charIterator % currentWord.length];
         
-        // Fetch character info (English, pinyin)
-        await this.fetchCharacterInfo(this.currentWord);
-        
         // Reset practice state for this word
         this.wordTotalMistakeCount = 0;
         this.wordTotalStrokeCount = 0;
         this.skipState = 0;
         
-        // PROBLEM IS HERE - We're loading the character even if it's already in the cache
-        // Using the cached data directly instead of calling loadStrokeData again
-        if (this.strokeCache[this.currentCharacter]) {
-          // Use cached data directly
-          this.strokeData = this.strokeCache[this.currentCharacter];
-          this.cachedStrokes = this.strokeData;
-          this.initPlotter();
-        } else {
-          // Only load if not in cache
-          await this.loadStrokeData(this.currentCharacter, () => {
-            this.strokeData = this.strokeCache[this.currentCharacter];
-            this.initPlotter();
-          });
+        // Load character data (both stroke data and character info) in parallel
+        const { strokeData, infoData } = await this.preloadCharacterData(this.currentCharacter);
+        
+        // Process stroke data
+        if (strokeData) {
+          this.strokeData = strokeData;
+          
+          // Initialize the plotter or reuse existing one
+          if (this.$refs.plotterCanvas) {
+            this.initPlotterWithExistingData();
+          }
         }
         
-        // Preload next character's stroke data
+        // Process character info data
+        if (infoData) {
+          this.currentPinyin = infoData.pinyin[0] || '';
+          this.currentEnglish = infoData.english || [''];
+          this.currentEnglish[0] = this.currentEnglish[0]
+            .split('/')
+            .slice(0, 5)
+            .map(part => part.length > 40 ? part.slice(0, 40) + '...' : part).join(' / ');
+        }
+        
+        // Preload next character's data (stroke data and character info)
         const nextIdx = (this.currentIndex + 1) % this.shuffledWords.length;
         const nextWord = this.shuffledWords[nextIdx];
         const nextChar = nextWord[this.charIterator % nextWord.length];
         if (nextChar !== this.currentCharacter) {
-          this.loadStrokeData(nextChar);
+          // No need to await this preload - it can happen in the background
+          this.preloadCharacterData(nextChar);
         }
       }
     },
     
-    async fetchCharacterInfo(character) {
+    async preloadCharacterData(character) {
       try {
-        const response = await fetch(`/api/get_simple_char_data?character=${encodeURIComponent(character)}`);
-        const data = await response.json();
-        this.currentPinyin = data.pinyin[0] || '';
-        this.currentEnglish = data.english || [''];
-        // for currentEnglish[0] do a split with "/" and if truncacte if there are mroe than 5 parts
-        // also truncate parts that are longer than 20 characters
-        this.currentEnglish[0] = this.currentEnglish[0]
-          .split('/')
-          .slice(0, 5)
-          .map(part => part.length > 40 ? part.slice(0, 40) + '...' : part).join(' / ');
+        // Create promises for both API calls
+        const strokePromise = this.strokeCache[character] 
+          ? Promise.resolve(this.strokeCache[character])
+          : fetch(`/api/getStrokes/${character}`).then(response => {
+              if (!response.ok) {
+                console.error('Network response was not ok for character:', character);
+                return null;
+              }
+              return response.json();
+            });
         
+        const infoPromise = this.charInfoCache[character]
+          ? Promise.resolve(this.charInfoCache[character])
+          : fetch(`/api/get_simple_char_data?character=${encodeURIComponent(character)}`).then(response => response.json());
+        
+        // Execute both promises in parallel
+        const [strokeData, infoData] = await Promise.all([strokePromise, infoPromise]);
+        
+        // Store stroke data in cache if it wasn't already there
+        if (strokeData && !this.strokeCache[character]) {
+          strokeData.character = character;
+          this.strokeCache[character] = strokeData;
+        }
+        
+        // Store character info in cache if it wasn't already there
+        if (infoData && !this.charInfoCache[character]) {
+          this.charInfoCache[character] = infoData;
+        }
+        
+        return { strokeData, infoData };
       } catch (error) {
-        console.error('Error fetching character info:', error);
-        this.currentPinyin = '';
-        this.currentEnglish = [''];
+        console.error('Error preloading character data:', error);
+        return { strokeData: null, infoData: null };
       }
     },
     

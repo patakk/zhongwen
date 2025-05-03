@@ -608,8 +608,12 @@ export default class HanziPlotter {
             this.animationProgress = 0;
             this.animationFrame = null;
             this.loadPromise = Promise.resolve();
-        } else if(this.dontLoadIfMissing) {
+        } else if(!this.dontLoadIfMissing) {
+            // Only attempt to load data if we're explicitly told not to skip loading
             this.loadPromise = this.loadStrokeData(this.onDataReady.bind(this));
+        } else {
+            // Don't load anything, just resolve the promise
+            this.loadPromise = Promise.resolve();
         }
     }   
 
