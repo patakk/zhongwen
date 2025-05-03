@@ -14,6 +14,10 @@
                 <span class="icon">📄</span>
                 <span>View Details</span>
             </div>
+            <div v-if="isDirectChild" class="menu-option delete-node" @click="handleDeleteNode">
+                <span class="icon">🗑️</span>
+                <span>Delete Node</span>
+            </div>
         </div>
     </div>
 </template>
@@ -49,12 +53,13 @@ export default {
             top: '0px'
         });
         const selectedNodeData = ref(null);
+        const isDirectChild = ref(false);
         
         // Define styling configuration for nodes with theme support
         const nodeStyles = ref({
             rootNode: {
                 fill: "#e67e22",       // Orange
-                strokeColor: "#d35400", // Darker orange
+                strokeColor: "#f11", // Darker orange
                 strokeWidth: 2,
                 radius: 30,
                 textColor: "#fff",
@@ -93,19 +98,19 @@ export default {
             const themeColors = {
                 theme1: {
                     rootNode: {
-                        fill: "#e67e22",       // Orange
-                        strokeColor: "#d35400", // Darker orange
+                        fill: "#f54",       // Orange
+                        strokeColor: "#000", // Darker orange
                         textColor: "#fff"
                     },
                     componentNode: {
-                        fill: "#3498db",       // Blue
-                        strokeColor: "#2980b9", // Darker blue
+                        fill: "#27f",       // Blue
+                        strokeColor: "#000", // Darker blue
                         textColor: "#fff"
                     },
                     subComponentNode: {
-                        fill: "#2ecc71",       // Green
-                        strokeColor: "#27ae60", // Darker green
-                        textColor: "#fff"
+                        fill: "#6f4",       // Green
+                        strokeColor: "#000", // Darker green
+                        textColor: "#000"
                     },
                     link: {
                         color: "#7f8c8d"
@@ -218,36 +223,114 @@ export default {
             
             const character = selectedNodeData.value.data.character;
             
-            // Don't reprocess the same character
-            if (character === currentCharacter.value) {
-                showMenu.value = false;
-                return;
-            }
-            
-            // Fetch decomposition data for the selected character
             try {
+                // Show loading state while fetching data
+                isLoading.value = true;
+                
+                // Fetch decomposition data for the selected character
                 const decompData = await store.dispatch('cardModal/fetchDecompositionDataOnly', character);
                 
-                // Store the previous tree data to maintain subtree relationships
-                const previousData = JSON.parse(JSON.stringify(treeData.value));
+                if (!decompData || !decompData[character]) {
+                    console.warn(`No decomposition data found for ${character}`);
+                    showMenu.value = false;
+                    isLoading.value = false;
+                    return;
+                }
                 
-                // Update the URL to reflect the new character
-                router.push({ 
-                    path: '/hanzi-tree', 
-                    query: { character: character } 
-                });
+                console.log(`Got decomposition data for ${character}:`, decompData[character]);
                 
-                // Update the current character and prepare new tree data
-                currentCharacter.value = character;
-                treeData.value = prepareTreeData(character, decompData, previousData);
+                // Create a deep clone of the current tree data to prevent direct modification
+                let updatedTreeData = JSON.parse(JSON.stringify(treeData.value));
+                
+                // Find the node in the existing tree that corresponds to our selected node
+                const findAndUpdateNode = (node, targetChar, newDecompData) => {
+                    // If we found our target character
+                    if (node.character === targetChar) {
+                        // Initialize children array if it doesn't exist
+                        if (!node.children) {
+                            node.children = [];
+                        }
+                        
+                        // Mark this node as explicitly decomposed
+                        // This will be used to apply rootNode styling
+                        node.isDecomposed = true;
+                        
+                        // Get components for this character from decomposition data
+                        const components = newDecompData[targetChar];
+                        if (!components) return false;
+                        
+                        console.log(`Adding components for ${targetChar}:`, Object.keys(components));
+                        
+                        let addedNewNodes = false;
+                        
+                        // For each component in the decomposition data
+                        Object.keys(components).forEach(component => {
+                            // Skip if component is the same as target (avoid loops)
+                            if (component === targetChar) return;
+                            
+                            // Check if this component already exists as a child
+                            const existingChild = node.children.find(child => 
+                                child.character === component
+                            );
+                            
+                            if (!existingChild) {
+                                // If component doesn't exist, create it and add it as a child
+                                const componentNode = {
+                                    name: component,
+                                    character: component,
+                                    children: []
+                                };
+                                
+                                // Add any sub-components if they exist
+                                if (components[component] && Array.isArray(components[component])) {
+                                    const filteredSubcomps = components[component].filter(
+                                        subComp => subComp !== targetChar && subComp !== component
+                                    );
+                                    
+                                    filteredSubcomps.forEach(subComp => {
+                                        componentNode.children.push({
+                                            name: subComp,
+                                            character: subComp
+                                        });
+                                    });
+                                }
+                                
+                                node.children.push(componentNode);
+                                addedNewNodes = true;
+                            }
+                        });
+                        
+                        return addedNewNodes; // Return whether we added any new nodes
+                    }
+                    
+                    // Recursively search children
+                    if (node.children && node.children.length > 0) {
+                        for (let i = 0; i < node.children.length; i++) {
+                            if (findAndUpdateNode(node.children[i], targetChar, newDecompData)) {
+                                return true; // Target found and updated in this branch
+                            }
+                        }
+                    }
+                    
+                    return false; // Target not found in this branch
+                };
+                
+                // Start the recursive search from the tree root
+                const nodesAdded = findAndUpdateNode(updatedTreeData, character, decompData);
+                
+                console.log(`Nodes added for ${character}: ${nodesAdded}`);
+                
+                // Update the tree data with the modified version
+                treeData.value = updatedTreeData;
                 
                 // Redraw the tree with the new data
                 await nextTick();
-                await createForceDirectedGraph(treeData.value);
+                createForceDirectedGraph(treeData.value);
                 
             } catch (error) {
-                console.error('Error fetching decomposition data:', error);
+                console.error('Error decomposing character:', error);
             } finally {
+                isLoading.value = false;
                 showMenu.value = false;
             }
         };
@@ -261,6 +344,53 @@ export default {
             // Show card modal for this character
             store.dispatch('cardModal/showCardModal', character);
             
+            // Hide the menu
+            showMenu.value = false;
+        };
+
+        // Handle deleting a node
+        const handleDeleteNode = () => {
+            if (!selectedNodeData.value || !treeData.value) return;
+
+            const characterToRemove = selectedNodeData.value.data.character;
+            
+            // Don't allow deleting the root node
+            if (characterToRemove === treeData.value.character) {
+                showMenu.value = false;
+                return;
+            }
+            
+            // Find the parent of the node to remove and remove it from the parent's children
+            const removeNodeFromParent = (node, targetChar) => {
+                if (!node.children) return false;
+                
+                // Check if any direct child matches the character to remove
+                const childIndex = node.children.findIndex(child => child.character === targetChar);
+                
+                if (childIndex !== -1) {
+                    // Found the child, remove it
+                    node.children.splice(childIndex, 1);
+                    return true;
+                }
+                
+                // If not found in direct children, recursively search deeper
+                for (let i = 0; i < node.children.length; i++) {
+                    if (removeNodeFromParent(node.children[i], targetChar)) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            };
+            
+            // Start the removal process from the root
+            removeNodeFromParent(treeData.value, characterToRemove);
+            
+            // Redraw the tree with the updated data
+            nextTick(() => {
+                createForceDirectedGraph(treeData.value);
+            });
+
             // Hide the menu
             showMenu.value = false;
         };
@@ -360,8 +490,8 @@ export default {
                 const nodes = root.descendants();
                 
                 const simulation = d3.forceSimulation(nodes)
-                    .force("link", d3.forceLink(links).id(d => d.id).distance(40).strength(0.7))
-                    .force("charge", d3.forceManyBody().strength(-1000))
+                    .force("link", d3.forceLink(links).id(d => d.id).distance(0).strength(0.5))
+                    .force("charge", d3.forceManyBody().strength(-666))
                     .force("center", d3.forceCenter(width / 2, height / 2))
                     .force("x", d3.forceX(width / 2).strength(0.1))
                     .force("y", d3.forceY(height / 2).strength(0.1));
@@ -373,10 +503,19 @@ export default {
                     .attr("height", "100%")
                     .attr("style", "display: block; margin: 0 auto; background: transparent;");
                 
-                // Helper function to determine node style based on depth
+                // Helper function to determine node style based on depth and decomposition status
                 const getNodeStyle = (d) => {
+                    // Original root node always gets rootNode style
                     if (d.depth === 0) return nodeStyles.value.rootNode;
+                    
+                    // Nodes explicitly decomposed by the user also get rootNode style
+                    // This ensures nodes you've clicked "Decompose" on maintain rootNode style
+                    if (d.data.isDecomposed) return nodeStyles.value.rootNode;
+                    
+                    // First level children get component style
                     if (d.depth === 1) return nodeStyles.value.componentNode;
+                    
+                    // Deeper children get subcomponent style
                     return nodeStyles.value.subComponentNode;
                 };
                 
@@ -426,11 +565,16 @@ export default {
                     .call(drag(simulation));
                 
                 // Add circles for the nodes with proper styling
-                nodeGroup.append("circle")
+                nodeGroup.append("rect")
                     .attr("fill", d => getNodeStyle(d).fill)
                     .attr("stroke", d => getNodeStyle(d).strokeColor)
                     .attr("stroke-width", d => getNodeStyle(d).strokeWidth)
                     .attr("r", d => getNodeStyle(d).radius)
+                    .attr("rx", d => getNodeStyle(d).radius/3)
+                    .attr("ry", d => getNodeStyle(d).radius/3)
+                    .attr("width", d => getNodeStyle(d).radius*2*.9)
+                    .attr("height", d => getNodeStyle(d).radius*2*.9)
+                    .attr("transform", d => `translate(${-getNodeStyle(d).radius*.9}, ${-getNodeStyle(d).radius*.9})`)
                     .on("click", (event, d) => {
                         // Prevent propagation to document
                         event.stopPropagation();
@@ -448,6 +592,10 @@ export default {
                         
                         // Store node data for menu actions
                         selectedNodeData.value = d;
+                        
+                        // Show delete option for any node that's a component (not the original root)
+                        // This allows deleting any decomposition character except the main root
+                        isDirectChild.value = d.depth > 0;
                         
                         // Position menu near the clicked node
                         const nodeBounds = event.target.getBoundingClientRect();
@@ -487,6 +635,10 @@ export default {
                         
                         // Store node data for menu actions
                         selectedNodeData.value = d;
+                        
+                        // Show delete option for any node that's a component (not the original root)
+                        // This allows deleting any decomposition character except the main root
+                        isDirectChild.value = d.depth > 0;
                         
                         // Position menu near the clicked node
                         const nodeBounds = event.target.getBoundingClientRect();
@@ -638,7 +790,8 @@ export default {
             showMenu,
             menuStyle,
             handleDecompose,
-            handleShowCard
+            handleShowCard,
+            handleDeleteNode
         };
     }
 }
@@ -722,5 +875,9 @@ export default {
 
 .menu-option.show-details:hover {
     background-color: color-mix(in oklab, var(--secondary-color, #9b59b6) 15%, var(--bg) 100%);
+}
+
+.menu-option.delete-node:hover {
+    background-color: color-mix(in oklab, var(--danger-color, #e74c3c) 15%, var(--bg) 100%);
 }
 </style>

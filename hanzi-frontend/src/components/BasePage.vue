@@ -30,6 +30,10 @@
   --h1-border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 30%, var(--bg) 50%);
 }
 
+[data-theme='theme1'] {
+  --h1-border: var(--thin-border-width) solid var(--fg);
+}
+
 
 </style>
 
