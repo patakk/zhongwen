@@ -1,17 +1,29 @@
 <template>
     <BasePage page_title="Hanzi Tree" />
     <div class="hanzi-tree-container">
-        <div v-if="isLoading" class="loading">Loading data for character: {{ currentWord }}</div>
+        <div v-if="isLoading" class="loading">Loading data for character: {{ currentCharacter }}</div>
         <div v-else class="tree-container" ref="treeContainer"></div>
+        
+        <!-- Popup menu -->
+        <div v-if="showMenu" class="node-menu" :style="menuStyle">
+            <div class="menu-option decompose" @click="handleDecompose">
+                <span class="icon">🔍</span>
+                <span>Decompose</span>
+            </div>
+            <div class="menu-option show-details" @click="handleShowCard">
+                <span class="icon">📄</span>
+                <span>View Details</span>
+            </div>
+        </div>
     </div>
 </template>
   
 <script>
 import BasePage from '../components/BasePage.vue';
 import PreloadWrapper from '../components/PreloadWrapper.vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import { ref, onMounted, watch, nextTick } from 'vue';
+import { ref, onMounted, watch, nextTick, onUnmounted } from 'vue';
 import * as d3 from 'd3';
 
 export default {
@@ -21,81 +33,295 @@ export default {
     },
     setup() {
         const route = useRoute();
+        const router = useRouter();
         const store = useStore();
         const isLoading = ref(true);
         const characterData = ref(null);
         const decompositionData = ref(null);
-        const currentWord = ref('');
+        const currentCharacter = ref('');
         const treeContainer = ref(null);
         const treeData = ref(null);
         
-        // Define styling configuration for nodes
-        const nodeStyles = {
+        // Menu state
+        const showMenu = ref(false);
+        const menuStyle = ref({
+            left: '0px',
+            top: '0px'
+        });
+        const selectedNodeData = ref(null);
+        
+        // Define styling configuration for nodes with theme support
+        const nodeStyles = ref({
             rootNode: {
                 fill: "#e67e22",       // Orange
                 strokeColor: "#d35400", // Darker orange
                 strokeWidth: 2,
-                radius: 40,
+                radius: 30,
                 textColor: "#fff",
-                fontSize: 36
+                fontSize: 26
             },
             componentNode: {
                 fill: "#3498db",       // Blue
                 strokeColor: "#2980b9", // Darker blue
                 strokeWidth: 2,
-                radius: 35,
+                radius: 24,
                 textColor: "#fff",
-                fontSize: 30
+                fontSize: 26
             },
             subComponentNode: {
                 fill: "#2ecc71",       // Green
                 strokeColor: "#27ae60", // Darker green
                 strokeWidth: 2,
-                radius: 30,
+                radius: 20,
                 textColor: "#fff",
-                fontSize: 24
+                fontSize: 26
             },
             link: {
                 color: "#7f8c8d",
                 opacity: 0.7,
                 width: 2
             }
+        });
+        
+        // Theme management
+        const currentTheme = ref(localStorage.getItem('theme') || 'light');
+        const themeObserver = ref(null);
+        
+        // Update node styles based on current theme
+        const updateNodeStylesForTheme = (themeName) => {
+            // Default theme colors
+            const themeColors = {
+                theme1: {
+                    rootNode: {
+                        fill: "#e67e22",       // Orange
+                        strokeColor: "#d35400", // Darker orange
+                        textColor: "#fff"
+                    },
+                    componentNode: {
+                        fill: "#3498db",       // Blue
+                        strokeColor: "#2980b9", // Darker blue
+                        textColor: "#fff"
+                    },
+                    subComponentNode: {
+                        fill: "#2ecc71",       // Green
+                        strokeColor: "#27ae60", // Darker green
+                        textColor: "#fff"
+                    },
+                    link: {
+                        color: "#7f8c8d"
+                    }
+                },
+                dark: {
+                    rootNode: {
+                        fill: "#f39c12",       // Brighter orange for dark mode
+                        strokeColor: "#e67e22", // Orange stroke
+                        textColor: "#fff"
+                    },
+                    componentNode: {
+                        fill: "#2980b9",       // Darker blue for dark mode
+                        strokeColor: "#3498db", // Blue stroke
+                        textColor: "#fff"
+                    },
+                    subComponentNode: {
+                        fill: "#27ae60",       // Darker green for dark mode
+                        strokeColor: "#2ecc71", // Green stroke
+                        textColor: "#fff"
+                    },
+                    link: {
+                        color: "#95a5a6"       // Lighter gray for dark mode
+                    }
+                },
+                light: {
+                    rootNode: {
+                        fill: "#d35400",       // Deep orange for theme1
+                        strokeColor: "#e67e22", 
+                        textColor: "#fff"
+                    },
+                    componentNode: {
+                        fill: "#2c3e50",       // Dark blue/gray for theme1
+                        strokeColor: "#34495e", 
+                        textColor: "#fff"
+                    },
+                    subComponentNode: {
+                        fill: "#16a085",       // Teal for theme1
+                        strokeColor: "#1abc9c",
+                        textColor: "#fff"
+                    },
+                    link: {
+                        color: "#bdc3c7"
+                    }
+                },
+                theme2: {
+                    rootNode: {
+                        fill: "#8e44ad",       // Purple for theme2
+                        strokeColor: "#9b59b6", 
+                        textColor: "#fff"
+                    },
+                    componentNode: {
+                        fill: "#c0392b",       // Red for theme2
+                        strokeColor: "#e74c3c", 
+                        textColor: "#fff"
+                    },
+                    subComponentNode: {
+                        fill: "#2980b9",       // Blue for theme2
+                        strokeColor: "#3498db",
+                        textColor: "#fff"
+                    },
+                    link: {
+                        color: "#95a5a6"
+                    }
+                }
+            };
+            
+            // Get the theme colors or use light theme as fallback
+            const colors = themeColors[themeName] || themeColors.light;
+            
+            // Update node styles with the theme-specific colors
+            nodeStyles.value = {
+                rootNode: {
+                    ...nodeStyles.value.rootNode,
+                    ...colors.rootNode
+                },
+                componentNode: {
+                    ...nodeStyles.value.componentNode,
+                    ...colors.componentNode
+                },
+                subComponentNode: {
+                    ...nodeStyles.value.subComponentNode,
+                    ...colors.subComponentNode
+                },
+                link: {
+                    ...nodeStyles.value.link,
+                    ...colors.link
+                }
+            };
         };
         
-        // Get the word from URL or use default
-        const getWordFromUrl = () => {
-            return route.query.word || '我';
+        // Hide menu when clicking outside
+        const handleDocumentClick = (e) => {
+            // Check if the click is outside the menu
+            const menuElement = document.querySelector('.node-menu');
+            if (menuElement && !menuElement.contains(e.target) && 
+                !e.target.closest('circle') && !e.target.closest('text')) {
+                showMenu.value = false;
+            }
+        };
+        
+        // Get the character from URL or use default
+        const getCharacterFromUrl = () => {
+            return route.query.character || '我';
+        };
+
+        // Handle menu options
+        const handleDecompose = async () => {
+            if (!selectedNodeData.value) return;
+            
+            const character = selectedNodeData.value.data.character;
+            
+            // Don't reprocess the same character
+            if (character === currentCharacter.value) {
+                showMenu.value = false;
+                return;
+            }
+            
+            // Fetch decomposition data for the selected character
+            try {
+                const decompData = await store.dispatch('cardModal/fetchDecompositionDataOnly', character);
+                
+                // Store the previous tree data to maintain subtree relationships
+                const previousData = JSON.parse(JSON.stringify(treeData.value));
+                
+                // Update the URL to reflect the new character
+                router.push({ 
+                    path: '/hanzi-tree', 
+                    query: { character: character } 
+                });
+                
+                // Update the current character and prepare new tree data
+                currentCharacter.value = character;
+                treeData.value = prepareTreeData(character, decompData, previousData);
+                
+                // Redraw the tree with the new data
+                await nextTick();
+                await createForceDirectedGraph(treeData.value);
+                
+            } catch (error) {
+                console.error('Error fetching decomposition data:', error);
+            } finally {
+                showMenu.value = false;
+            }
+        };
+        
+        // Handle showing card details
+        const handleShowCard = () => {
+            if (!selectedNodeData.value) return;
+            
+            const character = selectedNodeData.value.data.character;
+            
+            // Show card modal for this character
+            store.dispatch('cardModal/showCardModal', character);
+            
+            // Hide the menu
+            showMenu.value = false;
+        };
+
+        // Preload card data for a character
+        const preloadCardData = async (character) => {
+            try {
+                await store.dispatch('cardModal/fetchCardData', character);
+            } catch (error) {
+                console.error('Error preloading card data:', error);
+            }
         };
 
         // Convert decomposition data to hierarchical structure for D3
-        const prepareTreeData = (word, decomp) => {
+        const prepareTreeData = (character, decomp, previousData = null) => {
             // If no decomposition data, return just the character
-            if (!decomp || !decomp[word]) {
+            if (!decomp || !decomp[character]) {
                 return { 
-                    name: word, 
-                    character: word
+                    name: character, 
+                    character: character
                 };
             }
             
             // Create root node
             const rootNode = {
-                name: word,
-                character: word,
+                name: character,
+                character: character,
                 children: []
             };
             
             // Add first level components
-            const components = decomp[word];
+            const components = decomp[character];
             for (const component in components) {
-                const componentNode = {
+                // Check if this component has a subtree from previous data
+                let componentNode = {
                     name: component,
                     character: component,
                     children: []
                 };
                 
-                // Add second level components if they exist
-                if (components[component] && Array.isArray(components[component])) {
-                    components[component].forEach(subComponent => {
+                // If we have previous data and are re-using a component, try to find it
+                if (previousData && previousData.children) {
+                    const foundComponent = previousData.children.find(child => 
+                        child.character === component
+                    );
+                    
+                    if (foundComponent) {
+                        // Re-use the existing subtree
+                        componentNode = JSON.parse(JSON.stringify(foundComponent));
+                    }
+                }
+                
+                // If no children were found in previous data, add components normally
+                if (componentNode.children.length === 0 && components[component] && 
+                    Array.isArray(components[component])) {
+                    // Filter out the parent character to prevent circular references
+                    const filteredComponents = components[component].filter(subComponent => 
+                        subComponent !== character
+                    );
+                    
+                    filteredComponents.forEach(subComponent => {
                         componentNode.children.push({
                             name: subComponent,
                             character: subComponent
@@ -134,7 +360,7 @@ export default {
                 const nodes = root.descendants();
                 
                 const simulation = d3.forceSimulation(nodes)
-                    .force("link", d3.forceLink(links).id(d => d.id).distance(150).strength(0.7))
+                    .force("link", d3.forceLink(links).id(d => d.id).distance(40).strength(0.7))
                     .force("charge", d3.forceManyBody().strength(-1000))
                     .force("center", d3.forceCenter(width / 2, height / 2))
                     .force("x", d3.forceX(width / 2).strength(0.1))
@@ -145,20 +371,20 @@ export default {
                     .append("svg")
                     .attr("width", "100%")
                     .attr("height", "100%")
-                    .attr("style", "display: block; margin: 0 auto;");
+                    .attr("style", "display: block; margin: 0 auto; background: transparent;");
                 
                 // Helper function to determine node style based on depth
-                const getNodeStyle = (depth) => {
-                    if (depth === 0) return nodeStyles.rootNode;
-                    if (depth === 1) return nodeStyles.componentNode;
-                    return nodeStyles.subComponentNode;
+                const getNodeStyle = (d) => {
+                    if (d.depth === 0) return nodeStyles.value.rootNode;
+                    if (d.depth === 1) return nodeStyles.value.componentNode;
+                    return nodeStyles.value.subComponentNode;
                 };
                 
                 // Append links
                 const link = svg.append("g")
-                    .attr("stroke", nodeStyles.link.color)
-                    .attr("stroke-opacity", nodeStyles.link.opacity)
-                    .attr("stroke-width", nodeStyles.link.width)
+                    .attr("stroke", nodeStyles.value.link.color)
+                    .attr("stroke-opacity", nodeStyles.value.link.opacity)
+                    .attr("stroke-width", nodeStyles.value.link.width)
                     .selectAll("line")
                     .data(links)
                     .join("line");
@@ -166,6 +392,9 @@ export default {
                 // Add drag behavior
                 const drag = simulation => {
                     function dragstarted(event, d) {
+                        // Hide menu when starting to drag
+                        showMenu.value = false;
+                        
                         if (!event.active) simulation.alphaTarget(0.3).restart();
                         d.fx = d.x;
                         d.fy = d.y;
@@ -193,23 +422,84 @@ export default {
                     .selectAll("g")
                     .data(nodes)
                     .join("g")
+                    .attr("data-character", d => d.data.character)
                     .call(drag(simulation));
                 
                 // Add circles for the nodes with proper styling
                 nodeGroup.append("circle")
-                    .attr("fill", d => getNodeStyle(d.depth).fill)
-                    .attr("stroke", d => getNodeStyle(d.depth).strokeColor)
-                    .attr("stroke-width", d => getNodeStyle(d.depth).strokeWidth)
-                    .attr("r", d => getNodeStyle(d.depth).radius);
+                    .attr("fill", d => getNodeStyle(d).fill)
+                    .attr("stroke", d => getNodeStyle(d).strokeColor)
+                    .attr("stroke-width", d => getNodeStyle(d).strokeWidth)
+                    .attr("r", d => getNodeStyle(d).radius)
+                    .on("click", (event, d) => {
+                        // Prevent propagation to document
+                        event.stopPropagation();
+                        
+                        // First and foremost - preload BOTH card data AND decomposition data IMMEDIATELY
+                        if (d.data.character) {
+                            // Preload card data
+                            store.dispatch('cardModal/preloadCardData', d.data.character);
+                            // Also preload decomposition data
+                            store.dispatch('cardModal/fetchDecompositionDataOnly', d.data.character);
+                        }
+                        
+                        // Don't show menu for current root character
+                        if (d.data.character === currentCharacter.value) return;
+                        
+                        // Store node data for menu actions
+                        selectedNodeData.value = d;
+                        
+                        // Position menu near the clicked node
+                        const nodeBounds = event.target.getBoundingClientRect();
+                        const containerBounds = treeContainer.value.getBoundingClientRect();
+                        
+                        menuStyle.value = {
+                            left: `${nodeBounds.left - containerBounds.left + nodeBounds.width}px`,
+                            top: `${nodeBounds.top - containerBounds.top}px`
+                        };
+                        
+                        // Show menu
+                        showMenu.value = true;
+                    });
                 
                 // Add text for the Chinese characters
                 nodeGroup.append("text")
                     .attr("text-anchor", "middle")
                     .attr("dy", ".3em")
-                    .attr("fill", d => getNodeStyle(d.depth).textColor)
-                    .attr("font-size", d => `${getNodeStyle(d.depth).fontSize}px`)
+                    .attr("fill", d => getNodeStyle(d).textColor)
+                    .attr("font-size", d => `${getNodeStyle(d).fontSize}px`)
                     .attr("font-family", "Noto Sans SC, sans-serif")
-                    .text(d => d.data.character);
+                    .text(d => d.data.character)
+                    .on("click", (event, d) => {
+                        // Prevent propagation to document
+                        event.stopPropagation();
+                        
+                        // First and foremost - preload BOTH card data AND decomposition data IMMEDIATELY
+                        if (d.data.character) {
+                            // Preload card data
+                            store.dispatch('cardModal/preloadCardData', d.data.character);
+                            // Also preload decomposition data
+                            store.dispatch('cardModal/fetchDecompositionDataOnly', d.data.character);
+                        }
+                        
+                        // Don't show menu for current root character
+                        if (d.data.character === currentCharacter.value) return;
+                        
+                        // Store node data for menu actions
+                        selectedNodeData.value = d;
+                        
+                        // Position menu near the clicked node
+                        const nodeBounds = event.target.getBoundingClientRect();
+                        const containerBounds = treeContainer.value.getBoundingClientRect();
+                        
+                        menuStyle.value = {
+                            left: `${nodeBounds.left - containerBounds.left + nodeBounds.width/2}px`,
+                            top: `${nodeBounds.top - containerBounds.top}px`
+                        };
+                        
+                        // Show menu
+                        showMenu.value = true;
+                    });
                 
                 // Update positions on each tick
                 simulation.on("tick", () => {
@@ -232,27 +522,27 @@ export default {
             }
         };
 
-        // Fetch all data for the word
-        const fetchWordData = async (word) => {
+        // Fetch all data for the character
+        const fetchCharacterData = async (character) => {
             try {
                 isLoading.value = true;
-                currentWord.value = word;
+                currentCharacter.value = character;
                 
                 // Using the store's fetchCardData action
-                await store.dispatch('cardModal/fetchCardData', word);
+                await store.dispatch('cardModal/fetchCardData', character);
                 
                 // Get the character data
                 characterData.value = store.getters['cardModal/getCardData'];
                 
                 // Properly await the decomposition data Promise
-                const decompData = await store.dispatch('cardModal/fetchDecompositionDataOnly', word);
+                const decompData = await store.dispatch('cardModal/fetchDecompositionDataOnly', character);
                 decompositionData.value = decompData;
                 
                 // Prepare data for visualization
-                treeData.value = prepareTreeData(word, decompositionData.value);
+                treeData.value = prepareTreeData(character, decompositionData.value);
                 
             } catch (error) {
-                console.error('Error fetching word data:', error);
+                console.error('Error fetching character data:', error);
                 treeData.value = null;
             } finally {
                 isLoading.value = false;
@@ -266,56 +556,125 @@ export default {
         };
 
         onMounted(() => {
-            const word = getWordFromUrl();
-            fetchWordData(word);
+            const character = getCharacterFromUrl();
+            fetchCharacterData(character);
+            
+            // Apply theme colors
+            updateNodeStylesForTheme(currentTheme.value);
+            
+            // Set up theme observer
+            themeObserver.value = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'data-theme') {
+                        const newTheme = document.documentElement.getAttribute('data-theme');
+                        if (currentTheme.value !== newTheme) {
+                            currentTheme.value = newTheme;
+                            localStorage.setItem('theme', newTheme);
+                            updateNodeStylesForTheme(newTheme);
+                            
+                            // Redraw the graph with updated theme styling
+                            if (!isLoading.value && decompositionData.value && treeData.value) {
+                                createForceDirectedGraph(treeData.value);
+                            }
+                        }
+                    }
+                });
+            });
+            
+            themeObserver.value.observe(document.documentElement, { 
+                attributes: true, 
+                attributeFilter: ['data-theme'] 
+            });
+            
+            // Add document click listener for hiding menu
+            document.addEventListener('click', handleDocumentClick);
             
             // Handle window resize
-            window.addEventListener('resize', () => {
-                if (!isLoading.value && decompositionData.value && treeData.value) {
-                    createForceDirectedGraph(treeData.value);
-                }
-            });
+            // let resizeTimeout;
+            // const handleResize = () => {
+            //     clearTimeout(resizeTimeout);
+            //     resizeTimeout = setTimeout(() => {
+            //         if (!isLoading.value && decompositionData.value && treeData.value) {
+            //             createForceDirectedGraph(treeData.value);
+            //         }
+            //         // Hide menu on resize
+            //         showMenu.value = false;
+            //     }, 100);
+            // };
+            // window.addEventListener('resize', handleResize);
         });
 
         // Watch for route changes to update data when URL parameter changes
         watch(
-            () => route.query.word,
-            (newWord) => {
-                if (newWord && newWord !== currentWord.value) {
-                    fetchWordData(newWord);
-                } else if (!newWord && currentWord.value !== '我') {
-                    fetchWordData('我');
+            () => route.query.character,
+            (newCharacter) => {
+                if (newCharacter && newCharacter !== currentCharacter.value) {
+                    fetchCharacterData(newCharacter);
+                } else if (!newCharacter && currentCharacter.value !== '我') {
+                    fetchCharacterData('我');
                 }
             }
         );
+        
+        // Clean up when component is unmounted
+        onUnmounted(() => {
+            document.removeEventListener('click', handleDocumentClick);
+            // window.removeEventListener('resize', handleResize);
+            
+            // Disconnect theme observer
+            if (themeObserver.value) {
+                themeObserver.value.disconnect();
+                themeObserver.value = null;
+            }
+        });
 
         return {
             isLoading,
             characterData,
             decompositionData,
-            currentWord,
+            currentCharacter,
             treeContainer,
-            treeData
+            treeData,
+            showMenu,
+            menuStyle,
+            handleDecompose,
+            handleShowCard
         };
     }
 }
 </script>
 
 <style scoped>
+
+#app {
+}
+
 .hanzi-tree-container {
     width: 100%;
-    height: calc(100vh - 60px); /* Adjust based on your BasePage height */
+    height: calc(100vh - 11.5rem + 2px); /* Adjust based on your BasePage height */
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 0;
     margin: 0;
+    position: relative;
+}
+
+@media screen and (max-width: 768px) {
+    .hanzi-tree-container {
+        height: calc(100vh - 7rem + 5px); /* Adjust for smaller screens */
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .hanzi-tree-container {
+        height: calc(100vh - 10rem + 2px); /* Adjust for smaller screens */
+    }
 }
 
 .tree-container {
     width: 100%;
     height: 100%;
-    background-color: white;
     margin: 0 auto;
     position: relative;
 }
@@ -325,5 +684,43 @@ export default {
     color: #666;
     text-align: center;
     width: 100%;
+}
+
+.node-menu {
+    position: absolute;
+    background-color: var(--bg, white);
+    border: 1px solid var(--fg-dim, #ddd);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    width: 160px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.menu-option {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: var(--fg, #333);
+}
+
+.menu-option:hover {
+    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+}
+
+.menu-option .icon {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+.menu-option.decompose:hover {
+    background-color: color-mix(in oklab, var(--primary-color, #3498db) 15%, var(--bg) 100%);
+}
+
+.menu-option.show-details:hover {
+    background-color: color-mix(in oklab, var(--secondary-color, #9b59b6) 15%, var(--bg) 100%);
 }
 </style>
