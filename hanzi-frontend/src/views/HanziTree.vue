@@ -288,45 +288,56 @@ export default {
                         
                         let addedNewNodes = false;
                         
+                        // First, create a set of all characters already in the tree for faster lookup
+                        const existingCharsInTree = new Set();
+                        const collectExistingChars = (treeNode) => {
+                            existingCharsInTree.add(treeNode.character);
+                            if (treeNode.children) {
+                                treeNode.children.forEach(child => collectExistingChars(child));
+                            }
+                        };
+                        collectExistingChars(updatedTreeData);
+                        
                         // For each component in the decomposition data
                         Object.keys(components).forEach(component => {
                             // Skip if component is the same as target (avoid loops)
                             if (component === targetChar) return;
-                            
-                            // Check if this component already exists in the tree anywhere
-                            const existingNode = findNodeInTree(updatedTreeData, component);
                             
                             // Check if this component already exists as a direct child of this node
                             const existingChildIndex = node.children.findIndex(child => 
                                 child.character === component
                             );
                             
-                            if (existingChildIndex === -1) {
-                                // If component doesn't exist as a direct child, 
-                                // create a placeholder node without duplicating
+                            // Skip if it's already a child OR if it exists anywhere else in the tree
+                            if (existingChildIndex === -1 && !existingCharsInTree.has(component)) {
+                                // If component doesn't exist anywhere, create it and add it as a child
                                 const componentNode = {
                                     name: component,
                                     character: component,
                                     children: []
                                 };
                                 
-                                // Add any sub-components if they exist and the node doesn't exist elsewhere in the tree
-                                if (!existingNode && components[component] && Array.isArray(components[component])) {
+                                // Add any sub-components if they exist
+                                if (components[component] && Array.isArray(components[component])) {
                                     const filteredSubcomps = components[component].filter(
                                         subComp => subComp !== targetChar && subComp !== component
                                     );
                                     
                                     filteredSubcomps.forEach(subComp => {
-                                        componentNode.children.push({
-                                            name: subComp,
-                                            character: subComp
-                                        });
+                                        // Only add subcomponent if it doesn't exist elsewhere in the tree
+                                        if (!existingCharsInTree.has(subComp)) {
+                                            componentNode.children.push({
+                                                name: subComp,
+                                                character: subComp
+                                            });
+                                            existingCharsInTree.add(subComp); // Add to set to skip in future iterations
+                                        }
                                     });
                                 }
                                 
-                                // Add this node to the children
                                 node.children.push(componentNode);
                                 addedNewNodes = true;
+                                existingCharsInTree.add(component); // Add to set to skip in future iterations
                             }
                         });
                         
