@@ -97,10 +97,20 @@ export default {
             // Default theme colors
             const themeColors = {
                 theme1: {
-                    rootNode: {
+                    rootNode_: {
                         fill: "#f54",       // Orange
                         strokeColor: "#000", // Darker orange
                         textColor: "#fff"
+                    },
+                    rootNode: {
+                        fill: "#f54",       // Orange
+                        fill: "#6f4",       // Green
+                        strokeColor: "#000", // Darker orange
+                        textColor: "#fff",
+                        textColor: "#000",
+                        strokeWidth: 2,
+                        radius: 26,
+                        fontSize: 26
                     },
                     componentNode: {
                         fill: "#27f",       // Blue
@@ -242,6 +252,22 @@ export default {
                 // Create a deep clone of the current tree data to prevent direct modification
                 let updatedTreeData = JSON.parse(JSON.stringify(treeData.value));
                 
+                // Helper function to find if a character exists anywhere in the tree
+                const findNodeInTree = (node, targetChar) => {
+                    if (node.character === targetChar) {
+                        return node;
+                    }
+                    
+                    if (node.children) {
+                        for (const child of node.children) {
+                            const found = findNodeInTree(child, targetChar);
+                            if (found) return found;
+                        }
+                    }
+                    
+                    return null;
+                };
+                
                 // Find the node in the existing tree that corresponds to our selected node
                 const findAndUpdateNode = (node, targetChar, newDecompData) => {
                     // If we found our target character
@@ -252,7 +278,6 @@ export default {
                         }
                         
                         // Mark this node as explicitly decomposed
-                        // This will be used to apply rootNode styling
                         node.isDecomposed = true;
                         
                         // Get components for this character from decomposition data
@@ -268,21 +293,25 @@ export default {
                             // Skip if component is the same as target (avoid loops)
                             if (component === targetChar) return;
                             
-                            // Check if this component already exists as a child
-                            const existingChild = node.children.find(child => 
+                            // Check if this component already exists in the tree anywhere
+                            const existingNode = findNodeInTree(updatedTreeData, component);
+                            
+                            // Check if this component already exists as a direct child of this node
+                            const existingChildIndex = node.children.findIndex(child => 
                                 child.character === component
                             );
                             
-                            if (!existingChild) {
-                                // If component doesn't exist, create it and add it as a child
+                            if (existingChildIndex === -1) {
+                                // If component doesn't exist as a direct child, 
+                                // create a placeholder node without duplicating
                                 const componentNode = {
                                     name: component,
                                     character: component,
                                     children: []
                                 };
                                 
-                                // Add any sub-components if they exist
-                                if (components[component] && Array.isArray(components[component])) {
+                                // Add any sub-components if they exist and the node doesn't exist elsewhere in the tree
+                                if (!existingNode && components[component] && Array.isArray(components[component])) {
                                     const filteredSubcomps = components[component].filter(
                                         subComp => subComp !== targetChar && subComp !== component
                                     );
@@ -295,6 +324,7 @@ export default {
                                     });
                                 }
                                 
+                                // Add this node to the children
                                 node.children.push(componentNode);
                                 addedNewNodes = true;
                             }
@@ -314,7 +344,7 @@ export default {
                     
                     return false; // Target not found in this branch
                 };
-                
+
                 // Start the recursive search from the tree root
                 const nodesAdded = findAndUpdateNode(updatedTreeData, character, decompData);
                 
@@ -509,13 +539,13 @@ export default {
                     if (d.depth === 0) return nodeStyles.value.rootNode;
                     
                     // Nodes explicitly decomposed by the user also get rootNode style
-                    // This ensures nodes you've clicked "Decompose" on maintain rootNode style
                     if (d.data.isDecomposed) return nodeStyles.value.rootNode;
                     
-                    // First level children get component style
-                    if (d.depth === 1) return nodeStyles.value.componentNode;
+                    // All parent nodes (nodes with children) should get componentNode style
+                    // This ensures decomposition characters use componentNode style
+                    if (d.children && d.children.length > 0) return nodeStyles.value.componentNode;
                     
-                    // Deeper children get subcomponent style
+                    // All other nodes get subComponentNode style (leaf nodes)
                     return nodeStyles.value.subComponentNode;
                 };
                 
