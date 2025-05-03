@@ -155,10 +155,30 @@ const initApp = async () => {
   
   // Only start dictionary data loading if backend is available
   if (isConnected) {
-    store.dispatch('fetchDictionaryData');
+    store.dispatch('fetchDictionaryData').then(async (dictionaryData) => {
+      // After dictionary data is loaded, preload a character from HSK1 for practice
+      if (dictionaryData && dictionaryData.hsk1 && dictionaryData.hsk1.chars) {
+        try {
+          // Get a sample character from HSK1
+          const hsk1Chars = Array.isArray(dictionaryData.hsk1.chars) 
+            ? dictionaryData.hsk1.chars 
+            : Object.keys(dictionaryData.hsk1.chars);
+            
+          if (hsk1Chars.length > 0) {
+            // Choose a character to preload (first one for consistency)
+            const charToPreload = hsk1Chars[0];
+            console.log('Preloading HSK1 character for practice:', charToPreload);
+            
+            // Preload the character data
+            await store.dispatch('preloadPracticeCharacter', charToPreload);
+          }
+        } catch (err) {
+          console.error('Error preloading HSK1 character:', err);
+        }
+      }
+    });
+    
     // Only fetch custom dictionary data if the user is logged in
-    // The store.getters.isLoggedIn check is redundant with our improved fetchCustomDictionaryData method,
-    // but we'll keep it here for clarity and to avoid the unnecessary function call
     if (store.getters.isLoggedIn) {
       store.dispatch('fetchCustomDictionaryData');
     }

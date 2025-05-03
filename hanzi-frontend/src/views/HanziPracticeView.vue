@@ -52,8 +52,11 @@
           </div>
         </div>
 
-        <div class="drawing-area" ref="drawingArea">
+        <div class="drawing-area" ref="drawingArea" :class="{ 'loading': isLoading }">
           <canvas id="plotter-canvas" ref="plotterCanvas"></canvas>
+          <div v-if="isLoading" class="loading-overlay">
+            <div class="loading-spinner"></div>
+          </div>
         </div>
 
         <div class="control-buttons">
@@ -140,6 +143,7 @@ export default defineComponent({
       cachedStrokes: null, 
       strokeCache: {}, 
       charInfoCache: {}, // Add cache for character info
+      isLoading: true, // Add loading state to manage initial render
       
       // Practice state
       skipState: 0,
@@ -408,7 +412,33 @@ export default defineComponent({
     },
     
     shuffleArray(array) {
+      const storeCache = this.$store.getters.getPracticeCharCache;
       const result = [...array];
+      
+      // Find if any character is already preloaded in the store
+      const preloadedChar = result.find(char => storeCache.strokeData[char] && storeCache.infoData[char]);
+      
+      if (preloadedChar) {
+        // If we have a preloaded character, make sure it's the first one
+        const index = result.indexOf(preloadedChar);
+        if (index > 0) {
+          // Move preloaded character to the beginning
+          result.splice(index, 1);
+          result.unshift(preloadedChar);
+        }
+        // Skip shuffling the first character, only shuffle the rest
+        const firstChar = result[0];
+        const restChars = result.slice(1);
+        
+        for (let i = restChars.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [restChars[i], restChars[j]] = [restChars[j], restChars[i]];
+        }
+        
+        return [firstChar, ...restChars];
+      }
+      
+      // Regular shuffle if no preloaded characters
       for (let i = result.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [result[i], result[j]] = [result[j], result[i]];
@@ -440,6 +470,9 @@ export default defineComponent({
       this.cachedStrokes = null;
       this.currentIndex = 0;
       
+      // Don't show loading indicator here - we'll check if data is already cached
+      // and only show loading if needed in showWord()
+      
       // Show the first word
       this.showWord();
     },
@@ -461,6 +494,18 @@ export default defineComponent({
         this.wordTotalMistakeCount = 0;
         this.wordTotalStrokeCount = 0;
         this.skipState = 0;
+        
+        // First check if data already exists in the store cache before showing loading state
+        const storeCache = this.$store.getters.getPracticeCharCache;
+        const hasStrokeDataInStore = storeCache.strokeData[this.currentCharacter];
+        const hasInfoDataInStore = storeCache.infoData[this.currentCharacter];
+        
+        // Only show loading state if we need to fetch data
+        if (!hasStrokeDataInStore || !hasInfoDataInStore) {
+          this.isLoading = true;
+        } else {
+          this.isLoading = false;
+        }
         
         // Load character data (both stroke data and character info) in parallel
         const { strokeData, infoData } = await this.preloadCharacterData(this.currentCharacter);
@@ -485,6 +530,9 @@ export default defineComponent({
             .map(part => part.length > 40 ? part.slice(0, 40) + '...' : part).join(' / ');
         }
         
+        // Set loading state to false after data is processed
+        this.isLoading = false;
+        
         // Preload next character's data (stroke data and character info)
         const nextIdx = (this.currentIndex + 1) % this.shuffledWords.length;
         const nextWord = this.shuffledWords[nextIdx];
@@ -498,33 +546,60 @@ export default defineComponent({
     
     async preloadCharacterData(character) {
       try {
-        // Create promises for both API calls
-        const strokePromise = this.strokeCache[character] 
-          ? Promise.resolve(this.strokeCache[character])
-          : fetch(`/api/getStrokes/${character}`).then(response => {
-              if (!response.ok) {
-                console.error('Network response was not ok for character:', character);
-                return null;
-              }
-              return response.json();
-            });
+        // First check if data already exists in the store cache
+        const storeCache = this.$store.getters.getPracticeCharCache;
+        const hasStrokeDataInStore = storeCache.strokeData[character];
+        const hasInfoDataInStore = storeCache.infoData[character];
         
-        const infoPromise = this.charInfoCache[character]
-          ? Promise.resolve(this.charInfoCache[character])
-          : fetch(`/api/get_simple_char_data?character=${encodeURIComponent(character)}`).then(response => response.json());
+        // If both data types exist in store, use them directly
+        if (hasStrokeDataInStore && hasInfoDataInStore) {
+          return {
+            strokeData: storeCache.strokeData[character],
+            infoData: storeCache.infoData[character]
+          };
+        }
+        
+        // Create promises for both API calls, using store data if available
+        const strokePromise = hasStrokeDataInStore 
+          ? Promise.resolve(storeCache.strokeData[character])
+          : this.strokeCache[character] 
+            ? Promise.resolve(this.strokeCache[character])
+            : fetch(`/api/getStrokes/${character}`).then(response => {
+                if (!response.ok) {
+                  console.error('Network response was not ok for character:', character);
+                  return null;
+                }
+                return response.json();
+              });
+        
+        const infoPromise = hasInfoDataInStore
+          ? Promise.resolve(storeCache.infoData[character])
+          : this.charInfoCache[character]
+            ? Promise.resolve(this.charInfoCache[character])
+            : fetch(`/api/get_simple_char_data?character=${encodeURIComponent(character)}`).then(response => response.json());
         
         // Execute both promises in parallel
         const [strokeData, infoData] = await Promise.all([strokePromise, infoPromise]);
         
-        // Store stroke data in cache if it wasn't already there
+        // Store stroke data in component cache if it wasn't already there
         if (strokeData && !this.strokeCache[character]) {
           strokeData.character = character;
           this.strokeCache[character] = strokeData;
+          
+          // Also update store cache if needed
+          if (!hasStrokeDataInStore) {
+            this.$store.commit('SET_PRACTICE_CHARACTER_STROKE_DATA', { character, data: strokeData });
+          }
         }
         
-        // Store character info in cache if it wasn't already there
+        // Store character info in component cache if it wasn't already there
         if (infoData && !this.charInfoCache[character]) {
           this.charInfoCache[character] = infoData;
+          
+          // Also update store cache if needed
+          if (!hasInfoDataInStore) {
+            this.$store.commit('SET_PRACTICE_CHARACTER_INFO_DATA', { character, data: infoData });
+          }
         }
         
         return { strokeData, infoData };
@@ -977,6 +1052,41 @@ export default defineComponent({
   aspect-ratio: 1;
   margin-bottom: 1.5rem;
   /* overflow: hidden; */
+  position: relative;
+}
+
+.drawing-area.loading canvas {
+  opacity: 0.5;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top: 5px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .control-buttons {

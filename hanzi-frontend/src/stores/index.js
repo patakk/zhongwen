@@ -275,6 +275,10 @@ const store = createStore({
       static: null,
       custom: null
     }, // Track loading promises
+    practiceCharacterCache: {
+      strokeData: {},
+      infoData: {}
+    }, // Cache for practice characters
   },
   mutations: {
     setDictionaryData(state, data) {
@@ -374,6 +378,12 @@ const store = createStore({
         deck.description = description;
       }
     },
+    SET_PRACTICE_CHARACTER_STROKE_DATA(state, { character, data }) {
+      state.practiceCharacterCache.strokeData[character] = data;
+    },
+    SET_PRACTICE_CHARACTER_INFO_DATA(state, { character, data }) {
+      state.practiceCharacterCache.infoData[character] = data;
+    }
   },
   actions: {
     async fetchDictionaryData({ commit, state }) {
@@ -659,6 +669,51 @@ const store = createStore({
     updateWordlistDescription({ commit }, payload) {
       commit('UPDATE_WORDLIST_DESCRIPTION', payload);
     },
+    async preloadPracticeCharacter({ commit, state }, character) {
+      // Skip preloading if we already have this character cached
+      if (state.practiceCharacterCache.strokeData[character] && state.practiceCharacterCache.infoData[character]) {
+        return {
+          strokeData: state.practiceCharacterCache.strokeData[character],
+          infoData: state.practiceCharacterCache.infoData[character]
+        };
+      }
+      
+      try {
+        // Create promises for both API calls
+        const strokePromise = state.practiceCharacterCache.strokeData[character] 
+          ? Promise.resolve(state.practiceCharacterCache.strokeData[character])
+          : fetch(`/api/getStrokes/${character}`).then(response => {
+              if (!response.ok) {
+                console.error('Network response was not ok for character:', character);
+                return null;
+              }
+              return response.json();
+            });
+        
+        const infoPromise = state.practiceCharacterCache.infoData[character]
+          ? Promise.resolve(state.practiceCharacterCache.infoData[character])
+          : fetch(`/api/get_simple_char_data?character=${encodeURIComponent(character)}`).then(response => response.json());
+        
+        // Execute both promises in parallel
+        const [strokeData, infoData] = await Promise.all([strokePromise, infoPromise]);
+        
+        // Store stroke data in cache if it wasn't already there
+        if (strokeData && !state.practiceCharacterCache.strokeData[character]) {
+          strokeData.character = character;
+          commit('SET_PRACTICE_CHARACTER_STROKE_DATA', { character, data: strokeData });
+        }
+        
+        // Store character info in cache if it wasn't already there
+        if (infoData && !state.practiceCharacterCache.infoData[character]) {
+          commit('SET_PRACTICE_CHARACTER_INFO_DATA', { character, data: infoData });
+        }
+        
+        return { strokeData, infoData };
+      } catch (error) {
+        console.error('Error preloading character data:', error);
+        return { strokeData: null, infoData: null };
+      }
+    },
   },
   getters: {
     getCustomDictionaryData: (state) => state.customDictionaryData,
@@ -676,7 +731,8 @@ const store = createStore({
       static: state.dictionaryPromises.static,
       custom: state.dictionaryPromises.custom
     }),
-    isLoggedIn:        (state) => !!state.authStatus && !!state.username
+    isLoggedIn:        (state) => !!state.authStatus && !!state.username,
+    getPracticeCharCache: (state) => state.practiceCharacterCache
   }
 })
 
