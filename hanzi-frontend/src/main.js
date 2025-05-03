@@ -165,9 +165,10 @@ const initApp = async () => {
             : Object.keys(dictionaryData.hsk1.chars);
             
           if (hsk1Chars.length > 0) {
-            // Choose a character to preload (first one for consistency)
-            const charToPreload = hsk1Chars[0];
-            console.log('Preloading HSK1 character for practice:', charToPreload);
+            // Choose a random character to preload instead of always the first one
+            const randomIndex = Math.floor(Math.random() * hsk1Chars.length);
+            const charToPreload = hsk1Chars[randomIndex];
+            console.log('Preloading random HSK1 character for practice:', charToPreload);
             
             // Preload the character data
             await store.dispatch('preloadPracticeCharacter', charToPreload);
