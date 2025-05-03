@@ -1,6 +1,55 @@
 # CHANGELOG
 
 
+## v1.3.0 (2025-05-03)
+
+### Chores
+
+- Build
+  ([`71eccd5`](https://github.com/patakk/zhongwen/commit/71eccd5ef7af32698561c10467a986f0f1a0ab9c))
+
+- Build
+  ([`0172052`](https://github.com/patakk/zhongwen/commit/0172052de95ae3451e6afe4cd30b37f396125ad4))
+
+### Features
+
+- Hanzi tree
+  ([`341af56`](https://github.com/patakk/zhongwen/commit/341af5601fa17230a67b5aff2f9e39144d7a6e64))
+
+- Hanzi tree
+  ([`f46143b`](https://github.com/patakk/zhongwen/commit/f46143be10adb8ec4937125cc01ced959148d420))
+
+- Hanzi tree
+  ([`e0adfd3`](https://github.com/patakk/zhongwen/commit/e0adfd318d4998ac161b49ea2dc75f2e368d2e6a))
+
+- Hanzi tree
+  ([`1ce1c00`](https://github.com/patakk/zhongwen/commit/1ce1c00c918e6fc977b62e1730328656e308c06d))
+
+- Hanzi tree
+  ([`04ade11`](https://github.com/patakk/zhongwen/commit/04ade116d5d25837a402cd6bafacc7a79b146cae))
+
+- Hanzi tree
+  ([`3931ff0`](https://github.com/patakk/zhongwen/commit/3931ff01d68c895c3202ad64b0d94f3765c3aafc))
+
+- Hanzi tree
+  ([`3dbb775`](https://github.com/patakk/zhongwen/commit/3dbb775d22afab0c21f39c620a7111268c51341c))
+
+- Hanzi tree
+  ([`52ec77a`](https://github.com/patakk/zhongwen/commit/52ec77a59d23c2ba935c3717a8bd8c84d758b377))
+
+- Hanzi tree
+  ([`551713f`](https://github.com/patakk/zhongwen/commit/551713feeb8e09065d3d926bfab4daa2d52b9e38))
+
+- Hanzi tree
+  ([`e04b179`](https://github.com/patakk/zhongwen/commit/e04b17920e71bc1380488e85cd052ff35e240132))
+
+- Style and hanzi tree
+  ([`9610db6`](https://github.com/patakk/zhongwen/commit/9610db66c5e90caf50790464338672457017f09e))
+
+- Themes
+  ([`55929a3`](https://github.com/patakk/zhongwen/commit/55929a3565b9fd53c6c76ba5b054ae969581dc7b))
+
+
 ## v1.2.0 (2025-05-02)
 
 ### Bug Fixes
