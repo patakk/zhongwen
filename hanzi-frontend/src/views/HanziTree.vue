@@ -105,7 +105,7 @@ export default {
                     rootNode: {
                         fill: "#f54",       // Orange
                         fill: "#6f4",       // Green
-                        strokeColor: "#000", // Darker orange
+                        strokeColor: "#0a5", // Darker orange
                         textColor: "#fff",
                         textColor: "#000",
                         strokeWidth: 2,
