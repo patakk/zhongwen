@@ -19,6 +19,7 @@ from backend.db.ops import db_add_words_to_set
 from backend.db.ops import db_create_word_list
 from backend.db.ops import db_add_words_to_set
 from backend.db.ops import db_get_user_wordlists
+from backend.db.ops import db_store_user_theme
 from backend.db.ops import db_get_word_list
 from backend.db.ops import db_rename_word_list
 from backend.db.ops import db_delete_word_list
@@ -27,7 +28,7 @@ from backend.db.ops import db_remove_word_from_set
 from backend.db.ops import db_update_wordlist_description
 from backend.db.ops import db_get_all_stroke_data
 
-from backend.db.models import Card, UserNotes
+from backend.db.models import Card, UserNotes, User
 
 from backend.common import CARDDECKS
 from backend.common import STROKES_CACHE
@@ -740,3 +741,24 @@ def record_answer():
     logger.info(f"Answer recorded for {character}: {correct}")
     # flashcard_app.record_answer(username, character, correct)
     return jsonify({"message": "Answer recorded successfully"})
+
+
+@api_bp.route("/save_theme", methods=["POST"])
+@session_required
+def save_theme():
+    data = request.get_json()
+    if not data or "theme" not in data:
+        return jsonify({"error": "Missing theme value"}), 400
+    
+    theme = data["theme"]
+    username = session.get("username")
+    
+    if not username:
+        return jsonify({"error": "User not authenticated"}), 401
+    
+    # Save the theme preference to the database
+    db_store_user_theme(username, theme)
+    session["theme"] = theme
+    logger.info(f"Theme preference saved for {username}: {theme}")
+    
+    return jsonify({"message": f"Theme preference saved successfully", "theme": theme})

@@ -347,7 +347,17 @@ def db_add_words_to_set(username, wordlist_name, words):
     }
 
 
+def db_store_user_theme(username, theme):
+    user = User.query.filter_by(username=username).first()
+    user.set_metainfo("theme", theme)
+    db.session.commit()
 
+def db_get_user_theme(username):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return None
+    theme = user.get_metainfo("theme")
+    return theme if theme else "theme1"
 
 
 def db_add_stroke_data(chardata):

@@ -1,6 +1,6 @@
 from sqlalchemy.dialects.sqlite import JSON
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from sqlalchemy.ext.mutable import MutableDict
 from backend.db.extensions import db
 import secrets
 
@@ -30,7 +30,7 @@ class User(db.Model):
     #google_id = db.Column(db.String(120), nullable=True)
 
     profile_pic = db.Column(db.String(200), nullable=True)
-    metainfo = db.Column(JSON, nullable=True, default=dict)
+    metainfo = db.Column(MutableDict.as_mutable(JSON), nullable=True, default=dict)
     oauth_token = db.Column(db.String(200), nullable=True)
     oauth_token_expiry = db.Column(db.DateTime, nullable=True)
 
@@ -47,6 +47,7 @@ class User(db.Model):
         if self.metainfo is None:
             self.metainfo = {}
         self.metainfo[key] = value
+        # MutableDict will track this change automatically
         return self.metainfo
 
     def get_metainfo(self, key, default=None):
@@ -59,7 +60,7 @@ class User(db.Model):
         """Check if a key exists in the metainfo dictionary."""
         if not self.metainfo:
             return False
-        return key in self.metainfo
+        return key in self.metainfo 
 
     def set_email(self, email, verified=False):
         self.email = email

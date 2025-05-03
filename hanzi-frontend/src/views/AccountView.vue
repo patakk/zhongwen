@@ -1,5 +1,5 @@
 <template>
-    <BasePage page_title="Account" />
+    <BasePage page_title="Settings" />
 
     <div class="account-container" v-if="loggedIn">
       <div class="profile-info-grid">

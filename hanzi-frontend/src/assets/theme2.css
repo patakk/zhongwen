@@ -19,6 +19,7 @@
 	--grid-item-border: 2px solid var(--fg);
 	--card-shadow: 10px 10px 0px 0px var(--fg);
 	--card-border: 4px solid color-mix(in oklab, var(--fg) 86%, var(--bg) 35%);
+	--overlay-background: #222622bb;
 }
 
 [data-theme="theme2"] .theme-toggle {

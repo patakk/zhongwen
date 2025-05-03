@@ -14,7 +14,7 @@
             <RouterLink to="/login" class="sidebar-link">Login</RouterLink>
           </template>
           <template v-else>
-            <RouterLink to="/account" class="sidebar-link">Account</RouterLink>
+            <RouterLink to="/account" class="sidebar-link">Settings</RouterLink>
             <RouterLink to="/my-lists" class="sidebar-link">Lists</RouterLink>
           </template>
           <RouterLink to="/grid" class="sidebar-link">Grid</RouterLink>
@@ -38,7 +38,7 @@
           <RouterLink to="/login" class="top-link">Login</RouterLink>
         </template>
         <template v-else>
-          <RouterLink to="/account" class="top-link">Account</RouterLink>
+          <RouterLink to="/account" class="top-link">Settings</RouterLink>
           <RouterLink to="/my-lists" class="top-link">Lists</RouterLink>
         </template>
         <RouterLink to="/grid" class="top-link">Grid</RouterLink>

@@ -531,7 +531,7 @@ def get_user_data():
         'email_verified': user.email_verified,
         'has_password': user.password_hash is not None, 
         "custom_deck_names": custom_decks_data,
-
+        "theme": user.get_metainfo("theme", None)  # Get theme from metainfo or return None if not set
     }
     return jsonify(user_data)
 

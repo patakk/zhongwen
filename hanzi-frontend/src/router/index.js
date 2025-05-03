@@ -3,7 +3,6 @@ import Home from '../views/HomeView.vue'
 import Login from '../views/LoginView.vue'
 import Register from '../views/RegisterView.vue'
 import Account from '../views/AccountView.vue'
-import DeleteAccount from '../views/DeleteAccountView.vue'
 import About from '../views/AboutView.vue'
 
 import Grid from '../views/GridView.vue'
@@ -21,7 +20,6 @@ const routes = [
   { path: '/login', component: Login },
   { path: '/register', component: Register },
   { path: '/account', component: Account },
-  { path: '/delete-account', component: DeleteAccount },
   { path: '/about', name: 'About', component: About },
 
   { path: '/grid', component: Grid },
