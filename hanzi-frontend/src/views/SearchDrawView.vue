@@ -106,9 +106,10 @@ export default {
     },
     
     loadHanziLookupScript() {
-      // Dynamically load the HanziLookup script
+      // Dynamically load the HanziLookup script from Cloudflare
       const script = document.createElement('script');
-      script.src = '/lib/hanzilookup/hanzilookup.min.js';
+      // script.src = '/lib/hanzilookup/hanzilookup.min.js';
+      script.src = 'https://assets.hanzi.abcrgb.xyz/hanzilookup/hanzilookup.min.js';
       script.async = true;
       script.onload = () => {
         this.scriptLoaded = true;
@@ -121,7 +122,7 @@ export default {
     },
     
     initHanziLookup() {
-      // Initialize HanziLookup with data files
+      // Initialize HanziLookup with data files from Cloudflare
       if (window.HanziLookup) {
         // Define a counter for tracking loaded files
         let loadedFiles = 0;
@@ -138,9 +139,9 @@ export default {
           }
         };
         
-        // Initialize with both data files
-        window.HanziLookup.init("mmah", "/lib/hanzilookup/mmah.json", fileLoaded);
-        window.HanziLookup.init("orig", "/lib/hanzilookup/orig.json", fileLoaded);
+        // Initialize with both data files from Cloudflare
+        window.HanziLookup.init("mmah", "https://assets.hanzi.abcrgb.xyz/hanzilookup/mmah.json", fileLoaded);
+        window.HanziLookup.init("orig", "https://assets.hanzi.abcrgb.xyz/hanzilookup/orig.json", fileLoaded);
       } else {
         console.error('HanziLookup library not found');
       }
