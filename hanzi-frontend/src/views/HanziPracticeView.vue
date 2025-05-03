@@ -52,11 +52,15 @@
           </div>
         </div>
 
-        <div class="drawing-area" ref="drawingArea" :class="{ 'loading': isLoading }">
+        <!-- <div class="drawing-area" ref="drawingArea" :class="{ 'loading': isLoading }">
           <canvas id="plotter-canvas" ref="plotterCanvas"></canvas>
           <div v-if="isLoading" class="loading-overlay">
             <div class="loading-spinner"></div>
           </div>
+        </div> -->
+
+        <div class="drawing-area" ref="drawingArea">
+          <canvas id="plotter-canvas" ref="plotterCanvas"></canvas>
         </div>
 
         <div class="control-buttons">
@@ -416,7 +420,8 @@ export default defineComponent({
       const result = [...array];
       
       // Find if any character is already preloaded in the store
-      const preloadedChar = result.find(char => storeCache.strokeData[char] && storeCache.infoData[char]);
+      // Only check for stroke data since we now get character info from dictionary
+      const preloadedChar = result.find(char => storeCache.strokeData[char]);
       
       if (preloadedChar) {
         // If we have a preloaded character, make sure it's the first one
@@ -495,19 +500,18 @@ export default defineComponent({
         this.wordTotalStrokeCount = 0;
         this.skipState = 0;
         
-        // First check if data already exists in the store cache before showing loading state
+        // First check if stroke data already exists in the store cache before showing loading state
         const storeCache = this.$store.getters.getPracticeCharCache;
         const hasStrokeDataInStore = storeCache.strokeData[this.currentCharacter];
-        const hasInfoDataInStore = storeCache.infoData[this.currentCharacter];
         
-        // Only show loading state if we need to fetch data
-        if (!hasStrokeDataInStore || !hasInfoDataInStore) {
+        // Only show loading state if we need to fetch stroke data
+        if (!hasStrokeDataInStore) {
           this.isLoading = true;
         } else {
           this.isLoading = false;
         }
         
-        // Load character data (both stroke data and character info) in parallel
+        // Load character data (stroke data and get character info from dictionary)
         const { strokeData, infoData } = await this.preloadCharacterData(this.currentCharacter);
         
         // Process stroke data
@@ -533,7 +537,7 @@ export default defineComponent({
         // Set loading state to false after data is processed
         this.isLoading = false;
         
-        // Preload next character's data (stroke data and character info)
+        // Preload next character's data (only stroke data, info comes from dictionary)
         const nextIdx = (this.currentIndex + 1) % this.shuffledWords.length;
         const nextWord = this.shuffledWords[nextIdx];
         const nextChar = nextWord[this.charIterator % nextWord.length];
@@ -546,20 +550,37 @@ export default defineComponent({
     
     async preloadCharacterData(character) {
       try {
-        // First check if data already exists in the store cache
+        // First check if stroke data already exists in the store cache
         const storeCache = this.$store.getters.getPracticeCharCache;
         const hasStrokeDataInStore = storeCache.strokeData[character];
-        const hasInfoDataInStore = storeCache.infoData[character];
         
-        // If both data types exist in store, use them directly
-        if (hasStrokeDataInStore && hasInfoDataInStore) {
-          return {
-            strokeData: storeCache.strokeData[character],
-            infoData: storeCache.infoData[character]
-          };
+        // Get character information from dictionary data instead of API call
+        const dictData = this.$store.getters.getDictionaryData || {};
+        let charInfo = null;
+        
+        // Search for the character in all dictionary categories
+        for (const category in dictData) {
+          const categoryData = dictData[category];
+          if (categoryData && categoryData.chars) {
+            const chars = categoryData.chars;
+            if (Array.isArray(chars)) {
+              // If chars is an array of objects with 'character' property
+              const found = chars.find(char => char.character === character);
+              if (found) {
+                charInfo = found;
+                break;
+              }
+            } else if (typeof chars === 'object') {
+              // If chars is an object with character keys
+              if (chars[character]) {
+                charInfo = chars[character];
+                break;
+              }
+            }
+          }
         }
         
-        // Create promises for both API calls, using store data if available
+        // If stroke data is already cached, use it
         const strokePromise = hasStrokeDataInStore 
           ? Promise.resolve(storeCache.strokeData[character])
           : this.strokeCache[character] 
@@ -572,14 +593,8 @@ export default defineComponent({
                 return response.json();
               });
         
-        const infoPromise = hasInfoDataInStore
-          ? Promise.resolve(storeCache.infoData[character])
-          : this.charInfoCache[character]
-            ? Promise.resolve(this.charInfoCache[character])
-            : fetch(`/api/get_simple_char_data?character=${encodeURIComponent(character)}`).then(response => response.json());
-        
-        // Execute both promises in parallel
-        const [strokeData, infoData] = await Promise.all([strokePromise, infoPromise]);
+        // Get stroke data
+        const strokeData = await strokePromise;
         
         // Store stroke data in component cache if it wasn't already there
         if (strokeData && !this.strokeCache[character]) {
@@ -592,17 +607,10 @@ export default defineComponent({
           }
         }
         
-        // Store character info in component cache if it wasn't already there
-        if (infoData && !this.charInfoCache[character]) {
-          this.charInfoCache[character] = infoData;
-          
-          // Also update store cache if needed
-          if (!hasInfoDataInStore) {
-            this.$store.commit('SET_PRACTICE_CHARACTER_INFO_DATA', { character, data: infoData });
-          }
-        }
-        
-        return { strokeData, infoData };
+        return { 
+          strokeData, 
+          infoData: charInfo // Return character info from dictionary instead of separate API call
+        };
       } catch (error) {
         console.error('Error preloading character data:', error);
         return { strokeData: null, infoData: null };
@@ -639,7 +647,7 @@ export default defineComponent({
       }
       
       // Save user stroke data
-      this.saveUserStrokeData(data);
+      // this.saveUserStrokeData(data);
     },
     
     handleMistake() {
