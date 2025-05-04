@@ -2,6 +2,43 @@
     <BasePage page_title="Settings" />
 
     <div class="account-container" v-if="loggedIn">
+
+      <!-- Theme Settings Section -->
+      <div class="settings-section theme-settings">
+        <h3>Appearance</h3>
+      <div class="section-divider"></div>
+      <div class="theme-selection">
+          <div class="theme-option-label">Theme:</div>
+          <div class="theme-buttons">
+            <button 
+              class="theme-button" 
+              :class="{ 'active': isDefaultThemeSystem }" 
+              @click="selectThemeSystem('default')"
+            >
+              Classic
+            </button>
+            <button 
+              class="theme-button" 
+              :class="{ 'active': !isDefaultThemeSystem }" 
+              @click="selectThemeSystem('custom')"
+            >
+              Tooney
+            </button>
+          </div>
+        </div>
+        <!-- <div class="current-theme">
+          <div class="theme-option-label">Current Theme:</div>
+          <div class="theme-value">{{ currentThemeName }}</div>
+          <button class="btn theme-toggle-btn" @click="toggleCurrentTheme">Toggle Theme</button>
+        </div> -->
+      </div>
+    </div>
+
+    <div class="account-container" v-if="loggedIn">
+
+        <h3>Account</h3>
+        <div class="section-divider"></div>
+
       <div class="profile-info-grid">
         <div class="profile-row">
           <div class="profile-label">Username:</div>
@@ -239,6 +276,22 @@ import { useRouter, useRoute } from 'vue-router'
 const store = useStore()
 const router = useRouter()
 const route = useRoute()
+
+// Theme system functions and variables
+const currentTheme = computed(() => store.getters['theme/getCurrentTheme'])
+const isDefaultThemeSystem = computed(() => store.getters['theme/isDefaultThemeSystem'])
+const currentThemeName = computed(() => store.getters['theme/getCurrentThemeName'])
+
+// Theme system functions
+function selectThemeSystem(system) {
+  store.dispatch('theme/setThemeSystem', system);
+  showSuccessToast(`Switched to ${currentThemeName.value}`);
+}
+
+function toggleCurrentTheme() {
+  store.dispatch('theme/toggleTheme');
+  showSuccessToast(`Switched to ${currentThemeName.value}`);
+}
 
 const showEmailModal = ref(false)
 const showPasswordModal = ref(false)
@@ -594,7 +647,7 @@ h2 {
   border-radius: 8px;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   border-radius: var(--modal-border-radius);
-  border: var(--thin-border-width) solid var(--fg-dim);
+  border: var(--thin-border-width) solid var(--fg);
   box-shadow: var(--card-shadow);
 
 }
@@ -873,6 +926,79 @@ h2 {
     color: var(--danger-color, #dc3545);
 }
 
+.settings-section {
+  margin-bottom: 1.5rem;
+}
+
+h3 {
+  margin-top: 0;
+  /* margin-bottom: 2rem; */
+  /* color: var(--fg); */
+  /* border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%); */
+  /* padding-bottom: 0.5rem; */
+}
+
+.section-divider {
+  margin: 2rem 0;
+  border-top: 2px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
+}
+
+.theme-selection, .current-theme {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.theme-option-label {
+  min-width: 120px;
+  font-weight: 500;
+  color: color-mix(in oklab, var(--fg) 85%, var(--bg) 100%);
+}
+
+.theme-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.theme-button {
+  padding: 0.4rem 1rem;
+  background: var(--bg-alt);
+  border: 2px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
+  border-radius: 0px;
+  cursor: pointer;
+  color: var(--fg);
+  /* transition: all 0.2s; */
+  
+	font-weight: bold;
+	border: 3px solid var(--black) !important;
+	background: var(--bg) !important;
+	opacity: .5;
+}
+
+.theme-button.active {
+  background: color-mix(in oklab, var(--green-btn-clr, #f11) 30%, var(--bg) 100%);
+  border-color: color-mix(in oklab, var(--green-btn-clr, #f11) 80%, var(--bg) 100%);
+  color: color-mix(in oklab, var(--green-btn-clr, #f11) 90%, var(--fg) 100%);
+	opacity: 1;
+}
+
+.theme-button:hover:not(.active) {
+  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
+}
+
+.theme-value {
+  font-weight: 500;
+  color: var(--green-btn-clr, #f11);
+  margin-right: 1rem;
+}
+
+.theme-toggle-btn {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.9em;
+}
+
 @media (max-width: 768px) {
   
   .account-container {
@@ -894,9 +1020,14 @@ h2 {
     border-bottom: 2px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
     padding-bottom: 1rem;
   }
+
+  .theme-selection, .current-theme {
+    flex-direction: column;
+    align-items: flex-start;
+  }
   
-  .logout-btn {
-    flex: 1;
+  .theme-option-label {
+    margin-bottom: 0.5rem;
   }
 }
 

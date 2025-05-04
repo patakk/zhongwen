@@ -222,7 +222,7 @@ export default defineComponent({
   },
   mounted() {
     // Check initial dark mode state
-    this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+    this.isDarkMode = ['dark', 'theme2'].includes(document.documentElement.getAttribute('data-theme'));
     
     // Set up theme change observer
     this.setupThemeObserver();
@@ -261,7 +261,7 @@ export default defineComponent({
   methods: {
     getThemeColors(theme) {
       if(theme === 'dark') {
-        return ['#ffffffee', '#ffffffee', '#cdb3dfdd', '#151515'];
+        return ['#ffffffee', '#ffffff77', '#cdb3dfdd', '#151515'];
       }
       if(theme === 'light') {
         return ['#000000ee', '#00000077', '#cdb3dfdd', '#f3f3f3'];
@@ -270,7 +270,7 @@ export default defineComponent({
         return ['#000000ee', '#00000077', '#cdb3dfdd', '#f3f3f3'];
       }
       if(theme === 'theme2') {
-        return ['#000000ee', '#00000077', '#cdb3dfdd', '#f3f3f3'];
+        return ['#ffffffee', '#ffffff77', '#cdb3dfdd', '#151515'];
       }
     },
     
@@ -805,7 +805,7 @@ export default defineComponent({
         mutations.forEach((mutation) => {
           if (mutation.attributeName === 'data-theme') {
             // Update isDarkMode flag when theme changes
-            this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            this.isDarkMode = ['dark', 'theme2'].includes(document.documentElement.getAttribute('data-theme'));
             
             // Update plotter with new theme colors if it exists
             if (this.plotter) {
@@ -886,7 +886,11 @@ export default defineComponent({
 }
 
 [data-theme="dark"] {
-  --plotter-bg: #000000;
+  --plotter-bg: #151515;
+}
+
+[data-theme="theme2"] {
+  --plotter-bg: #141b16;
 }
 
 </style>
@@ -932,8 +936,8 @@ export default defineComponent({
 }
 
 #selected-deck {
-  background-color: var(--btn-bg);
-  color: var(--btn-fg);
+  background-color: var(--bg);
+  color: var(--fg);
   cursor: pointer;
   font-size: 1.5em;
   font-weight: bold;
@@ -1107,8 +1111,8 @@ export default defineComponent({
 
 .btn {
   padding: 0.5rem 1rem;
-  background-color: var(--btn-bg);
-  color: var(--btn-fg);
+  background-color: var(--bg);
+  color: var(--fg);
   border: none;
   cursor: pointer;
   display: flex;

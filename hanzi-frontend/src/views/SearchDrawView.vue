@@ -63,7 +63,8 @@ export default {
     this.initCanvas();
     this.loadHanziLookupScript();
     this.setupThemeObserver();
-    this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+    this.isDarkMode = ['dark', 'theme2'].includes(document.documentElement.getAttribute('data-theme'));
+
     this.drawCanvasBg();
     
     // Add touch event listeners with passive option after mounting
@@ -85,7 +86,7 @@ export default {
         mutations.forEach((mutation) => {
           if (mutation.attributeName === 'data-theme') {
             // Update isDarkMode flag when theme changes
-            this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            this.isDarkMode = ['dark', 'theme2'].includes(document.documentElement.getAttribute('data-theme'));
             
             // Update stroke style based on theme
             this.updateStrokeStyle();
@@ -156,8 +157,8 @@ export default {
       
       this.ctx.lineJoin = 'round';
       this.ctx.lineCap = 'round';
-      this.ctx.lineWidth = 8;
-      this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+      this.ctx.lineWidth = this.canvas.width / 25; // Adjust line width based on canvas size
+      this.isDarkMode = ['dark', 'theme2'].includes(document.documentElement.getAttribute('data-theme'));
       this.ctx.strokeStyle = this.isDarkMode ? '#fff' : '#000';
 
     },
@@ -412,7 +413,7 @@ export default {
 
 .drawing-container {
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   margin-bottom: 1rem;
 }
 

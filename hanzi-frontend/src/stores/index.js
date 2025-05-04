@@ -254,12 +254,92 @@ const bubbleTooltipModule = {
   }
 };
 
+// Create a module for theme management
+const themeModule = {
+  namespaced: true,
+  state: {
+    currentTheme: 'theme1', // Default theme
+  },
+  mutations: {
+    SET_THEME(state, theme) {
+      state.currentTheme = theme;
+      // Update DOM and localStorage
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    },
+  },
+  actions: {
+    initTheme({ commit }) {
+      // Check localStorage first
+      let theme = localStorage.getItem('theme');
+      
+      // If no theme in localStorage, check system preference
+      if (!theme) {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        theme = prefersDark ? 'dark' : 'theme1';
+      }
+      
+      // Set the theme
+      commit('SET_THEME', theme);
+    },
+    toggleTheme({ commit, state }) {
+      // Toggle between pairs: light/dark or theme1/theme2
+      let newTheme;
+      
+      if (state.currentTheme === 'light') {
+        newTheme = 'dark';
+      } else if (state.currentTheme === 'dark') {
+        newTheme = 'light';
+      } else if (state.currentTheme === 'theme1') {
+        newTheme = 'theme2';
+      } else if (state.currentTheme === 'theme2') {
+        newTheme = 'theme1';
+      }
+      
+      commit('SET_THEME', newTheme);
+    },
+    setTheme({ commit }, theme) {
+      commit('SET_THEME', theme);
+    },
+    setThemeSystem({ commit, state }, system) {
+      // 'default' = light/dark, 'custom' = theme1/theme2
+      let newTheme;
+      
+      if (system === 'default') {
+        // Switch to default light/dark system
+        newTheme = ['light', 'dark'].includes(state.currentTheme) ? 
+          state.currentTheme : 'light';
+      } else {
+        // Switch to custom theme1/theme2 system
+        newTheme = ['theme1', 'theme2'].includes(state.currentTheme) ?
+          state.currentTheme : 'theme1';
+      }
+      
+      commit('SET_THEME', newTheme);
+    }
+  },
+  getters: {
+    getCurrentTheme: state => state.currentTheme,
+    isDefaultThemeSystem: state => ['light', 'dark'].includes(state.currentTheme),
+    getCurrentThemeName: state => {
+      switch(state.currentTheme) {
+        case 'light': return 'Light Mode';
+        case 'dark': return 'Dark Mode';
+        case 'theme1': return 'Theme1 (Light)';
+        case 'theme2': return 'Theme2 (Dark)';
+        default: return state.currentTheme;
+      }
+    }
+  }
+};
+
 const USER_STORAGE_KEY = 'userData';
 
 const store = createStore({
   modules: {
     cardModal: cardModalModule,
-    bubbleTooltip: bubbleTooltipModule
+    bubbleTooltip: bubbleTooltipModule,
+    theme: themeModule
   },
   state: {
     staticDictionaryData: null,

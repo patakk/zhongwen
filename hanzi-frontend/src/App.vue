@@ -1,9 +1,9 @@
 <template>
-  <div id="app" :data-theme="theme">
+  <div id="app" :data-theme="currentTheme">
     <button class="theme-toggle" @click="toggleTheme">
-      <font-awesome-icon :icon="['fas', 'moon']" v-if="theme === 'dark'" />
-      <font-awesome-icon :icon="['fas', 'sun']" v-else-if="theme === 'theme1'" />
-      <font-awesome-icon :icon="['fas', 'moon']" v-else-if="theme === 'theme2'" />
+      <font-awesome-icon :icon="['fas', 'moon']" v-if="currentTheme === 'dark'" />
+      <font-awesome-icon :icon="['fas', 'sun']" v-else-if="currentTheme === 'theme1'" />
+      <font-awesome-icon :icon="['fas', 'moon']" v-else-if="currentTheme === 'theme2'" />
       <font-awesome-icon :icon="['fas', 'sun']" v-else />
     </button>
     <router-view />
@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch, computed } from 'vue'
+import { onMounted, nextTick, watch, computed } from 'vue'
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import GlobalCardModal from './components/GlobalCardModal.vue';
@@ -29,7 +29,8 @@ import BubbleTooltip from './components/BubbleTooltip.vue';
 const store = useStore()
 const router = useRouter()
 
-const theme = ref(localStorage.getItem('theme') || 'theme1')
+// Use theme from Vuex store
+const currentTheme = computed(() => store.getters['theme/getCurrentTheme'])
 const bubbleData = computed(() => store.getters['bubbleTooltip/getBubbleData'])
 
 // Create a watcher for route changes to close the modal and bubble tooltip when navigating
@@ -103,39 +104,23 @@ const checkBackendConnectivity = async () => {
   }
 };
 
+// Use theme toggle from Vuex store
 const toggleTheme = () => {
-  // Cycle through three themes: theme1 -> light -> dark -> theme1
-  if (theme.value === 'theme2') {
-    theme.value = 'light'
-  } else if (theme.value === 'light') {
-    theme.value = 'dark'
-  } else if (theme.value === 'dark') {
-    theme.value = 'theme1'
-  } else if (theme.value === 'theme1') {
-    theme.value = 'theme2'
-  }
+  store.dispatch('theme/toggleTheme');
   
-  localStorage.setItem('theme', theme.value)
-  document.documentElement.setAttribute('data-theme', theme.value)
-  // Add the spin class
-  const button = document.querySelector('.theme-toggle')
-  button.classList.add('spin')
+  // Add the spin animation class
+  const button = document.querySelector('.theme-toggle');
+  button.classList.add('spin');
 
   // Remove the spin class after the animation ends
   setTimeout(() => {
-    button.classList.remove('spin')
-  }, 200) // Match the duration of the animation
+    button.classList.remove('spin');
+  }, 200); // Match the duration of the animation
 }
 
 onMounted(async () => {
-  // Check system preference on first load if no theme is set in localStorage
-  if (!localStorage.getItem('theme')) {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    // Set to theme1 as default, or dark if system prefers dark mode
-    theme.value = prefersDark ? 'dark' : 'theme1'
-    localStorage.setItem('theme', theme.value)
-  }
-  document.documentElement.setAttribute('data-theme', theme.value)
+  // Initialize theme from localStorage or system preference
+  store.dispatch('theme/initTheme');
   
   // Verify user exists in database on each app load/refresh
   await verifyUserExists();

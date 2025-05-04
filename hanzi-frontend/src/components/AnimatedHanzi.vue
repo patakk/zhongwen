@@ -41,6 +41,7 @@ export default defineComponent({
     const currentTheme = ref(document.documentElement.getAttribute('data-theme') || 'light');
     const isQuizMode = ref(false);
 
+
     const getThemeColors = () => {
       let theme = localStorage.getItem('theme') || 'light';
       let themeColors;
@@ -54,7 +55,7 @@ export default defineComponent({
         themeColors = ['#151511dd', '#eaa', '#151511', '#f3f3f3'];
       }
       if(theme === 'theme2') {
-        themeColors = ['#000000ee', '#00000077', '#cdb3dfdd', '#f3f3f3'];
+        themeColors = ['#e5ddeddd', '#e2cdec88', '#e5dded', '#151515'];
       }
       return themeColors;
     };
@@ -62,7 +63,7 @@ export default defineComponent({
     const updateTheme = () => {
       if (!plotter.value) return;
 
-      const isDarkMode = currentTheme.value === 'dark';
+    const isDarkMode = ['dark', 'theme2'].includes(currentTheme.value);
       const colors = getThemeColors();
       
       plotter.value.isDarkMode = isDarkMode;
@@ -90,7 +91,7 @@ export default defineComponent({
         plotter.value = null;
       } 
 
-      const isDarkMode = currentTheme.value === 'dark';
+    const isDarkMode = ['dark', 'theme2'].includes(currentTheme.value);
       
       if (!props.strokes || !props.strokes.medians || !props.strokes.strokes) {
         console.error("No stroke data provided for character:", props.character);

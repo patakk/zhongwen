@@ -1003,7 +1003,7 @@ html, body {
 #selected-deck {
   padding: 10px 15px;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  color: var(--btn-fg);
+  color: var(--fg);
   cursor: pointer;
   font-weight: bold;
   text-align: center;
@@ -1116,7 +1116,7 @@ canvas.plotter {
     padding: 5px 11px;
     font-size: 0.8em;
     background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-    color: var(--btn-fg);
+    color: var(--fg);
     cursor: pointer;
     font-weight: bold;
     text-align: center;

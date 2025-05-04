@@ -891,7 +891,7 @@ export default {
   height: 90vh;
   max-height: 90vh;
   aspect-ratio: .75;
-  border: var(--modal-border-width) solid var(--fg-dim);
+  border: var(--modal-border-width) solid var(--fg);
   box-shadow: var(--card-shadow);
   background: var(--modal-bg);
   display: flex;
@@ -1029,7 +1029,8 @@ export default {
 }
 
 .example-word-content:hover {
-  background-color: color-mix(in oklab, var(--fg) 3%, var(--bg) 90%);
+  background-color: color-mix(in oklab, var(--fg) 85%, var(--bg) 50%) !important;
+  color: var(--bg) !important;
 }
 
 .example-chinese-pinyin {
@@ -1279,6 +1280,11 @@ export default {
   background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
   cursor: pointer;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
+}
+
+.decomp-char:hover {
+  background-color: color-mix(in oklab, var(--fg) 85%, var(--bg) 50%) !important;
+  color: var(--bg) !important;
 }
 
 
