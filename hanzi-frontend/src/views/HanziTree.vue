@@ -235,7 +235,7 @@ export default {
             // Check if the click is outside the menu
             const menuElement = document.querySelector('.node-menu');
             if (menuElement && !menuElement.contains(e.target) && 
-                !e.target.closest('circle') && !e.target.closest('text')) {
+                !e.target.closest('rect') && !e.target.closest('text')) {
                 showMenu.value = false;
             }
         };
@@ -723,7 +723,7 @@ export default {
                         }
                         
                         // Don't show menu for current root character
-                        if (d.data.character === currentCharacter.value) return;
+                        // if (d.data.character === currentCharacter.value) return;
                         
                         // Store node data for menu actions
                         selectedNodeData.value = d;
