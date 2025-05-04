@@ -252,18 +252,18 @@ export default {
             const character = selectedNodeData.value.data.character;
             
             try {
-                // Show loading state while fetching data
-                isLoading.value = true;
-                
                 // Fetch decomposition data for the selected character
                 const decompData = await store.dispatch('cardModal/fetchDecompositionDataOnly', character);
                 
-                if (!decompData || !decompData[character]) {
+                if (!decompData || !decompData[character] || Object.keys(decompData[character]).length === 0) {
                     console.warn(`No decomposition data found for ${character}`);
+                    // Don't change any state or redraw anything
                     showMenu.value = false;
-                    isLoading.value = false;
-                    return;
+                    return; // Exit early without changing isLoading or the tree
                 }
+                
+                // Only now that we have data, show loading state
+                isLoading.value = true;
                 
                 console.log(`Got decomposition data for ${character}:`, decompData[character]);
                 
@@ -465,20 +465,18 @@ export default {
 
         // Convert decomposition data to hierarchical structure for D3
         const prepareTreeData = (character, decomp, previousData = null) => {
-            // If no decomposition data, return just the character
-            if (!decomp || !decomp[character]) {
-                return { 
-                    name: character, 
-                    character: character
-                };
-            }
-            
-            // Create root node
+            // Create basic node structure even if no decomposition data exists
             const rootNode = {
                 name: character,
                 character: character,
                 children: []
             };
+            
+            // If no decomposition data, return just the character as a root node
+            if (!decomp || !decomp[character] || Object.keys(decomp[character]).length === 0) {
+                console.warn(`No decomposition data available for character: ${character}`);
+                return rootNode;
+            }
             
             // Add first level components
             const components = decomp[character];
@@ -534,13 +532,53 @@ export default {
             // Clear previous visualization if any
             d3.select(treeContainer.value).selectAll("*").remove();
             
-            if (!data || !data.name) return;
+            // Get container dimensions for styling
+            const containerRect = treeContainer.value.getBoundingClientRect();
+            const width = containerRect.width;
+            const height = containerRect.height;
+            
+            // Create the SVG container regardless of data
+            const svg = d3.select(treeContainer.value)
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("style", "display: block; margin: 0 auto; background: transparent;");
+            
+            // Add zoom functionality
+            zoomGroup.value = svg.append("g");
+            zoomBehavior.value = d3.zoom()
+                .scaleExtent([0.5, 5]) // Set zoom scale limits
+                .on("zoom", (event) => {
+                    zoomGroup.value.attr("transform", event.transform);
+                });
+            svg.call(zoomBehavior.value);
+            
+            // Check if we have valid data to visualize
+            if (!data || !data.name) {
+                // No data case - display a message in the center of the canvas
+                zoomGroup.value.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("x", width / 2)
+                    .attr("y", height / 2)
+                    .attr("font-size", "24px")
+                    .attr("fill", "var(--fg, #333)")
+                    .text(`No decomposition data available for "${currentCharacter.value}"`);
+                
+                // Add the character in a larger font below the message
+                zoomGroup.value.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("x", width / 2)
+                    .attr("y", height / 2 + 60)
+                    .attr("font-size", "72px")
+                    .attr("fill", "var(--fg, #333)")
+                    .attr("font-family", "Noto Sans SC, sans-serif")
+                    .text(currentCharacter.value);
+                
+                return; // Exit early
+            }
             
             try {
-                // Get container dimensions for responsive sizing
-                const containerRect = treeContainer.value.getBoundingClientRect();
-                const width = containerRect.width;
-                const height = containerRect.height;
+                // Normal case - we have data to visualize
                 
                 // Compute the graph and start the force simulation
                 const root = d3.hierarchy(data);
@@ -554,22 +592,6 @@ export default {
                     .force("center", d3.forceCenter(width / 2, height / 2))
                     .force("x", d3.forceX(width / 2).strength(0.1))
                     .force("y", d3.forceY(height / 2).strength(0.1));
-                
-                // Create the container SVG
-                const svg = d3.select(treeContainer.value)
-                    .append("svg")
-                    .attr("width", "100%")
-                    .attr("height", "100%")
-                    .attr("style", "display: block; margin: 0 auto; background: transparent;");
-                
-                // Add zoom functionality
-                zoomGroup.value = svg.append("g");
-                zoomBehavior.value = d3.zoom()
-                    .scaleExtent([0.5, 5]) // Set zoom scale limits
-                    .on("zoom", (event) => {
-                        zoomGroup.value.attr("transform", event.transform);
-                    });
-                svg.call(zoomBehavior.value);
                 
                 // Helper function to determine node style based on depth and decomposition status
                 const getNodeStyle = (d) => {
@@ -859,7 +881,8 @@ export default {
             menuStyle,
             handleDecompose,
             handleShowCard,
-            handleDeleteNode
+            handleDeleteNode,
+            isDirectChild // Add this to fix the Vue warning
         };
     }
 }
