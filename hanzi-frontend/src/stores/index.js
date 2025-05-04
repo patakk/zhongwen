@@ -795,7 +795,21 @@ const store = createStore({
       custom: state.dictionaryPromises.custom
     }),
     isLoggedIn:        (state) => !!state.authStatus && !!state.username,
-    getPracticeCharCache: (state) => state.practiceCharacterCache
+    getPracticeCharCache: (state) => state.practiceCharacterCache,
+    
+    // Helper getter to find character data across all dictionaries
+    getCharacterData: (state) => (character) => {
+      if (!state.dictionaryData) return null;
+      
+      // Search for the character in all dictionaries
+      for (const category in state.dictionaryData) {
+        const dict = state.dictionaryData[category];
+        if (dict?.chars && dict.chars[character]) {
+          return dict.chars[character];
+        }
+      }
+      return null;
+    }
   }
 })
 

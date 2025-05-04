@@ -6,16 +6,25 @@
         
         <!-- Popup menu -->
         <div v-if="showMenu" class="node-menu" :style="menuStyle">
+            <!-- Character info section -->
+            <div class="char-info">
+                <div class="char">{{ selectedNodeData?.data?.character }}</div>
+                <div class="details">
+                    <div class="pinyin">{{ this.$toAccentedPinyin(selectedCharPinyin) }}</div>
+                    <div class="english">{{ selectedCharEnglish }}</div>
+                </div>
+            </div>
+            <div class="menu-divider"></div>
             <div class="menu-option decompose" @click="handleDecompose">
-                <span class="icon">🔍</span>
+                <span class="icon"><font-awesome-icon :icon="['fas', 'magnifying-glass']" /></span>
                 <span>Decompose</span>
             </div>
             <div class="menu-option show-details" @click="handleShowCard">
-                <span class="icon">📄</span>
+                <span class="icon"><font-awesome-icon :icon="['fas', 'file']" /></span>
                 <span>View Details</span>
             </div>
             <div v-if="isDirectChild" class="menu-option delete-node" @click="handleDeleteNode">
-                <span class="icon">🗑️</span>
+                <span class="icon"><font-awesome-icon :icon="['fas', 'trash']" /></span>
                 <span>Delete Node</span>
             </div>
         </div>
@@ -58,6 +67,10 @@ export default {
         });
         const selectedNodeData = ref(null);
         const isDirectChild = ref(false);
+        
+        // Selected character details
+        const selectedCharPinyin = ref('');
+        const selectedCharEnglish = ref('');
         
         // Define styling configuration for nodes with theme support
         const nodeStyles = ref({
@@ -670,14 +683,6 @@ export default {
                         // Prevent propagation to document
                         event.stopPropagation();
                         
-                        // First and foremost - preload BOTH card data AND decomposition data IMMEDIATELY
-                        if (d.data.character) {
-                            // Preload card data
-                            store.dispatch('cardModal/preloadCardData', d.data.character);
-                            // Also preload decomposition data
-                            store.dispatch('cardModal/fetchDecompositionDataOnly', d.data.character);
-                        }
-                        
                         // Don't show menu for current root character
                         if (d.data.character === currentCharacter.value) return;
                         
@@ -687,6 +692,32 @@ export default {
                         // Show delete option for any node that's a component (not the original root)
                         // This allows deleting any decomposition character except the main root
                         isDirectChild.value = d.depth > 0;
+                        
+                        // Clear previous data first
+                        selectedCharPinyin.value = '';
+                        selectedCharEnglish.value = '';
+                        
+                        // Instead of using dictionary data, preload the card data and use it when received
+                        store.dispatch('cardModal/preloadCardData', d.data.character).then(() => {
+                            // Get the preloaded data from the store
+                            const charData = store.getters['cardModal/getPreloadedData'](d.data.character);
+                            if (charData && selectedNodeData.value && selectedNodeData.value.data.character === d.data.character) {
+                                // Set the pinyin and English from the preloaded data
+                                if (charData.pinyin && charData.pinyin.length > 0) {
+                                    selectedCharPinyin.value = charData.pinyin[0];
+                                }
+                                if (charData.english && charData.english.length > 0) {
+                                    selectedCharEnglish.value = charData.english[0];
+                                    // Truncate long English definitions
+                                    if (selectedCharEnglish.value.length > 30) {
+                                        selectedCharEnglish.value = selectedCharEnglish.value.substring(0, 30) + '...';
+                                    }
+                                }
+                            }
+                        });
+                        
+                        // Also preload decomposition data
+                        store.dispatch('cardModal/fetchDecompositionDataOnly', d.data.character);
                         
                         // Position menu near the clicked node
                         const nodeBounds = event.target.getBoundingClientRect();
@@ -714,16 +745,8 @@ export default {
                         // Prevent propagation to document
                         event.stopPropagation();
                         
-                        // First and foremost - preload BOTH card data AND decomposition data IMMEDIATELY
-                        if (d.data.character) {
-                            // Preload card data
-                            store.dispatch('cardModal/preloadCardData', d.data.character);
-                            // Also preload decomposition data
-                            store.dispatch('cardModal/fetchDecompositionDataOnly', d.data.character);
-                        }
-                        
                         // Don't show menu for current root character
-                        // if (d.data.character === currentCharacter.value) return;
+                        if (d.data.character === currentCharacter.value) return;
                         
                         // Store node data for menu actions
                         selectedNodeData.value = d;
@@ -731,6 +754,32 @@ export default {
                         // Show delete option for any node that's a component (not the original root)
                         // This allows deleting any decomposition character except the main root
                         isDirectChild.value = d.depth > 0;
+                        
+                        // Clear previous data first
+                        selectedCharPinyin.value = '';
+                        selectedCharEnglish.value = '';
+                        
+                        // Instead of using dictionary data, preload the card data and use it when received
+                        store.dispatch('cardModal/preloadCardData', d.data.character).then(() => {
+                            // Get the preloaded data from the store
+                            const charData = store.getters['cardModal/getPreloadedData'](d.data.character);
+                            if (charData && selectedNodeData.value && selectedNodeData.value.data.character === d.data.character) {
+                                // Set the pinyin and English from the preloaded data
+                                if (charData.pinyin && charData.pinyin.length > 0) {
+                                    selectedCharPinyin.value = charData.pinyin[0];
+                                }
+                                if (charData.english && charData.english.length > 0) {
+                                    selectedCharEnglish.value = charData.english[0];
+                                    // Truncate long English definitions
+                                    if (selectedCharEnglish.value.length > 30) {
+                                        selectedCharEnglish.value = selectedCharEnglish.value.substring(0, 30) + '...';
+                                    }
+                                }
+                            }
+                        });
+                        
+                        // Also preload decomposition data
+                        store.dispatch('cardModal/fetchDecompositionDataOnly', d.data.character);
                         
                         // Position menu near the clicked node
                         const nodeBounds = event.target.getBoundingClientRect();
@@ -884,7 +933,10 @@ export default {
             handleDecompose,
             handleShowCard,
             handleDeleteNode,
-            isDirectChild // Add this to fix the Vue warning
+            isDirectChild,
+            selectedNodeData,
+            selectedCharPinyin,
+            selectedCharEnglish
         };
     }
 }
@@ -940,6 +992,40 @@ export default {
     z-index: 1000;
     width: 160px;
     overflow: hidden;
+}
+
+.char-info {
+    padding: 10px;
+    background-color: var(--bg-light, #f9f9f9);
+    border-bottom: 1px solid var(--fg-dim, #ddd);
+}
+
+.char-info .char {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--fg, #333);
+    text-align: center;
+}
+
+.char-info .details {
+    margin-top: 5px;
+    text-align: center;
+}
+
+.char-info .details .pinyin {
+    font-size: 14px;
+    color: var(--fg-dim, #666);
+}
+
+.char-info .details .english {
+    font-size: 14px;
+    color: var(--fg-dim, #666);
+}
+
+.menu-divider {
+    height: 1px;
+    background-color: var(--fg-dim, #ddd);
+    margin: 5px 0;
 }
 
 .menu-option {
