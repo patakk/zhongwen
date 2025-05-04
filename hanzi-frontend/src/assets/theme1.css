@@ -677,3 +677,51 @@ opacity: 0.7;
 	border-color: var(--fg) !important;
 	box-shadow: none !important;
 }
+
+
+
+[data-theme="theme1"] .node-menu {
+    position: absolute;
+    background-color: var(--bg, white);
+    border: 1px solid var(--fg-dim, #ddd);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    width: 160px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+
+	
+	border: 2px solid var(--fg) !important;
+	border-radius: 1em !important;
+	box-shadow: 2px 2px 0px 0px var(--fg) !important;
+}
+
+[data-theme="theme1"] .menu-option {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: var(--fg, #333);
+}
+
+[data-theme="theme1"] .menu-option:hover {
+    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+}
+
+[data-theme="theme1"] .menu-option .icon {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+[data-theme="theme1"] .menu-option.decompose:hover {
+    background-color: color-mix(in oklab, var(--primary-color, #3498db) 15%, var(--bg) 100%);
+}
+
+[data-theme="theme1"] .menu-option.show-details:hover {
+    background-color: color-mix(in oklab, var(--secondary-color, #9b59b6) 15%, var(--bg) 100%);
+}
+
+[data-theme="theme1"] .menu-option.delete-node:hover {
+    background-color: color-mix(in oklab, var(--danger-color, #e74c3c) 15%, var(--bg) 100%);
+}

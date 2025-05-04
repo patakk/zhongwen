@@ -46,6 +46,10 @@ export default {
         const treeContainer = ref(null);
         const treeData = ref(null);
         
+        // Zoom state
+        const zoomBehavior = ref(null);
+        const zoomGroup = ref(null);
+        
         // Menu state
         const showMenu = ref(false);
         const menuStyle = ref({
@@ -98,32 +102,34 @@ export default {
             const themeColors = {
                 theme1: {
                     rootNode_: {
-                        fill: "#f54",       // Orange
+                        fill: "#f540",       // Orange
                         strokeColor: "#000", // Darker orange
                         textColor: "#fff"
                     },
                     rootNode: {
+                        fill: "#6f40",       // Green
                         fill: "#f54",       // Orange
-                        fill: "#6f4",       // Green
-                        strokeColor: "#0a5", // Darker orange
+                        strokeColor: "#0a50", // Darker orange
                         textColor: "#fff",
                         textColor: "#000",
                         strokeWidth: 2,
                         radius: 26,
-                        fontSize: 26
+                        fontSize: 38
                     },
                     componentNode: {
                         fill: "#27f",       // Blue
-                        strokeColor: "#000", // Darker blue
-                        textColor: "#fff"
+                        strokeColor: "#0000", // Darker blue
+                        textColor: "#fff",
+                        textColor: "#000",
+                        fontSize: 31
                     },
                     subComponentNode: {
-                        fill: "#6f4",       // Green
-                        strokeColor: "#000", // Darker green
+                        fill: "#6f40",       // Green
+                        strokeColor: "#0000", // Darker green
                         textColor: "#000"
                     },
                     link: {
-                        color: "#7f8c8d"
+                        color: "#7f8c8d22"
                     }
                 },
                 dark: {
@@ -147,23 +153,35 @@ export default {
                     }
                 },
                 light: {
-                    rootNode: {
-                        fill: "#d35400",       // Deep orange for theme1
-                        strokeColor: "#e67e22", 
+                    rootNode_: {
+                        fill: "#f540",       // Orange
+                        strokeColor: "#000", // Darker orange
                         textColor: "#fff"
+                    },
+                    rootNode: {
+                        fill: "#6f40",       // Green
+                        fill: "#faa",       // Orange
+                        strokeColor: "#0a50", // Darker orange
+                        textColor: "#fff",
+                        textColor: "#000",
+                        strokeWidth: 2,
+                        radius: 26,
+                        fontSize: 38
                     },
                     componentNode: {
-                        fill: "#2c3e50",       // Dark blue/gray for theme1
-                        strokeColor: "#34495e", 
-                        textColor: "#fff"
+                        fill: "#6af",       // Blue
+                        strokeColor: "#0000", // Darker blue
+                        textColor: "#fff",
+                        textColor: "#000",
+                        fontSize: 31
                     },
                     subComponentNode: {
-                        fill: "#16a085",       // Teal for theme1
-                        strokeColor: "#1abc9c",
-                        textColor: "#fff"
+                        fill: "#6f40",       // Green
+                        strokeColor: "#0000", // Darker green
+                        textColor: "#000"
                     },
                     link: {
-                        color: "#bdc3c7"
+                        color: "#7f8c8d22"
                     }
                 },
                 theme2: {
@@ -532,7 +550,7 @@ export default {
                 
                 const simulation = d3.forceSimulation(nodes)
                     .force("link", d3.forceLink(links).id(d => d.id).distance(0).strength(0.5))
-                    .force("charge", d3.forceManyBody().strength(-666))
+                    .force("charge", d3.forceManyBody().strength(-300))
                     .force("center", d3.forceCenter(width / 2, height / 2))
                     .force("x", d3.forceX(width / 2).strength(0.1))
                     .force("y", d3.forceY(height / 2).strength(0.1));
@@ -543,6 +561,15 @@ export default {
                     .attr("width", "100%")
                     .attr("height", "100%")
                     .attr("style", "display: block; margin: 0 auto; background: transparent;");
+                
+                // Add zoom functionality
+                zoomGroup.value = svg.append("g");
+                zoomBehavior.value = d3.zoom()
+                    .scaleExtent([0.5, 5]) // Set zoom scale limits
+                    .on("zoom", (event) => {
+                        zoomGroup.value.attr("transform", event.transform);
+                    });
+                svg.call(zoomBehavior.value);
                 
                 // Helper function to determine node style based on depth and decomposition status
                 const getNodeStyle = (d) => {
@@ -561,7 +588,7 @@ export default {
                 };
                 
                 // Append links
-                const link = svg.append("g")
+                const link = zoomGroup.value.append("g")
                     .attr("stroke", nodeStyles.value.link.color)
                     .attr("stroke-opacity", nodeStyles.value.link.opacity)
                     .attr("stroke-width", nodeStyles.value.link.width)
@@ -598,7 +625,7 @@ export default {
                 };
                 
                 // Append nodes with Chinese characters
-                const nodeGroup = svg.append("g")
+                const nodeGroup = zoomGroup.value.append("g")
                     .selectAll("g")
                     .data(nodes)
                     .join("g")
@@ -884,12 +911,10 @@ export default {
     position: absolute;
     background-color: var(--bg, white);
     border: 1px solid var(--fg-dim, #ddd);
-    border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     width: 160px;
     overflow: hidden;
-    transition: all 0.2s ease;
 }
 
 .menu-option {
@@ -897,7 +922,6 @@ export default {
     display: flex;
     align-items: center;
     cursor: pointer;
-    transition: background-color 0.2s ease;
     color: var(--fg, #333);
 }
 
