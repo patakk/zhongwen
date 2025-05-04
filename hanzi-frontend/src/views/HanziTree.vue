@@ -665,6 +665,7 @@ export default {
                     .attr("width", d => getNodeStyle(d).radius*2*.9)
                     .attr("height", d => getNodeStyle(d).radius*2*.9)
                     .attr("transform", d => `translate(${-getNodeStyle(d).radius*.9}, ${-getNodeStyle(d).radius*.9})`)
+                    .style("cursor", "pointer") // Add pointer cursor
                     .on("click", (event, d) => {
                         // Prevent propagation to document
                         event.stopPropagation();
@@ -707,6 +708,7 @@ export default {
                     .attr("fill", d => getNodeStyle(d).textColor)
                     .attr("font-size", d => `${getNodeStyle(d).fontSize}px`)
                     .attr("font-family", "Noto Sans SC, sans-serif")
+                    .style("cursor", "pointer") // Add pointer cursor to text elements
                     .text(d => d.data.character)
                     .on("click", (event, d) => {
                         // Prevent propagation to document
