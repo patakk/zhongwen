@@ -149,4 +149,4 @@ def char_decomp_info(char):
                 result[c] = DECOMPOSE_CACHE[c]
         return result
     # Handle the case where a single character is passed    
-    return {char: DECOMPOSE_CACHE.get(char, {})}
+    return {char: DECOMPOSE_CACHE.get(char, {})} if char in DECOMPOSE_CACHE else {}

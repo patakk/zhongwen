@@ -685,7 +685,10 @@ import time
 def get_char_decomp_info():
     data = request.get_json()
     characters = data.get("characters")
+    
     decomp = char_decomp_info(characters)
+    print('Seinding decomp info for characters', characters)
+    print(decomp)
     return jsonify(decomp)
 
 
@@ -756,7 +759,6 @@ def save_theme():
     if not username:
         return jsonify({"error": "User not authenticated"}), 401
     
-    # Save the theme preference to the database
     db_store_user_theme(username, theme)
     session["theme"] = theme
     logger.info(f"Theme preference saved for {username}: {theme}")

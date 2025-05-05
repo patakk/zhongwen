@@ -78,7 +78,7 @@ const cardModalModule = {
         commit('SET_CARD_DATA', state.preloadedData[character]);
         
         // Always trigger decomposition data fetch
-        dispatch('fetchDecompositionDataOnly', character);
+        //dispatch('fetchDecompositionDataOnly', character);
       } else {
         // If no preloaded data, fetch it normally
         await dispatch('fetchCardData', character);
@@ -108,8 +108,6 @@ const cardModalModule = {
           // First set the card data so the modal shows immediately
           commit('SET_CARD_DATA', data);
           
-          // ALWAYS fetch decomposition data right after card data
-          dispatch('fetchDecompositionDataOnly', character);
         }
       } catch (error) {
         console.error('Error fetching card data:', error);
@@ -117,21 +115,39 @@ const cardModalModule = {
       }
     },
     async fetchDecompositionDataOnly({ commit, state }, character) {
-      // Get only Han characters
-      const hanCharacters = character.split('').filter(char => /\p{Script=Han}/u.test(char));
+      // Get both Han characters AND CJK strokes
+      const validCharacters = character.split('').filter(char => {
+        // Include Han script characters
+        if (/\p{Script=Han}/u.test(char)) return true;
+        
+        // Also include CJK strokes like "㇒"
+        if (/[\u31C0-\u31EF]/.test(char)) return true;
+        
+        // Also explicitly include "㇒" in case the above doesn't catch it
+        if (char === "㇒") return true;
+        
+        return false;
+      });
       
-      if (hanCharacters.length === 0) {
+      if (validCharacters.length === 0) {
         return Promise.resolve(null);
       }
       
+      console.log(`fetchDecompositionDataOnly called for: "${character}" (${validCharacters.join(', ')})`);
+      
       // Don't refetch if we already have this character's decomposition data
-      // and it's non-empty (i.e., this character has components)
+      // and it's non-empty (i.e., this character has parts)
       if (state.decompositionData) {
-        const allCharsHaveData = hanCharacters.every(char => 
-          state.decompositionData[char] && Object.keys(state.decompositionData[char]).length > 0
+        const allCharsHaveData = validCharacters.every(char => 
+          state.decompositionData[char] && 
+          (
+            (state.decompositionData[char].parts && state.decompositionData[char].parts.length > 0) ||
+            (state.decompositionData[char].present_in && state.decompositionData[char].present_in.length > 0)
+          )
         );
         
         if (allCharsHaveData) {
+          console.log(`Using cached decomposition data for: "${character}"`, state.decompositionData);
           return Promise.resolve(state.decompositionData);
         }
       }
@@ -140,7 +156,7 @@ const cardModalModule = {
         try {
           // Send a single request for all Han characters in the word
           const url = '/api/get_char_decomp_info';
-          const payload = { characters: hanCharacters }; // Send all characters at once
+          const payload = { characters: validCharacters }; // Send all characters at once
           const options = {
             method: 'POST',
             headers: {
@@ -149,8 +165,25 @@ const cardModalModule = {
             body: JSON.stringify(payload),
           };
 
+          console.log(`Sending request to ${url} with payload:`, payload);
           const response = await fetch(url, options);
           const data = await response.json();
+          
+          console.log(`Received decomposition data for: "${character}"`, data);
+          
+          // Add detailed logging for each character's data
+          validCharacters.forEach(char => {
+            if (data[char]) {
+              console.log(`Character "${char}" data:`, {
+                parts: data[char].parts || [],
+                present_in: data[char].present_in || [],
+                parts_length: data[char].parts ? data[char].parts.length : 0,
+                present_in_length: data[char].present_in ? data[char].present_in.length : 0
+              });
+            } else {
+              console.warn(`No decomposition data returned for character: "${char}"`);
+            }
+          });
           
           // Only update the store if we actually got data
           if (Object.keys(data).length > 0) {
