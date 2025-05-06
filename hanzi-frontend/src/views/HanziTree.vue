@@ -74,6 +74,75 @@ export default {
         const svg = ref(null);
         const simulation = ref(null);
         
+        // Theme related variables
+        const currentTheme = ref(document.documentElement.getAttribute('data-theme') || 'light');
+        const themeObserver = ref(null);
+
+        // Theme-specific color definitions
+        const themeColors = {
+            light: {
+                background: '#ffffff',
+                foreground: '#333333',
+                nodeCharacter: '#ffffff',
+                nodeDecomposition: '#f1c40f', // Yellow
+                nodeContaining: '#3498db', // Blue
+                linkDecomposition: '#e67e22', // Orange
+                linkContaining: '#3498db', // Blue
+                linkDefault: '#999999',
+                menuBackground: '#ffffff',
+                menuText: '#333333',
+                menuHover: '#f5f5f5',
+                menuDivider: '#eeeeee'
+            },
+            dark: {
+                background: '#1a1a1a',
+                foreground: '#f0f0f0',
+                nodeCharacter: '#2a2a2a',
+                nodeDecomposition: '#f1c40f', // Yellow
+                nodeContaining: '#3498db', // Blue
+                linkDecomposition: '#e67e22', // Orange
+                linkContaining: '#3498db', // Blue
+                linkDefault: '#888888',
+                menuBackground: '#2a2a2a',
+                menuText: '#f0f0f0',
+                menuHover: '#3a3a3a',
+                menuDivider: '#444444'
+            },
+            theme1: {
+                background: '#f2f8f6',
+                foreground: '#000000',
+                nodeCharacter: '#ffffff',
+                nodeDecomposition: '#f1c40f', // Yellow
+                nodeContaining: '#3498db', // Blue
+                linkDecomposition: '#e67e22', // Orange
+                linkContaining: '#3498db', // Blue
+                linkDefault: '#999999',
+                menuBackground: '#f2f8f6',
+                menuText: '#000000',
+                menuHover: '#e1e6e0',
+                menuDivider: '#cccccc'
+            },
+            theme2: {
+                background: '#171a19',
+                foreground: '#bbf3cc',
+                nodeCharacter: '#2d3230',
+                nodeDecomposition: '#f1c40f', // Yellow with darker hue
+                nodeContaining: '#3498db', // Blue with darker hue
+                linkDecomposition: '#e67e22', // Orange with darker hue
+                linkContaining: '#3498db', // Blue with darker hue
+                linkDefault: '#777777',
+                menuBackground: '#2d3230',
+                menuText: '#bbf3cc',
+                menuHover: '#3d423f',
+                menuDivider: '#444444'
+            }
+        };
+
+        // Get current theme colors
+        const getThemeColors = () => {
+            return themeColors[currentTheme.value] || themeColors.light;
+        };
+        
         // Tree data structure
         const treeData = ref({
             character: '我',
@@ -148,13 +217,16 @@ export default {
             const width = treeContainer.value.clientWidth || 800;
             const height = treeContainer.value.clientHeight || 600;
             
+            // Get current theme colors
+            const colors = getThemeColors();
+            
             // Create SVG
             svg.value = d3.select(treeContainer.value)
                 .append('svg')
                 .attr('width', width)
                 .attr('height', height)
                 .attr('viewBox', [-width / 2, -height / 2, width, height])
-                .attr('style', 'max-width: 100%; height: auto; border: 1px solid #ccc;');
+                .attr('style', 'max-width: 100%; height: auto;');
             
             // Create container group that will be transformed with zoom
             const container = svg.value.append("g").attr("class", "container");
@@ -162,7 +234,7 @@ export default {
             // Store container reference for later use
             svg.value.container = container;
 
-            // Add arrow marker definitions for main links (orange and blue)
+            // Add arrow marker definitions for main links (themed colors)
             svg.value.append('defs').append('marker')
                 .attr('id', 'arrow-main-orange')
                 .attr('viewBox', '0 -5 10 10')
@@ -173,7 +245,8 @@ export default {
                 .attr('orient', 'auto')
                 .append('path')
                 .attr('d', 'M0,-5L10,0L0,5')
-                .attr('fill', '#e67e22'); // Orange for decomposition
+                .attr('fill', colors.linkDecomposition); // Use theme color for decomposition arrows
+                
             svg.value.append('defs').append('marker')
                 .attr('id', 'arrow-main-blue')
                 .attr('viewBox', '0 -5 10 10')
@@ -184,7 +257,7 @@ export default {
                 .attr('orient', 'auto')
                 .append('path')
                 .attr('d', 'M0,-5L10,0L0,5')
-                .attr('fill', '#3498db'); // Blue for containing
+                .attr('fill', colors.linkContaining); // Use theme color for containing arrows
                 
             // Convert tree data to hierarchy
             const hierarchyData = createHierarchy(treeData.value);
@@ -258,7 +331,7 @@ export default {
             // Create container groups within the main container
             const linkGroup = container.append('g')
                 .attr('class', 'links')
-                .attr('stroke', '#999')
+                .attr('stroke', colors.linkDefault) // Use theme color for default links
                 .attr('stroke-opacity', 0.6);
                 
             const nodeGroup = container.append('g')
@@ -277,11 +350,11 @@ export default {
                 .attr('stroke', d => {
                     if (d.source.data.nodeType === 'character' && d.target.data.nodeType === 'decomposition' ||
                         d.source.data.nodeType === 'decomposition' && d.target.data.nodeType === 'character') {
-                        return '#e67e22';
+                        return colors.linkDecomposition; // Use theme color for decomposition links
                     } else if (d.source.data.nodeType === 'containing' || d.target.data.nodeType === 'containing') {
-                        return '#3498db';
+                        return colors.linkContaining; // Use theme color for containing links
                     }
-                    return '#999';
+                    return colors.linkDefault; // Use theme color for default links
                 })
                 .attr('stroke-width', 1)
                 .attr('marker-end', d => {
@@ -316,11 +389,11 @@ export default {
                 .attr('class', 'dashed-link')
                 .attr('stroke', d => {
                     if (d.source.data.nodeType === 'decomposition' || d.target.data.nodeType === 'decomposition') {
-                        return '#e67e22';
+                        return colors.linkDecomposition; // Use theme color for decomposition links
                     } else if (d.source.data.nodeType === 'containing' || d.target.data.nodeType === 'containing') {
-                        return '#3498db';
+                        return colors.linkContaining; // Use theme color for containing links
                     }
-                    return '#999';
+                    return colors.linkDefault; // Use theme color for default links
                 })
                 .attr('stroke-width', 1)
                 .attr('stroke-dasharray', '5,5');
@@ -365,8 +438,8 @@ export default {
                     sel.append('circle')
                         .attr('r', getNodeRadius(d)*.8)
                         .attr('fill', getNodeColor(d.data.nodeType))
-                        .attr('stroke', '#0000')
-                        .attr('stroke-width', 2);
+                        .attr('stroke', colors.foreground) // Use theme foreground color for node stroke
+                        .attr('stroke-width', 1);
                 } else {
                     // Rect for other nodes
                     sel.append('rect')
@@ -375,8 +448,8 @@ export default {
                         .attr('x', -getNodeRadius(d)*0.7)
                         .attr('y', -getNodeRadius(d)*0.7)
                         .attr('fill', getNodeColor(d.data.nodeType))
-                        .attr('stroke', '#0000')
-                        .attr('stroke-width', 2);
+                        .attr('stroke', colors.foreground) // Use theme foreground color for node stroke
+                        .attr('stroke-width', 1);
                 }
             });
                 
@@ -385,7 +458,7 @@ export default {
                 .attr('dy', '.35em')
                 .attr('text-anchor', 'middle')
                 .attr('font-size', d => d.data.nodeType === 'character' ? '18px' : '10px')
-                .attr('fill', '#000')
+                .attr('fill', d => d.data.nodeType === 'character' ? colors.foreground : colors.background) // Use theme colors for text
                 .text(d => d.data.character || '');
                 
             // Add click event to show menu
@@ -503,11 +576,12 @@ export default {
         };
         
         const getNodeColor = (nodeType) => {
+            const colors = getThemeColors();
             switch (nodeType) {
-                case 'character': return '#fff';
-                case 'decomposition': return '#f1c40f'; // Yellow
-                case 'containing': return '#3498db'; // Blue
-                default: return '#ddd';
+                case 'character': return colors.nodeCharacter;
+                case 'decomposition': return colors.nodeDecomposition;
+                case 'containing': return colors.nodeContaining;
+                default: return colors.linkDefault;
             }
         };
         
@@ -1060,6 +1134,14 @@ export default {
             
             // Add window resize handler
             window.addEventListener('resize', handleResize);
+
+            // Observe theme changes
+            themeObserver.value = new MutationObserver(() => {
+                currentTheme.value = document.documentElement.getAttribute('data-theme') || 'light';
+                updateTree();
+            });
+
+            themeObserver.value.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
         });
         
         // Rest of lifecycle hooks remain same
@@ -1069,6 +1151,11 @@ export default {
             // Stop simulation if it exists
             if (simulation.value) {
                 simulation.value.stop();
+            }
+
+            // Disconnect theme observer
+            if (themeObserver.value) {
+                themeObserver.value.disconnect();
             }
         });
         
@@ -1139,14 +1226,13 @@ export default {
     min-height: 400px; /* Add minimum height */
     margin: 0 auto;
     position: relative;
-    border: 1px dashed #ccc; /* Add border for visibility */
-    background-color: var(--bg, white); /* Add background for visibility */
+    background-color: var(--bg); /* Add background for visibility */
 }
 
 .node-menu {
     position: absolute;
-    background-color: var(--bg, white);
-    border: 1px solid var(--fg-dim, #ddd);
+    background-color: var(--bg);
+    border: 1px solid var(--fg);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     z-index: 11;
     width: 160px;
@@ -1155,14 +1241,14 @@ export default {
 
 .char-info {
     padding: 10px;
-    background-color: var(--bg-light, #f9f9f9);
-    border-bottom: 1px solid var(--fg-dim, #ddd);
+    background-color: var(--bg);
+    border-bottom: 1px solid var(--fg);
 }
 
 .char-info .char {
     font-size: 24px;
     font-weight: bold;
-    color: var(--fg, #333);
+    color: var(--fg);
     text-align: center;
 }
 
@@ -1173,17 +1259,17 @@ export default {
 
 .char-info .details .pinyin {
     font-size: 14px;
-    color: var(--fg-dim, #666);
+    color: var(--fg);
 }
 
 .char-info .details .english {
     font-size: 14px;
-    color: var(--fg-dim, #666);
+    color: var(--fg);
 }
 
 .menu-divider {
     height: 1px;
-    background-color: var(--fg-dim, #ddd);
+    background-color: var(--fg);
     margin: 5px 0;
 }
 

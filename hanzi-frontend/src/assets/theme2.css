@@ -6,7 +6,7 @@
 	--second-font: "Archivo Black";
     --second-font: 'Neuething Sans Test';
 	--third-font: "Lexend Mega";
-	--thin-border-width: 4px;
+	--thin-border-width: 2px;
 	--modal-border-width: 8px;
 	--modal-border-radius: 2em;
 	--modal-bg: #1d201f;
@@ -20,7 +20,7 @@
 	--card-shadow-color: rgb(124, 170, 124);
 	--card-shadow: 10px 10px 0px 0px var(--card-shadow-color);
 	--card-border-color: color-mix(in oklab, var(--fg) 86%, var(--bg) 35%);
-	--card-border: 4px solid var(--card-border-color);
+	--card-border: 2px solid var(--card-border-color);
 	--overlay-background: #222622bb;
 	--orange: #F45203;
 	--yellow: rgb(240, 229, 131);
@@ -37,7 +37,7 @@
 [data-theme="theme2"] .theme-button {
 	font-weight: bold;
 	border-radius: 1em !important;
-	border: 3px solid var(--black) !important;
+	border: 2px solid var(--black) !important;
 	background: var(--bg) !important;
 	opacity: .5;
 }
@@ -56,12 +56,12 @@
 
 
 [data-theme="theme2"] .search-input {
-	border: 4px solid var(--fg);
+	border: 2px solid var(--fg);
 	border-radius: 1rem;
 }
 
 [data-theme="theme2"] .search-button {
-	border: 4px solid var(--fg);
+	border: 2px solid var(--fg);
 	border-radius: 1rem;
 }
 
@@ -142,14 +142,14 @@
 
 [data-theme="theme2"] .tab-btn {
 	border-radius: .5em .5em 0 0 !important;
-	border: 3.5px solid #0000 !important;
+	border: 2.5px solid #0000 !important;
 	border-bottom: 3.5px solid #0000 !important;
 	transform: translate(0, 3.5px);
 }
 
 
 [data-theme="theme2"] .tab-btn.active {
-	border: 3.5px solid var(--black) !important;
+	border: 2.5px solid var(--black) !important;
 	transform: translate(0, 3.5px) !important;
 	border-bottom: 3.5px solid #0000 !important;
 }
@@ -157,7 +157,7 @@
 
 [data-theme="theme2"] .decomp-section {
 	border-radius: 2em;
-	border: 4px solid var(--animated-hanzi-border-color) !important;
+	border: 2px solid var(--animated-hanzi-border-color) !important;
 }
 
 [data-theme="theme2"] .decomp-char {
@@ -227,7 +227,7 @@
 
 [data-theme="theme2"] .logout-btn {
 	box-shadow: none !important;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color) !important;
 }
@@ -250,7 +250,7 @@
 
 [data-theme="theme2"] .btn {
 	box-shadow: none !important;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color) !important;
     transition: transform 0.1s !important;
@@ -300,18 +300,18 @@
 }
 
 [data-theme="theme2"] .create-list-form {
-    border: 3px solid var(--fg) !important;
+    border: 2px solid var(--fg) !important;
     border-radius: 1em !important;
     box-shadow: 4px 4px 0px 0px var(--card-shadow-color) !important;
     padding: 1em !important;
 }
 [data-theme="theme2"] #new-list-name {
-    border: 3px solid var(--yellow) !important;
+    border: 2px solid var(--yellow) !important;
     border-radius: .5em !important;
 }
 
 [data-theme="theme2"] .cancel-button, [data-theme="theme2"] .confirm-button {
-    border: 3px solid var(--fg) !important;
+    border: 2px solid var(--fg) !important;
     background-color: var(--bg) !important;
     padding: .25em .5em;
     border-radius: .5em !important;
@@ -348,7 +348,7 @@
 
 [data-theme="theme2"] #deck-options.show {
 	box-shadow: none;
-	border: 3px solid var(--fg);
+	border: 2px solid var(--fg);
 	border-radius: 1em;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color);
 }
@@ -369,7 +369,7 @@
 
 [data-theme="theme2"] .action-button {
 	box-shadow: none !important;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color) !important;
     transition: transform 0.1s;
@@ -383,7 +383,7 @@
 
 [data-theme="theme2"] #deck-options.show {
 	box-shadow: none;
-	border: 3px solid var(--fg);
+	border: 2px solid var(--fg);
 	border-radius: 1em;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color);
 }
@@ -391,12 +391,12 @@
 
 [data-theme="theme2"] .wordlist-container {
 	border-radius: 2em;
-	border: 3px solid var(--fg);
+	border: 2px solid var(--fg);
 }
 
 
 [data-theme="theme2"] #selected-deck {
-	border: 4px solid var(--fg);
+	border: 2px solid var(--fg);
 	border-radius: .65em;
     font-size: 1.5em;
     font-family: var(--second-font);
@@ -417,7 +417,7 @@
 [data-theme="theme2"] #deck-options.show {
 	box-shadow: none;
     border-color: var(--fg) !important;
-	border: 3px solid var(--fg);
+	border: 2px solid var(--fg);
 	border-radius: 1em;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color);
 }
@@ -425,7 +425,7 @@
 
 [data-theme="theme2"] .nav-button {
 	box-shadow: none !important;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color) !important;
     transition: transform 0.1s;
@@ -467,7 +467,7 @@
 
 [data-theme="theme2"] .control-button {
 	box-shadow: none;
-	border: 3px solid var(--fg);
+	border: 2px solid var(--fg);
 	border-radius: 1em;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color);
 }
@@ -482,13 +482,13 @@
 
 
 [data-theme="theme2"] .result-cell {
-	border: 4px solid var(--fg);
+	border: 2px solid var(--fg);
 	border-radius: 1rem;
 }
 
 
 [data-theme="theme2"] .bubble-tooltip {
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color) !important;
   }
@@ -548,7 +548,7 @@ opacity: 0.7;
 
 [data-theme="theme2"] .chinese-word-wrapper {
     position: relative;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color) !important;
     transition: transform 0.1s !important;
@@ -557,14 +557,14 @@ opacity: 0.7;
 
 
 [data-theme="theme2"] .chinese-word-wrapper:hover {
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	box-shadow: 2px 2px 0px 0px var(--card-shadow-color) !important;
     transform: translate(0px, 0px) !important;
 }
 
 [data-theme="theme2"]  .size-button {
     border-radius: 1.5em;
-    border: 3px solid var(--fg) !important;
+    border: 2px solid var(--fg) !important;
 }
   
 [data-theme="theme2"]  .size-button:hover {
@@ -592,12 +592,12 @@ opacity: 0.7;
 
 [data-theme="theme2"] .scroll-to-top-button {
   background: var(--orangey) !important;
-  border: 3px solid var(--fg) !important;
+  border: 2px solid var(--fg) !important;
   }
   
 [data-theme="theme2"] .scroll-to-top-button:hover {
   background: var(--yellow) !important;
-  border: 3px solid var(--fg) !important;
+  border: 2px solid var(--fg) !important;
 }
 
 
@@ -617,7 +617,7 @@ opacity: 0.7;
 
 [data-theme="theme2"] .single-toggle-button {
 	box-shadow: none !important;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--card-shadow-color) !important;
     transition: transform 0.1s !important;
@@ -626,7 +626,7 @@ opacity: 0.7;
 
 [data-theme="theme2"] .single-toggle-button:hover {
 	box-shadow: none !important;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 2px 2px 0px 0px var(--card-shadow-color) !important;
 	transform: translate(2px, 2px) !important;
@@ -634,13 +634,13 @@ opacity: 0.7;
 
 [data-theme="theme2"] select {
 	box-shadow: none !important;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 }
 
 [data-theme="theme2"] .sidebar-link {
 	box-shadow: none !important;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
     box-sizing: border-box;
     margin-bottom: .25em;
@@ -653,10 +653,28 @@ opacity: 0.7;
 
 
 [data-theme="theme2"] .leftbar-toggle {
-	color: var(--pink-strong) !important;
+	color: var(--fg) !important;
 }
 
 [data-theme="theme2"] .leftbar {
 	border-color: var(--fg) !important;
 	box-shadow: none !important;
+}
+
+
+[data-theme="theme2"] .add-word-input {
+	border: 2px solid var(--fg) !important;
+	border-radius: 1em !important;
+	padding: .75em !important;
+	font-size: 1em !important;
+	box-sizing: border-box !important;
+}
+
+[data-theme="theme2"] .modal-content{
+	box-shadow: none !important;
+}
+
+[data-theme="theme2"] .btn-change-username{
+	border: 2px solid var(--fg) !important;
+	border-radius: 8px;
 }

@@ -205,8 +205,8 @@
                 <template v-slot:therest="slotProps">
                   <div class="example-words rest-words">
                     <ClickableRow
-                      v-for="(word, index) in activeCharData.example_words.slice(5)"
-                      :key="index + 5"
+                      v-for="(word, index) in activeCharData.example_words.slice(3)"
+                      :key="index + 3"
                       :word="word"
                       class="therest"
                     >
@@ -214,10 +214,10 @@
                         <div class="example-chinese-pinyin">
                           <span class="example-chinese">{{ word }}</span>
                           <span class="example-pinyin">
-                            {{ $toAccentedPinyin(activeCharData.pinyin[index + 5]) }}
+                            {{ $toAccentedPinyin(activeCharData.pinyin[index + 3]) }}
                           </span>
                         </div>
-                        <span class="example-meaning">{{ activeCharData.english[index + 5] }}</span>
+                        <span class="example-meaning">{{ activeCharData.english[index + 3] }}</span>
                       </template>
                     </ClickableRow>
                   </div>
