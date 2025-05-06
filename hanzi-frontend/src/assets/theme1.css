@@ -741,3 +741,11 @@ opacity: 0.7;
 	background: var(--secondary-color);
 	color: var(--orange);
 }
+
+[data-theme="theme1"] .add-word-input {
+	border: 3px solid var(--fg) !important;
+	border-radius: 1em !important;
+	padding: .75em !important;
+	font-size: 1em !important;
+	box-sizing: border-box !important;
+}
