@@ -191,6 +191,54 @@ def get_progress_data_for_chars():
     return jsonify({'progress_stats': progress_stats})
 
 
+@api_bp.route("/add_word_learning_with_data", methods=["POST"])
+@session_required
+def add_word_learning_with_data():
+    data = request.get_json()
+    if not data or "words" not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+    
+    words = data["words"]
+    words = [w.strip() for w in words if w.strip()]
+    
+    if not words:
+        return jsonify({"error": "No valid Chinese words found in input"}), 400
+
+    username = session.get("username")
+    set_name = data.get("set_name")
+    
+    # If set name not provided, use the user's first available set
+    if not set_name:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+            
+        first_set = WordList.query.filter_by(user_id=user.id).first()
+        if not first_set:
+            return jsonify({"error": "No word lists found for user"}), 404
+            
+        set_name = first_set.name
+    
+    result = db_add_words_to_set(username, set_name, words)
+    
+    if result is None:
+        return jsonify({"error": "User or word list not found"}), 404
+    
+    # Get character information for all words
+    words_info = get_chars_info(words)
+    
+    response = {
+        "message": f"Processing complete for list '{set_name}'",
+        "added": result["added"],
+        "chars_info": words_info
+    }   
+    
+    if result["skipped"]:
+        response["skipped"] = result["skipped"]
+        response["skipped_reason"] = "Words already exist in the list"
+    
+    return jsonify(response)
+
 
 @api_bp.route("/add_word_to_learning", methods=["POST"])
 @session_required
@@ -242,7 +290,6 @@ def add_word_to_learning():
         response["skipped_reason"] = "Words already exist in the list"
     
     return jsonify(response)
-
 
 
 @api_bp.route("/remove_word_from_learning", methods=["POST"])
@@ -321,28 +368,6 @@ def get_story_audio_clip():
 
 
 
-@api_bp.route("/get_characters_simple_info", methods=["GET", "POST"])
-@session_required
-def get_characters_simple_info():
-    all_data = []
-    characters = None
-
-    if request.method == "POST":
-        data = request.get_json()
-        characters = data.get("characters") if data else None
-
-    inserted = []
-    characters = sorted(characters)
-    cinfos = {}
-    # for char in characters:
-    #     try:
-    #         cinfo = dictionary.definition_lookup(char)[0]
-    #     except:
-    #         cinfo = {"definition": "-", "pinyin": "-"}
-    #     cinfos[char] = cinfo
-    cinfos = get_chars_info(characters)
-    return jsonify(cinfos)
-
 @api_bp.route("/get_deck_chars", methods=["GET", "POST"])
 @session_required
 def get_deck_chars():
@@ -351,6 +376,17 @@ def get_deck_chars():
     characters = CARDDECKS[deck]['chars']
     data = get_chars_info(CARDDECKS[deck]["chars"], pinyin=True)
     return jsonify(data)
+
+@api_bp.route("/get_characters_simple_info", methods=["GET", "POST"])
+@session_required
+def get_characters_simple_info():
+    characters = None
+    if request.method == "POST":
+        data = request.get_json()
+        characters = data.get("characters") if data else None
+    characters = sorted(characters)
+    cinfos = get_chars_info(characters)
+    return jsonify(cinfos)
 
 
 @api_bp.route("/get_characters_pinyinenglish", methods=["GET", "POST"])

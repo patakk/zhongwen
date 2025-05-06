@@ -1,5 +1,5 @@
 <template>
-    <BasePage page_title="My Lists" />
+    <BasePage page_title="My Words" />
     <div class="myspace-view" v-if="loggedIn">
       <div class="wordlist-container">
         <div class="wordlist-header">
@@ -103,10 +103,28 @@
                 title="Download Anki Deck"
                 :disabled="words.length === 0"
               >
-                download anki deck
+              <font-awesome-icon :icon="['fas', 'download']" /> anki deck
               </button>
             </div>
-  
+
+            <!-- Add Word Input -->
+            <div class="add-word-section">
+              <input
+                type="text"
+                v-model="newWordInput"
+                placeholder="Enter word(s) to add"
+                class="add-word-input"
+                @keyup.enter="addWordToList"
+              />
+              <button
+                @click="addWordToList"
+                class="nav-button add-word-button"
+                :disabled="!selectedWordlist || !newWordInput.trim()"
+              >
+                Add Words
+              </button>
+            </div>
+
             <!-- Word list -->
             <div class="word-list">
                 <PreloadWrapper :character="word.character"
@@ -252,6 +270,7 @@
         newWordlistName: '',
         newWordlistDescription: '', // Added for description editing
         isDropdownOpen: false, // Added for dropdown control
+        newWordInput: '', // Added for adding words
       };
     },
     computed: {
@@ -657,6 +676,65 @@
         });
       },
 
+      // New method for adding words
+      addWordToList() {
+        if (!this.selectedWordlist || !this.newWordInput.trim()) return;
+
+        // Split by spaces, commas, and/or semicolons
+        const wordsToAdd = this.newWordInput
+          .split(/[\s,， ;]+/) // Split by one or more spaces, commas, or semicolons
+          .map(word => word.trim())
+          .filter(Boolean); // Remove empty strings
+        
+        if (wordsToAdd.length === 0) return;
+        
+        this.newWordInput = '';
+
+        // Send to backend with the new API endpoint
+        fetch('/api/add_word_learning_with_data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            words: wordsToAdd,
+            set_name: this.selectedWordlist,
+          }),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to add words');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Words added successfully:', data);
+          
+          // Update store with the character data from the response
+          if (data.chars_info) {
+            Object.entries(data.chars_info).forEach(([character, info]) => {
+              this.$store.dispatch('addWordToCustomDeck', {
+                word: character,
+                setName: this.selectedWordlist,
+                wordData: {
+                  pinyin: info.pinyin || [''],
+                  english: info.english || [''],
+                  character: character
+                }
+              });
+            });
+          }
+          
+          // Refresh the display
+          this.loadWordlistWords();
+        })
+        .catch(error => {
+          console.error('Error adding words to wordlist:', error);
+          // Refresh the word list in case of error
+          this.loadWordlistWords();
+        });
+      },
+
       // New method for custom dropdown
       selectWordlist(name) {
         this.selectedWordlist = name;
@@ -1048,7 +1126,32 @@
     color: var(--fg);
   }
   
-  
+  /* New styles for add word section */
+  .add-word-section {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .add-word-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    background: var(--bg);
+    color: var(--fg);
+    font-family: inherit;
+  }
+
+  .add-word-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 2px 4px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  }
+
   /* Modal styles */
   .modal-overlay {
     position: fixed;

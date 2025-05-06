@@ -433,7 +433,7 @@
 	border: 3px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--fg) !important;
-    transition: transform 0.1s;
+    transition: transform 0.1s box-shadow 0.1s !important;
 }
 
 [data-theme="theme1"] .nav-button:hover {
@@ -449,6 +449,7 @@
 	border: var(--thin-border-width) solid var(--fg) !important;
 	border-radius: 1em;
     position: relative;
+	transition: transform 0.4s box-shadow 0.4s !important;
 }
 
 [data-theme="theme1"] .result-cell {
@@ -459,12 +460,13 @@
 }
 
 [data-theme="theme1"] .word-item:hover {
-	transform: translate(2px, 2px) !important;
+	transform: translate(0px, 2px) !important;
 	box-shadow: 2px 2px 0px 0px #e8e6df !important;
+	transition: transform 0.4s box-shadow 0.4s !important;
 }
 
 [data-theme="theme1"] .result-cell:hover {
-	transform: translate(2px, 2px) !important;
+	transform: translate(0px, 2px) !important;
 	box-shadow: 2px 2px 0px 0px #e8e6df !important;
 }
 
@@ -474,7 +476,7 @@
 	border: 3px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--fg) !important;
-    transition: transform 0.1s;
+    transition: transform 0.1s box-shadow 0.1s !important;
 }
 
 [data-theme="theme1"] .action-button:hover {

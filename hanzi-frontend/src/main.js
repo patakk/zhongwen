@@ -28,6 +28,8 @@ import {
   faMagnifyingGlass,
   faSitemap,
   faScissors,
+  faDownload,
+  faCloudArrowDown,
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -45,6 +47,8 @@ library.add(
   faMagnifyingGlass,
   faSitemap,
   faScissors,
+  faDownload,
+  faCloudArrowDown
 )
 
 // IMMEDIATELY clear login state on page load before checking backend
