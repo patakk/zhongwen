@@ -114,7 +114,13 @@ def get_tatoeba_page(character, page):
 
 def get_char_info(character, full=False):
     if full:
-        return copy.deepcopy(CHARS_CACHE.get(character, {}))
+        char_info = copy.deepcopy(CHARS_CACHE.get(character, {}))
+        if character in DECOMPOSE_CACHE:
+            char_info['recursive'] = get_recursive_decomposition(character)
+            entry = copy.deepcopy(DECOMPOSE_CACHE[character])
+            if 'present_in' in entry:
+                char_info['present_in'] = entry['present_in']
+        return char_info
     return copy.deepcopy(WORDS_CACHE.get(character, {
         'character': character,
         'pinyin': ['N/A'],

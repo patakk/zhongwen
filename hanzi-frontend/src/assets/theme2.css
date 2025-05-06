@@ -136,7 +136,7 @@
 }
 
 [data-theme="theme2"] .tabs {
-	border-bottom: 3.5px solid var(--black) !important;
+	border-bottom: 3.5px solid var(--fg) !important;
 }
 
 
@@ -149,7 +149,7 @@
 
 
 [data-theme="theme2"] .tab-btn.active {
-	border: 2.5px solid var(--black) !important;
+	border: 2.5px solid var(--fg) !important;
 	transform: translate(0, 3.5px) !important;
 	border-bottom: 3.5px solid #0000 !important;
 }

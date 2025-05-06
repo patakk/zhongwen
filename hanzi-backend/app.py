@@ -96,21 +96,23 @@ logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
 # stroke_chars = set([os.path.basename(j).split('.')[0] for j in stroke_jsons])
 
 
-def breakdown_chars(word):
-    infos = {}
-    for char in word:
-        simplified = HanziConv.toSimplified(char)
-        infos[char] = get_char_info(simplified, full=True)
-        infos[char]['strokes'] = STROKES_CACHE.get(char)
-        infos[char]['character'] = char
-    return infos
-
 
 @app.errorhandler(500)
 def handle_500(error):
     return "Something went wrong, please try again later.", 500
 
 
+
+def breakdown_chars(word):
+    infos = {}
+    for char in word:
+        simplified = HanziConv.toSimplified(char)
+        infos[char] = get_char_info(simplified, full=True)
+        if 'present_in' in infos[char]:
+            infos[char]['present_in'] = infos[char]['present_in'][:50]
+        infos[char]['strokes'] = STROKES_CACHE.get(char)
+        infos[char]['character'] = char
+    return infos
 
 
 @app.route('/api/get_card_data')
@@ -122,6 +124,7 @@ def get_card_data():
         return jsonify({'message': 'No cards available', 'chars_breakdown': None})
     chars_breakdown = breakdown_chars(character)
     return  jsonify({'message': message, **main_card_data(character), 'chars_breakdown': chars_breakdown})
+
 
 @app.before_request
 def before_request():

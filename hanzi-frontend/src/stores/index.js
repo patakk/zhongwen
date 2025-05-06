@@ -80,8 +80,27 @@ const cardModalModule = {
       if (state.preloadedData[character]) {
         commit('SET_CARD_DATA', state.preloadedData[character]);
         
-        // Always trigger decomposition data fetch
-        dispatch('fetchDecompositionDataOnly', character);
+        // Extract decomposition data from the card data if available
+        if (state.preloadedData[character].chars_breakdown) {
+          const decompositionData = {};
+          
+          // Process each character in the breakdown
+          Object.keys(state.preloadedData[character].chars_breakdown).forEach(char => {
+            const charData = state.preloadedData[character].chars_breakdown[char];
+            
+            if (charData.recursive || charData.present_in) {
+              decompositionData[char] = {
+                recursive: charData.recursive || {},
+                present_in: charData.present_in || []
+              };
+            }
+          });
+          
+          // Only update if we have data
+          if (Object.keys(decompositionData).length > 0) {
+            commit('SET_DECOMPOSITION_DATA', decompositionData);
+          }
+        }
       } else {
         // If no preloaded data, fetch it normally
         await dispatch('fetchCardData', character);
@@ -100,7 +119,7 @@ const cardModalModule = {
         }
       });
     },
-    async fetchCardData({ commit, state, dispatch }, character) {
+    async fetchCardData({ commit, state }, character) {
       commit('SET_LOADING', true);
       
       try {
@@ -108,10 +127,32 @@ const cardModalModule = {
         const data = await response.json();
         
         if (data) {
-          // First set the card data so the modal shows immediately
+          // Set the card data
           commit('SET_CARD_DATA', data);
           
-          await dispatch('fetchDecompositionDataOnly', character);
+          // Extract decomposition data from the card data response
+          if (data.chars_breakdown) {
+            const decompositionData = {};
+            
+            // Process each character in the breakdown
+            Object.keys(data.chars_breakdown).forEach(char => {
+              const charData = data.chars_breakdown[char];
+              
+              if (charData.recursive || charData.present_in) {
+                decompositionData[char] = {
+                  recursive: charData.recursive || {},
+                  present_in: charData.present_in || []
+                };
+              }
+            });
+            
+            // Only update if we have data
+            if (Object.keys(decompositionData).length > 0) {
+              commit('SET_DECOMPOSITION_DATA', decompositionData);
+            }
+          }
+          
+          // No need to fetch decomposition data separately anymore
         }
       } catch (error) {
         console.error('Error fetching card data:', error);
@@ -137,14 +178,13 @@ const cardModalModule = {
         return Promise.resolve(null);
       }
       
-      
       // Don't refetch if we already have this character's decomposition data
       // and it's non-empty (i.e., this character has parts)
       if (state.decompositionData) {
         const allCharsHaveData = validCharacters.every(char => 
           state.decompositionData[char] && 
           (
-            (state.decompositionData[char].parts && state.decompositionData[char].parts.length > 0) ||
+            (state.decompositionData[char].recursive && Object.keys(state.decompositionData[char].recursive).length > 0) ||
             (state.decompositionData[char].present_in && state.decompositionData[char].present_in.length > 0)
           )
         );
@@ -170,25 +210,9 @@ const cardModalModule = {
           const response = await fetch(url, options);
           const data = await response.json();
           
-          
           // Only update the store if we actually got data
           if (Object.keys(data).length > 0) {
             commit('SET_DECOMPOSITION_DATA', data);
-            
-            // Now that we have decomposition data, fetch simple character info for all parts
-            // Extract all component parts from decomposition data
-            const componentParts = [];
-            Object.keys(data).forEach(char => {
-              if (data[char].parts && data[char].parts.length > 0) {
-                componentParts.push(...data[char].parts);
-              }
-            });
-            
-            // Fetch simple info for all unique parts in a single request
-            if (componentParts.length > 0) {
-              const uniqueParts = [...new Set(componentParts)];
-              // await dispatch('fetchSimpleCharInfo', uniqueParts, { root: true });
-            }
           }
           
           resolve(data);
@@ -198,17 +222,10 @@ const cardModalModule = {
         }
       });
     },
-    async preloadCardData({ commit, state, dispatch }, character) {
+    async preloadCardData({ commit, state }, character) {
       // Don't preload if we already have the data
       if (state.preloadedData[character]) {
-        // Also, don't refetch decomposition data if already present for this character
-        if (state.decompositionData && state.decompositionData[character]) {
-          return;
-        } else {
-          // Only fetch decomposition data if missing for this character
-          await dispatch('fetchDecompositionDataOnly', character);
-          return;
-        }
+        return;
       }
       try {
         const response = await fetch(`/api/get_card_data?character=${character}`);
@@ -216,9 +233,27 @@ const cardModalModule = {
         if (data) {
           // Store in preloaded data cache
           commit('SET_PRELOADED_DATA', { character, data });
-          // Preload decomposition data only if missing
-          if (!state.decompositionData || !state.decompositionData[character]) {
-            await dispatch('fetchDecompositionDataOnly', character);
+          
+          // Extract decomposition data from the card data response
+          if (data.chars_breakdown) {
+            const decompositionData = {};
+            
+            // Process each character in the breakdown
+            Object.keys(data.chars_breakdown).forEach(char => {
+              const charData = data.chars_breakdown[char];
+              
+              if (charData.recursive || charData.present_in) {
+                decompositionData[char] = {
+                  recursive: charData.recursive || {},
+                  present_in: charData.present_in || []
+                };
+              }
+            });
+            
+            // Only update if we have data
+            if (Object.keys(decompositionData).length > 0) {
+              commit('SET_DECOMPOSITION_DATA', decompositionData);
+            }
           }
         }
       } catch (error) {

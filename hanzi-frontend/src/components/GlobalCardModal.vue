@@ -225,7 +225,7 @@
               </ExpandableExamples>
 
               <!-- Present In section: show characters from presentInChars -->
-              <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].present_in" class="present-in-section">
+              <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].present_in && decompositionData[activeChar].present_in.length > 0" class="present-in-section">
                 <div class="medium-label">{{ activeChar }} Present in:</div>
                 <div class="present-in-chars" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
                   <PreloadWrapper
@@ -355,7 +355,7 @@ export default {
     }),
     validChars() {
       if (!this.cardData || !this.cardData.character) return []
-      return this.cardData.character.split('').filter(char => /\p{Script=Han}/u.test(char))
+      return Array.from(new Set(this.cardData.character.split('').filter(char => /\p{Script=Han}/u.test(char))))
     },
     // Format similar concepts for display
     formattedSimilars() {
@@ -1661,9 +1661,8 @@ export default {
   }
   
   .tab-btn {
-    font-size: 1rem;
     border: none;
-    padding: 0.25rem .5rem;
+    /* padding: 0.25rem .5rem; */
   }
 
   .tabs {
