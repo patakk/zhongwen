@@ -223,7 +223,7 @@
 
 [data-theme="theme1"] .logout-btn {
 	box-shadow: none !important;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--fg) !important;
 }
@@ -246,10 +246,10 @@
 
 [data-theme="theme1"] .btn {
 	box-shadow: none !important;
-	border: 3px solid var(--fg) !important;
+	border: 2px solid var(--fg) !important;
 	border-radius: 1em !important;
 	box-shadow: 4px 4px 0px 0px var(--fg) !important;
-    transition: transform 0.1s !important;
+    transition: transform 0.1s box-shadow 0.1s !important;
 }
 
 [data-theme="theme1"] .btn:hover {
@@ -748,4 +748,13 @@ opacity: 0.7;
 	padding: .75em !important;
 	font-size: 1em !important;
 	box-sizing: border-box !important;
+}
+
+[data-theme="theme1"] .modal-content{
+	box-shadow: none !important;
+}
+
+[data-theme="theme1"] .btn-change-username{
+	border: 2px solid var(--fg) !important;
+	border-radius: 8px;
 }

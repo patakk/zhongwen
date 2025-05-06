@@ -43,7 +43,7 @@
           <div class="profile-label">Username:</div>
           <div class="profile-value">
             {{ username }}
-            <button @click="openUsernameModal" class="btn-small btn-change-username">Change Username</button>
+            <button @click="openUsernameModal" class="btn-small btn-change-username btn">Change Username</button>
           </div>
         </div>
         <div class="profile-row">
@@ -280,8 +280,21 @@ const currentThemeName = computed(() => store.getters['theme/getCurrentThemeName
 
 // Theme system functions
 function selectThemeSystem(system) {
-  store.dispatch('theme/setThemeSystem', system);
-  showSuccessToast(`Switched to ${currentThemeName.value}`);
+  const currentTheme = store.getters['theme/getCurrentTheme'];
+  
+  if (currentTheme === 'light') {
+    store.dispatch('theme/setTheme', 'theme1');
+    showSuccessToast(`Switched to Tooney dark theme`);
+  } else if (currentTheme === 'theme2') {
+    store.dispatch('theme/setTheme', 'dark');
+    showSuccessToast(`Switched to Classic light theme`);
+  } else if (currentTheme === 'dark') {
+    store.dispatch('theme/setTheme', 'theme2');
+    showSuccessToast(`Switched to Tooney dark theme`);
+  } else if (currentTheme === 'theme1') {
+    store.dispatch('theme/setTheme', 'light');
+    showSuccessToast(`Switched to Classic light theme`);
+  }
 }
 
 function toggleCurrentTheme() {
@@ -888,7 +901,6 @@ h2 {
 
 .confirm-button {
   background: var(--accent-color, #007bff);
-  color: #fff;
 }
 .confirm-button:hover {
     background: color-mix(in oklab, var(--accent-color, #007bff) 85%, black 15%);
@@ -963,7 +975,7 @@ h3 {
   /* transition: all 0.2s; */
   
 	font-weight: bold;
-	border: 3px solid var(--black) !important;
+	border: 2px solid var(--black) !important;
 	background: var(--bg) !important;
 	opacity: .5;
 }
