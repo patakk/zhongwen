@@ -3,6 +3,7 @@ import json
 import logging
 import genanki
 import random
+import copy
 import zlib
 import re
 import os
@@ -605,7 +606,7 @@ def get_random_characters():
     data = request.get_json()
     deck = data.get("wordlist")
     num = int(data.get("num", 24))
-    random_chars = cd[deck]['chars']
+    random_chars = cd[deck]['chars'][:]
     random.shuffle(random_chars)
     random_chars = random_chars[:num]
     characters_data = get_chars_info(random_chars)
@@ -685,11 +686,9 @@ import time
 def get_char_decomp_info():
     data = request.get_json()
     characters = data.get("characters")
-    
     decomp = char_decomp_info(characters)
-    print('Seinding decomp info for characters', characters)
-    print(decomp)
     return jsonify(decomp)
+
 
 
 @api_bp.route("/get_all_stroke_data", methods=["GET"])

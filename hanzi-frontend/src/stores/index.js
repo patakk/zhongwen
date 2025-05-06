@@ -27,7 +27,10 @@ const cardModalModule = {
       state.loading = false;
     },
     SET_DECOMPOSITION_DATA(state, data) {
-      state.decompositionData = data;
+      state.decompositionData = {
+        ...(state.decompositionData || {}),
+        ...data
+      };
     },
     SET_LOADING(state, loading) {
       state.loading = loading;
@@ -78,7 +81,7 @@ const cardModalModule = {
         commit('SET_CARD_DATA', state.preloadedData[character]);
         
         // Always trigger decomposition data fetch
-        //dispatch('fetchDecompositionDataOnly', character);
+        dispatch('fetchDecompositionDataOnly', character);
       } else {
         // If no preloaded data, fetch it normally
         await dispatch('fetchCardData', character);
@@ -108,13 +111,14 @@ const cardModalModule = {
           // First set the card data so the modal shows immediately
           commit('SET_CARD_DATA', data);
           
+          await dispatch('fetchDecompositionDataOnly', character);
         }
       } catch (error) {
         console.error('Error fetching card data:', error);
         commit('SET_LOADING', false);
       }
     },
-    async fetchDecompositionDataOnly({ commit, state }, character) {
+    async fetchDecompositionDataOnly({ commit, state, dispatch }, character) {
       // Get both Han characters AND CJK strokes
       const validCharacters = character.split('').filter(char => {
         // Include Han script characters
@@ -133,7 +137,6 @@ const cardModalModule = {
         return Promise.resolve(null);
       }
       
-      console.log(`fetchDecompositionDataOnly called for: "${character}" (${validCharacters.join(', ')})`);
       
       // Don't refetch if we already have this character's decomposition data
       // and it's non-empty (i.e., this character has parts)
@@ -147,7 +150,6 @@ const cardModalModule = {
         );
         
         if (allCharsHaveData) {
-          console.log(`Using cached decomposition data for: "${character}"`, state.decompositionData);
           return Promise.resolve(state.decompositionData);
         }
       }
@@ -165,29 +167,28 @@ const cardModalModule = {
             body: JSON.stringify(payload),
           };
 
-          console.log(`Sending request to ${url} with payload:`, payload);
           const response = await fetch(url, options);
           const data = await response.json();
           
-          console.log(`Received decomposition data for: "${character}"`, data);
-          
-          // Add detailed logging for each character's data
-          validCharacters.forEach(char => {
-            if (data[char]) {
-              console.log(`Character "${char}" data:`, {
-                parts: data[char].parts || [],
-                present_in: data[char].present_in || [],
-                parts_length: data[char].parts ? data[char].parts.length : 0,
-                present_in_length: data[char].present_in ? data[char].present_in.length : 0
-              });
-            } else {
-              console.warn(`No decomposition data returned for character: "${char}"`);
-            }
-          });
           
           // Only update the store if we actually got data
           if (Object.keys(data).length > 0) {
             commit('SET_DECOMPOSITION_DATA', data);
+            
+            // Now that we have decomposition data, fetch simple character info for all parts
+            // Extract all component parts from decomposition data
+            const componentParts = [];
+            Object.keys(data).forEach(char => {
+              if (data[char].parts && data[char].parts.length > 0) {
+                componentParts.push(...data[char].parts);
+              }
+            });
+            
+            // Fetch simple info for all unique parts in a single request
+            if (componentParts.length > 0) {
+              const uniqueParts = [...new Set(componentParts)];
+              // await dispatch('fetchSimpleCharInfo', uniqueParts, { root: true });
+            }
           }
           
           resolve(data);
@@ -200,19 +201,25 @@ const cardModalModule = {
     async preloadCardData({ commit, state, dispatch }, character) {
       // Don't preload if we already have the data
       if (state.preloadedData[character]) {
-        return;
+        // Also, don't refetch decomposition data if already present for this character
+        if (state.decompositionData && state.decompositionData[character]) {
+          return;
+        } else {
+          // Only fetch decomposition data if missing for this character
+          await dispatch('fetchDecompositionDataOnly', character);
+          return;
+        }
       }
-      
       try {
         const response = await fetch(`/api/get_card_data?character=${character}`);
         const data = await response.json();
-        
         if (data) {
           // Store in preloaded data cache
           commit('SET_PRELOADED_DATA', { character, data });
-          
-          // Don't preload decomposition data - we'll fetch it when needed
-          // This helps prevent duplicate fetches
+          // Preload decomposition data only if missing
+          if (!state.decompositionData || !state.decompositionData[character]) {
+            await dispatch('fetchDecompositionDataOnly', character);
+          }
         }
       } catch (error) {
         console.error('Error preloading card data:', error);
@@ -392,6 +399,8 @@ const store = createStore({
       strokeData: {},
       infoData: {}
     }, // Cache for practice characters
+    simpleCharInfoCache: {}, // New cache for simple character information
+    pendingSimpleCharRequests: null, // Track pending simple character requests
   },
   mutations: {
     setDictionaryData(state, data) {
@@ -496,6 +505,12 @@ const store = createStore({
     },
     SET_PRACTICE_CHARACTER_INFO_DATA(state, { character, data }) {
       state.practiceCharacterCache.infoData[character] = data;
+    },
+    SET_SIMPLE_CHAR_INFO(state, data) {
+      state.simpleCharInfoCache = {
+        ...state.simpleCharInfoCache,
+        ...data
+      };
     }
   },
   actions: {
@@ -810,6 +825,66 @@ const store = createStore({
         return null;
       }
     },
+    async fetchSimpleCharInfo({ commit, state }, characters) {
+      // Skip if no characters provided
+      if (!characters || characters.length === 0) {
+        return {};
+      }
+      
+      
+      // Filter out characters we already have cached
+      const uncachedChars = characters.filter(char => !state.simpleCharInfoCache[char]);
+      
+      // If all characters are cached, return from cache
+      if (uncachedChars.length === 0) {
+        return characters.reduce((result, char) => {
+          result[char] = state.simpleCharInfoCache[char];
+          return result;
+        }, {});
+      }
+      
+      
+      // If we have a pending request, wait for it to complete
+      if (state.pendingSimpleCharRequests) {
+        await state.pendingSimpleCharRequests;
+      }
+      
+      // Create new promise and store it
+      const promise = (async () => {
+        try {
+          
+          const response = await fetch('/api/get_characters_simple_info', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ characters: uncachedChars })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          // Add to cache
+          commit('SET_SIMPLE_CHAR_INFO', data);
+          
+          // Return full requested data (cached + new)
+          return characters.reduce((result, char) => {
+            result[char] = state.simpleCharInfoCache[char] || data[char] || null;
+            return result;
+          }, {});
+        } catch (error) {
+          console.error('Error fetching simple character info:', error);
+          return {};
+        } finally {
+          state.pendingSimpleCharRequests = null;
+        }
+      })();
+      
+      // Store the promise
+      state.pendingSimpleCharRequests = promise;
+      return promise;
+    },
   },
   getters: {
     getCustomDictionaryData: (state) => state.customDictionaryData,
@@ -842,6 +917,14 @@ const store = createStore({
         }
       }
       return null;
+    },
+    getSimpleCharInfo: state => character => state.simpleCharInfoCache[character] || null,
+    getMultipleSimpleCharInfo: state => characters => {
+      if (!characters || characters.length === 0) return {};
+      return characters.reduce((result, char) => {
+        result[char] = state.simpleCharInfoCache[char] || null;
+        return result;
+      }, {});
     }
   }
 })

@@ -75,6 +75,7 @@
 
   --modal-bg: var(--bg);
   --secondary-color: var(--yellow);
+  --secondary-color: #c09cc9;
   --dim-primary: var(--orange);
   --decks-shadow: 7px 6px 0px 0px var(--fg);
   --card-border: 2px solid color-mix(in oklab, var(--fg) 46%, var(--bg) 35%);
@@ -82,7 +83,9 @@
   --grid-item-border: 1.5px solid color-mix(in oklab, var(--fg) 35%, var(--bg) 100%);
 }
 
-
+* {
+  font-family: var(--font-family);
+}
 
 
 [data-theme="dark"] {
@@ -151,7 +154,10 @@ input[type="text"]:focus-visible {
 
 ::selection {
   background: var(--secondary-color);
-  color: var(--orange);
+  color: var(--fg);
+  color: #faf;
+  background: var(--fg);
+  color: var(--bg);
 }
 
 h4 {
@@ -186,7 +192,7 @@ input[type="range"]::-webkit-slider-thumb:active {
 
 
 * {
-  font-family: var(--font-family);
+  /* font-family: var(--font-family); */
 }
 
 body {

@@ -1,13 +1,12 @@
 <template>
     <BasePage page_title="Settings" />
 
-    <div class="account-container" v-if="loggedIn">
-
-      <!-- Theme Settings Section -->
+    <!-- Theme Settings Section (Available to all users) -->
+    <div class="account-container">
       <div class="settings-section theme-settings">
         <h3>Appearance</h3>
-      <div class="section-divider"></div>
-      <div class="theme-selection">
+        <div class="section-divider"></div>
+        <div class="theme-selection">
           <div class="theme-option-label">Theme:</div>
           <div class="theme-buttons">
             <button 
@@ -34,8 +33,8 @@
       </div>
     </div>
 
-    <div class="account-container" v-if="loggedIn">
-
+    <!-- Account Settings Section (Only for logged-in users) -->
+    <div v-if="loggedIn" class="account-container">
         <h3>Account</h3>
         <div class="section-divider"></div>
 
@@ -96,11 +95,8 @@
         <button @click="openDeleteConfirmModal" class="btn btn-danger delete-account-btn">Delete Account</button>
       </div>
     </div>
-    <div v-else class="account-container">
-      <p>Please log in to view your account.</p>
-      <!-- <RouterLink to="/login" class="btn">Login</RouterLink> -->
-    </div>
 
+    <!-- Rest of modals and ui components -->
     <div v-if="showEmailModal" class="modal-overlay" @click="closeEmailModal">
       <div class="modal-content" @click.stop>
         <h3>{{ emailModalMode === 'add' ? 'Add' : 'Change' }} Email</h3>
@@ -380,11 +376,6 @@ watch(profile, (newProfile) => {
 }, { immediate: true, deep: true })
 
 onMounted(() => {
-
-  if (!loggedIn.value) {
-    router.push('/login');
-    return;
-  }
   if (!profile.value) {
       store.dispatch('fetchUserData');
   }

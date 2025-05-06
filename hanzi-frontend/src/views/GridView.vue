@@ -784,10 +784,19 @@ html, body {
   width: 100%;
 }
 
+
+@media (min-width: 1024px) {
+  .list-container {
+    width: 60%;
+    margin: 0 auto;
+  }
+}
+
+
 .list-item {
   display: flex;
   /* border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%); */
-  box-shadow: 0px -1.25px color-mix(in oklab, var(--fg) 10%, var(--bg) 10%);
+  /* box-shadow: 0px -1.25px color-mix(in oklab, var(--fg) 10%, var(--bg) 10%); */
   padding: .25em;
   font-family: inherit;
   text-align: left;
@@ -795,6 +804,8 @@ html, body {
   width: 100%;
   cursor: pointer;
   font-size: .75em;
+  box-shadow: none;
+  border-bottom: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
 }
 
 .list-item:hover {
@@ -1100,8 +1111,6 @@ label {
 
   .list-item {
     padding: 1em 0;
-    box-shadow: none;
-    border-bottom: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
   }
 
 

@@ -2,7 +2,16 @@
     <BasePage page_title="Hanzi Tree" />
     <div class="hanzi-tree-container">
         <div class="tree-container" ref="treeContainer"></div>
-        
+        <div class="char-input-container">
+            <input
+                v-model="inputChar"
+                maxlength="1"
+                class="char-input"
+                @input="handleInputChange"
+                placeholder="汉"
+            />
+        </div>
+
         <!-- Popup menu -->
         <div v-if="showMenu" class="node-menu" :style="menuStyle">
             <!-- Character info section -->
@@ -14,15 +23,15 @@
                 </div>
             </div>
             <div class="menu-divider"></div>
-            <div class="menu-option decompose" @click="handleDecompose">
+            <div v-if="selectedNodeData?.data?.nodeType === 'character'" class="menu-option decompose" @click="handleDecompose">
                 <span class="icon"><font-awesome-icon :icon="['fas', 'magnifying-glass']" /></span>
                 <span>Decompose</span>
             </div>
-            <div class="menu-option containing" @click="handleShowContaining">
+            <div v-if="selectedNodeData?.data?.nodeType === 'character'" class="menu-option containing" @click="handleShowContaining">
                 <span class="icon"><font-awesome-icon :icon="['fas', 'sitemap']" /></span>
                 <span>Show Chars Containing</span>
             </div>
-            <div class="menu-option show-details" @click="handleShowCard">
+            <div v-if="selectedNodeData?.data?.nodeType === 'character'" class="menu-option show-details" @click="handleShowCard">
                 <span class="icon"><font-awesome-icon :icon="['fas', 'file']" /></span>
                 <span>View Details</span>
             </div>
@@ -30,7 +39,7 @@
                 <span class="icon"><font-awesome-icon :icon="['fas', 'trash']" /></span>
                 <span>Delete Node</span>
             </div>
-            <div v-if="hasChildren" class="menu-option delete-children" @click="handleDeleteChildren">
+            <div v-if="hasChildren && selectedNodeData?.data?.nodeType === 'character'" class="menu-option delete-children" @click="handleDeleteChildren">
                 <span class="icon"><font-awesome-icon :icon="['fas', 'scissors']" /></span>
                 <span>Delete Children</span>
             </div>
@@ -83,10 +92,50 @@ export default {
         const selectedCharEnglish = ref('');
         const isDirectChild = ref(false);
         const hasChildren = ref(false);
+
+        const inputChar = ref('');
+
+        const handleInputChange = async () => {
+            const char = inputChar.value.trim().slice(0, 1); // Only allow one character
+            if (!char) return;
+
+            inputChar.value = char;
+            currentCharacter.value = char;
+
+            decomposedNodeIds.value.clear();
+            containingNodeIds.value.clear();
+
+            treeData.value = {
+                character: char,
+                id: 'root',
+                nodeType: 'character',
+                children: []
+            };
+
+            await Promise.all([
+                store.dispatch('cardModal/preloadCardData', char),
+                getCharDecompositionData(char)
+            ]);
+
+            updateTree();
+            
+            // Auto-decompose the root node after tree is rendered
+            nextTick(() => {
+                // Create a fake event for the decompose handler
+                const fakeEvent = { preventDefault: () => {}, stopPropagation: () => {} };
+                
+                // Set the selected node to the root node
+                selectedNodeData.value = {
+                    data: treeData.value
+                };
+                
+                // Call the decompose handler
+                handleDecompose();
+            });
+        };
         
         // Methods for handling tree nodes
         const initializeTree = () => {
-            console.log('Initializing tree with data:', JSON.stringify(treeData.value));
             
             if (!treeContainer.value) {
                 console.error('Tree container reference is null');
@@ -94,7 +143,7 @@ export default {
             }
             
             // Clear any existing SVG
-            d3.select(treeContainer.value).selectAll('*').remove();
+            d3.select(treeContainer.value).selectAll('*').remove(); 
             
             const width = treeContainer.value.clientWidth || 800;
             const height = treeContainer.value.clientHeight || 600;
@@ -112,6 +161,30 @@ export default {
             
             // Store container reference for later use
             svg.value.container = container;
+
+            // Add arrow marker definitions for main links (orange and blue)
+            svg.value.append('defs').append('marker')
+                .attr('id', 'arrow-main-orange')
+                .attr('viewBox', '0 -5 10 10')
+                .attr('refX', 15)
+                .attr('refY', 0)
+                .attr('markerWidth', 9)
+                .attr('markerHeight', 9)
+                .attr('orient', 'auto')
+                .append('path')
+                .attr('d', 'M0,-5L10,0L0,5')
+                .attr('fill', '#e67e22'); // Orange for decomposition
+            svg.value.append('defs').append('marker')
+                .attr('id', 'arrow-main-blue')
+                .attr('viewBox', '0 -5 10 10')
+                .attr('refX', 15)
+                .attr('refY', 0)
+                .attr('markerWidth', 9)
+                .attr('markerHeight', 9)
+                .attr('orient', 'auto')
+                .append('path')
+                .attr('d', 'M0,-5L10,0L0,5')
+                .attr('fill', '#3498db'); // Blue for containing
                 
             // Convert tree data to hierarchy
             const hierarchyData = createHierarchy(treeData.value);
@@ -126,11 +199,11 @@ export default {
                 if (link.source.data.nodeType === 'character' && link.target.data.nodeType === 'decomposition') {
                     // Make decomposition nodes farther from parent character
                     link.distance = 100; // Farther distance for decomposition nodes
-                    link.strength = 0.7; // Stronger link to maintain distance
+                    link.strength = 0.1; // Stronger link to maintain distance
                 } else if (link.source.data.nodeType === 'character' && link.target.data.nodeType === 'containing') {
                     // Make containing nodes farther from parent character as well
                     link.distance = 100; // Farther distance for containing nodes
-                    link.strength = 0.7; // Stronger link to maintain distance
+                    link.strength = 0.1; // Stronger link to maintain distance
                 } else if (link.source.data.nodeType === 'decomposition') {
                     // Default distance for components connected to decomposition nodes
                     link.distance = 40;
@@ -152,7 +225,7 @@ export default {
                     .id(d => d.id)
                     .distance(link => link.distance)
                     .strength(link => link.strength))
-                .force('charge', d3.forceManyBody().strength(-300))
+                .force('charge', d3.forceManyBody().strength(-210))
                 .force('x', d3.forceX())
                 .force('y', d3.forceY())
                 .alphaDecay(0.05); // Speed up the simulation
@@ -173,6 +246,14 @@ export default {
                 // Show all other links
                 return true;
             });
+
+            // Split visibleLinks into main (solid) and dashed
+            const mainLinks = visibleLinks.filter(d => {
+                // Main links: solid, not dashed
+                return !((d.source.data.nodeType === 'decomposition' && d.target.data.nodeType === 'character') ||
+                         (d.source.data.nodeType === 'containing' && d.target.data.nodeType === 'character'));
+            });
+            const dashedLinks = visibleLinks.filter(d => !mainLinks.includes(d));
                 
             // Create container groups within the main container
             const linkGroup = container.append('g')
@@ -186,35 +267,87 @@ export default {
             // Store references to groups
             svg.value.linkGroup = linkGroup;
             svg.value.nodeGroup = nodeGroup;
-            
-            // Create visible links only
-            const linkElements = linkGroup.selectAll('line')
-                .data(visibleLinks) // Use filtered links for visual display
-                .join('line')
-                .attr('stroke-width', d => {
-                    // Make decomposition links thicker for better visibility
-                    if (d.source.data.nodeType === 'character' && d.target.data.nodeType === 'decomposition' ||
-                        d.source.data.nodeType === 'decomposition' && d.target.data.nodeType === 'character') {
-                        return 1;
-                    }
-                    // Also make containing links thicker for better visibility
-                    if (d.source.data.nodeType === 'character' && d.target.data.nodeType === 'containing' ||
-                        d.source.data.nodeType === 'containing' && d.target.data.nodeType === 'character') {
-                        return 1;
-                    }
-                    return 1;
-                })
+
+            // Draw main links as arched paths with arrow
+            const mainLinkElements = linkGroup.selectAll('path.main-link')
+                .data(mainLinks)
+                .join('path')
+                .attr('class', 'main-link')
+                .attr('fill', 'none')
                 .attr('stroke', d => {
-                    // Use different colors for different link types
                     if (d.source.data.nodeType === 'character' && d.target.data.nodeType === 'decomposition' ||
                         d.source.data.nodeType === 'decomposition' && d.target.data.nodeType === 'character') {
-                        return '#e67e22'; // Orange for decomposition links
+                        return '#e67e22';
                     } else if (d.source.data.nodeType === 'containing' || d.target.data.nodeType === 'containing') {
-                        return '#3498db'; // Blue for containing links
+                        return '#3498db';
                     }
-                    return '#999'; // Default gray
+                    return '#999';
+                })
+                .attr('stroke-width', 1)
+                .attr('marker-end', d => {
+                    if (d.source.data.nodeType === 'character' && d.target.data.nodeType === 'decomposition' ||
+                        d.source.data.nodeType === 'decomposition' && d.target.data.nodeType === 'character') {
+                        return 'url(#arrow-main-orange)';
+                    } else if (d.source.data.nodeType === 'containing' || d.target.data.nodeType === 'containing') {
+                        return 'url(#arrow-main-blue)';
+                    }
+                    return 'url(#arrow-main-orange)'; // fallback
                 });
-                
+
+            // Add invisible hit areas for arched main links
+            const mainLinkHitAreas = linkGroup.selectAll('path.main-link-hit-area')
+                .data(mainLinks)
+                .join('path')
+                .attr('class', 'main-link-hit-area')
+                .attr('fill', 'none')
+                .attr('stroke', 'transparent')
+                .attr('stroke-width', 18) // Large enough for easy interaction
+                .style('pointer-events', 'stroke')
+                .style('cursor', 'pointer') // Add pointer cursor
+                .on('click', (event, d) => {
+                    event.stopPropagation();
+                    showNodeMenu(event, d.target); // Show menu for yellow/blue node
+                });
+
+            // Draw dashed links as lines
+            const dashedLinkElements = linkGroup.selectAll('line.dashed-link')
+                .data(dashedLinks)
+                .join('line')
+                .attr('class', 'dashed-link')
+                .attr('stroke', d => {
+                    if (d.source.data.nodeType === 'decomposition' || d.target.data.nodeType === 'decomposition') {
+                        return '#e67e22';
+                    } else if (d.source.data.nodeType === 'containing' || d.target.data.nodeType === 'containing') {
+                        return '#3498db';
+                    }
+                    return '#999';
+                })
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '5,5');
+            
+            // Update line hit areas during simulation tick
+            const updateLineHitAreas = () => {
+                // Update arched hit areas for main links
+                mainLinkHitAreas.attr('d', d => {
+                    const sx = d.source.x, sy = d.source.y;
+                    const tx = d.target.x, ty = d.target.y;
+                    const mx = (sx + tx) / 2;
+                    const my = (sy + ty) / 2;
+                    const dx = tx - sx, dy = ty - sy;
+                    const norm = Math.sqrt(dx*dx + dy*dy) || 1;
+                    const arch = 30;
+                    const cx = mx - arch * (dy / norm);
+                    const cy = my + arch * (dx / norm);
+                    return `M${sx},${sy} Q${cx},${cy} ${tx},${ty}`;
+                });
+                // Update dashed links
+                dashedLinkElements
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+                nodeElements.attr('transform', d => `translate(${d.x},${d.y})`);
+            };
             // Create nodes
             const nodeElements = nodeGroup.selectAll('g')
                 .data(nodes)
@@ -224,12 +357,28 @@ export default {
                 .style('cursor', 'pointer') // Add pointer cursor on all nodes
                 .call(drag(simulation.value));
                 
-            // Add circles to nodes
-            nodeElements.append('circle')
-                .attr('r', d => getNodeRadius(d))
-                .attr('fill', d => getNodeColor(d.data.nodeType))
-                .attr('stroke', '#000')
-                .attr('stroke-width', 1.5);
+            // Add shapes to nodes
+            nodeElements.each(function(d) {
+                const sel = d3.select(this);
+                if (d.data.nodeType === 'decomposition' || d.data.nodeType === 'containing') {
+                    // Circle for yellow/blue nodes
+                    sel.append('circle')
+                        .attr('r', getNodeRadius(d)*.8)
+                        .attr('fill', getNodeColor(d.data.nodeType))
+                        .attr('stroke', '#0000')
+                        .attr('stroke-width', 2);
+                } else {
+                    // Rect for other nodes
+                    sel.append('rect')
+                        .attr('width', getNodeRadius(d)*1.4)
+                        .attr('height', getNodeRadius(d)*1.4)
+                        .attr('x', -getNodeRadius(d)*0.7)
+                        .attr('y', -getNodeRadius(d)*0.7)
+                        .attr('fill', getNodeColor(d.data.nodeType))
+                        .attr('stroke', '#0000')
+                        .attr('stroke-width', 2);
+                }
+            });
                 
             // Add text to nodes
             nodeElements.append('text')
@@ -247,13 +396,23 @@ export default {
                 
             // Update positions on simulation tick
             simulation.value.on('tick', () => {
-                linkElements
-                    .attr('x1', d => d.source.x)
-                    .attr('y1', d => d.source.y)
-                    .attr('x2', d => d.target.x)
-                    .attr('y2', d => d.target.y);
-                    
-                nodeElements.attr('transform', d => `translate(${d.x},${d.y})`);
+                // Update arched main links
+                mainLinkElements.attr('d', d => {
+                    // Quadratic Bezier: from source to target, with control point offset for arch
+                    const sx = d.source.x, sy = d.source.y;
+                    const tx = d.target.x, ty = d.target.y;
+                    // Control point: midpoint offset perpendicular to line
+                    const mx = (sx + tx) / 2;
+                    const my = (sy + ty) / 2;
+                    const dx = tx - sx, dy = ty - sy;
+                    const norm = Math.sqrt(dx*dx + dy*dy) || 1;
+                    // Arch amount (adjust as needed)
+                    const arch = 30;
+                    const cx = mx - arch * (dy / norm);
+                    const cy = my + arch * (dx / norm);
+                    return `M${sx},${sy} Q${cx},${cy} ${tx},${ty}`;
+                });
+                updateLineHitAreas();
             });
             
             // Setup zoom and pan behavior
@@ -269,7 +428,6 @@ export default {
             
             // Set loading to false once tree is ready
             isLoading.value = false;
-            console.log('Tree initialization complete, loading set to false');
         };
         
         // Function to set up zoom and pan behavior
@@ -311,7 +469,7 @@ export default {
                 const height = treeContainer.value.clientHeight || 600;
                 
                 // Calculate transform to center on this node
-                const scale = 1.2; // Slightly zoomed in for better visibility
+                const scale = 1.8; // Slightly zoomed in for better visibility
                 
                 // Transform calculation needs to account for current viewbox centering
                 // SVG viewBox is centered at [0,0], so we need to negate the node coordinates
@@ -327,7 +485,6 @@ export default {
                         d3.zoomIdentity.translate(x, y).scale(scale)
                     );
                     
-                console.log(`Centering on node ${nodeId} at position (${node.x}, ${node.y}) with transform: translate(${x}, ${y}) scale(${scale})`);
             }, 300);
         };
 
@@ -390,17 +547,84 @@ export default {
             // Set selected node data immediately
             selectedNodeData.value = d;
             
-            // Position menu right away for better UX
+            // Position menu properly relative to the click position
+            // First, get the container's bounding rect
             const boundingRect = treeContainer.value.getBoundingClientRect();
+            
+            // Calculate appropriate menu size
+            const menuWidth = 160; // Width of the menu in pixels
+            const menuHeight = 250; // Approximate max height of the menu
+            
+            // Get coordinates relative to the SVG container
+            // Use the node's x,y for D3 events, or clientX,clientY for DOM events
+            let leftPos, topPos;
+            
+            if (event.sourceEvent || event.clientX === undefined) {
+                // D3 drag or zoom event wraps the original event
+                const sourceEvent = event.sourceEvent || event;
+                leftPos = sourceEvent.clientX - boundingRect.left;
+                topPos = sourceEvent.clientY - boundingRect.top;
+            } else {
+                // For clicks directly on nodes, we have the d3 node position
+                // Convert the D3 coordinates to screen coordinates
+                const transform = d3.zoomTransform(svg.value.node());
+                leftPos = transform.applyX(d.x) + boundingRect.width/2;
+                topPos = transform.applyY(d.y) + boundingRect.height/2;
+            }
+            
+            // Constrain to container boundaries
+            // Right edge check
+            if (leftPos + menuWidth > boundingRect.width) {
+                leftPos = leftPos - menuWidth;
+            }
+            
+            // Bottom edge check
+            if (topPos + menuHeight > boundingRect.height) {
+                topPos = topPos - menuHeight;
+            }
+            
+            // Ensure menu doesn't go off-screen to the left or top
+            leftPos = Math.max(0, leftPos);
+            topPos = Math.max(0, topPos);
+            
+            // Set menu position
             menuStyle.value = {
-                top: `${event.clientY - boundingRect.top}px`,
-                left: `${event.clientX - boundingRect.left}px`
+                top: `${topPos}px`,
+                left: `${leftPos}px`
             };
             
-            // Special handling for decomposition and containing nodes - only show delete option
+            // Special handling for decomposition and containing nodes
             if (d.data.nodeType === 'decomposition' || d.data.nodeType === 'containing') {
-                selectedCharPinyin.value = '';
-                selectedCharEnglish.value = '';
+                // Find parent node (the character being decomposed or showing containing)
+                const parentNode = findParentNode(treeData.value, d.data.id);
+                if (parentNode && parentNode.character) {
+                    // Set character information
+                    const parentChar = parentNode.character;
+                    
+                    // Get child nodes (components or containing characters)
+                    const childChars = d.children?.map(child => child.data.character).filter(Boolean) || [];
+                    const maxDisplayChars = 5; // Maximum number of characters to display
+                    let childText = '';
+                    
+                    if (childChars.length > 0) {
+                        childText = childChars.slice(0, maxDisplayChars).join(', ');
+                        if (childChars.length > maxDisplayChars) {
+                            childText += ` +${childChars.length - maxDisplayChars} more`;
+                        }
+                    }
+                    
+                    if (d.data.nodeType === 'decomposition') {
+                        selectedCharPinyin.value = `${parentChar} decomposed into:`;
+                        selectedCharEnglish.value = childText || 'No components';
+                    } else { // containing
+                        selectedCharPinyin.value = `${parentChar} contained in:`;
+                        selectedCharEnglish.value = childText || 'No characters';
+                    }
+                } else {
+                    selectedCharPinyin.value = d.data.nodeType === 'decomposition' ? 'Decomposition node' : 'Containing node';
+                    selectedCharEnglish.value = '';
+                }
+                
                 isDirectChild.value = true;  // Enable delete option
                 hasChildren.value = false;   // Disable delete children option
                 showMenu.value = true;
@@ -422,7 +646,6 @@ export default {
             hasChildren.value = d.children && d.children.length > 0;
             
             const character = d.data.character;
-            console.log('Fetching data for character:', character);
             
             try {
                 // Always fetch decomposition data, regardless of card data availability
@@ -448,7 +671,6 @@ export default {
                         }
                     }
                 } catch (error) {
-                    console.log('Card data not available for character:', character);
                     // Continue even if card data fails - decomposition should still work
                 }
             } catch (error) {
@@ -466,11 +688,9 @@ export default {
             const character = selectedNodeData.value.data.character;
             const nodeId = selectedNodeData.value.data.id;
             
-            console.log(`handleDecompose called for character: "${character}" (nodeId: ${nodeId})`);
             
             // Check if this node specifically has been decomposed
             if (decomposedNodeIds.value.has(nodeId)) {
-                console.log('This specific node already has decomposition children:', nodeId);
                 showMenu.value = false;
                 return;
             }
@@ -479,13 +699,10 @@ export default {
             decomposedNodeIds.value.add(nodeId);
             
             // Get decomposition data
-            console.log(`Fetching decomposition data for "${character}"`);
             const decompData = await getCharDecompositionData(character);
-            console.log('Decomposition data received:', decompData);
             
             if (!decompData || !decompData[character] || !decompData[character].parts || 
                 decompData[character].parts.length === 0) {
-                console.log('No valid decomposition data for:', character);
                 decomposedNodeIds.value.delete(nodeId); // Remove from tracked IDs if no data
                 showMenu.value = false;
                 return;
@@ -514,7 +731,6 @@ export default {
             });
             
             // Find the selected node in the tree and add the decomposition node as its child
-            console.log('Adding decomposition node to:', nodeId);
             addChildToNode(treeData.value, nodeId, decompNode);
             
             // Hide the menu
@@ -528,24 +744,19 @@ export default {
             
             // Preload data for all decomposition parts in a single batch
             if (parts && parts.length > 0) {
-                console.log('Preloading data for decomposition parts:', parts);
                 
                 // 1. Preload card data for each part
                 const cardPromises = parts.map(part => {
-                    console.log(`Starting card preload for part: "${part}"`);
                     return store.dispatch('cardModal/preloadCardData', part);
                 });
                 
                 try {
                     // 2. First wait for all card data to finish loading
                     await Promise.all(cardPromises);
-                    console.log('All card data preloaded successfully');
                     
                     // 3. Then fetch decomposition data for all parts in a single request
                     // AND their decomposition data in a single batch as well
-                    console.log(`Fetching decomposition data for all parts in a single request:`, parts);
                     await store.dispatch('cardModal/fetchDecompositionDataOnly', parts.join(''));
-                    console.log('Decomposition data for all parts preloaded successfully');
                 } catch (error) {
                     console.error('Error during preloading:', error);
                 }
@@ -564,7 +775,6 @@ export default {
             
             // Check if this node specifically has been shown containing
             if (containingNodeIds.value.has(nodeId)) {
-                console.log('This specific node already has containing children:', nodeId);
                 showMenu.value = false;
                 return;
             }
@@ -577,7 +787,6 @@ export default {
             
             if (!decompData || !decompData[character] || !decompData[character].present_in || 
                 decompData[character].present_in.length === 0) {
-                console.log('No valid containing data for:', character);
                 containingNodeIds.value.delete(nodeId); // Remove from tracked IDs if no data
                 showMenu.value = false;
                 return;
@@ -607,7 +816,6 @@ export default {
             });
             
             // Find the selected node in the tree and add the containing node as its child
-            console.log('Adding containing node to:', nodeId);
             addChildToNode(treeData.value, nodeId, containingNode);
             
             // Hide the menu
@@ -625,7 +833,6 @@ export default {
                 const preloadLimit = Math.min(5, preloadChars.length);
                 const charactersToPreload = preloadChars.slice(0, preloadLimit);
                 
-                console.log(`Preloading data for ${preloadLimit} present_in characters:`, charactersToPreload);
                 
                 charactersToPreload.forEach(char => {
                     // Preload card data
@@ -641,7 +848,6 @@ export default {
             if (!selectedNodeData.value || !selectedNodeData.value.data.character) return;
             
             const character = selectedNodeData.value.data.character;
-            console.log('Showing card for:', character);
             
             // Show card modal for this character
             store.dispatch('cardModal/showCardModal', character);
@@ -658,11 +864,9 @@ export default {
             }
             
             const nodeId = selectedNodeData.value.data.id;
-            console.log('Deleting node:', nodeId);
             
             // If the node is the root, don't allow deletion
             if (nodeId === 'root') {
-                console.log('Cannot delete root node');
                 showMenu.value = false;
                 return;
             }
@@ -703,7 +907,6 @@ export default {
             }
             
             const nodeId = selectedNodeData.value.data.id;
-            console.log('Deleting children of node:', nodeId);
             
             // Clear children of the node
             clearNodeChildren(treeData.value, nodeId);
@@ -754,7 +957,6 @@ export default {
         
         const updateTree = () => {
             // Update tree visualization
-            console.log('Updating tree visualization');
             nextTick(() => {
                 initializeTree();
             });
@@ -762,57 +964,24 @@ export default {
         
         // Function to get character decomposition data with cache optimization
         const getCharDecompositionData = async (character) => {  
-            console.log(`getCharDecompositionData called for: "${character}"`);
             
             // Check if we already have decomposition data in the store
             const existingData = store.getters['cardModal/getDecompositionData'];
             
             // Check if we already have data for this character
             if (existingData && existingData[character]) {
-                console.log(`Found existing decomposition data for "${character}" in store:`, existingData[character]);
-                
-                // Special case for "㇒" - if it exists but has no present_in, create synthetic data
-                if (character === '㇒' && (!existingData[character].present_in || existingData[character].present_in.length === 0)) {
-                    console.log('Adding synthetic present_in data for ㇒');
-                    
-                    // Add common characters that contain ㇒ if they're not already there
-                    const syntheticData = { ...existingData };
-                    syntheticData[character] = { 
-                        ...syntheticData[character],
-                        present_in: ['乂', '乇', '乊', '飞', '习', '我', '㠯', '广', '及', '又', '叉', '夕', '夂', '久'] 
-                    };
-                    
-                    // Update the store with our synthetic data
-                    store.commit('cardModal/SET_DECOMPOSITION_DATA', syntheticData);
-                    
-                    return syntheticData;
-                }
                 
                 // If character has parts or present_in data, use the cached version
                 if ((existingData[character].parts && existingData[character].parts.length > 0) || 
                     (existingData[character].present_in && existingData[character].present_in.length > 0)) {
-                    console.log(`Using cached decomposition data for "${character}"`);
                     return existingData;
                 }
             }
             
-            console.log(`No cached data found for "${character}", fetching from API`);
             
             // Fetch decomposition data if not already available
             try {
                 const data = await store.dispatch('cardModal/fetchDecompositionDataOnly', character);
-                
-                // Special case for "㇒" - if no present_in data is returned, add synthetic data
-                if (character === '㇒' && data && data[character] && (!data[character].present_in || data[character].present_in.length === 0)) {
-                    console.log('Adding synthetic present_in data for ㇒ after API fetch');
-                    
-                    // Modify the data to include common characters that contain ㇒
-                    data[character].present_in = ['乂', '乇', '乊', '飞', '习', '我', '㠯', '广', '及', '又', '叉', '夕', '夂', '久'];
-                    
-                    // Update the store with our synthetic data
-                    store.commit('cardModal/SET_DECOMPOSITION_DATA', data);
-                }
-                
                 return data;
             } catch (error) {
                 console.error('Error fetching decomposition data:', error);
@@ -864,7 +1033,6 @@ export default {
 
         // Optimize the initialization
         onMounted(async () => {
-            console.log('HanziTree component mounted');
             isLoading.value = true;
             loadingStatus.value = 'Loading data...';
             
@@ -879,7 +1047,6 @@ export default {
             try {
                 // Wait for all data to load in parallel
                 await Promise.all(dataPromises);
-                console.log('All data loaded successfully');
                 
                 // Initialize tree immediately
                 isLoading.value = false;
@@ -933,7 +1100,9 @@ export default {
             handleShowContaining,
             handleShowCard,
             handleDeleteNode,
-            handleDeleteChildren
+            handleDeleteChildren,
+            inputChar,
+            handleInputChange
         };
     }
 }
@@ -979,7 +1148,7 @@ export default {
     background-color: var(--bg, white);
     border: 1px solid var(--fg-dim, #ddd);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    z-index: 11;
     width: 160px;
     overflow: hidden;
 }
@@ -1054,4 +1223,29 @@ export default {
 .menu-option.delete-children:hover {
     background-color: color-mix(in oklab, var(--warning-color, #f1c40f) 15%, var(--bg) 100%);
 }
+
+
+.char-input-container {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 12;
+    background: var(--bg, white);
+    padding: 4px 8px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.char-input {
+    width: 2.5em;
+    font-size: 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    background: transparent;
+    color: var(--fg, #333);
+}
+
 </style>

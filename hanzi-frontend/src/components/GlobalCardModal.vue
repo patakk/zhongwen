@@ -117,9 +117,11 @@
           <!-- Tab content -->
           <div class="tab-content" v-if="activeCharData">
             <div class="char-details">
+
+
+              <!-- Character details section -->
               <div class="freq-trad-anim">
                 <div class="freq-trad">
-                  <!-- Replace the separate pinyin and meaning sections with a combined section -->
                   <div class="detail-group pinyin-meaning-group">
                     <span class="basic-label">Pronunciation & Meaning:</span>
                     <div class="pinyin-meaning-pairs">
@@ -143,7 +145,7 @@
                     <span class="trad-simple">{{ activeCharData.simplified }}</span>
                   </div>
 
-                  <div class="detail-group radicals-group">
+                  <!-- <div class="detail-group radicals-group">
                     <span class="basic-label">Radicals: </span>
                     <div class="radicals">
                       <span
@@ -155,10 +157,11 @@
                         <span class="radical-meaning">{{ meaning }}</span>
                       </span>
                     </div>
-                  </div>
+                  </div> -->
+
                 </div>
 
-                <div class="hanzi-anim">
+                <div class="hanzi-anim" v-if="activeCharData.strokes && activeCharData.strokes.medians && activeCharData.strokes.strokes">
                   <AnimatedHanzi 
                     :character="activeCharData.character"
                     :strokes="activeCharData.strokes"
@@ -169,7 +172,12 @@
                 </div>
               </div>
 
-              <ExpandableExamples title="Words containing this character">
+              <!-- Only render ExpandableExamples if there are example words -->
+              <ExpandableExamples 
+                v-if="activeCharData.example_words && activeCharData.example_words.length > 0" 
+                title="Words containing this character"
+                :itemCount="activeCharData.example_words.length"
+                :thresholdForExpand="3">
                 <template v-slot:afew="slotProps">
                     <div 
                     class="example-words first-words" 
@@ -216,82 +224,33 @@
                 </template>
               </ExpandableExamples>
 
+              <!-- Present In section: show characters from presentInChars -->
+              <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].present_in" class="present-in-section">
+                <div class="medium-label">{{ activeChar }} Present in:</div>
+                <div class="present-in-chars" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                  <PreloadWrapper
+                    v-for="char in limitedPresentInChars"
+                    :key="char"
+                    :character="char"
+                    :showBubbles="false"
+                    class="present-in-char"
+                  >
+                  {{ char }}
+                  </PreloadWrapper>
+                  <span v-if="hasMorePresentInChars" class="more-chars">...</span>
+                </div>
+              </div>
+
+              
+
               <!-- Components section - Formatted decomposition data -->
-              <ExpandableExamples title="Components">
-                <template v-slot:afew="slotProps">
-                  <div class="decomp-section" :class="{ 'collapsed-section': !slotProps.isExpanded }" style="max-height: 200px; overflow: hidden;" v-if="!slotProps.isExpanded">
-                    <div class="decomposition-items">
-                      <!-- For Han characters, check if their components exist in decompositionData -->
-                      <div v-if="activeChar && decompositionData && decompositionData[activeChar]" 
-                          v-for="(charArray, component) in decompositionData[activeChar]" 
-                          :key="component" 
-                          class="decomp-group">
-                        <span class="component-char">{{ activeChar }}</span>
-                        <div class="decomp-component">
-                          <span class="component-label">↳</span>
-                          <span class="component-char">{{ component }}</span>
-                          <span class="component-label-2">↘</span>
-                        </div>
-                        <div class="decomp-chars">
-                          <span 
-                            v-for="char in charArray" 
-                            :key="char"
-                            @click="updateModalContent(char)"
-                            @mouseenter="startHoverTimer(char)"
-                            @mouseleave="clearHoverTimer"
-                            class="decomp-char"
-                            :class="{ 'current-char': char === activeChar }"
-                          >
-                            {{ char }}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <!-- If no components found -->
-                      <div v-if="activeChar && (!decompositionData || !decompositionData[activeChar] || Object.keys(decompositionData[activeChar]).length === 0)" class="decomp-message">
-                        <p>No component data available for this character</p>
-                      </div>
-                    </div>
-                  </div>
-                </template>
-                
-                <template v-slot:therest="slotProps">
-                  <div class="decomp-section">
-                    <div class="decomposition-items">
-                      <!-- For Han characters, check if their components exist in decompositionData -->
-                      <div v-if="activeChar && decompositionData && decompositionData[activeChar]" 
-                          v-for="(charArray, component) in decompositionData[activeChar]" 
-                          :key="component" 
-                          class="decomp-group">
-                        <span class="component-char">{{ activeChar }}</span>
-                        <div class="decomp-component">
-                          <span class="component-label">↳</span>
-                          <span class="component-char">{{ component }}</span>
-                          <span class="component-label-2">↘</span>
-                        </div>
-                        <div class="decomp-chars">
-                          <span 
-                            v-for="char in charArray" 
-                            :key="char"
-                            @click="updateModalContent(char)"
-                            @mouseenter="startHoverTimer(char)"
-                            @mouseleave="clearHoverTimer"
-                            class="decomp-char"
-                            :class="{ 'current-char': char === activeChar }"
-                          >
-                            {{ char }}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <!-- If no components found -->
-                      <div v-if="activeChar && (!decompositionData || !decompositionData[activeChar] || Object.keys(decompositionData[activeChar]).length === 0)" class="decomp-message">
-                        <p>No component data available for this character</p>
-                      </div>
-                    </div>
-                  </div>
-                </template>
-              </ExpandableExamples>
+              <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].recursive && Object.keys(decompositionData[activeChar].recursive).length > 0">
+                <div class="medium-label">Decomposition</div>
+                <div class="decomp-section">
+                  <RecursiveDecomposition :data="{ [activeChar]: decompositionData[activeChar].recursive }" />
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -338,6 +297,8 @@ import ExpandableExamples from './ExpandableExamples.vue'
 import ClickableRow from './ClickableRow.vue'
 import AnimatedHanzi from './AnimatedHanzi.vue'
 import ToastNotification from './ToastNotification.vue'
+import RecursiveDecomposition from './RecursiveDecomposition.vue'
+import PreloadWrapper from './PreloadWrapper.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -345,7 +306,9 @@ export default {
     ExpandableExamples,
     ClickableRow,
     AnimatedHanzi,
-    ToastNotification
+    ToastNotification,
+    RecursiveDecomposition,
+    PreloadWrapper
   },
   name: 'GlobalCardModal',
   props: {
@@ -490,6 +453,18 @@ export default {
         main_word_pinyin: breakdown.pinyin?.filter((_, index) => shortindices.includes(index)) || [],
         main_word_english: breakdown.english?.filter((_, index) => shortindices.includes(index)) || [],
       } : null;
+    },
+    limitedPresentInChars() {
+      if (!this.activeChar || !this.decompositionData || !this.decompositionData[this.activeChar] || !this.decompositionData[this.activeChar].present_in) {
+        return [];
+      }
+      return this.decompositionData[this.activeChar].present_in.slice(0, 30);
+    },
+    hasMorePresentInChars() {
+      if (!this.activeChar || !this.decompositionData || !this.decompositionData[this.activeChar] || !this.decompositionData[this.activeChar].present_in) {
+        return false;
+      }
+      return this.decompositionData[this.activeChar].present_in.length > 30;
     }
   },
   watch: {
@@ -935,7 +910,8 @@ export default {
 }
 
 .main-word-char {
-  font-family: 'Noto Serif SC';
+  font-family: "Noto Serif SC", "Kaiti", sans-serif;
+
   font-weight: 600;
 }
 
@@ -1392,7 +1368,12 @@ export default {
 .medium-label {
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
+  margin-top: 0rem;
   color: var(--text-primary);
+}
+
+.present-in-section{
+  margin-bottom: 1em;
 }
 
 .pinyin-meaning-group {
@@ -1590,6 +1571,43 @@ export default {
 .cancel-button:hover,
 .confirm-button:hover {
   cursor: pointer;
+}
+
+.present-in-chars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: .5em .5em .5em .5em;
+  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
+}
+
+.present-in-chars span {
+  padding: 0.3rem 0.5rem;
+  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
+  cursor: pointer;
+}
+.present-in-chars span:hover {
+  background-color: color-mix(in oklab, var(--fg) 85%, var(--bg) 50%);
+  color: var(--bg);
+}
+
+
+.present-in-char {
+  /* font-family: "Noto Sans SC" !important;
+  font-family: "Noto Serif SC" !important; */
+  font-family: "Kaiti" !important;
+  font-size: 1.5em;
+}
+
+.more-chars {
+  background: none !important;
+  color: var(--fg) !important;
+}
+
+.more-chars:hover {
+  background: none !important;
+  color: var(--fg) !important;
+  cursor: default;
 }
 
 @media (max-width: 1024px) {

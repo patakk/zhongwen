@@ -127,7 +127,7 @@
 
 
 [data-theme="theme2"] .detail-group {
-    border-bottom: 3px solid #e9e0b5 !important;
+    border-bottom: 3px solid var(--animated-hanzi-border-color) !important;
     box-sizing: border-box;
 }
 

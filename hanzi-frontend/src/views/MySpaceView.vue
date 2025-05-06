@@ -675,6 +675,10 @@
   </script>
   
   <style scoped>
+* {
+  font-family: var(--font-family) !important;
+}
+
   .myspace-view {
     display: flex;
     flex-direction: column;

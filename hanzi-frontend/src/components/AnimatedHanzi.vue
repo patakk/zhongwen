@@ -1,5 +1,5 @@
 <template>
-  <div class="animated-hanzi">
+  <div class="animated-hanzi" v-if="hasStrokeData">
     <div class="redraw-button" @click="animateCharacter"><font-awesome-icon :icon="['fas', 'arrow-rotate-right']" class="redraw-icon" /></div>
     <div class="clear-button" @click="beginQuizMode"><font-awesome-icon :icon="['fas', 'pen-fancy']"   class="clear-icon" /></div>
     <canvas ref="hanziCanvas" class="anim-character"></canvas>
@@ -8,7 +8,7 @@
 
 <script>
 import HanziPlotter from '../lib/plotter';
-import { defineComponent, ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
+import { defineComponent, ref, onMounted, onBeforeUnmount, nextTick, watch, computed } from 'vue';
 
 export default defineComponent({
   name: 'AnimatedHanzi',
@@ -41,6 +41,16 @@ export default defineComponent({
     const currentTheme = ref(document.documentElement.getAttribute('data-theme') || 'light');
     const isQuizMode = ref(false);
 
+    // Computed property to check if stroke data is available
+    const hasStrokeData = computed(() => {
+      return props.strokes && 
+             props.strokes.medians && 
+             props.strokes.strokes && 
+             Array.isArray(props.strokes.medians) && 
+             props.strokes.medians.length > 0 &&
+             Array.isArray(props.strokes.strokes) && 
+             props.strokes.strokes.length > 0;
+    });
 
     const getThemeColors = () => {
       let theme = localStorage.getItem('theme') || 'light';
@@ -63,7 +73,7 @@ export default defineComponent({
     const updateTheme = () => {
       if (!plotter.value) return;
 
-    const isDarkMode = ['dark', 'theme2'].includes(currentTheme.value);
+      const isDarkMode = ['dark', 'theme2'].includes(currentTheme.value);
       const colors = getThemeColors();
       
       plotter.value.isDarkMode = isDarkMode;
@@ -91,9 +101,9 @@ export default defineComponent({
         plotter.value = null;
       } 
 
-    const isDarkMode = ['dark', 'theme2'].includes(currentTheme.value);
+      const isDarkMode = ['dark', 'theme2'].includes(currentTheme.value);
       
-      if (!props.strokes || !props.strokes.medians || !props.strokes.strokes) {
+      if (!hasStrokeData.value) {
         console.error("No stroke data provided for character:", props.character);
         return;
       }
@@ -286,13 +296,17 @@ export default defineComponent({
       }
     }, { deep: true });
 
-    expose({ plotter: () => plotter.value });
+    expose({ 
+      plotter: () => plotter.value,
+      hasStrokeData
+    });
 
     return {
       hanziCanvas,
       animateCharacter,
       beginQuizMode,
-      plotter
+      plotter,
+      hasStrokeData
     };
   }
 });

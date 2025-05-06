@@ -92,7 +92,6 @@ const setupKofiWidget = () => {
 
   // Update visibility on route change BEFORE and AFTER navigation
   router.beforeEach((to, from, next) => {
-    console.log('Route changing from', from.path, 'to', to.path);
     next();
   });
   
@@ -198,7 +197,6 @@ const initApp = async () => {
             // Choose a random character to preload instead of always the first one
             const randomIndex = Math.floor(Math.random() * hsk1Chars.length);
             const charToPreload = hsk1Chars[randomIndex];
-            console.log('Preloading random HSK1 character for practice:', charToPreload);
             
             // Only preload stroke data, not character info since it's already in the dictionary
             await store.dispatch('preloadPracticeCharacterStrokes', charToPreload);

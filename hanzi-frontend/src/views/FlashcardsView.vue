@@ -927,18 +927,19 @@ export default {
 </script>
 
 <style>
-
-html, body {
-  /* margin: 0;
-  padding: 0;
-  overflow: hidden; 
-  height: 100vh;
-  width: 100vw; */
+/* Apply these styles globally to prevent zooming anywhere on the page */
+:global(html), :global(body) {
+  touch-action: manipulation; /* Prevents double-tap zoom */
+  -webkit-touch-callout: none; /* iOS Safari */
+  user-select: none; /* Standard syntax */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  overscroll-behavior: none; /* Prevent pull-to-refresh */
 }
 
 #app {
 }
-
 </style>
 
 <style scoped>
@@ -948,6 +949,8 @@ html, body {
   overflow: hidden;
   height: 100vh;
   width: 100vw;
+  touch-action: manipulation; /* Prevents double-tap zoom */
+  -webkit-touch-callout: none; /* Disables callout on iOS */
 }
 
 .flashcards-view {
@@ -959,6 +962,8 @@ html, body {
   box-sizing: border-box;
   margin: 0 auto;
   position: relative;
+  user-select: none; /* Prevents text selection */
+  -webkit-user-select: none; /* For Safari */
 }
 
 #flashcard_container {
@@ -983,6 +988,7 @@ html, body {
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
+  touch-action: manipulation; /* Prevents double-tap zoom on the flashcard */
 }
 
 .top-buttons {

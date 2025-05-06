@@ -34,11 +34,11 @@
     <div class="topbar" :style="{ opacity: topbarOpacity }">
       <div class="top-nav">
         <RouterLink to="/" class="top-link">Home</RouterLink>
+        <RouterLink to="/account" class="top-link">Settings</RouterLink>
         <template v-if="!authStatus">
           <RouterLink to="/login" class="top-link">Login</RouterLink>
         </template>
         <template v-else>
-          <RouterLink to="/account" class="top-link">Settings</RouterLink>
           <RouterLink to="/my-lists" class="top-link">Lists</RouterLink>
         </template>
         <RouterLink to="/grid" class="top-link">Grid</RouterLink>

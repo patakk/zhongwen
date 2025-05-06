@@ -6,8 +6,9 @@
       @mousemove="handleMouseMove"
       @click="handleClick"
       @auxclick="handleAuxClick"
+      class="preload-wrapper"
     >
-      <slot></slot>
+     <slot></slot>
     </div>
   </div>
 </template>
@@ -47,6 +48,7 @@ export default {
     ...mapActions({
       showCardModal: 'cardModal/showCardModal',
       preloadCardDataAction: 'cardModal/preloadCardData',
+      preloadDecompDataAction: 'cardModal/fetchDecompositionDataOnly',
       showBubble: 'bubbleTooltip/showBubble',
       hideBubble: 'bubbleTooltip/hideBubble'
     }),
@@ -168,5 +170,6 @@ export default {
 <style scoped>
 .preload-wrapper {
   cursor: pointer;
+  font-family: inherit;
 }
 </style>

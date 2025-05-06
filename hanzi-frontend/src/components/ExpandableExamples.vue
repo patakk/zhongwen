@@ -17,8 +17,8 @@
     <div v-show="isExpanded" class="expand-button sticky-collapse" @click="toggleExpanded">
         collapse ↑
       </div>
-    <!-- Expand button (only visible when not expanded) -->
-    <div v-show="!isExpanded" class="expand-button" @click="toggleExpanded">
+    <!-- Expand button (only visible when not expanded AND there is content to expand) -->
+    <div v-show="!isExpanded && hasExpandableContent" class="expand-button" @click="toggleExpanded">
       expand ↓
     </div>
   </div>
@@ -32,11 +32,24 @@ export default {
     defaultExpanded: {
       type: Boolean,
       default: false
+    },
+    itemCount: {
+      type: Number,
+      default: 0
+    },
+    thresholdForExpand: {
+      type: Number,
+      default: 3
     }
   },
   data() {
     return {
       isExpanded: this.defaultExpanded
+    }
+  },
+  computed: {
+    hasExpandableContent() {
+      return this.itemCount > this.thresholdForExpand;
     }
   },
   methods: {
@@ -82,11 +95,11 @@ export default {
   cursor: pointer;
   text-align: center;
   padding: 0.5rem;
-  margin: 1rem auto 0 auto;
+  margin: -1rem auto 0 auto;
   
   position: sticky;
   bottom: 0;
-  background-color: color-mix(in oklab, var(--fg) 4%, var(--bg) 100%);
+  background-color: color-mix(in oklab, var(--fg) 14%, var(--bg) 100%);
   z-index: 1;
   width: auto;
   justify-self: center;

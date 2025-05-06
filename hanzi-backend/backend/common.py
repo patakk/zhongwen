@@ -11,6 +11,7 @@ from backend.setup import config
 from backend.setup import auth_keys
 from backend.setup import BASE_DIR
 from backend.setup import DOMAIN
+import copy
 
 import logging
 
@@ -113,9 +114,12 @@ def get_tatoeba_page(character, page):
 
 def get_char_info(character, full=False):
     if full:
-        char_info = CHARS_CACHE.get(character, {})
-        return char_info
-    return WORDS_CACHE.get(character, {'character': character, 'pinyin': ['N/A'], 'english': ['N/A']})
+        return copy.deepcopy(CHARS_CACHE.get(character, {}))
+    return copy.deepcopy(WORDS_CACHE.get(character, {
+        'character': character,
+        'pinyin': ['N/A'],
+        'english': ['N/A']
+    }))
 
 def getshortdate():
     return datetime.now(timezone.utc).strftime("%Y%m%d")
@@ -134,19 +138,30 @@ with open("./static/json/carddecks_w_pinyin.json", "w", encoding="utf-8") as f:
     json.dump(CARDDECKS_W_PINYIN, f, ensure_ascii=False)
 
 def get_random_chars_from_deck(deck, n, function=False):
-    characters = CARDDECKS[deck]["chars"]
+    characters = CARDDECKS[deck]["chars"][:]
     random.shuffle(characters)
     characters = characters[:n]
     return get_chars_info(characters)
 
-def char_decomp_info(char):
-    # Handle the case where a list is passed
-    if isinstance(char, list):
-        # Process each character individually
-        result = {}
-        for c in char:
-            if c in DECOMPOSE_CACHE:
-                result[c] = DECOMPOSE_CACHE[c]
-        return result
-    # Handle the case where a single character is passed    
-    return {char: DECOMPOSE_CACHE.get(char, {})} if char in DECOMPOSE_CACHE else {}
+
+def get_recursive_decomposition(char, memo=None):
+    if memo is None:
+        memo = {}
+    if char in memo:
+        return memo[char]
+    parts = DECOMPOSE_CACHE.get(char, {}).get('parts', [])
+    result = {part: get_recursive_decomposition(part, memo) for part in parts}
+    memo[char] = result
+    return result
+
+def char_decomp_info(chars):
+    result = {}
+    for c in chars:
+        if c in DECOMPOSE_CACHE:
+            entry = copy.deepcopy(DECOMPOSE_CACHE[c])
+            if 'present_in' in entry:
+                entry['present_in'] = entry['present_in'][:50]
+            entry['recursive'] = get_recursive_decomposition(c)
+            result[c] = entry
+    return result
+
