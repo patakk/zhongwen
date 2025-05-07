@@ -10,7 +10,7 @@ from urllib.parse import unquote
 import logging
 import random
 import json
-import string
+import copy
 from nltk.stem import WordNetLemmatizer
 import regex
 import time
@@ -35,10 +35,13 @@ from backend.db.ops import db_delete_user
 
 from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
+from backend.common import DECOMPOSE_CACHE
 from backend.common import DECKNAMES
 from backend.common import STROKES_CACHE
 from backend.common import RELATED_CONCEPTS
 from backend.common import OPPOSITE_CONCEPTS
+from backend.common import get_recursive_decomposition
+
 from backend.common import get_tatoeba_page
 from backend.common import send_bot_notification
 from backend.common import default_darkmode
@@ -108,8 +111,12 @@ def breakdown_chars(word):
     for char in word:
         simplified = HanziConv.toSimplified(char)
         infos[char] = get_char_info(simplified, full=True)
-        if 'present_in' in infos[char]:
-            infos[char]['present_in'] = infos[char]['present_in'][:50]
+
+        if char in DECOMPOSE_CACHE:
+            infos[char]['recursive'] = get_recursive_decomposition(char)
+            if 'present_in' in DECOMPOSE_CACHE[char]:
+                infos[char]['present_in'] = copy.deepcopy(DECOMPOSE_CACHE[char]['present_in'][:50])
+
         infos[char]['strokes'] = STROKES_CACHE.get(char)
         infos[char]['character'] = char
     return infos
@@ -703,6 +710,34 @@ def get_story_strokes(story_index, chapter_index):
     else:
         return jsonify({'error': 'Story index out of range'}), 404
 
+
+
+@app.route('/api/get_present_in_chunk', methods=['GET'])
+@session_required
+def get_present_in_chunk():
+    character = request.args.get('character')
+    chunk_index = request.args.get('chunk_index', 0)
+    
+    try:
+        chunk_index = int(chunk_index)
+    except ValueError:
+        chunk_index = 0
+    
+    chunk_size = 50
+    start_index = chunk_index * chunk_size
+    
+    if not character or character not in DECOMPOSE_CACHE or 'present_in' not in DECOMPOSE_CACHE[character]:
+        return jsonify({'characters': [], 'has_more': False})
+    
+    present_in = DECOMPOSE_CACHE[character].get('present_in', [])
+    characters_chunk = present_in[start_index:start_index + chunk_size]
+    has_more = (start_index + chunk_size) < len(present_in)
+    
+    return jsonify({
+        'characters': characters_chunk,
+        'has_more': has_more,
+        'total_count': len(present_in)
+    })
 
 
 def get_charset(text):

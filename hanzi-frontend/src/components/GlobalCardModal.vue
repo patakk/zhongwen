@@ -224,7 +224,7 @@
                 </template>
               </ExpandableExamples>
 
-              <!-- Present In section: show characters from presentInChars -->
+              <!-- Present In section: show characters from presentInChars with loading state -->
               <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].present_in && decompositionData[activeChar].present_in.length > 0" class="present-in-section">
                 <div class="medium-label">{{ activeChar }} Present in:</div>
                 <div class="present-in-chars" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
@@ -237,11 +237,16 @@
                   >
                   {{ char }}
                   </PreloadWrapper>
-                  <span v-if="hasMorePresentInChars" class="more-chars">...</span>
+                  <span 
+                    v-if="hasMorePresentInChars" 
+                    class="more-chars" 
+                    @click="loadMorePresentInChars"
+                    :class="{ 'loading': isLoadingMoreChars }"
+                  >
+                    +
+                  </span>
                 </div>
               </div>
-
-              
 
               <!-- Components section - Formatted decomposition data -->
               <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].recursive && Object.keys(decompositionData[activeChar].recursive).length > 0">
@@ -334,7 +339,10 @@ export default {
       showRelatedConcepts: false,
       showOppositeConcepts: false,
       showCreateListModal: false,
-      newListName: ''
+      newListName: '',
+      presentInChunkIndex: 0,  // Track the current chunk index
+      isLoadingMoreChars: false, // Track loading state for more characters
+      loadedPresentInChars: {} // Store all loaded character chunks by character
     }
   },
   provide() {
@@ -458,13 +466,31 @@ export default {
       if (!this.activeChar || !this.decompositionData || !this.decompositionData[this.activeChar] || !this.decompositionData[this.activeChar].present_in) {
         return [];
       }
-      return this.decompositionData[this.activeChar].present_in.slice(0, 30);
+
+      // If we've loaded additional chunks for this character, return those instead
+      if (this.loadedPresentInChars[this.activeChar]) {
+        return this.loadedPresentInChars[this.activeChar];
+      }
+      
+      // Default behavior - use the first chunk from decomposition data
+      return this.decompositionData[this.activeChar].present_in;
     },
     hasMorePresentInChars() {
       if (!this.activeChar || !this.decompositionData || !this.decompositionData[this.activeChar] || !this.decompositionData[this.activeChar].present_in) {
         return false;
       }
-      return this.decompositionData[this.activeChar].present_in.length > 30;
+
+      // If we've loaded additional chunks for this character, use the API's has_more flag
+      if (this.loadedPresentInChars[this.activeChar]) {
+        return this._presentInHasMore === true;
+      }
+      
+      // Default behavior - assume there's more if initial chunk is full (exactly 50 characters)
+      return this.decompositionData[this.activeChar].present_in.length === 50;
+    },
+    presentInHasMore() {
+      // This is set by the loadMorePresentInChars method
+      return this._presentInHasMore || false;
     }
   },
   watch: {
@@ -513,6 +539,14 @@ export default {
         }
       },
       deep: true
+    },
+    activeChar: {
+      handler(newChar) {
+        if (newChar) {
+          // Reset the chunk index when active character changes
+          this.presentInChunkIndex = 0;
+        }
+      }
     }
   },
   mounted() {
@@ -559,10 +593,19 @@ export default {
     closeModal() {
       this.hideCardModal();
       this.showWordlistDropdown = false;
+      // Reset the loaded present-in characters when modal closes
+      this.loadedPresentInChars = {};
+      this.presentInChunkIndex = 0;
     },
-    closeCreateListModal() {
-      this.showCreateListModal = false;
-      this.newListName = '';
+    setActiveChar(char) {
+      if (this.validChars.includes(char)) {
+        if (this.activeChar !== char) {
+          this.activeChar = char;
+          // Reset loaded present-in characters when changing to a new character
+          this.loadedPresentInChars = {};
+          this.presentInChunkIndex = 0;
+        }
+      }
     },
     createNewListAndAddWord() {
       if (!this.newListName.trim()) {
@@ -690,12 +733,6 @@ export default {
       
       this.showCardModal(word);
     },
-    setActiveChar(char) {
-      if (this.validChars.includes(char)) {
-        this.activeChar = char;
-        // Don't fetch decomposition data here - rely on what's already loaded
-      }
-    },
     toggleWordlistDropdown() {
       if (this.isLoggedIn && (!this.customWordlists || this.customWordlists.length === 0)) {
         // If we're logged in but have no wordlists, try to fetch them
@@ -801,6 +838,54 @@ export default {
         this.showOppositeConcepts = !this.showOppositeConcepts;
         this.showRelatedConcepts = false;
       }
+    },
+    // Add this new method to load more characters
+    loadMorePresentInChars() {
+      if (this.isLoadingMoreChars || !this.activeChar) return;
+      
+      this.isLoadingMoreChars = true;
+      this.presentInChunkIndex++;
+      
+      // Call the new API endpoint
+      fetch(`/api/get_present_in_chunk?character=${encodeURIComponent(this.activeChar)}&chunk_index=${this.presentInChunkIndex}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to load more characters');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Initialize the array for this character if it doesn't exist
+          if (!this.loadedPresentInChars[this.activeChar]) {
+            const initialChars = this.decompositionData[this.activeChar].present_in || [];
+            this.loadedPresentInChars[this.activeChar] = [...initialChars];
+          }
+          
+          // Add the new characters to the existing array
+          if (data.characters && data.characters.length > 0) {
+            this.loadedPresentInChars[this.activeChar] = [
+              ...this.loadedPresentInChars[this.activeChar],
+              ...data.characters
+            ];
+          }
+          
+          // Update the hasMore flag
+          this._presentInHasMore = data.has_more;
+          
+          // Show notification if we've loaded all characters
+          if (!data.has_more && data.total_count) {
+            this.showNotification(`Loaded all ${data.total_count} characters`, 'info');
+          }
+        })
+        .catch(error => {
+          console.error('Error loading more characters:', error);
+          this.showNotification('Failed to load more characters', 'error');
+          // Reset the index since this request failed
+          this.presentInChunkIndex--;
+        })
+        .finally(() => {
+          this.isLoadingMoreChars = false;
+        });
     }
   }
 }
@@ -1068,7 +1153,6 @@ export default {
   overflow: visible;
 }
 
-
 .tab-btn {
   position: relative;
   font-size: 1.2rem;
@@ -1089,7 +1173,6 @@ export default {
   transform: translate(0, 3.5px);
 }
 
-
 .tab-btn.active {
   border: 3.5px solid color-mix(in oklab, var(--fg) 55%, var(--bg) 50%);
   background: var(--modal-bg);
@@ -1098,7 +1181,6 @@ export default {
   transform: translate(0, 3.5px);
   border-bottom: 3.5px solid #0000;
 }
-
 
 .char-details {
   display: grid;
@@ -1263,7 +1345,6 @@ export default {
   color: var(--bg) !important;
 }
 
-
 .decomp-char.current-char {
   /* background-color: color-mix(in oklab, var(--primary-color) 30%, var(--bg) 70%);
   font-weight: bold; */
@@ -1310,7 +1391,6 @@ export default {
   background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
 }
 
-
 .plus-icon {
   font-size: 1.2rem;
 }
@@ -1346,7 +1426,6 @@ export default {
   align-items: center;
   gap: 0.5rem;
 }
-
 
 .create-icon {
   font-weight: bold;
@@ -1401,7 +1480,6 @@ export default {
   border-radius: var(--border-radius);
   background-color: transparent;
 }
-
 
 .pm-pinyin {
   font-size: 1.2rem;
@@ -1561,7 +1639,6 @@ export default {
   background: none;
 }
 
-
 .cancel-button,
 .confirm-button {
   border: none;
@@ -1591,23 +1668,32 @@ export default {
   color: var(--bg);
 }
 
-
 .present-in-char {
   /* font-family: "Noto Sans SC" !important;
   font-family: "Noto Serif SC" !important; */
-  font-family: "Kaiti" !important;
+  font-family: "Kaiti";
   font-size: 1.5em;
 }
 
+
 .more-chars {
-  background: none !important;
-  color: var(--fg) !important;
+	font-size: 1em;
+	width: 1em;
+	height: 1em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	cursor: pointer;
+	color: var(--fg);
+	border: 1px solid color-mix(in oklab, var(--fg) 44%, var(--bg) 30%);
+	border-radius: 0;
+	font-weight: bold;
 }
 
 .more-chars:hover {
-  background: none !important;
-  color: var(--fg) !important;
-  cursor: default;
+	background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+	transform: scale(1);
 }
 
 @media (max-width: 1024px) {
