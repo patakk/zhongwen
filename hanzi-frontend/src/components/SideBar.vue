@@ -2,8 +2,6 @@
   <div>
     <div class="sidebar-container" :class="{ 'sidebar-open': isOpen }">
       <button v-if="!isOpen" class="sidebar-toggle" @click.stop="toggleSidebar">
-          <!-- <span class="toggle-icon">◀</span>
-          <span class="toggle-text">◀</span> -->
           <font-awesome-icon :icon="['fas', 'bars']" />
       </button>
 
@@ -17,15 +15,13 @@
             <RouterLink to="/account" class="sidebar-link">Settings</RouterLink>
             <RouterLink to="/my-lists" class="sidebar-link">My words</RouterLink>
           </template>
-          <RouterLink to="/grid" class="sidebar-link">Grid</RouterLink>
+          <RouterLink to="/grid" class="sidebar-link">Explorer</RouterLink>
           <RouterLink to="/flashcards" class="sidebar-link">Flashcards</RouterLink>
-          <RouterLink to="/practice" class="sidebar-link">Practice</RouterLink>
-          <RouterLink to="/sketch-lookup" class="sidebar-link">Sketch Lookup</RouterLink>
-          <RouterLink to="/hanzi-tree" class="sidebar-link">Hanzi Tree</RouterLink>
+          <RouterLink to="/practice" class="sidebar-link">Strokes</RouterLink>
           <RouterLink to="/search" class="sidebar-link">Search</RouterLink>
-          <!-- <RouterLink to="/page-info" class="sidebar-link">Page Info</RouterLink> -->
+          <RouterLink to="/sketch-lookup" class="sidebar-link">Sketch Search</RouterLink>
           <RouterLink to="/about" class="sidebar-link">About</RouterLink>
-          <!-- <LogoutButton v-if="authStatus" /> -->
+          <!-- <RouterLink to="/hanzi-tree" class="sidebar-link">Hanzi Tree</RouterLink> -->
         </nav>
       </div>
     </div>
@@ -41,15 +37,13 @@
         <template v-else>
           <RouterLink to="/my-lists" class="top-link">My words</RouterLink>
         </template>
-        <RouterLink to="/grid" class="top-link">Grid</RouterLink>
+        <RouterLink to="/grid" class="top-link">Explorer</RouterLink>
         <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
-        <RouterLink to="/practice" class="top-link">Practice</RouterLink>
-        <RouterLink to="/sketch-lookup" class="top-link">Sketch Lookup</RouterLink>
-        <RouterLink to="/hanzi-tree" class="top-link">Hanzi Tree</RouterLink>
+        <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
         <RouterLink to="/search" class="top-link">Search</RouterLink>
-        <!-- <RouterLink to="/page-info" class="top-link">Page Info</RouterLink> -->
+        <RouterLink to="/sketch-lookup" class="top-link">Sketch Search</RouterLink>
         <RouterLink to="/about" class="top-link">About</RouterLink>
-        <!-- <LogoutButton v-if="authStatus" /> -->
+        <!-- <RouterLink to="/hanzi-tree" class="top-link">Hanzi Tree</RouterLink> -->
       </div>
     </div>
   </div>

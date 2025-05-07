@@ -58,6 +58,9 @@ export default {
     },
     setCollapse() {
       this.isExpanded = false;
+    },
+    resetExpandedState() {
+      this.isExpanded = this.defaultExpanded;
     }
   }
 }

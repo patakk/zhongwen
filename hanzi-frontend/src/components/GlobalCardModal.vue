@@ -177,7 +177,8 @@
                 v-if="activeCharData.example_words && activeCharData.example_words.length > 0" 
                 title="Words containing this character"
                 :itemCount="activeCharData.example_words.length"
-                :thresholdForExpand="3">
+                :thresholdForExpand="3"
+                ref="examplesComponent">
                 <template v-slot:afew="slotProps">
                     <div 
                     class="example-words first-words" 
@@ -362,8 +363,8 @@ export default {
       currentCharacter: 'cardModal/getCurrentCharacter'
     }),
     validChars() {
-      if (!this.cardData || !this.cardData.character) return []
-      return Array.from(new Set(this.cardData.character.split('').filter(char => /\p{Script=Han}/u.test(char))))
+      if (!this.cardData || !this.cardData.character) return [];
+      return Array.from(new Set(this.cardData.character.split('').filter(char => /\p{Script=Han}/u.test(char))));
     },
     // Format similar concepts for display
     formattedSimilars() {
@@ -521,6 +522,11 @@ export default {
           // Reset concept sections when new card data is loaded
           this.showRelatedConcepts = false;
           this.showOppositeConcepts = false;
+
+          // Reset ExpandableExamples component state
+          if (this.$refs.examplesComponent) {
+            this.$refs.examplesComponent.resetExpandedState();
+          }
         }
       }
     },
@@ -545,6 +551,11 @@ export default {
         if (newChar) {
           // Reset the chunk index when active character changes
           this.presentInChunkIndex = 0;
+          
+          // Reset expanded examples state when active character changes
+          if (this.$refs.examplesComponent) {
+            this.$refs.examplesComponent.resetExpandedState();
+          }
         }
       }
     }

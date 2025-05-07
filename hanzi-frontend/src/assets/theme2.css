@@ -698,3 +698,42 @@ opacity: 0.7;
 	background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%) !important;
 	transform: scale(1) !important;
 }
+
+
+[data-theme="theme2"]  .toast-notification {
+	min-width: 250px !important;
+	max-width: 400px !important;
+	margin-top: 10px !important;
+	pointer-events: auto !important;
+	border-radius: 8px !important;
+	box-shadow: 4px 4px 0px 0px var(--fg) !important;
+	border: 2px solid var(--fg) !important;
+	animation: toast-slide-in .3s ease-out forwards !important;
+	color: #000000 !important;
+  }
+  
+[data-theme="theme2"]  .toast-close {
+	opacity: 1 !important;
+	color: #000000 !important;
+}
+
+[data-theme="theme2"]  .toast-close:hover {
+	opacity: 1 !important;
+	color: #000000 !important;
+}
+
+[data-theme="theme2"]  .toast-notification.success {
+	background-color: var(--success-color) !important;
+}
+
+[data-theme="theme2"]  .toast-notification.error {
+	background-color: var(--danger-color) !important;
+}
+
+[data-theme="theme2"]  .toast-notification.info {
+	background-color: var(--accent-color) !important;
+}
+
+[data-theme="theme2"]  .toast-notification.warning {
+	background-color: var(--warning-color) !important;
+}

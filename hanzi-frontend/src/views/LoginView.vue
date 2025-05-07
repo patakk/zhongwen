@@ -170,19 +170,6 @@ button:hover {
   padding: 0 10px;
 }
 
-.google-login {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ffffff;
-  color: #757575;
-  border: 1px solid #dddddd;
-  border-radius: 4px;
-}
-
-.google-login:hover {
-  background-color: #f5f5f5;
-}
 
 @media (max-width: 768px) {
 }
