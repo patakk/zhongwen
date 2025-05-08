@@ -7,21 +7,20 @@
 
       <div v-if="isOpen" class="sidebar" @click.stop>
         <nav class="sidebar-nav">
-          <RouterLink to="/" class="sidebar-link">Home</RouterLink>
+          <RouterLink to="/" class="top-link">Home</RouterLink>
+          <template v-if="authStatus">
+            <RouterLink to="/my-lists" class="top-link">My words</RouterLink>
+          </template>
+          <RouterLink to="/grid" class="top-link">Explorer</RouterLink>
+          <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
+          <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
+          <RouterLink to="/search" class="top-link">Search</RouterLink>
+          <RouterLink to="/sketch-lookup" class="top-link">Sketch Search</RouterLink>
+          <RouterLink to="/about" class="top-link">About</RouterLink>
+          <RouterLink to="/account" class="top-link">Settings</RouterLink>
           <template v-if="!authStatus">
-            <RouterLink to="/login" class="sidebar-link">Login</RouterLink>
+            <RouterLink to="/login" class="top-link">Login</RouterLink>
           </template>
-          <template v-else>
-            <RouterLink to="/account" class="sidebar-link">Settings</RouterLink>
-            <RouterLink to="/my-lists" class="sidebar-link">My words</RouterLink>
-          </template>
-          <RouterLink to="/grid" class="sidebar-link">Explorer</RouterLink>
-          <RouterLink to="/flashcards" class="sidebar-link">Flashcards</RouterLink>
-          <RouterLink to="/practice" class="sidebar-link">Strokes</RouterLink>
-          <RouterLink to="/search" class="sidebar-link">Search</RouterLink>
-          <RouterLink to="/sketch-lookup" class="sidebar-link">Sketch Search</RouterLink>
-          <RouterLink to="/about" class="sidebar-link">About</RouterLink>
-          <!-- <RouterLink to="/hanzi-tree" class="sidebar-link">Hanzi Tree</RouterLink> -->
         </nav>
       </div>
     </div>
@@ -30,11 +29,7 @@
     <div class="topbar" :style="{ opacity: topbarOpacity }">
       <div class="top-nav">
         <RouterLink to="/" class="top-link">Home</RouterLink>
-        <RouterLink to="/account" class="top-link">Settings</RouterLink>
-        <template v-if="!authStatus">
-          <RouterLink to="/login" class="top-link">Login</RouterLink>
-        </template>
-        <template v-else>
+        <template v-if="authStatus">
           <RouterLink to="/my-lists" class="top-link">My words</RouterLink>
         </template>
         <RouterLink to="/grid" class="top-link">Explorer</RouterLink>
@@ -43,7 +38,10 @@
         <RouterLink to="/search" class="top-link">Search</RouterLink>
         <RouterLink to="/sketch-lookup" class="top-link">Sketch Search</RouterLink>
         <RouterLink to="/about" class="top-link">About</RouterLink>
-        <!-- <RouterLink to="/hanzi-tree" class="top-link">Hanzi Tree</RouterLink> -->
+        <RouterLink to="/account" class="top-link">Settings</RouterLink>
+        <template v-if="!authStatus">
+          <RouterLink to="/login" class="top-link">Login</RouterLink>
+        </template>
       </div>
     </div>
   </div>

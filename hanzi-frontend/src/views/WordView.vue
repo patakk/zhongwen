@@ -83,12 +83,26 @@ export default {
 </script>
 
 <style scoped>
+
+
 .word-page {
-  width: 100%;
-  min-height: 100%;
   display: flex;
+  gap: 0rem;
+  width: 100%;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
   justify-content: center;
   align-items: center;
+}
+
+
+@media (min-width: 1024px) {
+  .word-page {
+    height: 100%;
+    width: 60%;
+    margin: 0 auto;
+  }
 }
 
 .loading-container {
@@ -138,6 +152,7 @@ export default {
     max-height: 100%;
     box-sizing: border-box;
 
+    aspect-ratio: auto;
     border: none;
     box-shadow: none;
     background: none;
@@ -151,6 +166,10 @@ export default {
     min-height: 600px;
     border: 1px solid var(--fg-dim);
     box-shadow: var(--card-shadow); */
+}
+
+:deep(.main-word) {
+  margin-top: 0;
 }
 
 :deep(.fixed-close) {

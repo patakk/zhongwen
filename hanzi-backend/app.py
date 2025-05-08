@@ -52,6 +52,8 @@ from backend.common import auth_keys
 from backend.common import AUDIO_MAPPINGS
 from backend.routes.manage import validate_password
 
+from backend.common import config
+
 from flask import send_file
 
 import json
@@ -81,23 +83,19 @@ limiter = Limiter(
 )
 
 
-log_dir = "/home/patakk/logs"
-log_file = os.path.join(log_dir, "flask-antispam.log")
 spam_logger = logging.getLogger("flask-antispam")
-spam_logger.setLevel(logging.WARNING)
-spam_file_handler = logging.FileHandler(log_file)
+spam_logger.setLevel(config.get('logging').get('spam_log').get('level'))
+spam_file_handler = logging.FileHandler(config.get('logging').get('spam_log').get('file'))
 spam_file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 spam_logger.addHandler(spam_file_handler)
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(config.get('logging').get('app_log').get('level'))
+app_file_handler = logging.FileHandler(config.get('logging').get('app_log').get('file'))
+app_file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
+logger.addHandler(app_file_handler)
 
 logger.info("Application root directory: " + app.config['APPLICATION_ROOT'])
-
-
-# stroke_jsons = glob.glob('static/strokes_data/*.json')
-# stroke_chars = set([os.path.basename(j).split('.')[0] for j in stroke_jsons])
-
 
 
 @app.errorhandler(500)
@@ -865,7 +863,7 @@ def get_search_results(query):
 
 
 @app.route('/api/search_results', methods=['POST'])
-@limiter.limit("1 per second")
+@limiter.limit("3 per second")
 @session_required
 def search_results():
     start_time = time.time()

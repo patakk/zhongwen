@@ -7,23 +7,26 @@
         type="text"
         placeholder="enter search term"
         class="search-input"
+        @input="handleInput"
       />
-      <button type="submit" class="search-button">Search</button>
+      <!-- Search button kept but hidden by default -->
+      <button type="submit" class="search-button" style="display: none;">Search</button>
     </form>
-    <div v-if="isLoading" class="loading-indicator">
+    <div v-if="isSearching" class="loading-indicator">
       searching...
     </div>
-    <div v-else class="results">
+    <div v-if="!isLoading" class="results">
       <PreloadWrapper
-        v-for="(result, index) in results"
-        :key="index"
-        :character="result.hanzi"
-        :showBubbles="false"
+      v-for="(result, index) in results"
+      :key="index"
+      :character="result.hanzi"
+      :showBubbles="false"
       >
         <div class="result-cell">
+          <div class="result-number">{{ index + 1 }}</div>
           <div class="hanzipinyin">
-            <div class="rhanzi">{{ result.hanzi }}</div>
-            <div class="rpinyin" v-html="highlightMatch($toAccentedPinyin(result.pinyin))"></div>
+          <div class="rhanzi">{{ result.hanzi }}</div>
+          <div class="rpinyin" v-html="highlightMatch($toAccentedPinyin(result.pinyin))"></div>
           </div>
           <div class="renglish" v-html="highlightMatch($toAccentedPinyin(result.english))"></div>
         </div>
@@ -56,7 +59,10 @@ export default {
       query: '',
       results: [],
       isLoading: false,
-      showScrollTop: false, // New property for scroll-to-top button visibility
+      isSearching: false,
+      showScrollTop: false,
+      searchTimeout: null,
+      latestQuery: '', // Track the latest query to ensure no inputs are lost
     };
   },
   created() {
@@ -87,7 +93,7 @@ export default {
           });
       } else {
         // If no pending promise exists, perform the search now
-        this.doSearch();
+        this.debouncedSearch();
       }
     }
   },
@@ -100,11 +106,48 @@ export default {
   beforeUnmount() {
     // Remove scroll event listener when component is unmounted
     window.removeEventListener('scroll', this.handleScroll);
+    // Clear any pending timeouts
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
   },
   methods: {
+    handleInput() {
+      // Store the latest query value
+      this.latestQuery = this.query;
+      
+      // Clear any existing timeout
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout);
+      }
+      
+      // Only trigger search if query has 2 or more characters
+      if (this.query.length >= 2) {
+        this.isLoading = true;
+        this.searchTimeout = setTimeout(() => {
+          this.isSearching = true;
+          this.query = this.latestQuery;
+          this.doSearch();
+        }, 100);
+      } else {
+        // Clear results and loading state if query is too short
+        this.results = [];
+        this.isLoading = false;
+        this.isSearching = false;
+      }
+    },
+    
+    debouncedSearch() {
+      // Helper method to handle initial search with debounce logic
+      if (this.query.length >= 2) {
+        // Store the query as latestQuery to maintain consistency
+        this.latestQuery = this.query;
+        this.doSearch();
+      }
+    },
+    
     async doSearch() {
       this.isLoading = true;
-      this.results = [];  // Clear current results immediately
       
       try {
         const res = await fetch('/api/search_results', {
@@ -112,7 +155,7 @@ export default {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ query: this.query }),
+          body: JSON.stringify({ query: this.latestQuery }), // Use latestQuery to ensure all inputs are captured
         });
         const data = await res.json();
         this.results = data.results;
@@ -120,6 +163,7 @@ export default {
         console.error("Error during search:", error);
       } finally {
         this.isLoading = false;
+        this.isSearching = false;
       }
     },
     highlightMatch(text) {
@@ -215,6 +259,7 @@ export default {
   width: 100%;
   display: flex;
   box-sizing: border-box;
+  position: relative; /* Added for absolute positioning of number indicator */
 }
 
 .result-cell:hover {
@@ -222,6 +267,20 @@ export default {
   cursor: pointer;
 }
 
+.result-number {
+  position: absolute;
+  top: .25em;
+  right: .25em;
+  font-size: 0.9rem;
+  color: var(--fg);
+  opacity: 0.5;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
 
 .hanzipinyin {
   display: flex;
@@ -246,6 +305,7 @@ export default {
 .renglish {
   color: var(--fg);
   flex: 12;
+  margin-right: 1em;
   word-wrap: break-word;
   word-break: break-word;
   overflow-wrap: break-word;

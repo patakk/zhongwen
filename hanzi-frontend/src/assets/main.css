@@ -26,6 +26,9 @@
   font-style: normal;
 }
 
+#app{
+}
+
 :root {
   --bg: rgb(255, 255, 255);
   --fg: rgb(254, 0, 0);

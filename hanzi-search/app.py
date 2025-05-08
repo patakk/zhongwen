@@ -4,8 +4,6 @@ import os
 import re
 import regex
 from flask import Flask, request, jsonify
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from hanziconv import HanziConv
 from hanzipy.dictionary import HanziDictionary
 from nltk.stem import WordNetLemmatizer
@@ -19,11 +17,6 @@ lemmatizer.lemmatize('jeans')
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-limiter = Limiter(
-    key_func=get_remote_address,
-    app=app,
-)
 
 DATA_DIR = '/home/patakk/zhongwen_data'
 indices_cache = json.load(open(os.path.join(DATA_DIR, "indices_cache.json")))
@@ -118,7 +111,6 @@ def search():
         if len(results) == 0:
             results = hard_results
         if len(results) == 0:
-            original_query = query
             query = normalize_query(query)
             res = dictionary.search_by_english(query)
             for r in res:

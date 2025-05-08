@@ -343,7 +343,9 @@ export default {
       newListName: '',
       presentInChunkIndex: 0,  // Track the current chunk index
       isLoadingMoreChars: false, // Track loading state for more characters
-      loadedPresentInChars: {} // Store all loaded character chunks by character
+      loadedPresentInChars: {}, // Store all loaded character chunks by character
+      displayedPresentInChars: {}, // Store characters that are currently displayed
+      isTypingEffect: false // Track if typing effect is in progress
     }
   },
   provide() {
@@ -852,7 +854,7 @@ export default {
     },
     // Add this new method to load more characters
     loadMorePresentInChars() {
-      if (this.isLoadingMoreChars || !this.activeChar) return;
+      if (this.isLoadingMoreChars || !this.activeChar || this.isTypingEffect) return;
       
       this.isLoadingMoreChars = true;
       this.presentInChunkIndex++;
@@ -872,12 +874,34 @@ export default {
             this.loadedPresentInChars[this.activeChar] = [...initialChars];
           }
           
-          // Add the new characters to the existing array
+          // Store the current loaded characters
+          const currentChars = [...this.loadedPresentInChars[this.activeChar]];
+          
+          // If we have new characters, add them one by one with typing effect
           if (data.characters && data.characters.length > 0) {
-            this.loadedPresentInChars[this.activeChar] = [
-              ...this.loadedPresentInChars[this.activeChar],
-              ...data.characters
-            ];
+            this.isTypingEffect = true;
+            
+            // Add characters one by one with a delay
+            let charIndex = 0;
+            const addNextChar = () => {
+              if (charIndex < data.characters.length) {
+                // Add the next character
+                this.loadedPresentInChars[this.activeChar] = [
+                  ...this.loadedPresentInChars[this.activeChar],
+                  data.characters[charIndex]
+                ];
+                charIndex++;
+                
+                // Schedule the next character after 50ms delay
+                setTimeout(addNextChar, 50);
+              } else {
+                // We've added all characters
+                this.isTypingEffect = false;
+              }
+            };
+            
+            // Start the typing effect
+            addNextChar();
           }
           
           // Update the hasMore flag
@@ -893,6 +917,7 @@ export default {
           this.showNotification('Failed to load more characters', 'error');
           // Reset the index since this request failed
           this.presentInChunkIndex--;
+          this.isTypingEffect = false;
         })
         .finally(() => {
           this.isLoadingMoreChars = false;
