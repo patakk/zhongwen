@@ -128,7 +128,7 @@ export default {
           this.isSearching = true;
           this.query = this.latestQuery;
           this.doSearch();
-        }, 100);
+        }, 366);
       } else {
         // Clear results and loading state if query is too short
         this.results = [];
