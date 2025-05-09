@@ -888,17 +888,15 @@ const store = createStore({
       const promise = (async () => {
         try {
           
-          const response = await fetch('/api/get_characters_simple_info', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ characters: uncachedChars })
-          });
-          
+          const query = uncachedChars.map(c => `characters=${encodeURIComponent(c)}`).join('&');
+          const response = await fetch(`/api/get_characters_simple_info?${query}`);
+
           if (!response.ok) {
             throw new Error(`Server returned ${response.status}`);
           }
-          
+
           const data = await response.json();
+
           
           // Add to cache
           commit('SET_SIMPLE_CHAR_INFO', data);

@@ -380,13 +380,15 @@ def get_deck_chars():
 @api_bp.route("/get_characters_simple_info", methods=["GET", "POST"])
 @session_required
 def get_characters_simple_info():
-    characters = None
     if request.method == "POST":
         data = request.get_json()
-        characters = data.get("characters") if data else None
+        characters = data.get("characters") if data else []
+    else:
+        characters = request.args.getlist("characters")
     characters = sorted(characters)
     cinfos = get_chars_info(characters)
     return jsonify(cinfos)
+
 
 
 @api_bp.route("/get_characters_pinyinenglish", methods=["GET", "POST"])

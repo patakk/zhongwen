@@ -120,15 +120,21 @@ def breakdown_chars(word):
     return infos
 
 
-@app.route('/api/get_card_data')
+@app.route('/api/get_card_data', methods=['GET', 'POST'])
 @session_required
 def get_card_data():
-    character = request.args.get('character')
+    if request.method == 'POST':
+        data = request.get_json()
+        character = data.get('character') if data else None
+    else:
+        character = request.args.get('character')
+        
     message = ''
     if not character:
         return jsonify({'message': 'No cards available', 'chars_breakdown': None})
+        
     chars_breakdown = breakdown_chars(character)
-    return  jsonify({'message': message, **main_card_data(character), 'chars_breakdown': chars_breakdown})
+    return jsonify({'message': message, **main_card_data(character), 'chars_breakdown': chars_breakdown})
 
 
 @app.before_request
@@ -862,19 +868,23 @@ def get_search_results(query):
         return {"error": str(e)}
 
 
-@app.route('/api/search_results', methods=['POST'])
+@app.route('/api/search_results', methods=['GET', 'POST'])
 @limiter.limit("3 per second")
 @session_required
 def search_results():
     start_time = time.time()
-    data = request.json
-    query = data.get('query', '')
-    results = []
-    start_time = time.time()
-    if query:
-        results = get_search_results(query)
+    
+    if request.method == 'POST':
+        data = request.get_json()
+        query = data.get('query', '') if data else ''
+    else: 
+        query = request.args.get('query', '')
+
+    results = get_search_results(query) if query else []
     search_time = time.time() - start_time
+    
     return jsonify({'results': results, 'query': query, 'search_time': search_time})
+
     
 @app.route('/hanzi_strokes_history')
 @session_required

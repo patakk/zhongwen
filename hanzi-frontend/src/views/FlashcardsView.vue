@@ -231,20 +231,16 @@ export default {
     },
     async getPinyinEnglishFor(word) {
       try {
-        // First create a promise for character data
-        const charDataPromise = fetch(`/api/get_simple_char_data?character=${encodeURIComponent(word)}`)
-          .then(response => response.json());
-          
-        // Create separate promises for each character's stroke data
-        const strokesPromises = [];
-        for (const character of word) {
-          if (!this.isHanzi(character)) continue;
-          strokesPromises.push(this.loadStrokeData(character));
-        }
+      const charDataPromise = fetch(`/api/get_characters_simple_info?characters=${encodeURIComponent(word)}`).then(response => response.json());
         
-        // Combine all promises and wait for them to resolve
+      const strokesPromises = [];
+      for (const character of word) {
+        if (!this.isHanzi(character)) continue;
+        strokesPromises.push(this.loadStrokeData(character));
+      }
+        
         const results = await Promise.all([charDataPromise, ...strokesPromises]);
-        return results; // This returns [charData, stroke1, stroke2, ...]
+        return results; 
       } catch (error) {
         console.error('Error fetching character data:', error);
         return [{ pinyin: [], english: [] }, []];

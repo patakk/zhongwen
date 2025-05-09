@@ -148,15 +148,10 @@ export default {
     
     async doSearch() {
       this.isLoading = true;
-      
+
       try {
-        const res = await fetch('/api/search_results', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ query: this.latestQuery }), // Use latestQuery to ensure all inputs are captured
-        });
+        const query = encodeURIComponent(this.latestQuery);
+        const res = await fetch(`/api/search_results?query=${query}`);
         const data = await res.json();
         this.results = data.results;
       } catch (error) {
