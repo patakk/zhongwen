@@ -17,6 +17,7 @@ import time
 import os
 import io
 from flask import request, jsonify
+from flask import make_response
 import glob
 import requests
 from backend.decorators import session_required
@@ -120,6 +121,7 @@ def breakdown_chars(word):
     return infos
 
 
+
 @app.route('/api/get_card_data', methods=['GET', 'POST'])
 def get_card_data():
     if request.method == 'POST':
@@ -127,13 +129,15 @@ def get_card_data():
         character = data.get('character') if data else None
     else:
         character = request.args.get('character')
-        
-    message = ''
+
     if not character:
-        return jsonify({'message': 'No cards available', 'chars_breakdown': None})
-        
-    chars_breakdown = breakdown_chars(character)
-    return jsonify({'message': message, **main_card_data(character), 'chars_breakdown': chars_breakdown})
+        response = make_response(jsonify({'message': 'No cards available', 'chars_breakdown': None}))
+    else:
+        result = {'message': '', **main_card_data(character), 'chars_breakdown': breakdown_chars(character)}
+        response = make_response(jsonify(result))
+
+    response.headers['Cache-Control'] = 'public, max-age=3600'
+    return response
 
 
 @app.before_request
