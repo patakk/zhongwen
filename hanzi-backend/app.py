@@ -131,13 +131,9 @@ def get_card_data():
         character = request.args.get('character')
 
     if not character:
-        response = make_response(jsonify({'message': 'No cards available', 'chars_breakdown': None}))
-    else:
-        result = {'message': '', **main_card_data(character), 'chars_breakdown': breakdown_chars(character)}
-        response = make_response(jsonify(result))
-
-    response.headers['Cache-Control'] = 'public, max-age=3600'
-    return response
+        return jsonify({'message': 'No cards available', 'chars_breakdown': None})
+    chars_breakdown = breakdown_chars(character)
+    return jsonify({'message': '', **main_card_data(character), 'chars_breakdown': chars_breakdown})
 
 
 @app.before_request
@@ -873,9 +869,7 @@ def search_results():
     results = get_search_results(query) if query else []
     search_time = time.time() - start_time
 
-    response = jsonify({'results': results, 'query': query, 'search_time': search_time})
-    response.headers['Cache-Control'] = 'public, max-age=604800'
-    return response
+    return jsonify({'results': results, 'query': query, 'search_time': search_time})
 
     
 @app.route('/hanzi_strokes_history')
