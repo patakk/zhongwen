@@ -121,7 +121,6 @@ def breakdown_chars(word):
 
 
 @app.route('/api/get_card_data', methods=['GET', 'POST'])
-@session_required
 def get_card_data():
     if request.method == 'POST':
         data = request.get_json()
@@ -143,17 +142,6 @@ def before_request():
         return
     if request.path.startswith('/static/'):
         return
-
-@app.route('/api/get_simple_char_data')
-@session_required
-def get_simple_char_data():
-    character = request.args.get('character')
-    cdata = {
-        "character": character,
-        **get_char_info(character),
-    }
-    
-    return  jsonify({'message': 'success', **cdata})
 
 
 from collections import defaultdict
@@ -717,7 +705,6 @@ def get_story_strokes(story_index, chapter_index):
 
 
 @app.route('/api/get_present_in_chunk', methods=['GET'])
-@session_required
 def get_present_in_chunk():
     character = request.args.get('character')
     chunk_index = request.args.get('chunk_index', 0)

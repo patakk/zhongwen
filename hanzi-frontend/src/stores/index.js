@@ -888,7 +888,7 @@ const store = createStore({
       const promise = (async () => {
         try {
           
-          const query = uncachedChars.map(c => `characters=${encodeURIComponent(c)}`).join('&');
+          const query = `characters=${uncachedChars.map(c => encodeURIComponent(c)).join(';')}`;
           const response = await fetch(`/api/get_characters_simple_info?${query}`);
 
           if (!response.ok) {

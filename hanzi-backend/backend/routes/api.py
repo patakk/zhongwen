@@ -383,7 +383,8 @@ def get_characters_simple_info():
         data = request.get_json()
         characters = data.get("characters") if data else []
     else:
-        characters = request.args.getlist("characters")
+        characters = request.args.get("characters", "")
+        characters = characters.split(";") if characters else []
     characters = sorted(characters)
     cinfos = get_chars_info(characters)
     return jsonify(cinfos)
