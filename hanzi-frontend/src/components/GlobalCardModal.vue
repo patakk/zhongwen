@@ -137,12 +137,24 @@
 
                   <div v-if="activeChar !== activeCharData.traditional" class="detail-group">
                       <span class="basic-label">Traditional: </span>
-                      <span class="trad-simple">{{ activeCharData.traditional }}</span>
+                      <PreloadWrapper
+                        :character="activeCharData.traditional"
+                        :showBubbles="false"
+                        class="trad-simple"
+                      >
+                        {{ activeCharData.traditional }}
+                      </PreloadWrapper>
                   </div>
 
                   <div v-if="activeChar !== activeCharData.simplified" class="detail-group">
                     <span class="basic-label">Simplified: </span>
-                    <span class="trad-simple">{{ activeCharData.simplified }}</span>
+                    <PreloadWrapper
+                      :character="activeCharData.simplified"
+                      :showBubbles="false"
+                      class="trad-simple"
+                    >
+                      {{ activeCharData.simplified }}
+                    </PreloadWrapper>
                   </div>
 
                   <!-- <div class="detail-group radicals-group">

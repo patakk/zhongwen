@@ -94,8 +94,7 @@ export default {
         return this.$toAccentedPinyin(this.currentWordInfo.pinyin[0]) || '';
       }
       catch(e){
-        console.log("FUCK")
-        return 'FUCK';
+        return '';
       }
     },
     singleEnglish() {
@@ -104,8 +103,7 @@ export default {
         return this.$toAccentedPinyin(this.currentWordInfo.english[0]) || '';
       }
       catch(e){
-        console.log("FUCK")
-        return 'FUCK';
+        return '';
       }
     },
     // Get decks from store
