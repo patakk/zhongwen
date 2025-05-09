@@ -868,8 +868,10 @@ def search_results():
 
     results = get_search_results(query) if query else []
     search_time = time.time() - start_time
-    
-    return jsonify({'results': results, 'query': query, 'search_time': search_time})
+
+    response = jsonify({'results': results, 'query': query, 'search_time': search_time})
+    response.headers['Cache-Control'] = 'public, max-age=604800'
+    return response
 
     
 @app.route('/hanzi_strokes_history')
