@@ -580,7 +580,6 @@ def get_custom_cc():
 def get_static_cc():
     json_path = os.path.join(app.static_folder, "json", "carddecks_w_pinyin.json")
     response = send_file(json_path)
-    response.headers["Cache-Control"] = "public, max-age=31536000, must-revalidate"
     return response
 
 
