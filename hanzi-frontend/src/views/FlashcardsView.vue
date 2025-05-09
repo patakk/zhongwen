@@ -90,10 +90,23 @@ export default {
       return this.decks[this.currentDeck]?.name || '';
     },
     singlePinyin() {
-      return this.$toAccentedPinyin(this.currentWordInfo.pinyin[0]) || '';
+      try{
+        return this.$toAccentedPinyin(this.currentWordInfo.pinyin[0]) || '';
+      }
+      catch(e){
+        console.log("FUCK")
+        return 'FUCK';
+      }
     },
     singleEnglish() {
-      return this.$toAccentedPinyin(this.currentWordInfo.english[0]) || '';
+      try{
+        console.log(this.currentWordInfo.english[0]);
+        return this.$toAccentedPinyin(this.currentWordInfo.english[0]) || '';
+      }
+      catch(e){
+        console.log("FUCK")
+        return 'FUCK';
+      }
     },
     // Get decks from store
     storeDecks() {
@@ -231,16 +244,22 @@ export default {
     },
     async getPinyinEnglishFor(word) {
       try {
-      const charDataPromise = fetch(`/api/get_characters_simple_info?characters=${encodeURIComponent(word)}`).then(response => response.json());
-        
-      const strokesPromises = [];
-      for (const character of word) {
-        if (!this.isHanzi(character)) continue;
-        strokesPromises.push(this.loadStrokeData(character));
-      }
-        
+        const charDataPromise = fetch(`/api/get_characters_simple_info?characters=${encodeURIComponent(word)}`)
+          .then(response => response.json());
+          
+        const strokesPromises = [];
+        for (const character of word) {
+          if (!this.isHanzi(character)) continue;
+          strokesPromises.push(this.loadStrokeData(character));
+        }
+          
         const results = await Promise.all([charDataPromise, ...strokesPromises]);
-        return results; 
+        // Format the data to be more easily consumed by the component
+        const charInfo = {
+          pinyin: results[0][word]?.pinyin || [],
+          english: results[0][word]?.english || []
+        };
+        return [charInfo, ...results.slice(1)]; 
       } catch (error) {
         console.error('Error fetching character data:', error);
         return [{ pinyin: [], english: [] }, []];
@@ -827,6 +846,9 @@ export default {
         this.currentWord = getRandomChar();
         
         const data = await this.getPinyinEnglishFor(this.currentWord);
+        console.log("1")
+        console.log(this.currentWordInfo)
+        console.log(data)
         this.currentWordInfo.character = this.currentWord;
         this.currentWordInfo.pinyin = data[0].pinyin;
         this.currentWordInfo.english = data[0].english;
@@ -839,7 +861,9 @@ export default {
         this.currentWordInfo = this.cloneWordInfo(this.nextWordInfo);
         this.revealed = false;
         this.interpolateCards();
+        console.log("2")
       }
+
 
       // Select next word randomly, ensuring it's not the same as current word
       this.nextWord = getRandomChar();
@@ -848,6 +872,7 @@ export default {
       }
 
       const nextData = await this.getPinyinEnglishFor(this.nextWord);
+
       this.nextWordInfo.character = this.nextWord;
       this.nextWordInfo.pinyin = nextData[0].pinyin;
       this.nextWordInfo.english = nextData[0].english;
