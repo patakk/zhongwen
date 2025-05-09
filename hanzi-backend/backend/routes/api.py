@@ -378,7 +378,6 @@ def get_deck_chars():
     return jsonify(data)
 
 @api_bp.route("/get_characters_simple_info", methods=["GET", "POST"])
-@session_required
 def get_characters_simple_info():
     if request.method == "POST":
         data = request.get_json()
