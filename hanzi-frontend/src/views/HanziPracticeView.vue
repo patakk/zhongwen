@@ -29,35 +29,22 @@
 
       <div class="practice-area">
         <div class="word-display">
-          <!-- <div class="full-word">
-            <span 
-              v-for="(char, index) in currentWord" 
-              :key="index" 
-              class="word-character"
-              :class="{ 'current-character': index === charIterator % currentWord.length, 'dim-character': index !== charIterator % currentWord.length }"
-            >
-              <span v-if="!skipState">{{ index !== charIterator % currentWord.length ? char : '' }}</span>
-              <span v-if="skipState">{{ char }}</span>
-            </span>
-          </div> -->
-          
-          <div class="pinyin-label" :class="{ 'active': showPinyin }">
-            <span v-for="(word, index) in currentPinyin.split(' ')" :key="index" :class="{ 'dimmed': currentWord.split('')[index] !== currentWord[charIterator % currentWord.length] }">
-              {{ $toAccentedPinyin(word) }}
+          <div class="full-word">
+            <span v-if="skipState" class="word-character current-character">
+              {{ currentWord[currentQuizItem?.charIndex] }}
             </span>
           </div>
-          
+          <div class="pinyin-label" :class="{ 'active': showPinyin }">
+            <span v-for="(word, idx) in currentPinyin.split(' ')" :key="idx" :class="{ 'dimmed': idx !== currentQuizItem?.charIndex }">
+              {{ $toAccentedPinyin(word) }} <span v-if="idx < currentWord.length - 1"> </span>
+            </span>
+          </div>
           <div class="english-display">
-            {{ currentEnglish[0] || '' }}
+            <span v-for="(part, idx) in currentEnglish" :key="idx" :class="{ 'dimmed': currentWord.length > 1 && idx !== currentQuizItem?.charIndex }">
+              {{ part }} <span v-if="idx < currentWord.length - 1">/</span>
+            </span>
           </div>
         </div>
-
-        <!-- <div class="drawing-area" ref="drawingArea" :class="{ 'loading': isLoading }">
-          <canvas id="plotter-canvas" ref="plotterCanvas"></canvas>
-          <div v-if="isLoading" class="loading-overlay">
-            <div class="loading-spinner"></div>
-          </div>
-        </div> -->
 
         <div class="drawing-area" ref="drawingArea">
           <canvas id="plotter-canvas" ref="plotterCanvas"></canvas>
@@ -168,7 +155,11 @@ export default defineComponent({
       
       // Theme state
       isDarkMode: false,
-      themeObserver: null
+      themeObserver: null,
+      
+      // Quiz state
+      quizOrder: [], // Flat list of { word, char, charIndex }
+      currentQuizItem: null, // { word, char, charIndex }
     };
   },
   computed: {
@@ -415,6 +406,19 @@ export default defineComponent({
       this.shuffledWords = [];
     },
     
+    flattenAndShuffleWords(words) {
+      // words: array of strings (words)
+      // Shuffle words, then flatten to [{word, char, charIndex}]
+      const shuffled = this.shuffleArray(words);
+      const flat = [];
+      for (const word of shuffled) {
+        for (let i = 0; i < word.length; i++) {
+          flat.push({ word, char: word[i], charIndex: i });
+        }
+      }
+      return flat;
+    },
+    
     shuffleArray(array) {
       const storeCache = this.$store.getters.getPracticeCharCache;
       const result = [...array];
@@ -458,42 +462,26 @@ export default defineComponent({
         console.error('No deck data found for:', this.currentDeck);
         return;
       }
-      
-      // Extract character data from the deck
-      let chars;
+      let words;
       if (Array.isArray(deckData.chars)) {
-        chars = deckData.chars;
+        words = deckData.chars;
       } else {
-        chars = Object.keys(deckData.chars);
+        words = Object.keys(deckData.chars);
       }
-      
-      // Shuffle the characters array
-      this.shuffledWords = this.shuffleArray(chars);
-      
-      // Reset state
+      this.quizOrder = this.flattenAndShuffleWords(words);
+      this.currentIndex = 0;
       this.skipState = 0;
       this.cachedStrokes = null;
-      this.currentIndex = 0;
-      
-      // Don't show loading indicator here - we'll check if data is already cached
-      // and only show loading if needed in showWord()
-      
-      // Show the first word
       this.showWord();
     },
     
     async showWord() {
       this.showPinyin = false;
-      
-      if (this.currentIndex < this.shuffledWords.length) {
-        // Get the current word
-        const currentWord = this.shuffledWords[this.currentIndex];
-        
-        // Set current word 
-        this.currentWord = currentWord;
-        
-        // Get character position in word
-        this.currentCharacter = currentWord[this.charIterator % currentWord.length];
+      if (this.currentIndex < this.quizOrder.length) {
+        const quizItem = this.quizOrder[this.currentIndex];
+        this.currentQuizItem = quizItem;
+        this.currentWord = quizItem.word;
+        this.currentCharacter = quizItem.char;
         
         // Reset practice state for this word
         this.wordTotalMistakeCount = 0;
@@ -512,7 +500,7 @@ export default defineComponent({
         }
         
         // Load character data (stroke data and get character info from dictionary)
-        const { strokeData, infoData } = await this.preloadCharacterData(this.currentCharacter);
+        const { strokeData, infoData } = await this.preloadCharacterData(quizItem.char, quizItem.word);
         
         // Process stroke data
         if (strokeData) {
@@ -526,6 +514,8 @@ export default defineComponent({
         
         // Process character info data
         if (infoData) {
+          // infoData.pinyin is array, infoData.english is array
+          // Use the first pinyin/english for display
           this.currentPinyin = infoData.pinyin[0] || '';
           this.currentEnglish = infoData.english || [''];
           this.currentEnglish[0] = this.currentEnglish[0]
@@ -537,48 +527,38 @@ export default defineComponent({
         // Set loading state to false after data is processed
         this.isLoading = false;
         
-        // Preload next character's data (only stroke data, info comes from dictionary)
-        const nextIdx = (this.currentIndex + 1) % this.shuffledWords.length;
-        const nextWord = this.shuffledWords[nextIdx];
-        const nextChar = nextWord[this.charIterator % nextWord.length];
-        if (nextChar !== this.currentCharacter) {
-          // No need to await this preload - it can happen in the background
-          this.preloadCharacterData(nextChar);
+        // Preload next char's stroke data
+        const nextIdx = (this.currentIndex + 1) % this.quizOrder.length;
+        const nextQuizItem = this.quizOrder[nextIdx];
+        if (nextQuizItem && nextQuizItem.char !== quizItem.char) {
+          this.preloadCharacterData(nextQuizItem.char, nextQuizItem.word);
         }
       }
     },
     
-    async preloadCharacterData(character) {
+    async preloadCharacterData(character, word) {
       try {
         // First check if stroke data already exists in the store cache
         const storeCache = this.$store.getters.getPracticeCharCache;
         const hasStrokeDataInStore = storeCache.strokeData[character];
         
-        // Get character information from dictionary data instead of API call
+        // Get info for the full word, not just the char
         const dictData = this.$store.getters.getDictionaryData || {};
         let charInfo = null;
-        
-        // Search for the character in all dictionary categories
         for (const category in dictData) {
           const categoryData = dictData[category];
           if (categoryData && categoryData.chars) {
             const chars = categoryData.chars;
             if (Array.isArray(chars)) {
-              // If chars is an array of objects with 'character' property
-              const found = chars.find(char => char.character === character);
-              if (found) {
-                charInfo = found;
-                break;
-              }
+              // chars is array of objects with 'character' property (word)
+              const found = chars.find(entry => entry.character === word);
+              if (found) { charInfo = found; break; }
             } else if (typeof chars === 'object') {
-              // If chars is an object with character keys
-              if (chars[character]) {
-                charInfo = chars[character];
-                break;
-              }
+              if (chars[word]) { charInfo = chars[word]; break; }
             }
           }
         }
+        console.log(character, " was found in dictionary data:", charInfo);
         
         // If stroke data is already cached, use it
         const strokePromise = hasStrokeDataInStore 
@@ -731,11 +711,8 @@ export default defineComponent({
         // Go to next character
         this.skipState = 0;
         this.currentIndex++;
-        
-        if (this.currentIndex >= this.shuffledWords.length) {
-          // Wrap around to the beginning and increment the character iterator
+        if (this.currentIndex >= this.quizOrder.length) {
           this.currentIndex = 0;
-          this.charIterator++;
         }
         
         // Ensure all animations are stopped before showing next word
@@ -772,15 +749,11 @@ export default defineComponent({
     },
     
     previousCharacter() {
-        this.currentIndex--;
-        
-        if (this.currentIndex < 0) {
-            this.currentIndex = this.shuffledWords.length - 1;
-            if (this.charIterator > 0) {
-            this.charIterator--;
-            }
-        }
-        this.showWord();
+      this.currentIndex--;
+      if (this.currentIndex < 0) {
+        this.currentIndex = this.quizOrder.length - 1;
+      }
+      this.showWord();
     },
     
     contextAction() {
@@ -1027,7 +1000,7 @@ export default defineComponent({
 
 .current-character {
   /* border-bottom: 2px solid var(--accent-color); */
-  border-bottom: 2px solid var(--fg);
+  /* border-bottom: 2px solid var(--fg); */
 }
 
 .dim-character {
