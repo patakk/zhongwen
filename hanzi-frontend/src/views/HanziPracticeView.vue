@@ -114,8 +114,7 @@ export default defineComponent({
     
     return {
       // Deck management
-      currentDeck: deckFromUrl || 'hsk1', // Use URL param if available, otherwise default
-      decks: {},
+      currentDeck: deckFromUrl || 'hsk1',
       isDropdownOpen: false,
       
       // Character management
@@ -164,7 +163,7 @@ export default defineComponent({
   },
   computed: {
     currentDeckName() {
-      return this.decks[this.currentDeck]?.name || 'Loading...';
+      return this.storeDecks[this.currentDeck]?.name || 'Loading...';
     },
     storeDecks() {
       // Combine static and custom dictionary data
@@ -185,14 +184,12 @@ export default defineComponent({
   watch: {
     storeDecks: {
       handler(newDecks) {
-        this.decks = newDecks;
-        
         // If we have deck data, initialize
-        if (Object.keys(this.decks).length > 0 && this.currentWord === '') {
+        if (Object.keys(newDecks).length > 0 && this.currentWord === '') {
           // Check URL parameter first
           const urlParams = new URLSearchParams(window.location.search);
           const deck = urlParams.get('wordlist');
-          if (deck && this.decks[deck]) {
+          if (deck && newDecks[deck]) {
             this.currentDeck = deck;
           }
           this.loadNewWords();
@@ -354,7 +351,7 @@ export default defineComponent({
     },
     
     loadDecksFromStore() {
-      this.decks = this.storeDecks;
+      // No-op, decks are always accessed via computed property
     },
     
     toggleDeckOptions() {
@@ -457,11 +454,11 @@ export default defineComponent({
     
     loadNewWords() {
       // Get the current deck data
-      const deckData = this.decks[this.currentDeck];
+      const deckData = this.storeDecks[this.currentDeck];
       if (!deckData || !deckData.chars) {
-        console.error('No deck data found for:', this.currentDeck);
         return;
       }
+      console.log('Loading new words from deck:', this.currentDeck);
       let words;
       if (Array.isArray(deckData.chars)) {
         words = deckData.chars;
@@ -512,6 +509,7 @@ export default defineComponent({
           }
         }
         
+        console.log("Stroke data and info data loaded for character:", quizItem.char, infoData);
         // Process character info data
         if (infoData) {
           // infoData.pinyin is array, infoData.english is array
@@ -541,9 +539,9 @@ export default defineComponent({
         // First check if stroke data already exists in the store cache
         const storeCache = this.$store.getters.getPracticeCharCache;
         const hasStrokeDataInStore = storeCache.strokeData[character];
-        
+        const hasInfoDataInStore = storeCache.infoData[character];
         // Get info for the full word, not just the char
-        const dictData = this.$store.getters.getDictionaryData || {};
+        const dictData = this.storeDecks || {};
         let charInfo = null;
         for (const category in dictData) {
           const categoryData = dictData[category];
@@ -554,12 +552,14 @@ export default defineComponent({
               const found = chars.find(entry => entry.character === word);
               if (found) { charInfo = found; break; }
             } else if (typeof chars === 'object') {
-              if (chars[word]) { charInfo = chars[word]; break; }
+              if (chars[word]) {  charInfo = chars[word]; break; }
             }
           }
         }
-        console.log(character, " was found in dictionary data:", charInfo);
-        
+        // Cache char info if not already cached
+        if (charInfo && !hasInfoDataInStore) {
+          this.$store.commit('SET_PRACTICE_CHARACTER_INFO_DATA', { character, data: charInfo });
+        }
         // If stroke data is already cached, use it
         const strokePromise = hasStrokeDataInStore 
           ? Promise.resolve(storeCache.strokeData[character])
@@ -572,21 +572,17 @@ export default defineComponent({
                 }
                 return response.json();
               });
-        
         // Get stroke data
         const strokeData = await strokePromise;
-        
         // Store stroke data in component cache if it wasn't already there
         if (strokeData && !this.strokeCache[character]) {
           strokeData.character = character;
           this.strokeCache[character] = strokeData;
-          
           // Also update store cache if needed
           if (!hasStrokeDataInStore) {
             this.$store.commit('SET_PRACTICE_CHARACTER_STROKE_DATA', { character, data: strokeData });
           }
         }
-        
         return { 
           strokeData, 
           infoData: charInfo // Return character info from dictionary instead of separate API call
@@ -697,12 +693,10 @@ export default defineComponent({
         this.skipState = 1;
         this.showPinyin = true;
         this.totalAnswered++;
-        
         if (this.plotter) {
           this.plotter.quizComplete = true;
           this.plotter.giveUp();
         }
-        
         // Reset streak when skipping
         this.streakCount = 0;
         this.streakCheckpoint = this.streakIncrement;
@@ -712,9 +706,9 @@ export default defineComponent({
         this.skipState = 0;
         this.currentIndex++;
         if (this.currentIndex >= this.quizOrder.length) {
-          this.currentIndex = 0;
+          this.currentIndex = 0; // Loop to first
+        } else {
         }
-        
         // Ensure all animations are stopped before showing next word
         if (this.plotter) {
           this.plotter.stopAnimation();
@@ -724,8 +718,6 @@ export default defineComponent({
           this.plotter.isAnimating = false;
           this.plotter.isAnimatingStroke = false;
           this.plotter.isAnimatingInterp = false;
-          
-          // Cancel all animations explicitly
           if (this.plotter.animationFrame) {
             cancelAnimationFrame(this.plotter.animationFrame);
             this.plotter.animationFrame = null;
@@ -743,17 +735,17 @@ export default defineComponent({
             this.plotter.demoAnimationFrame = null;
           }
         }
-        
         this.showWord();
       }
     },
     
     previousCharacter() {
-      this.currentIndex--;
-      if (this.currentIndex < 0) {
-        this.currentIndex = this.quizOrder.length - 1;
+      // Only go back if not at the first element
+      if (this.currentIndex > 0) {
+        this.currentIndex--;
+        this.showWord();
+      } else {
       }
-      this.showWord();
     },
     
     contextAction() {
@@ -909,6 +901,9 @@ export default defineComponent({
 }
 
 #selected-deck {
+  background-color: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
   background-color: var(--bg);
   color: var(--fg);
   cursor: pointer;
