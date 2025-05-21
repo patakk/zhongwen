@@ -490,10 +490,10 @@ def get_app_context():
         # "wordlists_words": wordlists_words,
     }
 
-@app.route('/')
-@session_required
-def home():
-    return send_file('static/dist/index.html')
+# @app.route('/')
+# @session_required
+# def home():
+#     return send_file('static/dist/index.html')
 
 @app.route('/api/get_user_data')
 @session_required
@@ -940,10 +940,10 @@ def strokerender():
 #     with open(stroke_file, 'w') as f:
 #         json.dump(stroke, f)
 
-@app.route('/<path:path>')
-def catch_all(path):
-    """Serve the Vue app for any routes not explicitly defined, enabling client-side routing."""
-    return send_file('static/dist/index.html')
+# @app.route('/<path:path>')
+# def catch_all(path):
+#     """Serve the Vue app for any routes not explicitly defined, enabling client-side routing."""
+#     return send_file('static/dist/index.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5117, debug=True)
