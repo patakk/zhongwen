@@ -212,12 +212,12 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
       }
       for (let i = 0; i < SQUARES_PER_ROW; i++) {
         const x = gridOffsetX + i * SQUARE_SIZE;
-        svg += `<rect x="${x}" y="${y}" width="${SQUARE_SIZE}" height="${SQUARE_SIZE}" fill="none" stroke="#888" stroke-width="1.5"/>`;
+        svg += `<rect x="${x}" y="${y}" width="${SQUARE_SIZE}" height="${SQUARE_SIZE}" fill="none" stroke="#888" stroke-width=".8"/>`;
         // Add diagonals and cross lines
-        svg += `<line x1="${x}" y1="${y}" x2="${x + SQUARE_SIZE}" y2="${y + SQUARE_SIZE}" stroke="#bbb" stroke-width="1"/>`;
-        svg += `<line x1="${x + SQUARE_SIZE}" y1="${y}" x2="${x}" y2="${y + SQUARE_SIZE}" stroke="#bbb" stroke-width="1"/>`;
-        svg += `<line x1="${x + SQUARE_SIZE/2}" y1="${y}" x2="${x + SQUARE_SIZE/2}" y2="${y + SQUARE_SIZE}" stroke="#bbb" stroke-width="1"/>`;
-        svg += `<line x1="${x}" y1="${y + SQUARE_SIZE/2}" x2="${x + SQUARE_SIZE}" y2="${y + SQUARE_SIZE/2}" stroke="#bbb" stroke-width="1"/>`;
+        svg += `<line x1="${x}" y1="${y}" x2="${x + SQUARE_SIZE}" y2="${y + SQUARE_SIZE}" stroke="#bbb" stroke-width="0.4"/>`;
+        svg += `<line x1="${x + SQUARE_SIZE}" y1="${y}" x2="${x}" y2="${y + SQUARE_SIZE}" stroke="#bbb" stroke-width="0.4"/>`;
+        svg += `<line x1="${x + SQUARE_SIZE/2}" y1="${y}" x2="${x + SQUARE_SIZE/2}" y2="${y + SQUARE_SIZE}" stroke="#bbb" stroke-width="0.4"/>`;
+        svg += `<line x1="${x}" y1="${y + SQUARE_SIZE/2}" x2="${x + SQUARE_SIZE}" y2="${y + SQUARE_SIZE/2}" stroke="#bbb" stroke-width="0.4"/>`;
         if (r === 0 && i === 0) {
           if (strokesData[char] && strokesData[char].strokes) {
             svg += `<g transform="translate(${x + SQUARE_SIZE/2},${y + SQUARE_SIZE/2}) scale(0.9) translate(${-SQUARE_SIZE/2},${-SQUARE_SIZE/2})">`;
