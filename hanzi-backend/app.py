@@ -50,7 +50,7 @@ from backend.common import get_pinyin
 from backend.common import get_char_info
 from backend.common import get_chars_info
 from backend.common import auth_keys
-from backend.common import AUDIO_MAPPINGS
+from backend.common import DATA_DIR
 from backend.routes.manage import validate_password
 
 from backend.common import config
@@ -578,7 +578,7 @@ def get_custom_cc():
 
 @app.route("/api/get_static_cc")
 def get_static_cc():
-    json_path = os.path.join(app.static_folder, "json", "carddecks_w_pinyin.json")
+    json_path = f"{DATA_DIR}/decks_w_pinyin.json"
     response = send_file(json_path)
     response.headers["Cache-Control"] = "public, max-age=31536000"
     return response
@@ -891,59 +891,6 @@ def hanzi_strokes_charlist():
 def strokerender():
     return render_template('strokerender.html')
     
-
-
-# @app.route('/book1')
-# @session_required
-# def book1():
-#     image_folder = 'static/images/book_1_unit_1_8'
-#     images = sorted([img for img in os.listdir(image_folder) if img.endswith('.jpg')])
-    
-#     # Get user strokes
-#     user_strokes = get_user_strokes(session['username'])
-    
-#     return render_template('book1.html', images=images, user_strokes=user_strokes, username=session.get('username'), decks=DECKS_INFO)
-
-# @app.route('/save_stroke', methods=['POST'])
-# @session_required
-# def save_stroke():
-#     data = request.json
-#     canvas_id = data['canvasId']
-#     stroke = data['stroke']
-    
-#     save_user_stroke(session['username'], canvas_id, stroke)
-    
-#     return jsonify({"status": "success"})
-
-
-# def get_user_strokes(username):
-#     strokes_path = f'data/user_strokes/{username}'
-#     if not os.path.exists(strokes_path):
-#         return {}
-    
-#     user_strokes = {}
-#     for canvas_folder in os.listdir(strokes_path):
-#         canvas_path = os.path.join(canvas_folder)
-#         if os.path.isdir(canvas_path):
-#             user_strokes[canvas_folder] = []
-#             for stroke_file in os.listdir(canvas_path):
-#                 with open(os.path.join(canvas_path, stroke_file), 'r') as f:
-#                     user_strokes[canvas_folder].append(f.read())
-    
-#     return user_strokes
-
-# def save_user_stroke(username, canvas_id, stroke):
-#     strokes_path = f'data/user_strokes/{username}/{canvas_id}'
-#     os.makedirs(strokes_path, exist_ok=True)
-    
-#     stroke_file = f'{strokes_path}/stroke_{int(time.time() * 1000)}.json'
-#     with open(stroke_file, 'w') as f:
-#         json.dump(stroke, f)
-
-# @app.route('/<path:path>')
-# def catch_all(path):
-#     """Serve the Vue app for any routes not explicitly defined, enabling client-side routing."""
-#     return send_file('static/dist/index.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5117, debug=True)

@@ -46,6 +46,17 @@ HANZI_DARKNESS_KAITI = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_kai
 RELATED_CONCEPTS = json.load(open(os.path.join(DATA_DIR, "related_cache.json")))
 OPPOSITE_CONCEPTS = json.load(open(os.path.join(DATA_DIR, "opposites_cache.json")))
 
+
+CARDDECKS_W_PINYIN = {
+    deck: {
+        "name": CARDDECKS[deck]["name"],
+        "chars": get_chars_info(CARDDECKS[deck]["chars"])
+    } for deck in CARDDECKS
+}
+
+with open(f"{DATA_DIR}/decks_w_pinyin.json", "w", encoding="utf-8") as f:
+    json.dump(CARDDECKS_W_PINYIN, f, ensure_ascii=False)
+
 default_darkmode = False
 
 DECKNAMES = {
@@ -128,15 +139,6 @@ def getshortdate():
 def get_chars_info(characters, function=False):
     return {c: get_char_info(c) for c in characters}
 
-CARDDECKS_W_PINYIN = {
-    deck: {
-        "name": CARDDECKS[deck]["name"],
-        "chars": get_chars_info(CARDDECKS[deck]["chars"])
-    } for deck in CARDDECKS
-}
-
-with open("./static/json/carddecks_w_pinyin.json", "w", encoding="utf-8") as f:
-    json.dump(CARDDECKS_W_PINYIN, f, ensure_ascii=False)
 
 def get_random_chars_from_deck(deck, n, function=False):
     characters = CARDDECKS[deck]["chars"][:]

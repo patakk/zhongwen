@@ -355,16 +355,16 @@ def get_characters_with_pinyin():
         characters_data.append({"character": char, "pinyin": data["pinyin"]})
     return jsonify({"characters": characters_data})
 
-@api_bp.route("/get_twang")
-def get_twang():
-    return send_file("../data/twang.mp3", mimetype="audio/mpeg")
+# @api_bp.route("/get_twang")
+# def get_twang():
+#     return send_file("../data/twang.mp3", mimetype="audio/mpeg")
 
 
-@api_bp.route("/get_story_audio_clip")
-def get_story_audio_clip():
-    name = request.args.get("name")
-    file_path = "../data/stories/clips/" + name + ".mp3"
-    return send_file(file_path, mimetype="audio/mpeg")
+# @api_bp.route("/get_story_audio_clip")
+# def get_story_audio_clip():
+#     name = request.args.get("name")
+#     file_path = "../data/stories/clips/" + name + ".mp3"
+#     return send_file(file_path, mimetype="audio/mpeg")
 
 
 

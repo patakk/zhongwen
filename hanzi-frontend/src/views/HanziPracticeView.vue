@@ -130,7 +130,6 @@ export default defineComponent({
       strokeCache: {}, 
       charInfoCache: {},
       isLoading: true,
-      
       skipState: 0,
       showPinyin: false,
       totalAnswered: 0,
