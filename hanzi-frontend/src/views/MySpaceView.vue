@@ -54,10 +54,28 @@
         </div>
   
         <div v-else>
+          <!-- Show add-word-section even if wordlist is empty -->
+          <div class="add-word-section">
+            <input
+              type="text"
+              v-model="newWordInput"
+              placeholder="Enter word(s) to add"
+              class="add-word-input"
+              @keyup.enter="addWordToList"
+            />
+            <button
+              @click="addWordToList"
+              class="nav-button add-word-button"
+              :disabled="!selectedWordlist || !newWordInput.trim()"
+            >
+              Add Words
+            </button>
+          </div>
+
           <div v-if="words.length === 0" class="empty-list">
             <p>This wordlist is empty. Add words from the Search or Grid views.</p>
           </div>
-  
+
           <div v-else>
             <!-- Info panel -->
             <div class="wordlist-info">
@@ -99,29 +117,27 @@
               </router-link>
               <button
                 @click="downloadAnkiDeck"
-                class="nav-button download-button"
+                class="nav-button data-button"
                 title="Download Anki Deck"
                 :disabled="words.length === 0"
               >
               <font-awesome-icon :icon="['fas', 'download']" /> anki deck
               </button>
-            </div>
-
-            <!-- Add Word Input -->
-            <div class="add-word-section">
-              <input
-                type="text"
-                v-model="newWordInput"
-                placeholder="Enter word(s) to add"
-                class="add-word-input"
-                @keyup.enter="addWordToList"
-              />
               <button
-                @click="addWordToList"
-                class="nav-button add-word-button"
-                :disabled="!selectedWordlist || !newWordInput.trim()"
+                @click="copyWordlistToClipboard"
+                class="nav-button data-button"
+                title="Copy Wordlist to Clipboard"
+                :disabled="words.length === 0"
               >
-                Add Words
+                <font-awesome-icon :icon="['fas', 'clipboard']" /> copy words
+              </button>
+              <button
+                @click="showPracticeSheetModal = true"
+                class="nav-button data-button"
+                title="Get Practice Sheet"
+                :disabled="words.length === 0"
+              >
+                <font-awesome-icon :icon="['fas', 'pen']" /> practice sheet
               </button>
             </div>
 
@@ -245,6 +261,38 @@
         </div>
       </div>
     </div>
+
+    <!-- Practice Sheet Modal -->
+    <div v-if="showPracticeSheetModal" class="modal-overlay" @click="closePracticeSheetModal">
+      <div class="modal-content" @click.stop>
+        <h3>Get Practice Sheet</h3>
+        <div class="modal-form">
+          <label>Choose an option:</label>
+          <div v-for="opt in practiceOptions" :key="opt.value" style="margin-bottom: 0.5rem;">
+            <input type="radio" :id="opt.value" :value="opt.value" v-model="selectedPracticeOption" />
+            <label :for="opt.value">{{ opt.label }}</label>
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button @click="closePracticeSheetModal" class="cancel-button">Cancel</button>
+          <button @click="createPracticeSheet" class="confirm-button">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Practice Sheet SVG Preview Modal -->
+    <div v-if="showPracticeSheetSVG" class="modal-overlay" @click="showPracticeSheetSVG = false">
+      <div class="modal-content-svg" @click.stop>
+        <h3>Practice Sheet Preview</h3>
+        <div class="modal-svg-preview">
+          <div class="modal-svg-content" v-html="practiceSheetSVG"></div>
+        </div>
+        <div class="modal-buttons">
+          <button @click="showPracticeSheetSVG = false" class="cancel-button">Close</button>
+          <button @click="downloadPracticeSheetSVG" class="confirm-button">Download SVG</button>
+        </div>
+      </div>
+    </div>
   </template>
   
   <script>
@@ -271,6 +319,14 @@
         newWordlistDescription: '', // Added for description editing
         isDropdownOpen: false, // Added for dropdown control
         newWordInput: '', // Added for adding words
+        showPracticeSheetModal: false,
+        selectedPracticeOption: 'option1',
+        practiceOptions: [
+          { value: 'one_row', label: 'One row per character' },
+          { value: 'two_rows', label: 'Two rows per character (second row empty)' },
+        ],
+        practiceSheetSVG: '', // SVG string for preview/download
+        showPracticeSheetSVG: false, // Show SVG preview modal
       };
     },
     computed: {
@@ -361,6 +417,16 @@
       }
     },
     methods: {
+      formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        try {
+          const options = { year: 'numeric', month: 'long', day: 'numeric' };
+          return new Date(dateString).toLocaleDateString(undefined, options);
+        } catch (e) {
+          console.error("Error formatting date:", e);
+          return dateString; // Fallback to original string
+        }
+      },
       loadWordlistWords() {
         try {
           if (
@@ -565,6 +631,10 @@
         this.showDeleteConfirmModal = false;
       },
 
+      closePracticeSheetModal() {
+        this.showPracticeSheetModal = false;
+      },
+
       // Methods for description editing
       openEditDescriptionModal() {
         if (!this.selectedWordlist) return;
@@ -616,17 +686,162 @@
         });
       },
 
-      formatDate(dateString) {
-        if (!dateString) return 'N/A';
+      async createPracticeSheet() {
+        // Gather all unique characters from the wordlist
+        const uniqueChars = new Set();
+        this.words.forEach(word => {
+          [...word.character].forEach(char => uniqueChars.add(char));
+        });
+        const charList = Array.from(uniqueChars).join('');
         try {
-          const options = { year: 'numeric', month: 'long', day: 'numeric' };
-          return new Date(dateString).toLocaleDateString(undefined, options);
-        } catch (e) {
-          console.error("Error formatting date:", e);
-          return dateString; // Fallback to original string
+          const response = await fetch(`/api/getStrokes/${charList}`);
+          if (!response.ok) {
+            console.error('Network response was not ok for characters:', charList);
+            return;
+          }
+          const strokesData = await response.json();
+          // Generate SVG
+          this.practiceSheetSVG = this.generatePracticeSheetSVG(Array.from(uniqueChars), strokesData);
+          this.showPracticeSheetSVG = true;
+        } catch (err) {
+          console.error('Error fetching strokes:', err);
         }
       },
-      
+      generatePracticeSheetSVG(charList, strokesData) {
+        // SVG constants for A4 (210mm x 297mm at 96dpi: 794x1123px)
+        const DPI = 96;
+        let windowHeight = window.innerHeight*.8;
+        const A4_WIDTH = windowHeight/1.414; // px (A4 aspect ratio)
+        const A4_HEIGHT = windowHeight; // px (A4 aspect ratio)
+        const SQUARE_SIZE = windowHeight/20; // px
+        const PADDING_X = windowHeight/20;
+        const PADDING_Y = windowHeight/20;
+        const ROW_HEIGHT = SQUARE_SIZE + windowHeight/30; // 40px for pinyin
+        const FONT_SIZE_PINYIN = windowHeight/60;
+        const FONT_SIZE_CHAR = 36;
+        const OPACITY_FADED = 0.4;
+        let svg = `<svg width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}" xmlns="http://www.w3.org/2000/svg">`;
+        svg += `<rect width='100%' height='100%' fill='white'/>`;
+        let row = 0, page = 0;
+
+        // Preprocess: calculate vertical centering offsets for each character
+        const charYOffsetMap = {};
+        for (const char of charList) {
+          if (strokesData[char] && strokesData[char].strokes && strokesData[char].strokes.length > 0) {
+            let minY = Infinity, maxY = -Infinity;
+            strokesData[char].strokes.forEach(path => {
+              // Extract all y values from the SVG path string
+              // This regex matches numbers after a comma or space (for y values)
+              const matches = path.match(/[-+]?[0-9]*\.?[0-9]+/g);
+              if (matches && matches.length > 1) {
+                for (let i = 1; i < matches.length; i += 2) {
+                  const y = parseFloat(matches[i]);
+                  if (!isNaN(y)) {
+                    minY = Math.min(minY, y);
+                    maxY = Math.max(maxY, y);
+                  }
+                }
+              }
+            });
+            if (minY < maxY && isFinite(minY) && isFinite(maxY)) {
+              // Centering offset: move by (maxY+minY)/2 to 500 (SVG center)
+              const centerY = (maxY + minY) / 2;
+              charYOffsetMap[char] = 500 - centerY;
+            } else {
+              charYOffsetMap[char] = 0;
+            }
+          } else {
+            charYOffsetMap[char] = 0;
+          }
+        }
+
+        // Calculate how many rows and columns fit vertically and horizontally
+        const availableWidth = A4_WIDTH - 2 * PADDING_X;
+        const availableHeight = A4_HEIGHT - 2 * PADDING_Y;
+        const ROWS_PER_PAGE = Math.floor(availableHeight / ROW_HEIGHT);
+        const SQUARES_PER_ROW = Math.floor(availableWidth / SQUARE_SIZE);
+        const totalGridWidth = SQUARES_PER_ROW * SQUARE_SIZE;
+        const totalGridHeight = ROWS_PER_PAGE * ROW_HEIGHT;
+        const gridOffsetX = PADDING_X + (availableWidth - totalGridWidth) / 2;
+        const gridOffsetY = PADDING_Y + (availableHeight - totalGridHeight) / 2;
+        // Adjust ROW_HEIGHT so that the last row fits exactly to the end
+        const adjustedRowHeight = (A4_HEIGHT - 2 * gridOffsetY) / (ROWS_PER_PAGE - .5);
+
+        charList.forEach((char, idx) => {
+          // Option: one or two rows per character
+          const rowsForChar = this.selectedPracticeOption === 'two_rows' ? 2 : 1;
+          for (let r = 0; r < rowsForChar; r++) {
+            if (row >= ROWS_PER_PAGE) {
+              // New page (not implemented: multi-page, just fit first page for now)
+              return;
+            }
+            const y = gridOffsetY + row * adjustedRowHeight;
+            // Pinyin above row (with fading for non-current char, and correct alignment)
+            let fadedPinyinSVG = '';
+            const wordObj = this.words.find(w => w.character.includes(char));
+            if (wordObj && wordObj.pinyin && wordObj.pinyin[0]) {
+              const pinyinSyllables = wordObj.pinyin[0].split(/\s+/);
+              const chars = [...wordObj.character];
+              // Find all indices where this char appears in the word
+              const charIndices = chars.reduce((arr, c, i) => {
+                if (c === char) arr.push(i);
+                return arr;
+              }, []);
+              // For each character in the word, render its pinyin above the corresponding grid cell
+              for (let i = 0; i < chars.length; i++) {
+                if (pinyinSyllables[i]) {
+                  // Calculate the x position using cumulative sum of previous syllable lengths * font size
+                  let x = gridOffsetX;
+                  for (let j = 0; j < i; j++) {
+                  // Estimate width: each syllable's length * FONT_SIZE_PINYIN * 0.6 (rough width per char)
+                  x += pinyinSyllables[j].length * FONT_SIZE_PINYIN * 0.55;
+                  }
+                  // Center the syllable above its estimated width
+                  x += (pinyinSyllables[i].length * FONT_SIZE_PINYIN * 0.55) / 2;
+                  const isCurrent = charIndices.includes(i);
+                  fadedPinyinSVG += `<text x="${x}" y="${y - 8}" font-size="${FONT_SIZE_PINYIN}" fill="#222" font-family="sans-serif" opacity="${isCurrent ? 1 : OPACITY_FADED}" text-anchor="middle">${this.$toAccentedPinyin(pinyinSyllables[i])}</text>`;
+                }
+              }
+            }
+            if(r === 0) {
+              svg += fadedPinyinSVG;
+            }
+            // Squares
+            for (let i = 0; i < SQUARES_PER_ROW; i++) {
+              const x = gridOffsetX + i * SQUARE_SIZE;
+              svg += `<rect x="${x}" y="${y}" width="${SQUARE_SIZE}" height="${SQUARE_SIZE}" fill="none" stroke="#888" stroke-width="1.5"/>`;
+              // Render character
+              if (r === 0 && i === 0) {
+                if (strokesData[char] && strokesData[char].strokes) {
+                  // Center and flip vertically, align to center of square, and vertically center glyph
+                  svg += `<g transform="translate(${x + SQUARE_SIZE/2},${y + SQUARE_SIZE/2}) scale(0.9) translate(${-SQUARE_SIZE/2},${-SQUARE_SIZE/2})">`;
+                  svg += `<g transform=\"translate(0,${SQUARE_SIZE}) scale(${SQUARE_SIZE/1000},-${SQUARE_SIZE/1000}) translate(0,${charYOffsetMap[char]})\">`;
+                  strokesData[char].strokes.forEach(path => {
+                    svg += `<path d=\"${path}\" fill=\"#222\" stroke=\"none\"/>`;
+                  });
+                  svg += `</g></g>`;
+                }
+              } else if (r === 0 && i > 0 && i <= (strokesData[char]?.strokes?.length || 2)) {
+                if (strokesData[char] && strokesData[char].strokes) {
+                  svg += `<g transform="translate(${x + SQUARE_SIZE/2},${y + SQUARE_SIZE/2}) scale(0.9) translate(${-SQUARE_SIZE/2},${-SQUARE_SIZE/2})" opacity="${OPACITY_FADED}">`;
+                  svg += `<g transform=\"translate(0,${SQUARE_SIZE}) scale(${SQUARE_SIZE/1000},-${SQUARE_SIZE/1000}) translate(0,${charYOffsetMap[char]})\">`;
+                  strokesData[char].strokes.forEach(path => {
+                    svg += `<path d=\"${path}\" fill=\"#222\" stroke=\"none\"/>`;
+                  });
+                  svg += `</g></g>`;
+                }
+              } else if (r === 1) {
+                // Second row: always empty
+                // (no character)
+              }
+            }
+            row++;
+          }
+        });
+        svg += '</svg>';
+        return svg;
+      },
+
       downloadAnkiDeck() {
         if (!this.selectedWordlist || this.words.length === 0) {
           alert('This wordlist is empty. Please add words before downloading an Anki deck.');
@@ -747,6 +962,35 @@
         if (!event.target.closest('.custom-dropdown')) {
           this.isDropdownOpen = false;
         }
+      },
+
+      // New method to copy wordlist to clipboard
+      copyWordlistToClipboard() {
+        if (!this.words || this.words.length === 0) return;
+        const wordString = this.words.map(w => w.character).join(";");
+        navigator.clipboard.writeText(wordString)
+          .then(() => {
+            alert('Wordlist copied to clipboard!');
+          })
+          .catch(err => {
+            console.error('Failed to copy:', err);
+            alert('Failed to copy wordlist.');
+          });
+      },
+
+      downloadPracticeSheetSVG() {
+        // Download the SVG as a file
+        const blob = new Blob([this.practiceSheetSVG], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${this.selectedWordlist}_practice_sheet.svg`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
       },
     },
   };
@@ -998,7 +1242,7 @@
   }
 
   
-  .download-button {
+  .data-button {
     outline: none;
     border: none;
     cursor: pointer;
@@ -1163,7 +1407,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1;
+    z-index: 12;
   }
   
   .modal-content {
@@ -1234,10 +1478,26 @@
 
   .delete-confirm-button {
     background: var(--danger-color, #dc3545);
-    color: #fff;
+    color: var(--fg);
   }
-
   .delete-confirm-button:hover {
     background: color-mix(in oklab, var(--danger-color, #dc3545) 80%, black 20%);
   }
+
+    .modal-content-svg{
+      padding: 3rem;
+      box-sizing: border-box;
+      max-height: 100vh;
+    }
+
+   .modal-svg-preview {
+      height: auto;
+      margin-top: 1rem;
+      background-color: var(--bg-dim);
+      padding: 1rem;
+  }
+
+   .modal-svg-content {
+    }
+
   </style>

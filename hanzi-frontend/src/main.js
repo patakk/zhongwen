@@ -30,6 +30,8 @@ import {
   faScissors,
   faDownload,
   faCloudArrowDown,
+  faClipboard,
+  faPen,
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -48,7 +50,9 @@ library.add(
   faSitemap,
   faScissors,
   faDownload,
-  faCloudArrowDown
+  faCloudArrowDown,
+  faClipboard,
+  faPen,
 )
 
 // IMMEDIATELY clear login state on page load before checking backend

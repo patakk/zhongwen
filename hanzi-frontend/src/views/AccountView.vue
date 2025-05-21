@@ -912,7 +912,7 @@ h2 {
 
 .delete-confirm-button {
   background: var(--danger-color, #dc3545);
-  color: #fff;
+  color: var(--fg);
 }
 .delete-confirm-button:hover {
   background: color-mix(in oklab, var(--danger-color, #dc3545) 80%, black 20%);
