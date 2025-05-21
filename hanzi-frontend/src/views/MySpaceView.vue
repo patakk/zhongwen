@@ -266,8 +266,7 @@
     <div v-if="showPracticeSheetModal" class="modal-overlay" @click="closePracticeSheetModal">
       <div class="modal-content" @click.stop>
         <h3>Get Practice Sheet</h3>
-        <div class="modal-form">
-          <label>Choose an option:</label>
+        <div class="svg-modal-form">
           <div class="practice-options">
             <div
               v-for="opt in practiceOptions"
@@ -311,8 +310,8 @@
         <div class="modal-svg-preview">
           <div class="modal-svg-content" v-html="practiceSheetSVG"></div>
         </div>
-        <div class="modal-buttons">
-          <button @click="showPracticeSheetSVG = false" class="cancel-button">Close</button>
+        <div class="svg-modal-buttons">
+          <!-- <button @click="showPracticeSheetSVG = false" class="cancel-button">Close</button> -->
           <button @click="downloadPracticeSheetSVG" class="confirm-button">Download SVG</button>
           <button @click="downloadPracticeSheetPDF" class="confirm-button">Download PDF</button>
         </div>
@@ -772,7 +771,7 @@
           // Generate SVG for the first page using utility
           const { svg, totalPages } = generatePracticeSheetSVG(filteredWords, strokesData, {
             selectedPracticeOption: this.selectedPracticeOption,
-            windowHeight: window.innerHeight * .7,
+            windowHeight: 1123,
             page: 0
           });
           this.practiceSheetSVG = svg;
@@ -789,7 +788,7 @@
         if (!this.practiceSheetStrokesData) return;
         const { svg } = generatePracticeSheetSVG(this.words, this.practiceSheetStrokesData, {
           selectedPracticeOption: this.selectedPracticeOption,
-          windowHeight: window.innerHeight * .7,
+          windowHeight: 1123,
           page
         });
         this.practiceSheetSVG = svg;
@@ -1391,7 +1390,7 @@
     background: var(--bg-alt);
     padding: 2rem;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
   }
   
   .modal-form {
@@ -1402,26 +1401,49 @@
   }
   
   .modal-form input {
-    padding: 0.5rem;
-    border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    padding: 1em;
+	  border: var(--thin-border-width) solid var(--fg);
     background: var(--bg);
     color: var(--fg);
     font-family: inherit;
   }
 
-  .modal-form textarea {
-    padding: 0.5rem;
-    border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
-    background: var(--bg);
+  .modal-form {
+    padding: 1em 2em;
+	  /* border: var(--thin-border-width) solid var(--fg); */
+    /* background: var(--bg); */
     color: var(--fg);
     font-family: inherit;
     resize: vertical; /* Allow vertical resizing */
     min-height: 80px;
   }
   
+  
+.svg-modal-form {
+	  /* border: 2px dashed var(--fg); */
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: 0;
+    font-family: inherit;
+    resize: vertical; /* Allow vertical resizing */
+    /* background: #0f0; */
+    padding: 2em 2em;
+}
+  
+[data-theme="theme2"] .svg-modal-form {
+    border-radius: 1em !important;
+}
+
   .modal-buttons {
     display: flex;
     justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .svg-modal-buttons {
+    display: flex;
+    justify-content: space-between;
     gap: 1rem;
     margin-top: 1.5rem;
   }
@@ -1462,23 +1484,38 @@
   }
 
     .modal-content-svg{
-      padding: 3rem;
+
+      align-items: center;
+
+      /* background: #0f0; */
+      justify-content: center;
+
       box-sizing: border-box;
-      max-height: 100vh;
     }
 
    .modal-svg-preview {
-      height: auto;
-      margin-top: 1rem;
       background-color: var(--bg-dim);
       padding: 1rem;
+      /* background: #f00; */
+      height: 70vh;
+      aspect-ratio: 1/1.414;
+  }
+
+
+  .modal-svg-preview svg {
+    width: 100%;
+    height: auto;
+    max-height: 90vh;
+    height: 90vh;
+    display: block;
+    margin: 0 auto;
   }
 
   .practice-char-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0.5rem 0 1rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 1em;
 }
 .practice-char {
   display: inline-block;

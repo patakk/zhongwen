@@ -41,6 +41,7 @@
 	background: var(--bg) !important;
 	opacity: .5;
 }
+
   
 [data-theme="theme2"] .theme-button.active {
 	background: var(--bg) !important;

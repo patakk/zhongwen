@@ -1,9 +1,6 @@
 // src/lib/practiceSheetExport.js
 // Utility for generating practice sheet SVG and PDF
 
-import { jsPDF } from 'jspdf';
-import 'svg2pdf.js';
-
 export function toAccentedPinyin(input) {
 
     if (!input) return input;
@@ -86,7 +83,8 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
   const FONT_SIZE_PINYIN = windowHeight/60;
   const FONT_SIZE_CHAR = 36;
   const OPACITY_FADED = 0.4;
-  let svg = `<svg width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}" xmlns="http://www.w3.org/2000/svg">`;
+  // let svg = `<svg width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}" xmlns="http://www.w3.org/2000/svg">`;
+  let svg = `<svg viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}" xmlns="http://www.w3.org/2000/svg">`;
   svg += `<rect width='100%' height='100%' fill='white'/>`;
 
   // Gather all unique characters from the wordlist
@@ -144,12 +142,18 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
   const pageCharList = charList.slice(startCharIdx, endCharIdx);
 
   let row = 0;
+  const PINYIN_GAP = FONT_SIZE_PINYIN + 4; // vertical space reserved for pinyin
+  const SECOND_ROW_GAP = PINYIN_GAP * 0.5; // reduce gap for second row
   pageCharList.forEach((char, idx) => {
     for (let r = 0; r < rowsForChar; r++) {
       if (row >= ROWS_PER_PAGE) {
         return;
       }
-      const y = gridOffsetY + row * adjustedRowHeight;
+      // For the second row, reduce the vertical gap since there's no pinyin
+      let y = gridOffsetY + row * adjustedRowHeight;
+      if (rowsForChar === 2 && r === 1) {
+        y -= (PINYIN_GAP - SECOND_ROW_GAP); // move second row up
+      }
       let fadedPinyinSVG = '';
       const wordObj = words.find(w => w.character.includes(char));
       if (wordObj && wordObj.pinyin && wordObj.pinyin[0]) {
@@ -159,6 +163,14 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
           if (c === char) arr.push(i);
           return arr;
         }, []);
+        // Calculate total syllable width for the word
+        let totalSyllableWidth = 0;
+        for (let j = 0; j < pinyinSyllables.length; j++) {
+          if (pinyinSyllables[j]) {
+            totalSyllableWidth += pinyinSyllables[j].length * FONT_SIZE_PINYIN * 0.6;
+          }
+        }
+
         for (let i = 0; i < chars.length; i++) {
           if (pinyinSyllables[i]) {
             // Estimate x by accumulating syllable lengths, scaled by 0.6
@@ -166,13 +178,27 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
             let x = gridOffsetX;
             for (let j = 0; j < i; j++) {
               if (pinyinSyllables[j]) {
-                x += pinyinSyllables[j].length * syllableWidth;
+            x += pinyinSyllables[j].length * syllableWidth;
               }
             }
             x += (pinyinSyllables[i].length * syllableWidth) / 2;
             const isCurrent = charIndices.includes(i);
             const pinyinText = noAccents ? pinyinSyllables[i] : toAccentedPinyin(pinyinSyllables[i]);
             fadedPinyinSVG += `<text x="${x}" y="${y - 8}" font-size="${FONT_SIZE_PINYIN}" fill="#222" font-family="sans-serif" opacity="${isCurrent ? 1 : OPACITY_FADED}" text-anchor="middle">${pinyinText}</text>`;
+            // --- Breakdown SVGs ---
+            if (isCurrent && strokesData[char] && strokesData[char].strokes && r === 0) {
+              const breakdownCount = strokesData[char].strokes.length;
+              const breakdownSize = FONT_SIZE_PINYIN * 1.2;
+              let breakdownX = gridOffsetX*1.1+totalSyllableWidth; // start a bit to the right of pinyin
+              for (let b = 1; b <= breakdownCount; b++) {
+            fadedPinyinSVG += `<g transform="translate(${breakdownX},${y - 4}) scale(${breakdownSize/1000}, ${-breakdownSize/1000})">`;
+            for (let s = 0; s < breakdownCount; s++) {
+              fadedPinyinSVG += `<path d='${strokesData[char].strokes[s]}' fill="#222" stroke="none" opacity="${s < b ? 1 : OPACITY_FADED}"/>`;
+            }
+            fadedPinyinSVG += `</g>`;
+            breakdownX += breakdownSize * 1.1; // space between breakdowns
+              }
+            }
           }
         }
       }
@@ -219,6 +245,10 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
 
 // --- PDF Generation ---
 export async function generatePracticeSheetPDF(words, strokesData, options = {}) {
+  // Dynamically import jsPDF and svg2pdf.js only when needed
+  const { jsPDF } = await import('jspdf');
+  await import('svg2pdf.js');
+
   // Get total pages
   const { totalPages } = generatePracticeSheetSVG(words, strokesData, { ...options, noAccents: true, page: 0 });
 

@@ -15,7 +15,7 @@
             :class="{ 'show': isDropdownOpen }"
           >
             <div 
-              v-for="(deck, key) in decks" 
+              v-for="(deck, key) in storeDecks" 
               :key="key" 
               class="option"
               :class="{ 'selected': currentDeck === key }"
