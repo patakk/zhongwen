@@ -72,6 +72,8 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
   const windowHeight = options.windowHeight || 900;
   const noAccents = options.noAccents || false;
   const page = options.page || 0;
+  const excludedChars = options.excludedChars || [];
+  const excludedSet = new Set(excludedChars);
   // SVG constants for A4 (210mm x 297mm at 96dpi: 794x1123px)
   const DPI = 96;
   const A4_WIDTH = windowHeight/1.414; // px (A4 aspect ratio)
@@ -92,7 +94,8 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
   words.forEach(word => {
     [...word.character].forEach(char => {if(char !== '，') uniqueChars.add(char);});
   });
-  const charList = Array.from(uniqueChars);
+  // Filter out excluded characters
+  const charList = Array.from(uniqueChars).filter(char => !excludedSet.has(char));
   console.log(charList);
   // Preprocess: calculate vertical centering offsets for each character
   const charYOffsetMap = {};
@@ -250,7 +253,7 @@ export async function generatePracticeSheetPDF(words, strokesData, options = {})
   await import('svg2pdf.js');
 
   // Get total pages
-  const { totalPages } = generatePracticeSheetSVG(words, strokesData, { ...options, noAccents: true, page: 0 });
+  const { totalPages } = generatePracticeSheetSVG(words, strokesData, { ...options, noAccents: true, page: 0, excludedChars: options.excludedChars });
 
   // PDF constants
   const DPI = 72;
@@ -266,7 +269,7 @@ export async function generatePracticeSheetPDF(words, strokesData, options = {})
 
   for (let page = 0; page < totalPages; page++) {
     if (page > 0) doc.addPage([A4_WIDTH, A4_HEIGHT], 'p');
-    const { svg } = generatePracticeSheetSVG(words, strokesData, { ...options, noAccents: true, page });
+    const { svg } = generatePracticeSheetSVG(words, strokesData, { ...options, noAccents: true, page, excludedChars: options.excludedChars });
     // Create a temporary DOM element for the SVG
     const tempDiv = document.createElement('div');
     tempDiv.style.position = 'fixed';

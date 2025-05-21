@@ -764,15 +764,12 @@
             return;
           }
           const strokesData = await response.json();
-          // Filter words to only those with at least one included char
-          const filteredWords = this.words.filter(word =>
-            [...word.character].some(char => !this.practiceSheetExcludedChars.has(char))
-          );
-          // Generate SVG for the first page using utility
-          const { svg, totalPages } = generatePracticeSheetSVG(filteredWords, strokesData, {
+          // No need to filter words here, let the SVG generator handle exclusion
+          const { svg, totalPages } = generatePracticeSheetSVG(this.words, strokesData, {
             selectedPracticeOption: this.selectedPracticeOption,
             windowHeight: 1123,
-            page: 0
+            page: 0,
+            excludedChars: Array.from(this.practiceSheetExcludedChars)
           });
           this.practiceSheetSVG = svg;
           this.practiceSheetTotalPages = totalPages;
@@ -789,7 +786,8 @@
         const { svg } = generatePracticeSheetSVG(this.words, this.practiceSheetStrokesData, {
           selectedPracticeOption: this.selectedPracticeOption,
           windowHeight: 1123,
-          page
+          page,
+          excludedChars: Array.from(this.practiceSheetExcludedChars)
         });
         this.practiceSheetSVG = svg;
         this.currentPracticeSheetPage = page;
@@ -951,11 +949,12 @@
           alert('Strokes data not loaded. Please generate the practice sheet first.');
           return;
         }
-        // Pass noAccents: true for PDF export (now handled in the utility, but explicit for clarity)
+        // Pass excludedChars for PDF export
         const blob = await generatePracticeSheetPDF(this.words, this.practiceSheetStrokesData, {
           selectedPracticeOption: this.selectedPracticeOption,
           windowHeight: window.innerHeight * .8,
-          noAccents: true
+          noAccents: true,
+          excludedChars: Array.from(this.practiceSheetExcludedChars)
         });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
