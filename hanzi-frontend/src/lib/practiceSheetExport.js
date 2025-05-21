@@ -76,6 +76,7 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
   const excludedSet = new Set(excludedChars);
   const dateStr = options.dateStr || null;
   const dateStrokesData = options.dateStrokesData || null;
+  const showFadedPinyin = options.showFadedPinyin !== undefined ? options.showFadedPinyin : false;
   // SVG constants for A4 (210mm x 297mm at 96dpi: 794x1123px)
   const DPI = 96;
   const A4_WIDTH = windowHeight/1.414; // px (A4 aspect ratio)
@@ -84,7 +85,7 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
   const PADDING_X = windowHeight/20;
   const PADDING_Y = windowHeight/20;
   const ROW_HEIGHT = SQUARE_SIZE + windowHeight/30; // 40px for pinyin
-  const FONT_SIZE_PINYIN = windowHeight/60;
+  const FONT_SIZE_PINYIN = windowHeight/80;
   const FONT_SIZE_CHAR = 36;
   const OPACITY_FADED = 0.4;
   // let svg = `<svg width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}" xmlns="http://www.w3.org/2000/svg">`;
@@ -170,38 +171,61 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
         }, []);
         // Calculate total syllable width for the word
         let totalSyllableWidth = 0;
-        for (let j = 0; j < pinyinSyllables.length; j++) {
-          if (pinyinSyllables[j]) {
-            totalSyllableWidth += pinyinSyllables[j].length * FONT_SIZE_PINYIN * 0.6;
+        let syllablePositions = [];
+        if (showFadedPinyin) {
+          for (let j = 0; j < pinyinSyllables.length; j++) {
+            if (pinyinSyllables[j]) {
+              let width = pinyinSyllables[j].length * FONT_SIZE_PINYIN * 0.6;
+              syllablePositions.push(width);
+              totalSyllableWidth += width;
+            }
+          }
+        } else {
+          // Only count the relevant syllable(s) for this char
+          for (let i = 0; i < chars.length; i++) {
+            if (charIndices.includes(i) && pinyinSyllables[i]) {
+              let width = pinyinSyllables[i].length * FONT_SIZE_PINYIN * 0.6;
+              syllablePositions.push(width);
+              totalSyllableWidth += width;
+            }
           }
         }
 
         for (let i = 0; i < chars.length; i++) {
           if (pinyinSyllables[i]) {
-            // Estimate x by accumulating syllable lengths, scaled by 0.6
-            let syllableWidth = FONT_SIZE_PINYIN * 0.6;
+            let syllableWidth = pinyinSyllables[i].length * FONT_SIZE_PINYIN * 0.6;
             let x = gridOffsetX;
-            for (let j = 0; j < i; j++) {
-              if (pinyinSyllables[j]) {
-            x += pinyinSyllables[j].length * syllableWidth;
+            if (showFadedPinyin) {
+              for (let j = 0; j < i; j++) {
+                if (pinyinSyllables[j]) {
+                  x += pinyinSyllables[j].length * FONT_SIZE_PINYIN * 0.6;
+                }
               }
+              x += (syllableWidth) / 2;
+            } else {
+              // Only position the relevant syllable(s) centered
+              if (!charIndices.includes(i)) continue;
+              x += totalSyllableWidth / 2;
             }
-            x += (pinyinSyllables[i].length * syllableWidth) / 2;
             const isCurrent = charIndices.includes(i);
             const pinyinText = noAccents ? pinyinSyllables[i].replace("5", "") : toAccentedPinyin(pinyinSyllables[i]);
-            fadedPinyinSVG += `<text x="${x}" y="${y - 8}" font-size="${FONT_SIZE_PINYIN}" fill="#222" font-family="sans-serif" font-style="italic" opacity="${isCurrent ? 1 : OPACITY_FADED}" text-anchor="middle">${pinyinText}</text>`;
+            if (showFadedPinyin) {
+              fadedPinyinSVG += `<text x="${x}" y="${y - 8}" font-size="${FONT_SIZE_PINYIN}" fill="#222" font-family="sans-serif" font-style="italic" opacity="${isCurrent ? 1 : OPACITY_FADED}" text-anchor="middle">${pinyinText}</text>`;
+            } else if (isCurrent) {
+              fadedPinyinSVG += `<text x="${x}" y="${y - 8}" font-size="${FONT_SIZE_PINYIN}" fill="#222" font-family="sans-serif" font-style="italic" opacity="1" text-anchor="middle">${pinyinText}</text>`;
+            }
             // --- Breakdown SVGs ---
             if (isCurrent && strokesData[char] && strokesData[char].strokes && r === 0) {
               const breakdownCount = strokesData[char].strokes.length;
               const breakdownSize = FONT_SIZE_PINYIN * 1.2;
               let breakdownX = gridOffsetX*1.1+totalSyllableWidth; // start a bit to the right of pinyin
               for (let b = 1; b <= breakdownCount; b++) {
-            fadedPinyinSVG += `<g transform="translate(${breakdownX},${y - 4}) scale(${breakdownSize/1000}, ${-breakdownSize/1000})">`;
-            for (let s = 0; s < breakdownCount; s++) {
-              fadedPinyinSVG += `<path d='${strokesData[char].strokes[s]}' fill="#222" stroke="none" opacity="${s < b ? 1 : OPACITY_FADED}"/>`;
-            }
-            fadedPinyinSVG += `</g>`;
-            breakdownX += breakdownSize * 1.1; // space between breakdowns
+                fadedPinyinSVG += `<g transform="translate(${breakdownX},${y - 4}) scale(${breakdownSize/1000}, ${-breakdownSize/1000})">`;
+                for (let s = 0; s < breakdownCount; s++) {
+                  fadedPinyinSVG += `<path d='${strokesData[char].strokes[s]}' fill="#222" stroke="none" opacity="${s < b ? 1 : OPACITY_FADED}"/>`;
+                }
+                fadedPinyinSVG += `</g>`;
+                breakdownX += breakdownSize * 1.1; // space between breakdowns
               }
             }
           }
@@ -263,7 +287,7 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
         svg += `</g>`;
       } else {
         // fallback: render as text if no stroke data
-        svg += `<text x="${startX + i * (dateSize + margin) + dateSize/2}" y="${y-dateSize/4}" font-size="${dateSize * 0.8}" fill="#222" text-anchor="middle" alignment-baseline="middle">${char}</text>`;
+        svg += `<text x="${startX + i * (dateSize + margin) + dateSize/2}" y="${y-dateSize/4}" font-size="${dateSize * 0.9}" fill="#222" text-anchor="middle" alignment-baseline="middle">${char}</text>`;
       }
     });
   }
