@@ -268,9 +268,33 @@
         <h3>Get Practice Sheet</h3>
         <div class="modal-form">
           <label>Choose an option:</label>
-          <div v-for="opt in practiceOptions" :key="opt.value" style="margin-bottom: 0.5rem;">
-            <input type="radio" :id="opt.value" :value="opt.value" v-model="selectedPracticeOption" />
-            <label :for="opt.value">{{ opt.label }}</label>
+          <div class="practice-options">
+            <div
+              v-for="opt in practiceOptions"
+              :key="opt.value"
+              class="practice-option"
+              :class="{ selected: selectedPracticeOption === opt.value, faded: selectedPracticeOption !== opt.value }"
+              @click="selectedPracticeOption = opt.value"
+            >
+              {{ opt.label }}
+            </div>
+          </div>
+          <div style="margin-top:1.5rem;">
+            <label>Included Characters (click to exclude/include):</label>
+            <div class="practice-char-list">
+              <span
+                v-for="char in getPracticeSheetUniqueChars()"
+                :key="char"
+                class="practice-char"
+                :class="{ excluded: practiceSheetExcludedChars.has(char) }"
+                @click="togglePracticeSheetChar(char)"
+                :title="practiceSheetExcludedChars.has(char) ? 'Click to include' : 'Click to exclude'"
+              >
+                {{ char }}
+              </span>
+            </div>
+            <div v-if="getPracticeSheetUniqueChars().length === 0" style="opacity:0.7; font-style:italic; margin-top:0.5rem;">No characters in this wordlist.</div>
+            <!-- <button v-if="practiceSheetExcludedChars.size > 0" @click="resetPracticeSheetExcludedChars" class="reset-excluded-button">Reset Excluded</button> -->
           </div>
         </div>
         <div class="modal-buttons">
@@ -290,6 +314,12 @@
         <div class="modal-buttons">
           <button @click="showPracticeSheetSVG = false" class="cancel-button">Close</button>
           <button @click="downloadPracticeSheetSVG" class="confirm-button">Download SVG</button>
+          <button @click="downloadPracticeSheetPDF" class="confirm-button">Download PDF</button>
+        </div>
+        <div v-if="practiceSheetTotalPages > 1" class="modal-buttons" style="justify-content:center;">
+          <button @click="updatePracticeSheetPage(currentPracticeSheetPage-1)" :disabled="currentPracticeSheetPage === 0">Previous Page</button>
+          <span style="margin:0 1rem;">Page {{ currentPracticeSheetPage+1 }} / {{ practiceSheetTotalPages }}</span>
+          <button @click="updatePracticeSheetPage(currentPracticeSheetPage+1)" :disabled="currentPracticeSheetPage >= practiceSheetTotalPages-1">Next Page</button>
         </div>
       </div>
     </div>
@@ -298,6 +328,7 @@
   <script>
   import BasePage from '../components/BasePage.vue';
   import PreloadWrapper from '../components/PreloadWrapper.vue';
+  import { generatePracticeSheetSVG, generatePracticeSheetPDF } from '../lib/practiceSheetExport.js';
   
   export default {
     name: 'MySpaceView',
@@ -327,6 +358,10 @@
         ],
         practiceSheetSVG: '', // SVG string for preview/download
         showPracticeSheetSVG: false, // Show SVG preview modal
+        practiceSheetStrokesData: null, // Store strokes data for PDF export
+        currentPracticeSheetPage: 0, // Track current page for preview
+        practiceSheetTotalPages: 1, // Track total pages for preview
+        practiceSheetExcludedChars: new Set(), // Track excluded chars for practice sheet
       };
     },
     computed: {
@@ -377,6 +412,11 @@
           this.$nextTick(() => {
             this.$refs.editDescriptionInput?.focus();
           });
+        }
+      },
+      showPracticeSheetModal(newVal) {
+        if (newVal) {
+          this.selectedPracticeOption = 'one_row';
         }
       }
     },
@@ -633,6 +673,7 @@
 
       closePracticeSheetModal() {
         this.showPracticeSheetModal = false;
+        this.resetPracticeSheetExcludedChars(); // Reset on close
       },
 
       // Methods for description editing
@@ -686,11 +727,35 @@
         });
       },
 
-      async createPracticeSheet() {
-        // Gather all unique characters from the wordlist
+      // --- PRACTICE SHEET CHAR FILTERING ---
+      getPracticeSheetUniqueChars() {
+        // Return all unique characters in the current word list
         const uniqueChars = new Set();
         this.words.forEach(word => {
           [...word.character].forEach(char => uniqueChars.add(char));
+        });
+        return Array.from(uniqueChars);
+      },
+      togglePracticeSheetChar(char) {
+        if (this.practiceSheetExcludedChars.has(char)) {
+          this.practiceSheetExcludedChars.delete(char);
+        } else {
+          this.practiceSheetExcludedChars.add(char);
+        }
+        // Force reactivity
+        this.practiceSheetExcludedChars = new Set(this.practiceSheetExcludedChars);
+      },
+      resetPracticeSheetExcludedChars() {
+        this.practiceSheetExcludedChars = new Set();
+      },
+
+      async createPracticeSheet() {
+        // Gather all unique characters from the wordlist, minus excluded
+        const uniqueChars = new Set();
+        this.words.forEach(word => {
+          [...word.character].forEach(char => {
+            if (!this.practiceSheetExcludedChars.has(char)) uniqueChars.add(char);
+          });
         });
         const charList = Array.from(uniqueChars).join('');
         try {
@@ -700,146 +765,35 @@
             return;
           }
           const strokesData = await response.json();
-          // Generate SVG
-          this.practiceSheetSVG = this.generatePracticeSheetSVG(Array.from(uniqueChars), strokesData);
+          // Filter words to only those with at least one included char
+          const filteredWords = this.words.filter(word =>
+            [...word.character].some(char => !this.practiceSheetExcludedChars.has(char))
+          );
+          // Generate SVG for the first page using utility
+          const { svg, totalPages } = generatePracticeSheetSVG(filteredWords, strokesData, {
+            selectedPracticeOption: this.selectedPracticeOption,
+            windowHeight: window.innerHeight * .7,
+            page: 0
+          });
+          this.practiceSheetSVG = svg;
+          this.practiceSheetTotalPages = totalPages;
+          this.currentPracticeSheetPage = 0;
+          this.practiceSheetStrokesData = strokesData; // Save for PDF export
           this.showPracticeSheetSVG = true;
         } catch (err) {
           console.error('Error fetching strokes:', err);
         }
       },
-      generatePracticeSheetSVG(charList, strokesData) {
-        // SVG constants for A4 (210mm x 297mm at 96dpi: 794x1123px)
-        const DPI = 96;
-        let windowHeight = window.innerHeight*.8;
-        const A4_WIDTH = windowHeight/1.414; // px (A4 aspect ratio)
-        const A4_HEIGHT = windowHeight; // px (A4 aspect ratio)
-        const SQUARE_SIZE = windowHeight/20; // px
-        const PADDING_X = windowHeight/20;
-        const PADDING_Y = windowHeight/20;
-        const ROW_HEIGHT = SQUARE_SIZE + windowHeight/30; // 40px for pinyin
-        const FONT_SIZE_PINYIN = windowHeight/60;
-        const FONT_SIZE_CHAR = 36;
-        const OPACITY_FADED = 0.4;
-        let svg = `<svg width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}" xmlns="http://www.w3.org/2000/svg">`;
-        svg += `<rect width='100%' height='100%' fill='white'/>`;
-        let row = 0, page = 0;
-
-        // Preprocess: calculate vertical centering offsets for each character
-        const charYOffsetMap = {};
-        for (const char of charList) {
-          if (strokesData[char] && strokesData[char].strokes && strokesData[char].strokes.length > 0) {
-            let minY = Infinity, maxY = -Infinity;
-            strokesData[char].strokes.forEach(path => {
-              // Extract all y values from the SVG path string
-              // This regex matches numbers after a comma or space (for y values)
-              const matches = path.match(/[-+]?[0-9]*\.?[0-9]+/g);
-              if (matches && matches.length > 1) {
-                for (let i = 1; i < matches.length; i += 2) {
-                  const y = parseFloat(matches[i]);
-                  if (!isNaN(y)) {
-                    minY = Math.min(minY, y);
-                    maxY = Math.max(maxY, y);
-                  }
-                }
-              }
-            });
-            if (minY < maxY && isFinite(minY) && isFinite(maxY)) {
-              // Centering offset: move by (maxY+minY)/2 to 500 (SVG center)
-              const centerY = (maxY + minY) / 2;
-              charYOffsetMap[char] = 500 - centerY;
-            } else {
-              charYOffsetMap[char] = 0;
-            }
-          } else {
-            charYOffsetMap[char] = 0;
-          }
-        }
-
-        // Calculate how many rows and columns fit vertically and horizontally
-        const availableWidth = A4_WIDTH - 2 * PADDING_X;
-        const availableHeight = A4_HEIGHT - 2 * PADDING_Y;
-        const ROWS_PER_PAGE = Math.floor(availableHeight / ROW_HEIGHT);
-        const SQUARES_PER_ROW = Math.floor(availableWidth / SQUARE_SIZE);
-        const totalGridWidth = SQUARES_PER_ROW * SQUARE_SIZE;
-        const totalGridHeight = ROWS_PER_PAGE * ROW_HEIGHT;
-        const gridOffsetX = PADDING_X + (availableWidth - totalGridWidth) / 2;
-        const gridOffsetY = PADDING_Y + (availableHeight - totalGridHeight) / 2;
-        // Adjust ROW_HEIGHT so that the last row fits exactly to the end
-        const adjustedRowHeight = (A4_HEIGHT - 2 * gridOffsetY) / (ROWS_PER_PAGE - .5);
-
-        charList.forEach((char, idx) => {
-          // Option: one or two rows per character
-          const rowsForChar = this.selectedPracticeOption === 'two_rows' ? 2 : 1;
-          for (let r = 0; r < rowsForChar; r++) {
-            if (row >= ROWS_PER_PAGE) {
-              // New page (not implemented: multi-page, just fit first page for now)
-              return;
-            }
-            const y = gridOffsetY + row * adjustedRowHeight;
-            // Pinyin above row (with fading for non-current char, and correct alignment)
-            let fadedPinyinSVG = '';
-            const wordObj = this.words.find(w => w.character.includes(char));
-            if (wordObj && wordObj.pinyin && wordObj.pinyin[0]) {
-              const pinyinSyllables = wordObj.pinyin[0].split(/\s+/);
-              const chars = [...wordObj.character];
-              // Find all indices where this char appears in the word
-              const charIndices = chars.reduce((arr, c, i) => {
-                if (c === char) arr.push(i);
-                return arr;
-              }, []);
-              // For each character in the word, render its pinyin above the corresponding grid cell
-              for (let i = 0; i < chars.length; i++) {
-                if (pinyinSyllables[i]) {
-                  // Calculate the x position using cumulative sum of previous syllable lengths * font size
-                  let x = gridOffsetX;
-                  for (let j = 0; j < i; j++) {
-                  // Estimate width: each syllable's length * FONT_SIZE_PINYIN * 0.6 (rough width per char)
-                  x += pinyinSyllables[j].length * FONT_SIZE_PINYIN * 0.55;
-                  }
-                  // Center the syllable above its estimated width
-                  x += (pinyinSyllables[i].length * FONT_SIZE_PINYIN * 0.55) / 2;
-                  const isCurrent = charIndices.includes(i);
-                  fadedPinyinSVG += `<text x="${x}" y="${y - 8}" font-size="${FONT_SIZE_PINYIN}" fill="#222" font-family="sans-serif" opacity="${isCurrent ? 1 : OPACITY_FADED}" text-anchor="middle">${this.$toAccentedPinyin(pinyinSyllables[i])}</text>`;
-                }
-              }
-            }
-            if(r === 0) {
-              svg += fadedPinyinSVG;
-            }
-            // Squares
-            for (let i = 0; i < SQUARES_PER_ROW; i++) {
-              const x = gridOffsetX + i * SQUARE_SIZE;
-              svg += `<rect x="${x}" y="${y}" width="${SQUARE_SIZE}" height="${SQUARE_SIZE}" fill="none" stroke="#888" stroke-width="1.5"/>`;
-              // Render character
-              if (r === 0 && i === 0) {
-                if (strokesData[char] && strokesData[char].strokes) {
-                  // Center and flip vertically, align to center of square, and vertically center glyph
-                  svg += `<g transform="translate(${x + SQUARE_SIZE/2},${y + SQUARE_SIZE/2}) scale(0.9) translate(${-SQUARE_SIZE/2},${-SQUARE_SIZE/2})">`;
-                  svg += `<g transform=\"translate(0,${SQUARE_SIZE}) scale(${SQUARE_SIZE/1000},-${SQUARE_SIZE/1000}) translate(0,${charYOffsetMap[char]})\">`;
-                  strokesData[char].strokes.forEach(path => {
-                    svg += `<path d=\"${path}\" fill=\"#222\" stroke=\"none\"/>`;
-                  });
-                  svg += `</g></g>`;
-                }
-              } else if (r === 0 && i > 0 && i <= (strokesData[char]?.strokes?.length || 2)) {
-                if (strokesData[char] && strokesData[char].strokes) {
-                  svg += `<g transform="translate(${x + SQUARE_SIZE/2},${y + SQUARE_SIZE/2}) scale(0.9) translate(${-SQUARE_SIZE/2},${-SQUARE_SIZE/2})" opacity="${OPACITY_FADED}">`;
-                  svg += `<g transform=\"translate(0,${SQUARE_SIZE}) scale(${SQUARE_SIZE/1000},-${SQUARE_SIZE/1000}) translate(0,${charYOffsetMap[char]})\">`;
-                  strokesData[char].strokes.forEach(path => {
-                    svg += `<path d=\"${path}\" fill=\"#222\" stroke=\"none\"/>`;
-                  });
-                  svg += `</g></g>`;
-                }
-              } else if (r === 1) {
-                // Second row: always empty
-                // (no character)
-              }
-            }
-            row++;
-          }
+      // Add a method to change the preview page
+      updatePracticeSheetPage(page) {
+        if (!this.practiceSheetStrokesData) return;
+        const { svg } = generatePracticeSheetSVG(this.words, this.practiceSheetStrokesData, {
+          selectedPracticeOption: this.selectedPracticeOption,
+          windowHeight: window.innerHeight * .7,
+          page
         });
-        svg += '</svg>';
-        return svg;
+        this.practiceSheetSVG = svg;
+        this.currentPracticeSheetPage = page;
       },
 
       downloadAnkiDeck() {
@@ -985,6 +939,29 @@
         const a = document.createElement('a');
         a.href = url;
         a.download = `${this.selectedWordlist}_practice_sheet.svg`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      },
+
+      async downloadPracticeSheetPDF() {
+        if (!this.practiceSheetStrokesData) {
+          alert('Strokes data not loaded. Please generate the practice sheet first.');
+          return;
+        }
+        // Pass noAccents: true for PDF export (now handled in the utility, but explicit for clarity)
+        const blob = await generatePracticeSheetPDF(this.words, this.practiceSheetStrokesData, {
+          selectedPracticeOption: this.selectedPracticeOption,
+          windowHeight: window.innerHeight * .8,
+          noAccents: true
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${this.selectedWordlist}_practice_sheet.pdf`;
         document.body.appendChild(a);
         a.click();
         setTimeout(() => {
@@ -1497,7 +1474,70 @@
       padding: 1rem;
   }
 
-   .modal-svg-content {
-    }
+  .practice-char-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1rem 0;
+}
+.practice-char {
+  display: inline-block;
+  font-size: 1.5rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 80%);
+  color: var(--fg);
+  cursor: pointer;
+  /* transition: opacity 0.2s, background 0.2s; */
+  user-select: none;
+  border: 1px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 80%);
+}
+.practice-char.excluded {
+  opacity: 0.35;
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 90%);
+  text-decoration: line-through;
+}
+.reset-excluded-button {
+  margin-top: 0.5rem;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.reset-excluded-button:hover {
+  background: color-mix(in oklab, var(--fg) 8%, var(--bg) 80%);
+  }
 
+  .practice-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .practice-option {
+    padding: 0.5rem 1rem;
+    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+    user-select: none;
+    text-align: left;
+  }
+
+  .practice-option:hover {
+    background: color-mix(in oklab, var(--fg) 8%, var(--bg) 75%);
+  }
+
+  .practice-option.selected {
+    background: color-mix(in oklab, var(--fg) 12%, var(--bg) 70%);
+    font-weight: bold;
+  }
+
+  .practice-option.faded {
+    opacity: 0.6;
+  }
   </style>
