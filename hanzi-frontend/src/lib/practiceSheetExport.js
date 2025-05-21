@@ -227,7 +227,8 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
             });
             svg += `</g></g>`;
           }
-        } else if (r === 0 && i > 0 && i <= Math.min(6, strokesData[char]?.strokes?.length/2+1 || 2)) {
+        // } else if (r === 0 && i > 0 && i <= Math.min(6, strokesData[char]?.strokes?.length/2+1 || 2)) {
+        } else if (r === 0 && i > 0 && i <= 3) {
           if (strokesData[char] && strokesData[char].strokes) {
             svg += `<g transform="translate(${x + SQUARE_SIZE/2},${y + SQUARE_SIZE/2}) scale(0.9) translate(${-SQUARE_SIZE/2},${-SQUARE_SIZE/2})" opacity="${OPACITY_FADED}">`;
             svg += `<g transform=\"translate(0,${SQUARE_SIZE}) scale(${SQUARE_SIZE/1000},-${SQUARE_SIZE/1000}) translate(0,${charYOffsetMap[char]})\">`;
