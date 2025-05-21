@@ -1,6 +1,177 @@
 # CHANGELOG
 
 
+## v1.4.0 (2025-05-21)
+
+### Bug Fixes
+
+- Get card data cache stuff
+  ([`57e2b35`](https://github.com/patakk/zhongwen/commit/57e2b35c5d72cb8995dddabfa479c101bb67bc76))
+
+- Get card data cache stuff
+  ([`66cdc33`](https://github.com/patakk/zhongwen/commit/66cdc334093379ec5d8cd037503a2e3f21635228))
+
+- Get card data cache stuff
+  ([`3a2a67b`](https://github.com/patakk/zhongwen/commit/3a2a67bb32ea0cc4c0b971937ccc0668b9e155b5))
+
+- Get card data cache stuff
+  ([`e70a011`](https://github.com/patakk/zhongwen/commit/e70a011ef58d97b76d6015cd4f0251cc6faba108))
+
+- Get flashcards char data
+  ([`dde24cd`](https://github.com/patakk/zhongwen/commit/dde24cd70f3c60270ed14ce61f70b7466071ead2))
+
+- Get requests
+  ([`71d14f1`](https://github.com/patakk/zhongwen/commit/71d14f112abb6202946b234d445546b96582e62a))
+
+- Present in
+  ([`e0a8f08`](https://github.com/patakk/zhongwen/commit/e0a8f086bb479e1616772557626ca5611abb892c))
+
+- Present in
+  ([`e4f3184`](https://github.com/patakk/zhongwen/commit/e4f318471c4754b5f77824f7d1205716d1f66cc6))
+
+- Removed @session_requried from some
+  ([`2272ae2`](https://github.com/patakk/zhongwen/commit/2272ae2483a76444c1432c4d697e74e95d1cfac9))
+
+- Search cache enforce, 7 days
+  ([`102063e`](https://github.com/patakk/zhongwen/commit/102063e5169d20ef3ddf01ab8d59fa43d64291b0))
+
+- Strokes practice logic
+  ([`bce9663`](https://github.com/patakk/zhongwen/commit/bce966386523817ea06097b71a0c5357d029750c))
+
+- Strokes practice logic
+  ([`77209eb`](https://github.com/patakk/zhongwen/commit/77209ebd227667a631a2eb163fdf26c4076291b9))
+
+- Style
+  ([`2a4bd67`](https://github.com/patakk/zhongwen/commit/2a4bd673575513c3246b341df64cc2529dc27fbd))
+
+### Chores
+
+- Build
+  ([`b882f7c`](https://github.com/patakk/zhongwen/commit/b882f7cef62742d2529eca45d888fe0347e6202c))
+
+- Build
+  ([`02986df`](https://github.com/patakk/zhongwen/commit/02986df303cf040217723de12043269fd77d6c0e))
+
+- Build
+  ([`91691ee`](https://github.com/patakk/zhongwen/commit/91691eef0a19e712c53b5f4ca433c226c034adff))
+
+- Build
+  ([`37e3dc1`](https://github.com/patakk/zhongwen/commit/37e3dc1a26561841d3c96632e5b9c41621afe253))
+
+- Build
+  ([`005a955`](https://github.com/patakk/zhongwen/commit/005a955691644aded734cba06dd4bc0e5b812d78))
+
+- Build
+  ([`635537e`](https://github.com/patakk/zhongwen/commit/635537ec3f25b20c5be98de042ed7eed57243777))
+
+- Build
+  ([`89c9d22`](https://github.com/patakk/zhongwen/commit/89c9d22b26a43d7671556266a5c02981b9fd72bf))
+
+- Build
+  ([`341eb54`](https://github.com/patakk/zhongwen/commit/341eb5452996f109fe271acb9c14fefca414dfbd))
+
+- Build
+  ([`2c59fc9`](https://github.com/patakk/zhongwen/commit/2c59fc9e296d41d9df49f870c5f41045d11ac920))
+
+- Build
+  ([`e615a1a`](https://github.com/patakk/zhongwen/commit/e615a1a902cc6e44666c6909039984f11b9a9bc1))
+
+- Build
+  ([`46c754d`](https://github.com/patakk/zhongwen/commit/46c754dd30c0fe2f280e28f60b7cc13acaa7476a))
+
+- Build
+  ([`2bf0756`](https://github.com/patakk/zhongwen/commit/2bf07563c9803dd6e5942b143d8ccd9398b0fc33))
+
+- Build
+  ([`1b10d68`](https://github.com/patakk/zhongwen/commit/1b10d683e4b86072785be27723ca12311297062b))
+
+- Build
+  ([`f76a69d`](https://github.com/patakk/zhongwen/commit/f76a69d1834044942683838ae4298c5af622538a))
+
+- Build
+  ([`aac4496`](https://github.com/patakk/zhongwen/commit/aac4496f58ba7828e64749446be246c6236fc4c7))
+
+- Build
+  ([`3105226`](https://github.com/patakk/zhongwen/commit/3105226357813275b987d7e34eaec8de3d394aa1))
+
+- Build
+  ([`8cf83d7`](https://github.com/patakk/zhongwen/commit/8cf83d73f3d740f7910d2f9bf8ae668be39ed73f))
+
+- Build
+  ([`3f6b665`](https://github.com/patakk/zhongwen/commit/3f6b665c3a535df0a77fc8345ce4e0cd63839535))
+
+- Build
+  ([`a226a43`](https://github.com/patakk/zhongwen/commit/a226a43cfafa4ae7097f8f25102b78d210af22a5))
+
+- Build
+  ([`0396917`](https://github.com/patakk/zhongwen/commit/03969177815e8676aece7ac7876e92fe60a3523f))
+
+- Build
+  ([`c5c178d`](https://github.com/patakk/zhongwen/commit/c5c178d593921255a0557767375a33f6715814c6))
+
+- Build
+  ([`c99ae28`](https://github.com/patakk/zhongwen/commit/c99ae28720c56e1a796ea4f34e4fc351e8ed9835))
+
+- Build
+  ([`c6b2d55`](https://github.com/patakk/zhongwen/commit/c6b2d55bd8eeff3661a46a031f010c88138c2e94))
+
+- Hanzilookup to assets
+  ([`5e9cd0c`](https://github.com/patakk/zhongwen/commit/5e9cd0c59b114adbcce744dc37f918e03bbde29c))
+
+### Features
+
+- Add words
+  ([`4b16a59`](https://github.com/patakk/zhongwen/commit/4b16a5935974570b88c8cbd3b0d8f2c2ffdc2072))
+
+- Add words
+  ([`91a8a5e`](https://github.com/patakk/zhongwen/commit/91a8a5e8b7cadb3494216aab9dd59ce2ef11e3b0))
+
+- Decomp info fetching immedate
+  ([`9996c2a`](https://github.com/patakk/zhongwen/commit/9996c2ac7731ecee65e2eaa53e5d8e8f056bf32b))
+
+- Decomp tree, and other styling
+  ([`c0413da`](https://github.com/patakk/zhongwen/commit/c0413da5fdbcf7146fe02c33af0bc8c3e1c4ad52))
+
+- Hanzi tree
+  ([`b8169a4`](https://github.com/patakk/zhongwen/commit/b8169a47f50e7bccbbf4ed77296d6b0218cdd052))
+
+- Hanzi tree
+  ([`3aa029d`](https://github.com/patakk/zhongwen/commit/3aa029da46c6c4429c21e3affdd6cce6111694ee))
+
+- Hanzi tree
+  ([`26c5130`](https://github.com/patakk/zhongwen/commit/26c5130295844fa8b4a779e7d007b7f793978f2b))
+
+- Hanzi tree, and much better decomp cache
+  ([`90eecaa`](https://github.com/patakk/zhongwen/commit/90eecaa6731722472a252b2c422fca45f62f8a97))
+
+- Hanzi tree, deleting and other things
+  ([`dd11419`](https://github.com/patakk/zhongwen/commit/dd11419fd6580ec0c1772671b800c1f6b9d9d71c))
+
+- Hanzi tree, popup stuff
+  ([`2da6a5b`](https://github.com/patakk/zhongwen/commit/2da6a5bdadb9cc224856a491fcd8ef2e6f1f45da))
+
+- Lots of stuff
+  ([`c11a070`](https://github.com/patakk/zhongwen/commit/c11a07005783e5feb127185facc42f9bd06f858c))
+
+- Metainfo mutable
+  ([`333d314`](https://github.com/patakk/zhongwen/commit/333d31464995404423d1cdc3e6e790f83abf90ae))
+
+- Search caching
+  ([`07709df`](https://github.com/patakk/zhongwen/commit/07709dfe312ed10dcab0c330281618374e104329))
+
+- Shorter search trigger
+  ([`d7adce7`](https://github.com/patakk/zhongwen/commit/d7adce7f0c2ac4a3622bbe585a6e27ddf02cc9c4))
+
+- Themes
+  ([`d500620`](https://github.com/patakk/zhongwen/commit/d500620eafa3977fa72c56c5eca42eda2f882249))
+
+- Themes
+  ([`5b92a0a`](https://github.com/patakk/zhongwen/commit/5b92a0a4209fa28a5ccbc3d0db339fa104679fb3))
+
+- Trad/simp preload wrapper
+  ([`9667c13`](https://github.com/patakk/zhongwen/commit/9667c13f7709d614db76a5fe25da3ae53caa8656))
+
+
 ## v1.3.0 (2025-05-03)
 
 ### Chores
