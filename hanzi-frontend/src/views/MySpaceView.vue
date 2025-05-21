@@ -757,24 +757,45 @@
           });
         });
         const charList = Array.from(uniqueChars).join('');
+        // --- Date in Chinese ---
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const day = now.getDate();
+        // e.g. 2025年5月22日
+        const dateStr = `${year}年${month}月${day}日`;
+        const dateCharSet = new Set([...dateStr]);
+        // Remove any ASCII digits, keep only Chinese chars and 年月日
+        const dateChars = Array.from(dateCharSet).filter(c => /[\u4e00-\u9fa5年月日0-9]/.test(c)).join('');
         try {
+          // Fetch main strokes
           const response = await fetch(`/api/getStrokes/${charList}`);
           if (!response.ok) {
             console.error('Network response was not ok for characters:', charList);
             return;
           }
           const strokesData = await response.json();
+          // Fetch date strokes
+          const dateResponse = await fetch(`/api/getStrokes/${dateChars}`);
+          let dateStrokesData = null;
+          if (dateResponse.ok) {
+            dateStrokesData = await dateResponse.json();
+          }
           // No need to filter words here, let the SVG generator handle exclusion
           const { svg, totalPages } = generatePracticeSheetSVG(this.words, strokesData, {
             selectedPracticeOption: this.selectedPracticeOption,
             windowHeight: 1123,
             page: 0,
-            excludedChars: Array.from(this.practiceSheetExcludedChars)
+            excludedChars: Array.from(this.practiceSheetExcludedChars),
+            dateStr,
+            dateStrokesData
           });
           this.practiceSheetSVG = svg;
           this.practiceSheetTotalPages = totalPages;
           this.currentPracticeSheetPage = 0;
           this.practiceSheetStrokesData = strokesData; // Save for PDF export
+          this.practiceSheetDateStr = dateStr;
+          this.practiceSheetDateStrokesData = dateStrokesData;
           this.showPracticeSheetSVG = true;
         } catch (err) {
           console.error('Error fetching strokes:', err);
@@ -787,7 +808,9 @@
           selectedPracticeOption: this.selectedPracticeOption,
           windowHeight: 1123,
           page,
-          excludedChars: Array.from(this.practiceSheetExcludedChars)
+          excludedChars: Array.from(this.practiceSheetExcludedChars),
+          dateStr: this.practiceSheetDateStr,
+          dateStrokesData: this.practiceSheetDateStrokesData
         });
         this.practiceSheetSVG = svg;
         this.currentPracticeSheetPage = page;

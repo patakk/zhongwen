@@ -74,6 +74,8 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
   const page = options.page || 0;
   const excludedChars = options.excludedChars || [];
   const excludedSet = new Set(excludedChars);
+  const dateStr = options.dateStr || null;
+  const dateStrokesData = options.dateStrokesData || null;
   // SVG constants for A4 (210mm x 297mm at 96dpi: 794x1123px)
   const DPI = 96;
   const A4_WIDTH = windowHeight/1.414; // px (A4 aspect ratio)
@@ -186,8 +188,8 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
             }
             x += (pinyinSyllables[i].length * syllableWidth) / 2;
             const isCurrent = charIndices.includes(i);
-            const pinyinText = noAccents ? pinyinSyllables[i] : toAccentedPinyin(pinyinSyllables[i]);
-            fadedPinyinSVG += `<text x="${x}" y="${y - 8}" font-size="${FONT_SIZE_PINYIN}" fill="#222" font-family="sans-serif" opacity="${isCurrent ? 1 : OPACITY_FADED}" text-anchor="middle">${pinyinText}</text>`;
+            const pinyinText = noAccents ? pinyinSyllables[i].replace("5", "") : toAccentedPinyin(pinyinSyllables[i]);
+            fadedPinyinSVG += `<text x="${x}" y="${y - 8}" font-size="${FONT_SIZE_PINYIN}" fill="#222" font-family="sans-serif" font-style="italic" opacity="${isCurrent ? 1 : OPACITY_FADED}" text-anchor="middle">${pinyinText}</text>`;
             // --- Breakdown SVGs ---
             if (isCurrent && strokesData[char] && strokesData[char].strokes && r === 0) {
               const breakdownCount = strokesData[char].strokes.length;
@@ -216,7 +218,6 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
         svg += `<line x1="${x + SQUARE_SIZE}" y1="${y}" x2="${x}" y2="${y + SQUARE_SIZE}" stroke="#bbb" stroke-width="1"/>`;
         svg += `<line x1="${x + SQUARE_SIZE/2}" y1="${y}" x2="${x + SQUARE_SIZE/2}" y2="${y + SQUARE_SIZE}" stroke="#bbb" stroke-width="1"/>`;
         svg += `<line x1="${x}" y1="${y + SQUARE_SIZE/2}" x2="${x + SQUARE_SIZE}" y2="${y + SQUARE_SIZE/2}" stroke="#bbb" stroke-width="1"/>`;
-        // ...existing code...
         if (r === 0 && i === 0) {
           if (strokesData[char] && strokesData[char].strokes) {
             svg += `<g transform="translate(${x + SQUARE_SIZE/2},${y + SQUARE_SIZE/2}) scale(0.9) translate(${-SQUARE_SIZE/2},${-SQUARE_SIZE/2})">`;
@@ -242,6 +243,36 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
       row++;
     }
   });
+  // Render the date in the top right corner if provided
+  if (dateStr) {
+    // Render each character of the date horizontally, right-aligned
+    const dateChars = [...dateStr];
+    const dateSize = SQUARE_SIZE * 0.25; // smaller size for date
+    const margin = SQUARE_SIZE * 0.05;
+    let totalDateWidth = dateChars.length * dateSize + (dateChars.length - 1) * margin;
+    // let startX = A4_WIDTH - .25*PADDING_X - totalDateWidth;
+    let startX = .25*PADDING_X;
+    let y = A4_HEIGHT - .25*PADDING_Y;
+    dateChars.forEach((char, i) => {
+      if (dateStrokesData && dateStrokesData[char] && dateStrokesData[char].strokes) {
+        svg += `<g transform="translate(${startX + i * (dateSize + margin)},${y}) scale(${dateSize/1000},-${dateSize/1000})">`;
+        dateStrokesData[char].strokes.forEach(path => {
+          svg += `<path d='${path}' fill="#222" stroke="none"/>`;
+        });
+        svg += `</g>`;
+      } else {
+        // fallback: render as text if no stroke data
+        svg += `<text x="${startX + i * (dateSize + margin) + dateSize/2}" y="${y-dateSize/4}" font-size="${dateSize * 0.8}" fill="#222" text-anchor="middle" alignment-baseline="middle">${char}</text>`;
+      }
+    });
+  }
+  // Render page number in bottom right if multiple pages
+  if (totalPages > 1) {
+    const pageNum = page + 1;
+    const pageText = `${pageNum} / ${totalPages}`;
+    const fontSize = SQUARE_SIZE * 0.22;
+    svg += `<text x="${A4_WIDTH - .25*PADDING_X}" y="${A4_HEIGHT - .25*PADDING_Y}" font-size="${fontSize}" fill="#222" text-anchor="end" alignment-baseline="middle">${pageText}</text>`;
+  }
   svg += '</svg>';
   return { svg, totalPages };
 }
