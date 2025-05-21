@@ -108,16 +108,13 @@ export default defineComponent({
     BasePage
   },
   data() {
-    // Get URL parameter first before setting default
     const urlParams = new URLSearchParams(window.location.search);
     const deckFromUrl = urlParams.get('wordlist');
     
     return {
-      // Deck management
       currentDeck: deckFromUrl || 'hsk1',
       isDropdownOpen: false,
       
-      // Character management
       currentWord: '',
       currentCharacter: '',
       currentEnglish: [],
@@ -125,17 +122,15 @@ export default defineComponent({
       charIterator: 0,
       shuffledWords: [],
       
-      // Stroke data
       strokeData: {
         medians: [],
         strokes: []
       },
       cachedStrokes: null, 
       strokeCache: {}, 
-      charInfoCache: {}, // Add cache for character info
-      isLoading: true, // Add loading state to manage initial render
+      charInfoCache: {},
+      isLoading: true,
       
-      // Practice state
       skipState: 0,
       showPinyin: false,
       totalAnswered: 0,
