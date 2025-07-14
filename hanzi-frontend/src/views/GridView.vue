@@ -190,7 +190,7 @@
                     }">
                       {{ entry.character }}
                     </div>
-                    <div v-if="showPinyin" class="list-pinyin">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
+                    <div class="list-pinyin" :style="{ visibility: showPinyin ? 'visible' : 'hidden' }">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
                   </div>
                   <div class="list-english">{{ entry.english.join(', ') }}</div>
                 </div>
