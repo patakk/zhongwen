@@ -110,6 +110,17 @@
             {{ showGridBorders ? 'Hide Borders' : 'Show Borders' }}
           </button>
         </template>
+        
+        <!-- Pinyin Toggle - only visible in list mode -->
+        <template v-if="isListView">
+          <label>Pinyin Display:</label>
+          <button 
+            class="single-toggle-button" 
+            @click="togglePinyin"
+          >
+            {{ showPinyin ? 'Hide Pinyin' : 'Show Pinyin' }}
+          </button>
+        </template>
     </div>
 
     <!-- Background overlay when leftbar is visible -->
@@ -179,7 +190,7 @@
                     }">
                       {{ entry.character }}
                     </div>
-                    <div class="list-pinyin">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
+                    <div v-if="showPinyin" class="list-pinyin">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
                   </div>
                   <div class="list-english">{{ entry.english.join(', ') }}</div>
                 </div>
@@ -227,7 +238,10 @@ export default {
       preloadedCharacters: new Set(), // Track which characters have been preloaded
 
       // Scroll to top button visibility
-      showScrollTop: false  // Controls visibility of the scroll-to-top button
+      showScrollTop: false,  // Controls visibility of the scroll-to-top button
+      
+      // Pinyin visibility toggle for list mode
+      showPinyin: true  // Controls visibility of pinyin in list mode
     };
   },
   components: {
@@ -606,6 +620,11 @@ export default {
     handleScroll() {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       this.showScrollTop = scrollTop > 200;
+    },
+    
+    // Method to toggle pinyin visibility in list mode
+    togglePinyin() {
+      this.showPinyin = !this.showPinyin;
     }
   },
   watch: {
