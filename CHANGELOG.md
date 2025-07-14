@@ -1,6 +1,72 @@
 # CHANGELOG
 
 
+## v1.5.0 (2025-07-14)
+
+### Bug Fixes
+
+- Aaa
+  ([`a6f2dc0`](https://github.com/patakk/zhongwen/commit/a6f2dc087439c49b66b2c8f8a0e7d692e9c47a4b))
+
+- Various
+  ([`f1a51cf`](https://github.com/patakk/zhongwen/commit/f1a51cfc692ada4128accc752d864da061554482))
+
+### Chores
+
+- Build
+  ([`a7e9cc7`](https://github.com/patakk/zhongwen/commit/a7e9cc78dba61db48a9d600a3fd69c54b4be8568))
+
+- Build
+  ([`4b07592`](https://github.com/patakk/zhongwen/commit/4b07592a42bffb1f3da8ac4f68d7479bc477acb3))
+
+- Build
+  ([`10db9b2`](https://github.com/patakk/zhongwen/commit/10db9b294959b81ab5f7635900e91f4785ff103e))
+
+- Build
+  ([`ff69aa5`](https://github.com/patakk/zhongwen/commit/ff69aa5457a8b52a01753f2b64e0dadd7869d5ef))
+
+- Build
+  ([`85f75d5`](https://github.com/patakk/zhongwen/commit/85f75d52a04a9b1642f00e90c43e2361b2271ed0))
+
+- Build
+  ([`c33e32c`](https://github.com/patakk/zhongwen/commit/c33e32c668439bb02a6464469f10e8df8aaec7bf))
+
+- Build
+  ([`81bf363`](https://github.com/patakk/zhongwen/commit/81bf363257f490e8034ba6acbc99af0e1f6e2f16))
+
+- Build
+  ([`89cbd0d`](https://github.com/patakk/zhongwen/commit/89cbd0d05c2d4c0dc452233f42d937d141971a03))
+
+- Thign
+  ([`d7b7f43`](https://github.com/patakk/zhongwen/commit/d7b7f43ad9f4c35185c077945ce875d0dbe74a87))
+
+### Features
+
+- Sheets export
+  ([`b864cca`](https://github.com/patakk/zhongwen/commit/b864ccabe767accdb2d9bcbe36a8ccc24223c55b))
+
+- Sheets export
+  ([`808b6d5`](https://github.com/patakk/zhongwen/commit/808b6d5b6ef63cdd41c2863b2a19995cb02148b6))
+
+- Sheets export
+  ([`cb5d804`](https://github.com/patakk/zhongwen/commit/cb5d80483b8e0215c76651fd50183dc3b34cc606))
+
+- Sheets export
+  ([`9da1eb1`](https://github.com/patakk/zhongwen/commit/9da1eb19fa209b41029f41ef4bd6186445b23613))
+
+- Sheets export
+  ([`eb0ae7c`](https://github.com/patakk/zhongwen/commit/eb0ae7c5918a26a9d880c2aac70761afa60f89bd))
+
+- Sheets export
+  ([`2bbb838`](https://github.com/patakk/zhongwen/commit/2bbb8389610d12183668079d0788fe85c768d2f2))
+
+- Sheets export
+  ([`40d4bb8`](https://github.com/patakk/zhongwen/commit/40d4bb863570f61670a0936d0f5b9745ae837b11))
+
+- Show/hide pinyin
+  ([`22b4b0f`](https://github.com/patakk/zhongwen/commit/22b4b0fdb9fa3e37882f4c9ec97801502e79ae9f))
+
+
 ## v1.4.0 (2025-05-21)
 
 ### Bug Fixes
