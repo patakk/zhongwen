@@ -190,7 +190,7 @@
                     }">
                       {{ entry.character }}
                     </div>
-                    <div class="list-pinyin" :style="{ visibility: showPinyin ? 'visible' : 'hidden' }">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
+                    <div class="list-pinyin" :class="{ 'pinyin-hidden': !showPinyin }">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
                   </div>
                   <div class="list-english">{{ entry.english.join(', ') }}</div>
                 </div>
@@ -849,6 +849,14 @@ html, body {
   font-style: italic;
   color: var(--fg);
   opacity: 0.4;
+}
+
+.list-pinyin.pinyin-hidden {
+  visibility: hidden;
+}
+
+.list-item:hover .list-pinyin.pinyin-hidden {
+  visibility: visible;
 }
 
 .list-english {
