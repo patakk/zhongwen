@@ -54,7 +54,7 @@
               <span class="smallh">Chinese-English examples:</span><br />
               <p style="margin-left:20px;">
                 Provided by <a class="links" href="https://tatoeba.org" target="_blank">Tatoeba.org</a>, licensed under 
-                <a class="links" href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution 2.0</a>.
+                <a class="links" href="https://creativecommons.org/licenses/by/2.0/fr/" target="_blank">Creative Commons Attribution 2.0 FR</a>.
               </p>
             </div>
           </div>
