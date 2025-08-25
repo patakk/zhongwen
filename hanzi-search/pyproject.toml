@@ -9,10 +9,6 @@ package-mode = false
 hanzipy = { path = "../hanzipy", develop = true }
 python = "^3.10"
 flask = "^2.3"
-Flask-SQLAlchemy = "^3.1"
-Flask-WTF = "^1.2"
-Flask-Migrate = "^4.0"
-flask-mail = "^0.9"
 python-dateutil = "^2.8"
 pypinyin = "^0.48"
 Pillow = "^10.0"
