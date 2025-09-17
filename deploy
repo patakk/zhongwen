@@ -1,8 +1,7 @@
 #!/usr/bin/bash
 
-commit_message="$1"
+commit_message="${1:-no message}"
 
-# First commit (before build)
 git add .
 git status --porcelain
 
