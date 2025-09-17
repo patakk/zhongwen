@@ -11,7 +11,7 @@
           <template v-if="authStatus">
             <RouterLink to="/my-lists" class="top-link">My words</RouterLink>
           </template>
-          <RouterLink to="/grid" class="top-link">Explorer</RouterLink>
+          <RouterLink :to="{ path: '/grid', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Explorer</RouterLink>
           <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
           <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
           <RouterLink to="/search" class="top-link">Search</RouterLink>
@@ -32,7 +32,7 @@
         <template v-if="authStatus">
           <RouterLink to="/my-lists" class="top-link">My words</RouterLink>
         </template>
-        <RouterLink to="/grid" class="top-link">Explorer</RouterLink>
+        <RouterLink :to="{ path: '/grid', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Explorer</RouterLink>
         <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
         <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
         <RouterLink to="/search" class="top-link">Search</RouterLink>

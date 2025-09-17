@@ -5,7 +5,7 @@
   />
     <SideBar id="mainsidebar" />
     
-    <div id="maintitle">{{ page_title }}</div> 
+    <div id="maintitle" @click="$emit('title-click')">{{ page_title }}</div> 
 </template>
   
   <script>

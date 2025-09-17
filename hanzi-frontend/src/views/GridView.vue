@@ -1,7 +1,8 @@
 <template>
-    <div @click="toggleDeckDropdown" class="grid-header">
+    <div class="grid-header">
         <BasePage 
-          :page_title="localPageTitle" 
+          :page_title="localPageTitle"
+          @title-click="toggleDeckDropdown"
         />
         <!-- Dropdown under the clickable title -->
         <div 
@@ -278,71 +279,12 @@ export default {
       return deck?.name || this.selectedCategory;
     },
     dictionaryData() {
-      // Get dictionary data from store
-      const data = this.$store.getters.getDictionaryData;
-      // Get custom dictionary data
-      const customData = this.$store.getters.getCustomDictionaryData;
-      
-      if (data) {
-        // Mark that we have dictionary data
-        this.waitingForDictData = false;
-        
-        // Handle category selection once data is loaded
-        if (!this.selectedCategory) {
-          // Try to use the category from URL
-          const wordlist = this.$route.query.wordlist;
-          
-          if (wordlist && data[wordlist]) {
-            // Set category and title if wordlist exists in data
-            this.selectedCategory = wordlist;
-            this.localPageTitle = data[wordlist].name || wordlist;
-            this.attemptedCategory = null; // Clear the attempted category
-          } else if (this.attemptedCategory && customData && customData[this.attemptedCategory]) {
-            // If we previously attempted to load a custom category and now it's available
-            this.selectedCategory = this.attemptedCategory;
-            this.localPageTitle = customData[this.attemptedCategory].name || this.attemptedCategory;
-            this.attemptedCategory = null; // Clear the attempted category
-          } else if (wordlist && !data[wordlist]) {
-            // If wordlist specified but not found in current data, store it as attempted category
-            // It might be a custom deck that hasn't loaded yet
-            this.attemptedCategory = wordlist;
-            
-            // Don't default to HSK1 yet, wait for custom data to load
-            if (customData && Object.keys(customData).length > 0) {
-              // We already have custom data but the wordlist is not there, so default to HSK1
-              this.selectedCategory = 'hsk1';
-              this.localPageTitle = data.hsk1?.name || 'HSK1';
-            }
-          } else if (!wordlist) {
-            // No wordlist in URL, default to HSK1
-            this.selectedCategory = 'hsk1';
-            this.localPageTitle = data.hsk1?.name || 'HSK1';
-          }
-        } else if (this.selectedCategory) {
-          // Update page title whenever the dictionary data changes
-          if (data[this.selectedCategory]) {
-            this.localPageTitle = data[this.selectedCategory].name || this.selectedCategory;
-          } else if (customData && customData[this.selectedCategory]) {
-            this.localPageTitle = customData[this.selectedCategory].name || this.selectedCategory;
-          }
-        }
-      }
-      
-      return data || {};
+      // Pure computed: return store data without side effects
+      return this.$store.getters.getDictionaryData || {};
     },
     customDictionaryData() {
-      // Get custom dictionary data from store and handle potential custom category loading
-      const customData = this.$store.getters.getCustomDictionaryData;
-      
-      if (customData && this.attemptedCategory && customData[this.attemptedCategory]) {
-        // If our attempted category is now available in the custom data
-        this.selectedCategory = this.attemptedCategory;
-        this.localPageTitle = customData[this.attemptedCategory].name || this.attemptedCategory;
-        this.attemptedCategory = null; // Clear the attempted category
-        this.waitingForDictData = false;
-      }
-      
-      return customData || {};
+      // Pure computed: return store data without side effects
+      return this.$store.getters.getCustomDictionaryData || {};
     },
     slicedChars() {
       if (!this.selectedCategory) return [];
@@ -383,7 +325,6 @@ export default {
       this.isSubmenuOpen = false;
     },
     handleOutsideClick(event) {
-      // Close dropdown when clicking outside of the title/dropdown area
       const headerEl = this.$el.querySelector('.grid-header');
       if (headerEl && !headerEl.contains(event.target)) {
         this.isSubmenuOpen = false;
@@ -428,14 +369,18 @@ export default {
       });
     },
     loadMore() {
+      const total = this.slicedChars.length;
+      // If data isn't ready yet, avoid resetting counts to 0
+      if (total === 0) return;
+
       this.visibleCount += defaultVisibleCount;
-      if (this.visibleCount >= this.slicedChars.length) {
-        this.visibleCount = this.slicedChars.length;
+      if (this.visibleCount >= total) {
+        this.visibleCount = total;
         this.reloading = false; // Done reloading
       }
       this.$nextTick(() => {
-        if (this.visibleCount < this.slicedChars.length) {
-          setTimeout(this.loadMore, 100); 
+        if (this.visibleCount < total) {
+          setTimeout(this.loadMore, 100);
         }
       });
     },
@@ -593,9 +538,38 @@ export default {
     // New improved method to check for word parameter
     checkQueryParams() {
       const wordlist = this.$route.query.wordlist;
-      if (wordlist && this.dictionaryData && this.dictionaryData[wordlist]) {
-        this.selectedCategory = wordlist;
-        this.localPageTitle = this.dictionaryData[wordlist].name || wordlist;
+      const dict = this.dictionaryData;
+      const custom = this.customDictionaryData;
+
+      // If URL specifies a valid wordlist in either dataset, use it
+      if (wordlist) {
+        if (this.selectedCategory === wordlist) {
+          return;
+        }
+        if (dict[wordlist]) {
+          this.selectedCategory = wordlist;
+          this.localPageTitle = dict[wordlist].name || wordlist;
+          this.attemptedCategory = null;
+          return;
+        }
+        if (custom[wordlist]) {
+          this.selectedCategory = wordlist;
+          this.localPageTitle = custom[wordlist].name || wordlist;
+          this.attemptedCategory = null;
+          return;
+        }
+        // Not found yet; likely a custom deck that will load later
+        this.attemptedCategory = wordlist;
+      }
+
+      // If no URL param and data is available, default to HSK1 (or first deck)
+      if (!wordlist && Object.keys(dict).length > 0 && !this.selectedCategory) {
+        const fallback = dict.hsk1 ? 'hsk1' : Object.keys(dict)[0];
+        if (fallback) {
+          this.selectedCategory = fallback;
+          this.localPageTitle = dict[fallback].name || fallback;
+          this.updateUrlWithCategory(fallback);
+        }
       }
       
       // Skip opening the modal directly from here - let the store handle it
@@ -695,10 +669,37 @@ export default {
       },
       immediate: true
     },
-    // Watch for dictionary data changes to handle the case where data loads after component
+    // Watch for dictionary data changes to handle initial load and title updates
     dictionaryData: {
-      handler() {
+      handler(newVal, oldVal) {
+        this.waitingForDictData = Object.keys(newVal || {}).length === 0;
+        // Re-evaluate URL/defaults when dict data changes
         this.checkQueryParams();
+        // Keep title in sync for selected category
+        if (this.selectedCategory) {
+          const key = this.selectedCategory;
+          if (newVal[key]) {
+            this.localPageTitle = newVal[key].name || key;
+          } else if (this.customDictionaryData[key]) {
+            this.localPageTitle = this.customDictionaryData[key].name || key;
+          }
+        }
+      },
+      immediate: true
+    },
+    // Watch for custom data to resolve attempted custom categories
+    customDictionaryData: {
+      handler(newVal) {
+        if (this.attemptedCategory && newVal[this.attemptedCategory]) {
+          const key = this.attemptedCategory;
+          this.selectedCategory = key;
+          this.localPageTitle = newVal[key].name || key;
+          this.attemptedCategory = null;
+          this.updateUrlWithCategory(key);
+        } else if (this.selectedCategory && newVal[this.selectedCategory]) {
+          const key = this.selectedCategory;
+          this.localPageTitle = newVal[key].name || key;
+        }
       },
       immediate: true
     }
@@ -706,14 +707,12 @@ export default {
   mounted() {
     // Check for URL parameters first when component mounts
     this.checkQueryParams();
-    // Then start loading characters incrementally
-    this.$nextTick(this.loadMore);
+    // Initial load will be triggered when category/data are ready
     // Add event listener for keydown events
     window.addEventListener('keydown', this.handleKeyDown);
 
     // Close deck dropdown on outside click
     document.addEventListener('click', this.handleOutsideClick);
-    
     // Add event listener for the sidebar opening event
     document.addEventListener('sidebar-opened', this.closeLeftbar);
     

@@ -172,16 +172,6 @@ def main_card_data(character):
         "html": "IMPLEMENT ME", #data.get('examples', ''),
     }
 
-@app.route('/version')
-def version():
-    version_file = 'version'
-    if os.path.exists(version_file):
-        try:
-            with open(version_file, 'r') as f:
-                return f.read().strip()
-        except IOError:
-            return 'Error reading version file', 500
-    return 'unknown'
 
 @app.route('/log', methods=['POST'])
 def log():

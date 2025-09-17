@@ -48,6 +48,16 @@ logger = logging.getLogger(__name__)
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
+@api_bp.route('/version')
+def version():
+    version_file = 'version'
+    if os.path.exists(version_file):
+        try:
+            with open(version_file, 'r') as f:
+                return f.read().strip()
+        except IOError:
+            return 'Error reading version file', 500
+    return 'unknown'
 
 @api_bp.route("/rename_wordlist", methods=["POST"])
 @session_required

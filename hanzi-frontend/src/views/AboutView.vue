@@ -61,6 +61,9 @@
         </li>
       </ul>
     </div>
+    <div class="commit-info" title="Latest commit hash">
+      {{ commitHash }}
+    </div>
   </div>
 </template>
 
@@ -72,9 +75,23 @@ export default {
   components: {
     BasePage
   },
+  data() {
+    return {
+      commitHash: 'loading...'
+    }
+  },
   mounted() {
     // Add about-page class to body when this component is mounted
     document.body.classList.add('about-page');
+    // Fetch commit hash from backend
+    fetch('/api/version')
+      .then(r => r.ok ? r.json() : { commit: 'unknown' })
+      .then(data => {
+        this.commitHash = data.commit || 'unknown'
+      })
+      .catch(() => {
+        this.commitHash = 'unknown'
+      })
   },
   beforeUnmount() {
     // Remove about-page class from body when this component is unmounted
@@ -232,5 +249,17 @@ ul {
   padding: 0;
   margin-top: 1em;
   padding-top: 1em;
+}
+
+.commit-info {
+  text-align: center;
+  margin-top: 2em;
+  opacity: .6;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 1em;
+  /* left: 50%;
+  transform: translateX(-50%); */
 }
 </style>
