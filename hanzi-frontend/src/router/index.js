@@ -22,7 +22,7 @@ const routes = [
   { path: '/account', component: Account },
   { path: '/about', name: 'About', component: About },
 
-  { path: '/grid', component: Grid },
+  { path: '/explorer', component: Grid },
   { path: '/search', name: 'SearchPage', component: Search },
   { path: '/sketch-lookup', name: 'DrawingPage', component: Drawing },
   { path: '/hanzi-tree', component: HanziTree },

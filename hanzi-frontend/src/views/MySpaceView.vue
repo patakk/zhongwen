@@ -107,7 +107,7 @@
               </router-link>
               <router-link
                 :to="{
-                  path: '/grid',
+                  path: '/explorer',
                   query: { wordlist: selectedWordlist }
                 }"
                 class="nav-button router-button"
