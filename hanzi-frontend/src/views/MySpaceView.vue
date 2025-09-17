@@ -100,7 +100,7 @@
                   path: '/flashcards',
                   query: { wordlist: selectedWordlist }
                 }"
-                class="nav-button"
+                class="nav-button router-button"
                 title="Go to Flashcards"
               >
                 flashcards
@@ -110,10 +110,10 @@
                   path: '/grid',
                   query: { wordlist: selectedWordlist }
                 }"
-                class="nav-button"
+                class="nav-button router-button"
                 title="Go to Grid View"
               >
-                grid view
+                explorer view
               </router-link>
               <button
                 @click="downloadAnkiDeck"
@@ -124,20 +124,20 @@
               <font-awesome-icon :icon="['fas', 'download']" /> anki deck
               </button>
               <button
-                @click="copyWordlistToClipboard"
-                class="nav-button data-button"
-                title="Copy Wordlist to Clipboard"
-                :disabled="words.length === 0"
-              >
-                <font-awesome-icon :icon="['fas', 'clipboard']" /> copy words
-              </button>
-              <button
                 @click="showPracticeSheetModal = true"
                 class="nav-button data-button"
                 title="Get Practice Sheet"
                 :disabled="words.length === 0"
               >
                 <font-awesome-icon :icon="['fas', 'pen']" /> practice sheet
+              </button>
+              <button
+                @click="copyWordlistToClipboard"
+                class="nav-button data-button"
+                title="Copy Wordlist to Clipboard"
+                :disabled="words.length === 0"
+              >
+                <font-awesome-icon :icon="['fas', 'clipboard']" /> copy words
               </button>
             </div>
 
@@ -1049,6 +1049,7 @@
   flex: 1;
 }
 
+
   .wordlist-selector {
     display: flex;
     flex-wrap: wrap;
@@ -1225,8 +1226,20 @@
   
   .nav-buttons {
     display: flex;
+    justify-content: space-between;
     gap: 1rem;
     margin-bottom: 1.5rem;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 0.75rem 1rem; /* row-gap col-gap */
+    margin-bottom: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  @media screen and (max-width: 768px) {
+    .nav-buttons {
+      justify-content: left;
+    }
   }
   
   .nav-button {
@@ -1244,6 +1257,10 @@
     outline: none;
     border: none;
     cursor: pointer;
+  }
+  
+  .router-button {
+    font-size: .85em;
   }
   
   .word-list {

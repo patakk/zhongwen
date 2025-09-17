@@ -1,8 +1,24 @@
 <template>
-    <div @click="toggleView" class="grid-header">
+    <div @click="toggleDeckDropdown" class="grid-header">
         <BasePage 
           :page_title="localPageTitle" 
         />
+        <!-- Dropdown under the clickable title -->
+        <div 
+          id="deck-options" 
+          :class="{ 'show': isSubmenuOpen }"
+          @click.stop
+        >
+          <div 
+            v-for="(deck, key) in decks" 
+            :key="key" 
+            class="option"
+            :class="{ 'selected': selectedCategory === key }"
+            @click.stop="changeDeck(key)"
+          >
+            {{ deck.name || key }}
+          </div>
+        </div>
     </div>
 
     <!-- Toggle button for the leftbar -->
@@ -127,7 +143,7 @@
     <div v-if="leftbarVisible" class="overlay" @click="closeLeftbar"></div>
 
     <!-- Main content takes full width regardless of leftbar state -->
-      <div class="main-content" ref="mainContent" @scroll="handleScroll">
+      <div class="main-content" ref="mainContent" @scroll="handleScroll" @click="handleMainClick">
         <!-- Scroll to top button - FIXED: changed showScrollTop to match data property -->
         <button 
           v-if="showScrollTop" 
@@ -217,6 +233,7 @@ export default {
     return {
       selectedCategory: null,
       localPageTitle: 'Grid',
+      isSubmenuOpen: false,
       visibleCount: defaultVisibleCount,
       hoveredItem: null,
       selectedFont: 'Noto Sans SC',
@@ -249,6 +266,17 @@ export default {
     BasePage
   },
   computed: {
+    // Combine store decks like in Flashcards
+    decks() {
+      const staticData = this.$store.getters.getDictionaryData || {};
+      const customData = this.$store.getters.getCustomDictionaryData || {};
+      return { ...staticData, ...customData };
+    },
+    currentDeckName() {
+      if (!this.selectedCategory) return '';
+      const deck = this.decks[this.selectedCategory];
+      return deck?.name || this.selectedCategory;
+    },
     dictionaryData() {
       // Get dictionary data from store
       const data = this.$store.getters.getDictionaryData;
@@ -338,6 +366,29 @@ export default {
     }
   },
   methods: {
+    toggleDeckDropdown() {
+      // Clicking the title toggles the dropdown instead of toggling view
+      this.isSubmenuOpen = !this.isSubmenuOpen;
+    },
+    changeDeck(deckKey) {
+      // Switch deck using same behavior as Flashcards dropdown
+      if (!deckKey || deckKey === this.selectedCategory) {
+        this.isSubmenuOpen = false;
+        return;
+      }
+      this.selectedCategory = deckKey;
+      const deck = this.decks[deckKey];
+      this.localPageTitle = deck?.name || deckKey;
+      this.updateUrlWithCategory(deckKey);
+      this.isSubmenuOpen = false;
+    },
+    handleOutsideClick(event) {
+      // Close dropdown when clicking outside of the title/dropdown area
+      const headerEl = this.$el.querySelector('.grid-header');
+      if (headerEl && !headerEl.contains(event.target)) {
+        this.isSubmenuOpen = false;
+      }
+    },
     // New methods for bubble tooltip
     showBubble(event, entry) {
       // Get pointer position
@@ -625,6 +676,10 @@ export default {
     // Method to toggle pinyin visibility in list mode
     togglePinyin() {
       this.showPinyin = !this.showPinyin;
+    },
+    // Close dropdown when clicking anywhere in main content
+    handleMainClick() {
+      if (this.isSubmenuOpen) this.isSubmenuOpen = false;
     }
   },
   watch: {
@@ -655,6 +710,9 @@ export default {
     this.$nextTick(this.loadMore);
     // Add event listener for keydown events
     window.addEventListener('keydown', this.handleKeyDown);
+
+    // Close deck dropdown on outside click
+    document.addEventListener('click', this.handleOutsideClick);
     
     // Add event listener for the sidebar opening event
     document.addEventListener('sidebar-opened', this.closeLeftbar);
@@ -673,6 +731,9 @@ export default {
     
     // Remove window scroll event listener
     window.removeEventListener('scroll', this.handleScroll);
+
+    // Remove outside click listener
+    document.removeEventListener('click', this.handleOutsideClick);
   }
 };
 </script>
@@ -722,6 +783,42 @@ html, body {
 .grid-header {
   cursor: pointer;
   text-decoration: underline;
+  position: relative;
+}
+
+#deck-options {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  max-width: 300px;
+  max-height: 0;
+  overflow: hidden;
+  background-color: var(--bg);
+  border: var(--thin-border-width) solid #0000;
+  margin-top: 5px;
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#deck-options.show {
+  max-height: 300px;
+  overflow-y: auto;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
+}
+
+.option {
+  padding: 10px 15px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.option:hover {
+  background-color: color-mix(in oklab, var(--fg) 6%, var(--bg) 75%);
+}
+
+.option.selected {
+  background-color: var(--selected-bg);
 }
 
 .page-layout {
@@ -1213,4 +1310,3 @@ label {
   }
 }
 </style>
-
