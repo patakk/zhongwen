@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-commit_message="${1:-no message}"
+commit_message="${1:-pre build}"
 
 git add .
 git status --porcelain
