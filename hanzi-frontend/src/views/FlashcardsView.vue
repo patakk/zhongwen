@@ -30,7 +30,13 @@
         <div class="hanzi">
           <!-- Canvas will be appended here programmatically -->
         </div>
+        <div class="answer" :class="{ inactive: revealed }">
+          <div class="answer-hanzi-text">{{ currentWordInfo.character }}</div>
+          <div class="pinyin" style="opacity: 0;">{{ singlePinyin }}</div>
+          <div class="english" style="opacity: 0;">{{ singleEnglish.split("/")[0] }}</div>
+        </div>
         <div class="answer" :class="{ inactive: !revealed }">
+          <div class="answer-hanzi-text">{{ currentWordInfo.character }}</div>
           <div class="pinyin">{{ singlePinyin }}</div>
           <div class="english">{{ singleEnglish.split("/")[0] }}</div>
         </div>
@@ -1100,6 +1106,15 @@ html, body {
 
 .answer.inactive {
   opacity: 0;
+}
+
+/* Hanzi text above pinyin/english (redundant to canvas) */
+.answer-hanzi-text {
+  font-family: 'Noto Sans SC', 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 2.2em;
+  line-height: 1.1;
+  margin-bottom: 0.25em;
 }
 
 .pinyin {
