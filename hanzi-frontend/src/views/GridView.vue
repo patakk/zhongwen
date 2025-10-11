@@ -1003,6 +1003,7 @@ html, body {
   justify-content: flex-start;
   align-items: flex-start;
   flex: 2;
+  min-width: 0; /* allow flex child to shrink and wrap */
 }
 
 .list-hanzi {
@@ -1031,6 +1032,12 @@ html, body {
   opacity: 0.6;
   flex: 12;
   align-self: center;
+  min-width: 0;        /* prevent flex item from forcing overflow */
+  max-width: 100%;
+  white-space: normal; /* allow wrapping */
+  overflow-wrap: anywhere; /* break long words without spaces */
+  word-break: break-word;   /* fallback */
+  word-wrap: break-word;    /* legacy fallback */
 }
 
 select {
