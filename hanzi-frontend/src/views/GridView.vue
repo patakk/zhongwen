@@ -528,15 +528,31 @@ export default {
     },
     // Build a query object from current state
     buildQueryFromState() {
+      const existing = { ...this.$route.query };
+
+      // Compute fallback category (default) to decide if we should omit wordlist
+      const dict = this.dictionaryData || {};
+      const keys = Object.keys(dict || {});
+      const fallback = keys.length ? (dict.hsk1 ? 'hsk1' : keys[0]) : null;
+
+      // Determine wordlist to include. Always include it in URL; preserve existing until resolved.
+      let wordlistVal;
+      if (this.selectedCategory) {
+        wordlistVal = this.selectedCategory;
+      } else {
+        wordlistVal = existing.wordlist; // keep original until resolved
+      }
+
       const query = {
-        ...this.$route.query,
-        wordlist: this.selectedCategory || undefined,
-        view: this.isListView ? 'list' : 'grid',
-        font: this.selectedFont,
-        fontScale: String(this.fontScale),
-        gridGap: this.gridGapSize,
-        borders: this.showGridBorders ? '1' : '0',
-        pinyin: this.showPinyin ? '1' : '0'
+        ...existing,
+        wordlist: wordlistVal,
+        // Only include non-default values
+        view: this.isListView ? 'list' : undefined, // default is grid
+        font: this.selectedFont !== 'Noto Sans SC' ? this.selectedFont : undefined,
+        fontScale: this.fontScale !== 1 ? String(this.fontScale) : undefined,
+        gridGap: this.gridGapSize !== '0.25em' ? this.gridGapSize : undefined,
+        borders: this.showGridBorders !== true ? (this.showGridBorders ? '1' : '0') : undefined,
+        pinyin: this.showPinyin !== true ? (this.showPinyin ? '1' : '0') : undefined
       };
       // Remove undefined to avoid stray params
       Object.keys(query).forEach(k => (query[k] === undefined ? delete query[k] : null));
@@ -620,9 +636,8 @@ export default {
     },
     // New method to update the URL when the category changes
     updateUrlWithCategory(category) {
-      // Update URL without reloading the page and include other settings
+      // Update URL, letting buildQueryFromState decide whether to include wordlist
       const newQuery = this.buildQueryFromState();
-      newQuery.wordlist = category;
       this.$router.replace({ query: newQuery }).catch(err => {
         if (err && err.name !== 'NavigationDuplicated') throw err;
       });
