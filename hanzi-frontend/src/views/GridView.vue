@@ -526,7 +526,32 @@ export default {
       // Show the card modal using the same action as PreloadWrapper
       this.$store.dispatch('cardModal/showCardModal', character);
     },
-    // New improved method to check for word parameter
+    // Build a query object from current state
+    buildQueryFromState() {
+      const query = {
+        ...this.$route.query,
+        wordlist: this.selectedCategory || undefined,
+        view: this.isListView ? 'list' : 'grid',
+        font: this.selectedFont,
+        fontScale: String(this.fontScale),
+        gridGap: this.gridGapSize,
+        borders: this.showGridBorders ? '1' : '0',
+        pinyin: this.showPinyin ? '1' : '0'
+      };
+      // Remove undefined to avoid stray params
+      Object.keys(query).forEach(k => (query[k] === undefined ? delete query[k] : null));
+      return query;
+    },
+    // Replace URL with current state encoded in query params
+    updateUrl() {
+      const newQuery = this.buildQueryFromState();
+      this.$router.replace({
+        query: newQuery
+      }).catch(err => {
+        if (err && err.name !== 'NavigationDuplicated') throw err;
+      });
+    },
+    // New improved method to check for word parameter and other settings
     checkQueryParams() {
       const wordlist = this.$route.query.wordlist;
       const dict = this.dictionaryData;
@@ -563,23 +588,43 @@ export default {
         }
       }
       
+      // Parse view/layout settings
+      const { view, font, fontScale, gridGap, borders, pinyin } = this.$route.query;
+      if (view === 'list' || view === 'grid') {
+        this.isListView = (view === 'list');
+      }
+      if (typeof font === 'string' && font.length > 0) {
+        this.selectedFont = font;
+      }
+      if (typeof fontScale !== 'undefined') {
+        const parsed = parseFloat(fontScale);
+        if (!Number.isNaN(parsed) && parsed > 0 && parsed < 10) {
+          this.fontScale = parsed;
+          this.tempFontScale = parsed;
+        }
+      }
+      if (typeof gridGap === 'string') {
+        const allowed = new Set(['0.25em', '1em', '3em']);
+        if (allowed.has(gridGap)) this.gridGapSize = gridGap;
+      }
+      if (typeof borders !== 'undefined') {
+        this.showGridBorders = borders === '1' || borders === 'true';
+      }
+      if (typeof pinyin !== 'undefined') {
+        this.showPinyin = pinyin === '1' || pinyin === 'true';
+      }
+
       // Skip opening the modal directly from here - let the store handle it
       // This prevents duplicate modal opening when multiple components detect
       // the URL parameter change
     },
     // New method to update the URL when the category changes
     updateUrlWithCategory(category) {
-      // Update URL without reloading the page
-      this.$router.replace({ 
-        query: { 
-          ...this.$route.query, 
-          wordlist: category 
-        }
-      }).catch(err => {
-        // Ignore navigation duplicate errors
-        if (err.name !== 'NavigationDuplicated') {
-          throw err;
-        }
+      // Update URL without reloading the page and include other settings
+      const newQuery = this.buildQueryFromState();
+      newQuery.wordlist = category;
+      this.$router.replace({ query: newQuery }).catch(err => {
+        if (err && err.name !== 'NavigationDuplicated') throw err;
       });
     },
     // New method to toggle sidebar visibility
@@ -652,6 +697,25 @@ export default {
       this.visibleCount = defaultVisibleCount; 
       this.updateUrlWithCategory(this.selectedCategory);
       this.$nextTick(this.loadMore);
+    },
+    // Sync key settings to URL so links preserve view state
+    isListView() {
+      this.updateUrl();
+    },
+    selectedFont() {
+      this.updateUrl();
+    },
+    fontScale() {
+      this.updateUrl();
+    },
+    gridGapSize() {
+      this.updateUrl();
+    },
+    showGridBorders() {
+      this.updateUrl();
+    },
+    showPinyin() {
+      this.updateUrl();
     },
     // Add a watcher for route changes to handle direct URL navigation
     '$route.query': {
