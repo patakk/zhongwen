@@ -959,7 +959,7 @@
       // New method to copy wordlist to clipboard
       copyWordlistToClipboard() {
         if (!this.words || this.words.length === 0) return;
-        const wordString = this.words.map(w => w.character).join(";");
+        const wordString = this.words.map(w => w.character).join(", ");
         navigator.clipboard.writeText(wordString)
           .then(() => {
             alert('Wordlist copied to clipboard!');
