@@ -73,6 +73,7 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
+  padding: 0;
   box-sizing: border-box;
   min-width: 0; /* Prevent flex item from overflowing */
 }

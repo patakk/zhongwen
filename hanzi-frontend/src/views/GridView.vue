@@ -918,7 +918,6 @@ html, body {
   position: fixed;
   bottom: 1rem;
   left: 1rem;
-  z-index: 1000;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   color: var(--fg);
   border: 2px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 25%);

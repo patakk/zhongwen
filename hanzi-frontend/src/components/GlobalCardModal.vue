@@ -111,7 +111,7 @@
           <div class="examples-list">
             <div v-for="(ex, idx) in formattedExamples" :key="idx" class="example-sentence">
               <div class="ex-chinese">{{ ex.hanzi }}</div>
-              <div class="ex-pinyin">{{ $toAccentedPinyin(ex.pinyin) }}</div>
+                <div class="ex-pinyin">{{ $toAccentedPinyin(ex.pinyin).charAt(0).toUpperCase() + $toAccentedPinyin(ex.pinyin).slice(1) }}</div>
               <div class="ex-english">{{ ex.english }}</div>
             </div>
           </div>
@@ -1317,7 +1317,7 @@ export default {
 .examples-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0rem;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -1364,8 +1364,9 @@ export default {
 
 .ex-pinyin {
   font-size: 0.9rem;
-  opacity: 0.6;
+  opacity: 0.46;
   margin-top: 0.25rem;
+  margin-left: 1rem;
   white-space: normal;
   overflow-wrap: anywhere;
 }
@@ -1374,6 +1375,7 @@ export default {
   font-size: 0.95rem;
   opacity: 0.8;
   margin-top: 0.25rem;
+  margin-left: 1rem;
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -2003,28 +2005,34 @@ export default {
     overflow: visible;
   }
 
-.fixed-close {
-  display: flex;
-  font-size: 2rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 50%;
+  .fixed-close {
+    display: flex;
+    font-size: 2rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 50%;
 
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  background-color: color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
-  width: 3.5rem;
-  height: 3.5rem;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  box-shadow: 0 4px 8px rgba(124, 98, 98, 0.2);
-  opacity: 0.8;
-  z-index: 30;
-  line-height: 0;
-  padding: 0;
-}
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background-color: color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+    width: 3.5rem;
+    height: 3.5rem;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    box-shadow: 0 4px 8px rgba(124, 98, 98, 0.2);
+    opacity: 0.8;
+    z-index: 30;
+    line-height: 0;
+    padding: 0;
+  }
+
+  .examples-view {
+    padding: 0 0rem;
+    box-sizing: border-box;
+  }
+
 
 }
 
