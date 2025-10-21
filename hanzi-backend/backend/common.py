@@ -26,9 +26,6 @@ from pypinyin import lazy_pinyin, Style
 
 # from .flashcard_app import init_flashcard_app, get_flashcard_app
 
-# Load configuration and secrets
-
-# Constants using data_dir from config
 DATA_DIR = config['paths']['data_dir']
 CARDDECKS = json.load(open(os.path.join(DATA_DIR, "decks.json")))
 CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "chars_cache.json")))

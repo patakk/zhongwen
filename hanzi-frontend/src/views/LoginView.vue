@@ -66,7 +66,6 @@ const handleLogin = async () => {
     const data = await response.json()
     store.commit('setUserData', data)
     await store.dispatch('saveUserDataToStorage')
-    // Make sure to await fetchUserData to ensure profile data is completely up-to-date before navigation
     await store.dispatch('fetchUserData')
     await store.dispatch('fetchCustomDictionaryData')
 
