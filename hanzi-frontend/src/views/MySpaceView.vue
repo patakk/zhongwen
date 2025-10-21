@@ -59,7 +59,7 @@
             <input
               type="text"
               v-model="newWordInput"
-              placeholder="Enter word(s) to add"
+              placeholder="Enter words to add (divided by spaces or commas)"
               class="add-word-input"
               @keyup.enter="addWordToList"
             />
