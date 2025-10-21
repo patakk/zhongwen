@@ -29,11 +29,11 @@
 
       <div class="practice-area">
         <div class="word-display">
-          <div class="full-word">
+          <!--<div class="full-word">
             <span v-if="skipState" class="word-character current-character">
               {{ currentWord[currentQuizItem?.charIndex] }}
             </span>
-          </div>
+          </div>-->
           <div class="pinyin-label" :class="{ 'active': showPinyin }">
             <span v-for="(word, idx) in currentPinyin.split(' ')" :key="idx" :class="{ 'dimmed': idx !== currentQuizItem?.charIndex }">
               {{ $toAccentedPinyin(word) }} <span v-if="idx < currentWord.length - 1"> </span>
@@ -905,7 +905,6 @@ export default defineComponent({
   font-weight: bold;
   text-align: center;
   min-width: 200px;
-  margin-bottom: 1em;
   text-decoration: underline;
   font-family: var(--second-font);
 }
@@ -1022,7 +1021,7 @@ export default defineComponent({
 
 .drawing-area {
   width: 100%;
-  max-width: 600px;
+  max-width: 50vh;
   aspect-ratio: 1;
   margin-bottom: 1.5rem;
   /* overflow: hidden; */

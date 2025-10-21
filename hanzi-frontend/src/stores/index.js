@@ -648,13 +648,7 @@ const store = createStore({
           }
           
           const data = await response.json();
-          // Debug: log order of characters per custom list as received
-          try {
-            Object.keys(data).forEach(wl => {
-              const chars = data[wl]?.chars || {};
-              console.log('[store] fetched chars order for', wl, Object.keys(chars));
-            });
-          } catch (e) {}
+         
           for (const key in data) {
             if (!data[key].name) {
               data[key].name = key;

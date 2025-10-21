@@ -413,7 +413,7 @@ export default {
 
 .drawing-container {
   width: 100%;
-  max-width: 600px;
+  max-width: 50vh;
   margin-bottom: 1rem;
 }
 

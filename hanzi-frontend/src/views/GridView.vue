@@ -1,7 +1,8 @@
 <template>
-    <div class="grid-header">
+    <div class="grid-header" @click="handleHeaderClick">
         <BasePage 
           :page_title="localPageTitle"
+          :is_underlined="true"
           @title-click="toggleDeckDropdown"
         />
         <!-- Dropdown under the clickable title -->
@@ -22,14 +23,24 @@
         </div>
     </div>
 
-    <!-- Toggle button for the leftbar -->
+    <!-- Fixed bottom-left toggle for grid/list view -->
     <button 
+      class="view-toggle-fixed" 
+      @click="toggleView"
+      :title="isGridView ? 'Show List' : 'Show Grid'"
+      aria-label="Toggle view"
+    >
+      <font-awesome-icon :icon="isGridView ? ['fas', 'bars'] : ['fas', 'grip']" />
+    </button>
+
+    <!-- Toggle button for the leftbar -->
+    <!-- <button 
       class="leftbar-toggle" 
       @click="toggleLeftbar"
       :class="{ 'leftbar-toggle-active': leftbarVisible }"
     >
     <font-awesome-icon :icon="['fas', 'gear']" />
-    </button>
+    </button> -->
 
     <!-- Floating leftbar, positioned outside the main flow -->
     <div class="leftbar" :class="{ 'leftbar-hidden': !leftbarVisible }">
@@ -54,7 +65,7 @@
           class="single-toggle-button" 
           @click="toggleView"
         >
-          {{ isListView ? 'Show Grid' : 'Show List' }}
+          {{ isGridView ? 'Show List' : 'Show Grid' }}
         </button>
 
         <!-- Font Selector -->
@@ -92,7 +103,7 @@
         </div>
         
         <!-- Grid Gap Size Options - only visible in grid mode -->
-        <template v-if="!isListView">
+        <template v-if="isGridView">
           <label>Grid Gap Size:</label>
           <div class="font-size-buttons">
             <button 
@@ -129,7 +140,7 @@
         </template>
         
         <!-- Pinyin Toggle - only visible in list mode -->
-        <template v-if="isListView">
+        <template v-if="!isGridView">
           <label>Pinyin Display:</label>
           <button 
             class="single-toggle-button" 
@@ -158,7 +169,7 @@
           <div class="dictionary-category">
             <!-- Grid View with optimized event delegation -->
             <div 
-              v-if="!isListView" 
+              v-if="isGridView" 
               class="grid-container" 
               :style="{ 
                 gridTemplateColumns: `repeat(auto-fill, minmax(${fontScale*1.1*100}px, 1fr))`, 
@@ -192,12 +203,13 @@
             
             <!-- List View still using PreloadWrapper since performance is less critical -->
             <div v-else class="list-container" :style="{fontSize: `${fontScale*1.1}em` }">
-              <PreloadWrapper
-                v-for="(entry, index) in visibleChars"
-                :key="entry.character"
-                :character="entry.character"
-                :showBubbles="false"
-              >
+            <PreloadWrapper
+              v-for="(entry, index) in visibleChars"
+              :key="entry.character"
+              :character="entry.character"
+              :navList="navCharList"
+              :showBubbles="false"
+            >
                 <div class="list-item">
                   <div class="hanzipinyin">
                     <div class="list-hanzi" :style="{ 
@@ -240,7 +252,7 @@ export default {
       selectedFont: 'Noto Sans SC',
       fontScale: 1,         // ✅ Actual font scale, used in layout
       tempFontScale: 1,     // ✅ Temporary one used by slider
-      isListView: false,    // ✅ Toggle between grid and list views
+      isGridView: false,    // ✅ Toggle between grid and list views
       reloading: false,     // Flag to track view switching reloading
       leftbarVisible: false, // Default to closed for all screen sizes
       waitingForDictData: true, // Flag to track if we're waiting for dictionary data
@@ -305,12 +317,23 @@ export default {
     },
     visibleChars() {
       return this.slicedChars.slice(0, this.visibleCount);
+    },
+    // Full navigation list for current wordlist
+    navCharList() {
+      return (this.slicedChars || []).map(e => e.character);
     }
   },
   methods: {
     toggleDeckDropdown() {
       // Clicking the title toggles the dropdown instead of toggling view
+      // Also collapse the leftbar when interacting with the header/title
+      console.log('[GridView] toggleDeckDropdown fired');
+      if (this.leftbarVisible) this.closeLeftbar();
       this.isSubmenuOpen = !this.isSubmenuOpen;
+    },
+    handleHeaderClick() {
+      console.log('[GridView] header clicked');
+      if (this.leftbarVisible) this.closeLeftbar();
     },
     changeDeck(deckKey) {
       // Switch deck using same behavior as Flashcards dropdown
@@ -325,9 +348,24 @@ export default {
       this.isSubmenuOpen = false;
     },
     handleOutsideClick(event) {
-      const headerEl = this.$el.querySelector('.grid-header');
-      if (headerEl && !headerEl.contains(event.target)) {
-        this.isSubmenuOpen = false;
+      try {
+        // Close deck dropdown when clicking anywhere outside the dropdown
+        const dropdownEl = document.getElementById('deck-options');
+        const clickedInsideDropdown = dropdownEl && dropdownEl.contains(event.target);
+        if (this.isSubmenuOpen && !clickedInsideDropdown) {
+          this.isSubmenuOpen = false;
+        }
+        if (this.leftbarVisible) {
+          const leftbarEl = document.querySelector('.leftbar');
+          const toggleEl = document.querySelector('.leftbar-toggle');
+          const clickedInsideLeftbar = leftbarEl && leftbarEl.contains(event.target);
+          const clickedToggle = toggleEl && toggleEl.contains(event.target);
+          if (!clickedInsideLeftbar && !clickedToggle) {
+            this.closeLeftbar();
+          }
+        }
+      } catch (e) {
+
       }
     },
     // New methods for bubble tooltip
@@ -387,7 +425,7 @@ export default {
     toggleView() {
       this.reloading = true;          // Start reloading
       this.visibleCount = defaultVisibleCount; // Reset visible count
-      this.isListView = !this.isListView;
+      this.isGridView = !this.isGridView;
       this.$nextTick(() => {
         this.loadMore();  // Start incremental loading
       });
@@ -522,7 +560,10 @@ export default {
     
     handleGridItemClick(character) {
       if (!character) return;
-      
+      // Set navigation context to full list, then open modal
+      if (this.navCharList && this.navCharList.length) {
+        this.$store.dispatch('cardModal/setNavContext', { list: this.navCharList, current: character });
+      }
       // Show the card modal using the same action as PreloadWrapper
       this.$store.dispatch('cardModal/showCardModal', character);
     },
@@ -547,7 +588,7 @@ export default {
         ...existing,
         wordlist: wordlistVal,
         // Only include non-default values
-        view: this.isListView ? 'list' : undefined, // default is grid
+        view: this.isGridView ? 'grid' : undefined, // default is grid
         font: this.selectedFont !== 'Noto Sans SC' ? this.selectedFont : undefined,
         fontScale: this.fontScale !== 1 ? String(this.fontScale) : undefined,
         gridGap: this.gridGapSize !== '0.25em' ? this.gridGapSize : undefined,
@@ -556,6 +597,8 @@ export default {
       };
       // Remove undefined to avoid stray params
       Object.keys(query).forEach(k => (query[k] === undefined ? delete query[k] : null));
+      console.log('qq')
+      console.log(query)
       return query;
     },
     // Replace URL with current state encoded in query params
@@ -607,7 +650,7 @@ export default {
       // Parse view/layout settings
       const { view, font, fontScale, gridGap, borders, pinyin } = this.$route.query;
       if (view === 'list' || view === 'grid') {
-        this.isListView = (view === 'list');
+        this.isGridView = (view === 'grid');
       }
       if (typeof font === 'string' && font.length > 0) {
         this.selectedFont = font;
@@ -646,10 +689,9 @@ export default {
     toggleLeftbar() {
       this.leftbarVisible = !this.leftbarVisible;
     },
-    // Method to close the sidebar
+    // Method to close the sidebar (always collapse on outside click)
     closeLeftbar() {
-      // Only close the leftbar automatically if in mobile/vertical mode
-      if (this.leftbarVisible && window.innerWidth <= 1024) {
+      if (this.leftbarVisible) {
         this.leftbarVisible = false;
       }
     },
@@ -702,9 +744,10 @@ export default {
     togglePinyin() {
       this.showPinyin = !this.showPinyin;
     },
-    // Close dropdown when clicking anywhere in main content
+    // Close dropdown when clicking anywhere in main content; also collapse leftbar
     handleMainClick() {
       if (this.isSubmenuOpen) this.isSubmenuOpen = false;
+      if (this.leftbarVisible) this.closeLeftbar();
     }
   },
   watch: {
@@ -714,7 +757,7 @@ export default {
       this.$nextTick(this.loadMore);
     },
     // Sync key settings to URL so links preserve view state
-    isListView() {
+    isGridView() {
       this.updateUrl();
     },
     selectedFont() {
@@ -781,8 +824,9 @@ export default {
     // Add event listener for keydown events
     window.addEventListener('keydown', this.handleKeyDown);
 
-    // Close deck dropdown on outside click
-    document.addEventListener('click', this.handleOutsideClick);
+    // Close deck dropdown on outside click (bind to preserve component context)
+    this._onDocClick = (e) => this.handleOutsideClick(e);
+    document.addEventListener('click', this._onDocClick);
     // Add event listener for the sidebar opening event
     document.addEventListener('sidebar-opened', this.closeLeftbar);
     
@@ -802,7 +846,10 @@ export default {
     window.removeEventListener('scroll', this.handleScroll);
 
     // Remove outside click listener
-    document.removeEventListener('click', this.handleOutsideClick);
+    if (this._onDocClick) {
+      document.removeEventListener('click', this._onDocClick);
+      this._onDocClick = null;
+    }
   }
 };
 </script>
@@ -850,9 +897,24 @@ html, body {
 }
 
 .grid-header {
-  cursor: pointer;
   text-decoration: underline;
   position: relative;
+}
+
+.view-toggle-fixed {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 1000;
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+  color: var(--fg);
+  border: 2px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 25%);
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+}
+
+.view-toggle-fixed:hover {
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 60%);
 }
 
 #deck-options {
@@ -864,10 +926,12 @@ html, body {
   overflow: hidden;
   background-color: var(--bg);
   border: var(--thin-border-width) solid #0000;
-  margin-top: 5px;
   z-index: 1;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 1em;
+  top: 5em;
+  left: 14em;
+  /*left: 50%;
+  transform: translateX(-50%);*/
 }
 
 #deck-options.show {
@@ -1383,6 +1447,21 @@ label {
 
   .list-english {
     align-self: flex-start;
+  }
+
+
+  #deck-options {
+    position: absolute;
+    top: 90%;
+    width: 100%;
+    max-width: 300px;
+    max-height: 0;
+    overflow: hidden;
+    background-color: var(--bg);
+    border: var(--thin-border-width) solid #0000;
+    z-index: 1;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 </style>

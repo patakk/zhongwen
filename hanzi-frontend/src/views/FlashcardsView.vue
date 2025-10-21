@@ -215,7 +215,7 @@ export default {
       }
       
       let maxWidth = flashcardElement.offsetWidth;
-      let width = maxWidth * .8;
+      let width = maxWidth * .5;
       // Set canvas size
       this.canvas.width = width * 2;
       this.canvas.height = width / 2 * 2;
@@ -1001,7 +1001,7 @@ html, body {
 #flashcard {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 60vh;
   max-height: 800px;
   cursor: pointer;
   transform-style: preserve-3d;

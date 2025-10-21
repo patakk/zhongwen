@@ -5,7 +5,9 @@
   />
     <SideBar id="mainsidebar" />
     
-    <div id="maintitle" @click="$emit('title-click')">{{ page_title }}</div> 
+    <div id="maintitle">
+      <div id="maintitlein" @click.stop="$emit('title-click')" :class="{ 'underlined': is_underlined }">{{ page_title }}</div>
+    </div> 
 </template>
   
   <script>
@@ -19,6 +21,10 @@
       page_title: {
         type: String,
         required: true
+      },
+      is_underlined: {
+        type: Boolean,
+        default: false
       }
     }
   };
@@ -47,16 +53,25 @@
 #maintitle {
   font-size: 3em;
   font-weight: bold;
-  /* letter-spacing: -0.1em; */
   margin: 0;
-  margin: 0;
-  padding: 1.5em 0em 1em 0em;
-  width: 100%;
-  text-align: center;
+  padding: 1.5em 1em 1em 1em;
+  text-align: left;
   box-sizing: border-box;
   font-family: var(--second-font);
   border-bottom: var(--h1-border);
   /* opacity: 0; */
+}
+
+#maintitlein {
+  font-family: var(--second-font);
+  display: inline-block;
+}
+
+.underlined {
+  text-decoration: underline;
+}
+.underlined:hover {
+  cursor: pointer;
 }
 
 @media (max-width: 784px) {
@@ -68,7 +83,7 @@
 
 @media (max-aspect-ratio: 1/1) or (max-width: 1024px) {
   #maintitle {
-    padding: 1em 0em 1em 0em;
+    padding: 1.5em .5em 1em .5em;
   }
 }
 
