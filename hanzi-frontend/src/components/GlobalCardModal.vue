@@ -1312,6 +1312,7 @@ export default {
 .examples-view {
   padding: 0 0rem;
   box-sizing: border-box;
+  min-width: 100%;
 }
 
 .examples-list {
