@@ -10,6 +10,7 @@
           id="deck-options" 
           :class="{ 'show': isSubmenuOpen }"
           @click.stop
+          v-if="isSubmenuOpen"
         >
           <div 
             v-for="(deck, key) in decks" 
