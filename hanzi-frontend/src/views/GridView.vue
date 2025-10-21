@@ -203,13 +203,12 @@
             
             <!-- List View still using PreloadWrapper since performance is less critical -->
             <div v-else class="list-container" :style="{fontSize: `${fontScale*1.1}em` }">
-            <PreloadWrapper
-              v-for="(entry, index) in visibleChars"
-              :key="entry.character"
-              :character="entry.character"
-              :navList="navCharList"
-              :showBubbles="false"
-            >
+              <PreloadWrapper
+                v-for="(entry, index) in visibleChars"
+                :key="entry.character"
+                :character="entry.character"
+                :showBubbles="false"
+              >
                 <div class="list-item">
                   <div class="hanzipinyin">
                     <div class="list-hanzi" :style="{ 
@@ -301,18 +300,30 @@ export default {
     slicedChars() {
       if (!this.selectedCategory) return [];
 
-      const standard = this.dictionaryData[this.selectedCategory]?.chars || {};
-      const custom = this.customDictionaryData[this.selectedCategory]?.chars || {};
+      const staticDeck = this.dictionaryData[this.selectedCategory];
+      const customDeck = this.customDictionaryData[this.selectedCategory];
+      const deck = staticDeck || customDeck || {};
+      const charsData = deck?.chars ?? {};
+      const explicitOrder = Array.isArray(deck?.order) ? deck.order : null;
 
-      // First check if it's in the standard dictionary
-      if (Object.keys(standard).length > 0) {
-        return Object.values(standard);
+      // If an explicit order exists, use it exactly
+      if (explicitOrder && charsData && typeof charsData === 'object' && !Array.isArray(charsData)) {
+        return explicitOrder
+          .filter((c) => !!charsData[c])
+          .map((c) => {
+            const d = charsData[c];
+            return d && typeof d === 'object' ? (d.character ? d : { ...d, character: c }) : { character: c };
+          });
       }
-      // Then check if it's in the custom dictionary
-      else if (Object.keys(custom).length > 0) {
-        return Object.values(custom);
+
+      // Otherwise preserve original behavior (no extra sorting)
+      const standard = staticDeck?.chars || {};
+      const custom = customDeck?.chars || {};
+      if (standard && Object.keys(standard).length > 0) {
+        return Array.isArray(standard) ? standard : Object.values(standard);
+      } else if (custom && Object.keys(custom).length > 0) {
+        return Array.isArray(custom) ? custom : Object.values(custom);
       }
-      
       return [];
     },
     visibleChars() {
