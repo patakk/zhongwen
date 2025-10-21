@@ -207,6 +207,7 @@
                 v-for="(entry, index) in visibleChars"
                 :key="entry.character"
                 :character="entry.character"
+                :navList="navCharList"
                 :showBubbles="false"
               >
                 <div class="list-item">

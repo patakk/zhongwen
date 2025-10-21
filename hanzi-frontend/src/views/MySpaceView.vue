@@ -1344,6 +1344,12 @@
     align-items: center;
     font-weight: 500;
     user-select: text;
+    /* Prevent long text from causing horizontal overflow */
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
   
   .remove-button {
