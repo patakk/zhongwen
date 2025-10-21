@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 commit_message="${1:-pre build}"
 

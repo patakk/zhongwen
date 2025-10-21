@@ -255,7 +255,7 @@ ul {
   text-align: center;
   margin-top: 2em;
   opacity: .6;
-  position: absolute;
+  position: fixed;
   bottom: 0;
   right: 0;
   padding: 1em;

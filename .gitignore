@@ -1,5 +1,6 @@
 .ipynb_checkpoints/
 .vscode/
+*.ipynb
 research/
 hanzi-backend/config.yml
 hanzi-frontend/.vite
