@@ -284,16 +284,16 @@ function selectThemeSystem(system) {
   
   if (currentTheme === 'light') {
     store.dispatch('theme/setTheme', 'theme1');
-    showSuccessToast(`Switched to Tooney dark theme`);
+    showSuccessToast(`Switched to Tooney theme`);
   } else if (currentTheme === 'theme2') {
     store.dispatch('theme/setTheme', 'dark');
-    showSuccessToast(`Switched to Classic light theme`);
+    showSuccessToast(`Switched to Classic theme`);
   } else if (currentTheme === 'dark') {
     store.dispatch('theme/setTheme', 'theme2');
-    showSuccessToast(`Switched to Tooney dark theme`);
+    showSuccessToast(`Switched to Tooney theme`);
   } else if (currentTheme === 'theme1') {
     store.dispatch('theme/setTheme', 'light');
-    showSuccessToast(`Switched to Classic light theme`);
+    showSuccessToast(`Switched to Classic theme`);
   }
 }
 
