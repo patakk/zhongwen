@@ -109,6 +109,24 @@ const cardModalModule = {
           }
         });
       }
+
+      // Keep navIndex in sync and preload neighbors for faster arrow navigation
+      try {
+        const list = state.navList || [];
+        const len = list.length;
+        if (len > 0) {
+          const idx = list.indexOf(character);
+          if (idx !== -1) {
+            commit('SET_NAV_INDEX', idx);
+            const nextChar = list[(idx + 1) % len];
+            const prevChar = list[(idx - 1 + len) % len];
+            if (nextChar && !state.preloadedData[nextChar]) dispatch('preloadCardData', nextChar);
+            if (prevChar && !state.preloadedData[prevChar]) dispatch('preloadCardData', prevChar);
+          }
+        }
+      } catch (e) {
+        // best-effort preloading; ignore errors
+      }
       
       // Check if we already have preloaded data
       if (state.preloadedData[character]) {
