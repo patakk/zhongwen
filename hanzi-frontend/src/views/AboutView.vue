@@ -81,9 +81,7 @@ export default {
     }
   },
   mounted() {
-    // Add about-page class to body when this component is mounted
     document.body.classList.add('about-page');
-    // Fetch commit hash from backend
     fetch('/api/version')
       .then(r => r.ok ? r.json() : { commit: 'unknown' })
       .then(data => {
@@ -94,7 +92,6 @@ export default {
       })
   },
   beforeUnmount() {
-    // Remove about-page class from body when this component is unmounted
     document.body.classList.remove('about-page');
   }
 };

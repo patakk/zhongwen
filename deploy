@@ -16,9 +16,7 @@ cd hanzi-frontend
 npm run build
 cd ..
 
-# Write short commit hash to version file
-SHORT=$(git rev-parse --short HEAD)
-echo "$SHORT" > version
+### Removed commit-hash version file step per request
 
 # Second commit (build artifacts)
 git add .

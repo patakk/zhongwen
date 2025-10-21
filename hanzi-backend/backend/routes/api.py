@@ -217,7 +217,6 @@ def add_word_learning_with_data():
     username = session.get("username")
     set_name = data.get("set_name")
     
-    # If set name not provided, use the user's first available set
     if not set_name:
         user = User.query.filter_by(username=username).first()
         if not user:
@@ -234,7 +233,6 @@ def add_word_learning_with_data():
     if result is None:
         return jsonify({"error": "User or word list not found"}), 404
     
-    # Get character information for all words
     words_info = get_chars_info(words)
     
     response = {
