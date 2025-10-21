@@ -476,7 +476,6 @@
           ) {
             const listData = this.customDictionaryData[this.selectedWordlist];
             const charsData = listData.chars;
-            // Debug: print the order of characters as seen in the frontend
             try {
               console.log('[MySpaceView] loadWordlistWords chars order for', this.selectedWordlist, Object.keys(charsData || {}));
             } catch (e) {}
