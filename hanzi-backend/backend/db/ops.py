@@ -49,16 +49,14 @@ def db_get_stroke_data_for_character(username, character):
 
 def db_create_user(
     username,
-    password,  # New parameter
-    email,  # New parameter
-    metainfo={},  # New parameter for metainfo
+    password,
+    email,
+    metainfo={},
 ):
     user = User(username=username)
     user.set_password(password)
     if len(email) > 0:
         user.set_email(email, verified=False)
-    
-    # Initialize metainfo if provided
     
     metainfo['signup_date'] = datetime.now().isoformat()
     if metainfo:

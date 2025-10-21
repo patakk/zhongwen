@@ -464,7 +464,7 @@
           return new Date(dateString).toLocaleDateString(undefined, options);
         } catch (e) {
           console.error("Error formatting date:", e);
-          return dateString; // Fallback to original string
+          return dateString;
         }
       },
       loadWordlistWords() {
