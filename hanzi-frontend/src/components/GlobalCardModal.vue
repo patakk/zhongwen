@@ -58,6 +58,11 @@
             <div class="concept-toggle" @click="toggleConcepts('opposite')" :class="{ 'active': showOppositeConcepts }">
               <span class="concept-label">opposite concepts</span>
             </div>
+            
+            <!-- New: quick examples button -->
+            <div class="concept-toggle" @click="toggleExamples" :class="{ 'active': showExamples }">
+              <span class="concept-label">examples</span>
+            </div>
           </div>
 
           <!-- Concept content containers -->
@@ -98,8 +103,39 @@
           </div>
         </div>
 
+        <!-- Examples view -->
+        <div v-if="showExamples" class="examples-group examples-view">
+          <div class="section-header">
+            <div class="medium-label">Examples</div>
+          </div>
+          <div class="examples-list">
+            <div v-for="(ex, idx) in formattedExamples" :key="idx" class="example-sentence">
+              <div class="ex-chinese">{{ ex.hanzi }}</div>
+              <div class="ex-pinyin">{{ $toAccentedPinyin(ex.pinyin) }}</div>
+              <div class="ex-english">{{ ex.english }}</div>
+            </div>
+          </div>
+          <div class="examples-nav">
+            <div 
+              class="concept-toggle examples-nav-btn" 
+              :class="{ disabled: examplesLoading || examplesPage === 1 }"
+              @click="examplesPage === 1 || examplesLoading ? null : prevExamples()"
+            >
+              ← Prev
+            </div>
+            <div class="examples-page-indicator">Page {{ examplesPage }}</div>
+            <div 
+              class="concept-toggle examples-nav-btn" 
+              :class="{ disabled: examplesLoading || examplesIsLast }"
+              @click="examplesIsLast || examplesLoading ? null : nextExamples()"
+            >
+              Next →
+            </div>
+          </div>
+        </div>
+
         <!-- Character breakdown section -->
-        <div class="breakdown-section" v-if="cardData.chars_breakdown">
+        <div class="breakdown-section" v-if="!showExamples && cardData.chars_breakdown">
           <h3 class="char-breakdown">Character Breakdown ↓</h3>
 
           <!-- Tabs -->
@@ -351,6 +387,7 @@ export default {
       notificationType: 'success',
       showRelatedConcepts: false,
       showOppositeConcepts: false,
+      showExamples: false,
       showCreateListModal: false,
       newListName: '',
       presentInChunkIndex: 0,  // Track the current chunk index
@@ -358,6 +395,12 @@ export default {
       loadedPresentInChars: {}, // Store all loaded character chunks by character
       displayedPresentInChars: {}, // Store characters that are currently displayed
       isTypingEffect: false // Track if typing effect is in progress
+      ,
+      // Examples pagination state
+      examplesPage: 1,
+      examplesIsLast: false,
+      examplesLoading: false,
+      fetchedExamples: {}
     }
   },
   provide() {
@@ -451,6 +494,26 @@ export default {
       }
       
       return result;
+    },
+    formattedExamples() {
+      if (!this.cardData) return [];
+      // Use fetched page if available; else use initial examples for page 1
+      const pageData = this.fetchedExamples[this.examplesPage];
+      const examples = Array.isArray(pageData)
+        ? pageData
+        : (this.examplesPage === 1 && Array.isArray(this.cardData.examples) ? this.cardData.examples : []);
+      try {
+        return examples.map((ex) => {
+          const hanzi = typeof ex.cmn === 'string'
+            ? ex.cmn
+            : (Array.isArray(ex.cmn) ? ex.cmn.map(part => part.character).join(' ') : '');
+          const english = Array.isArray(ex.eng) && ex.eng.length ? ex.eng[0] : '';
+          const pinyin = typeof ex.pinyin === 'string' ? ex.pinyin : '';
+          return { hanzi, english, pinyin };
+        });
+      } catch {
+        return [];
+      }
     },
     activeCharData() {
       if (!this.cardData || !this.cardData.chars_breakdown) return null;
@@ -606,6 +669,11 @@ export default {
       fetchCardData: 'cardModal/fetchCardData'
       // Removed fetchDecompositionData to prevent direct calls
     }),
+    logExamples() {
+      try {
+        console.log('[GlobalCardModal] examples for', this.cardData?.character, this.cardData?.examples || []);
+      } catch (e) {}
+    },
     // Add a new method to determine tone class
     getToneClass(pinyin) {
       if (!pinyin) return 'pinyin-neutral';
@@ -874,11 +942,49 @@ export default {
       if (type === 'related') {
         this.showRelatedConcepts = !this.showRelatedConcepts;
         this.showOppositeConcepts = false;
+        this.showExamples = false;
       } else if (type === 'opposite') {
         this.showOppositeConcepts = !this.showOppositeConcepts;
         this.showRelatedConcepts = false;
+        this.showExamples = false;
       }
     },
+    toggleExamples() {
+      this.showExamples = !this.showExamples;
+      if (this.showExamples) {
+        this.showRelatedConcepts = false;
+        this.showOppositeConcepts = false;
+        // reset pagination when opening examples
+        this.examplesPage = 1;
+        this.examplesIsLast = false;
+        this.examplesLoading = false;
+        this.fetchedExamples = {};
+      }
+    },
+    async loadExamplesPage(page) {
+      if (!this.cardData || !this.cardData.character) return;
+      this.examplesLoading = true;
+      try {
+        const res = await fetch('/api/get_examples_page', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ character: this.cardData.character, page })
+        });
+        if (!res.ok) throw new Error('Failed to load examples page');
+        const data = await res.json();
+        const examples = Array.isArray(data.examples) ? data.examples : [];
+        this.fetchedExamples = { ...this.fetchedExamples, [page]: examples };
+        this.examplesIsLast = Boolean(data.is_last);
+        this.examplesPage = page;
+      } catch (e) {
+        console.error('Error loading examples page:', e);
+      } finally {
+        this.examplesLoading = false;
+      }
+    },
+    nextExamples() { this.loadExamplesPage(this.examplesPage + 1); },
+    prevExamples() { this.loadExamplesPage(this.examplesPage - 1); },
     // Add this new method to load more characters
     loadMorePresentInChars() {
       if (this.isLoadingMoreChars || !this.activeChar || this.isTypingEffect) return;
@@ -1201,6 +1307,76 @@ export default {
   padding-top: 1.5rem;
   width: 100%;
   min-width: 0;
+}
+
+.examples-view {
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.examples-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.example-sentence {
+  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
+  border-bottom: 2px dashed color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  padding: 0.75rem 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.example-sentence:last-child {
+  border-bottom: none;
+}
+
+.examples-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.examples-nav-btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.examples-page-indicator {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.ex-chinese {
+  font-size: 1.2rem;
+  font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.ex-pinyin {
+  font-size: 0.9rem;
+  opacity: 0.6;
+  margin-top: 0.25rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.ex-english {
+  font-size: 0.95rem;
+  opacity: 0.8;
+  margin-top: 0.25rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .tabs {

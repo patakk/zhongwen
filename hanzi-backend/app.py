@@ -115,7 +115,6 @@ def breakdown_chars(word):
             infos[char]['recursive'] = get_recursive_decomposition(char)
             if 'present_in' in DECOMPOSE_CACHE[char]:
                 infos[char]['present_in'] = copy.deepcopy(DECOMPOSE_CACHE[char]['present_in'][:50])
-
         infos[char]['strokes'] = STROKES_CACHE.get(char)
         infos[char]['character'] = char
     return infos
@@ -154,8 +153,8 @@ def main_card_data(character):
     username = session.get('username')
     simple_info = get_char_info(character)
 
-    # res = get_tatoeba_page(character, 0)
-    res = None
+    res = get_tatoeba_page(character, 0)
+    #res = None
     if res:
         examples, is_last = res
     else:
@@ -557,11 +556,6 @@ def get_custom_cc():
             cc[wl] = {}
             chars = custom_wordlists[wl]['chars']
             order = custom_wordlists[wl].get('order', [])
-            # Debug: print sequences
-            try:
-                print(f"[get_custom_cc] {username}:{wl} return order: " + ",".join(order))
-            except Exception:
-                pass
             cc[wl]['order'] = order
             cc[wl]['chars'] = chars
         return jsonify(cc)

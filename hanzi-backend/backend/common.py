@@ -98,7 +98,7 @@ def get_tatoeba_page(character, page):
     for tid in tids[aa:bb]:
         tatoebas.append(TATOEBA_DATA[tid])
 
-    for _, t in enumerate(tatoebas):
+    '''for _, t in enumerate(tatoebas):
         try:
             t['cmn'] = simplify_hanzi(t['cmn'])
             words = pseg.cut(t['cmn'])
@@ -107,9 +107,9 @@ def get_tatoeba_page(character, page):
                 cmn.append({**get_char_info(a), 'character': a})
             examples.append({**t, 'cmn': cmn})
         except:
-            pass
+            pass'''
 
-    return examples, is_last
+    return tatoebas, is_last
 
 def get_char_info(character, full=False):
     if full:

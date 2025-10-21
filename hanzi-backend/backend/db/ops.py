@@ -266,11 +266,6 @@ def db_get_user_wordlists(username, with_data=True):
                     .all()
                 )
                 ordered = [word.word for word in words]
-                # Debug: print the exact order we fetched from DB
-                try:
-                    print(f"[db_get_user_wordlists] {username}:{word_list.name} order: " + ",".join(ordered))
-                except Exception:
-                    pass
                 result[word_list.name] = ordered
         custom_wordlists = {
             word_list.name: {
