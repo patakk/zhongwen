@@ -23,6 +23,10 @@ export default {
       type: String,
       required: true
     },
+    navList: {
+      type: Array,
+      default: () => []
+    },
     delay: {
       type: Number,
       default: 150
@@ -47,6 +51,7 @@ export default {
   methods: {
     ...mapActions({
       showCardModal: 'cardModal/showCardModal',
+      setNavContext: 'cardModal/setNavContext',
       preloadCardDataAction: 'cardModal/preloadCardData',
       preloadDecompDataAction: 'cardModal/fetchDecompositionDataOnly',
       showBubble: 'bubbleTooltip/showBubble',
@@ -157,6 +162,9 @@ export default {
     },
     openPopup() {
       // Use the mapped action from Vuex store
+      if (this.navList && this.navList.length > 0) {
+        this.setNavContext({ list: this.navList, current: this.character });
+      }
       this.showCardModal(this.character);
     },
     navigateToDedicatedPage() {

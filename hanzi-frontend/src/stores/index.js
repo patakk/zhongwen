@@ -10,7 +10,9 @@ const cardModalModule = {
     characterData: null,
     decompositionData: null,
     currentCharacter: null,
-    preloadedData: {} // Add cache for preloaded data
+    preloadedData: {}, // Add cache for preloaded data
+    navList: [],
+    navIndex: -1
   },
   mutations: {
     SHOW_CARD_MODAL(state, character) {
@@ -21,6 +23,17 @@ const cardModalModule = {
     HIDE_CARD_MODAL(state) {
       state.visible = false;
       state.currentCharacter = null;
+    },
+    SET_NAV_CONTEXT(state, { list, current }) {
+      state.navList = Array.isArray(list) ? list.slice() : [];
+      state.navIndex = Array.isArray(list) ? Math.max(0, list.indexOf(current)) : -1;
+    },
+    CLEAR_NAV_CONTEXT(state) {
+      state.navList = [];
+      state.navIndex = -1;
+    },
+    SET_NAV_INDEX(state, index) {
+      state.navIndex = index;
     },
     SET_CARD_DATA(state, data) {
       state.characterData = data;
@@ -40,6 +53,27 @@ const cardModalModule = {
     }
   },
   actions: {
+    setNavContext({ commit }, { list, current }) {
+      commit('SET_NAV_CONTEXT', { list, current });
+    },
+    navigateNext({ state, dispatch, commit }) {
+      if (!state.visible || !state.navList || state.navList.length === 0) return;
+      const len = state.navList.length;
+      const curIdx = state.navIndex >= 0 ? state.navIndex : state.navList.indexOf(state.currentCharacter);
+      const nextIdx = (curIdx + 1) % len;
+      commit('SET_NAV_INDEX', nextIdx);
+      const nextChar = state.navList[nextIdx];
+      if (nextChar) dispatch('showCardModal', nextChar);
+    },
+    navigatePrev({ state, dispatch, commit }) {
+      if (!state.visible || !state.navList || state.navList.length === 0) return;
+      const len = state.navList.length;
+      const curIdx = state.navIndex >= 0 ? state.navIndex : state.navList.indexOf(state.currentCharacter);
+      const prevIdx = (curIdx - 1 + len) % len;
+      commit('SET_NAV_INDEX', prevIdx);
+      const prevChar = state.navList[prevIdx];
+      if (prevChar) dispatch('showCardModal', prevChar);
+    },
     async showCardModal({ commit, dispatch, state }, character) {
       if (state.visible && state.currentCharacter === character) {
         return;
@@ -108,6 +142,7 @@ const cardModalModule = {
     },
     hideCardModal({ commit }) {
       commit('HIDE_CARD_MODAL');
+      commit('CLEAR_NAV_CONTEXT');
       
       // Remove word parameter from URL
       const query = { ...router.currentRoute.value.query };
@@ -281,7 +316,9 @@ const cardModalModule = {
     getCardData: state => state.characterData,
     getDecompositionData: state => state.decompositionData,
     getCurrentCharacter: state => state.currentCharacter,
-    getPreloadedData: state => character => state.preloadedData[character]
+    getPreloadedData: state => character => state.preloadedData[character],
+    getNavList: state => state.navList,
+    getNavIndex: state => state.navIndex
   }
 };
 
@@ -611,6 +648,13 @@ const store = createStore({
           }
           
           const data = await response.json();
+          // Debug: log order of characters per custom list as received
+          try {
+            Object.keys(data).forEach(wl => {
+              const chars = data[wl]?.chars || {};
+              console.log('[store] fetched chars order for', wl, Object.keys(chars));
+            });
+          } catch (e) {}
           for (const key in data) {
             if (!data[key].name) {
               data[key].name = key;

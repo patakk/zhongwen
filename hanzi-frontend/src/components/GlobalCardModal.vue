@@ -374,7 +374,9 @@ export default {
       isLoading: 'cardModal/isCardModalLoading',
       cardData: 'cardModal/getCardData',
       decompositionData: 'cardModal/getDecompositionData',
-      currentCharacter: 'cardModal/getCurrentCharacter'
+      currentCharacter: 'cardModal/getCurrentCharacter',
+      navList: 'cardModal/getNavList',
+      navIndex: 'cardModal/getNavIndex'
     }),
     validChars() {
       if (!this.cardData || !this.cardData.character) return [];
@@ -584,11 +586,13 @@ export default {
     
     window.addEventListener('keydown', this.handleEscKey);
     window.addEventListener('keydown', this.handleDebugKey); // Add the debug key handler
+    window.addEventListener('keydown', this.handleArrowNav);
     document.addEventListener('click', this.handleOutsideClick);
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleEscKey);
     window.removeEventListener('keydown', this.handleDebugKey); // Remove the debug key handler
+    window.removeEventListener('keydown', this.handleArrowNav);
     document.removeEventListener('click', this.handleOutsideClick);
     
     if (this.isVisible) {
@@ -711,6 +715,17 @@ export default {
     handleDebugKey(event) {
       if (event.key === 'd') {
         // this.debugCardData();
+      }
+    },
+    handleArrowNav(event) {
+      if (!this.isVisible) return;
+      if (!this.navList || this.navList.length === 0) return;
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        this.$store.dispatch('cardModal/navigateNext');
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        this.$store.dispatch('cardModal/navigatePrev');
       }
     },
     // Debug function to log card data to console

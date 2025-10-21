@@ -260,13 +260,27 @@ def db_get_user_wordlists(username, with_data=True):
         result = {}
         if with_data:
             for word_list in wordlists:
-                words = WordEntry.query.filter_by(list_id=word_list.id).all()
-                result[word_list.name] = [word.word for word in words]
+                # Ensure stable insertion order on fetch
+                words = (
+                    WordEntry.query
+                    .filter_by(list_id=word_list.id)
+                    .order_by(WordEntry.id.asc())
+                    .all()
+                )
+                ordered = [word.word for word in words]
+                # Debug: print the exact order we fetched from DB
+                try:
+                    print(f"[db_get_user_wordlists] {username}:{word_list.name} order: " + ",".join(ordered))
+                except Exception:
+                    pass
+                result[word_list.name] = ordered
         custom_wordlists = {
             word_list.name: {
                 'name': word_list.name,
                 'timestamp': word_list.timestamp,
                 'description': word_list.description,
+                # Explicit order list to preserve insertion across JSON layers
+                'order': result[word_list.name] if with_data else None,
                 'chars': get_chars_info(result[word_list.name]) if with_data else None,
             } for word_list in wordlists
         }

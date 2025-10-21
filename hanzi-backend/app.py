@@ -555,7 +555,15 @@ def get_custom_cc():
         cc = {}
         for wl in custom_wordlists:
             cc[wl] = {}
-            cc[wl]['chars'] = custom_wordlists[wl]['chars']
+            chars = custom_wordlists[wl]['chars']
+            order = custom_wordlists[wl].get('order', [])
+            # Debug: print sequences
+            try:
+                print(f"[get_custom_cc] {username}:{wl} return order: " + ",".join(order))
+            except Exception:
+                pass
+            cc[wl]['order'] = order
+            cc[wl]['chars'] = chars
         return jsonify(cc)
     except Exception as e:
         logger.error(f"Error fetching custom dictionary data: {str(e)}")

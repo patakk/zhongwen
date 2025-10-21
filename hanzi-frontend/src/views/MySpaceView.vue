@@ -144,6 +144,7 @@
             <!-- Word list -->
             <div class="word-list">
                 <PreloadWrapper :character="word.character"
+                    :navList="words.map(w => w.character)"
                     v-for="word in words"
                     :key="word.character"
                     class="word-item"
@@ -473,13 +474,28 @@
             this.selectedWordlist &&
             this.customDictionaryData[this.selectedWordlist]
           ) {
-            const charsData = this.customDictionaryData[this.selectedWordlist].chars;
+            const listData = this.customDictionaryData[this.selectedWordlist];
+            const charsData = listData.chars;
+            // Debug: print the order of characters as seen in the frontend
+            try {
+              console.log('[MySpaceView] loadWordlistWords chars order for', this.selectedWordlist, Object.keys(charsData || {}));
+            } catch (e) {}
   
             if (charsData) {
-              this.words = Object.entries(charsData).map(([character, data]) => ({
-                character,
-                ...data,
-              }));
+              const explicitOrder = Array.isArray(listData.order) ? listData.order : null;
+              if (explicitOrder && explicitOrder.length > 0) {
+                this.words = explicitOrder
+                  .filter(c => !!charsData[c])
+                  .map(c => ({ character: c, ...charsData[c] }));
+              } else {
+                this.words = Object.entries(charsData).map(([character, data]) => ({
+                  character,
+                  ...data,
+                }));
+              }
+              try {
+                console.log('[MySpaceView] words array order', this.words.map(w => w.character));
+              } catch (e) {}
             } else {
               this.words = [];
             }
@@ -899,19 +915,22 @@
         .then(data => {
           console.log('Words added successfully:', data);
           
-          // Update store with the character data from the response
+          // Update store in the exact typed order
           if (data.chars_info) {
-            Object.entries(data.chars_info).forEach(([character, info]) => {
-              this.$store.dispatch('addWordToCustomDeck', {
-                word: character,
-                setName: this.selectedWordlist,
-                wordData: {
-                  pinyin: info.pinyin || [''],
-                  english: info.english || [''],
-                  character: character
-                }
+            wordsToAdd
+              .filter(ch => !!data.chars_info[ch])
+              .forEach(character => {
+                const info = data.chars_info[character] || {};
+                this.$store.dispatch('addWordToCustomDeck', {
+                  word: character,
+                  setName: this.selectedWordlist,
+                  wordData: {
+                    pinyin: info.pinyin || [''],
+                    english: info.english || [''],
+                    character: character
+                  }
+                });
               });
-            });
           }
           
           // Refresh the display
