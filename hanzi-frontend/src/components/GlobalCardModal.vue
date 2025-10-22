@@ -48,7 +48,7 @@
         :class="['main-word-section']"
         >
           <div
-            :class="['main-word', { 'main-word-inverted': swipeDimVisible }]"
+            :class="['main-word', { 'main-word-inverted': swipeDimVisible }, { mleft: swipeHintDirection === 'left' }, { mright: swipeHintDirection === 'right' }]"
 
           >
             <span
@@ -1281,12 +1281,25 @@ export default {
   font-family: "Noto Serif SC", "Kaiti", sans-serif;
 
   font-weight: 600;
-  transition: filter 150ms ease-out;
 }
 
 .main-word-inverted {
-  filter: invert(0.8);
+  transition: filter 150ms ease-out opacity 150ms ease-out, transform 150ms ease-out;
+  filter: blur(.031em) invert(.0);
+  transform: translate(-5%, 0%);
+  opacity: 0.8;
 }
+
+.main-word-inverted.mleft {
+  transform: translate(3%, 0%);
+}
+
+.main-word-inverted.mright {
+  transform: translate(-3%, 0%);
+}
+
+
+
 
 .minor-character {
   font-size: 2.5rem;
