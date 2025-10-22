@@ -988,6 +988,12 @@ export default {
         });
         
         this.showNotification(`Added "${word}" to "${setName}" list`, 'success');
+
+        // In production, ensure store reflects server state to avoid stale overwrites
+        // Fetch fresh custom dictionary data; if backend is slightly delayed, retry once
+        const refresh = () => this.$store.dispatch('fetchCustomDictionaryData').catch(() => {});
+        refresh();
+        setTimeout(refresh, 350);
       })
       .catch(error => {
         console.error("Error:", error);
