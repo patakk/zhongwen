@@ -20,6 +20,7 @@
       v-for="(result, index) in results"
       :key="index"
       :character="result.hanzi"
+      :navList="navCharList"
       :showBubbles="false"
       >
         <div class="result-cell">
@@ -53,6 +54,12 @@ export default {
   components: {
     BasePage,
     PreloadWrapper,
+  },
+  computed: {
+    // Navigation list matches current search results order
+    navCharList() {
+      return Array.isArray(this.results) ? this.results.map(r => r.hanzi) : [];
+    }
   },
   data() {
     return {
@@ -102,6 +109,8 @@ export default {
     window.addEventListener('scroll', this.handleScroll);
     // Initial check for scroll position
     this.handleScroll();
+    // If opened with ?word=, ensure nav context once results are available
+    this.$nextTick(() => this.ensureNavContextForUrlWord());
   },
   beforeUnmount() {
     // Remove scroll event listener when component is unmounted
@@ -112,6 +121,17 @@ export default {
     }
   },
   methods: {
+    ensureNavContextForUrlWord() {
+      try {
+        const word = this.$route.query.word || this.$store.getters['cardModal/getCurrentCharacter'];
+        if (!word) return;
+        const list = this.navCharList || [];
+        if (!list.length) return;
+        if (list.includes(word)) {
+          this.$store.dispatch('cardModal/setNavContext', { list, current: word });
+        }
+      } catch (e) {}
+    },
     handleInput() {
       // Store the latest query value
       this.latestQuery = this.query;
@@ -154,6 +174,7 @@ export default {
         const res = await fetch(`/api/search_results?query=${query}`);
         const data = await res.json();
         this.results = data.results;
+        this.$nextTick(() => this.ensureNavContextForUrlWord());
       } catch (error) {
         console.error("Error during search:", error);
       } finally {
@@ -205,6 +226,14 @@ export default {
     handleScroll() {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       this.showScrollTop = scrollTop > 200;
+    }
+  },
+  watch: {
+    results() {
+      this.$nextTick(() => this.ensureNavContextForUrlWord());
+    },
+    '$route.query.word'() {
+      this.ensureNavContextForUrlWord();
     }
   },
 };
@@ -345,4 +374,3 @@ export default {
   color: var(--fg);
 }
 </style>
-
