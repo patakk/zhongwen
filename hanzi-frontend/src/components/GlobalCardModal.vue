@@ -6,7 +6,18 @@
         <div>Loading...</div>
       </div>
       
-      <div v-else class="modal card-modal" @click.stop="handleModalClick" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
+      <div 
+        v-else 
+        class="modal card-modal" 
+        @click.stop="handleModalClick" 
+        @touchstart="onTouchStart" 
+        @touchmove="onTouchMove" 
+        @touchend="onTouchEnd"
+      >
+        <!-- Swipe hint overlay (fades in/out quickly) -->
+        <div class="swipe-hint" :class="{ visible: swipeHintVisible }">{{ swipeHintDirection === 'right' ? '→' : '←' }}</div>
+        <!-- Swipe dim overlay with directional gradient -->
+        <div class="swipe-dim-overlay" :class="[swipeDimDirection, { visible: swipeDimVisible }]" />
         
         <!-- Add to wordlist dropdown button - now shown to all users -->
         <div class="wordlist-dropdown">
@@ -401,7 +412,14 @@ export default {
       touchLastX: 0,
       touchLastY: 0,
       touchStartTime: 0,
-      isSwiping: false
+      isSwiping: false,
+      swipeHintVisible: false,
+      swipeHintDirection: 'right',
+      swipeHintTimer: null,
+      // Dim animation for modal during swipe hint
+      swipeDimVisible: false,
+      swipeDimTimer: null,
+      swipeDimDirection: 'right'
       ,
       // Examples pagination state
       examplesPage: 1,
@@ -819,6 +837,38 @@ export default {
       if (!t) return;
       this.touchLastX = t.clientX;
       this.touchLastY = t.clientY;
+      const dx = this.touchLastX - this.touchStartX;
+      const dy = this.touchLastY - this.touchStartY;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        // Horizontal intent: prevent vertical scroll and show hint briefly
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        this.swipeHintVisible = true;
+        this.swipeHintDirection = dx < 0 ? 'right' : 'left';
+        if (this.swipeHintTimer) clearTimeout(this.swipeHintTimer);
+        this.swipeHintTimer = setTimeout(() => {
+          this.swipeHintVisible = false;
+          this.swipeHintTimer = null;
+        }, 250);
+        // Also briefly show directional gradient to indicate swipe
+        this.swipeDimVisible = true;
+        this.swipeDimDirection = (dx < 0 ? 'right' : 'left');
+        if (this.swipeDimTimer) clearTimeout(this.swipeDimTimer);
+        this.swipeDimTimer = setTimeout(() => {
+          this.swipeDimVisible = false;
+          this.swipeDimTimer = null;
+        }, 200);
+      } else {
+        this.swipeHintVisible = false;
+        if (this.swipeHintTimer) {
+          clearTimeout(this.swipeHintTimer);
+          this.swipeHintTimer = null;
+        }
+        if (this.swipeDimTimer) {
+          clearTimeout(this.swipeDimTimer);
+          this.swipeDimTimer = null;
+        }
+        this.swipeDimVisible = false;
+      }
     },
     onTouchEnd() {
       if (!this.isSwiping) return;
@@ -839,6 +889,16 @@ export default {
           this.$store.dispatch('cardModal/navigatePrev');
         }
       }
+      this.swipeHintVisible = false;
+      if (this.swipeHintTimer) {
+        clearTimeout(this.swipeHintTimer);
+        this.swipeHintTimer = null;
+      }
+      if (this.swipeDimTimer) {
+        clearTimeout(this.swipeDimTimer);
+        this.swipeDimTimer = null;
+      }
+      this.swipeDimVisible = false;
     },
     // Debug function to log card data to console
     debugCardData() {
@@ -1167,6 +1227,7 @@ export default {
   border: var(--modal-border-width) solid var(--fg);
   box-shadow: var(--card-shadow);
   background: var(--modal-bg);
+  background-color: var(--modal-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1183,6 +1244,35 @@ export default {
   cursor: default;
   scrollbar-width: none;
   border-radius: var(--modal-border-radius);
+  touch-action: pan-y; /* allow vertical scroll by default; JS prevents during horizontal swipe */
+  transition: background-color 150ms ease-in-out;
+}
+
+/* directional swipe overlay */
+.swipe-dim-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+  border-radius: var(--modal-border-radius);
+}
+.swipe-dim-overlay.visible { opacity: 0.35; }
+.swipe-dim-overlay.right {
+  background: linear-gradient(to right,
+    color-mix(in oklab, var(--modal-bg) 100%, var(--fg) 0%) 0%,
+    color-mix(in oklab, var(--modal-bg) 90%, var(--fg) 10%) 30%,
+    color-mix(in oklab, var(--modal-bg) 85%, var(--fg) 15%) 60%,
+    color-mix(in oklab, var(--modal-bg) 80%, var(--fg) 20%) 100%
+  );
+}
+.swipe-dim-overlay.left {
+  background: linear-gradient(to left,
+    color-mix(in oklab, var(--modal-bg) 100%, var(--fg) 0%) 0%,
+    color-mix(in oklab, var(--modal-bg) 90%, var(--fg) 10%) 30%,
+    color-mix(in oklab, var(--modal-bg) 85%, var(--fg) 15%) 60%,
+    color-mix(in oklab, var(--modal-bg) 80%, var(--fg) 20%) 100%
+  );
 }
 
 .modal::-webkit-scrollbar {
@@ -1425,6 +1515,25 @@ export default {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+
+.swipe-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.5rem;
+  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 85%);
+  color: var(--fg);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.5rem;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+}
+
+.swipe-hint.visible { opacity: 0.0; }
+
 
 .tabs {
   display: flex;
