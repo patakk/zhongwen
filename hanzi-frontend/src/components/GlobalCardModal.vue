@@ -8,7 +8,7 @@
       
       <div 
         v-else 
-        :class="['modal', 'card-modal', { invert: swipeDimVisible }]"
+        :class="['modal', 'card-modal', { invert: swipeDimVisible }, { mleft: swipeHintDirection === 'left' }, { mright: swipeHintDirection === 'right' }]"
         @click.stop="handleModalClick" 
         @touchstart="onTouchStart" 
         @touchmove="onTouchMove" 
@@ -1495,10 +1495,8 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 2.5rem;
-  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 85%);
   color: var(--fg);
   padding: 0.2rem 0.5rem;
-  border-radius: 0.5rem;
   pointer-events: none;
   user-select: none;
   opacity: 0;
@@ -1506,11 +1504,14 @@ export default {
   z-index: 6;
 }
 
-.swipe-hint.visible { opacity: 0.75; }
+.swipe-hint.visible { opacity: 0.0; }
 
 .modal.invert { filter: invert(0.24); }
+.modal.invert.mleft { transform: translateX(5%);}
+.modal.invert.mright { transform: translateX(-5%);}
 [data-theme='dark'] .modal.invert,
 [data-theme='theme2'] .modal.invert { filter: invert(0.03); }
+
 
 
 .tabs {
@@ -2083,6 +2084,11 @@ export default {
       top: 3em;
       left: 1rem;
     }
+
+    .modal.invert { filter: invert(0.24); }
+    .modal.invert.mleft { transform: translate(-45%, -50%);}
+    .modal.invert.mright { transform: translate(-55%, -50%);}
+    
 }
 
 @media screen and (max-width: 768px) {
@@ -2098,7 +2104,7 @@ export default {
       padding: 3rem 1rem 1rem 1rem;
       border: none;
     }
-    
+
     .wordlist-dropdown {
       position: fixed;
       top: 3em;
