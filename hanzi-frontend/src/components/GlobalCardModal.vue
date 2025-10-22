@@ -2106,8 +2106,8 @@ export default {
     }
 
     .modal.invert { filter: invert(0.24); }
-    .modal.invert.mleft { transform: translate(-5%, 0%);}
-    .modal.invert.mright { transform: translate(5%, 0%);}
+    .modal.invert.mleft { transform: translate(5%, 0%);}
+    .modal.invert.mright { transform: translate(-5%, 0%);}
 
     .wordlist-dropdown {
       position: fixed;
