@@ -8,7 +8,7 @@
       
       <div 
         v-else 
-        class="modal card-modal" 
+        :class="['modal', 'card-modal', { invert: swipeDimVisible }]"
         @click.stop="handleModalClick" 
         @touchstart="onTouchStart" 
         @touchmove="onTouchMove" 
@@ -16,8 +16,7 @@
       >
         <!-- Swipe hint overlay (fades in/out quickly) -->
         <div class="swipe-hint" :class="{ visible: swipeHintVisible }">{{ swipeHintDirection === 'right' ? '→' : '←' }}</div>
-        <!-- Swipe dim overlay with directional gradient -->
-        <div class="swipe-dim-overlay" :class="[swipeDimDirection, { visible: swipeDimVisible }]" />
+        
         
         <!-- Add to wordlist dropdown button - now shown to all users -->
         <div class="wordlist-dropdown">
@@ -1245,35 +1244,10 @@ export default {
   scrollbar-width: none;
   border-radius: var(--modal-border-radius);
   touch-action: pan-y; /* allow vertical scroll by default; JS prevents during horizontal swipe */
-  transition: background-color 150ms ease-in-out;
+  transition: background-color 150ms ease-in-out, filter 150ms ease-in-out;
 }
 
-/* directional swipe overlay */
-.swipe-dim-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 200ms ease-in-out;
-  border-radius: var(--modal-border-radius);
-}
-.swipe-dim-overlay.visible { opacity: 0.35; }
-.swipe-dim-overlay.right {
-  background: linear-gradient(to right,
-    color-mix(in oklab, var(--modal-bg) 100%, var(--fg) 0%) 0%,
-    color-mix(in oklab, var(--modal-bg) 90%, var(--fg) 10%) 30%,
-    color-mix(in oklab, var(--modal-bg) 85%, var(--fg) 15%) 60%,
-    color-mix(in oklab, var(--modal-bg) 80%, var(--fg) 20%) 100%
-  );
-}
-.swipe-dim-overlay.left {
-  background: linear-gradient(to left,
-    color-mix(in oklab, var(--modal-bg) 100%, var(--fg) 0%) 0%,
-    color-mix(in oklab, var(--modal-bg) 90%, var(--fg) 10%) 30%,
-    color-mix(in oklab, var(--modal-bg) 85%, var(--fg) 15%) 60%,
-    color-mix(in oklab, var(--modal-bg) 80%, var(--fg) 20%) 100%
-  );
-}
+/* (removed duplicate absolute overlay; using sticky version below) */
 
 .modal::-webkit-scrollbar {
   width: 0;
@@ -1517,8 +1491,8 @@ export default {
 }
 
 .swipe-hint {
-  position: absolute;
-  top: 50%;
+  position: sticky;
+  top: 5%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 2.5rem;
@@ -1530,9 +1504,12 @@ export default {
   user-select: none;
   opacity: 0;
   transition: opacity 150ms ease-in-out;
+  z-index: 6;
 }
 
-.swipe-hint.visible { opacity: 0.0; }
+.swipe-hint.visible { opacity: 0.75; }
+
+.modal.invert { filter: invert(0.07); }
 
 
 .tabs {
