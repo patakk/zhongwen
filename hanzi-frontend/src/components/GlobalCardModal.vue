@@ -1285,17 +1285,15 @@ export default {
 
 .main-word-inverted {
   transition: filter 150ms ease-out opacity 150ms ease-out, transform 150ms ease-out;
-  filter: blur(.031em) invert(.0);
+  filter: blur(.031em) invert(.7);
   transform: translate(-5%, 0%);
   opacity: 0.8;
 }
 
 .main-word-inverted.mleft {
-  transform: translate(3%, 0%);
 }
 
 .main-word-inverted.mright {
-  transform: translate(-3%, 0%);
 }
 
 
