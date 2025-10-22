@@ -35,13 +35,13 @@
             </span>
           </div>-->
           <div class="pinyin-label" :class="{ 'active': showPinyin }">
-            <span v-for="(word, idx) in currentPinyin.split(' ')" :key="idx" :class="{ 'dimmed': idx !== currentQuizItem?.charIndex }">
+            <span v-for="(word, idx) in displayCurrentPinyin.split(' ')" :key="idx" :class="{ 'dimmed': idx !== currentQuizItem?.charIndex }">
               {{ $toAccentedPinyin(word) }} <span v-if="idx < currentWord.length - 1"> </span>
             </span>
           </div>
           <div class="english-display">
-            <span v-for="(part, idx) in currentEnglish" :key="idx" :class="{ 'dimmed': currentWord.length > 1 && idx !== currentQuizItem?.charIndex }">
-              {{ part }} <span v-if="idx < currentWord.length - 1">/</span>
+            <span v-for="(part, idx) in displayEnglishParts" :key="idx" :class="{ 'dimmed': currentWord.length > 1 && idx !== currentQuizItem?.charIndex }">
+              {{ part }} <span v-if="idx < displayEnglishParts.length - 1">/</span>
             </span>
           </div>
         </div>
@@ -173,6 +173,23 @@ export default defineComponent({
     },
     navIcon() {
       return this.skipState ? 'fa-rotate' : 'fa-backward-step';
+    },
+    customDefCurrent() {
+      try {
+        const h = this.currentWord;
+        const getter = this.$store.getters.getCustomDefinition;
+        return h && getter ? getter(h) : null;
+      } catch (e) { return null; }
+    },
+    displayCurrentPinyin() {
+      const base = this.currentPinyin || '';
+      const custom = this.customDefCurrent && this.customDefCurrent.pinyin ? this.customDefCurrent.pinyin : '';
+      return (custom || base) || '';
+    },
+    displayEnglishParts() {
+      const base = Array.isArray(this.currentEnglish) ? this.currentEnglish : [];
+      const custom = this.customDefCurrent && this.customDefCurrent.english ? this.customDefCurrent.english : '';
+      return (custom ? [custom] : base);
     }
   },
   watch: {
@@ -201,6 +218,13 @@ export default defineComponent({
         this.plotter.setColors(colors);
       }
     }
+    ,
+    currentWord(newVal) {
+      if (this.$store.getters.isLoggedIn && newVal) {
+        this.$store.dispatch('fetchCustomDefinition', newVal);
+      }
+    }
+
   },
   mounted() {
     // Check initial dark mode state
@@ -227,6 +251,10 @@ export default defineComponent({
     // Initialize if decks are available
     if (Object.keys(this.storeDecks).length > 0) {
       this.loadNewWords();
+    }
+    // Preload custom def for current word if available
+    if (this.$store.getters.isLoggedIn && this.currentWord) {
+      this.$store.dispatch('fetchCustomDefinition', this.currentWord);
     }
   },
   beforeUnmount() {

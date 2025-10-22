@@ -50,6 +50,17 @@ const cardModalModule = {
     },
     SET_PRELOADED_DATA(state, { character, data }) {
       state.preloadedData[character] = data;
+    },
+    SET_CUSTOM_DEFINITION(state, { hanzi, def }) {
+      state.customDefinitions = {
+        ...state.customDefinitions,
+        [hanzi]: def
+      };
+    },
+    CLEAR_CUSTOM_DEFINITION(state, hanzi) {
+      const defs = { ...state.customDefinitions };
+      delete defs[hanzi];
+      state.customDefinitions = defs;
     }
   },
   actions: {
@@ -326,7 +337,8 @@ const cardModalModule = {
         
         dispatch('showCardModal', word);
       }
-    }
+    },
+
   },
   getters: {
     isCardModalVisible: state => state.visible,
@@ -362,6 +374,17 @@ const bubbleTooltipModule = {
     },
     HIDE_BUBBLE(state) {
       state.visible = false;
+    },
+    SET_CUSTOM_DEFINITION(state, { hanzi, def }) {
+      state.customDefinitions = {
+        ...state.customDefinitions,
+        [hanzi]: def
+      };
+    },
+    CLEAR_CUSTOM_DEFINITION(state, hanzi) {
+      const defs = { ...state.customDefinitions };
+      delete defs[hanzi];
+      state.customDefinitions = defs;
     }
   },
   actions: {
@@ -491,6 +514,7 @@ const store = createStore({
     }, // Cache for practice characters
     simpleCharInfoCache: {}, // New cache for simple character information
     pendingSimpleCharRequests: null, // Track pending simple character requests
+    customDefinitions: {}, // Cache of user custom definitions keyed by hanzi
   },
   mutations: {
     setDictionaryData(state, data) {
@@ -601,6 +625,17 @@ const store = createStore({
         ...state.simpleCharInfoCache,
         ...data
       };
+    },
+    SET_CUSTOM_DEFINITION(state, { hanzi, def }) {
+      state.customDefinitions = {
+        ...state.customDefinitions,
+        [hanzi]: def
+      };
+    },
+    CLEAR_CUSTOM_DEFINITION(state, hanzi) {
+      const defs = { ...state.customDefinitions };
+      delete defs[hanzi];
+      state.customDefinitions = defs;
     }
   },
   actions: {
@@ -729,6 +764,8 @@ const store = createStore({
         }
         
         commit('setUserData', userData);
+        // Preload all custom definitions so UI can override N/A immediately
+        try { await dispatch('fetchAllCustomDefinitions'); } catch (e) {}
         
         // Save to localStorage for persistence
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
@@ -985,6 +1022,59 @@ const store = createStore({
       state.pendingSimpleCharRequests = promise;
       return promise;
     },
+    async fetchCustomDefinition({ commit }, hanzi) {
+      if (!hanzi) return null;
+      try {
+        const res = await fetch(`/api/custom_definitions/get?hanzi=${encodeURIComponent(hanzi)}`, { credentials: 'include' });
+        const data = await res.json();
+        if (data && data.found) {
+          commit('SET_CUSTOM_DEFINITION', { hanzi, def: { hanzi: data.hanzi, pinyin: data.pinyin || '', english: data.english || '' } });
+          return data;
+        } else {
+          commit('CLEAR_CUSTOM_DEFINITION', hanzi);
+          return null;
+        }
+      } catch (e) {
+        return null;
+      }
+    },
+    async setCustomDefinition({ commit }, { hanzi, pinyin, english }) {
+      const res = await fetch('/api/custom_definitions/set', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ hanzi, pinyin, english })
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      commit('SET_CUSTOM_DEFINITION', { hanzi, def: { hanzi, pinyin: pinyin || '', english: english || '' } });
+      return true;
+    },
+    async deleteCustomDefinition({ commit }, { hanzi }) {
+      const res = await fetch('/api/custom_definitions/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ hanzi })
+      });
+      if (!res.ok) throw new Error('Failed to delete');
+      commit('CLEAR_CUSTOM_DEFINITION', hanzi);
+      return true;
+    },
+
+    async fetchAllCustomDefinitions({ commit, getters }) {
+      if (!getters.isLoggedIn) return [];
+      const res = await fetch('/api/custom_definitions/list', { credentials: 'include' });
+      if (!res.ok) return [];
+      const data = await res.json();
+      const items = Array.isArray(data.items) ? data.items : [];
+      items.forEach(it => {
+        if (it && it.hanzi) {
+          commit('SET_CUSTOM_DEFINITION', { hanzi: it.hanzi, def: { hanzi: it.hanzi, pinyin: it.pinyin || '', english: it.english || '' } });
+        }
+      });
+      return items;
+    },
+
   },
   getters: {
     getCustomDictionaryData: (state) => state.customDictionaryData,
@@ -1002,6 +1092,7 @@ const store = createStore({
       static: state.dictionaryPromises.static,
       custom: state.dictionaryPromises.custom
     }),
+    getCustomDefinition: (state) => (hanzi) => state.customDefinitions[hanzi] || null,
     isLoggedIn:        (state) => !!state.authStatus && !!state.username,
     getPracticeCharCache: (state) => state.practiceCharacterCache,
     

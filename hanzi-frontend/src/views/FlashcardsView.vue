@@ -32,13 +32,13 @@
         </div>
         <div class="answer" :class="{ inactive: revealed }">
           <div class="answer-hanzi-text">{{ currentWordInfo.character }}</div>
-          <div class="pinyin" style="opacity: 0;">{{ singlePinyin }}</div>
-          <div class="english" style="opacity: 0;">{{ singleEnglish.split("/")[0] }}</div>
+          <div class="pinyin" style="opacity: 0;">{{ displaySinglePinyin }}</div>
+          <div class="english" style="opacity: 0;">{{ displaySingleEnglish }}</div>
         </div>
         <div class="answer" :class="{ inactive: !revealed }">
           <div class="answer-hanzi-text">{{ currentWordInfo.character }}</div>
-          <div class="pinyin">{{ singlePinyin }}</div>
-          <div class="english">{{ singleEnglish.split("/")[0] }}</div>
+          <div class="pinyin">{{ displaySinglePinyin }}</div>
+          <div class="english">{{ displaySingleEnglish }}</div>
         </div>
       </div>
     </div>
@@ -95,22 +95,27 @@ export default {
     currentDeckName() {
       return this.decks[this.currentDeck]?.name || '';
     },
-    singlePinyin() {
-      try{
-        return this.$toAccentedPinyin(this.currentWordInfo.pinyin[0]) || '';
-      }
-      catch(e){
-        return '';
-      }
+    customDefCurrent() {
+      try {
+        const h = this.currentWordInfo && this.currentWordInfo.character;
+        const getter = this.$store.getters.getCustomDefinition;
+        return h && getter ? getter(h) : null;
+      } catch (e) { return null; }
     },
-    singleEnglish() {
-      try{
-        console.log(this.currentWordInfo.english[0]);
-        return this.$toAccentedPinyin(this.currentWordInfo.english[0]) || '';
-      }
-      catch(e){
-        return '';
-      }
+    displaySinglePinyin() {
+      try {
+        const base = (this.currentWordInfo.pinyin && this.currentWordInfo.pinyin[0]) || '';
+        const custom = this.customDefCurrent && this.customDefCurrent.pinyin ? this.customDefCurrent.pinyin : '';
+        return this.$toAccentedPinyin((custom || base) || '');
+      } catch (e) { return ''; }
+    },
+    displaySingleEnglish() {
+      try {
+        const base = (this.currentWordInfo.english && this.currentWordInfo.english[0]) || '';
+        const custom = this.customDefCurrent && this.customDefCurrent.english ? this.customDefCurrent.english : '';
+        const txt = (custom || base) || '';
+        return txt.split('/')[0];
+      } catch (e) { return ''; }
     },
     // Get decks from store
     storeDecks() {

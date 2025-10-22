@@ -38,6 +38,13 @@ class User(db.Model):
     user_string = db.relationship("UserString", backref="user", uselist=False)
     stroke_entries = db.relationship("StrokeData", backref="user_ref", lazy=True)
     word_lists = db.relationship("WordList", backref="user", lazy=True)
+    # Per-user custom definitions for custom words (hanzi/pinyin/english)
+    custom_definitions = db.relationship(
+        "UserCustomDefinition",
+        backref="user",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -150,3 +157,29 @@ class UserString(db.Model):
     last_updated = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
 
+class UserCustomDefinition(db.Model):
+    """
+    A per-user custom word definition (three strings only): hanzi, pinyin, english.
+    This is separate from notes and does not alter the core dictionary data.
+    """
+    __tablename__ = 'user_custom_definition'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+
+    # Three primary fields for a custom definition
+    # hanzi acts as the identifier for this custom entry
+    hanzi = db.Column(db.String(512), nullable=False)
+    pinyin = db.Column(db.String(256), nullable=True)
+    english = db.Column(db.String(1024), nullable=True)
+
+    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = db.Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    # Ensure one custom definition per (user, hanzi)
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'hanzi', name='uq_user_custom_definition_user_hanzi'),
+    )
+
+    def __repr__(self):
+        return f"<UserCustomDefinition user_id={self.user_id} hanzi={self.hanzi}>"

@@ -27,6 +27,7 @@ from backend.db.ops import db_delete_word_list
 from backend.db.ops import db_get_stroke_data_for_character
 from backend.db.ops import db_remove_word_from_set
 from backend.db.ops import db_update_wordlist_description
+from backend.db.ops import db_set_custom_definition, db_delete_custom_definition, db_get_custom_definition, db_list_custom_definitions
 from backend.db.ops import db_get_all_stroke_data
 
 from backend.db.models import Card, UserNotes, User
@@ -158,6 +159,63 @@ def get_examples_page():
     # examples = []
     # is_last = False
     return jsonify({"examples": examples, "is_last": is_last})
+
+
+# =============================
+# User Custom Definitions CRUD
+# =============================
+@api_bp.route("/custom_definitions/get", methods=["GET"])
+@session_required
+def get_custom_definition():
+    hanzi = request.args.get('hanzi') or (request.get_json() or {}).get('hanzi')
+    if not hanzi:
+        return jsonify({"error": "Missing required field 'hanzi'"}), 400
+    username = session.get("username")
+    data = db_get_custom_definition(username, hanzi)
+    if not data:
+        return jsonify({"found": False, "hanzi": hanzi})
+    return jsonify({"found": True, **data})
+
+
+@api_bp.route("/custom_definitions/set", methods=["POST"])
+@session_required
+def set_custom_definition():
+    data = request.get_json() or {}
+    hanzi = data.get('hanzi')
+    if not hanzi:
+        return jsonify({"error": "Missing required field 'hanzi'"}), 400
+    username = session.get("username")
+    result = db_set_custom_definition(
+        username,
+        hanzi,
+        pinyin=data.get('pinyin'),
+        english=data.get('english'),
+    )
+    if result and isinstance(result, tuple) and result[0] is False:
+        return jsonify({"error": result[1]}), 500
+    return jsonify({"message": "Saved", "data": result})
+
+
+@api_bp.route("/custom_definitions/delete", methods=["POST", "DELETE"])
+@session_required
+def delete_custom_definition():
+    payload = request.get_json() or {}
+    hanzi = payload.get('hanzi') or request.args.get('hanzi')
+    if not hanzi:
+        return jsonify({"error": "Missing required field 'hanzi'"}), 400
+    username = session.get("username")
+    ok, err = db_delete_custom_definition(username, hanzi)
+    if not ok:
+        code = 404 if err == 'Not found' else 500
+        return jsonify({"error": err or "Failed"}), code
+    return jsonify({"message": "Deleted", "hanzi": hanzi})
+
+@api_bp.route("/custom_definitions/list", methods=["GET"])
+@session_required
+def list_custom_definitions():
+    username = session.get("username")
+    items = db_list_custom_definitions(username)
+    return jsonify({"items": items})
 
 import datetime
 from datetime import timezone

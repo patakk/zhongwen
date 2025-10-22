@@ -157,10 +157,10 @@
                             {{ word.character }}
                           </div>
                             <div class="word-pinyin">
-                                {{ $toAccentedPinyin(word.pinyin[0]) }}
+                                {{ displayPinyin(word.character, (word.pinyin && word.pinyin[0]) || '') }}
                             </div>
                         </div>
-                        <div class="word-english">{{ word.english[0] }}</div>
+                        <div class="word-english">{{ displayEnglish(word.character, (word.english && word.english[0]) || '') }}</div>
                         <button
                             class="remove-button"
                             @click.stop="removeWord(word.character)"
@@ -457,6 +457,24 @@
       }
     },
   methods: {
+      displayPinyin(hanzi, base) {
+        try {
+          const def = this.$store.getters.getCustomDefinition && this.$store.getters.getCustomDefinition(hanzi);
+          const p = (def && def.pinyin) ? def.pinyin : base;
+          return this.$toAccentedPinyin(p || '');
+        } catch (e) {
+          return this.$toAccentedPinyin(base || '');
+        }
+      },
+      displayEnglish(hanzi, base) {
+        try {
+          const def = this.$store.getters.getCustomDefinition && this.$store.getters.getCustomDefinition(hanzi);
+          const e = (def && def.english) ? def.english : base;
+          return e || '';
+        } catch (err) {
+          return base || '';
+        }
+      },
       ensureNavContextForUrlWord() {
         try {
           const currentWord = this.$route.query.word || this.$store.getters['cardModal/getCurrentCharacter'];
@@ -487,9 +505,6 @@
           ) {
             const listData = this.customDictionaryData[this.selectedWordlist];
             const charsData = listData.chars;
-            try {
-              console.log('[MySpaceView] loadWordlistWords chars order for', this.selectedWordlist, Object.keys(charsData || {}));
-            } catch (e) {}
   
             if (charsData) {
               const explicitOrder = Array.isArray(listData.order) ? listData.order : null;
@@ -505,9 +520,6 @@
               }
               // After loading words, ensure nav context for URL/opened modal
               this.$nextTick(() => this.ensureNavContextForUrlWord());
-              try {
-                console.log('[MySpaceView] words array order', this.words.map(w => w.character));
-              } catch (e) {}
             } else {
               this.words = [];
             }

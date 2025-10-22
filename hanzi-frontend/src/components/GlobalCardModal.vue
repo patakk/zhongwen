@@ -62,8 +62,13 @@
           </div>
           <div class="minor-character">{{ cardData.character }}</div>
           
-          <div class="main-pinyin">{{ $toAccentedPinyin(cardData.pinyin[0]) }}</div>
-          <div class="main-english">{{ cardData.english[0] }}</div>
+          <div class="main-pinyin">{{ $toAccentedPinyin(displayPinyin || '') }}</div>
+          <div class="main-english">{{ displayEnglish }}</div>
+          <div v-if="isLoggedIn" class="custom-edit-wrap">
+            <button class="custom-edit-btn" @click.stop="openCustomEdit">
+              <font-awesome-icon :icon="['fas','pen']" />
+            </button>
+          </div>
 
           <!-- Concept toggle buttons with dropdown functionality -->
           <div class="concepts-container">
@@ -319,9 +324,34 @@
                 <div class="decomp-section">
                   <RecursiveDecomposition :data="{ [activeChar]: decompositionData[activeChar].recursive }" />
                 </div>
-              </div>
+      </div>
 
-            </div>
+      </div>
+      <!-- Custom definition edit modal -->
+      <div v-if="showCustomEditModal" class="custom-edit-overlay" @click="cancelCustomEdit">
+        <div class="custom-edit-modal" @click.stop>
+          <input
+            class="edit-input pinyin-input"
+            type="text"
+            v-model="editPinyin"
+            @input="onPinyinInput"
+            placeholder="pinyin"
+            autocomplete="off"
+          />
+          <input
+            class="edit-input english-input"
+            type="text"
+            v-model="editEnglish"
+            placeholder="english"
+            autocomplete="off"
+          />
+          <div v-if="editError" class="modal-error">{{ editError }}</div>
+          <div class="modal-buttons">
+            <button class="cancel-button" @click="cancelCustomEdit">Cancel</button>
+            <button class="confirm-button" @click="saveCustomEdit">Save</button>
+          </div>
+        </div>
+      </div>
           </div>
         </div>
       </div>
@@ -426,6 +456,12 @@ export default {
       swipeDimTimer: null,
       swipeDimDirection: 'right'
       ,
+      // Custom edit modal state
+      showCustomEditModal: false,
+      editHanzi: '',
+      editPinyin: '',
+      editEnglish: '',
+      editError: '',
       // Examples pagination state
       examplesPage: 1,
       examplesIsLast: false,
@@ -451,6 +487,20 @@ export default {
       navList: 'cardModal/getNavList',
       navIndex: 'cardModal/getNavIndex'
     }),
+    customDef() {
+      if (!this.cardData || !this.cardData.character) return null;
+      return this.$store.getters.getCustomDefinition(this.cardData.character);
+    },
+    displayPinyin() {
+      const base = (this.cardData && this.cardData.pinyin && this.cardData.pinyin[0]) ? this.cardData.pinyin[0] : '';
+      const custom = this.customDef && this.customDef.pinyin ? this.customDef.pinyin : '';
+      return (custom || base);
+    },
+    displayEnglish() {
+      const base = (this.cardData && this.cardData.english && this.cardData.english[0]) ? this.cardData.english[0] : '';
+      const custom = this.customDef && this.customDef.english ? this.customDef.english : '';
+      return (custom || base);
+    },
     validChars() {
       if (!this.cardData || !this.cardData.character) return [];
       return Array.from(new Set(this.cardData.character.split('').filter(char => /\p{Script=Han}/u.test(char))));
@@ -680,6 +730,10 @@ export default {
     window.addEventListener('keydown', this.handleDebugKey); // Add the debug key handler
     window.addEventListener('keydown', this.handleArrowNav);
     document.addEventListener('click', this.handleOutsideClick);
+    // Fetch custom definition for current word if logged in
+    if (this.isLoggedIn && this.cardData && this.cardData.character) {
+      this.$store.dispatch('fetchCustomDefinition', this.cardData.character);
+    }
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleEscKey);
@@ -731,6 +785,98 @@ export default {
           this.loadedPresentInChars = {};
           this.presentInChunkIndex = 0;
         }
+      }
+    },
+    openCustomEdit() {
+      try { console.log('[GlobalCardModal] openCustomEdit clicked'); } catch (e) {}
+      if (!this.cardData || !this.cardData.character) return;
+      const hanzi = this.cardData.character;
+      // Prefill with custom def if exists, otherwise defaults (treat 'N/A' as empty)
+      const baseP = (this.cardData.pinyin && this.cardData.pinyin[0] && this.cardData.pinyin[0] !== 'N/A') ? this.cardData.pinyin[0] : '';
+      const baseE = (this.cardData.english && this.cardData.english[0] && this.cardData.english[0] !== 'N/A') ? this.cardData.english[0] : '';
+      const custom = this.customDef || {};
+      this.editHanzi = hanzi;
+      this.editPinyin = (custom.pinyin != null ? custom.pinyin : baseP) || '';
+      this.editEnglish = (custom.english != null ? custom.english : baseE) || '';
+      this.showCustomEditModal = true;
+      this.editError = '';
+    },
+    async saveCustomEdit() {
+      try {
+        if (!this.editHanzi) return;
+        const p = this.normalizePinyinInput((this.editPinyin || '').trim());
+        const e = (this.editEnglish || '').trim();
+        if (p === '' && e === '') {
+          // both empty -> delete custom
+          await this.$store.dispatch('deleteCustomDefinition', { hanzi: this.editHanzi });
+        } else {
+          await this.$store.dispatch('setCustomDefinition', { hanzi: this.editHanzi, pinyin: p, english: e });
+        }
+        this.showCustomEditModal = false;
+      } catch (err) {
+        this.editError = 'Failed to save changes';
+      }
+    },
+    cancelCustomEdit() {
+      this.showCustomEditModal = false;
+    },
+    onPinyinInput() {
+      // live-normalize numbered tones to accented vowels
+      this.editPinyin = this.normalizePinyinInput(this.editPinyin || '');
+    },
+    normalizePinyinInput(val) {
+      try {
+        if (!val) return '';
+        const toneMap = {
+          'a': ['ā','á','ǎ','à','a'],
+          'e': ['ē','é','ě','è','e'],
+          'i': ['ī','í','ǐ','ì','i'],
+          'o': ['ō','ó','ǒ','ò','o'],
+          'u': ['ū','ú','ǔ','ù','u'],
+          'ü': ['ǖ','ǘ','ǚ','ǜ','ü']
+        };
+
+        const convertSyllable = (syllable) => {
+          if (!syllable) return '';
+          // allow 'v' or 'u:' as ü
+          let base = syllable.replace(/u:/gi, (m)=> m[0]=== 'U' ? 'Ü' : 'ü').replace(/v/gi, (m)=> m=== 'V' ? 'Ü' : 'ü');
+          // extract tone (last 1-5 digit)
+          const toneMatch = base.match(/([1-5])(?!.*[1-5])/);
+          const tone = toneMatch ? parseInt(toneMatch[1],10) : 5;
+          base = base.replace(/[1-5]/g, '');
+          if (tone===5) return base; // neutral, nothing to accent
+          // choose vowel to accent
+          const lower = base.toLowerCase();
+          const pickIndex = () => {
+            const pri = ['a','e','o'];
+            for (const v of pri) {
+              const idx = lower.indexOf(v);
+              if (idx !== -1) return idx;
+            }
+            // handle iu/ui rule: accent second vowel
+            if (lower.includes('iu')) return lower.indexOf('u');
+            if (lower.includes('ui')) return lower.indexOf('i');
+            // else mark first occurrence among i/u/ü
+            for (let i=0;i<lower.length;i++) {
+              if ('iuü'.includes(lower[i])) return i;
+            }
+            return -1;
+          };
+          const idx = pickIndex();
+          if (idx === -1) return base; // nothing to accent
+          const ch = base[idx];
+          const lowerCh = ch.toLowerCase();
+          const table = toneMap[lowerCh];
+          if (!table) return base;
+          const marked = table[tone-1];
+          const finalChar = (ch === ch.toUpperCase()) ? marked.toUpperCase() : marked;
+          return base.slice(0, idx) + finalChar + base.slice(idx+1);
+        };
+
+        // split by spaces, also normalize multiple spaces
+        return val.split(/\s+/).map(convertSyllable).join(' ').trim();
+      } catch(e) {
+        return val;
       }
     },
     createNewListAndAddWord() {
@@ -1229,6 +1375,43 @@ export default {
   cursor: default;
 }
 
+.custom-edit-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+
+.custom-edit-modal {
+  background: var(--bg);
+  padding: 1rem 1.25rem;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.custom-edit-modal .edit-input {
+  width: 100%;
+  background: transparent;
+  color: var(--fg);
+  border: none;
+  outline: none;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+}
+.custom-edit-modal .pinyin-input { font-style: italic; }
+.custom-edit-modal .english-input { font-style: normal; }
+.custom-edit-modal .edit-input + .edit-input {
+  border-top: 1px dashed color-mix(in oklab, var(--fg) 35%, var(--bg) 75%);
+}
+
+
 .modal {
   position: fixed;
   height: 90vh;
@@ -1324,6 +1507,24 @@ export default {
   white-space: wrap;
   word-wrap: break-word;
   word-break: break-word;
+}
+
+
+.custom-edit-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+.custom-edit-btn {
+  background: none;
+  border: 1px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 80%);
+  color: var(--fg);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+.custom-edit-btn:hover {
+  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 85%);
 }
 
 .multi-pronunciation {
@@ -1497,6 +1698,24 @@ export default {
   word-break: break-word;
 }
 
+
+.custom-edit-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+.custom-edit-btn {
+  background: none;
+  border: 1px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 80%);
+  color: var(--fg);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+.custom-edit-btn:hover {
+  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 85%);
+}
+
 .ex-pinyin {
   font-size: 0.9rem;
   opacity: 0.46;
@@ -1514,6 +1733,24 @@ export default {
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+
+.custom-edit-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+.custom-edit-btn {
+  background: none;
+  border: 1px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 80%);
+  color: var(--fg);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+.custom-edit-btn:hover {
+  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 85%);
 }
 
 .swipe-hint {
@@ -2012,6 +2249,15 @@ export default {
 
 .create-list-modal-container {
   background: var(--bg-alt);
+
+.custom-edit-overlay .modal-content {
+  background: var(--bg-alt);
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
   padding: 2rem;
   width: 90%;
   max-width: 500px;
@@ -2028,7 +2274,6 @@ export default {
   padding: 0.5rem;
   border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
   background: var(--bg);
-  color: var(--fg);
   font-family: inherit;
 }
 
@@ -2043,7 +2288,9 @@ export default {
 .cancel-button,
 .confirm-button {
   border: none;
+  color: var(--fg);
   background: none;
+  opacity: 0.8;
 }
 
 .cancel-button:hover,
@@ -2224,3 +2471,16 @@ body.modal-open {
   overflow: hidden;
 }
 </style>
+  ,
+  watch: {
+    currentCharacter(newVal) {
+      if (this.isLoggedIn && newVal) {
+        this.$store.dispatch('fetchCustomDefinition', newVal);
+      }
+    },
+    isLoggedIn(newVal) {
+      if (newVal && this.cardData && this.cardData.character) {
+        this.$store.dispatch('fetchCustomDefinition', this.cardData.character);
+      }
+    }
+  }

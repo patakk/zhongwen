@@ -9,7 +9,7 @@ from datetime import datetime
 from flask_mail import Mail, Message
 
 from backend.db.extensions import db, mail
-from backend.db.models import StrokeData, User, UserString, Card, UserNotes, WordList, WordEntry
+from backend.db.models import StrokeData, User, UserString, Card, UserNotes, WordList, WordEntry, UserCustomDefinition
 from backend.common import get_chars_info
 from backend.common import getshortdate
 from backend.common import DOMAIN
@@ -510,3 +510,88 @@ def db_get_user_string(username):
         return ""
     except SQLAlchemyError as e:
         return f"Database error: {str(e)}"
+
+
+# =========================
+# User Custom Definitions
+# =========================
+def db_list_custom_definitions(username):
+    """Return all custom definitions for a user as a list of dicts."""
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return []
+    defs = UserCustomDefinition.query.filter_by(user_id=user.id).all()
+    result = []
+    for d in defs:
+        result.append({
+            'hanzi': d.hanzi,
+            'pinyin': d.pinyin or '',
+            'english': d.english or ''
+        })
+    return result
+def db_set_custom_definition(username, hanzi, pinyin=None, english=None):
+    """Create or update a per-user custom definition for a hanzi entry.
+
+    Returns a dict of the saved definition fields or (False, error) on failure.
+    """
+    try:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return False, f"User '{username}' not found"
+
+        ucd = UserCustomDefinition.query.filter_by(user_id=user.id, hanzi=hanzi).first()
+        if ucd:
+            ucd.pinyin = pinyin
+            ucd.english = english
+        else:
+            ucd = UserCustomDefinition(
+                user_id=user.id,
+                hanzi=hanzi,
+                pinyin=pinyin,
+                english=english,
+            )
+            db.session.add(ucd)
+
+        db.session.commit()
+        return {
+            'hanzi': ucd.hanzi,
+            'pinyin': ucd.pinyin,
+            'english': ucd.english,
+        }
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return False, f"Database error: {str(e)}"
+
+
+def db_delete_custom_definition(username, hanzi):
+    """Delete a user's custom definition for the given hanzi."""
+    try:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return False, f"User '{username}' not found"
+        ucd = UserCustomDefinition.query.filter_by(user_id=user.id, hanzi=hanzi).first()
+        if not ucd:
+            return False, "Not found"
+        db.session.delete(ucd)
+        db.session.commit()
+        return True, None
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return False, f"Database error: {str(e)}"
+
+
+def db_get_custom_definition(username, hanzi):
+    try:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return None
+        ucd = UserCustomDefinition.query.filter_by(user_id=user.id, hanzi=hanzi).first()
+        if not ucd:
+            return None
+        return {
+            'hanzi': ucd.hanzi,
+            'pinyin': ucd.pinyin,
+            'english': ucd.english,
+        }
+    except SQLAlchemyError:
+        return None

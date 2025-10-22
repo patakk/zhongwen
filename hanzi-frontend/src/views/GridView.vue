@@ -220,9 +220,9 @@
                     }">
                       {{ entry.character }}
                     </div>
-                    <div class="list-pinyin" :class="{ 'pinyin-hidden': !showPinyin }">{{ $toAccentedPinyin(entry.pinyin.join(', ')) }}</div>
+                    <div class="list-pinyin" :class="{ 'pinyin-hidden': !showPinyin }">{{ displayListPinyin(entry.character, (entry.pinyin && entry.pinyin[0]) || '') }}</div>
                   </div>
-                  <div class="list-english">{{ entry.english.join(', ') }}</div>
+                  <div class="list-english">{{ displayListEnglish(entry.character, (entry.english && entry.english[0]) || '') }}</div>
                 </div>
               </PreloadWrapper>
             </div>
@@ -337,6 +337,24 @@ export default {
     }
   },
   methods: {
+    displayListPinyin(hanzi, base) {
+      try {
+        const def = this.$store.getters.getCustomDefinition && this.$store.getters.getCustomDefinition(hanzi);
+        const p = (def && def.pinyin) ? def.pinyin : base;
+        return this.$toAccentedPinyin(p || '');
+      } catch (e) {
+        return this.$toAccentedPinyin(base || '');
+      }
+    },
+    displayListEnglish(hanzi, base) {
+      try {
+        const def = this.$store.getters.getCustomDefinition && this.$store.getters.getCustomDefinition(hanzi);
+        const e = (def && def.english) ? def.english : base;
+        return e || '';
+      } catch (err) {
+        return base || '';
+      }
+    },
     ensureNavContextForUrlWord() {
       try {
         const isModalVisible = this.$store.getters['cardModal/isCardModalVisible'];
@@ -400,11 +418,23 @@ export default {
       const x = event.clientX;
       const y = event.clientY;
       
+      // Prefer custom definition if available
+      let custom = null;
+      try {
+        const getter = this.$store.getters.getCustomDefinition;
+        if (getter) custom = getter(entry.character);
+      } catch (e) {}
+
+      const basePinyin = Array.isArray(entry.pinyin) ? (entry.pinyin[0] || '') : (entry.pinyin || '');
+      const baseEnglish = Array.isArray(entry.english) ? (entry.english[0] || '') : (entry.english || '');
+      const pinyinText = this.$toAccentedPinyin((custom && custom.pinyin) ? custom.pinyin : basePinyin);
+      const englishText = (custom && custom.english) ? custom.english : baseEnglish;
+
       // Show the bubble with character data
       this.$store.dispatch('bubbleTooltip/showBubble', {
         character: entry.character,
-        pinyin: this.$toAccentedPinyin(entry.pinyin.join(', ')),
-        english: entry.english.join(', '),
+        pinyin: pinyinText,
+        english: englishText,
         position: { x, y },
         fontFamily: this.selectedFont
       });
