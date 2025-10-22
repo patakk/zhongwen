@@ -6,7 +6,7 @@
         <div>Loading...</div>
       </div>
       
-      <div v-else class="modal card-modal" @click.stop="handleModalClick">
+      <div v-else class="modal card-modal" @click.stop="handleModalClick" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
         
         <!-- Add to wordlist dropdown button - now shown to all users -->
         <div class="wordlist-dropdown">
@@ -394,7 +394,14 @@ export default {
       isLoadingMoreChars: false, // Track loading state for more characters
       loadedPresentInChars: {}, // Store all loaded character chunks by character
       displayedPresentInChars: {}, // Store characters that are currently displayed
-      isTypingEffect: false // Track if typing effect is in progress
+      isTypingEffect: false, // Track if typing effect is in progress
+      // Swipe detection state
+      touchStartX: 0,
+      touchStartY: 0,
+      touchLastX: 0,
+      touchLastY: 0,
+      touchStartTime: 0,
+      isSwiping: false
       ,
       // Examples pagination state
       examplesPage: 1,
@@ -794,6 +801,43 @@ export default {
       } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
         this.$store.dispatch('cardModal/navigatePrev');
+      }
+    },
+    // Touch swipe navigation for mobile
+    onTouchStart(e) {
+      if (!this.isVisible) return;
+      const t = e.changedTouches ? e.changedTouches[0] : (e.touches ? e.touches[0] : null);
+      if (!t) return;
+      this.touchStartX = this.touchLastX = t.clientX;
+      this.touchStartY = this.touchLastY = t.clientY;
+      this.touchStartTime = Date.now();
+      this.isSwiping = true;
+    },
+    onTouchMove(e) {
+      if (!this.isSwiping) return;
+      const t = e.changedTouches ? e.changedTouches[0] : (e.touches ? e.touches[0] : null);
+      if (!t) return;
+      this.touchLastX = t.clientX;
+      this.touchLastY = t.clientY;
+    },
+    onTouchEnd() {
+      if (!this.isSwiping) return;
+      this.isSwiping = false;
+      const dx = this.touchLastX - this.touchStartX;
+      const dy = this.touchLastY - this.touchStartY;
+      const dt = Date.now() - this.touchStartTime;
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+      // Horizontal swipe threshold: >50px, faster than 800ms, and predominately horizontal
+      if (absDx > 50 && absDx > absDy && dt < 800) {
+        if (!this.navList || this.navList.length === 0) return;
+        if (dx < 0) {
+          // Swipe left -> next
+          this.$store.dispatch('cardModal/navigateNext');
+        } else {
+          // Swipe right -> prev
+          this.$store.dispatch('cardModal/navigatePrev');
+        }
       }
     },
     // Debug function to log card data to console
