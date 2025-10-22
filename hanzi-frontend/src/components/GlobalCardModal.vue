@@ -1274,7 +1274,7 @@ export default {
   line-height: 1;
   width: 100%;
   text-align: center;
-  background-color: var(--bg);
+  /*background-color: var(--bg);*/
 }
 
 .main-word-char {
@@ -1285,7 +1285,7 @@ export default {
 
 .main-word-inverted {
   transition: filter 150ms ease-out opacity 150ms ease-out, transform 150ms ease-out;
-  filter: invert(.7);
+  filter: invert(0);
 }
 
 .main-word-inverted.mleft {
@@ -1527,12 +1527,12 @@ export default {
 
 .swipe-hint.visible { opacity: 0.0; }
 
-/*.modal.invert { filter: invert(0.24); }
-.modal.invert.mleft { transform: translateX(2%) rotate(2deg);}
-.modal.invert.mright { transform: translateX(-2%) rotate(-2deg);}
+.modal.invert { filter: invert(0.14); }
 [data-theme='dark'] .modal.invert,
-[data-theme='theme2'] .modal.invert { filter: invert(0.03); }*/
+[data-theme='theme2'] .modal.invert { filter: invert(0.03); }
 
+/*.modal.invert.mleft { transform: translateX(2%) rotate(2deg);}
+.modal.invert.mright { transform: translateX(-2%) rotate(-2deg);}*/
 
 
 .tabs {
