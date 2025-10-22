@@ -59,7 +59,7 @@
             <input
               type="text"
               v-model="newWordInput"
-              placeholder="Enter words to add (divided by spaces or commas)"
+              placeholder="Enter words to add (divided by ';')"
               class="add-word-input"
               @keyup.enter="addWordToList"
             />
@@ -899,7 +899,7 @@
 
         // Split by spaces, commas, and/or semicolons
         const wordsToAdd = this.newWordInput
-          .split(/[\s,， ;]+/) // Split by one or more spaces, commas, or semicolons
+          .split(/[\s；;]+/) // Split by one or more spaces, commas, or semicolons
           .map(word => word.trim())
           .filter(Boolean); // Remove empty strings
         
@@ -972,7 +972,7 @@
       // New method to copy wordlist to clipboard
       copyWordlistToClipboard() {
         if (!this.words || this.words.length === 0) return;
-        const wordString = this.words.map(w => w.character).join(", ");
+        const wordString = this.words.map(w => w.character).join(";");
         navigator.clipboard.writeText(wordString)
           .then(() => {
             alert('Wordlist copied to clipboard!');

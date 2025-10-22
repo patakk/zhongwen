@@ -750,10 +750,14 @@ const store = createStore({
         const updatedChars = { ...state.customDictionaryData[selectedWordlist].chars };
         delete updatedChars[character];
         
+        // Preserve and update explicit order if present
+        const existingDeck = state.customDictionaryData[selectedWordlist] || {};
+        let updatedOrder = Array.isArray(existingDeck.order) ? existingDeck.order.filter(c => c !== character) : existingDeck.order;
         // Update the customDictionaryData
         const updatedDeck = {
-          ...state.customDictionaryData[selectedWordlist],
-          chars: updatedChars
+          ...existingDeck,
+          chars: updatedChars,
+          ...(Array.isArray(updatedOrder) ? { order: updatedOrder } : {})
         };
         
         // Update state
@@ -771,15 +775,22 @@ const store = createStore({
     addWordToCustomDeck({ state, dispatch }, { word, setName, wordData }) {
       if (state.customDictionaryData && state.customDictionaryData[setName]) {
         // If wordlist exists, update it with the new word
+        const existingDeck = state.customDictionaryData[setName];
         const updatedChars = { 
-          ...state.customDictionaryData[setName].chars,
+          ...existingDeck.chars,
           [word]: wordData
         };
+        // Preserve and update explicit order if present
+        let updatedOrder = Array.isArray(existingDeck.order) ? [...existingDeck.order] : existingDeck.order;
+        if (Array.isArray(updatedOrder) && !updatedOrder.includes(word)) {
+          updatedOrder.push(word);
+        }
         
         // Update the customDictionaryData
         const updatedDeck = {
-          ...state.customDictionaryData[setName],
-          chars: updatedChars
+          ...existingDeck,
+          chars: updatedChars,
+          ...(Array.isArray(updatedOrder) ? { order: updatedOrder } : {})
         };
         
         // Update state
