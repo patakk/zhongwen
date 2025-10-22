@@ -43,12 +43,18 @@
         </div>
 
         <!-- Main word section -->
-        <div class="main-word-section">
-          <div class="main-word">
+        <div
+        class="main-word-section"
+        :class="['main-word-section']"
+        >
+          <div
+            :class="['main-word', { 'main-word-inverted': swipeDimVisible }]"
+
+          >
             <span
               v-for="(char, index) in cardData.character.split('')"
               :key="index"
-              class="main-word-char"
+              :class="['main-word-char']"
               @click="setActiveChar(char)"
             >
               {{ char }}
@@ -1268,12 +1274,18 @@ export default {
   line-height: 1;
   width: 100%;
   text-align: center;
+  background-color: var(--bg);
 }
 
 .main-word-char {
   font-family: "Noto Serif SC", "Kaiti", sans-serif;
 
   font-weight: 600;
+  transition: filter 150ms ease-out;
+}
+
+.main-word-inverted {
+  filter: invert(0.8);
 }
 
 .minor-character {
@@ -1506,11 +1518,11 @@ export default {
 
 .swipe-hint.visible { opacity: 0.0; }
 
-.modal.invert { filter: invert(0.24); }
-.modal.invert.mleft { transform: translateX(5%);}
-.modal.invert.mright { transform: translateX(-5%);}
+/*.modal.invert { filter: invert(0.24); }
+.modal.invert.mleft { transform: translateX(2%) rotate(2deg);}
+.modal.invert.mright { transform: translateX(-2%) rotate(-2deg);}
 [data-theme='dark'] .modal.invert,
-[data-theme='theme2'] .modal.invert { filter: invert(0.03); }
+[data-theme='theme2'] .modal.invert { filter: invert(0.03); }*/
 
 
 
@@ -2085,10 +2097,10 @@ export default {
       left: 1rem;
     }
 
-    .modal.invert { filter: invert(0.24); }
-    .modal.invert.mleft { transform: translate(-45%, -50%);}
-    .modal.invert.mright { transform: translate(-55%, -50%);}
-    
+    /*.modal.invert { filter: invert(0.24); }
+    .modal.invert.mleft { transform: translate(-48%, -50%) rotate(2deg);}
+    .modal.invert.mright { transform: translate(-52%, -50%) rotate(-2deg);}
+    */
 }
 
 @media screen and (max-width: 768px) {
@@ -2105,10 +2117,11 @@ export default {
       border: none;
     }
 
-    .modal.invert { filter: invert(0.24); }
-    .modal.invert.mleft { transform: translate(5%, 0%);}
-    .modal.invert.mright { transform: translate(-5%, 0%);}
-
+    /*.modal.invert { filter: invert(0.24); }
+    .modal.invert.mleft { transform: translate(2%, 0%) rotate(2deg);}
+    .modal.invert.mright { transform: translate(-2%, 0%) rotate(-2deg);}
+    */
+    
     .wordlist-dropdown {
       position: fixed;
       top: 3em;
