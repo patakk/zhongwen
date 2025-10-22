@@ -664,7 +664,6 @@ export default {
     }
   },
   mounted() {
-    // Debug logging of wordlists
     
     // If we're in page mode and have a forcedCharacter, show the modal with that character
     if (this.pageMode && this.forcedCharacter) {
@@ -1509,7 +1508,9 @@ export default {
 
 .swipe-hint.visible { opacity: 0.75; }
 
-.modal.invert { filter: invert(0.07); }
+.modal.invert { filter: invert(0.24); }
+[data-theme='dark'] .modal.invert,
+[data-theme='theme2'] .modal.invert { filter: invert(0.03); }
 
 
 .tabs {

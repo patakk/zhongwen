@@ -337,6 +337,19 @@ export default {
     }
   },
   methods: {
+    ensureNavContextForUrlWord() {
+      try {
+        const isModalVisible = this.$store.getters['cardModal/isCardModalVisible'];
+        const currentWord = this.$route.query.word || this.$store.getters['cardModal/getCurrentCharacter'];
+        if (!currentWord) return;
+        const list = this.navCharList || [];
+        if (list.length === 0) return;
+        // Only set context if modal is (or will be) shown and the word exists in current list
+        if (list.includes(currentWord)) {
+          this.$store.dispatch('cardModal/setNavContext', { list, current: currentWord });
+        }
+      } catch (e) {}
+    },
     toggleDeckDropdown() {
       // Clicking the title toggles the dropdown instead of toggling view
       // Also collapse the leftbar when interacting with the header/title
@@ -764,6 +777,13 @@ export default {
     }
   },
   watch: {
+    // When the underlying list changes, reapply context for URL word if present
+    slicedChars() {
+      this.ensureNavContextForUrlWord();
+    },
+    '$route.query.word'(/*val*/) {
+      this.ensureNavContextForUrlWord();
+    },
     selectedCategory() {
       this.visibleCount = defaultVisibleCount; 
       this.updateUrlWithCategory(this.selectedCategory);
@@ -847,6 +867,9 @@ export default {
     window.addEventListener('scroll', this.handleScroll);
     // Initial check for scroll position
     this.handleScroll();
+
+    // Ensure nav context if page opened with ?word=
+    this.$nextTick(() => this.ensureNavContextForUrlWord());
   },
   beforeUnmount() {
     // Remove event listener for keydown events

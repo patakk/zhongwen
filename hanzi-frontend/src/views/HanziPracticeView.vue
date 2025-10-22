@@ -205,7 +205,6 @@ export default defineComponent({
   mounted() {
     // Check initial dark mode state
     this.isDarkMode = ['dark', 'theme2'].includes(document.documentElement.getAttribute('data-theme'));
-    
     // Set up theme change observer
     this.setupThemeObserver();
     

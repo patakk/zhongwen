@@ -456,7 +456,18 @@
         }
       }
     },
-    methods: {
+  methods: {
+      ensureNavContextForUrlWord() {
+        try {
+          const currentWord = this.$route.query.word || this.$store.getters['cardModal/getCurrentCharacter'];
+          if (!currentWord) return;
+          const list = (this.words || []).map(w => w.character);
+          if (list.length === 0) return;
+          if (list.includes(currentWord)) {
+            this.$store.dispatch('cardModal/setNavContext', { list, current: currentWord });
+          }
+        } catch (e) {}
+      },
       formatDate(dateString) {
         if (!dateString) return 'N/A';
         try {
@@ -492,6 +503,8 @@
                   ...data,
                 }));
               }
+              // After loading words, ensure nav context for URL/opened modal
+              this.$nextTick(() => this.ensureNavContextForUrlWord());
               try {
                 console.log('[MySpaceView] words array order', this.words.map(w => w.character));
               } catch (e) {}
