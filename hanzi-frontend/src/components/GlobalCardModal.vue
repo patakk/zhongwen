@@ -335,6 +335,7 @@
             type="text"
             v-model="editPinyin"
             @input="onPinyinInput"
+            @keydown.stop="onEditKeydown"
             placeholder="pinyin"
             autocomplete="off"
           />
@@ -342,6 +343,7 @@
             class="edit-input english-input"
             type="text"
             v-model="editEnglish"
+            @keydown.stop="onEditKeydown"
             placeholder="english"
             autocomplete="off"
           />
@@ -822,9 +824,17 @@ export default {
     },
     onPinyinInput() {
       // live-normalize numbered tones to accented vowels
-      this.editPinyin = this.normalizePinyinInput(this.editPinyin || '');
+      const val = this.editPinyin || '';
+      // Preserve user-intended spacing while normalizing tokens
+      this.editPinyin = this.normalizePinyinInput(val, { preserveSpaces: true });
     },
-    normalizePinyinInput(val) {
+    onEditKeydown(e) {
+      // Prevent arrow keys from navigating cards while editing
+      if (e && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        e.stopPropagation();
+      }
+    },
+    normalizePinyinInput(val, opts = {}) {
       try {
         if (!val) return '';
         const toneMap = {
@@ -873,8 +883,13 @@ export default {
           return base.slice(0, idx) + finalChar + base.slice(idx+1);
         };
 
-        // split by spaces, also normalize multiple spaces
-        return val.split(/\s+/).map(convertSyllable).join(' ').trim();
+        if (opts.preserveSpaces) {
+          // Split preserving whitespace tokens and rejoin 1:1
+          return val.split(/(\s+)/).map(tok => (tok.trim() === '' ? tok : convertSyllable(tok))).join('');
+        } else {
+          // Normalize spacing to single spaces
+          return val.split(/\s+/).map(convertSyllable).join(' ').trim();
+        }
       } catch(e) {
         return val;
       }
