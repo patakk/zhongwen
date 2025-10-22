@@ -28,11 +28,7 @@ google_oauth_bp = make_google_blueprint(
         "https://www.googleapis.com/auth/userinfo.email",
         "openid"
     ],
-    redirect_to="google_auth.authorized_handler",
-    authorization_url_params={
-        # Force the Google account chooser so users can pick or add an account
-        "prompt": "select_account"
-    }
+    redirect_to="google_auth.authorized_handler"
 )
 
 google_auth_bp = Blueprint('google_auth', __name__, url_prefix='/api/google_auth')
@@ -174,7 +170,8 @@ def create_or_get_google_user(google_info, initial_metainfo=None):
 @google_auth_bp.route("/login")
 def login():
     # Redirect to Google OAuth
-    return redirect("/login/google")
+    # Add prompt=select_account so the account chooser appears and user can add another account
+    return redirect("/login/google?prompt=select_account")
 
 # Link Google account route
 # Link Google account route
@@ -188,8 +185,8 @@ def link_account():
     session['linking_account'] = True
     session['linking_user_id'] = session['user_id']
     
-    # Redirect to Google OAuth - this will come back to /authorized
-    return redirect("/login/google")
+    # Redirect to Google OAuth - force account chooser
+    return redirect("/login/google?prompt=select_account")
 
 # Callback route - where Google redirects after authentication
 @google_auth_bp.route("/authorized_handler")
