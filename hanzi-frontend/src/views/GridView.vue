@@ -946,6 +946,7 @@ html, body {
   border: 2px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 25%);
   padding: 0.6rem 0.8rem;
   cursor: pointer;
+  z-index: 10;
 }
 
 .view-toggle-fixed:hover {
