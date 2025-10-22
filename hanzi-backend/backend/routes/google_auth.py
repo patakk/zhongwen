@@ -29,7 +29,7 @@ google_oauth_bp = make_google_blueprint(
         "openid"
     ],
     redirect_to="google_auth.authorized_handler",
-    prompt="select_account"
+    reprompt_select_account=True
 )
 
 google_auth_bp = Blueprint('google_auth', __name__, url_prefix='/api/google_auth')
