@@ -899,7 +899,7 @@
 
         // Split by spaces, commas, and/or semicolons
         const wordsToAdd = this.newWordInput
-          .split(/[\s；;]+/) // Split by one or more spaces, commas, or semicolons
+          .split(/[；;]+/) // Split by one or more spaces, commas, or semicolons
           .map(word => word.trim())
           .filter(Boolean); // Remove empty strings
         
