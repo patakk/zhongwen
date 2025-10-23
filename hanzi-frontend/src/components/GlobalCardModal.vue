@@ -1825,7 +1825,7 @@ export default {
 
 .modal.invert { filter: invert(0.14); }
 [data-theme='dark'] .modal.invert,
-[data-theme='theme2'] .modal.invert { filter: invert(0.03); }
+[data-theme='theme2'] .modal.invert { filter: invert(0.06); }
 
 /*.modal.invert.mleft { transform: translateX(2%) rotate(2deg);}
 .modal.invert.mright { transform: translateX(-2%) rotate(-2deg);}*/
