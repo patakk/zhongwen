@@ -16,7 +16,7 @@
       >
         <!-- Swipe hint overlay (fades in/out quickly) -->
         <div class="swipe-hint" :class="{ visible: swipeHintVisible }">{{ swipeHintDirection === 'right' ? '→' : '←' }}</div>
-        
+      
         
         <!-- Add to wordlist dropdown button - now shown to all users -->
         <div class="wordlist-dropdown">
@@ -324,12 +324,26 @@
                 <div class="decomp-section">
                   <RecursiveDecomposition :data="{ [activeChar]: decompositionData[activeChar].recursive }" />
                 </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
       </div>
 
-      </div>
       <!-- Custom definition edit modal -->
-      <div v-if="showCustomEditModal" class="custom-edit-overlay" @click="cancelCustomEdit">
+      <div v-if="showCustomEditModal" class="custom-edit-overlay" @click.stop="cancelCustomEdit">
         <div class="custom-edit-modal" @click.stop>
+          <input
+            class="edit-input hanzi-input"
+            type="text"
+            v-model="editHanzi"
+            disabled
+            readonly
+            @keydown.stop="onEditKeydown"
+            placeholder="hanzi"
+            autocomplete="off"
+          />
           <input
             class="edit-input pinyin-input"
             type="text"
@@ -351,9 +365,6 @@
           <div class="modal-buttons">
             <button class="cancel-button" @click="cancelCustomEdit">Cancel</button>
             <button class="confirm-button" @click="saveCustomEdit">Save</button>
-          </div>
-        </div>
-      </div>
           </div>
         </div>
       </div>
@@ -489,6 +500,8 @@ export default {
       navList: 'cardModal/getNavList',
       navIndex: 'cardModal/getNavIndex'
     }),
+    // Hanzi editing disabled globally per product decision
+    canEditHanzi() { return false; },
     customDef() {
       if (!this.cardData || !this.cardData.character) return null;
       return this.$store.getters.getCustomDefinition(this.cardData.character);
@@ -746,6 +759,12 @@ export default {
     if (this.isVisible) {
       document.body.classList.remove('modal-open');
     }
+    // Ensure edit modal is closed and cleared when card modal unmounts
+    this.showCustomEditModal = false;
+    this.editHanzi = '';
+    this.editPinyin = '';
+    this.editEnglish = '';
+    this.editError = '';
   },
   methods: {
     ...mapActions({
@@ -799,20 +818,24 @@ export default {
       const custom = this.customDef || {};
       this.editHanzi = hanzi;
       this.editPinyin = (custom.pinyin != null ? custom.pinyin : baseP) || '';
+      // Immediately normalize numbered tones to accented vowels on open
+      // so the input shows accents without needing edits or save.
+      this.editPinyin = this.normalizePinyinInput(this.editPinyin, { preserveSpaces: true });
       this.editEnglish = (custom.english != null ? custom.english : baseE) || '';
       this.showCustomEditModal = true;
       this.editError = '';
     },
     async saveCustomEdit() {
       try {
-        if (!this.editHanzi) return;
+        if (!this.cardData || !this.cardData.character) return;
+        const hanzi = this.cardData.character;
         const p = this.normalizePinyinInput((this.editPinyin || '').trim());
         const e = (this.editEnglish || '').trim();
         if (p === '' && e === '') {
-          // both empty -> delete custom
-          await this.$store.dispatch('deleteCustomDefinition', { hanzi: this.editHanzi });
+          // both empty -> delete custom def for this hanzi
+          await this.$store.dispatch('deleteCustomDefinition', { hanzi });
         } else {
-          await this.$store.dispatch('setCustomDefinition', { hanzi: this.editHanzi, pinyin: p, english: e });
+          await this.$store.dispatch('setCustomDefinition', { hanzi, pinyin: p, english: e });
         }
         this.showCustomEditModal = false;
       } catch (err) {
@@ -1390,6 +1413,19 @@ export default {
   cursor: default;
 }
 
+
+.custom-edit-overlay-inside {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--overlay-background);
+  z-index: 500;
+}
 .custom-edit-overlay {
   position: fixed;
   top: 0;
@@ -1427,7 +1463,9 @@ export default {
 }
 
 
+
 .modal {
+  position: relative;
   position: fixed;
   height: 90vh;
   max-height: 90vh;
