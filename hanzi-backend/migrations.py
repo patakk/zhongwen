@@ -1,6 +1,7 @@
 from flask_migrate import Migrate
+import yaml
 from backend.db.extensions import db
-from backend.db.models import User, UserNotes, UserString, Card, StrokeData, WordList, WordEntry
+from backend.db.models import User, UserNotes, UserString, Card, StrokeData, WordList, WordEntry, UserCustomDefinition
 import click
 from flask.cli import with_appcontext
 from datetime import datetime
@@ -12,6 +13,9 @@ import os
 from backend.db.extensions import db, migrate, mail
 
 import os
+
+BASE_DIR = os.path.dirname(__file__)
+CONFIG_PATH = os.path.join(BASE_DIR, 'config.yml')
 
 def load_secrets(secrets_file):
     secrets = {}
@@ -28,7 +32,17 @@ def load_secrets(secrets_file):
         print(f"Warning: Could not load secrets file: {e}")
     return secrets
 
-auth_keys = load_secrets('/home/patakk/.zhongweb-secrets')
+def load_config():
+    with open(CONFIG_PATH) as f:
+        config = yaml.safe_load(f)
+    print("Loaded config:")
+    print(yaml.dump(config, default_flow_style=False))
+    return config
+
+
+config = load_config()
+secrets_path = os.path.join(BASE_DIR, config['paths']['secrets'])
+auth_keys = load_secrets(secrets_path)
 
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -384,6 +398,31 @@ def set_list_description(list_id, description):
     db.session.commit()
     click.echo(f"Description for word list '{word_list.name}' (ID: {list_id}) updated.")
 
+# List custom word definitions (hanzi only) for a user
+@app.cli.command("list-custom-defs")
+@click.argument("username")
+def list_custom_defs(username):
+    """List all custom word definitions (hanzi only) for a given user."""
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        click.echo(f"User {username} not found.")
+        return
+
+    defs = (
+        UserCustomDefinition.query
+        .filter_by(user_id=user.id)
+        .order_by(UserCustomDefinition.hanzi.asc())
+        .all()
+    )
+
+    click.echo(f"\nCustom definitions for {username} (hanzi only):")
+    if not defs:
+        click.echo("None")
+        return
+
+    for d in defs:
+        click.echo(d.hanzi)
+
 
 '''
 # List all users and their details
@@ -437,4 +476,7 @@ flask --app migrations.py delete-word-list 5
 
 # Update word list description
 flask --app migrations.py set-list-description 5 "My favorite HSK1 words"
+
+# List custom word definitions (hanzi only) for a user
+flask --app migrations.py list-custom-defs username
 '''
