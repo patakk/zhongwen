@@ -98,6 +98,7 @@ spam_file_handler = logging.FileHandler(os.path.join(ROOT_DIR, config.get('loggi
 spam_file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 spam_logger.addHandler(spam_file_handler)
 
+
 logger = logging.getLogger(__name__)
 logger.setLevel(config.get('logging').get('app_log').get('level'))
 app_file_handler = logging.FileHandler(os.path.join(ROOT_DIR, config.get('logging').get('app_log').get('file')))
