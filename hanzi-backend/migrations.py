@@ -40,7 +40,6 @@ FLASK_CONFIG = {
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
 }
 
-
 def create_app():
     app = Flask(__name__)
     app.config.update(FLASK_CONFIG)
