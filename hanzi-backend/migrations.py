@@ -41,7 +41,7 @@ def load_config():
 
 
 config = load_config()
-secrets_path = os.path.join(BASE_DIR, config['paths']['secrets'])
+secrets_path = os.path.join(config['paths']['root'], config['paths']['secrets'])
 auth_keys = load_secrets(secrets_path)
 
 import os
@@ -57,7 +57,7 @@ FLASK_CONFIG = {
     'SESSION_COOKIE_HTTPONLY': True,
     'SESSION_COOKIE_SAMESITE': 'Lax',
     'PERMANENT_SESSION_LIFETIME': timedelta(days=30),
-    'SQLALCHEMY_DATABASE_URI': 'sqlite:////home/patakk/zhongweb_db/flashcards.db',
+    'SQLALCHEMY_DATABASE_URI': 'sqlite:///' + os.path.join(config['paths']['root'], config['database']['uri']),
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
 }
 

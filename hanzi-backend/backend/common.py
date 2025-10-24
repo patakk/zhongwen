@@ -25,27 +25,32 @@ from pypinyin import lazy_pinyin, Style
 # decomposer = HanziDecomposer()
 
 # from .flashcard_app import init_flashcard_app, get_flashcard_app
+default_darkmode = False
 
-DATA_DIR = config['paths']['data_dir']
+DATA_DIR = os.path.join(config['paths']['root'], config['paths']['data_dir'])
 CARDDECKS = json.load(open(os.path.join(DATA_DIR, "decks.json")))
 CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "chars_cache.json")))
 STROKES_CACHE = json.load(open(os.path.join(DATA_DIR, "strokes_cache.json")))
 WORDS_CACHE = json.load(open(os.path.join(DATA_DIR, "words_cache.json")))
 DECOMPOSE_CACHE = json.load(open(os.path.join(DATA_DIR, "decompose_cache.json")))
-ANTHROPIC_DATA = json.load(open(os.path.join(DATA_DIR, "anthropic.json")))
 TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_examples.json")))
 TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_example_ids_by_char.json")))
 AUDIO_MAPPINGS = json.load(open(os.path.join(DATA_DIR, "audio_mappings.json")))
-DECKS_INFO = {key : CARDDECKS[key]["name"] for key in CARDDECKS}
 STROKE_COUNT = json.load(open(os.path.join(DATA_DIR, "stroke_count.json")))
 HANZI_DARKNESS_NOTO = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_noto.json")))
 HANZI_DARKNESS_KAITI = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_kaiti.json")))
 RELATED_CONCEPTS = json.load(open(os.path.join(DATA_DIR, "related_cache.json")))
 OPPOSITE_CONCEPTS = json.load(open(os.path.join(DATA_DIR, "opposites_cache.json")))
+DECKS_INFO = {key : CARDDECKS[key]["name"] for key in CARDDECKS}
+
+cache_json_names = [
+    'decks', 'chars_cache', 'strokes_cache', 'words_cache',
+    'decompose_cache', 'tatoeba_examples', 'tatoeba_example_ids_by_char',
+    'audio_mappings', 'stroke_count', 'hanzi_darkness_noto', 'hanzi_darkness_kaiti',
+    'related_cache', 'opposites_cache'
+]
 
 
-
-default_darkmode = False
 
 DECKNAMES = {
     d : CARDDECKS[d]['name'] for d in CARDDECKS
@@ -128,15 +133,15 @@ def get_chars_info(characters, function=False):
     return {c: get_char_info(c) for c in characters}
 
 
-CARDDECKS_W_PINYIN = {
+'''CARDDECKS_W_PINYIN = {
     deck: {
         "name": CARDDECKS[deck]["name"],
         "chars": get_chars_info(CARDDECKS[deck]["chars"])
     } for deck in CARDDECKS
 }
 
-with open(f"{DATA_DIR}/decks_w_pinyin.json", "w", encoding="utf-8") as f:
-    json.dump(CARDDECKS_W_PINYIN, f, ensure_ascii=False)
+with open(f"{DATA_DIR}/decks_cache.json", "w", encoding="utf-8") as f:
+    json.dump(CARDDECKS_W_PINYIN, f, ensure_ascii=False)'''
 
 
 def get_random_chars_from_deck(deck, n, function=False):

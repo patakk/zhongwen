@@ -1,3 +1,4 @@
+import yaml
 import string
 import json
 import os
@@ -18,11 +19,11 @@ lemmatizer.lemmatize('jeans')
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-DATA_DIR = '/home/patakk/zhongwen_data'
-indices_cache = json.load(open(os.path.join(DATA_DIR, "indices_cache.json")))
-
-dictionary = HanziDictionary(indices_cache=indices_cache)
-
+print('__file__:', __file__)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+CONFIG_PATH = os.path.join(BASE_DIR, 'config.yml')
+print('BASE_DIR:', BASE_DIR)
+print('CONFIG_PATH:', CONFIG_PATH)
 
 def load_secrets(secrets_file):
     secrets = {}
@@ -39,8 +40,21 @@ def load_secrets(secrets_file):
         print(f"Warning: Could not load secrets file: {e}")
     return secrets
 
-auth_keys = load_secrets('/home/patakk/.zhongweb-secrets')
+def load_config():
+    with open(CONFIG_PATH) as f:
+        config = yaml.safe_load(f)
+    print("Loaded config:")
+    print(yaml.dump(config, default_flow_style=False))
+    return config
 
+
+config = load_config()
+secrets_path = os.path.join(BASE_DIR, config['paths']['secrets'])
+auth_keys = load_secrets(secrets_path)
+
+DATA_DIR = config['paths']['data_dir']
+indices_cache = json.load(open(os.path.join(DATA_DIR, "indices_cache.json")))
+dictionary = HanziDictionary(indices_cache=indices_cache)
 
 def remove_tones(pinyin):
     return re.sub(r'[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]', lambda m: 'aeiouü'['āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'.index(m.group()) // 4], pinyin)

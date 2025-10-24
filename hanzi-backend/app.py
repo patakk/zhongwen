@@ -86,13 +86,13 @@ limiter = Limiter(
 
 spam_logger = logging.getLogger("flask-antispam")
 spam_logger.setLevel(config.get('logging').get('spam_log').get('level'))
-spam_file_handler = logging.FileHandler(config.get('logging').get('spam_log').get('file'))
+spam_file_handler = logging.FileHandler(os.path.join(config.get('paths').get('root'), config.get('logging').get('spam_log').get('file')))
 spam_file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 spam_logger.addHandler(spam_file_handler)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(config.get('logging').get('app_log').get('level'))
-app_file_handler = logging.FileHandler(config.get('logging').get('app_log').get('file'))
+app_file_handler = logging.FileHandler(os.path.jon(config.get('paths').get('root'), config.get('logging').get('app_log').get('file')))
 app_file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 logger.addHandler(app_file_handler)
 
@@ -570,7 +570,7 @@ def get_custom_cc():
 
 @app.route("/api/get_static_cc")
 def get_static_cc():
-    json_path = f"{DATA_DIR}/decks_w_pinyin.json"
+    json_path = f"{DATA_DIR}/decks_cache.json"
     response = send_file(json_path)
     response.headers["Cache-Control"] = "public, max-age=31536000"
     return response

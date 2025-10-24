@@ -60,14 +60,14 @@ def create_app():
     app.config['SESSION_COOKIE_SECURE'] = config['flask']['session']['cookie']['secure']
     app.config['SESSION_COOKIE_HTTPONLY'] = config['flask']['session']['cookie']['httponly'] 
     app.config['SESSION_COOKIE_SAMESITE'] = config['flask']['session']['cookie']['samesite']
-    app.config['SESSION_FILE_DIR'] = config['flask']['session'].get('file_dir')
+    app.config['SESSION_FILE_DIR'] = os.path.join(config['paths']['root'], config['flask']['session'].get('file_dir'))
     app.config['SESSION_FILE_THRESHOLD'] = config['flask']['session'].get('file_threshold', 500)
     app.config['SESSION_FILE_MODE'] = 0o600
 
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=config['flask']['session']['lifetime_days'])
 
     # Database
-    app.config['SQLALCHEMY_DATABASE_URI'] = config['database']['url']
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(config['paths']['root'], config['database']['uri'])
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['APPLICATION_ROOT'] = '/'
     
