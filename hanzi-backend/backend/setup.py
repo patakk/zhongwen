@@ -37,7 +37,7 @@ def load_config():
 
 
 config = load_config()
-secrets_path = os.path.join(BASE_DIR, config['paths']['secrets'])
+secrets_path = os.path.join(config['paths']['root'], config['paths']['secrets'])
 auth_keys = load_secrets(secrets_path)
 
 if os.getenv('PROD') == 'true':
