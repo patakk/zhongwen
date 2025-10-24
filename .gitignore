@@ -2,6 +2,7 @@
 .vscode/
 *.ipynb
 research/
+config.yml
 hanzi-backend/config.yml
 hanzi-frontend/.vite
 hanzipy/

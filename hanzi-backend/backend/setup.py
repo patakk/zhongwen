@@ -8,7 +8,7 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 from flask_session import Session
 
 print('__file__:', __file__)
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config.yml')
 print('BASE_DIR:', BASE_DIR)
 print('CONFIG_PATH:', CONFIG_PATH)

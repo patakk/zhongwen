@@ -10,39 +10,18 @@ from datetime import datetime
 from datetime import timedelta
 from flask import Flask
 import os
+
 from backend.db.extensions import db, migrate, mail
+from backend.common import load_secrets, load_config
 
 import os
-
-BASE_DIR = os.path.dirname(__file__)
-CONFIG_PATH = os.path.join(BASE_DIR, 'config.yml')
-
-def load_secrets(secrets_file):
-    secrets = {}
-    try:
-        with open(secrets_file, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                if '=' in line:
-                    key, value = line.split('=', 1)
-                    secrets[key.strip()] = value.strip()
-    except Exception as e:
-        print(f"Warning: Could not load secrets file: {e}")
-    return secrets
-
-def load_config():
-    with open(CONFIG_PATH) as f:
-        config = yaml.safe_load(f)
-    print("Loaded config:")
-    print(yaml.dump(config, default_flow_style=False))
-    return config
-
 
 config = load_config()
 secrets_path = os.path.join(config['paths']['root'], config['paths']['secrets'])
 auth_keys = load_secrets(secrets_path)
+
+BASE_DIR = os.path.dirname(__file__)
+CONFIG_PATH = os.path.join(config['paths']['root'], 'config.yml')
 
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
