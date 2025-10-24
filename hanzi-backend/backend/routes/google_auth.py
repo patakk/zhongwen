@@ -15,7 +15,6 @@ from backend.decorators import hard_session_required
 from backend.common import DOMAIN
 from backend.routes.manage import validate_password  # Import validation function
 import os
-# 1. The Flask-Dance blueprint for OAuth
 
 
 print("Domain set to:", DOMAIN)

@@ -47,9 +47,9 @@ def load_config():
     print(yaml.dump(config, default_flow_style=False))
     return config
 
-
 config = load_config()
-secrets_path = os.path.join(BASE_DIR, config['paths']['secrets'])
+secrets_path = os.path.join(config['paths']['root'], config['paths']['secrets'])
+
 auth_keys = load_secrets(secrets_path)
 
 DATA_DIR = config['paths']['data_dir']
