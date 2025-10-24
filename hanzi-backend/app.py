@@ -83,7 +83,6 @@ limiter = Limiter(
     app=app,
 )
 
-# Ensure log directories exist before setting up loggers
 ROOT_DIR = config.get('paths').get('root')
 log_dir = os.path.join(ROOT_DIR, 'logs')
 spam_log_path = os.path.join(ROOT_DIR, config.get('logging').get('spam_log').get('file'))
