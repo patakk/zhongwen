@@ -56,6 +56,7 @@ DATA_DIR = os.path.join(config['paths']['root'], config['paths']['data_dir'])
 indices_cache = json.load(open(os.path.join(DATA_DIR, "indices_cache.json")))
 dictionary = HanziDictionary(indices_cache=indices_cache)
 
+
 def remove_tones(pinyin):
     return re.sub(r'[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]', lambda m: 'aeiouü'['āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'.index(m.group()) // 4], pinyin)
 
