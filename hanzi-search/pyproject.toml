@@ -20,6 +20,7 @@ nltk = "^3.8"
 flask-dance = "^7.0"
 rapidfuzz = "^3.6"
 gunicorn = "^23.0.0"
+pyyaml = "^6.0.3"
 
 [build-system]
 requires = ["poetry-core"]
