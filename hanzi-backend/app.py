@@ -69,6 +69,7 @@ from flask_limiter import Limiter
 app = create_app()
 application = app
 
+
 def get_remote_address():
     if request.headers.get('CF-Connecting-IP'):
         return request.headers.get('CF-Connecting-IP')
