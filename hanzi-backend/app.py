@@ -83,16 +83,25 @@ limiter = Limiter(
     app=app,
 )
 
+# Ensure log directories exist before setting up loggers
+ROOT_DIR = config.get('paths').get('root')
+log_dir = os.path.join(ROOT_DIR, 'logs')
+spam_log_path = os.path.join(ROOT_DIR, config.get('logging').get('spam_log').get('file'))
+app_log_path = os.path.join(ROOT_DIR, config.get('logging').get('app_log').get('file'))
+
+for path in [os.path.dirname(spam_log_path), os.path.dirname(app_log_path)]:
+    if not os.path.exists(path):
+        os.makedirs(path, exist_ok=True)
 
 spam_logger = logging.getLogger("flask-antispam")
 spam_logger.setLevel(config.get('logging').get('spam_log').get('level'))
-spam_file_handler = logging.FileHandler(os.path.join(config.get('paths').get('root'), config.get('logging').get('spam_log').get('file')))
+spam_file_handler = logging.FileHandler(os.path.join(ROOT_DIR, config.get('logging').get('spam_log').get('file')))
 spam_file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 spam_logger.addHandler(spam_file_handler)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(config.get('logging').get('app_log').get('level'))
-app_file_handler = logging.FileHandler(os.path.jon(config.get('paths').get('root'), config.get('logging').get('app_log').get('file')))
+app_file_handler = logging.FileHandler(os.path.jon(ROOT_DIR, config.get('logging').get('app_log').get('file')))
 app_file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 logger.addHandler(app_file_handler)
 
