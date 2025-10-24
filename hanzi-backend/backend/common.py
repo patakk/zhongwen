@@ -28,6 +28,7 @@ from pypinyin import lazy_pinyin, Style
 default_darkmode = False
 
 DATA_DIR = os.path.join(config['paths']['root'], config['paths']['data_dir'])
+print("DATA_DIR:", DATA_DIR)
 CARDDECKS = json.load(open(os.path.join(DATA_DIR, "decks.json")))
 CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "chars_cache.json")))
 STROKES_CACHE = json.load(open(os.path.join(DATA_DIR, "strokes_cache.json")))
