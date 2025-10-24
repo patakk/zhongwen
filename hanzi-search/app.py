@@ -52,7 +52,7 @@ secrets_path = os.path.join(config['paths']['root'], config['paths']['secrets'])
 
 auth_keys = load_secrets(secrets_path)
 
-DATA_DIR = config['paths']['data_dir']
+DATA_DIR = os.path.join(config['paths']['root'], config['paths']['data_dir'])
 indices_cache = json.load(open(os.path.join(DATA_DIR, "indices_cache.json")))
 dictionary = HanziDictionary(indices_cache=indices_cache)
 
