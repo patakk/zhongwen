@@ -648,9 +648,8 @@ const store = createStore({
       // Create a new promise and store it
       const promise = (async () => {
         try {
-          const response = await fetch('/api/get_static_cc')
+          const response = await fetch('/api/get_decks')
           const data = await response.json()
-          console.log("Fetched static dictionary data:", data);
           commit('setDictionaryData', data)
           return data;
         } catch (error) {
