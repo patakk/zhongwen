@@ -650,6 +650,7 @@ const store = createStore({
         try {
           const response = await fetch('/api/get_static_cc')
           const data = await response.json()
+          console.log("Fetched static dictionary data:", data);
           commit('setDictionaryData', data)
           return data;
         } catch (error) {

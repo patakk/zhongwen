@@ -579,6 +579,7 @@ def get_custom_cc():
 @app.route("/api/get_static_cc")
 def get_static_cc():
     json_path = f"{DATA_DIR}/decks_cache.json"
+    print(json.load(open(json_path, 'r', encoding='utf-8')))
     response = send_file(json_path)
     response.headers["Cache-Control"] = "public, max-age=31536000"
     return response

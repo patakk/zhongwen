@@ -134,7 +134,7 @@ def get_chars_info(characters, function=False):
     return {c: get_char_info(c) for c in characters}
 
 
-'''CARDDECKS_W_PINYIN = {
+CARDDECKS_W_PINYIN = {
     deck: {
         "name": CARDDECKS[deck]["name"],
         "chars": get_chars_info(CARDDECKS[deck]["chars"])
@@ -142,7 +142,7 @@ def get_chars_info(characters, function=False):
 }
 
 with open(f"{DATA_DIR}/decks_cache.json", "w", encoding="utf-8") as f:
-    json.dump(CARDDECKS_W_PINYIN, f, ensure_ascii=False)'''
+    json.dump(CARDDECKS_W_PINYIN, f, ensure_ascii=False)
 
 
 def get_random_chars_from_deck(deck, n, function=False):
