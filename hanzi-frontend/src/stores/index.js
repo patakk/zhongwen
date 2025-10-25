@@ -679,7 +679,7 @@ const store = createStore({
       // Create a new promise and store it
       const promise = (async () => {
         try {
-          const response = await fetch('/api/get_custom_cc', {
+          const response = await fetch('/api/get_custom_decks', {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
