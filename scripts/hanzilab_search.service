@@ -1,0 +1,14 @@
+[Unit]
+Description=Gunicorn instance to serve zhongwen search engine
+After=network.target
+
+[Service]
+User=patakk
+Group=patakk
+WorkingDirectory=/home/patakk/hanzilab/repo/hanzi-search
+Environment="PATH=/home/patakk/hanzilab/repo/hanzi-search/.venv/bin"
+ExecStart=/home/patakk/hanzilab/repo/hanzi-search/.venv/bin/gunicorn --bind 127.0.0.1:8001 --workers=2 --preload app:app
+
+[Install]
+WantedBy=multi-user.target
+
