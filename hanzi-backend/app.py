@@ -535,9 +535,9 @@ def get_user_data():
     return jsonify(user_data)
 
 
-@app.route('/api/get_custom_cc', methods=['POST'])
+@app.route('/api/get_custom_decks', methods=['POST'])
 @session_required
-def get_custom_cc():
+def get_custom_decks():
     if request.method == 'OPTIONS':
         return '', 200
     
