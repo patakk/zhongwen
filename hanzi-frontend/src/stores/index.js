@@ -431,6 +431,9 @@ const themeModule = {
       const family = families[fontKey] || families['noto-serif'];
       // Apply CSS variable for main character font
       document.documentElement.style.setProperty('--main-word-font', family);
+      // Apply a mild scale for Kaiti in contexts that use the default
+      const scale = fontKey === 'kaiti' ? '1.15' : '1';
+      document.documentElement.style.setProperty('--main-word-scale', scale);
       // Persist
       localStorage.setItem('font', fontKey);
     },

@@ -515,7 +515,8 @@ export default {
       };
       const key = this.fontOrder[this.fontCycleIndex] || this.currentFontKey;
       const family = families[key] || families['noto-serif'];
-      return { '--main-word-font': family };
+      const scale = key === 'kaiti' ? '1.15' : '1';
+      return { '--main-word-font': family, '--main-word-scale': scale };
     },
     // Hanzi editing disabled globally per product decision
     canEditHanzi() { return false; },
@@ -1555,6 +1556,7 @@ export default {
 }
 
 .main-word {
+  /*font-size: calc(11rem * var(--main-word-scale, 1));*/
   font-size: 11rem;
   margin: 0.1em 0 0.2em 0;
   line-height: 1;
