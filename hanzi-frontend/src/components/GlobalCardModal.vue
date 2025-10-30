@@ -700,6 +700,15 @@ export default {
         }
       } catch (e) {}
     },
+    // Ensure first open uses the initialized default font
+    currentFontKey(newVal) {
+      try {
+        if (!this.isVisible) {
+          const idx = this.fontOrder.indexOf(newVal);
+          if (idx >= 0) this.fontCycleIndex = idx;
+        }
+      } catch (e) {}
+    },
     isVisible: {
       handler(visible) {
         if (visible) {
