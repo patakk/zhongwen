@@ -688,6 +688,23 @@ export default {
     }
   },
   watch: {
+    isVisible(newVal, oldVal) {
+      try {
+        if (newVal) {
+          // Modal opened: sync to default and enable cycling
+          const idx = this.fontOrder.indexOf(this.currentFontKey);
+          this.fontCycleIndex = idx >= 0 ? idx : 0;
+          this.fontInitialized = true;
+          this.userCycledFont = false;
+        } else {
+          // Modal closed: reset to default state
+          this.userCycledFont = false;
+          this.fontInitialized = false;
+          const idx = this.fontOrder.indexOf(this.currentFontKey);
+          this.fontCycleIndex = idx >= 0 ? idx : 0;
+        }
+      } catch (e) {}
+    },
     isVisible: {
       handler(visible) {
         if (visible) {
@@ -837,6 +854,13 @@ export default {
       // Reset the loaded present-in characters when modal closes
       this.loadedPresentInChars = {};
       this.presentInChunkIndex = 0;
+      // Reset font cycling to default on close
+      try {
+        this.userCycledFont = false;
+        this.fontInitialized = false;
+        const idx = this.fontOrder.indexOf(this.currentFontKey);
+        this.fontCycleIndex = idx >= 0 ? idx : 0;
+      } catch (e) {}
     },
     setActiveChar(char) {
       if (this.validChars.includes(char)) {
