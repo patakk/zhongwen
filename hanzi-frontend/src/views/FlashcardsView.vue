@@ -1115,7 +1115,7 @@ html, body {
 
 /* Hanzi text above pinyin/english (redundant to canvas) */
 .answer-hanzi-text {
-  font-family: 'Noto Sans SC', 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
   font-weight: 400;
   font-size: 2.2em;
   line-height: 1.1;

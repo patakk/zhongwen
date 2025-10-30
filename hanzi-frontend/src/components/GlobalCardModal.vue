@@ -49,7 +49,8 @@
         >
           <div
             :class="['main-word', { 'main-word-inverted': swipeDimVisible }, { mleft: swipeHintDirection === 'left' }, { mright: swipeHintDirection === 'right' }]"
-
+            :style="mainWordFontStyle"
+            @click.capture="cycleMainWordFont"
           >
             <span
               v-for="(char, index) in cardData.character.split('')"
@@ -98,7 +99,7 @@
                 class="concept-item"
                 @click="updateModalContent(item.character)"
               >
-                <div class="concept-character">{{ item.character }}</div>
+                <div class="concept-character" :style="{ fontFamily: 'var(--main-word-font)' }">{{ item.character }}</div>
                 <div class="concept-pinyin">{{ item.pinyin && item.pinyin.length > 0 ? $toAccentedPinyin(item.pinyin[0]) : '' }}</div>
                 <div class="concept-english">{{ item.english && item.english.length > 0 ? item.english[0].split('/')[0] : '' }}</div>
               </div>
@@ -116,7 +117,7 @@
                 class="concept-item"
                 @click="updateModalContent(item.character)"
               >
-                <div class="concept-character">{{ item.character }}</div>
+                <div class="concept-character" :style="{ fontFamily: 'var(--main-word-font)' }">{{ item.character }}</div>
                 <div class="concept-pinyin">{{ item.pinyin && item.pinyin.length > 0 ? $toAccentedPinyin(item.pinyin[0]) : '' }}</div>
                 <div class="concept-english">{{ item.english && item.english.length > 0 ? item.english[0].split('/')[0] : '' }}</div>
               </div>
@@ -479,7 +480,12 @@ export default {
       examplesPage: 1,
       examplesIsLast: false,
       examplesLoading: false,
-      fetchedExamples: {}
+      fetchedExamples: {},
+      // Local font cycling state for main word
+      fontOrder: ['kaiti', 'noto-sans', 'noto-serif'],
+      fontCycleIndex: 0,
+      fontInitialized: false,
+      userCycledFont: false
     }
   },
   provide() {
@@ -500,6 +506,19 @@ export default {
       navList: 'cardModal/getNavList',
       navIndex: 'cardModal/getNavIndex'
     }),
+    currentFontKey() {
+      try { return this.$store.getters['theme/getCurrentFont'] || 'noto-serif'; } catch(e) { return 'noto-serif'; }
+    },
+    mainWordFontStyle() {
+      const families = {
+        'kaiti': "'Kaiti','STKaiti','Kai','楷体',serif",
+        'noto-sans': "'Noto Sans SC','Noto Sans CJK SC','Source Han Sans SC','PingFang SC','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif",
+        'noto-serif': "'Noto Serif SC','Noto Serif CJK SC','Source Han Serif SC','Songti SC','SimSun',serif",
+      };
+      const key = this.fontInitialized ? (this.fontOrder[this.fontCycleIndex] || this.currentFontKey) : this.currentFontKey;
+      const family = families[key] || families['noto-serif'];
+      return { '--main-word-font': family };
+    },
     // Hanzi editing disabled globally per product decision
     canEditHanzi() { return false; },
     customDef() {
@@ -733,6 +752,17 @@ export default {
         }
       }
     }
+    ,
+    // Keep local font cycle aligned with global default until user cycles
+    currentFontKey(newVal) {
+      try {
+        if (this.userCycledFont) return;
+        const idx = this.fontOrder.indexOf(newVal);
+        if (idx >= 0) {
+          this.fontCycleIndex = idx;
+        }
+      } catch (e) {}
+    }
   },
   mounted() {
     
@@ -749,6 +779,10 @@ export default {
     if (this.isLoggedIn && this.cardData && this.cardData.character) {
       this.$store.dispatch('fetchCustomDefinition', this.cardData.character);
     }
+    // Initialize font cycle index based on current default font
+    const idx = this.fontOrder.indexOf(this.currentFontKey);
+    this.fontCycleIndex = idx >= 0 ? idx : 0;
+    this.fontInitialized = true;
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleEscKey);
@@ -773,6 +807,12 @@ export default {
       fetchCardData: 'cardModal/fetchCardData'
       // Removed fetchDecompositionData to prevent direct calls
     }),
+    cycleMainWordFont() {
+      try {
+        this.userCycledFont = true;
+        this.fontCycleIndex = (this.fontCycleIndex + 1) % this.fontOrder.length;
+      } catch (e) {}
+    },
     logExamples() {
       try {
         console.log('[GlobalCardModal] examples for', this.cardData?.character, this.cardData?.examples || []);
@@ -1516,13 +1556,23 @@ export default {
   line-height: 1;
   width: 100%;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.05em;
   /*background-color: var(--bg);*/
 }
 
 .main-word-char {
-  font-family: "Noto Serif SC", "Kaiti", sans-serif;
-
-  font-weight: 600;
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
+  font-weight: 400;
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  line-height: 1em;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
 }
 
 .main-word-inverted {
@@ -1666,6 +1716,8 @@ export default {
 .example-chinese {
   font-size: 1.45rem;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
+
 }
 
 .example-pinyin {
@@ -1688,6 +1740,7 @@ export default {
 .trad-simple {
   font-size: 2rem;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
 }
 
 .breakdown-section {
@@ -1746,6 +1799,7 @@ export default {
 .ex-chinese {
   font-size: 1.2rem;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -1851,6 +1905,7 @@ export default {
   border: none;
   cursor: pointer;
   font-family: "Noto Sans SC";
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
   font-weight: 400;
   color: var(--primary-primary);
   white-space: nowrap;
@@ -2254,6 +2309,7 @@ export default {
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", serif);
 }
 
 .concept-item {
@@ -2274,6 +2330,8 @@ export default {
 .concept-character {
   font-size: 1.5rem;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
+
 }
 
 .concept-pinyin {
@@ -2357,6 +2415,7 @@ export default {
   gap: 0.5rem;
   padding: .5em .5em .5em .5em;
   background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
+
 }
 
 .present-in-chars span {
@@ -2374,6 +2433,7 @@ export default {
   font-family: "Noto Serif SC" !important; */
   font-family: "Kaiti";
   font-size: 1.5em;
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
 }
 
 

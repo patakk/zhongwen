@@ -312,6 +312,7 @@ h2 {
 
 .chinese-word {
   font-size: 1.5em;
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
   color: var(--fg);
   cursor: pointer;
   margin-bottom: 0.5rem;

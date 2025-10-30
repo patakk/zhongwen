@@ -250,7 +250,13 @@ export default {
       isSubmenuOpen: false,
       visibleCount: defaultVisibleCount,
       hoveredItem: null,
-      selectedFont: 'Noto Sans SC',
+      selectedFont: (() => {
+        try {
+          const key = (this && this.$store && this.$store.getters && this.$store.getters['theme/getCurrentFont']) || 'noto-serif';
+          const map = { 'kaiti': 'Kaiti', 'noto-sans': 'Noto Sans SC', 'noto-serif': 'Noto Serif SC' };
+          return map[key] || 'Noto Serif SC';
+        } catch(e) { return 'Noto Serif SC'; }
+      })(),
       fontScale: 1,         // ✅ Actual font scale, used in layout
       tempFontScale: 1,     // ✅ Temporary one used by slider
       isGridView: false,    // ✅ Toggle between grid and list views
@@ -640,12 +646,16 @@ export default {
         wordlistVal = existing.wordlist; // keep original until resolved
       }
 
+      const storeDefaultKey = (this.$store && this.$store.getters && this.$store.getters['theme/getCurrentFont']) || 'noto-serif';
+      const defaultFontMap = { 'kaiti': 'Kaiti', 'noto-sans': 'Noto Sans SC', 'noto-serif': 'Noto Serif SC' };
+      const defaultFont = defaultFontMap[storeDefaultKey] || 'Noto Serif SC';
+
       const query = {
         ...existing,
         wordlist: wordlistVal,
         // Only include non-default values
         view: this.isGridView ? 'grid' : undefined, // default is grid
-        font: this.selectedFont !== 'Noto Sans SC' ? this.selectedFont : undefined,
+        font: this.selectedFont !== defaultFont ? this.selectedFont : undefined,
         fontScale: this.fontScale !== 1 ? String(this.fontScale) : undefined,
         gridGap: this.gridGapSize !== '0.25em' ? this.gridGapSize : undefined,
         borders: this.showGridBorders !== true ? (this.showGridBorders ? '1' : '0') : undefined,
@@ -807,6 +817,16 @@ export default {
     }
   },
   watch: {
+    // Reset to default font when entering explorer without an explicit font query
+    '$route.path'(newPath) {
+      try {
+        if (newPath === '/explorer' && !this.$route.query.font) {
+          const key = this.$store.getters['theme/getCurrentFont'] || 'noto-serif';
+          const map = { 'kaiti': 'Kaiti', 'noto-sans': 'Noto Sans SC', 'noto-serif': 'Noto Serif SC' };
+          this.selectedFont = map[key] || 'Noto Serif SC';
+        }
+      } catch (e) {}
+    },
     // When the underlying list changes, reapply context for URL word if present
     slicedChars() {
       this.ensureNavContextForUrlWord();

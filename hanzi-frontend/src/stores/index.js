@@ -412,6 +412,7 @@ const themeModule = {
   namespaced: true,
   state: {
     currentTheme: 'theme1', // Default theme
+    currentFont: 'noto-serif', // Default character font
   },
   mutations: {
     SET_THEME(state, theme) {
@@ -419,6 +420,19 @@ const themeModule = {
       // Update DOM and localStorage
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('theme', theme);
+    },
+    SET_FONT(state, fontKey) {
+      state.currentFont = fontKey;
+      const families = {
+        'kaiti': "'Kaiti','STKaiti','Kai','楷体',serif",
+        'noto-sans': "'Noto Sans SC','Noto Sans CJK SC','Source Han Sans SC','PingFang SC','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif",
+        'noto-serif': "'Noto Serif SC','Noto Serif CJK SC','Source Han Serif SC','Songti SC','SimSun',serif",
+      };
+      const family = families[fontKey] || families['noto-serif'];
+      // Apply CSS variable for main character font
+      document.documentElement.style.setProperty('--main-word-font', family);
+      // Persist
+      localStorage.setItem('font', fontKey);
     },
   },
   actions: {
@@ -434,6 +448,10 @@ const themeModule = {
       
       // Set the theme
       commit('SET_THEME', theme);
+
+      // Initialize font from localStorage (defaults to noto-serif)
+      const font = localStorage.getItem('font') || 'noto-serif';
+      commit('SET_FONT', font);
     },
     toggleTheme({ commit, state }) {
       // Toggle between pairs: light/dark or theme1/theme2
@@ -454,6 +472,9 @@ const themeModule = {
     setTheme({ commit }, theme) {
       commit('SET_THEME', theme);
     },
+    setFont({ commit }, fontKey) {
+      commit('SET_FONT', fontKey);
+    },
     setThemeSystem({ commit, state }, system) {
       // 'default' = light/dark, 'custom' = theme1/theme2
       let newTheme;
@@ -473,6 +494,7 @@ const themeModule = {
   },
   getters: {
     getCurrentTheme: state => state.currentTheme,
+    getCurrentFont: state => state.currentFont,
     isDefaultThemeSystem: state => ['light', 'dark'].includes(state.currentTheme),
     getCurrentThemeName: state => {
       switch(state.currentTheme) {

@@ -203,6 +203,7 @@ export default {
 .d3-tree-char {
   font-size: 1.85em;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体';
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
   cursor: pointer;
   display: block;
   text-align: center;
@@ -211,6 +212,7 @@ export default {
   line-height: 48px;
   background: transparent;
 }
+
 .d3-tree-pinyin {
   font-size: 0.8em;
   color: var(--fg);

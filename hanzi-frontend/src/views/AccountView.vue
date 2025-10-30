@@ -25,6 +25,32 @@
             </button>
           </div>
         </div>
+        <div class="theme-selection" style="margin-top: 1rem;">
+          <div class="theme-option-label">Default Font:</div>
+          <div class="theme-buttons">
+            <button 
+              class="theme-button" 
+              :class="{ 'active': currentFont === 'kaiti' }" 
+              @click="selectFont('kaiti')"
+            >
+              Kaiti
+            </button>
+            <button 
+              class="theme-button" 
+              :class="{ 'active': currentFont === 'noto-sans' }" 
+              @click="selectFont('noto-sans')"
+            >
+              Noto Sans
+            </button>
+            <button 
+              class="theme-button" 
+              :class="{ 'active': currentFont === 'noto-serif' }" 
+              @click="selectFont('noto-serif')"
+            >
+              Noto Serif
+            </button>
+          </div>
+        </div>
         <!-- <div class="current-theme">
           <div class="theme-option-label">Current Theme:</div>
           <div class="theme-value">{{ currentThemeName }}</div>
@@ -277,6 +303,7 @@ const route = useRoute()
 const currentTheme = computed(() => store.getters['theme/getCurrentTheme'])
 const isDefaultThemeSystem = computed(() => store.getters['theme/isDefaultThemeSystem'])
 const currentThemeName = computed(() => store.getters['theme/getCurrentThemeName'])
+const currentFont = computed(() => store.getters['theme/getCurrentFont'])
 
 // Theme system functions
 function selectThemeSystem(system) {
@@ -300,6 +327,12 @@ function selectThemeSystem(system) {
 function toggleCurrentTheme() {
   store.dispatch('theme/toggleTheme');
   showSuccessToast(`Switched to ${currentThemeName.value}`);
+}
+
+function selectFont(fontKey) {
+  store.dispatch('theme/setFont', fontKey);
+  const label = fontKey === 'kaiti' ? 'Kaiti' : fontKey === 'noto-sans' ? 'Noto Sans' : 'Noto Serif';
+  showSuccessToast(`Character font set to ${label}`);
 }
 
 const showEmailModal = ref(false)

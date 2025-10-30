@@ -317,7 +317,7 @@ export default {
 .rhanzi {
   font-size: 2rem;
   padding-right: 2rem;
-  font-family: Kaiti;
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
 }
 
 .rpinyin {

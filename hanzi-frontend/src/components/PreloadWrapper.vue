@@ -179,5 +179,6 @@ export default {
 .preload-wrapper {
   cursor: pointer;
   font-family: inherit;
+  
 }
 </style>

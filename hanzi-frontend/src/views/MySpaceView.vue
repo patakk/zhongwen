@@ -153,7 +153,7 @@
                 >
                     <div class="word-cell">
                         <div class="hanzipinyin">
-                          <div class="word-hanzi">
+                          <div class="word-hanzi" :style="{ fontFamily: defaultFontFamily }">
                             {{ word.character }}
                           </div>
                             <div class="word-pinyin">
@@ -367,6 +367,17 @@
     computed: {
       loggedIn() {
         return this.$store.getters.getAuthStatus;
+      },
+      defaultFontKey() {
+        try { return this.$store.getters['theme/getCurrentFont'] || 'noto-serif'; } catch (e) { return 'noto-serif'; }
+      },
+      defaultFontFamily() {
+        const map = {
+          'kaiti': "Kaiti",
+          'noto-sans': "Noto Sans SC",
+          'noto-serif': "Noto Serif SC"
+        };
+        return map[this.defaultFontKey] || 'Noto Serif SC';
       },
       customDecks() {
         return this.$store.getters.getCustomDecks; // Use the original getter
@@ -1350,7 +1361,7 @@
   
   .word-hanzi {
     font-size: 1.7rem;
-    font-family: Kaiti, serif;
+    font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif) !important;
     user-select: text;
   }
   
