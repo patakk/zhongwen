@@ -1596,7 +1596,7 @@ export default {
 
 .main-pinyin {
   font-size: 1.2rem;
-  margin-top: 1em;
+  /*margin-top: 1em;*/
 }
 
 .main-english {
