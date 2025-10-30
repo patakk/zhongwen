@@ -61,7 +61,7 @@
               {{ char }}
             </span>
           </div>
-          <div class="minor-character">{{ cardData.character }}</div>
+          <!-- <div class="minor-character">{{ cardData.character }}</div> -->
           
           <div class="main-pinyin">{{ $toAccentedPinyin(displayPinyin || '') }}</div>
           <div class="main-english">{{ displayEnglish }}</div>
