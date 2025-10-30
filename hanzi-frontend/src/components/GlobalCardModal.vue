@@ -689,15 +689,11 @@ export default {
     isVisible(newVal, oldVal) {
       try {
         if (newVal) {
-          // Modal opened: sync to default and enable cycling
+          // Modal opened: sync cycle index to current default
           const idx = this.fontOrder.indexOf(this.currentFontKey);
           this.fontCycleIndex = idx >= 0 ? idx : 0;
-          this.fontInitialized = true;
-          this.userCycledFont = false;
         } else {
-          // Modal closed: reset to default state
-          this.userCycledFont = false;
-          this.fontInitialized = false;
+          // Modal closed: reset cycle index to default
           const idx = this.fontOrder.indexOf(this.currentFontKey);
           this.fontCycleIndex = idx >= 0 ? idx : 0;
         }
@@ -767,17 +763,7 @@ export default {
         }
       }
     }
-    ,
-    // Keep local font cycle aligned with global default until user cycles
-    currentFontKey(newVal) {
-      try {
-        if (this.userCycledFont) return;
-        const idx = this.fontOrder.indexOf(newVal);
-        if (idx >= 0) {
-          this.fontCycleIndex = idx;
-        }
-      } catch (e) {}
-    }
+    
   },
   mounted() {
     
@@ -823,7 +809,6 @@ export default {
     }),
     cycleMainWordFont() {
       try {
-        this.userCycledFont = true;
         this.fontCycleIndex = (this.fontCycleIndex + 1) % this.fontOrder.length;
       } catch (e) {}
     },
