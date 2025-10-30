@@ -483,9 +483,7 @@ export default {
       fetchedExamples: {},
       // Local font cycling state for main word
       fontOrder: ['kaiti', 'noto-sans', 'noto-serif'],
-      fontCycleIndex: 0,
-      fontInitialized: false,
-      userCycledFont: false
+      fontCycleIndex: 0
     }
   },
   provide() {
@@ -515,7 +513,7 @@ export default {
         'noto-sans': "'Noto Sans SC','Noto Sans CJK SC','Source Han Sans SC','PingFang SC','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif",
         'noto-serif': "'Noto Serif SC','Noto Serif CJK SC','Source Han Serif SC','Songti SC','SimSun',serif",
       };
-      const key = this.fontInitialized ? (this.fontOrder[this.fontCycleIndex] || this.currentFontKey) : this.currentFontKey;
+      const key = this.fontOrder[this.fontCycleIndex] || this.currentFontKey;
       const family = families[key] || families['noto-serif'];
       return { '--main-word-font': family };
     },
@@ -799,7 +797,6 @@ export default {
     // Initialize font cycle index based on current default font
     const idx = this.fontOrder.indexOf(this.currentFontKey);
     this.fontCycleIndex = idx >= 0 ? idx : 0;
-    this.fontInitialized = true;
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleEscKey);
@@ -854,10 +851,8 @@ export default {
       // Reset the loaded present-in characters when modal closes
       this.loadedPresentInChars = {};
       this.presentInChunkIndex = 0;
-      // Reset font cycling to default on close
+      // Reset font cycling index to default on close
       try {
-        this.userCycledFont = false;
-        this.fontInitialized = false;
         const idx = this.fontOrder.indexOf(this.currentFontKey);
         this.fontCycleIndex = idx >= 0 ? idx : 0;
       } catch (e) {}
