@@ -8,20 +8,21 @@
 	--third-font: "Lexend Mega";
 	--thin-border-width: 2px;
 	--modal-border-width: 8px;
+	--hue: 223;
 	--modal-border-radius: 2em;
-	--modal-bg: #1d201f;
-	--animated-hanzi-border-color: #4f4953;
+	--modal-bg: hsl(var(--hue), 5%, 12%);
+	--animated-hanzi-border-color: hsl(var(--hue), 6%, 31%);
 	--pinyin-meaning-group-border: var(--thin-border-width) solid var(--animated-hanzi-border-color);
 	--pinyin-meaning-group-border-radius: 2em;
-	--bg: hsl(140, 6%, 10%);
-    --fg: hsl(138, 87%, 90%);
+	--bg: hsl(var(--hue), 6%, 10%);
+    --fg: hsl(var(--hue), 88%, 90%);
 	--grid-item-border-transparent: 2px solid transparent;
 	--grid-item-border: 2px solid var(--fg);
-	--card-shadow-color: rgb(124, 170, 124);
+	--card-shadow-color: hsl(var(--hue), 21%, 58%);
 	--card-shadow: 10px 10px 0px 0px var(--card-shadow-color);
 	--card-border-color: color-mix(in oklab, var(--fg) 86%, var(--bg) 35%);
 	--card-border: 2px solid var(--card-border-color);
-	--overlay-background: #222622bb;
+	--overlay-background: hsla(var(--hue), 6%, 14%, 0.733);
 	--orange: #F45203;
 	--yellow: rgb(240, 229, 131);
 	--pink-strong: #e898b9;
@@ -408,7 +409,7 @@
 }
 
 [data-theme="theme2"] #selected-deck:hover {
-    background: rgb(232, 232, 232) !important;
+    background: hsl(var(--hue), 16%, 18%) !important;
 }
 
 
