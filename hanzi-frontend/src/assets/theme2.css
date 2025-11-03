@@ -594,13 +594,13 @@ opacity: 0.7;
 
 
 [data-theme="theme2"] .scroll-to-top-button {
-  background: var(--orangey) !important;
-  border: 2px solid var(--fg) !important;
+  background: var(--bg) !important;
+  border: 2px solid color-mix(in oklab, var(--fg) 50%, var(--bg) 50%) !important;
   }
   
 [data-theme="theme2"] .scroll-to-top-button:hover {
-  background: var(--yellow) !important;
-  border: 2px solid var(--fg) !important;
+  background: color-mix(in oklab, var(--fg) 20%, var(--bg) 80%) !important;
+  border: 2px solid color-mix(in oklab, var(--fg) 50%, var(--bg) 50%) !important;
 }
 
 
