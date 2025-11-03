@@ -23,10 +23,11 @@
 	--card-border-color: color-mix(in oklab, var(--fg) 86%, var(--bg) 35%);
 	--card-border: 2px solid var(--card-border-color);
 	--overlay-background: hsla(var(--hue), 6%, 14%, 0.733);
-	--orange: #F45203;
+	--orange: lch(43.53% 50.89 288.57);
+  	--orange-dim: #5ba2ee;
 	--yellow: rgb(240, 229, 131);
 	--pink-strong: #e898b9;
-	--bluey:#99c9fc;
+	--bluey:#c1daf5;
 	--green: #8ae78f;
 }
 
@@ -214,7 +215,7 @@
 	cursor: pointer;
 	background-color: var(--orange) !important;
 	color: var(--orange-dim);
-	color: #ffd2d2;
+	color: hsl(208, 100%, 91%);
 	border-radius: 1em;
 }
 

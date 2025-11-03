@@ -516,7 +516,9 @@ export default {
       const key = this.fontOrder[this.fontCycleIndex] || this.currentFontKey;
       const family = families[key] || families['noto-serif'];
       const scale = key === 'kaiti' ? '1.15' : '1';
-      return { '--main-word-font': family, '--main-word-scale': scale };
+      const len = (this.cardData && this.cardData.character) ? this.cardData.character.split('') .length : 1;
+      const lenScale = len >= 4 ? '0.8' : '1';
+      return { '--main-word-font': family, '--main-word-scale': scale, '--main-word-len-scale': lenScale };
     },
     // Hanzi editing disabled globally per product decision
     canEditHanzi() { return false; },
@@ -1565,8 +1567,7 @@ export default {
 }
 
 .main-word {
-  /*font-size: calc(11rem * var(--main-word-scale, 1));*/
-  font-size: 11rem;
+  font-size: calc(11rem * var(--main-word-scale, 1) * var(--main-word-len-scale, 1));
   margin: 0.1em 0 0.2em 0;
   line-height: 1;
   width: 100%;
@@ -1575,6 +1576,8 @@ export default {
   justify-content: center;
   align-items: center;
   gap: 0.05em;
+  flex-wrap: wrap;          /* allow long words to wrap */
+  overflow: visible;        /* avoid clipping at container edges */
   /*background-color: var(--bg);*/
 }
 
@@ -1982,7 +1985,7 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 2;
-  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
+  background-color: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
   height: 100%;
   justify-self: flex-start;
   align-items: center;
@@ -2519,8 +2522,7 @@ export default {
     }
 
     .main-word {
-      font-size: 5rem;
-      margin-top: 3rem;
+      /*margin-top: 3rem;*/
     }
 
     .main-pinyin,

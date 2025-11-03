@@ -275,7 +275,7 @@ export default {
   padding: 1.5rem;
   background: var(--bg-secondary);
   box-shadow: var(--card-shadow);
-  border: var(--thin-border-width) solid var(--fg-dim);
+  border: var(--thin-border-width) solid var(--fg);
   border-radius: var(--modal-border-radius);
 }
 

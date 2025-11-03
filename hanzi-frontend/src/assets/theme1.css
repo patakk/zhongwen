@@ -11,14 +11,14 @@
 	--thin-border-width: 2px;
 	--modal-border-width: 8px;
 	--modal-border-radius: 2em;
-	--modal-bg: #e1e6e0;
-	--animated-hanzi-border-color: #e8cda4;
+	--modal-bg: hsl(0, 0%, 94%);
+	--animated-hanzi-border-color: hsl(36, 60%, 78%);
 	--pinyin-meaning-group-border: var(--thin-border-width) solid var(--animated-hanzi-border-color);
 	--animated-hanzi-border-color: #111;
 	--pinyin-meaning-group-border-radius: 2em;
 	--fg: #000;
 	--secondary-color: var(--yellow);
-	--bg: #f2f8f6;
+	--bg: hsl(160, 0%, 94%);
 	--router-color: #cbff8f;
 	--router-color: #98ff11;
 	--router-color: #ff7226;
@@ -29,6 +29,8 @@
 	--card-shadow: 10px 10px 0px 0px var(--card-shadow-color);
 	--card-border: 4px solid color-mix(in oklab, var(--fg) 86%, var(--bg) 35%);
 	--success-color: #15dc4d;
+	--orange: #c0c0c0;
+	--orange-dim: #515151;
 }
 
 
@@ -170,7 +172,6 @@
 
 [data-theme="theme1"] .wordlist-btn {
 	background-color: var(--orange) !important;
-	color: var(--orange-dim) !important;
 	border-radius: 1em !important;
 }
 
@@ -208,8 +209,8 @@
 	padding: 0.5rem 1rem;
 	cursor: pointer;
 	background-color: var(--orange) !important;
+	color: #f0f0f0;
 	color: var(--orange-dim);
-	color: #ffd2d2;
 	border-radius: 1em;
 }
 
