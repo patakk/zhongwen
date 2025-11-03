@@ -517,7 +517,7 @@ export default {
       const family = families[key] || families['noto-serif'];
       const scale = key === 'kaiti' ? '1.15' : '1';
       const len = (this.cardData && this.cardData.character) ? this.cardData.character.split('') .length : 1;
-      const lenScale = len >= 4 ? '0.8' : '1';
+      const lenScale = len >= 3 ? '0.8' : '1';
       return { '--main-word-font': family, '--main-word-scale': scale, '--main-word-len-scale': lenScale };
     },
     // Hanzi editing disabled globally per product decision
