@@ -168,10 +168,14 @@ export default {
     
     async doSearch() {
       this.isLoading = true;
-
       try {
-        const query = encodeURIComponent(this.latestQuery);
-        const res = await fetch(`/api/search_results?query=${query}`);
+        const res = await fetch('/api/search_results', {
+          method: 'POST',
+          headers: {
+        'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: this.latestQuery }),
+        });
         const data = await res.json();
         this.results = data.results;
         this.$nextTick(() => this.ensureNavContextForUrlWord());
