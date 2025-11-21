@@ -12,13 +12,9 @@ from flask import Flask
 import os
 
 from backend.db.extensions import db, migrate, mail
-from backend.common import load_secrets, load_config
+from backend.common import config, auth_keys
 
 import os
-
-config = load_config()
-secrets_path = os.path.join(config['paths']['root'], config['paths']['secrets'])
-auth_keys = load_secrets(secrets_path)
 
 BASE_DIR = os.path.dirname(__file__)
 CONFIG_PATH = os.path.join(config['paths']['root'], 'config.yml')
