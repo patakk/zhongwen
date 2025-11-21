@@ -579,7 +579,6 @@ def get_custom_decks():
 @app.route("/api/get_decks")
 def get_decks():
     json_path = f"{DATA_DIR}/decks_cache.json"
-    print(json.load(open(json_path, 'r', encoding='utf-8')))
     response = send_file(json_path)
     response.headers["Cache-Control"] = "public, max-age=31536000"
     return response

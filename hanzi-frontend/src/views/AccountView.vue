@@ -51,6 +51,7 @@
             </button>
           </div>
         </div>
+        <div class="font-preview">你好</div>
         <!-- <div class="current-theme">
           <div class="theme-option-label">Current Theme:</div>
           <div class="theme-value">{{ currentThemeName }}</div>
@@ -689,6 +690,13 @@ h2 {
 
 }
 
+.font-preview {
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+  font-size: calc(2rem * var(--main-word-scale, 1));
+  text-align: center;
+  padding: 1rem;
+}
+
 .profile-info-grid {
   display: flex;
   flex-direction: column;
@@ -963,7 +971,7 @@ h2 {
 }
 
 .settings-section {
-  margin-bottom: 1.5rem;
+  /* margin-bottom: 1.5rem; */
 }
 
 h3 {
