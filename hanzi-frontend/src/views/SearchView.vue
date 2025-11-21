@@ -185,10 +185,10 @@ export default {
     highlightMatch(text) {
       if (!this.query) return text;
 
+      if (!text) return text;
       const stripAccents = (s) =>
         s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
-      if (!text) return text;
       const plainText = stripAccents(text);
       const plainQuery = stripAccents(this.query);
 
