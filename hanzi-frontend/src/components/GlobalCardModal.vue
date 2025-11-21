@@ -64,7 +64,11 @@
           <!-- <div class="minor-character">{{ cardData.character }}</div> -->
           
           <div class="main-pinyin">{{ $toAccentedPinyin(displayPinyin || '') }}</div>
-          <div class="main-english">{{ displayEnglish }}</div>
+          <div class="main-english">
+            <div v-for="(item, index) in displayEnglish" :key="index" class="english-item">
+              {{ index + 1 }}. {{ item }}
+            </div>
+          </div>
           <div v-if="isLoggedIn" class="custom-edit-wrap">
             <button class="custom-edit-btn" @click.stop="openCustomEdit">
               <font-awesome-icon :icon="['fas','pen']" />
@@ -534,7 +538,9 @@ export default {
     displayEnglish() {
       const base = (this.cardData && this.cardData.english && this.cardData.english[0]) ? this.cardData.english[0] : '';
       const custom = this.customDef && this.customDef.english ? this.customDef.english : '';
-      return (custom || base);
+      let results = (custom || base);
+      results = results.split('/');
+      return results;
     },
     validChars() {
       if (!this.cardData || !this.cardData.character) return [];
@@ -1558,23 +1564,23 @@ export default {
 }
 
 .main-word-section {
-  text-align: center;
   margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  text-align: left;
+  align-items: left;
   width: 100%;
 }
 
 .main-word {
-  font-size: calc(11rem * var(--main-word-scale, 1) * var(--main-word-len-scale, 1));
+  font-size: calc(5rem * var(--main-word-scale, 1) * var(--main-word-len-scale, 1));
   margin: 0.1em 0 0.2em 0;
   line-height: 1;
   width: 100%;
-  text-align: center;
+  text-align: left;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: left;
+  align-items: left;
   gap: 0.05em;
   flex-wrap: wrap;          /* allow long words to wrap */
   overflow: visible;        /* avoid clipping at container edges */
