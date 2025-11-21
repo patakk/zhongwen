@@ -11,8 +11,6 @@ BACKEND_DIR="$REPO_DIR/hanzi-backend"
 SEARCH_DIR="$REPO_DIR/hanzi-search"
 HANZIPY_DIR="$PROJECT_DIR/hanzipy"
 HANZIPY_REPO="git@github.com:patakk/hanzipy.git"
-ssh-add ~/.ssh/macpro >> $LOG_FILE 2>&1
-
 HANZIPY_BRANCH="main"
 FRONTEND_DEPLOY_DIR="/var/www/hanzi-frontend"
 
