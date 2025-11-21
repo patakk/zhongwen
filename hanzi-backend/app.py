@@ -854,7 +854,7 @@ def get_search_results(query):
 
 
 @app.route('/api/search_results', methods=['GET', 'POST'])
-@limiter.limit("3 per second")
+@limiter.limit("10 per second")
 def search_results():
     start_time = time.time()
     
