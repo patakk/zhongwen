@@ -1508,6 +1508,10 @@ export default {
       }
       this.showWordlistDropdown = !this.showWordlistDropdown;
     },
+    closeCreateListModal() {
+      this.showCreateListModal = false;
+      this.newListName = '';
+    },
     addWordToList(setName) {
       this.addingToList = true;
       this.showWordlistDropdown = false;
@@ -2957,6 +2961,7 @@ export default {
   border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
   background: var(--bg);
   font-family: inherit;
+  color: var(--fg);
 }
 
 .create-list-buttons {

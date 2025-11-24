@@ -58,6 +58,7 @@
 [data-theme="theme1"] .search-input {
 	border: var(--thin-border-width) solid var(--fg);
 	border-radius: 1rem;
+	
 }
 
 [data-theme="theme1"] .search-button {
@@ -300,6 +301,7 @@
     border: 3px solid var(--yellow) !important;
     border-radius: .5em !important;
 }
+
 
 [data-theme="theme1"] .cancel-button, [data-theme="theme1"] .confirm-button {
     border: 3px solid var(--fg) !important;
