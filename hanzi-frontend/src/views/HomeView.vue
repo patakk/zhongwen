@@ -1,5 +1,5 @@
 <template>
-  <BasePage page_title="HanziLab" />
+  <BasePage page_title="Hanzi" />
   <div class="search-view">
     <form @submit.prevent="doSearch" class="search-form">
       <input

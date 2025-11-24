@@ -1977,17 +1977,14 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.35em;
-  flex-wrap: nowrap;
-  overflow: hidden;
+  flex-wrap: wrap;
 }
 
 .main-word-line {
   display: inline-flex;
   align-items: baseline;
   gap: 0.4rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-wrap: wrap;
 }
 
 .main-word-trad {
@@ -1995,11 +1992,13 @@ export default {
   gap: 0.2rem;
   align-items: baseline;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .trad-bracket {
   opacity: 0.7;
   font-size: 0.85em;
+  font-weight: 200;
 }
 
 .trad-char {

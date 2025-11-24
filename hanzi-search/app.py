@@ -156,13 +156,19 @@ def search():
         joined = ''.join(tokens)
         is_multi_token = len(tokens) > 1
 
+        def safe_gather(term, include_examples=True):
+            try:
+                return gather_hanzi_results(term, dictionary, include_other_examples=include_examples)
+            except KeyError:
+                return [], False
+
         def append_lookup(term, include_examples=True):
-            res, _ = gather_hanzi_results(term, dictionary, include_other_examples=include_examples)
+            res, _ = safe_gather(term, include_examples=include_examples)
             add_unique_entries(results, res, seen)
 
         # 1) Full query (joined tokens) if available
         if joined:
-            full_results, full_has_direct = gather_hanzi_results(joined, dictionary, include_other_examples=True)
+            full_results, full_has_direct = safe_gather(joined, include_examples=True)
             add_unique_entries(results, full_results, seen)
         else:
             full_has_direct = False
@@ -182,7 +188,7 @@ def search():
                 ordered_chars.append(ch)
         include_other = full_has_direct or is_multi_token
         for ch in ordered_chars:
-            per_char, _ = gather_hanzi_results(ch, dictionary, include_other_examples=True)
+            per_char, _ = safe_gather(ch, include_examples=True)
             add_unique_entries(results, per_char, seen)
 
     else:
