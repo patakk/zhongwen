@@ -33,20 +33,33 @@ const router = useRouter()
 const currentTheme = computed(() => store.getters['theme/getCurrentTheme'])
 const bubbleData = computed(() => store.getters['bubbleTooltip/getBubbleData'])
 
-// Create a watcher for route changes to close the modal and bubble tooltip when navigating
+// Close modal/bubble when navigating to a different path
 watch(
   () => router.currentRoute.value.path,
   (newPath, oldPath) => {
-    // Only close UI elements if we're actually changing paths (not just query params)
     if (newPath !== oldPath) {
-      // Check if modal is visible before trying to close it
       if (store.getters['cardModal/isCardModalVisible']) {
         store.dispatch('cardModal/hideCardModal');
       }
-      
-      // Hide bubble tooltip if visible
       if (store.getters['bubbleTooltip/isBubbleVisible']) {
         store.dispatch('bubbleTooltip/hideBubble');
+      }
+    }
+  }
+);
+
+// Sync modal with ?word= changes on the same path
+watch(
+  () => router.currentRoute.value.query.word,
+  (newWord, oldWord) => {
+    const path = router.currentRoute.value.path || '';
+    // Ignore dedicated word pages
+    if (path.startsWith('/word/')) return;
+    if (newWord) {
+      store.dispatch('cardModal/showCardModal', newWord);
+    } else {
+      if (store.getters['cardModal/isCardModalVisible']) {
+        store.dispatch('cardModal/hideCardModal');
       }
     }
   }

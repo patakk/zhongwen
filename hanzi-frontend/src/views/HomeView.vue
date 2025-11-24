@@ -1,338 +1,719 @@
 <template>
-  <BasePage page_title="HanziLab" /> 
-  <div class="page-info">
-    <!-- <div class="infoTitle">Chinese Language Learning</div> -->
-    
-    <form @submit.prevent="goToSearch" class="search-form">
+  <BasePage page_title="HanziLab" />
+  <div class="search-view">
+    <form @submit.prevent="doSearch" class="search-form">
       <input
-        v-model="searchQuery"
+        v-model="query"
         type="text"
-        placeholder="search for words or characters..."
+        placeholder="enter search term"
         class="search-input"
+        @input="handleInput"
       />
-      <button type="submit" class="search-button">search</button>
+      <button type="button" class="stroke-toggle" @click="toggleStrokePad" :aria-pressed="showStrokePad" title="Draw search">
+        <font-awesome-icon :icon="['fas','pen-fancy']" />
+      </button>
+      <!-- Search button kept but hidden by default -->
+      <button type="submit" class="search-button" style="display: none;">Search</button>
     </form>
-    
-    <div class="content">
-      <div class="example-section">
-        <h2>Random pick</h2> 
-        <div v-if="loading" class="loading-indicator">
-          Loading random words...
+    <div v-if="isSearching" class="loading-indicator">
+      searching...
+    </div>
+
+    <div v-if="showStrokePad" class="stroke-draw-wrap">
+      <div class="stroke-controls">
+        <span class="stroke-label">Draw character</span>
+        <div class="stroke-buttons">
+          <button type="button" @click="undoStroke" :disabled="strokes.length === 0">Undo</button>
+          <button type="button" @click="clearCanvas" :disabled="strokes.length === 0">Clear</button>
         </div>
-        <div v-else class="word-grid">
-          <div v-for="(word, index) in randomWords" :key="index" class="home-word-item">
-            <PreloadWrapper :character="word.character" class="chinese-word-wrapper">
-              <span class="chinese-word">{{ word.character }}</span>
-            </PreloadWrapper>
-            <span class="mpinyin">{{ word.pinyin }}</span>
-            <span class="meaning">{{ word.meaning }}</span>
-          </div>
+      </div>
+      <canvas
+        ref="strokeCanvas"
+        class="stroke-canvas"
+        @mousedown="startDrawing"
+        @mousemove="draw"
+        @mouseup="stopDrawing"
+        @mouseleave="stopDrawing"
+        @touchstart.prevent="handleTouchStart"
+        @touchmove.prevent="handleTouchMove"
+        @touchend.prevent="stopDrawing"
+      ></canvas>
+      <div class="stroke-results" v-if="strokeResults.length">
+        <span class="stroke-label">tap to add:</span>
+        <div class="stroke-result-list">
+          <button
+            v-for="(res, idx) in strokeResults"
+            :key="idx"
+            type="button"
+            class="stroke-result-btn"
+            @click="appendCharFromStroke(res.character)"
+          >
+            {{ res.character }}
+          </button>
         </div>
       </div>
     </div>
+    <div v-if="!isLoading" class="results">
+      <div
+        v-for="group in groupedResults"
+        :key="group.key"
+        class="result-group"
+      >
+        <div
+          class="group-header"
+          :class="{ clickable: group.collapsible }"
+          @click="group.collapsible && toggleGroup(group.key)"
+        >
+          <div class="group-title">{{ group.label }}</div>
+          <div v-if="group.collapsible" class="group-toggle">
+            {{ isGroupCollapsed(group.key) ? '↓' : '↑' }}
+          </div>
+        </div>
+        <div v-show="!group.collapsible || !isGroupCollapsed(group.key)" class="group-body">
+          <PreloadWrapper
+            v-for="entry in group.items"
+            :key="entry.originalIdx"
+            :character="entry.item.hanzi"
+            :navList="navCharList"
+            :navMetaList="navMetaList"
+            :navIndex="entry.displayIdx"
+            :cardOverrides="resultOverrides(entry.item)"
+            :showBubbles="false"
+          >
+            <div class="result-cell">
+              <div class="result-number">{{ entry.displayIdx + 1 }}</div>
+              <div class="hanzipinyin">
+                <div class="rhanzi">{{ entry.item.hanzi }}</div>
+                <div class="rpinyin" v-html="highlightMatch($toAccentedPinyin(entry.item.pinyin))"></div>
+              </div>
+              <div class="renglish" v-html="highlightMatch($toAccentedPinyin(entry.item.english))"></div>
+            </div>
+          </PreloadWrapper>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scroll to top button -->
+    <button 
+      v-if="showScrollTop" 
+      @click="scrollToTop" 
+      class="scroll-to-top-button"
+      aria-label="Scroll to top"
+    >
+      ↑
+    </button>
   </div>
 </template>
 
 <script>
-import PreloadWrapper from '../components/PreloadWrapper.vue';
 import BasePage from '../components/BasePage.vue';
+import PreloadWrapper from '../components/PreloadWrapper.vue';
 
 export default {
-  name: 'PageInfoView',
   components: {
+    BasePage,
     PreloadWrapper,
-    BasePage
+  },
+  computed: {
+    // Navigation list matches current search results order
+    navCharList() {
+      return this.displayedItems.map(r => r.hanzi);
+    },
+    navMetaList() {
+      return this.displayedItems.map(r => this.resultOverrides(r));
+    },
+    displayedItems() {
+      return this.groupedResults.flatMap(g => g.items.map(e => e.item));
+    },
+    groupedResults() {
+      const raw = Array.isArray(this.results) ? this.results : [];
+      const annotated = raw.map((item, idx) => ({ item, originalIdx: idx }));
+      const query = this.latestQuery || this.query || '';
+      const onlyHanzi = this.isHanziOnly(query);
+
+      if (!onlyHanzi || query.length <= 1) {
+        const groups = [{ key: 'all', label: 'Results', collapsible: false, items: annotated }];
+        groups[0].items.forEach((e, i) => e.displayIdx = i);
+        return groups;
+      }
+
+      const charOrder = [];
+      for (const ch of Array.from(query)) {
+        if (ch && !charOrder.includes(ch)) charOrder.push(ch);
+      }
+
+      const groups = [];
+      const used = new Set();
+
+      const exactItems = annotated.filter(entry => entry.item && entry.item.hanzi === query);
+      exactItems.forEach(entry => used.add(entry.originalIdx));
+      if (exactItems.length) {
+        groups.push({ key: `exact-${query}`, label: `${query} (exact)`, collapsible: false, items: exactItems });
+      }
+
+      const perChar = {};
+      const extras = [];
+      for (const entry of annotated) {
+        if (used.has(entry.originalIdx)) continue;
+        const hanzi = (entry.item && entry.item.hanzi) || '';
+        let bucket = null;
+        for (const ch of charOrder) {
+          if (hanzi.includes(ch)) { bucket = ch; break; }
+        }
+        if (bucket) {
+          if (!perChar[bucket]) perChar[bucket] = [];
+          perChar[bucket].push(entry);
+        } else {
+          extras.push(entry);
+        }
+      }
+
+      for (const ch of charOrder) {
+        const items = perChar[ch];
+        if (items && items.length) {
+          groups.push({ key: `char-${ch}`, label: ch, collapsible: true, items });
+        }
+      }
+
+      if (extras.length) {
+        groups.push({ key: 'other', label: 'Other matches', collapsible: true, items: extras });
+      }
+
+
+      const sortWithinHanzi = (items) => {
+        const orderVal = (v) => {
+          const n = Number(v);
+          return Number.isFinite(n) ? n : Number.MAX_SAFE_INTEGER;
+        };
+        const buckets = new Map();
+        items.forEach((entry, idx) => {
+          const h = entry?.item?.hanzi;
+          if (!h) return;
+          if (!buckets.has(h)) buckets.set(h, []);
+          buckets.get(h).push({ entry, idx });
+        });
+        for (const list of buckets.values()) {
+          if (list.length <= 1) continue;
+          const positions = list.map(x => x.idx).sort((a, b) => a - b);
+          const sorted = list.slice().sort((a, b) => {
+            const va = orderVal(a.entry?.item?.order);
+            const vb = orderVal(b.entry?.item?.order);
+            if (va !== vb) return va - vb;
+            return a.idx - b.idx;
+          }).map(x => x.entry);
+          sorted.forEach((entry, i) => { if (entry?.item) entry.item._prefDefIndex = i; });
+          positions.forEach((pos, i) => { items[pos] = sorted[i]; });
+        }
+        return items;
+      };
+
+      groups.forEach(g => {
+        g.items = sortWithinHanzi(g.items.slice());
+      });
+
+      let displayIdx = 0;
+      groups.forEach(g => {
+        g.items.forEach(e => { e.displayIdx = displayIdx++; });
+      });
+
+      return groups;
+    }
   },
   data() {
     return {
-      searchQuery: '',
-      randomWords: [],
-      numRandomWords: 3,
-      loading: true,
-      fetchInProgress: false
+      query: '',
+      results: [],
+      isLoading: false,
+      isSearching: false,
+      showScrollTop: false,
+      searchTimeout: null,
+      latestQuery: '', // Track the latest query to ensure no inputs are lost
+      // Stroke search state
+      showStrokePad: false,
+      strokes: [],
+      currentStroke: [],
+      isDrawing: false,
+      lastX: 0,
+      lastY: 0,
+      strokeResults: [],
+      hanzilookupReady: false,
+      strokeCanvasCtx: null,
+      strokeCanvasSize: 0,
+      themeObserver: null,
+      groupCollapsed: {},
     };
   },
-  computed: {
-    storeDecks() {
-      // Combine static and custom dictionary data
-      const staticData = this.$store.getters.getDictionaryData || {};
-      const customData = this.$store.getters.getCustomDictionaryData || {};
-      const isLoading = this.$store.getters.isDictionaryLoading;
-      return { ...staticData, ...customData };
-    },
-    isDictionaryLoading() {
-      return this.$store.getters.isDictionaryLoading;
-    },
-    dictionaryPromises() {
-      return this.$store.getters.getDictionaryPromises;
-    }
-  },
-  watch: {
-    storeDecks: {
-      handler(newDecks) {
-        // When store decks change and we have data available
-        if (Object.keys(newDecks).length > 0) {
-          this.loading = false;
-          this.getRandomWords();
-        }
-      },
-      deep: true,
-      immediate: true
+  created() {
+    // Check if there's a query parameter in the URL
+    const queryParam = this.$route.query.q;
+    if (queryParam) {
+      this.query = queryParam;
+      
+      // Check if we have a pending search promise from PageInfoView
+      if (window.pendingSearchPromise) {
+        this.isLoading = true;
+        // Use the existing promise
+        window.pendingSearchPromise
+          .then(res => res.json())
+          .then(data => {
+            this.results = data.results;
+            this.resetGroupCollapse();
+            this.isLoading = false;
+          })
+          .catch(error => {
+            console.error("Error processing search results:", error);
+            this.isLoading = false;
+            // Fallback to a new search if the pending one fails
+            this.doSearch();
+          })
+          .finally(() => {
+            // Clear the pending promise
+            window.pendingSearchPromise = null;
+          });
+      } else {
+        // If no pending promise exists, perform the search now
+        this.debouncedSearch();
+      }
     }
   },
   mounted() {
-    // Check if we need to wait for dictionary data
-    if (this.isDictionaryLoading) {
-      this.loading = true;
-      
-      // Wait for both promise types to complete (if they exist)
-      const promises = [];
-      if (this.dictionaryPromises.static) {
-        promises.push(this.dictionaryPromises.static);
-      }
-      if (this.dictionaryPromises.custom) {
-        promises.push(this.dictionaryPromises.custom);
-      }
-      
-      // Wait for all existing promises to complete
-      Promise.all(promises)
-        .then(() => {
-          this.loading = false;
-          this.getRandomWords();
-        })
-        .catch(error => {
-          console.error('Error waiting for dictionary data:', error);
-          this.loading = false;
-        });
-    } 
-    // If data is already loaded in store
-    else if (Object.keys(this.storeDecks).length > 0) {
-      this.loading = false;
-      this.getRandomWords();
-    } 
-    // If no data in store and no loading in progress, initiate loading
-    else {
-      this.loading = true;
-      
-      Promise.all([
-        this.$store.dispatch('fetchDictionaryData'),
-        this.$store.dispatch('fetchCustomDictionaryData')
-      ])
-        .then(() => {
-          this.loading = false;
-          this.getRandomWords();
-        })
-        .catch(error => {
-          console.error('Error loading dictionary data:', error);
-          this.loading = false;
-        });
+    // Add event listener for scroll
+    window.addEventListener('scroll', this.handleScroll);
+    // Initial check for scroll position
+    this.handleScroll();
+    // If opened with ?word=, ensure nav context once results are available
+    this.$nextTick(() => this.ensureNavContextForUrlWord());
+    // Observe theme changes to refresh stroke colors
+    this.setupThemeObserver();
+  },
+  beforeUnmount() {
+    // Remove scroll event listener when component is unmounted
+    window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('resize', this.resizeCanvas);
+    if (this.themeObserver) {
+      this.themeObserver.disconnect();
+    }
+    // Clear any pending timeouts
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
     }
   },
   methods: {
-    goToSearch() {
-      // Start the search request immediately
-      const searchPromise = fetch('/api/search_results', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: this.searchQuery }),
-      });
-      
-      // Store the search promise in a global variable that SearchView can access
-      window.pendingSearchPromise = searchPromise;
-      
-      // Navigate to the search page with the query parameter
-      this.$router.push({ name: 'SearchPage', query: { q: this.searchQuery } });
+
+    resetGroupCollapse() {
+      this.groupCollapsed = {};
     },
-    
-    getRandomWords() {
-      try {
-        // Initialize empty arrays to hold characters
-        let allCustomChars = [];
-        let basicChars = [];
-        
-        // Get data from store
-        const customData = this.$store.getters.getCustomDictionaryData || {};
-        const staticData = this.$store.getters.getDictionaryData || {};
-        
-        // First collect characters from custom dictionaries
-        for (const [deckKey, deck] of Object.entries(customData)) {
-          const chars = Array.isArray(deck.chars) ? deck.chars : Object.keys(deck.chars);
-          allCustomChars = [...allCustomChars, ...chars];
-        }
-        
-        // Collect HSK1 and HSK2 characters as backup
-        if (staticData.hsk1 && staticData.hsk1.chars) {
-          const chars = Array.isArray(staticData.hsk1.chars) ? staticData.hsk1.chars : Object.keys(staticData.hsk1.chars);
-          basicChars = [...basicChars, ...chars];
-        }
-        
-        if (staticData.hsk2 && staticData.hsk2.chars) {
-          const chars = Array.isArray(staticData.hsk2.chars) ? staticData.hsk2.chars : Object.keys(staticData.hsk2.chars);
-          basicChars = [...basicChars, ...chars];
-        }
-        
-        // Shuffle the custom characters
-        allCustomChars = this.shuffleArray(allCustomChars);
-        
-        // If we don't have enough custom characters, add some from HSK1/HSK2
-        if (allCustomChars.length < this.numRandomWords) {
-          basicChars = this.shuffleArray(basicChars);
-          // Add enough basic characters to reach the desired number
-          allCustomChars = [...allCustomChars, ...basicChars.slice(0, this.numRandomWords - allCustomChars.length)];
-        }
-        
-        // Take just the number we need
-        const selectedChars = allCustomChars.slice(0, this.numRandomWords);
-        
-        // Get word info for each character from the store
-        this.randomWords = selectedChars.map(char => this.getWordInfoFromStore(char));
-      } catch (error) {
-        console.error('Error getting random words:', error);
-        // Fallback with some default words if there's an error
-        this.randomWords = [
-          { character: '你好', pinyin: 'nǐ hǎo', meaning: 'Hello' },
-          { character: '谢谢', pinyin: 'xièxie', meaning: 'Thank you' },
-          { character: '再见', pinyin: 'zàijiàn', meaning: 'Goodbye' }
-        ];
-      }
+    isGroupCollapsed(key) {
+      return !!this.groupCollapsed[key];
     },
-    
-    getWordInfoFromStore(character) {
-      // First look in custom dictionaries
-      const customData = this.$store.getters.getCustomDictionaryData || {};
-      for (const [deckKey, deck] of Object.entries(customData)) {
-        if (Array.isArray(deck.chars)) {
-          // Skip decks that have chars as arrays without detailed info
-          continue;
-        }
-        
-        // Check if this character exists in the current deck
-        if (deck.chars && deck.chars[character]) {
-          const charInfo = deck.chars[character];
-          return {
-            character: character,
-            pinyin: this.$toAccentedPinyin(charInfo.pinyin ? charInfo.pinyin[0] : ''),
-            meaning: charInfo.english ? charInfo.english[0].split("/").slice(0, 3).join("/") : ''
-          };
+    toggleGroup(key) {
+      const next = !this.isGroupCollapsed(key);
+      this.groupCollapsed = { ...this.groupCollapsed, [key]: next };
+    },
+
+    isHanziOnly(str) {
+      if (!str) return false;
+      return Array.from(str).every(ch => /\p{Script=Han}/u.test(ch));
+    },
+    reorderHanziResults(results, query) {
+      if (!Array.isArray(results)) return results;
+
+      // Preserve the character order from the query so singles appear in that sequence
+      const charOrder = [];
+      for (const ch of Array.from(query)) {
+        if (!charOrder.includes(ch)) charOrder.push(ch);
+      }
+
+      const exact = [];
+      const singleMap = new Map();
+      const rest = [];
+      const isExact = r => r && r.hanzi === query;
+      const isSingleOfQuery = r => r && r.hanzi && r.hanzi.length === 1 && charOrder.includes(r.hanzi);
+
+      for (const r of results) {
+        if (isExact(r)) {
+          exact.push(r);
+        } else if (isSingleOfQuery(r) && !singleMap.has(r.hanzi)) {
+          singleMap.set(r.hanzi, r);
+        } else {
+          rest.push(r);
         }
       }
-      
-      // If not found in custom dictionaries, check static dictionaries
-      const staticData = this.$store.getters.getDictionaryData || {};
-      for (const [deckKey, deck] of Object.entries(staticData)) {
-        if (Array.isArray(deck.chars)) {
-          // Skip decks that have chars as arrays without detailed info
-          continue;
-        }
-        
-        // Check if this character exists in the current deck
-        if (deck.chars && deck.chars[character]) {
-          const charInfo = deck.chars[character];
-          return {
-            character: character,
-            pinyin: this.$toAccentedPinyin(charInfo.pinyin ? charInfo.pinyin[0] : ''),
-            meaning: charInfo.english ? charInfo.english[0].split("/").slice(0, 3).join("/") : ''
-          };
-        }
-      }
-      
-      // If not found in any deck with detailed info, return basic structure
+
+      const singles = charOrder.map(ch => singleMap.get(ch)).filter(Boolean);
+      return [...exact, ...singles, ...rest];
+    },
+    resultOverrides(result) {
+      if (!result) return null;
+      const english = Array.isArray(result.english) ? result.english : (result.english || '');
+      const prefIdx = Number.isFinite(result?._prefDefIndex) ? result._prefDefIndex : null;
+      const orderNum = Number(result?.order);
+      const order = Number.isFinite(orderNum) ? orderNum : null;
       return {
-        character: character,
-        pinyin: '',
-        meaning: ''
+        preferredPinyin: result.pinyin,
+        preferredEnglish: english,
+        preferredIndex: prefIdx !== null ? prefIdx : order,
       };
     },
-    
-    shuffleArray(array) {
-      const result = [...array];
-      for (let i = result.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [result[i], result[j]] = [result[j], result[i]];
+    ensureNavContextForUrlWord() {
+      try {
+        const word = this.$route.query.word || this.$store.getters['cardModal/getCurrentCharacter'];
+        if (!word) return;
+        const list = this.navCharList || [];
+        if (!list.length) return;
+
+        // Only seed nav context if it is currently empty; avoid overwriting an active index
+        const storeList = this.$store.getters['cardModal/getNavList'] || [];
+        if (Array.isArray(storeList) && storeList.length) return;
+
+        if (list.includes(word)) {
+          const index = list.indexOf(word);
+          this.$store.dispatch('cardModal/setNavContext', { list, current: word, index, metaList: this.navMetaList });
+        }
+      } catch (e) {}
+    },
+
+
+    handleInput() {
+      // Store the latest query value
+      this.latestQuery = this.query;
+      
+      // Clear any existing timeout
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout);
       }
+      
+      // Only trigger search if query has 2 or more characters
+      if (this.query.length >= 2) {
+        this.isLoading = true;
+        this.searchTimeout = setTimeout(() => {
+          this.isSearching = true;
+          this.query = this.latestQuery;
+          this.doSearch();
+        }, 366);
+      } else {
+        // Clear results and loading state if query is too short
+        this.results = [];
+        this.resetGroupCollapse();
+        this.isLoading = false;
+        this.isSearching = false;
+      }
+    },
+    
+    debouncedSearch() {
+      // Helper method to handle initial search with debounce logic
+      if (this.query.length >= 2) {
+        // Store the query as latestQuery to maintain consistency
+        this.latestQuery = this.query;
+        this.doSearch();
+      }
+    },
+    
+    async doSearch() {
+      this.isLoading = true;
+      try {
+        const res = await fetch('/api/search_results', {
+          method: 'POST',
+          headers: {
+        'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: this.latestQuery }),
+        });
+        const data = await res.json();
+        const rawResults = data.results || [];
+        const onlyHanzi = this.isHanziOnly(this.latestQuery);
+        let ordered = rawResults;
+        if (onlyHanzi && this.latestQuery) {
+          ordered = this.reorderHanziResults(rawResults, this.latestQuery);
+        }
+        this.results = ordered;
+        this.resetGroupCollapse();
+        this.$nextTick(() => this.ensureNavContextForUrlWord());
+      } catch (error) {
+        console.error("Error during search:", error);
+      } finally {
+        this.isLoading = false;
+        this.isSearching = false;
+      }
+    },
+    highlightMatch(text) {
+      if (!this.query) return text;
+
+      if (!text) return text;
+      const stripAccents = (s) =>
+        s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+      const plainText = stripAccents(text);
+      const plainQuery = stripAccents(this.query);
+
+      if (!plainQuery) return text;
+
+      const indices = [];
+      let i = 0;
+      while (i < plainText.length) {
+        const foundAt = plainText.indexOf(plainQuery, i);
+        if (foundAt === -1) break;
+        indices.push([foundAt, foundAt + plainQuery.length]);
+        i = foundAt + plainQuery.length;
+      }
+
+      if (!indices.length) return text;
+
+      // Apply highlights to original text using <mark> tag
+      let result = '';
+      let last = 0;
+      for (const [start, end] of indices) {
+        result += text.slice(last, start);
+        // result += '<mark>' + text.slice(start, end) + '</mark>';
+        result += text.slice(start, end);
+        last = end;
+      }
+      result += text.slice(last);
+
       return result;
+    },
+    
+    // New methods for scroll to top functionality
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    
+    handleScroll() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      this.showScrollTop = scrollTop > 200;
+    },
+    toggleStrokePad() {
+      this.showStrokePad = !this.showStrokePad;
+      this.$nextTick(() => {
+        if (this.showStrokePad) {
+          this.initStrokeCanvas();
+          this.loadHanziLookupScript();
+          this.refreshStrokeColors();
+        }
+      });
+    },
+    setupThemeObserver() {
+      try {
+        this.themeObserver = new MutationObserver(() => {
+          this.refreshStrokeColors();
+        });
+        this.themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      } catch (e) {}
+    },
+    refreshStrokeColors() {
+      if (!this.showStrokePad || !this.strokeCanvasCtx) return;
+      this.clearCanvas(false);
+      this.redrawStrokes();
+    },
+    initStrokeCanvas() {
+      const canvas = this.$refs.strokeCanvas;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const size = Math.min(340, window.innerWidth - 40);
+      this.strokeCanvasSize = size;
+      canvas.style.width = `${size}px`;
+      canvas.style.height = `${size}px`;
+      canvas.width = size;
+      canvas.height = size;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = size / 25;
+      const dark = document.documentElement.getAttribute('data-theme');
+      const isDark = dark === 'dark' || dark === 'theme2';
+      ctx.strokeStyle = isDark ? '#fff' : '#000';
+      this.strokeCanvasCtx = ctx;
+      this.clearCanvas();
+      window.addEventListener('resize', this.resizeCanvas);
+    },
+    resizeCanvas() {
+      if (!this.showStrokePad) return;
+      const canvas = this.$refs.strokeCanvas;
+      if (!canvas) return;
+      const data = canvas.toDataURL();
+      const size = Math.min(340, window.innerWidth - 40);
+      this.strokeCanvasSize = size;
+      canvas.style.width = `${size}px`;
+      canvas.style.height = `${size}px`;
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = size / 25;
+      const theme = document.documentElement.getAttribute('data-theme');
+      ctx.strokeStyle = (theme === 'dark' || theme === 'theme2') ? '#fff' : '#000';
+      this.strokeCanvasCtx = ctx;
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, size, size);
+      };
+      img.src = data;
+    },
+    startDrawing(e) {
+      if (!this.strokeCanvasCtx) return;
+      this.isDrawing = true;
+      const rect = this.$refs.strokeCanvas.getBoundingClientRect();
+      const x = (e.offsetX !== undefined ? e.offsetX : e.clientX - rect.left);
+      const y = (e.offsetY !== undefined ? e.offsetY : e.clientY - rect.top);
+      this.lastX = x; this.lastY = y;
+      this.currentStroke = [{ x, y }];
+    },
+    draw(e) {
+      if (!this.isDrawing || !this.strokeCanvasCtx) return;
+      const rect = this.$refs.strokeCanvas.getBoundingClientRect();
+      const x = (e.offsetX !== undefined ? e.offsetX : e.clientX - rect.left);
+      const y = (e.offsetY !== undefined ? e.offsetY : e.clientY - rect.top);
+      const ctx = this.strokeCanvasCtx;
+      ctx.beginPath();
+      ctx.moveTo(this.lastX, this.lastY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      this.lastX = x; this.lastY = y;
+      this.currentStroke.push({ x, y });
+    },
+    stopDrawing() {
+      if (!this.isDrawing) return;
+      this.isDrawing = false;
+      if (this.currentStroke.length > 0) {
+        this.strokes.push(this.currentStroke.slice());
+        this.currentStroke = [];
+        this.searchByDrawing();
+      }
+    },
+    handleTouchStart(e) {
+      const touch = e.touches[0];
+      const rect = this.$refs.strokeCanvas.getBoundingClientRect();
+      this.startDrawing({
+        offsetX: touch.clientX - rect.left,
+        offsetY: touch.clientY - rect.top
+      });
+    },
+    handleTouchMove(e) {
+      if (!this.isDrawing) return;
+      const touch = e.touches[0];
+      const rect = this.$refs.strokeCanvas.getBoundingClientRect();
+      this.draw({
+        offsetX: touch.clientX - rect.left,
+        offsetY: touch.clientY - rect.top
+      });
+    },
+    clearCanvas(reset = true) {
+      if (!this.strokeCanvasCtx || !this.$refs.strokeCanvas) return;
+      const canvas = this.$refs.strokeCanvas;
+      const size = this.strokeCanvasSize || canvas.width;
+      const ctx = this.strokeCanvasCtx;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // light grid in CSS units
+      ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+      ctx.lineWidth = 1;
+      const step = size / 4;
+      ctx.beginPath();
+      ctx.moveTo(step, 0); ctx.lineTo(step, size);
+      ctx.moveTo(step*2, 0); ctx.lineTo(step*2, size);
+      ctx.moveTo(step*3, 0); ctx.lineTo(step*3, size);
+      ctx.moveTo(0, step); ctx.lineTo(size, step);
+      ctx.moveTo(0, step*2); ctx.lineTo(size, step*2);
+      ctx.moveTo(0, step*3); ctx.lineTo(size, step*3);
+      ctx.stroke();
+      ctx.lineWidth = size / 25;
+      const theme = document.documentElement.getAttribute('data-theme');
+      ctx.strokeStyle = (theme === 'dark' || theme === 'theme2') ? '#fff' : '#000';
+      if (reset) {
+        this.strokes = [];
+        this.currentStroke = [];
+        this.strokeResults = [];
+      }
+    },
+    redrawStrokes() {
+      if (!this.strokeCanvasCtx) return;
+      const ctx = this.strokeCanvasCtx;
+      const theme = document.documentElement.getAttribute('data-theme');
+      ctx.strokeStyle = (theme === 'dark' || theme === 'theme2') ? '#fff' : '#000';
+      for (const stroke of this.strokes) {
+        if (stroke.length < 2) continue;
+        ctx.beginPath();
+        ctx.moveTo(stroke[0].x, stroke[0].y);
+        for (let i = 1; i < stroke.length; i++) {
+          ctx.lineTo(stroke[i].x, stroke[i].y);
+        }
+        ctx.stroke();
+      }
+    },
+    undoStroke() {
+      if (this.strokes.length === 0 || !this.strokeCanvasCtx) return;
+      this.strokes.pop();
+      this.clearCanvas(false);
+      this.redrawStrokes();
+      if (this.strokes.length) {
+        this.searchByDrawing();
+      } else {
+        this.strokeResults = [];
+      }
+    },
+    convertStrokesForLookup() {
+      return this.strokes.map(stroke => stroke.map(pt => [pt.x, pt.y]));
+    },
+    searchByDrawing() {
+      if (!this.hanzilookupReady || !window.HanziLookup || this.strokes.length === 0) return;
+      const hStrokes = this.convertStrokesForLookup();
+      try {
+        const analyzed = new window.HanziLookup.AnalyzedCharacter(hStrokes);
+        const matcher = new window.HanziLookup.Matcher('mmah');
+        matcher.match(analyzed, 8, matches => {
+          if (matches && matches.length) {
+            this.strokeResults = matches.map(m => ({ character: m.character }));
+          }
+        });
+      } catch (e) {
+        console.error('Stroke search error', e);
+      }
+    },
+    loadHanziLookupScript() {
+      if (this.hanzilookupReady || this._loadingLookup) return;
+      this._loadingLookup = true;
+      const script = document.createElement('script');
+      script.src = 'https://assets.hanzi.abcrgb.xyz/hanzilookup/hanzilookup.min.js';
+      script.async = true;
+      script.onload = () => {
+        const readyCheck = () => {
+          try {
+            let loaded = 0;
+            const done = () => { loaded++; if (loaded === 2) { this.hanzilookupReady = true; this._loadingLookup = false; } };
+            window.HanziLookup.init('mmah', 'https://assets.hanzi.abcrgb.xyz/hanzilookup/mmah.json', (ok)=> ok&&done());
+            window.HanziLookup.init('orig', 'https://assets.hanzi.abcrgb.xyz/hanzilookup/orig.json', (ok)=> ok&&done());
+          } catch (e) { this._loadingLookup = false; }
+        };
+        readyCheck();
+      };
+      script.onerror = () => { this._loadingLookup = false; };
+      document.head.appendChild(script);
+    },
+    appendCharFromStroke(char) {
+      this.query += char;
+      this.latestQuery = this.query;
+      this.clearCanvas();
+      this.doSearch();
+      this.showStrokePad = false;
     }
-  }
-}
+  },
+  watch: {
+    results() {
+      this.$nextTick(() => this.ensureNavContextForUrlWord());
+    },
+    '$route.query.word'() {
+      this.ensureNavContextForUrlWord();
+    }
+  },
+};
 </script>
 
 <style scoped>
-.page-info {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.content {
-  margin-top: 2rem;
-  line-height: 1.6;
-}
-
-.example-section {
-  margin-bottom: 3rem;
-  padding: 1.5rem;
-  background: var(--bg-secondary);
-  box-shadow: var(--card-shadow);
-  border: var(--thin-border-width) solid var(--fg);
-  border-radius: var(--modal-border-radius);
-}
-
-.infoTitle {
-  color: var(--fg);
-  text-align: center;
-  font-size: 2em;
-  font-weight: bold;
-  margin-bottom: 2rem;
-}
-
-h2 {
-  color: var(--fg);
-  margin-top: 0rem;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-}
-
-.word-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-.home-word-item {
+.search-view {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
-  background: var(--bg);
-  border-radius: 8px;
-}
-
-.chinese-word {
-  font-size: calc(1.5em * var(--main-word-scale, 1));
-  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
-  color: var(--fg);
-  cursor: pointer;
-  margin-bottom: 0.5rem;
-  background-color: none;
-  padding: .125em 0.25em;
-}
-
-.chinese-word:hover {
-}
-
-
-.pinyin {
-  color: var(--fg);
-  font-size: 0.9em;
-  margin-bottom: 0.25rem;
-}
-
-.meaning {
-  color: var(--fg);
-  font-size: 0.9em;
+  padding: 2rem;
+  flex-wrap: wrap;
 }
 
 .search-form {
@@ -341,26 +722,234 @@ h2 {
   width: 100%;
   max-width: 600px;
   margin: 0 auto 2rem auto;
-  flex-wrap: wrap; /* Add this to make the form wrap on narrow screens */
-}
-
-input.search-input {
-  flex: 1;
-  min-width: 200px; /* This ensures the input doesn't get too narrow before wrapping */
-  
-}
-
-.mpinyin {
-  color: var(--fg);
-  font-size: 0.9em;
-  opacity: .5;
-  margin-bottom: 0.25rem;
+  flex-wrap: wrap; /* Add this line to make input and button wrap on narrow screens */
 }
 
 .loading-indicator {
-  text-align: center;
-  padding: 2rem;
+  margin-top: 2rem;
+  font-size: 1.5rem;
   color: var(--fg);
+  opacity: 0.8;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
+  align-items: stretch;
+  max-width: 1500px;
+}
+
+.result-group {
+  overflow: hidden;
+  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 5%);
+}
+
+.group-header {
+  display: flex;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 60%);
+  border-radius: 1px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: color-mix(in oklab, var(--bg) 80%, var(--fg) 8%);
+}
+
+.group-header.clickable {
+  cursor: pointer;
+}
+
+.group-title {
+  letter-spacing: 0.01em;
+}
+
+.group-toggle {
+  color: var(--fg);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  user-select: none;
+  font-weight: 700;
+}
+
+.group-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.result-cell {
+  border:var(--thin-border-width) solid color-mix(in oklab, var(--fg) 35%, var(--bg) 50%);
+  padding: .5rem;
+  font-family: inherit;
+  text-align: left;
+  background: var(--bg);
+  width: 100%;
+  display: flex;
+  box-sizing: border-box;
+  position: relative; /* Added for absolute positioning of number indicator */
+}
+
+.result-cell:first-child {
+  border-top: none;
+}
+
+.result-cell:hover {
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  cursor: pointer;
+}
+
+.result-number {
+  position: absolute;
+  top: .25em;
+  right: .25em;
+  font-size: 0.9rem;
+  color: var(--fg);
+  opacity: 0.5;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.hanzipinyin {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 2;
+}
+
+.rhanzi {
+  font-size: 2rem;
+  padding-right: 2rem;
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+}
+
+.rpinyin {
   font-style: italic;
+  color: var(--fg);
+  opacity: 0.6;
+}
+
+.renglish {
+  color: var(--fg);
+  flex: 12;
+  margin-right: 1em;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 600px) {
+  .result-cell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .search-view {
+    padding: 1rem;
+  }
+}
+
+
+.stroke-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.6rem;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
+  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.stroke-draw-wrap {
+  width: 100%;
+  max-width: 600px;
+  margin: 0.5rem auto 1rem auto;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 80%);
+  padding: 0.75rem;
+  background: color-mix(in oklab, var(--bg) 95%, var(--fg) 5%);
+}
+
+.stroke-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.stroke-label { font-size: 0.95rem; opacity: 0.7; }
+
+.stroke-buttons button {
+  margin-left: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.stroke-canvas {
+  width: 100%;
+  background: color-mix(in oklab, var(--bg) 97%, var(--fg) 3%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
+  touch-action: none;
+  display: block;
+}
+
+.stroke-results {
+  margin-top: 0.35rem;
+}
+
+.stroke-result-list {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.stroke-result-btn {
+  padding: 0.35rem 0.55rem;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
+  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
+  color: var(--fg);
+  cursor: pointer;
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+  font-size: 1.2rem;
+}
+
+.stroke-result-btn:hover {
+  background: color-mix(in oklab, var(--bg) 80%, var(--fg) 20%);
+}
+
+/* Scroll to top button styles */
+.scroll-to-top-button {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--fg);
+  font-size: 2.1em;
+  padding: 0.5em;
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.scroll-to-top-button:hover {
+  background: color-mix(in oklab, var(--bg) 85%, var(--fg) 30%);
+  transform: translateY(-3px);
+  color: var(--fg);
 }
 </style>

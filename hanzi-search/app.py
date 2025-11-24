@@ -57,6 +57,70 @@ indices_cache = json.load(open(os.path.join(DATA_DIR, "indices_cache.json")))
 dictionary = HanziDictionary(indices_cache=indices_cache)
 
 
+
+
+def gather_hanzi_results(query, dict_client, include_other_examples=True):
+    """Return (results, has_direct_match) for a Hanzi term."""
+    results = []
+    has_direct = False
+
+    simplified_query = HanziConv.toSimplified(query)
+    traditional_query = HanziConv.toTraditional(query)
+    prefer_simplified = query == simplified_query
+
+    def choose_hanzi(entry):
+        # Match the user's variant (simplified vs traditional) when possible
+        if prefer_simplified:
+            return entry.get('simplified') or entry.get('traditional')
+        return entry.get('traditional') or entry.get('simplified')
+
+    try:
+        definition_results = dict_client.definition_lookup(query)
+    except KeyError:
+        definition_results = []
+    for idx, d in enumerate(definition_results):
+        results.append({
+            'hanzi': choose_hanzi(d),
+            'pinyin': d['pinyin'],
+            'english': d['definition'],
+            'match_type': 'hanzi',
+            'order': idx
+        })
+        has_direct = True
+
+    exact_examples = []
+    other_examples = []
+    try:
+        res = dict_client.get_examples(query)
+    except KeyError:
+        res = {}
+    for fr in res:
+        for idx, r in enumerate(res[fr]):
+            entry = {
+                'hanzi': choose_hanzi(r),
+                'pinyin': r['pinyin'],
+                'english': r['definition'],
+                'match_type': 'hanzi',
+                'order': idx
+            }
+            if r.get('simplified') == simplified_query or r.get('traditional') == traditional_query:
+                exact_examples.append(entry)
+                has_direct = True
+            elif include_other_examples:
+                other_examples.append(entry)
+
+    combined = results + exact_examples + (other_examples if include_other_examples else [])
+    return combined, has_direct
+
+def add_unique_entries(results, new_entries, seen):
+    for r in new_entries:
+        key = (r.get('hanzi'), r.get('pinyin'), r.get('english'))
+        if key in seen:
+            continue
+        seen.add(key)
+        results.append(r)
+    return results
+
 def remove_tones(pinyin):
     return re.sub(r'[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]', lambda m: 'aeiouü'['āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'.index(m.group()) // 4], pinyin)
 
@@ -84,28 +148,27 @@ def search():
     logger.debug(f"Query: {query}")
     only_hanzi = all(regex.match(r'\p{Han}', char) for char in query if char.strip())
     if only_hanzi:
-        
-        
-        definition_results = dictionary.definition_lookup(query)
-        for idx, d in enumerate(definition_results):
-            results.append({'hanzi': d['simplified'], 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'hanzi', 'order': idx})
+        seen = set()
+        results = []
 
-        exact_matches = []
-        other_matches = []
-        res = dictionary.get_examples(query)
-        for fr in res:
-            for idx, r in enumerate(res[fr]):
-                if r['simplified'] == query:
-                    exact_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
-                elif r['traditional'] == query:
-                    exact_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
-                else:
-                    if query == HanziConv.toSimplified(query):
-                        other_matches.append({'hanzi': r['simplified'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
-                    else:
-                        other_matches.append({'hanzi': r['traditional'], 'pinyin': r['pinyin'], 'english': r['definition'], 'match_type': 'hanzi', 'order': idx})
+        # 1) Full query results
+        include_other_full = (len(query) == 1)
+        full_results, full_has_direct = gather_hanzi_results(query, dictionary, include_other_examples=True)
+        add_unique_entries(results, full_results, seen)
 
-        results += other_matches
+        # 2) If multi-character query, also include per-character lookups in order (unique)
+        if len(query) > 1:
+            ordered_chars = []
+            for ch in query:
+                if not ch.strip():
+                    continue
+                if ch not in ordered_chars:
+                    ordered_chars.append(ch)
+            include_other = full_has_direct  # only show words containing the char if the full query exists
+            for ch in ordered_chars:
+                per_char, _ = gather_hanzi_results(ch, dictionary, include_other_examples=True)
+                add_unique_entries(results, per_char, seen)
+
     else:
         res = dictionary.search_by_pinyin(query)
         hard_results = []
@@ -126,14 +189,14 @@ def search():
         if len(results) == 0:
             results = hard_results
         if len(results) == 0:
-            query = normalize_query(query)
-            res = dictionary.search_by_english(query)
+            query_norm = normalize_query(query)
+            res = dictionary.search_by_english(query_norm)
             for r in res:
                 dd = dictionary.definition_lookup(r)
                 for idx, d in enumerate(dd): # here i take into account the order of the definitions
-                    if d and query in d['definition'].lower():
+                    if d and query_norm in d['definition'].lower():
                         results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': idx})
-            qwords = query.split(" ") 
+            qwords = query_norm.split(" ") 
             if len(qwords) > 1:
                 fresults = []
                 for r in results:
@@ -146,8 +209,9 @@ def search():
                     indices = [definition.find(qw) for qw in qwords]
                     return [i if i != -1 else float('inf') for i in indices]  # Handle missing words
                 results = sorted(fresults, key=order_key)
-    return jsonify(results)
 
+    results = [r for r in results if 'variant of' not in r.get('english', '').lower()]
+    return jsonify(results)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8001, debug=True)

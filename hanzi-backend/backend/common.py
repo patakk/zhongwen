@@ -117,15 +117,42 @@ def get_tatoeba_page(character, page):
 
     return tatoebas, is_last
 
+def remove_variantof(char_info, ew=False):
+    pinyin = [p for p in char_info['pinyin']]
+    english = [p for p in char_info['english']]
+    if ew:
+        ewords = [p for p in char_info['example_words']]
+        ewords2 = []
+    else:
+        ewords = [None]*len(english)
+    pinyin2 = []
+    english2 = []
+    for eng, pin, eword in zip(english, pinyin, ewords):
+        if 'variant of' in eng.lower():
+            continue
+        pinyin2.append(pin)
+        english2.append(eng)
+        if ew:
+            ewords2.append(eword)
+    char_info['pinyin'] = pinyin2
+    char_info['english'] = english2
+    if ew:
+        char_info['example_words'] = ewords2
+    return char_info
+
 def get_char_info(character, full=False):
     if full:
         char_info = copy.deepcopy(CHARS_CACHE.get(character, {}))
-        return char_info
-    return copy.deepcopy(WORDS_CACHE.get(character, {
-        'character': character,
-        'pinyin': ['N/A'],
-        'english': ['N/A']
-    }))
+        char_info = remove_variantof(char_info, ew=True)
+    else:
+        char_info = copy.deepcopy(WORDS_CACHE.get(character, {
+            'character': character,
+            'pinyin': ['N/A'],
+            'english': ['N/A']
+        }))
+        char_info = remove_variantof(char_info, ew=False)
+    return char_info
+
 
 def getshortdate():
     return datetime.now(timezone.utc).strftime("%Y%m%d")

@@ -27,6 +27,18 @@ export default {
       type: Array,
       default: () => []
     },
+    navMetaList: {
+      type: Array,
+      default: () => []
+    },
+    navIndex: {
+      type: Number,
+      default: -1
+    },
+    cardOverrides: {
+      type: Object,
+      default: null
+    },
     delay: {
       type: Number,
       default: 150
@@ -163,9 +175,21 @@ export default {
     openPopup() {
       // Use the mapped action from Vuex store
       if (this.navList && this.navList.length > 0) {
-        this.setNavContext({ list: this.navList, current: this.character });
+        this.setNavContext({
+          list: this.navList,
+          current: this.character,
+          index: this.navIndex,
+          metaList: this.navMetaList
+        });
       }
-      this.showCardModal(this.character);
+      const payload = { character: this.character };
+      if (this.cardOverrides) {
+        payload.overrides = this.cardOverrides;
+      }
+      if (typeof this.navIndex === 'number' && this.navIndex >= 0) {
+        payload.index = this.navIndex;
+      }
+      this.showCardModal(payload);
     },
     navigateToDedicatedPage() {
       // Navigate to the dedicated page for this word

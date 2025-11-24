@@ -12,11 +12,10 @@
             <RouterLink to="/my-lists" class="top-link">My words</RouterLink>
           </template>
           <RouterLink :to="{ path: '/explorer', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Explorer</RouterLink>
-          <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
+          <!--<RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
           <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
-          <RouterLink to="/search" class="top-link">Search</RouterLink>
-          <RouterLink to="/sketch-lookup" class="top-link">Sketch Search</RouterLink>
-          <RouterLink to="/about" class="top-link">About</RouterLink>
+          <RouterLink to="/search" class="top-link">Search</RouterLink>-->
+            <RouterLink to="/about" class="top-link">About</RouterLink>
           <RouterLink to="/account" class="top-link">Settings</RouterLink>
           <template v-if="!authStatus">
             <RouterLink to="/login" class="top-link">Login</RouterLink>
@@ -33,15 +32,14 @@
           <RouterLink to="/my-lists" class="top-link">My words</RouterLink>
         </template>
         <RouterLink :to="{ path: '/explorer', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Explorer</RouterLink>
-        <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
+        <!--<RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
         <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
-        <RouterLink to="/search" class="top-link">Search</RouterLink>
-        <RouterLink to="/sketch-lookup" class="top-link">Sketch Search</RouterLink>
-        <RouterLink to="/about" class="top-link">About</RouterLink>
+        <RouterLink to="/search" class="top-link">Search</RouterLink>-->
         <RouterLink to="/account" class="top-link">Settings</RouterLink>
         <template v-if="!authStatus">
           <RouterLink to="/login" class="top-link">Login</RouterLink>
         </template>
+        <RouterLink to="/about" class="top-link">About</RouterLink>
       </div>
     </div>
   </div>

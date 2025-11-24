@@ -12,7 +12,9 @@ const cardModalModule = {
     currentCharacter: null,
     preloadedData: {}, // Add cache for preloaded data
     navList: [],
-    navIndex: -1
+    navIndex: -1,
+    navMetaList: [],
+    displayOverrides: null
   },
   mutations: {
     SHOW_CARD_MODAL(state, character) {
@@ -23,13 +25,21 @@ const cardModalModule = {
     HIDE_CARD_MODAL(state) {
       state.visible = false;
       state.currentCharacter = null;
+      state.displayOverrides = null;
     },
-    SET_NAV_CONTEXT(state, { list, current }) {
+    SET_NAV_CONTEXT(state, { list, current, index, metaList }) {
       state.navList = Array.isArray(list) ? list.slice() : [];
-      state.navIndex = Array.isArray(list) ? Math.max(0, list.indexOf(current)) : -1;
+      state.navMetaList = Array.isArray(metaList) ? metaList.slice() : [];
+      let idx = (typeof index === 'number' && index >= 0) ? index : -1;
+      if (idx === -1 && Array.isArray(list)) {
+        const found = list.indexOf(current);
+        idx = found !== -1 ? found : -1;
+      }
+      state.navIndex = idx;
     },
     CLEAR_NAV_CONTEXT(state) {
       state.navList = [];
+      state.navMetaList = [];
       state.navIndex = -1;
     },
     SET_NAV_INDEX(state, index) {
@@ -51,6 +61,9 @@ const cardModalModule = {
     SET_PRELOADED_DATA(state, { character, data }) {
       state.preloadedData[character] = data;
     },
+    SET_DISPLAY_OVERRIDES(state, overrides) {
+      state.displayOverrides = overrides || null;
+    },
     SET_CUSTOM_DEFINITION(state, { hanzi, def }) {
       state.customDefinitions = {
         ...state.customDefinitions,
@@ -64,35 +77,38 @@ const cardModalModule = {
     }
   },
   actions: {
-    setNavContext({ commit }, { list, current }) {
-      commit('SET_NAV_CONTEXT', { list, current });
+    setNavContext({ commit }, { list, current, index, metaList }) {
+      commit('SET_NAV_CONTEXT', { list, current, index, metaList });
     },
     navigateNext({ state, dispatch, commit }) {
       if (!state.visible || !state.navList || state.navList.length === 0) return;
       const len = state.navList.length;
-      const curIdx = state.navIndex >= 0 ? state.navIndex : state.navList.indexOf(state.currentCharacter);
+      const curIdx = state.navIndex >= 0 ? state.navIndex : 0;
       const nextIdx = (curIdx + 1) % len;
       commit('SET_NAV_INDEX', nextIdx);
       const nextChar = state.navList[nextIdx];
-      if (nextChar) dispatch('showCardModal', nextChar);
+      if (nextChar) dispatch('showCardModal', { character: nextChar, index: nextIdx });
     },
     navigatePrev({ state, dispatch, commit }) {
       if (!state.visible || !state.navList || state.navList.length === 0) return;
       const len = state.navList.length;
-      const curIdx = state.navIndex >= 0 ? state.navIndex : state.navList.indexOf(state.currentCharacter);
+      const curIdx = state.navIndex >= 0 ? state.navIndex : 0;
       const prevIdx = (curIdx - 1 + len) % len;
       commit('SET_NAV_INDEX', prevIdx);
       const prevChar = state.navList[prevIdx];
-      if (prevChar) dispatch('showCardModal', prevChar);
+      if (prevChar) dispatch('showCardModal', { character: prevChar, index: prevIdx });
     },
-    async showCardModal({ commit, dispatch, state }, character) {
-      if (state.visible && state.currentCharacter === character) {
+    async showCardModal({ commit, dispatch, state }, payload) {
+      const { character, overrides, index } = typeof payload === 'string' ? { character: payload } : (payload || {});
+      if (!character) return;
+
+      if (state.visible && state.currentCharacter === character && !overrides && typeof index !== 'number') {
         return;
       }
       // Only update URL with word parameter if we're not on the dedicated word page
       if (!router.currentRoute.value.path.startsWith('/word/')) {
         commit('SHOW_CARD_MODAL', character);
-        router.replace({ 
+        router.push({ 
           query: { 
             ...router.currentRoute.value.query, 
             word: character 
@@ -125,16 +141,32 @@ const cardModalModule = {
       try {
         const list = state.navList || [];
         const len = list.length;
+        let navIdx = (typeof index === 'number' && index >= 0) ? index : -1;
+
         if (len > 0) {
-          const idx = list.indexOf(character);
-          if (idx !== -1) {
-            commit('SET_NAV_INDEX', idx);
-            const nextChar = list[(idx + 1) % len];
-            const prevChar = list[(idx - 1 + len) % len];
+          if (navIdx === -1 && state.navIndex >= 0 && state.navIndex < len) {
+            navIdx = state.navIndex;
+          }
+
+          if (navIdx === -1) {
+            const found = list.indexOf(character);
+            navIdx = found >= 0 ? found : -1;
+          }
+
+          if (navIdx !== -1) {
+            commit('SET_NAV_INDEX', navIdx);
+            const nextChar = list[(navIdx + 1) % len];
+            const prevChar = list[(navIdx - 1 + len) % len];
             if (nextChar && !state.preloadedData[nextChar]) dispatch('preloadCardData', nextChar);
             if (prevChar && !state.preloadedData[prevChar]) dispatch('preloadCardData', prevChar);
           }
         }
+
+        const navOverride = (navIdx !== -1 && list[navIdx] === character && state.navMetaList)
+          ? state.navMetaList[navIdx]
+          : null;
+        const effectiveOverrides = overrides || navOverride || null;
+        commit('SET_DISPLAY_OVERRIDES', effectiveOverrides);
       } catch (e) {
         // best-effort preloading; ignore errors
       }
@@ -182,6 +214,8 @@ const cardModalModule = {
           console.error(err);
         }
       });
+      // Tell modal to reset local history
+      try { document.dispatchEvent(new CustomEvent('global-modal-closed')); } catch(e) {}
     },
     async fetchCardData({ commit, state }, character) {
       commit('SET_LOADING', true);
@@ -348,7 +382,8 @@ const cardModalModule = {
     getCurrentCharacter: state => state.currentCharacter,
     getPreloadedData: state => character => state.preloadedData[character],
     getNavList: state => state.navList,
-    getNavIndex: state => state.navIndex
+    getNavIndex: state => state.navIndex,
+    getDisplayOverrides: state => state.displayOverrides
   }
 };
 

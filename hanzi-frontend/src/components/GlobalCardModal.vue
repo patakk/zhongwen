@@ -5,19 +5,42 @@
         <div class="spinner"></div>
         <div>Loading...</div>
       </div>
-      
-      <div 
-        v-else 
+
+      <div
+        v-else
         :class="['modal', 'card-modal', { invert: swipeDimVisible }, { mleft: swipeHintDirection === 'left' }, { mright: swipeHintDirection === 'right' }]"
-        @click.stop="handleModalClick" 
-        @touchstart="onTouchStart" 
-        @touchmove="onTouchMove" 
+        @click.stop="handleModalClick"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
         @touchend="onTouchEnd"
+      @click="historyOpen = false"
       >
         <!-- Swipe hint overlay (fades in/out quickly) -->
         <div class="swipe-hint" :class="{ visible: swipeHintVisible }">{{ swipeHintDirection === 'right' ? '→' : '←' }}</div>
-      
-        
+
+
+        <div class="history-controls" v-if="modalHistory.length > 1">
+          <div class="history-btn-wrap">
+            <button v-if="showBackButton" @click.stop="loadPrevious" class="back-btn" ref="backButton">
+              <span class="plus-icon"><</span>
+            </button>
+            <button class="history-btn" @click.stop="historyOpen = !historyOpen">
+                <font-awesome-icon :icon="['fas', 'clock-rotate-left']" />
+            </button>
+          </div>
+          <div v-if="historyOpen" class="history-menu">
+            <button
+              v-for="(entry, idx) in modalHistory"
+              :key="idx"
+              :class="['history-item', { active: idx === modalHistoryIndex }]"
+              @click.stop="jumpToHistory(idx)"
+            >
+              <span class="history-idx">{{ idx + 1 }}.</span>
+              <span class="history-entry">{{ entry }}</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Add to wordlist dropdown button - now shown to all users -->
         <div class="wordlist-dropdown">
           <button @click.stop="toggleWordlistDropdown" class="wordlist-btn" ref="dropdownButton">
@@ -29,7 +52,7 @@
             </div>
             <div v-else-if="customWordlists && customWordlists.length === 0" class="no-lists">No custom wordlists available</div>
             <div v-else>
-              <div v-for="wordlist in customWordlists" :key="wordlist.name" 
+              <div v-for="wordlist in customWordlists" :key="wordlist.name"
                   class="wordlist-item"
                   @click.stop="addWordToList(wordlist.name)">
                 {{ wordlist.name }}
@@ -52,43 +75,72 @@
             :style="mainWordFontStyle"
             @click.capture="cycleMainWordFont"
           >
-            <span
-              v-for="(char, index) in cardData.character.split('')"
-              :key="index"
-              :class="['main-word-char']"
-              @click="setActiveChar(char)"
-            >
-              {{ char }}
-            </span>
-          </div>
-          <!-- <div class="minor-character">{{ cardData.character }}</div> -->
-          
-          <div class="main-pinyin">{{ $toAccentedPinyin(displayPinyin || '') }}</div>
-          <div class="main-english">
-            <div v-for="(item, index) in displayEnglish" :key="index" class="english-item">
-              {{ index + 1 }}. {{ item }}
+            <div class="main-word-line">
+              <span
+                v-for="(char, index) in cardData.character.split('')"
+                :key="index"
+                :class="['main-word-char']"
+                @click="setActiveChar(char)"
+              >
+                {{ char }}
+              </span>
+
+              <span v-if="showTraditionalLine" class="main-word-trad">
+                <span class="trad-bracket">[</span>
+                <span
+                  v-for="(tchar, index) in traditionalChars"
+                  :key="index"
+                  :class="['main-word-char','trad-char']"
+                  @click="setActiveChar(tchar)"
+                >
+                  {{ tchar }}
+                </span>
+                <span class="trad-bracket">]</span>
+              </span>
             </div>
           </div>
-          <div v-if="isLoggedIn" class="custom-edit-wrap">
+          <!-- <div class="minor-character">{{ cardData.character }}</div> -->
+
+          <div class="main-def-flex">
+            <div class="main-def-text">
+              <div class="main-pinyin">{{ $toAccentedPinyin(displayPinyin || '') }}</div>
+              <div class="main-english">
+                <div v-for="(item, index) in displayEnglish" :key="index" class="english-item">
+                  <span class="english-idx">{{ index + 1 }}.</span>
+                  <span class="english-text">
+                    <template v-for="(tok, tIdx) in tokenizeHanziText(item)" :key="tIdx">
+                      <span v-if="tok.isHanzi" class="hanzi-link" @click.stop="openCharAsWord(tok.text)">{{ tok.text }}</span>
+                      <span v-else>{{ tok.text }}</span>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div v-if="defCount > 1" class="def-nav">
+              <button class="def-btn" @click="stepDefinition(-1)">‹</button>
+              <span class="def-counter">{{ (mainDefIndex % defCount) + 1 }}/{{ defCount }}</span>
+              <button class="def-btn" @click="stepDefinition(1)">›</button>
+            </div>
+          </div>
+          <!--<div v-if="isLoggedIn" class="custom-edit-wrap">
             <button class="custom-edit-btn" @click.stop="openCustomEdit">
               <font-awesome-icon :icon="['fas','pen']" />
             </button>
-          </div>
+          </div>-->
 
           <!-- Concept toggle buttons with dropdown functionality -->
           <div class="concepts-container">
-            <div class="concept-toggle" @click="toggleConcepts('related')" :class="{ 'active': showRelatedConcepts }">
+            <!-- <div class="concept-toggle" @click="toggleConcepts('related')" :class="{ 'active': showRelatedConcepts }">
               <span class="concept-label">related concepts</span>
             </div>
-            
+
             <div class="concept-toggle" @click="toggleConcepts('opposite')" :class="{ 'active': showOppositeConcepts }">
               <span class="concept-label">opposite concepts</span>
             </div>
-            
-            <!-- New: quick examples button -->
+
             <div class="concept-toggle" @click="toggleExamples" :class="{ 'active': showExamples }">
               <span class="concept-label">examples</span>
-            </div>
+            </div> -->
           </div>
 
           <!-- Concept content containers -->
@@ -97,9 +149,9 @@
               No related concepts available
             </div>
             <div v-else class="concept-items">
-              <div 
-                v-for="(item, index) in formattedSimilars" 
-                :key="index" 
+              <div
+                v-for="(item, index) in formattedSimilars"
+                :key="index"
                 class="concept-item"
                 @click="updateModalContent(item.character)"
               >
@@ -109,15 +161,15 @@
               </div>
             </div>
           </div>
-          
+
           <div v-if="showOppositeConcepts" class="concept-content opposite-content">
             <div v-if="formattedOpposites.length === 0" class="no-concepts">
               No opposite concepts available
             </div>
             <div v-else class="concept-items">
-              <div 
-                v-for="(item, index) in formattedOpposites" 
-                :key="index" 
+              <div
+                v-for="(item, index) in formattedOpposites"
+                :key="index"
                 class="concept-item"
                 @click="updateModalContent(item.character)"
               >
@@ -142,16 +194,16 @@
             </div>
           </div>
           <div class="examples-nav">
-            <div 
-              class="concept-toggle examples-nav-btn" 
+            <div
+              class="concept-toggle examples-nav-btn"
               :class="{ disabled: examplesLoading || examplesPage === 1 }"
               @click="examplesPage === 1 || examplesLoading ? null : prevExamples()"
             >
               ← Prev
             </div>
             <div class="examples-page-indicator">Page {{ examplesPage }}</div>
-            <div 
-              class="concept-toggle examples-nav-btn" 
+            <div
+              class="concept-toggle examples-nav-btn"
               :class="{ disabled: examplesLoading || examplesIsLast }"
               @click="examplesIsLast || examplesLoading ? null : nextExamples()"
             >
@@ -162,50 +214,88 @@
 
         <!-- Character breakdown section -->
         <div class="breakdown-section" v-if="!showExamples && cardData.chars_breakdown">
-          <h3 class="char-breakdown">Character Breakdown ↓</h3>
-
-          <!-- Tabs -->
-          <div class="tabs" v-if="validChars.length > 1">
+          <!-- <h3 class="char-breakdown" v-if="cardData.character && cardData.character.length > 1">Character Breakdown ↓</h3>
+        -->
+          <div class="tabs" v-if="validChars.length > 1" :style="{ fontFamily: tabFontFamily }">
             <button
               v-for="char in validChars"
               :key="char"
               :class="['tab-btn', { active: activeChar === char }]"
+              :style="{ fontFamily: tabFontFamily }"
               @click="activeChar = char"
             >
               {{ char }}
+              <span v-if="activeChar === char" class="tab-open-word" @click.stop="openCharAsWord(char)">
+                <font-awesome-icon :icon="['fas','magnifying-glass']" />
+              </span>
             </button>
           </div>
 
-          <!-- Tab content -->
           <div class="tab-content" v-if="activeCharData">
             <div class="char-details">
 
+              <div class="detail-toggle-row">
+                <div
+                  class="concept-toggle detail-toggle"
+                  :class="{ active: activeDetailTab === 'dict', disabled: !hasDictSection }"
+                  @click="setDetailTab('dict')"
+                >def</div>
+                <div
+                  class="concept-toggle detail-toggle"
+                  :class="{ active: activeDetailTab === 'examples', disabled: !hasExamples }"
+                  @click="setDetailTab('examples')"
+                >words</div>
+                <div
+                  class="concept-toggle detail-toggle"
+                  :class="{ active: activeDetailTab === 'strokes', disabled: !hasStrokes }"
+                  @click="setDetailTab('strokes')"
+                >strokes</div>
+                <div
+                  class="concept-toggle detail-toggle"
+                  :class="{ active: activeDetailTab === 'present', disabled: !hasPresentIn }"
+                  @click="setDetailTab('present')"
+                >comp</div>
+                <div
+                  class="concept-toggle detail-toggle"
+                  :class="{ active: activeDetailTab === 'decomp', disabled: !hasDecomposition }"
+                  @click="setDetailTab('decomp')"
+                >decomp</div>
+              </div>
 
-              <!-- Character details section -->
-              <div class="freq-trad-anim">
+              <div v-if="activeDetailTab === 'dict' && hasDictSection" class="freq-trad-anim">
+                <span class="medium-label">Definition:</span>
                 <div class="freq-trad">
                   <div class="detail-group pinyin-meaning-group">
-                    <span class="basic-label">Pronunciation & Meaning:</span>
                     <div class="pinyin-meaning-pairs">
                       <div v-for="(pinyin, index) in activeCharData.main_word_pinyin" :key="index" class="pinyin-meaning-pair">
                         <div class="pm-pinyin" :class="getToneClass(pinyin)"><span class="pinyinshadow">{{ $toAccentedPinyin(pinyin) }}</span></div>
-                        <div class="pm-meaning">{{ activeCharData.main_word_english[index] || '' }}</div>
+                        <div class="pm-meaning">
+                          <div v-for="(meaning, mIdx) in splitMeaning(activeCharData.main_word_english[index])" :key="mIdx">
+                            <span class="english-idx">{{ mIdx + 1 }}.</span>
+                            <span class="english-text">
+                              <template v-for="(tok, tIdx) in tokenizeHanziText(meaning)" :key="tIdx">
+                                <span v-if="tok.isHanzi" class="hanzi-link" @click.stop="openCharAsWord(tok.text)">{{ tok.text }}</span>
+                                <span v-else>{{ tok.text }}</span>
+                              </template>
+                            </span>
+                          </div>
+                        </div>
                       </div>
                       <div v-if="activeCharData.main_word_pinyin.length === 0" class="no-pinyin-meaning">
-                        No pronunciation data available
+                        No definition data available
                       </div>
                     </div>
                   </div>
 
                   <div v-if="activeChar !== activeCharData.traditional" class="detail-group">
-                      <span class="basic-label">Traditional: </span>
-                      <PreloadWrapper
-                        :character="activeCharData.traditional"
-                        :showBubbles="false"
-                        class="trad-simple"
-                      >
-                        {{ activeCharData.traditional }}
-                      </PreloadWrapper>
+                    <span class="basic-label">Traditional: </span>
+                    <PreloadWrapper
+                      :character="activeCharData.traditional"
+                      :showBubbles="false"
+                      class="trad-simple"
+                    >
+                      {{ activeCharData.traditional }}
+                    </PreloadWrapper>
                   </div>
 
                   <div v-if="activeChar !== activeCharData.simplified" class="detail-group">
@@ -218,46 +308,34 @@
                       {{ activeCharData.simplified }}
                     </PreloadWrapper>
                   </div>
-
-                  <!-- <div class="detail-group radicals-group">
-                    <span class="basic-label">Radicals: </span>
-                    <div class="radicals">
-                      <span
-                        v-for="(meaning, char) in activeCharData.radicals"
-                        :key="char"
-                        class="radical"
-                      >
-                        <span class="radical-char">{{ char }}</span>
-                        <span class="radical-meaning">{{ meaning }}</span>
-                      </span>
-                    </div>
-                  </div> -->
-
-                </div>
-
-                <div class="hanzi-anim" v-if="activeCharData.strokes && activeCharData.strokes.medians && activeCharData.strokes.strokes">
-                  <AnimatedHanzi 
-                    :character="activeCharData.character"
-                    :strokes="activeCharData.strokes"
-                    :animatable="true" 
-                    :drawThin="false" 
-                    :animSpeed="0.1"
-                  />
                 </div>
               </div>
 
-              <!-- Only render ExpandableExamples if there are example words -->
-              <ExpandableExamples 
-                v-if="activeCharData.example_words && activeCharData.example_words.length > 0" 
-                title="Words containing this character"
+              <div v-if="activeDetailTab === 'strokes' && hasStrokes">
+                <div class="medium-label">Strokes:</div>
+
+                <div class="hanzi-anim">
+                <AnimatedHanzi
+                  :character="activeCharData.character"
+                  :strokes="activeCharData.strokes"
+                  :animatable="true"
+                  :drawThin="false"
+                  :animSpeed="0.1"
+                />
+                </div>
+              </div>
+
+              <div v-if="activeDetailTab === 'examples' && hasExamples" class="medium-label">Examples:</div>
+              <ExpandableExamples
+                v-if="activeDetailTab === 'examples' && hasExamples"
                 :itemCount="activeCharData.example_words.length"
                 :thresholdForExpand="3"
                 ref="examplesComponent">
                 <template v-slot:afew="slotProps">
-                    <div 
-                    class="example-words first-words" 
+                  <div
+                    class="example-words first-words"
                     :class="{ 'collapsed-words': !slotProps.isExpanded }"
-                    >
+                  >
                     <ClickableRow
                       v-for="(word, index) in activeCharData.example_words.slice(0, 3)"
                       :key="index"
@@ -265,16 +343,16 @@
                       :class="{ therest: !slotProps.isExpanded }"
                     >
                       <template #default>
-                      <div class="example-chinese-pinyin">
-                        <span class="example-chinese">{{ word }}</span>
-                        <span class="example-pinyin">
-                        {{ $toAccentedPinyin(activeCharData.pinyin[index]) }}
-                        </span>
-                      </div>
-                      <span class="example-meaning">{{ activeCharData.english[index] }}</span>
+                        <div class="example-chinese-pinyin">
+                          <span class="example-chinese">{{ word }}</span>
+                          <span class="example-pinyin">
+                            {{ $toAccentedPinyin(activeCharData.pinyin[index]) }}
+                          </span>
+                        </div>
+                        <span class="example-meaning">{{ activeCharData.english[index] }}</span>
                       </template>
                     </ClickableRow>
-                    </div>
+                  </div>
                 </template>
 
                 <template v-slot:therest="slotProps">
@@ -299,9 +377,8 @@
                 </template>
               </ExpandableExamples>
 
-              <!-- Present In section: show characters from presentInChars with loading state -->
-              <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].present_in && decompositionData[activeChar].present_in.length > 0" class="present-in-section">
-                <div class="medium-label">{{ activeChar }} Present in:</div>
+              <div v-if="activeDetailTab === 'present' && hasPresentIn" class="medium-label">{{ activeChar }} Present in:</div>
+              <div v-if="activeDetailTab === 'present' && hasPresentIn" class="present-in-section">
                 <div class="present-in-chars" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
                   <PreloadWrapper
                     v-for="char in limitedPresentInChars"
@@ -310,11 +387,11 @@
                     :showBubbles="false"
                     class="present-in-char"
                   >
-                  {{ char }}
+                    {{ char }}
                   </PreloadWrapper>
-                  <span 
-                    v-if="hasMorePresentInChars" 
-                    class="more-chars" 
+                  <span
+                    v-if="hasMorePresentInChars"
+                    class="more-chars"
                     @click="loadMorePresentInChars"
                     :class="{ 'loading': isLoadingMoreChars }"
                   >
@@ -323,18 +400,18 @@
                 </div>
               </div>
 
-              <!-- Components section - Formatted decomposition data -->
-              <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].recursive && Object.keys(decompositionData[activeChar].recursive).length > 0">
-                <div class="medium-label">Decomposition</div>
-                <div class="decomp-section">
-                  <RecursiveDecomposition :data="{ [activeChar]: decompositionData[activeChar].recursive }" />
+              <div v-if="activeDetailTab === 'decomp' && hasDecomposition">
+                  <div class="medium-label">Decomposition:</div>
+                <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].recursive && Object.keys(decompositionData[activeChar].recursive).length > 0">
+                  <div class="decomp-section">
+                    <RecursiveDecomposition :data="{ [activeChar]: decompositionData[activeChar].recursive }" />
+                  </div>
                 </div>
               </div>
 
             </div>
           </div>
         </div>
-      </div>
 
       <!-- Custom definition edit modal -->
       <div v-if="showCustomEditModal" class="custom-edit-overlay" @click.stop="cancelCustomEdit">
@@ -373,18 +450,18 @@
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Fixed position close button at bottom right - only show in modal mode -->
-    <button v-if="!pageMode" @click="closeModal" class="close-btn fixed-close"><span class="x-centered">×</span></button>
-    
-    <ToastNotification
-      v-model:visible="notificationVisible"
-      :message="notificationMessage"
-      :type="notificationType"
-      position="bottom-right"
-    />
-  </div>
+    </div> <!-- end modal -->
+  </div> <!-- end overlay -->
+
+  <!-- Fixed position close button at bottom right - only show in modal mode -->
+  <button v-if="!pageMode" @click="closeModal" class="close-btn fixed-close"><span class="x-centered">×</span></button>
+
+  <ToastNotification
+    v-model:visible="notificationVisible"
+    :message="notificationMessage"
+    :type="notificationType"
+    position="bottom-right"
+  />
 
   <!-- Add Create New List modal -->
   <div v-if="showCreateListModal" class="create-list-modal-overlay" @click="closeCreateListModal">
@@ -392,9 +469,9 @@
       <h3>Create New List</h3>
       <div class="create-list-form">
         <label for="new-list-name">List Name:</label>
-        <input 
-          id="new-list-name" 
-          v-model="newListName" 
+        <input
+          id="new-list-name"
+          v-model="newListName"
           placeholder="Enter list name"
           @keyup.enter="createNewListAndAddWord"
           @keyup.esc="closeCreateListModal"
@@ -408,6 +485,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -487,7 +565,14 @@ export default {
       fetchedExamples: {},
       // Local font cycling state for main word
       fontOrder: ['kaiti', 'noto-sans', 'noto-serif'],
-      fontCycleIndex: 0
+      fontCycleIndex: 0,
+      activeDetailTab: 'dict',
+      // Local history of viewed chars/words within an open modal
+      modalHistory: [],
+      modalHistoryIndex: -1,
+      historyAction: 'reset',
+      historyOpen: false,
+      mainDefIndex: 0
     }
   },
   provide() {
@@ -506,7 +591,8 @@ export default {
       decompositionData: 'cardModal/getDecompositionData',
       currentCharacter: 'cardModal/getCurrentCharacter',
       navList: 'cardModal/getNavList',
-      navIndex: 'cardModal/getNavIndex'
+      navIndex: 'cardModal/getNavIndex',
+      displayOverrides: 'cardModal/getDisplayOverrides'
     }),
     currentFontKey() {
       try { return this.$store.getters['theme/getCurrentFont'] || 'noto-serif'; } catch(e) { return 'noto-serif'; }
@@ -524,6 +610,22 @@ export default {
       const lenScale = len >= 3 ? '0.8' : '1';
       return { '--main-word-font': family, '--main-word-scale': scale, '--main-word-len-scale': lenScale };
     },
+    defCount() {
+      if (this.displayOverrides && this.displayOverrides.english) {
+        const raw = this.displayOverrides.english;
+        const count = Array.isArray(raw) ? raw.length || 1 : 1;
+        this.mainDefIndex = this.mainDefIndex % count;
+        return count;
+      }
+      if (this.customDef && this.customDef.english) {
+        this.mainDefIndex = 0;
+        return 1;
+      }
+      const base = (this.cardData && Array.isArray(this.cardData.english)) ? this.cardData.english.length : 0;
+      const count = base > 0 ? base : 1;
+      this.mainDefIndex = this.mainDefIndex % count;
+      return count;
+    },
     // Hanzi editing disabled globally per product decision
     canEditHanzi() { return false; },
     customDef() {
@@ -531,16 +633,59 @@ export default {
       return this.$store.getters.getCustomDefinition(this.cardData.character);
     },
     displayPinyin() {
-      const base = (this.cardData && this.cardData.pinyin && this.cardData.pinyin[0]) ? this.cardData.pinyin[0] : '';
       const custom = this.customDef && this.customDef.pinyin ? this.customDef.pinyin : '';
-      return (custom || base);
+      if (custom) return custom;
+      const list = (this.cardData && Array.isArray(this.cardData.pinyin)) ? this.cardData.pinyin : [];
+      if (!list.length) return '';
+      const idx = this.mainDefIndex % list.length;
+      return list[idx] || '';
     },
     displayEnglish() {
-      const base = (this.cardData && this.cardData.english && this.cardData.english[0]) ? this.cardData.english[0] : '';
       const custom = this.customDef && this.customDef.english ? this.customDef.english : '';
-      let results = (custom || base);
-      results = results.split('/');
-      return results;
+      if (custom) return this.splitMeaning(custom);
+      const list = (this.cardData && Array.isArray(this.cardData.english)) ? this.cardData.english : [];
+      if (!list.length) return [];
+      const idx = this.mainDefIndex % list.length;
+      const val = list[idx] || '';
+      return this.splitMeaning(val);
+    },
+    hasDictSection() {
+      return !!this.activeCharData;
+    },
+    hasStrokes() {
+      const s = this.activeCharData && this.activeCharData.strokes;
+      return !!(s && s.medians && s.strokes);
+    },
+    hasExamples() {
+      return !!(this.activeCharData && Array.isArray(this.activeCharData.example_words) && this.activeCharData.example_words.length);
+    },
+    tabFontFamily() {
+      const fontVar = this.mainWordFontStyle && this.mainWordFontStyle['--main-word-font'];
+      return fontVar || "'Noto Serif SC','Kaiti',serif";
+    },
+    hasPresentIn() {
+      const dec = this.decompositionData && this.activeChar && this.decompositionData[this.activeChar];
+      return !!(dec && dec.present_in && dec.present_in.length);
+    },
+    hasDecomposition() {
+      const dec = this.decompositionData && this.activeChar && this.decompositionData[this.activeChar];
+      return !!(dec && dec.recursive && Object.keys(dec.recursive).length);
+    },
+    traditionalChars() {
+      const chars = this.cardData && this.cardData.character ? this.cardData.character.split('') : [];
+      return chars.map(char => {
+        const info = this.cardData && this.cardData.chars_breakdown ? this.cardData.chars_breakdown[char] : null;
+        const trad = info && info.traditional;
+        if (trad && trad !== char) return trad;
+        return '-';
+      });
+    },
+    showTraditionalLine() {
+      if (!this.cardData || !this.cardData.character) return false;
+      return this.traditionalChars.some(t => t && t !== '-');
+    },
+    showBackButton() {
+      return this.modalHistoryIndex > 0;
     },
     validChars() {
       if (!this.cardData || !this.cardData.character) return [];
@@ -549,10 +694,10 @@ export default {
     // Format similar concepts for display
     formattedSimilars() {
       if (!this.cardData || !this.cardData.similars) return [];
-      
+
       const result = [];
       const similars = this.cardData.similars;
-      
+
       // Process the entire array of similar items
       if (Array.isArray(similars)) {
         for (let item of similars) {
@@ -578,16 +723,16 @@ export default {
           }
         }
       }
-      
+
       return result;
     },
     // Format opposite concepts for display
     formattedOpposites() {
       if (!this.cardData || !this.cardData.opposites) return [];
-      
+
       const result = [];
       const opposites = this.cardData.opposites;
-      
+
       // Process the entire array of opposite items
       if (Array.isArray(opposites)) {
         for (let item of opposites) {
@@ -613,7 +758,7 @@ export default {
           }
         }
       }
-      
+
       return result;
     },
     formattedExamples() {
@@ -642,7 +787,7 @@ export default {
       const breakdown = this.cardData.chars_breakdown[charToShow];
       const goodindices = [];
       const shortindices = [];
-      
+
       if (breakdown?.example_words) {
         breakdown.example_words.forEach((word, index) => {
           if (word.length > 1) {
@@ -672,7 +817,7 @@ export default {
       if (this.loadedPresentInChars[this.activeChar]) {
         return this.loadedPresentInChars[this.activeChar];
       }
-      
+
       // Default behavior - use the first chunk from decomposition data
       return this.decompositionData[this.activeChar].present_in;
     },
@@ -685,7 +830,7 @@ export default {
       if (this.loadedPresentInChars[this.activeChar]) {
         return this._presentInHasMore === true;
       }
-      
+
       // Default behavior - assume there's more if initial chunk is full (exactly 50 characters)
       return this.decompositionData[this.activeChar].present_in.length === 50;
     },
@@ -721,14 +866,14 @@ export default {
       handler(visible) {
         if (visible) {
           document.body.classList.add('modal-open');
-          
+
           // Set the initial active char when modal becomes visible
           if (this.cardData && this.validChars.length > 0) {
             this.activeChar = this.validChars[0];
           }
         } else {
           document.body.classList.remove('modal-open');
-          
+
           // Reset toast notification state when modal closes
           this.notificationVisible = false;
           this.notificationMessage = '';
@@ -740,22 +885,67 @@ export default {
       handler(newData) {
         if (newData && this.validChars.length > 0) {
           this.activeChar = this.validChars[0];
-          
-          // Reset concept sections when new card data is loaded
+          this.activeDetailTab = 'dict';
+          this.mainDefIndex = 0;
+
+          try {
+            const prefPin = this.displayOverrides && this.displayOverrides.preferredPinyin;
+            const prefEng = this.displayOverrides && this.displayOverrides.preferredEnglish;
+            const prefIdx = this.displayOverrides && Number.isInteger(this.displayOverrides.preferredIndex)
+              ? this.displayOverrides.preferredIndex
+              : null;
+            if (prefPin || prefEng || prefIdx !== null) {
+              const idx = this.findPreferredDefIndex(newData, prefPin, prefEng, prefIdx);
+              if (idx >= 0) this.mainDefIndex = idx;
+            }
+          } catch (e) {}
+          // Always keep definition order as provided; we only move the index
+
+          if (this.historyAction === 'reset') {
+            this.modalHistory = [newData.character];
+            this.modalHistoryIndex = 0;
+          } else if (this.historyAction === 'historyBack' || this.historyAction === 'jump') {
+            const idx = this.modalHistoryIndex >= 0 ? this.modalHistoryIndex : this.modalHistory.length - 1;
+            this.modalHistoryIndex = idx;
+          } else {
+            const upto = this.modalHistoryIndex >= 0 ? this.modalHistoryIndex + 1 : this.modalHistory.length;
+            this.modalHistory = this.modalHistory.slice(0, upto);
+            const last = this.modalHistory[this.modalHistory.length - 1];
+            if (last !== newData.character) {
+              this.modalHistory.push(newData.character);
+            }
+            this.modalHistoryIndex = this.modalHistory.length - 1;
+          }
+          this.historyAction = 'append';
+
           this.showRelatedConcepts = false;
           this.showOppositeConcepts = false;
 
-          // Reset ExpandableExamples component state
           if (this.$refs.examplesComponent) {
             this.$refs.examplesComponent.resetExpandedState();
           }
         }
       }
     },
+
+    displayOverrides: {
+      handler(val) {
+        if (!this.cardData) return;
+        const prefPin = val && val.preferredPinyin;
+        const prefEng = val && val.preferredEnglish;
+        const prefIdx = (val && Number.isInteger(val.preferredIndex)) ? val.preferredIndex : null;
+        const idx = this.findPreferredDefIndex(this.cardData, prefPin, prefEng, prefIdx);
+        this.mainDefIndex = idx >= 0 ? idx : 0;
+      }
+    },
     currentCharacter: {
       handler(newChar) {
         if (newChar && this.validChars.includes(newChar)) {
           this.activeChar = newChar;
+          this.mainDefIndex = 0;
+          if (this.historyAction !== 'historyBack' && this.historyAction !== 'jump') {
+            this.historyAction = 'append';
+          }
         }
       }
     },
@@ -769,31 +959,39 @@ export default {
       deep: true
     },
     activeChar: {
-      handler(newChar) {
+      handler(newChar, oldChar) {
         if (newChar) {
-          // Reset the chunk index when active character changes
           this.presentInChunkIndex = 0;
-          
-          // Reset expanded examples state when active character changes
+          this.mainDefIndex = 0;
           if (this.$refs.examplesComponent) {
             this.$refs.examplesComponent.resetExpandedState();
+          }
+          if (this.activeDetailTab === 'strokes' && !this.hasStrokes) {
+            this.activeDetailTab = 'dict';
+          } else if (this.activeDetailTab === 'examples' && !this.hasExamples) {
+            this.activeDetailTab = 'dict';
+          } else if (this.activeDetailTab === 'present' && !this.hasPresentIn) {
+            this.activeDetailTab = 'dict';
+          } else if (this.activeDetailTab === 'decomp' && !this.hasDecomposition) {
+            this.activeDetailTab = 'dict';
           }
         }
       }
     }
-    
+
   },
   mounted() {
-    
+
     // If we're in page mode and have a forcedCharacter, show the modal with that character
     if (this.pageMode && this.forcedCharacter) {
       this.showCardModal(this.forcedCharacter);
     }
-    
+
     window.addEventListener('keydown', this.handleEscKey);
     window.addEventListener('keydown', this.handleDebugKey); // Add the debug key handler
     window.addEventListener('keydown', this.handleArrowNav);
     document.addEventListener('click', this.handleOutsideClick);
+    document.addEventListener('global-modal-closed', this.resetLocalHistory);
     // Fetch custom definition for current word if logged in
     if (this.isLoggedIn && this.cardData && this.cardData.character) {
       this.$store.dispatch('fetchCustomDefinition', this.cardData.character);
@@ -807,7 +1005,8 @@ export default {
     window.removeEventListener('keydown', this.handleDebugKey); // Remove the debug key handler
     window.removeEventListener('keydown', this.handleArrowNav);
     document.removeEventListener('click', this.handleOutsideClick);
-    
+    document.removeEventListener('global-modal-closed', this.resetLocalHistory);
+
     if (this.isVisible) {
       document.body.classList.remove('modal-open');
     }
@@ -825,9 +1024,115 @@ export default {
       fetchCardData: 'cardModal/fetchCardData'
       // Removed fetchDecompositionData to prevent direct calls
     }),
+    resetLocalHistory() {
+      this.modalHistory = [];
+      this.modalHistoryIndex = -1;
+      this.historyAction = 'reset';
+      this.historyOpen = false;
+    },
+    openCharAsWord(char) {
+      this.historyAction = 'append';
+      this.historyOpen = false;
+      this.updateModalContent(char);
+    },
+    jumpToHistory(idx) {
+      if (idx < 0 || idx >= this.modalHistory.length) return;
+      this.historyAction = 'jump';
+      this.modalHistoryIndex = idx;
+      this.historyOpen = false;
+      this.showCardModal(this.modalHistory[idx]);
+    },
+
+    stripTones(val) {
+      if (!val) return '';
+      return String(val).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[0-9]/g, '').toLowerCase();
+    },
+    normalizeEng(val) {
+      if (!val) return [];
+      return String(val)
+        .split('/')
+        .map(s => s.trim().toLowerCase())
+        .filter(Boolean);
+    },
+    findPreferredDefIndex(cardData, prefPin, prefEng, prefIdx = null) {
+      const pins = Array.isArray(cardData?.pinyin) ? cardData.pinyin : [];
+      const engs = Array.isArray(cardData?.english) ? cardData.english : [];
+      const maxLen = Math.max(pins.length, engs.length);
+
+      if (Number.isInteger(prefIdx) && prefIdx >= 0 && prefIdx < maxLen) {
+        return prefIdx;
+      }
+
+      const targetP = this.stripTones(prefPin);
+      const targetEList = this.normalizeEng(prefEng);
+      const targetE = targetEList[0] || '';
+      let found = -1;
+      for (let i = 0; i < maxLen; i++) {
+        const pMatch = targetP && pins[i] && this.stripTones(pins[i]) === targetP;
+        let eMatch = false;
+        if (targetE) {
+          const engTokens = this.normalizeEng(engs[i]);
+          eMatch = engTokens.includes(targetE) || engTokens.some(t => targetE.includes(t));
+        }
+        if (pMatch || eMatch) { found = i; break; }
+      }
+      return found;
+    },
+
+    tokenizeHanziText(strVal) {
+      if (!strVal) return [];
+      const parts = String(strVal).split(/(\p{Script=Han}+)/u).filter(Boolean);
+      return parts.map(p => ({ text: p, isHanzi: /\p{Script=Han}/u.test(p) }));
+    },
+    splitMeaning(val) {
+      if (!val) return [];
+      const combined = Array.isArray(val) ? val.join('/') : String(val);
+      return combined.split('/')
+        .map(s => s.trim())
+        .filter(Boolean);
+    },
+    stepDefinition(delta) {
+      if (this.defCount <= 1) return;
+      const next = (this.mainDefIndex + delta + this.defCount) % this.defCount;
+      this.mainDefIndex = next;
+    },
+    setDetailTab(tab) {
+      const allowed = ['dict', 'strokes', 'examples', 'present', 'decomp'];
+      if (!allowed.includes(tab)) return;
+      if (tab === 'strokes' && !this.hasStrokes) return;
+      if (tab === 'examples' && !this.hasExamples) return;
+      if (tab === 'present' && !this.hasPresentIn) return;
+      if (tab === 'decomp' && !this.hasDecomposition) return;
+      this.activeDetailTab = tab;
+    },
+    pushModalHistory(char) {
+      if (!char) return;
+      const last = this.modalHistory[this.modalHistory.length - 1];
+      if (last === char) return;
+      // truncate any forward history when appending
+      if (this.modalHistoryIndex >= 0 && this.modalHistoryIndex < this.modalHistory.length - 1) {
+        this.modalHistory = this.modalHistory.slice(0, this.modalHistoryIndex + 1);
+      }
+      this.modalHistory.push(char);
+      this.modalHistoryIndex = this.modalHistory.length - 1;
+    },
+    loadPrevious() {
+      if (this.modalHistoryIndex > 0) {
+        const prev = this.modalHistory[this.modalHistoryIndex - 1];
+        this.historyAction = 'historyBack';
+        this.modalHistoryIndex -= 1;
+        if (prev) this.showCardModal(prev);
+      }
+    },
+    resetLocalHistory() {
+      this.modalHistory = [];
+      this.modalHistoryIndex = -1;
+      this.historyAction = 'reset';
+      this.historyOpen = false;
+    },
     cycleMainWordFont() {
       try {
-        this.fontCycleIndex = (this.fontCycleIndex + 1) % this.fontOrder.length;
+        //this.fontCycleIndex = (this.fontCycleIndex + 1) % this.fontOrder.length;
       } catch (e) {}
     },
     logExamples() {
@@ -838,13 +1143,13 @@ export default {
     // Add a new method to determine tone class
     getToneClass(pinyin) {
       if (!pinyin) return 'pinyin-neutral';
-      
+
       // Check for tone numbers in the original pinyin
       if (pinyin.includes('1')) return 'pinyin-first';
       if (pinyin.includes('2')) return 'pinyin-second';
       if (pinyin.includes('3')) return 'pinyin-third';
       if (pinyin.includes('4')) return 'pinyin-fourth';
-      
+
       // If no tone number is found, it's a neutral tone
       return 'pinyin-neutral';
     },
@@ -987,13 +1292,13 @@ export default {
 
       const name = this.newListName.trim();
       const word = this.cardData.character;
-      
+
       // First update the store (optimistic update)
       this.$store.dispatch('createWordlist', { name });
-      
+
       // Close the modal
       this.closeCreateListModal();
-      
+
       // Create the new list on the backend
       fetch("./api/create_wordlist", {
         method: "POST",
@@ -1006,16 +1311,16 @@ export default {
         if (!response.ok) {
           throw new Error('Failed to create wordlist');
         }
-        
+
         // After list is created, add the word to it
         return fetch("./api/add_word_to_learning", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ 
-            word: word, 
-            set_name: name 
+          body: JSON.stringify({
+            word: word,
+            set_name: name
           })
         });
       })
@@ -1023,7 +1328,7 @@ export default {
         if (!response.ok) {
           throw new Error('Failed to add word to list');
         }
-        
+
         // Update store with the new word
         this.$store.dispatch('addWordToCustomDeck', {
           word: word,
@@ -1034,17 +1339,17 @@ export default {
             character: this.cardData.character
           }
         });
-        
+
         // Show success notification
         this.showNotification(`Added "${word}" to new list "${name}"`, 'success');
-        
+
         // Refresh custom dictionary data
         this.$store.dispatch('fetchCustomDictionaryData');
       })
       .catch(error => {
         console.error("Error:", error);
         this.showNotification(`Error: ${error.message}`, 'error');
-        
+
         // If there's an error, refresh data to get the correct state
         this.$store.dispatch('fetchUserData')
           .then(() => this.$store.dispatch('fetchCustomDictionaryData'));
@@ -1180,19 +1485,19 @@ export default {
     },
     updateModalContent(word) {
       this.clearHoverTimer();
-      
+
       // Don't call showCardModal if we're already showing this word
       if (this.isVisible && this.cardData && this.cardData.character === word) {
-        
+
         // Just update the active character if needed
         if (this.validChars.includes(word) && this.activeChar !== word) {
           this.activeChar = word;
         }
         return;
       }
-      
+
       // This will trigger fetchCardData, which will then fetch decomp data ONCE
-      
+
       this.showCardModal(word);
     },
     toggleWordlistDropdown() {
@@ -1206,10 +1511,10 @@ export default {
     addWordToList(setName) {
       this.addingToList = true;
       this.showWordlistDropdown = false;
-      
+
       // Get the character/word to add
       const word = this.cardData.character;
-      
+
       // Send request to the backend API
       fetch("/api/add_word_to_learning", {
         method: "POST",
@@ -1221,7 +1526,7 @@ export default {
       .then(response => response.json())
       .then(data => {
         this.addingToList = false;
-        
+
         // Update the Vuex store to show the word immediately in wordlists
         this.$store.dispatch('addWordToCustomDeck', {
           word: word,
@@ -1232,7 +1537,7 @@ export default {
             character: this.cardData.character
           }
         });
-        
+
         this.showNotification(`Added "${word}" to "${setName}" list`, 'success');
 
         // In production, ensure store reflects server state to avoid stale overwrites
@@ -1257,10 +1562,10 @@ export default {
       if (this.showWordlistDropdown) {
         const dropdownButton = this.$refs.dropdownButton;
         const dropdownContent = this.$refs.dropdownContent;
-        
+
         // Close dropdown if click is outside both the dropdown button and its content
         if (
-          (!dropdownButton || !dropdownButton.contains(event.target)) && 
+          (!dropdownButton || !dropdownButton.contains(event.target)) &&
           (!dropdownContent || !dropdownContent.contains(event.target))
         ) {
           this.showWordlistDropdown = false;
@@ -1272,7 +1577,7 @@ export default {
       // and not on the dropdown button or dropdown content
       const dropdownButton = this.$refs.dropdownButton;
       const dropdownContent = this.$refs.dropdownContent;
-      
+
       if (this.showWordlistDropdown &&
           dropdownButton && !dropdownButton.contains(event.target) &&
           dropdownContent && !dropdownContent.contains(event.target)) {
@@ -1282,12 +1587,12 @@ export default {
     getCharacterComponents(character) {
       // Extract the actual components from decompositionData
       if (!this.decompositionData) return [];
-      
-      
+
+
       // With the restructured data, we need to look for the character as a key first level
       // Then return all component keys under that character
       const components = [];
-      
+
       // In our data structure, the components are the direct keys inside each character's object
       // For example: decompositionData = { '不': { '丆': [...], '卜': [...] } }
       // So we need to return ['丆', '卜'] for character '不'
@@ -1295,7 +1600,7 @@ export default {
         // This character has decomposition info - return its component keys
         return Object.keys(this.decompositionData[character]);
       }
-      
+
       return components;
     },
     toggleConcepts(type) {
@@ -1348,10 +1653,10 @@ export default {
     // Add this new method to load more characters
     loadMorePresentInChars() {
       if (this.isLoadingMoreChars || !this.activeChar || this.isTypingEffect) return;
-      
+
       this.isLoadingMoreChars = true;
       this.presentInChunkIndex++;
-      
+
       // Call the new API endpoint
       fetch(`/api/get_present_in_chunk?character=${encodeURIComponent(this.activeChar)}&chunk_index=${this.presentInChunkIndex}`)
         .then(response => {
@@ -1366,14 +1671,14 @@ export default {
             const initialChars = this.decompositionData[this.activeChar].present_in || [];
             this.loadedPresentInChars[this.activeChar] = [...initialChars];
           }
-          
+
           // Store the current loaded characters
           const currentChars = [...this.loadedPresentInChars[this.activeChar]];
-          
+
           // If we have new characters, add them one by one with typing effect
           if (data.characters && data.characters.length > 0) {
             this.isTypingEffect = true;
-            
+
             // Add characters one by one with a delay
             let charIndex = 0;
             const addNextChar = () => {
@@ -1384,7 +1689,7 @@ export default {
                   data.characters[charIndex]
                 ];
                 charIndex++;
-                
+
                 // Schedule the next character after 50ms delay
                 setTimeout(addNextChar, 50);
               } else {
@@ -1392,14 +1697,14 @@ export default {
                 this.isTypingEffect = false;
               }
             };
-            
+
             // Start the typing effect
             addNextChar();
           }
-          
+
           // Update the hasMore flag
           this._presentInHasMore = data.has_more;
-          
+
           // Show notification if we've loaded all characters
           if (!data.has_more && data.total_count) {
             this.showNotification(`Loaded all ${data.total_count} characters`, 'info');
@@ -1563,8 +1868,95 @@ export default {
   height: 0;
 }
 
+
+.main-def-flex {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.main-def-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1 1 auto;
+}
+
+.main-pinyin {
+  font-size: 1.3rem;
+}
+
+.def-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.def-btn {
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
+  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
+  color: var(--fg);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.def-counter {
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+.main-def-flex {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.main-def-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1 1 auto;
+}
+
+.main-pinyin {
+  font-size: 1.3rem;
+}
+
+.def-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.def-btn {
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
+  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
+  color: var(--fg);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.def-counter {
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+.english-idx { margin-right: 0.35rem; opacity: 0.8; }
+.english-text { display: inline; }
+.hanzi-link { color: var(--primary-primary); cursor: pointer; }
+.hanzi-link:hover { text-decoration: underline; }
 .main-word-section {
-  margin-bottom: 1rem;
+  margin-bottom: 0rem;
   display: flex;
   flex-direction: column;
   text-align: left;
@@ -1579,12 +1971,36 @@ export default {
   width: 100%;
   text-align: left;
   display: flex;
-  justify-content: left;
-  align-items: left;
-  gap: 0.05em;
-  flex-wrap: wrap;          /* allow long words to wrap */
-  overflow: visible;        /* avoid clipping at container edges */
-  /*background-color: var(--bg);*/
+  align-items: center;
+  gap: 0.35em;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.main-word-line {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main-word-trad {
+  display: inline-flex;
+  gap: 0.2rem;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.trad-bracket {
+  opacity: 0.7;
+  font-size: 0.85em;
+}
+
+.trad-char {
+  font-size: 0.85em;
+  opacity: 0.75;
 }
 
 .main-word-char {
@@ -1592,7 +2008,7 @@ export default {
   font-weight: 400;
   display: inline-flex;
   width: 1em;
-  height: 1em;
+  height: 1.1em;
   line-height: 1em;
   align-items: center;
   justify-content: center;
@@ -1630,7 +2046,7 @@ export default {
   width: 100%;
   margin-top: 1em;
   opacity: 0.6;
-  
+
   white-space: wrap;
   word-wrap: break-word;
   word-break: break-word;
@@ -1769,7 +2185,7 @@ export default {
 
 .breakdown-section {
   border-top: 2px dashed color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
-  padding-top: 1.5rem;
+  padding-top: 1.0rem;
   width: 100%;
   min-width: 0;
 }
@@ -1909,6 +2325,88 @@ export default {
 .modal.invert.mright { transform: translateX(-2%) rotate(-2deg);}*/
 
 
+.history-controls {
+  position: absolute;
+  top: 1rem;
+  left: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  z-index: 6;
+}
+
+.history-btn-wrap {
+  display: flex;
+  gap: 0.3rem;
+  align-items: flex-start;
+}
+
+.back-btn,
+.history-btn {
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 75%);
+  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
+  color: var(--fg);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+}
+
+.history-btn {
+  font-size: 1.0rem;
+  padding: 0.65rem 0.85rem;
+}
+
+.history-menu {
+  position: absolute;
+  top: 3.1rem;
+  left: 0;
+  background: var(--modal-bg);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
+  padding: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  z-index: 7;
+  max-width: 8rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.history-item {
+  border: none;
+  background: color-mix(in oklab, var(--bg) 95%, var(--fg) 5%);
+  color: var(--fg);
+  text-align: left;
+  padding: 0.25rem 0.5rem;
+  width: 100%;
+  cursor: pointer;
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.history-idx {
+  flex: 0 0 auto;
+}
+
+.history-entry {
+  flex: 1 1 auto;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-item.active {
+  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 90%);
+}
+
+
+
 .tabs {
   display: flex;
   gap: 0.5rem;
@@ -1917,46 +2415,76 @@ export default {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  border-bottom: 3.5px solid color-mix(in oklab, var(--fg) 55%, var(--bg) 50%);
+  border-bottom: 1.5px solid color-mix(in oklab, var(--fg) 55%, var(--bg) 50%);
+  border: none;
   position: relative;
   overflow: visible;
 }
 
 .tab-btn {
   position: relative;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   padding: 0.5rem 1rem;
   border: none;
   cursor: pointer;
-  font-family: "Noto Sans SC";
-  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
+  font-family: inherit;
   font-weight: 400;
   color: var(--primary-primary);
   white-space: nowrap;
-  opacity: 0.35; 
+  opacity: 0.35;
   border: 3.5px solid #0000;
+  border: none;
   background: #0000;
   flex-shrink: 0;
   position: relative;
   z-index: 1;
   border-bottom: 3.5px solid #0000;
+  border-bottom: none;
   transform: translate(0, 3.5px);
 }
 
+.tab-open-word {
+  position: absolute;
+  top: 0rem;
+  font-size: 0.95rem;
+  opacity: 0.75;
+  cursor: pointer;
+  color: var(--fg);
+}
+
 .tab-btn.active {
-  border: 3.5px solid color-mix(in oklab, var(--fg) 55%, var(--bg) 50%);
-  background: var(--modal-bg);
-  opacity: 1;
+  background: color-mix(in srgb, var(--fg), var(--bg) 95%);
+  opacity: .8;
   z-index: 2;
   transform: translate(0, 3.5px);
-  border-bottom: 3.5px solid #0000;
 }
 
 .char-details {
   display: grid;
   gap: 0.6rem;
   width: 100%;
-  min-width: 0; 
+  min-width: 0;
+}
+
+.detail-toggle-row {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  font-size: 0.9rem;
+  justify-content: space-between;
+}
+
+.detail-toggle {
+  padding: 0.35rem 0.75rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.detail-toggle.disabled {
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .detail-group {
@@ -1984,7 +2512,7 @@ export default {
 .freq-trad-anim {
   display: flex;
   gap: 0.5rem;
-  flex-direction: row;
+  flex-direction: column;
 }
 
 .freq-trad {
@@ -1995,7 +2523,7 @@ export default {
   height: 100%;
   justify-self: flex-start;
   align-items: center;
-  
+
   border: var(--pinyin-meaning-group-border);
   border-radius: var(--pinyin-meaning-group-border-radius, 0);
   /* justify-content: space-around; */
@@ -2005,9 +2533,13 @@ export default {
 .hanzi-anim {
   flex: 1;
   display: flex;
-  justify-content: left;
+  justify-content: center;
   align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
   line-height: 1;
+  width: 45%;
   box-sizing: border-box;
 }
 
@@ -2030,7 +2562,7 @@ export default {
   font-size: 1em;
   padding: 0.2rem 0.75rem;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  flex-shrink: 0; 
+  flex-shrink: 0;
 }
 
 .radical-char {
@@ -2144,7 +2676,8 @@ export default {
 .wordlist-dropdown {
   position: fixed;
   top: 1rem;
-  left: 1rem;
+  right: 1rem;
+  z-index: 30;
 }
 
 .wordlist-btn {
@@ -2161,16 +2694,29 @@ export default {
   background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
 }
 
+
 .plus-icon {
   font-size: 1.2rem;
 }
 
+.back-btn {
+  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  color: var(--fg);
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: .9rem;
+  cursor: pointer;
+  aspect-ratio: 1;
+}
+
+
 .dropdown-content {
   position: absolute;
   top: 2.5rem;
-  left: 0;
+  right: 0;
   background-color: var(--bg);
   border: 1px solid var(--fg);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   border-radius: var(--border-radius);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 10;
@@ -2180,6 +2726,7 @@ export default {
 .wordlist-item {
   font-size: .9rem;
   padding: 0.5rem;
+  margin: 0.25rem;
   cursor: pointer;
   background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
 }
@@ -2215,7 +2762,7 @@ export default {
 }
 
 .medium-label {
-  font-size: 1.2rem;
+  font-size: 1.0rem;
   margin-bottom: 0.5rem;
   margin-top: 0rem;
   color: var(--text-primary);
@@ -2229,7 +2776,7 @@ export default {
   height: auto;
   flex-direction: column;
   align-items: flex-start;
-/* 
+/*
   border: var(--pinyin-meaning-group-border);
   border-radius: var(--pinyin-meaning-group-border-radius, 0); */
 }
@@ -2245,7 +2792,7 @@ export default {
 .pinyin-meaning-pair {
   display: flex;
   gap: 1rem;
-  align-items: center;
+  align-items: flex-start;
   padding: 0.25rem 0.5rem;
   border-radius: var(--border-radius);
   background-color: transparent;
@@ -2280,7 +2827,7 @@ export default {
 
 .concepts-container {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   gap: 1rem;
   margin-top: 1rem;
 }
@@ -2520,7 +3067,7 @@ export default {
     .modal.invert.mleft { transform: translate(2%, 0%) rotate(2deg);}
     .modal.invert.mright { transform: translate(-2%, 0%) rotate(-2deg);}
     */
-    
+
     .wordlist-dropdown {
       position: fixed;
       top: 3em;
@@ -2539,7 +3086,7 @@ export default {
   .freq-trad-anim {
     flex-direction: column;
   }
-  
+
   .tab-btn {
     border: none;
     /* padding: 0.25rem .5rem; */
@@ -2607,16 +3154,3 @@ body.modal-open {
   overflow: hidden;
 }
 </style>
-  ,
-  watch: {
-    currentCharacter(newVal) {
-      if (this.isLoggedIn && newVal) {
-        this.$store.dispatch('fetchCustomDefinition', newVal);
-      }
-    },
-    isLoggedIn(newVal) {
-      if (newVal && this.cardData && this.cardData.character) {
-        this.$store.dispatch('fetchCustomDefinition', this.cardData.character);
-      }
-    }
-  }

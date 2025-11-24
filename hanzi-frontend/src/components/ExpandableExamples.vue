@@ -1,8 +1,8 @@
 <template>
   <div class="examples-group">
-    <div class="section-header">
-      <div class="medium-label">{{ title }}</div>
-    </div>
+    <!-- <div class="section-header">
+      <div class="medium-label">{{ title }}</div> 
+    </div> -->
 
     <!-- Always visible portion -->
     <slot name="afew" :is-expanded="isExpanded"></slot>

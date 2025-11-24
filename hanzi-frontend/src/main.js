@@ -33,6 +33,7 @@ import {
   faClipboard,
   faPen,
   faGrip,
+  faClockRotateLeft
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -54,7 +55,8 @@ library.add(
   faCloudArrowDown,
   faClipboard,
   faPen,
-  faGrip
+  faGrip,
+  faClockRotateLeft
 )
 
 // IMMEDIATELY clear login state on page load before checking backend
