@@ -151,23 +151,39 @@ def search():
         seen = set()
         results = []
 
-        # 1) Full query results
-        include_other_full = (len(query) == 1)
-        full_results, full_has_direct = gather_hanzi_results(query, dictionary, include_other_examples=True)
-        add_unique_entries(results, full_results, seen)
+        # Tokenize on whitespace to support semi-exact matches like "对不起 吧"
+        tokens = [t for t in regex.split(r'\s+', query) if t]
+        joined = ''.join(tokens)
+        is_multi_token = len(tokens) > 1
 
-        # 2) If multi-character query, also include per-character lookups in order (unique)
-        if len(query) > 1:
-            ordered_chars = []
-            for ch in query:
-                if not ch.strip():
-                    continue
-                if ch not in ordered_chars:
-                    ordered_chars.append(ch)
-            include_other = full_has_direct  # only show words containing the char if the full query exists
-            for ch in ordered_chars:
-                per_char, _ = gather_hanzi_results(ch, dictionary, include_other_examples=True)
-                add_unique_entries(results, per_char, seen)
+        def append_lookup(term, include_examples=True):
+            res, _ = gather_hanzi_results(term, dictionary, include_other_examples=include_examples)
+            add_unique_entries(results, res, seen)
+
+        # 1) Full query (joined tokens) if available
+        if joined:
+            full_results, full_has_direct = gather_hanzi_results(joined, dictionary, include_other_examples=True)
+            add_unique_entries(results, full_results, seen)
+        else:
+            full_has_direct = False
+
+        # 2) Per-token exact lookups (preserve token order)
+        if is_multi_token:
+            for tok in tokens:
+                append_lookup(tok, include_examples=True)
+
+        # 3) Per-character lookups in order (unique)
+        ordered_chars = []
+        source_chars = joined if joined else query
+        for ch in source_chars:
+            if not ch.strip():
+                continue
+            if ch not in ordered_chars:
+                ordered_chars.append(ch)
+        include_other = full_has_direct or is_multi_token
+        for ch in ordered_chars:
+            per_char, _ = gather_hanzi_results(ch, dictionary, include_other_examples=True)
+            add_unique_entries(results, per_char, seen)
 
     else:
         res = dictionary.search_by_pinyin(query)

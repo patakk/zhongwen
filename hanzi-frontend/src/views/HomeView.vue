@@ -53,7 +53,7 @@
         </div>
       </div>
     </div>
-    <div v-if="!isLoading" class="results">
+    <div v-if="!isLoading && groupedResults.length" class="results">
       <div
         v-for="group in groupedResults"
         :key="group.key"
@@ -130,25 +130,41 @@ export default {
       const annotated = raw.map((item, idx) => ({ item, originalIdx: idx }));
       const query = this.latestQuery || this.query || '';
       const onlyHanzi = this.isHanziOnly(query);
+      const hanziChars = this.extractHanzi(query);
+      const effectiveQuery = hanziChars.join('');
 
-      if (!onlyHanzi || query.length <= 1) {
+      if (!annotated.length) return [];
+
+      if (!onlyHanzi || !hanziChars.length) {
         const groups = [{ key: 'all', label: 'Results', collapsible: false, items: annotated }];
         groups[0].items.forEach((e, i) => e.displayIdx = i);
         return groups;
       }
 
       const charOrder = [];
-      for (const ch of Array.from(query)) {
+      for (const ch of hanziChars) {
         if (ch && !charOrder.includes(ch)) charOrder.push(ch);
       }
+      const tokens = (this.latestQuery || this.query || '').split(/\s+/).map(t => this.extractHanzi(t).join('')).filter(Boolean);
 
       const groups = [];
       const used = new Set();
 
-      const exactItems = annotated.filter(entry => entry.item && entry.item.hanzi === query);
+      const exactItems = annotated.filter(entry => entry.item && entry.item.hanzi === effectiveQuery);
       exactItems.forEach(entry => used.add(entry.originalIdx));
       if (exactItems.length) {
-        groups.push({ key: `exact-${query}`, label: `${query} (exact)`, collapsible: false, items: exactItems });
+        groups.push({ key: `exact-${effectiveQuery}`, label: `${effectiveQuery}`, collapsible: false, items: exactItems });
+      }
+
+      // Token-level exact groups if query had spaces
+      if (tokens.length > 1) {
+        tokens.forEach((tok, idx) => {
+          const tokItems = annotated.filter(entry => !used.has(entry.originalIdx) && entry.item && entry.item.hanzi === tok);
+          tokItems.forEach(entry => used.add(entry.originalIdx));
+          if (tokItems.length) {
+            groups.push({ key: `token-${idx}-${tok}`, label: tok, collapsible: false, items: tokItems });
+          }
+        });
       }
 
       const perChar = {};
@@ -171,7 +187,7 @@ export default {
       for (const ch of charOrder) {
         const items = perChar[ch];
         if (items && items.length) {
-          groups.push({ key: `char-${ch}`, label: ch, collapsible: true, items });
+          groups.push({ key: `char-${ch}`, label: ch, collapsible: true, items, anchor: ch });
         }
       }
 
@@ -179,12 +195,17 @@ export default {
         groups.push({ key: 'other', label: 'Other matches', collapsible: true, items: extras });
       }
 
+      // Drop any empty groups before numbering
+      const nonEmpty = groups.filter(g => Array.isArray(g.items) && g.items.length);
+      if (!nonEmpty.length) return [];
 
-      const sortWithinHanzi = (items) => {
-        const orderVal = (v) => {
-          const n = Number(v);
-          return Number.isFinite(n) ? n : Number.MAX_SAFE_INTEGER;
-        };
+
+      const orderVal = (v) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : Number.MAX_SAFE_INTEGER;
+      };
+
+      const sortWithinHanzi = (items, anchorChar = null) => {
         const buckets = new Map();
         items.forEach((entry, idx) => {
           const h = entry?.item?.hanzi;
@@ -192,10 +213,17 @@ export default {
           if (!buckets.has(h)) buckets.set(h, []);
           buckets.get(h).push({ entry, idx });
         });
+        const startsWithAnchor = (hanzi) => {
+          if (!anchorChar) return 1;
+          return hanzi && hanzi.startsWith(anchorChar) ? 0 : 1;
+        };
         for (const list of buckets.values()) {
           if (list.length <= 1) continue;
           const positions = list.map(x => x.idx).sort((a, b) => a - b);
           const sorted = list.slice().sort((a, b) => {
+            const sa = startsWithAnchor(a.entry?.item?.hanzi);
+            const sb = startsWithAnchor(b.entry?.item?.hanzi);
+            if (sa !== sb) return sa - sb;
             const va = orderVal(a.entry?.item?.order);
             const vb = orderVal(b.entry?.item?.order);
             if (va !== vb) return va - vb;
@@ -207,8 +235,36 @@ export default {
         return items;
       };
 
+      const sortGroupItems = (items, anchorChar = null) => {
+        const startsWithAnchor = (hanzi) => {
+          if (!anchorChar) return 1;
+          return hanzi && hanzi.startsWith(anchorChar) ? 0 : 1;
+        };
+        const charPos = (hanzi) => {
+          if (!anchorChar || !hanzi) return Number.MAX_SAFE_INTEGER;
+          const idx = hanzi.indexOf(anchorChar);
+          return idx >= 0 ? idx : Number.MAX_SAFE_INTEGER;
+        };
+        return items.slice().sort((a, b) => {
+          const ha = a?.item?.hanzi || '';
+          const hb = b?.item?.hanzi || '';
+          const sa = startsWithAnchor(ha);
+          const sb = startsWithAnchor(hb);
+          if (sa !== sb) return sa - sb;
+          const pa = charPos(ha);
+          const pb = charPos(hb);
+          if (pa !== pb) return pa - pb;
+          const va = orderVal(a?.item?.order);
+          const vb = orderVal(b?.item?.order);
+          if (va !== vb) return va - vb;
+          return (a.originalIdx ?? 0) - (b.originalIdx ?? 0);
+        });
+      };
+
       groups.forEach(g => {
-        g.items = sortWithinHanzi(g.items.slice());
+        const anchor = g.anchor || null;
+        g.items = sortWithinHanzi(g.items.slice(), anchor);
+        g.items = sortGroupItems(g.items, anchor);
       });
 
       let displayIdx = 0;
@@ -311,9 +367,23 @@ export default {
       this.groupCollapsed = { ...this.groupCollapsed, [key]: next };
     },
 
+    updateUrlQuery() {
+      const q = this.query || '';
+      const query = { ...this.$route.query };
+      if (q) query.q = q; else delete query.q;
+      this.$router.replace({ query }).catch(() => {});
+    },
+
+    extractHanzi(str) {
+      if (!str) return [];
+      return Array.from(str).filter(ch => /\p{Script=Han}/u.test(ch));
+    },
     isHanziOnly(str) {
       if (!str) return false;
-      return Array.from(str).every(ch => /\p{Script=Han}/u.test(ch));
+      const chars = Array.from(str);
+      const hanzi = chars.filter(ch => /\p{Script=Han}/u.test(ch));
+      const nonAllowed = chars.filter(ch => !/\p{Script=Han}/u.test(ch) && /\S/.test(ch));
+      return hanzi.length > 0 && nonAllowed.length === 0;
     },
     reorderHanziResults(results, query) {
       if (!Array.isArray(results)) return results;
@@ -377,14 +447,16 @@ export default {
     handleInput() {
       // Store the latest query value
       this.latestQuery = this.query;
+      this.updateUrlQuery();
       
       // Clear any existing timeout
       if (this.searchTimeout) {
         clearTimeout(this.searchTimeout);
       }
       
-      // Only trigger search if query has 2 or more characters
-      if (this.query.length >= 2) {
+      const qlen = (this.query || '').trim().length;
+      // Only trigger search if query has 1 or more characters
+      if (qlen >= 1) {
         this.isLoading = true;
         this.searchTimeout = setTimeout(() => {
           this.isSearching = true;
@@ -402,7 +474,7 @@ export default {
     
     debouncedSearch() {
       // Helper method to handle initial search with debounce logic
-      if (this.query.length >= 2) {
+      if ((this.query || '').trim().length >= 1) {
         // Store the query as latestQuery to maintain consistency
         this.latestQuery = this.query;
         this.doSearch();
@@ -411,6 +483,7 @@ export default {
     
     async doSearch() {
       this.isLoading = true;
+      this.updateUrlQuery();
       try {
         const res = await fetch('/api/search_results', {
           method: 'POST',
@@ -422,9 +495,10 @@ export default {
         const data = await res.json();
         const rawResults = data.results || [];
         const onlyHanzi = this.isHanziOnly(this.latestQuery);
+        const cleanQuery = this.extractHanzi(this.latestQuery).join('');
         let ordered = rawResults;
-        if (onlyHanzi && this.latestQuery) {
-          ordered = this.reorderHanziResults(rawResults, this.latestQuery);
+        if (onlyHanzi && cleanQuery) {
+          ordered = this.reorderHanziResults(rawResults, cleanQuery);
         }
         this.results = ordered;
         this.resetGroupCollapse();
