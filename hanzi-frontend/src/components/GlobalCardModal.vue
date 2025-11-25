@@ -216,7 +216,7 @@
         <div class="breakdown-section" v-if="!showExamples && cardData.chars_breakdown">
           <!-- <h3 class="char-breakdown" v-if="cardData.character && cardData.character.length > 1">Character Breakdown ↓</h3>
         -->
-          <div class="tabs" v-if="validChars.length > 1" :style="{ fontFamily: tabFontFamily }">
+          <div class="tabs" v-if="cardData.character.length > 1" :style="{ fontFamily: tabFontFamily }">
             <button
               v-for="char in validChars"
               :key="char"
