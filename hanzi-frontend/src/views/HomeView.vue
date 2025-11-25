@@ -549,7 +549,7 @@ export default {
     
     // New methods for scroll to top functionality
     scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'auto' });
     },
     
     handleScroll() {

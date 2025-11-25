@@ -797,7 +797,7 @@ export default {
 
     // Method to scroll to top
     scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'auto' });
     },
 
     // Method to handle scroll event
