@@ -118,10 +118,10 @@ def get_tatoeba_page(character, page):
     return tatoebas, is_last
 
 def remove_variantof(char_info, ew=False):
-    pinyin = [p for p in char_info['pinyin']]
-    english = [p for p in char_info['english']]
+    pinyin = [p for p in char_info.get('pinyin', [])]
+    english = [p for p in char_info.get('english', [])]
     if ew:
-        ewords = [p for p in char_info['example_words']]
+        ewords = [p for p in char_info.get('example_words', [])]
         ewords2 = []
     else:
         ewords = [None]*len(english)

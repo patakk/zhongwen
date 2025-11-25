@@ -314,7 +314,7 @@
                     </div>
                   </div>
 
-                  <div v-if="activeChar !== activeCharData.traditional" class="detail-group">
+                  <!--<div v-if="activeChar !== activeCharData.traditional" class="detail-group">
                     <span class="basic-label">Traditional: </span>
                     <PreloadWrapper
                       :character="activeCharData.traditional"
@@ -323,7 +323,7 @@
                     >
                       {{ activeCharData.traditional }}
                     </PreloadWrapper>
-                  </div>
+                  </div>-->
 
                   <div v-if="activeChar !== activeCharData.simplified" class="detail-group">
                     <span class="basic-label">Simplified: </span>
@@ -695,17 +695,24 @@ export default {
       return this.$store.getters.getCustomDefinition(this.cardData.character);
     },
     displayPinyin() {
+      let ppp = this.cardData.pinyin;
+      if (ppp[0] === "N/A") ppp = this.cardData.chars_breakdown[this.cardData.character].pinyin;
       const custom = this.customDef && this.customDef.pinyin ? this.customDef.pinyin : '';
       if (custom) return custom;
-      const list = (this.cardData && Array.isArray(this.cardData.pinyin)) ? this.cardData.pinyin : [];
+      const list = (Array.isArray(ppp)) ? ppp : [];
       if (!list.length) return '';
       const idx = this.mainDefIndex % list.length;
+
       return list[idx] || '';
     },
     displayEnglish() {
+
+      let ppp = this.cardData.english;
+      if (ppp[0] === "N/A") ppp = this.cardData.chars_breakdown[this.cardData.character].english;
+
       const custom = this.customDef && this.customDef.english ? this.customDef.english : '';
       if (custom) return this.splitMeaning(custom);
-      const list = (this.cardData && Array.isArray(this.cardData.english)) ? this.cardData.english : [];
+      const list = (this.cardData && Array.isArray(ppp)) ? ppp : [];
       if (!list.length) return [];
       const idx = this.mainDefIndex % list.length;
       const val = list[idx] || '';
@@ -735,7 +742,6 @@ export default {
     },
     hasExtraInfo() {
       const info = this.activeCharData;
-      console.log('extra info check', info);
       if (!info) return false;
       return !!(info.similars || info.radical || info.stroke_count || info.frequency_rank || info.grade_level || info.rank);
     },
@@ -1212,7 +1218,6 @@ export default {
     },
     logExamples() {
       try {
-        console.log('[GlobalCardModal] examples for', this.cardData?.character, this.cardData?.examples || []);
       } catch (e) {}
     },
     // Add a new method to determine tone class
@@ -1251,7 +1256,7 @@ export default {
       }
     },
     openCustomEdit() {
-      try { console.log('[GlobalCardModal] openCustomEdit clicked'); } catch (e) {}
+      try { } catch (e) {}
       if (!this.cardData || !this.cardData.character) return;
       const hanzi = this.cardData.character;
       // Prefill with custom def if exists, otherwise defaults (treat 'N/A' as empty)
@@ -2952,9 +2957,20 @@ export default {
 .concept-toggle.active {
   /* background-color: var(--primary-color); */
   background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
-  color: var(--orange-dim);
   background-color: var(--orange);
   color: var(--bg);
+}
+
+[data-theme="dark"] .concept-toggle.active {
+  color: var(--fg);
+}
+
+[data-theme="theme1"] .concept-toggle.active {
+  color: var(--bg);
+}
+
+[data-theme="theme2"] .concept-toggle.active {
+  color: var(--fg);
 }
 
 .concept-bookmark {

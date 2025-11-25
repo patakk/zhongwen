@@ -6,13 +6,6 @@
 }
 
 @font-face {
-  font-family: 'SF Mono';
-  src: url('https://assets.hanzi.abcrgb.xyz/SFMono-Medium.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
   font-family: 'SF Mono Regular';
   src: url('https://assets.hanzi.abcrgb.xyz/SFMono-Regular.otf') format('opentype');
   font-weight: normal;

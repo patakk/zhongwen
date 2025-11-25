@@ -118,7 +118,11 @@ def breakdown_chars(word):
     for char in word:
         orig_char = char
         simplified = HanziConv.toSimplified(char)
-        infos[char] = get_char_info(orig_char, full=True)
+        cinfo = get_char_info(orig_char, full=True)
+        if not cinfo.get("pinyin"):
+            cinfo = get_char_info(simplified, full=True)
+            print(cinfo)
+        infos[char] = cinfo
 
         if char in DECOMPOSE_CACHE:
             infos[char]['recursive'] = get_recursive_decomposition(char)
