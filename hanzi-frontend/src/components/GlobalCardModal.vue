@@ -386,13 +386,13 @@
 
               <div v-if="activeDetailTab === 'present' && hasPresentIn" class="medium-label">{{ activeChar }} Present in:</div>
               <div v-if="activeDetailTab === 'present' && hasPresentIn" class="present-in-section">
-                <div class="present-in-chars" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <div class="present-in-chars" style="display: flex; flex-wrap: wrap;">
                   <PreloadWrapper
                     v-for="char in limitedPresentInChars"
                     :key="char"
                     :character="char"
                     :showBubbles="false"
-                    class="present-in-char"
+                    class="present-in-char hanzi-link"
                   >
                     {{ char }}
                   </PreloadWrapper>
@@ -1798,7 +1798,7 @@ export default {
 }
 
 .hanzi-link {
-  padding: .25rem 0.5rem;
+  padding: .25rem 0.25rem;
 }
 
 .extra-info-details {
@@ -2025,8 +2025,8 @@ export default {
 
 .english-idx { margin-right: 0.35rem; opacity: 0.8; }
 .english-text { display: inline; }
-.hanzi-link { color: var(--primary-primary); cursor: pointer; }
-.hanzi-link:hover { text-decoration: underline; }
+.hanzi-link { color: var(--fg); cursor: pointer; }
+.hanzi-link:hover { text-decoration: underline;}
 
 .similars-list .similar-link {
   font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', sans-serif);
@@ -2506,7 +2506,7 @@ export default {
   cursor: pointer;
   font-family: inherit;
   font-weight: 400;
-  color: var(--primary-primary);
+  color: var(--fg);
   white-space: nowrap;
   opacity: 0.35;
   border: 3.5px solid #0000;
@@ -3070,7 +3070,7 @@ export default {
 .present-in-chars {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.0rem;
   padding: .5em .5em .5em .5em;
   background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
