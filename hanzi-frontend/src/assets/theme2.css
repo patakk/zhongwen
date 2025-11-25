@@ -740,3 +740,8 @@ opacity: 0.7;
 [data-theme="theme2"]  .toast-notification.warning {
 	background-color: var(--warning-color) !important;
 }
+
+
+[data-theme="theme2"]  .history-menu {
+	border-radius: 1em !important;
+}

@@ -10,7 +10,7 @@
         <button @click="deleteAccount" :disabled="loading" class="btn btn-danger">
           {{ loading ? "Deleting..." : "Delete Account" }}
         </button>
-        <RouterLink to="/account" class="btn">Cancel</RouterLink>
+        <RouterLink to="/settings" class="btn">Cancel</RouterLink>
       </div>
       <div v-if="error" class="error">{{ error }}</div>
     </div>

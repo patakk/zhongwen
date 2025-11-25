@@ -89,7 +89,7 @@ async function handleRegister() {
     await store.dispatch('saveUserDataToStorage')
     // Fetch user data again to ensure all profile details are up-to-date
     await store.dispatch('fetchUserData')
-    router.push('/account')
+    router.push('/settings')
   } catch (err) {
     error.value = err.message || 'Registration failed'
   } finally {

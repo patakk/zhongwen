@@ -155,7 +155,7 @@ def verify_email(token):
         db.session.commit()
         logger.info(f"User {user.username} verified their email.")
         # Redirect directly to the frontend account page to trigger data refresh
-        return redirect('/account') 
+        return redirect('/settings') 
     else:
         logger.info(f"User tried to verify email with invalid token: {token}")
         # Redirect to home or an error page if token is invalid

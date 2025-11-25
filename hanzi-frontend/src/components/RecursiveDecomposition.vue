@@ -68,17 +68,17 @@ const themeStyles = {
     linkStroke: '#b48f3c88',
     linkStrokeWidth: 2,
     linkCurve: true,
-    rootColor: '#924422aa',
-    firstChildColor: '#924422',
-    nodeColor: '#92442288',
+    rootColor: '#666',
+    firstChildColor: '#111',
+    nodeColor: '#999',
   },
   theme2: {
     linkStroke: '#bbbbff22',
     linkStrokeWidth: 2,
     linkCurve: false,
-    rootColor: '#bbbbff',
-    firstChildColor: '#bbffbb',
-    nodeColor: '#bbffbb55',
+    rootColor: '#777',
+    firstChildColor: '#fff',
+    nodeColor: '#555',
   }
 };
 

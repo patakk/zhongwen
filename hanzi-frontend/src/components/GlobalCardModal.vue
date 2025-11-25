@@ -260,6 +260,11 @@
                   :class="{ active: activeDetailTab === 'decomp', disabled: !hasDecomposition }"
                   @click="setDetailTab('decomp')"
                 >decomp</div>
+                <div
+                  class="concept-toggle detail-toggle"
+                  :class="{ active: activeDetailTab === 'extra', disabled: !hasExtraInfo }"
+                  @click="setDetailTab('extra')"
+                >extra</div>
               </div>
 
               <div v-if="activeDetailTab === 'dict' && hasDictSection" class="freq-trad-anim">
@@ -314,6 +319,7 @@
               <div v-if="activeDetailTab === 'strokes' && hasStrokes">
                 <div class="medium-label">Strokes:</div>
 
+                <div class="hanzi-anim-wrap">
                 <div class="hanzi-anim">
                 <AnimatedHanzi
                   :character="activeCharData.character"
@@ -323,9 +329,10 @@
                   :animSpeed="0.1"
                 />
                 </div>
+                </div>
               </div>
 
-              <div v-if="activeDetailTab === 'examples' && hasExamples" class="medium-label">Examples:</div>
+              <div v-if="activeDetailTab === 'examples' && hasExamples" class="medium-label">Words containing {{ activeChar }}:</div>
               <ExpandableExamples
                 v-if="activeDetailTab === 'examples' && hasExamples"
                 :itemCount="activeCharData.example_words.length"
@@ -405,6 +412,39 @@
                 <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].recursive && Object.keys(decompositionData[activeChar].recursive).length > 0">
                   <div class="decomp-section">
                     <RecursiveDecomposition :data="{ [activeChar]: decompositionData[activeChar].recursive }" />
+                  </div>
+                </div>
+              </div>
+              
+
+
+              <div v-if="activeDetailTab === 'extra' && hasExtraInfo" class="extra-info-section">
+                <div class="medium-label">Extra:</div>
+                <div class="extra-info-details">
+                  <div v-if="activeCharData.radical" class="extra-info-item">
+                    <span class="basic-label">Radical:</span> {{ activeCharData.radical }}
+                  </div>
+                  <div v-if="activeCharData.stroke_count" class="extra-info-item">
+                    <span class="basic-label">Stroke Count:</span> {{ activeCharData.stroke_count }}
+                  </div>
+                  <div v-if="activeCharData.rank" class="extra-info-item">
+                    <span class="basic-label">Frequency Rank:</span> {{ activeCharData.rank }}
+                  </div>
+                    <div v-if="activeCharData.similars && !(typeof activeCharData.similars === 'object' && Object.keys(activeCharData.similars).length === 0)" class="extra-info-item">
+                    <span class="basic-label">Similars:</span>
+                    <span class="similars-list">
+                      <span
+                        v-for="(simChar, sIdx) in similarsChars"
+                        :key="sIdx"
+                        class="hanzi-link similar-link"
+                        @click.stop="openCharAsWord(simChar)"
+                      >
+                        {{ simChar }}
+                      </span>
+                    </span>
+                    </div>
+                  <div v-if="activeCharData.grade_level" class="extra-info-item">
+                    <span class="basic-label">Grade Level:</span> {{ activeCharData.grade_level }}
                   </div>
                 </div>
               </div>
@@ -671,6 +711,12 @@ export default {
       const dec = this.decompositionData && this.activeChar && this.decompositionData[this.activeChar];
       return !!(dec && dec.recursive && Object.keys(dec.recursive).length);
     },
+    hasExtraInfo() {
+      const info = this.activeCharData;
+      console.log('extra info check', info);
+      if (!info) return false;
+      return !!(info.similars || info.radical || info.stroke_count || info.frequency_rank || info.grade_level || info.rank);
+    },
     traditionalChars() {
       const chars = this.cardData && this.cardData.character ? this.cardData.character.split('') : [];
       return chars.map(char => {
@@ -690,6 +736,12 @@ export default {
     validChars() {
       if (!this.cardData || !this.cardData.character) return [];
       return Array.from(new Set(this.cardData.character.split('').filter(char => /\p{Script=Han}/u.test(char))));
+    },
+    similarsChars() {
+      const s = this.activeCharData.similars;
+      if(!s) return [];
+      const sa = Array.from(s);
+      return sa;
     },
     // Format similar concepts for display
     formattedSimilars() {
@@ -1097,12 +1149,13 @@ export default {
       this.mainDefIndex = next;
     },
     setDetailTab(tab) {
-      const allowed = ['dict', 'strokes', 'examples', 'present', 'decomp'];
+      const allowed = ['dict', 'strokes', 'examples', 'present', 'decomp', 'extra'];
       if (!allowed.includes(tab)) return;
       if (tab === 'strokes' && !this.hasStrokes) return;
       if (tab === 'examples' && !this.hasExamples) return;
       if (tab === 'present' && !this.hasPresentIn) return;
       if (tab === 'decomp' && !this.hasDecomposition) return;
+      if (tab === 'extra' && !this.hasExtraInfo) return;
       this.activeDetailTab = tab;
     },
     pushModalHistory(char) {
@@ -1744,6 +1797,21 @@ export default {
   height: 100%;
 }
 
+.hanzi-link {
+  padding: .25rem 0.5rem;
+}
+
+.extra-info-details {
+  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
+  padding: 1em;
+}
+
+.extra-info-item {
+  padding: 0.5rem 1rem;
+
+}
+
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -1959,6 +2027,11 @@ export default {
 .english-text { display: inline; }
 .hanzi-link { color: var(--primary-primary); cursor: pointer; }
 .hanzi-link:hover { text-decoration: underline; }
+
+.similars-list .similar-link {
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', sans-serif);
+  font-size: 1.5em;
+}
 .main-word-section {
   margin-bottom: 0rem;
   display: flex;
@@ -2119,6 +2192,7 @@ export default {
   box-sizing: border-box;
   min-width: 0;
   background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 }
 
 
@@ -2456,8 +2530,8 @@ export default {
 }
 
 .tab-btn.active {
-  background: color-mix(in srgb, var(--fg), var(--bg) 95%);
-  opacity: .8;
+  background: color-mix(in srgb, var(--fg), var(--bg) 100%);
+  opacity: 1;
   z-index: 2;
   transform: translate(0, 3.5px);
 }
@@ -2480,7 +2554,7 @@ export default {
 }
 
 .detail-toggle {
-  padding: 0.35rem 0.75rem;
+  padding: 0.25rem 0.5rem;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -2522,15 +2596,26 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 2;
-  background-color: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
   height: 100%;
   justify-self: flex-start;
   align-items: center;
 
-  border: var(--pinyin-meaning-group-border);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   border-radius: var(--pinyin-meaning-group-border-radius, 0);
   /* justify-content: space-around; */
   box-sizing: border-box;
+}
+
+.hanzi-anim-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  flex: 1;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 }
 
 .hanzi-anim {
@@ -2720,7 +2805,6 @@ export default {
   background-color: var(--bg);
   border: 1px solid var(--fg);
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
-  border-radius: var(--border-radius);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 10;
   min-width: 200px;
@@ -2836,10 +2920,9 @@ export default {
 }
 
 .concept-toggle {
+  font-size: .8rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
   cursor: pointer;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
 }
@@ -2990,7 +3073,7 @@ export default {
   gap: 0.5rem;
   padding: .5em .5em .5em .5em;
   background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
-
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 }
 
 .present-in-chars span {
@@ -3044,7 +3127,7 @@ export default {
   .wordlist-dropdown {
       position: fixed;
       top: 3em;
-      left: 1rem;
+      right: 1rem;
     }
 
     /*.modal.invert { filter: invert(0.24); }
@@ -3075,7 +3158,7 @@ export default {
     .wordlist-dropdown {
       position: fixed;
       top: 3em;
-      left: 1rem;
+      right: 1rem;
     }
 
     .main-word {

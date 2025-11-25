@@ -414,7 +414,7 @@ const hasPassword = computed(() => store.getters.getHasPassword)
 const authStatus = computed(() => store.getters.getAuthStatus)
 
 watch(() => route.path, (newPath) => {
-  if (newPath === '/account') {
+  if (newPath === '/settings') {
     store.dispatch('fetchUserData');
   }
 });

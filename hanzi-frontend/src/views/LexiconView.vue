@@ -1,5 +1,5 @@
 <template>
-    <BasePage page_title="My Words" />
+    <BasePage page_title="Lexicon" />
     <div class="myspace-view" v-if="loggedIn">
       <div class="wordlist-container">
         <div class="wordlist-header">
