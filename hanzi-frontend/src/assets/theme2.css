@@ -214,6 +214,7 @@
 	/* border-radius: 1em; */
 	border-width: 2px !important;
 }
+[data-theme="theme2"] .hanzi-link:hover { color: #0f0 !important; }
 
 
 [data-theme="theme2"] .concept-toggle {

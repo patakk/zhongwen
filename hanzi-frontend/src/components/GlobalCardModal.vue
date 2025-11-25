@@ -297,7 +297,7 @@
                     <PreloadWrapper
                       :character="activeCharData.traditional"
                       :showBubbles="false"
-                      class="trad-simple"
+                      class="trad-simple hanzi-link"
                     >
                       {{ activeCharData.traditional }}
                     </PreloadWrapper>
@@ -308,7 +308,7 @@
                     <PreloadWrapper
                       :character="activeCharData.simplified"
                       :showBubbles="false"
-                      class="trad-simple"
+                      class="trad-simple hanzi-link"
                     >
                       {{ activeCharData.simplified }}
                     </PreloadWrapper>
@@ -1930,7 +1930,7 @@ export default {
   scrollbar-width: none;
   border-radius: var(--modal-border-radius);
   touch-action: pan-y; /* allow vertical scroll by default; JS prevents during horizontal swipe */
-  transition: background-color 150ms ease-in-out, filter 150ms ease-in-out;
+  transition: background-color 30ms ease-in-out, filter 150ms ease-in-out;
   border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 20%);
 }
 
@@ -2027,7 +2027,8 @@ export default {
 .english-idx { margin-right: 0.35rem; opacity: 0.8; }
 .english-text { display: inline; }
 .hanzi-link { color: var(--fg); cursor: pointer; }
-.hanzi-link:hover { text-decoration: underline;}
+.hanzi-link:hover { text-decoration: underline; color: #00f;}
+
 
 .similars-list .similar-link {
   font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', sans-serif);

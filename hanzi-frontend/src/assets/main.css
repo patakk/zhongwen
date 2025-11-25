@@ -35,7 +35,7 @@
   --fg: rgb(254, 0, 0);
   --fg: rgb(0, 0, 0);
   --fg-dim: rgb(19, 19, 19);
-  --overlay-background: rgba(255, 255, 255, 0.75);
+  --overlay-background: rgba(255, 255, 255, 0.6);
   --primary-color: #b39cc9;
   --pinyin-color: #8d67b0;
   --secondary-color: #d31500;
@@ -93,7 +93,9 @@
 
 
 @media (max-width: 1700px) and (orientation: landscape) {
-  
+  html {
+    font-size: 90%;
+  }
 }
 
 [data-theme="dark"] {
@@ -112,7 +114,7 @@
   --success-color: #45a270;
   --card-shadow-color: color-mix(in oklab, var(--primary-color) 4%, var(--bg) 5%);
   --card-shadow: 5px 5px 26px 12px var(--card-shadow-color);
-  /* --card-shadow: none; */
+  --card-shadow: none;
   --decks-shadow: 5px 5px 16px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
 }
 
@@ -123,6 +125,7 @@
   --third-t: #8a72af;
   --fourth-t: #ca5b78;
 }
+
 
 .pinyin-first {
   color: var(--first-t);
@@ -144,6 +147,12 @@
 input[type="text"]:focus-visible {
   outline-color: color-mix(in oklab, var(--fg) 6%, var(--bg) 26%);
 }
+
+
+.hanzi-link:hover { color: #00f !important; }
+[data-theme="theme1"] .hanzi-link:hover { color: #00f !important; }
+[data-theme="theme2"] .hanzi-link:hover { color: #0f0 !important; }
+[data-theme="dark"] .hanzi-link:hover { color: #0f0 !important; }
 
 
 .loginregister-container {
