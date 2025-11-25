@@ -3119,17 +3119,17 @@ export default {
 
 @media (max-width: 1024px) {
   .modal {
-    width: 95vw;
+    /*width: 95vw;
     max-width: 95vw;
     height: 80vh;
     max-height: 80vh;
-    padding: 1rem;
+    padding: 1rem;*/
   }
 
   .wordlist-dropdown {
       position: fixed;
-      top: 3em;
-      right: 1rem;
+      /*top: 3em;
+      right: 1rem;*/
     }
 
     /*.modal.invert { filter: invert(0.24); }
