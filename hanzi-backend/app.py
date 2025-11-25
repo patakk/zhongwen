@@ -116,8 +116,9 @@ def handle_500(error):
 def breakdown_chars(word):
     infos = {}
     for char in word:
+        orig_char = char
         simplified = HanziConv.toSimplified(char)
-        infos[char] = get_char_info(simplified, full=True)
+        infos[char] = get_char_info(orig_char, full=True)
 
         if char in DECOMPOSE_CACHE:
             infos[char]['recursive'] = get_recursive_decomposition(char)

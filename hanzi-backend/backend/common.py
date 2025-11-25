@@ -151,6 +151,7 @@ def get_char_info(character, full=False):
             'english': ['N/A']
         }))
         char_info = remove_variantof(char_info, ew=False)
+
     return char_info
 
 
