@@ -60,6 +60,7 @@
         class="result-group"
       >
         <div
+          v-if="group.label"
           class="group-header"
           :class="{ clickable: group.collapsible }"
           @click="group.collapsible && toggleGroup(group.key)"
@@ -136,9 +137,77 @@ export default {
       if (!annotated.length) return [];
 
       if (!onlyHanzi || !hanziChars.length) {
-        const groups = [{ key: 'all', label: 'Results', collapsible: false, items: annotated }];
-        groups[0].items.forEach((e, i) => e.displayIdx = i);
-        return groups;
+        const tokens = (query || '').trim().split(/\s+/).filter(Boolean);
+        const norm = (s) => (s || '')
+          .normalize('NFD')
+          .replace(/[̀-ͯ]/g, '')
+          .replace(/\d/g, '')
+          .replace(/\*/g, '')
+          .toLowerCase();
+        const queryNorm = norm(query);
+        const joinedNorm = queryNorm.replace(/\s+/g, '');
+
+        const groups = [];
+        const used = new Set();
+
+        // Exact matches explicitly flagged by backend (e.g., mixed hanzi+pinyin inference)
+        const backendExact = annotated.filter(entry => entry.item?.is_pinyin_exact);
+        backendExact.forEach(e => used.add(e.originalIdx));
+        if (backendExact.length) {
+          groups.push({ key: 'pinyin-exact', label: query.trim(), collapsible: true, items: backendExact });
+        }
+
+        // Full-query matches first when multiple tokens
+        if (tokens.length > 1 && backendExact.length === 0) {
+          const exactItems = annotated.filter(entry => {
+            const p = norm(entry.item?.pinyin || '');
+            return p.includes(queryNorm) || p.replace(/\s+/g, '').includes(joinedNorm);
+          });
+          exactItems.forEach(e => used.add(e.originalIdx));
+          if (exactItems.length) {
+            groups.push({ key: 'pinyin-exact', label: query.trim(), collapsible: true, items: exactItems });
+          }
+        }
+
+        // Token-ordered groups (preserve query order)
+        if (tokens.length) {
+          tokens.forEach((tok, idx) => {
+            const hanziTok = this.extractHanzi(tok).join('');
+            if (hanziTok) {
+              const tokItems = annotated.filter(entry => {
+                if (used.has(entry.originalIdx)) return false;
+                const h = entry.item?.hanzi || '';
+                return h.includes(hanziTok);
+              });
+              tokItems.forEach(e => used.add(e.originalIdx));
+              if (tokItems.length) {
+                groups.push({ key: `hanzi-${idx}-${hanziTok}`, label: hanziTok, collapsible: true, items: tokItems });
+              }
+              return;
+            }
+            const tnorm = norm(tok);
+            const tokItems = annotated.filter(entry => {
+              if (used.has(entry.originalIdx)) return false;
+              const p = norm(entry.item?.pinyin || '');
+              return p.includes(tnorm);
+            });
+            tokItems.forEach(e => used.add(e.originalIdx));
+            if (tokItems.length) {
+              groups.push({ key: `pinyin-${idx}-${tok}`, label: tok, collapsible: true, items: tokItems });
+            }
+          });
+        }
+
+        // Any remaining
+        const extras = annotated.filter(e => !used.has(e.originalIdx));
+        if (extras.length) {
+          groups.push({ key: 'pinyin-other', label: 'Other', collapsible: true, items: extras });
+        }
+
+        // Numbering
+        let displayIdx = 0;
+        groups.forEach(g => g.items.forEach(e => { e.displayIdx = displayIdx++; }));
+        return groups.filter(g => g.items && g.items.length);
       }
 
       const charOrder = [];
@@ -152,9 +221,6 @@ export default {
 
       const exactItems = annotated.filter(entry => entry.item && entry.item.hanzi === effectiveQuery);
       exactItems.forEach(entry => used.add(entry.originalIdx));
-      if (exactItems.length) {
-        groups.push({ key: `exact-${effectiveQuery}`, label: `${effectiveQuery}`, collapsible: false, items: exactItems });
-      }
 
       // Token-level exact groups if query had spaces
       if (tokens.length > 1) {
@@ -184,15 +250,29 @@ export default {
         }
       }
 
-      for (const ch of charOrder) {
-        const items = perChar[ch];
-        if (items && items.length) {
-          groups.push({ key: `char-${ch}`, label: ch, collapsible: true, items, anchor: ch });
+      if (charOrder.length === 1) {
+        const ch = charOrder[0];
+        const combined = [];
+        const seenIdx = new Set();
+        exactItems.forEach(e => { if (!seenIdx.has(e.originalIdx)) { combined.push(e); seenIdx.add(e.originalIdx); } });
+        (perChar[ch] || []).forEach(e => { if (!seenIdx.has(e.originalIdx)) { combined.push(e); seenIdx.add(e.originalIdx); } });
+        (extras || []).forEach(e => { if (!seenIdx.has(e.originalIdx)) { combined.push(e); seenIdx.add(e.originalIdx); } });
+        if (combined.length) {
+          groups.push({ key: `char-${ch}`, label: ch, collapsible: false, items: combined, anchor: ch });
         }
-      }
-
-      if (extras.length) {
-        groups.push({ key: 'other', label: 'Other matches', collapsible: true, items: extras });
+      } else {
+        if (exactItems.length) {
+          groups.push({ key: `exact-${effectiveQuery}`, label: `${effectiveQuery}`, collapsible: true, items: exactItems });
+        }
+        for (const ch of charOrder) {
+          const items = perChar[ch];
+          if (items && items.length) {
+            groups.push({ key: `char-${ch}`, label: ch, collapsible: true, items, anchor: ch });
+          }
+        }
+        if (extras.length) {
+          groups.push({ key: 'other', label: 'Other matches', collapsible: true, items: extras });
+        }
       }
 
       // Drop any empty groups before numbering

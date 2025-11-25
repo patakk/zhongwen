@@ -57,8 +57,6 @@ indices_cache = json.load(open(os.path.join(DATA_DIR, "indices_cache.json")))
 dictionary = HanziDictionary(indices_cache=indices_cache)
 
 
-
-
 def gather_hanzi_results(query, dict_client, include_other_examples=True):
     """Return (results, has_direct_match) for a Hanzi term."""
     results = []
@@ -129,6 +127,73 @@ def remove_all_numbers(pinyin):
     return re.sub(r'\d', '', pinyin)
 
 
+def ensure_neutral_tone(term):
+    tokens = [t for t in term.split() if t]
+    if not any(re.search(r'\d', t) for t in tokens):
+        return term
+    adjusted = []
+    for t in tokens:
+        if re.search(r'\d', t) or '*' in t:
+            adjusted.append(t)
+        else:
+            adjusted.append(t + '5')
+    return ' '.join(adjusted)
+
+
+def ensure_pinyin_wildcards(term):
+    if '*' in term or re.search(r'\d', term):
+        return term
+    parts = term.split()
+    if len(parts) > 1:
+        return ' '.join(p + '*' if p else p for p in parts)
+    return term + '*' if term else term
+
+
+def build_mixed_pinyin_query(tokens, dict_client):
+    inferred = []
+    for tok in tokens:
+        has_hanzi = any(regex.match(r'\p{Han}', ch) for ch in tok if ch.strip())
+        if has_hanzi:
+            try:
+                defs = dict_client.definition_lookup(tok)
+            except KeyError:
+                defs = []
+            base = ''
+            if defs:
+                base = defs[0].get('pinyin', '') or ''
+                base = re.sub(r'\s+', ' ', base).strip().lower()
+            if not base:
+                continue
+            if not re.search(r'\d', base) and '*' not in base:
+                base = base + '*'
+            inferred.append(base)
+        else:
+            tok_prepared = ensure_neutral_tone(tok)
+            inferred.append(ensure_pinyin_wildcards(tok_prepared))
+    inferred = [part for part in inferred if part]
+    return ' '.join(inferred)
+
+
+def expand_pinyin_wildcards(term):
+    if '*' not in term:
+        return [term]
+    replacements = ['1', '2', '3', '4', '5', '']
+    expanded = ['']
+    for ch in term:
+        if ch == '*':
+            expanded = [prefix + rep for prefix in expanded for rep in replacements]
+        else:
+            expanded = [prefix + ch for prefix in expanded]
+    uniq = []
+    seen = set()
+    for t in expanded:
+        if not t or t in seen:
+            continue
+        seen.add(t)
+        uniq.append(t)
+    return uniq
+
+
 def normalize_query(text):
     text = text.lower()
     text = text.strip(string.punctuation)
@@ -192,24 +257,78 @@ def search():
             add_unique_entries(results, per_char, seen)
 
     else:
-        res = dictionary.search_by_pinyin(query)
-        hard_results = []
-        for r in res:
-            dd = dictionary.definition_lookup(r)
-            for idx, d in enumerate(dd):
-                order = idx
-                piny_removed = remove_tones(d['pinyin'].lower())
-                piny_removed_numbers = remove_all_numbers(d['pinyin'].lower())
-                if d and query in piny_removed:
-                    if 'surname' in d['definition']:
-                        order = 1000
-                    hard_results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': order})
-                if d and query in piny_removed_numbers:
-                    if 'surname' in d['definition']:
-                        order = 1000
-                    results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': order})
-        if len(results) == 0:
-            results = hard_results
+        seen = set()
+        seen_map = {}
+        def append_unique(entries):
+            for r in entries:
+                key = (r.get('hanzi'), r.get('pinyin'), r.get('english'))
+                if key in seen_map:
+                    existing = seen_map[key]
+                    if r.get('is_pinyin_exact') and not existing.get('is_pinyin_exact'):
+                        existing['is_pinyin_exact'] = True
+                        existing['matched_query'] = r.get('matched_query', existing.get('matched_query'))
+                    continue
+                seen.add(key)
+                seen_map[key] = r
+                results.append(r)
+
+        def search_pinyin_term(term, mark_exact=False, source_query=None):
+            res_local = []
+            hard_results_local = []
+            normalized_term = ensure_pinyin_wildcards(ensure_neutral_tone(term))
+            candidate_terms = expand_pinyin_wildcards(normalized_term)
+            for cand in candidate_terms:
+                res = dictionary.search_by_pinyin(cand)
+                for r in res:
+                    dd = dictionary.definition_lookup(r)
+                    for idx, d in enumerate(dd):
+                        order = idx
+                        piny_removed = remove_tones(d['pinyin'].lower())
+                        piny_removed_numbers = remove_all_numbers(d['pinyin'].lower())
+                        cand_lower = cand.lower()
+                        cand_no_numbers = remove_all_numbers(cand_lower)
+                        base_entry = {'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'pinyin', 'order': order, 'is_pinyin_exact': mark_exact, 'matched_query': source_query or term}
+                        if d and cand_lower in piny_removed:
+                            if 'surname' in d['definition']:
+                                order = 1000
+                                base_entry['order'] = order
+                            hard_results_local.append(base_entry)
+                        if d and (cand_lower in piny_removed_numbers or (cand_no_numbers and cand_no_numbers in piny_removed_numbers)):
+                            if 'surname' in d['definition']:
+                                order = 1000
+                            res_entry = dict(base_entry)
+                            res_entry['order'] = order
+                            res_local.append(res_entry)
+            if len(res_local) == 0:
+                res_local = hard_results_local
+            return res_local
+
+        tokens = [t for t in query.split() if t]
+        joined = ''.join(tokens)
+        has_hanzi_token = any(any(regex.match(r'\p{Han}', ch) for ch in tok if ch.strip()) for tok in tokens)
+
+        # Prefer full query first (with spaces preserved)
+        append_unique(search_pinyin_term(query))
+        if len(tokens) > 1:
+            # Also try a joined form for multi-syllable exacts
+            append_unique(search_pinyin_term(joined))
+            for tok in tokens:
+                append_unique(search_pinyin_term(tok))
+
+        # Mixed hanzi + pinyin: infer combined pinyin and try exact lookup
+        if has_hanzi_token:
+            inferred = build_mixed_pinyin_query(tokens, dictionary)
+            if inferred:
+                append_unique(search_pinyin_term(inferred, mark_exact=True, source_query=inferred))
+            # Also surface direct hanzi lookups for hanzi tokens
+            for tok in tokens:
+                if any(regex.match(r'\p{Han}', ch) for ch in tok if ch.strip()):
+                    try:
+                        hanzi_res, _ = gather_hanzi_results(tok, dictionary, include_other_examples=True)
+                        append_unique(hanzi_res)
+                    except KeyError:
+                        pass
+
         if len(results) == 0:
             query_norm = normalize_query(query)
             res = dictionary.search_by_english(query_norm)
