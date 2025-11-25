@@ -1931,6 +1931,7 @@ export default {
   border-radius: var(--modal-border-radius);
   touch-action: pan-y; /* allow vertical scroll by default; JS prevents during horizontal swipe */
   transition: background-color 150ms ease-in-out, filter 150ms ease-in-out;
+  border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 20%);
 }
 
 /* (removed duplicate absolute overlay; using sticky version below) */
@@ -2530,7 +2531,6 @@ export default {
 }
 
 .tab-btn.active {
-  background: color-mix(in srgb, var(--fg), var(--bg) 100%);
   opacity: 1;
   z-index: 2;
   transform: translate(0, 3.5px);
@@ -2930,8 +2930,8 @@ export default {
 .concept-toggle.active {
   /* background-color: var(--primary-color); */
   background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
-  background-color: var(--orange);
   color: var(--orange-dim);
+  background-color: var(--orange);
   color: var(--bg);
 }
 
@@ -3114,6 +3114,7 @@ export default {
 	background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 	transform: scale(1);
 }
+
 
 @media (max-width: 1024px) {
   .modal {

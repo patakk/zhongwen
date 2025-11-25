@@ -92,6 +92,10 @@
 }
 
 
+@media (max-width: 1700px) and (orientation: landscape) {
+  
+}
+
 [data-theme="dark"] {
   --bg: rgb(12, 12, 12);
   --fg: rgb(255, 255, 255);

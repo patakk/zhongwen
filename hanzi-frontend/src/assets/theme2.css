@@ -35,6 +35,14 @@
   color: #e2cdec;
 }
 
+[data-theme="theme2"] .result-group {
+  border-radius: 1em !important;
+}
+
+[data-theme="theme2"] .group-header {
+  border-radius: 1em !important;
+}
+
 
 [data-theme="theme2"] .theme-button {
 	font-weight: bold;
@@ -139,22 +147,23 @@
 }
 
 [data-theme="theme2"] .tabs {
-	border-bottom: 3.5px solid var(--fg) !important;
+	border-bottom: var(--thin-border-width) solid var(--fg) !important;
 }
 
 
 [data-theme="theme2"] .tab-btn {
 	border-radius: .5em .5em 0 0 !important;
 	border: 2.5px solid #0000 !important;
-	border-bottom: 3.5px solid #0000 !important;
-	transform: translate(0, 3.5px);
+	border-bottom: var(--thin-border-width) solid #0000 !important;
+	transform: translate(0, var(--thin-border-width));
 }
 
 
 [data-theme="theme2"] .tab-btn.active {
 	border: 2.5px solid var(--fg) !important;
-	transform: translate(0, 3.5px) !important;
-	border-bottom: 3.5px solid #0000 !important;
+	transform: translate(0, calc(var(--thin-border-width) + .2px)) !important;
+	border-bottom: var(--thin-border-width) solid #0000 !important;
+    background: color-mix(in srgb, var(--fg), var(--bg) 97%);
 }
 
 
@@ -213,7 +222,6 @@
 	gap: 0.5rem;
 	padding: 0.5rem 1rem;
 	cursor: pointer;
-	background-color: var(--orange) !important;
 	color: var(--orange-dim);
 	color: hsl(208, 100%, 91%);
 	border-radius: 1em;

@@ -29,10 +29,18 @@
 	--card-shadow: 10px 10px 0px 0px var(--card-shadow-color);
 	--card-border: 4px solid color-mix(in oklab, var(--fg) 86%, var(--bg) 35%);
 	--success-color: #15dc4d;
-	--orange: #c0c0c0;
+	--orange: #fd5d00;
 	--orange-dim: #515151;
 }
 
+
+[data-theme="theme1"] .result-group {
+  border-radius: 1em !important;
+}
+
+[data-theme="theme1"] .group-header {
+  border-radius: 1em !important;
+}
 
 [data-theme="theme1"] .theme-button {
 	font-weight: bold;
@@ -152,6 +160,7 @@
 	border: var(--thin-border-width) solid var(--fg-dim) !important;
 	transform: translate(0, calc(var(--thin-border-width) + 0.2px)) !important;
 	border-bottom: var(--thin-border-width) solid #0000 !important;
+  background: color-mix(in srgb, var(--fg), var(--bg) 100%);
 }
 
 
@@ -209,11 +218,11 @@
 	gap: 0.5rem;
 	padding: 0.5rem 1rem;
 	cursor: pointer;
-	background-color: var(--orange) !important;
 	color: #f0f0f0;
 	color: var(--orange-dim);
 	border-radius: 1em;
 }
+
 
 [data-theme="theme1"] .concept-item {
 	border-radius: 1em!important;
