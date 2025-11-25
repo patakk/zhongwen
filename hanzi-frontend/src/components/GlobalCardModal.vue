@@ -77,23 +77,45 @@
           >
             <div class="main-word-line">
               <span
+                v-if="cardData.character.length > 1"
                 v-for="(char, index) in cardData.character.split('')"
-                :key="index"
                 :class="['main-word-char']"
                 @click="setActiveChar(char)"
               >
-                {{ char }}
+                
+                  <PreloadWrapper
+                        :character="char"
+                        :showBubbles="false"
+                        class="hanzi-link trad-char main-word-char"
+                      >
+                    {{ char }}
+                </PreloadWrapper>
+              </span>
+
+              <span
+                v-else
+                v-for="(char, index) in cardData.character.split('')"
+                :class="['main-word-char']"
+                @click="setActiveChar(char)"
+              >
+                  {{ char }}
               </span>
 
               <span v-if="showTraditionalLine" class="main-word-trad">
                 <span class="trad-bracket">[</span>
-                <span
+                
+                <span 
                   v-for="(tchar, index) in traditionalChars"
-                  :key="index"
-                  :class="['main-word-char','trad-char']"
-                  @click="setActiveChar(tchar)"
                 >
-                  {{ tchar }}
+                  <PreloadWrapper
+                      v-if="tchar !== '-'"
+                        :character="tchar"
+                        :showBubbles="false"
+                        class="hanzi-link trad-char main-word-char"
+                      >
+                    {{ tchar }}
+                </PreloadWrapper>
+                  <span v-else class="trad-char main-word-char">-</span>
                 </span>
                 <span class="trad-bracket">]</span>
               </span>
@@ -2027,7 +2049,7 @@ export default {
 .english-idx { margin-right: 0.35rem; opacity: 0.8; }
 .english-text { display: inline; }
 .hanzi-link { color: var(--fg); cursor: pointer; }
-.hanzi-link:hover { text-decoration: underline; color: #00f;}
+.hanzi-link:hover { text-decoration: underline; color: #00f; opacity: 1 !important; }
 
 
 .similars-list .similar-link {
@@ -2123,7 +2145,6 @@ export default {
   overflow-wrap: break-word;
   width: 100%;
   margin-top: 1em;
-  opacity: 0.6;
 
   white-space: wrap;
   word-wrap: break-word;
