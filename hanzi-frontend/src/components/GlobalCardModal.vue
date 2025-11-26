@@ -2105,7 +2105,7 @@ export default {
 .main-word-line {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.4rem;
+  gap: 0.0rem;
   flex-wrap: wrap;
 }
 
@@ -2132,12 +2132,13 @@ export default {
   font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
   font-weight: 400;
   display: inline-flex;
-  width: 1em;
   height: 1.1em;
   line-height: 1em;
   align-items: center;
   justify-content: center;
   vertical-align: middle;
+  padding: 0px !important;
+  margin: 0px !important;
 }
 
 .main-word-inverted {
