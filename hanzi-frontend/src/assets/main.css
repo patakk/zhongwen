@@ -113,19 +113,19 @@
 
 @media screen and (max-width: 768px) {
   :root {
-    --overlay-background: var(--bg);
+    --overlay-background: var(--bg) !important;
   }
 
   [data-theme="dark"] {
-    --overlay-background: var(--bg);
+    --overlay-background: var(--bg) !important;
   }
 
   [data-theme="theme1"] {
-    --overlay-background: var(--bg);
+    --overlay-background: var(--bg) !important;
   }
 
   [data-theme="theme2"] {
-    --overlay-background: var(--bg);
+    --overlay-background: var(--bg) !important;
   }
 }
 
