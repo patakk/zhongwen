@@ -82,7 +82,7 @@
                 :class="['main-word-char']"
                 @click="setActiveChar(char)"
               >
-                
+
                   <PreloadWrapper
                         :character="char"
                         :showBubbles="false"
@@ -103,8 +103,8 @@
 
               <span v-if="showTraditionalLine" class="main-word-trad">
                 <span class="trad-bracket">[</span>
-                
-                <span 
+
+                <span
                   v-for="(tchar, index) in traditionalChars"
                 >
                   <PreloadWrapper
@@ -269,11 +269,6 @@
                 >words</div>
                 <div
                   class="concept-toggle detail-toggle"
-                  :class="{ active: activeDetailTab === 'strokes', disabled: !hasStrokes }"
-                  @click="setDetailTab('strokes')"
-                >strokes</div>
-                <div
-                  class="concept-toggle detail-toggle"
                   :class="{ active: activeDetailTab === 'present', disabled: !hasPresentIn }"
                   @click="setDetailTab('present')"
                 >comp</div>
@@ -282,6 +277,11 @@
                   :class="{ active: activeDetailTab === 'decomp', disabled: !hasDecomposition }"
                   @click="setDetailTab('decomp')"
                 >decomp</div>
+                <div
+                  class="concept-toggle detail-toggle"
+                  :class="{ active: activeDetailTab === 'strokes', disabled: !hasStrokes }"
+                  @click="setDetailTab('strokes')"
+                >strokes</div>
                 <div
                   class="concept-toggle detail-toggle"
                   :class="{ active: activeDetailTab === 'extra', disabled: !hasExtraInfo }"
@@ -340,18 +340,22 @@
 
               <div v-if="activeDetailTab === 'strokes' && hasStrokes">
                 <div class="medium-label">Strokes:</div>
+                </div>
+              <div v-if="activeDetailTab === 'strokes' && hasStrokes">
 
                 <div class="hanzi-anim-wrap">
-                <div class="hanzi-anim">
-                <AnimatedHanzi
-                  :character="activeCharData.character"
-                  :strokes="activeCharData.strokes"
-                  :animatable="true"
-                  :drawThin="false"
-                  :animSpeed="0.1"
-                />
+
+                  <div class="hanzi-anim">
+                  <AnimatedHanzi
+                    :character="activeCharData.character"
+                    :strokes="activeCharData.strokes"
+                    :animatable="true"
+                    :drawThin="false"
+                    :animSpeed="0.1"
+                  />
+                  </div>
                 </div>
-                </div>
+
               </div>
 
               <div v-if="activeDetailTab === 'examples' && hasExamples" class="medium-label">Words containing {{ activeChar }}:</div>
@@ -431,18 +435,34 @@
 
               <div v-if="activeDetailTab === 'decomp' && hasDecomposition">
                   <div class="medium-label">Decomposition:</div>
+                  </div>
+              <div v-if="activeDetailTab === 'decomp' && hasDecomposition">
                 <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].recursive && Object.keys(decompositionData[activeChar].recursive).length > 0">
                   <div class="decomp-section">
                     <RecursiveDecomposition :data="{ [activeChar]: decompositionData[activeChar].recursive }" />
                   </div>
                 </div>
               </div>
-              
+
 
 
               <div v-if="activeDetailTab === 'extra' && hasExtraInfo" class="extra-info-section">
                 <div class="medium-label">Extra:</div>
+                </div>
+              <div v-if="activeDetailTab === 'extra' && hasExtraInfo" class="extra-info-section">
+
                 <div class="extra-info-details">
+
+
+                <div class="extra-info-item">
+                  <span class="basic-label">Alternate fonts:</span>
+                  <div class="extra-fonts">
+                    <div class="extra-font-item font-kaiti">{{ activeChar || (cardData && cardData.character) || '' }}</div>
+                    <div class="extra-font-item font-noto-sans">{{ activeChar || (cardData && cardData.character) || '' }}</div>
+                    <div class="extra-font-item font-noto-serif">{{ activeChar || (cardData && cardData.character) || '' }}</div>
+                  </div>
+                </div>
+
                   <div v-if="activeCharData.radical" class="extra-info-item">
                     <span class="basic-label">Radical:</span> {{ activeCharData.radical }}
                   </div>
@@ -1829,7 +1849,7 @@ export default {
 }
 
 .extra-info-details {
-  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
+  /*background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));*/
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   padding: 1em;
 }
@@ -2576,7 +2596,7 @@ export default {
   flex-wrap: nowrap;
   overflow-x: auto;
   padding-bottom: 0.25rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   justify-content: space-between;
 }
 
@@ -2638,9 +2658,8 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
   box-sizing: border-box;
-  padding: 0.5rem;
+  padding: 1em;
   flex: 1;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 }
@@ -2653,6 +2672,7 @@ export default {
   margin-left: auto;
   margin-right: auto;
   margin-top: 1em;
+  margin-bottom: 1em;
   line-height: 1;
   width: 45%;
   box-sizing: border-box;
@@ -2717,8 +2737,6 @@ export default {
 
 .decomp-section {
   height: auto;
-  margin-top: 1rem;
-  padding: 1rem;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 }
 
@@ -3279,4 +3297,26 @@ export default {
 body.modal-open {
   overflow: hidden;
 }
+
+.extra-fonts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  justify-items: center;
+  margin: 0.75rem 0 1rem;
+}
+.extra-font-item {
+  font-size: 2.75rem;
+  line-height: 1.1;
+  text-align: center;
+  width: 100%;
+  padding: 0.5rem 0;
+  border: 1px solid color-mix(in oklab, var(--fg) 8%, var(--bg) 100%);
+  border-radius: var(--pinyin-meaning-group-border-radius, 0);
+  background: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
+}
+.font-kaiti { font-family: 'Kaiti', 'KaiTi', serif; }
+.font-noto-sans { font-family: 'Noto Sans SC', 'Noto Sans', sans-serif; }
+.font-noto-serif { font-family: 'Noto Serif SC', 'Noto Serif', serif; }
 </style>

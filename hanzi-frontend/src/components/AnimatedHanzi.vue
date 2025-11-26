@@ -1,7 +1,7 @@
 <template>
   <div class="animated-hanzi" v-if="hasStrokeData">
     <div class="redraw-button" @click="animateCharacter"><font-awesome-icon :icon="['fas', 'arrow-rotate-right']" class="redraw-icon" /></div>
-    <div class="clear-button" @click="beginQuizMode"><font-awesome-icon :icon="['fas', 'pen-fancy']"   class="clear-icon" /></div>
+    <!--<div class="clear-button" @click="beginQuizMode"><font-awesome-icon :icon="['fas', 'pen-fancy']"   class="clear-icon" /></div>-->
     <canvas ref="hanziCanvas" class="anim-character"></canvas>
   </div>
 </template>
@@ -336,13 +336,14 @@ export default defineComponent({
 
 .redraw-button {
   position: absolute;
-  top: .5em;
-  right: .5em;
+  top: .35em;
+  right: .35em;
   background: var(--bg);
   border-radius: 50%;
-  padding: .5rem;
+  padding: .25rem;
   cursor: pointer;
   z-index: 10;
+  opacity: 0.7;
   border: 2px solid var(--fg);
 }
 
