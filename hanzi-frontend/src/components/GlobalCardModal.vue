@@ -448,21 +448,7 @@
 
               <div v-if="activeDetailTab === 'extra' && hasExtraInfo" class="extra-info-section">
                 <div class="medium-label">Extra:</div>
-                </div>
-              <div v-if="activeDetailTab === 'extra' && hasExtraInfo" class="extra-info-section">
-
                 <div class="extra-info-details">
-
-
-                <div class="extra-info-item">
-                  <span class="basic-label">Alternate fonts:</span>
-                  <div class="extra-fonts">
-                    <div class="extra-font-item font-kaiti">{{ activeChar || (cardData && cardData.character) || '' }}</div>
-                    <div class="extra-font-item font-noto-sans">{{ activeChar || (cardData && cardData.character) || '' }}</div>
-                    <div class="extra-font-item font-noto-serif">{{ activeChar || (cardData && cardData.character) || '' }}</div>
-                  </div>
-                </div>
-
                   <div v-if="activeCharData.radical" class="extra-info-item">
                     <span class="basic-label">Radical:</span> {{ activeCharData.radical }}
                   </div>
@@ -472,7 +458,7 @@
                   <div v-if="activeCharData.rank" class="extra-info-item">
                     <span class="basic-label">Frequency Rank:</span> {{ activeCharData.rank }}
                   </div>
-                    <div v-if="activeCharData.similars && !(typeof activeCharData.similars === 'object' && Object.keys(activeCharData.similars).length === 0)" class="extra-info-item">
+                  <div v-if="activeCharData.similars && !(typeof activeCharData.similars === 'object' && Object.keys(activeCharData.similars).length === 0)" class="extra-info-item">
                     <span class="basic-label">Similars:</span>
                     <span class="similars-list">
                       <span
@@ -484,9 +470,22 @@
                         {{ simChar }}
                       </span>
                     </span>
-                    </div>
+                  </div>
                   <div v-if="activeCharData.grade_level" class="extra-info-item">
                     <span class="basic-label">Grade Level:</span> {{ activeCharData.grade_level }}
+                  </div>
+                  <div class="extra-info-item">
+                    <span class="basic-label">Alternate fonts:</span>
+                    <div class="extra-fonts">
+                      <div
+                        v-for="font in alternateFontOptions"
+                        :key="font.key"
+                        class="extra-font-item"
+                        :class="font.className"
+                      >
+                        {{ font.char }}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -679,13 +678,27 @@ export default {
     currentFontKey() {
       try { return this.$store.getters['theme/getCurrentFont'] || 'noto-serif'; } catch(e) { return 'noto-serif'; }
     },
+    alternateFontOptions() {
+      const displayChar = this.activeChar || (this.cardData && this.cardData.character) || ''
+      const options = [
+        { key: 'kaiti', className: 'font-kaiti' },
+        { key: 'noto-sans', className: 'font-noto-sans' },
+        { key: 'noto-serif', className: 'font-noto-serif' },
+        { key: 'fusion-pixel', className: 'font-fusion-pixel' },
+      ];
+      const current = this.currentFontKey || 'noto-serif';
+      return options
+        .filter(o => o.key !== current)
+        .map(o => ({ ...o, char: displayChar || ' ' }));
+    },
     mainWordFontStyle() {
       const families = {
         'kaiti': "'Kaiti','STKaiti','Kai','楷体',serif",
         'noto-sans': "'Noto Sans SC','Noto Sans CJK SC','Source Han Sans SC','PingFang SC','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif",
         'noto-serif': "'Noto Serif SC','Noto Serif CJK SC','Source Han Serif SC','Songti SC','SimSun',serif",
+        'fusion-pixel': "'Fusion Pixel S', 'Fusion Pixel T'"
       };
-      const key = this.fontOrder[this.fontCycleIndex] || this.currentFontKey;
+      const key = this.currentFontKey;
       const family = families[key] || families['noto-serif'];
       const scale = key === 'kaiti' ? '1.15' : '1';
       const len = (this.cardData && this.cardData.character) ? this.cardData.character.split('') .length : 1;
@@ -3336,4 +3349,5 @@ body.modal-open {
 .font-kaiti { font-family: 'Kaiti', 'KaiTi', serif; }
 .font-noto-sans { font-family: 'Noto Sans SC', 'Noto Sans', sans-serif; }
 .font-noto-serif { font-family: 'Noto Serif SC', 'Noto Serif', serif; }
+.font-fusion-pixel { font-family: 'Fusion Pixel S', 'Fusion Pixel T'; }
 </style>

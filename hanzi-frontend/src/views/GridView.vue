@@ -253,7 +253,7 @@ export default {
       selectedFont: (() => {
         try {
           const key = (this && this.$store && this.$store.getters && this.$store.getters['theme/getCurrentFont']) || 'noto-serif';
-          const map = { 'kaiti': 'Kaiti', 'noto-sans': 'Noto Sans SC', 'noto-serif': 'Noto Serif SC' };
+          const map = { 'kaiti': 'Kaiti', 'noto-sans': 'Noto Sans SC', 'noto-serif': 'Noto Serif SC', 'fusion-pixel': 'Fusion Pixel S' };
           return map[key] || 'Noto Serif SC';
         } catch(e) { return 'Noto Serif SC'; }
       })(),

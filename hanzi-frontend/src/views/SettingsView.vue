@@ -49,8 +49,42 @@
             >
               Noto Serif
             </button>
+            <button 
+              class="theme-button" 
+              :class="{ 'active': currentFont === 'fusion-pixel' }" 
+              @click="selectFont('fusion-pixel')"
+            >
+              Fusion Pixel
+            </button>
           </div>
         </div>
+        <div class="theme-selection" style="margin-top: 1rem;">
+          <div class="theme-option-label">UI Font:</div>
+          <div class="theme-buttons">
+            <button
+              class="theme-button"
+              :class="{ 'active': currentUiFont === 'sf-mono' }"
+              @click="selectUiFont('sf-mono')"
+            >
+              SF Mono
+            </button>
+            <button
+              class="theme-button"
+              :class="{ 'active': currentUiFont === 'fusion-pixel' }"
+              @click="selectUiFont('fusion-pixel')"
+            >
+              Fusion Pixel
+            </button>
+            <button
+              class="theme-button"
+              :class="{ 'active': currentUiFont === 'times' }"
+              @click="selectUiFont('times')"
+            >
+              Times New Roman
+            </button>
+          </div>
+        </div>
+        <div class="ui-font-preview">Abc 汉字</div>
         <div class="font-preview">你好</div>
         <!-- <div class="current-theme">
           <div class="theme-option-label">Current Theme:</div>
@@ -305,6 +339,7 @@ const currentTheme = computed(() => store.getters['theme/getCurrentTheme'])
 const isDefaultThemeSystem = computed(() => store.getters['theme/isDefaultThemeSystem'])
 const currentThemeName = computed(() => store.getters['theme/getCurrentThemeName'])
 const currentFont = computed(() => store.getters['theme/getCurrentFont'])
+const currentUiFont = computed(() => store.getters['theme/getCurrentUiFont'])
 
 // Theme system functions
 function selectThemeSystem(system) {
@@ -332,8 +367,14 @@ function toggleCurrentTheme() {
 
 function selectFont(fontKey) {
   store.dispatch('theme/setFont', fontKey);
-  const label = fontKey === 'kaiti' ? 'Kaiti' : fontKey === 'noto-sans' ? 'Noto Sans' : 'Noto Serif';
+  const label = fontKey === 'kaiti' ? 'Kaiti' : fontKey === 'noto-sans' ? 'Noto Sans' : fontKey === 'noto-serif' ? 'Noto Serif' : fontKey === 'fusion-pixel' ? 'Fusion Pixel S' : 'Unknown';
   showSuccessToast(`Character font set to ${label}`);
+}
+
+function selectUiFont(fontKey) {
+  store.dispatch('theme/setUiFont', fontKey);
+  const label = fontKey === 'fusion-pixel' ? 'Fusion Pixel S' : fontKey === 'times' ? 'Times New Roman' : 'SF Mono Regular';
+  showSuccessToast(`UI font set to ${label}`);
 }
 
 const showEmailModal = ref(false)
@@ -695,6 +736,13 @@ h2 {
   font-size: calc(2rem * var(--main-word-scale, 1));
   text-align: center;
   padding: 1rem;
+}
+
+.ui-font-preview {
+  font-family: var(--font-family, 'SF Mono Regular', monospace);
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 0.75rem;
 }
 
 .profile-info-grid {

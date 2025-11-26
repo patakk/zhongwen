@@ -96,13 +96,11 @@ def create_app():
     # Register blueprints
     from backend.routes.google_auth import google_oauth_bp, google_auth_bp
     from backend.routes.api import api_bp
-    from backend.routes.puzzles import puzzles_bp
     from backend.routes.manage import manage_bp
 
     app.register_blueprint(google_oauth_bp, url_prefix="/login")
     app.register_blueprint(google_auth_bp)
     app.register_blueprint(api_bp)
-    app.register_blueprint(puzzles_bp)
     app.register_blueprint(manage_bp)
 
     Session(app)

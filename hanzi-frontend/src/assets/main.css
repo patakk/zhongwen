@@ -19,6 +19,17 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Fusion Pixel S';
+  src: url('https://assets.hanzi.abcrgb.xyz/fusion-pixel-12px-proportional-zh_hans.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fusion Pixel T';
+  src: url('https://assets.hanzi.abcrgb.xyz/fusion-pixel-12px-proportional-zh_hant.ttf') format('truetype');
+}
+
+
 #app{
 }
 
@@ -34,7 +45,6 @@
   --secondary-color: #d31500;
   --dim-primary: #b789c733;
   --font-family: 'SF Mono Regular', monospace;
-  --second-font: "Archivo Black";
   --second-font: Arial, Helvetica, sans-serif;
 
   --font-size: 16px;

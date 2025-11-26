@@ -21,21 +21,6 @@ def validate_password(password):
 
 manage_bp = Blueprint("manage", __name__, url_prefix="/api")
 
-@manage_bp.route('/account-management')
-@hard_session_required
-def account_management():
-    username = request.args.get('user', session.get('username'))
-
-    if not username:
-        return "User or deck not specified", 400
-
-    google_id = User.query.filter_by(username=username).first().google_id
-    profile_pic = User.query.filter_by(username=username).first().profile_pic
-    email = User.query.filter_by(username=username).first().email
-    password = User.query.filter_by(username=username).first().password_hash
-
-    return render_template('account_management/account_management.html', darkmode=session['darkmode'], username=session.get('username'), google_id=google_id, profile_pic=profile_pic, email=email)
-
 
 @manage_bp.route('/delete-account', methods=['POST'])
 @hard_session_required
@@ -134,15 +119,6 @@ def email_management():
             
             session['_from_post'] = True
         return redirect(url_for('manage.email_management'))
-    
-    # Handle GET request - render the template for traditional web flows
-    if not session.pop('_from_post', False):
-        session.pop('_flashes', None)
-    
-    email = ''
-    if session.get('username', 'tempuser') != 'tempuser':
-        email = User.query.filter_by(username=session['username']).first().email
-    return render_template('account_management/email_management.html', darkmode=session['darkmode'], username=session['username'], current_user={'email': email})
 
 
 @manage_bp.route('/verify-email/<token>')

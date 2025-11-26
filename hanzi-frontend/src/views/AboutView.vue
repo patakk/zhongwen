@@ -56,6 +56,11 @@
                 Provided by <a class="links" href="https://tatoeba.org" target="_blank">Tatoeba.org</a>, licensed under 
                 <a class="links" href="https://creativecommons.org/licenses/by/2.0/fr/" target="_blank">Creative Commons Attribution 2.0 FR</a>.
               </p>
+              <br />
+              <span class="smallh">Fonts:</span><br />
+              <p style="margin-left:20px;">
+                Fusion Pixel fonts (S/T) from the <a class="links" href="https://github.com/TakWolf/fusion-pixel-font" target="_blank">fusion-pixel-font</a> project, used under SIL Open Font License 1.1 and MIT (see the project licenses).
+              </p>
             </div>
           </div>
         </li>

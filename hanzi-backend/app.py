@@ -54,13 +54,12 @@ from backend.common import DATA_DIR
 from backend.routes.manage import validate_password
 
 from backend.common import config
+from hanziconv import HanziConv
 
 from flask import send_file
 
 import json
 import os
-import secrets
-from backend.routes.puzzles import add_sorted_decknames_to_context
 
 from backend.setup import create_app
 from flask_limiter.util import get_remote_address
@@ -121,7 +120,6 @@ def breakdown_chars(word):
         cinfo = get_char_info(orig_char, full=True)
         if not cinfo.get("pinyin"):
             cinfo = get_char_info(simplified, full=True)
-            print(cinfo)
         infos[char] = cinfo
 
         if char in DECOMPOSE_CACHE:
@@ -589,123 +587,6 @@ def get_decks():
     return response
 
 
-from backend.routes.puzzles import get_common_context
-
-'''
-@puzzles_bp.route("/hanzitest_pinyin")
-@session_required
-def hanzitest_pinyin():
-    characters = dict(CARDDECKS[session["deck"]].items())
-    context = get_common_context()
-    context["characters"] = characters
-    return render_template("puzzles/hanzitest_pinyin.html", **context)
-'''
-
-
-@app.route('/hanziwriting')
-@session_required
-def hanziwriting():
-    context = get_common_context()
-    add_sorted_decknames_to_context(session.get('username'), context)
-    return render_template("hanziquiz.html", **context)
-
-# @app.route('/convert')
-# @session_required
-# def convert():
-#     return render_template('convert.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, wordlist=session['deck'])
-
-@app.route('/convert2')
-@session_required
-def convert2():
-    return render_template('convert2.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=db_get_user_string(session['username']), decks=DECKS_INFO, wordlist=session['deck'])
-
-@app.route('/convert3')
-@session_required
-def convert3():
-    convertedText = db_get_user_string(session['username'])
-    chars = set(''.join(convertedText.split()))
-    chars = chars.intersection(stroke_chars)
-    char_data = {char : {'strokes': STROKES_CACHE[char], 'pinyin': get_pinyin(char)} for char in chars}
-    
-    lines = convertedText.split('\n')
-    translations = get_translations(lines)
-
-    return render_template('convert3.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
-
-@app.route('/convert')
-@session_required
-def convert():
-    convertedText = db_get_user_string(session['username'])
-    chars = set(''.join(convertedText.split()))
-    chars = chars.intersection(stroke_chars)
-    char_data = {char : {'strokes': STROKES_CACHE[char], 'pinyin': get_pinyin(char)} for char in chars}
-    
-    lines = convertedText.split('\n')
-    translations = get_translations(lines)
-
-    return render_template('convert.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), convertedText=convertedText, dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], transPerLine=translations)
-
-
-
-
-@app.route('/stories')
-@session_required
-def stories():
-    username = session.get('username')
-    first_story = all_stories[stories_names[0]]
-    first_chapter = first_story['chapters_data'][first_story['chapters_list'][0]['uri']]
-    chars = set(''.join([''.join(ls) for ls in first_chapter['hanzi']]) + ''.join(first_chapter['name']))
-    words = []
-    for line in first_chapter['hanzi']:
-        words += line
-    words += first_chapter['name']
-    chars = chars.intersection(stroke_chars)
-    char_data = {char : {'strokes': STROKES_CACHE[char], 'chardata': get_char_info(char)} for char in chars}
-    word_data = {word: get_char_info(word) for word in words}
-    all_chapters = [[chapter['title'] for chapter in all_stories[story_name]['chapters_list']] for story_name in stories_names]
-    return render_template('stories.html', darkmode=session.get('darkmode', default_darkmode), chapter=first_chapter, chapters=all_chapters, stories=stories_names, username=session.get('username'), dataPerCharacter=char_data, decks=DECKS_INFO, wordlist=session['deck'], word_data=word_data, custom_deck_names=db_get_word_list_names_only(username))
-
-@app.route('/get_story/<int:story_index>/<int:chapter_index>')
-@session_required
-def get_story(story_index, chapter_index):
-    selected_story = all_stories[stories_names[story_index-1]]
-    chapter_list = selected_story['chapters_list']
-    chapter_data = selected_story['chapters_data']
-    if 1 <= chapter_index <= len(chapter_list):
-        chapter = chapter_data[chapter_list[chapter_index-1]['uri']]
-        chars = set(''.join([''.join(ls) for ls in chapter['hanzi']]) + ''.join(chapter['name']))
-        words = []
-        for line in chapter['hanzi']:
-            words += line
-        words += chapter['name']
-        chars = chars.intersection(stroke_chars)
-        char_data = {char: {'pinyin': get_pinyin(char)} for char in chars}
-        word_data = {word: get_char_info(word) for word in words}
-        return jsonify({
-            'chapter': chapter,
-            'char_data': char_data,
-            'word_data': word_data
-        })
-    else:
-        return jsonify({'error': 'Story index out of range'}), 404
-
-
-@app.route('/get_story_strokes/<int:story_index>/<int:chapter_index>')
-@session_required
-def get_story_strokes(story_index, chapter_index):
-    selected_story = all_stories[stories_names[story_index-1]]
-    chapter_list = selected_story['chapters_list']
-    chapter_data = selected_story['chapters_data']
-    if 1 <= chapter_index <= len(chapter_list):
-        chapter = chapter_data[chapter_list[chapter_index-1]['uri']]
-        chars = set(''.join([''.join(ls) for ls in chapter['hanzi']]) + ''.join(chapter['name']))
-        chars = chars.intersection(stroke_chars)
-        stroke_data = {char: STROKES_CACHE[char] for char in chars}
-        return jsonify(stroke_data)
-    else:
-        return jsonify({'error': 'Story index out of range'}), 404
-
-
 
 @app.route('/api/get_present_in_chunk', methods=['GET'])
 def get_present_in_chunk():
@@ -734,98 +615,16 @@ def get_present_in_chunk():
     })
 
 
-def get_charset(text):
-    charset = [c for c in text if c not in ' \n']
-    charset = set(''.join(text.split()))
-    charset = charset.intersection(stroke_chars)
-    return charset
-
 new_translations_path = 'data/new_translations.json'
 cached_translations = {}
 if os.path.exists(new_translations_path):
     cached_translations = json.load(open(new_translations_path, 'r'))
-
-def get_translations(lines):
-    ai_input = []
-    ai_translations = []
-    for line in lines:
-        if line.strip() == '':
-            pass
-            ai_translations.append('')
-        elif line in cached_translations:
-            ai_translations.append(cached_translations[line])
-        else:
-            ai_translations.append('<translation>')
-            ai_input.append(line)
-    if len(ai_input) == 0:
-        return ai_translations
-    prompt = '''
-        you are a chinese knowledge genius translator, and you behave like a software the takes as input an array of strings, and outputs the complete translations, but each in one line. Your output must under all circumsatnces always simply be these translated lines, nothing else. No comments or anything. Here's the aray, you simply output the lines which I will parse (output raw text in each line): ''' + str(ai_input) 
-    api_key = auth_keys.get("OPENAI_API_KEY_ZHONG_WEN")
-    url = "https://api.openai.com/v1/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
-    }
-    data = {
-        "model": "gpt-4o-mini",
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.5
-    }
-
-    response = requests.post(url, headers=headers, json=data)
-    data = response.json()['choices'][0]['message']['content']
-    translations_wos = data.split('\n')
-    translations = []
-
-    for i, line in enumerate(lines):
-        ai_translation = ai_translations[i]
-        if ai_translation == '<translation>':
-            tw = translations_wos.pop(0)
-            if tw not in cached_translations:
-                cached_translations[line] = tw
-            translations.append(tw)
-        else:
-            translations.append(ai_translation)
-    
-    with open(new_translations_path, 'w') as f:
-        f.write(json.dumps(cached_translations, ensure_ascii=False, indent=4))
-    
-    # for i, line in enumerate(lines):
-    #     if line.strip() == '':
-    #         translations.append('')
-    #     else:
-    #         tw = translations_wos[tidx]
-    #         if tw not in cached_translations:
-    #             cached_translations[line] = tw
-    #         translations.append(tw)
-    #         tidx += 1
-
-    assert len(translations) == len(lines)
-    return translations
-    
 
 @app.errorhandler(404)
 def page_not_found(e):
     return '', 404
 
 
-import re
-def remove_tones(pinyin):
-    return re.sub(r'[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]', lambda m: 'aeiouü'['āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'.index(m.group()) // 4], pinyin)
-
-def remove_all_numbers(pinyin):
-    return re.sub(r'\d', '', pinyin)
-
-
-@app.route('/deviceinfo')
-def deviceinfo():
-    return render_template('deviceinfo.html')
-
-
-from pypinyin import lazy_pinyin, Style
-
-from hanziconv import HanziConv
 
 def move_tone_number_to_end(pinyin):
     return ''.join([char for char in pinyin if char not in '1234']) + ''.join([char for char in pinyin if char in '1234'])

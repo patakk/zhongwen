@@ -448,6 +448,7 @@ const themeModule = {
   state: {
     currentTheme: 'theme1', // Default theme
     currentFont: 'noto-serif', // Default character font
+    currentUiFont: 'sf-mono', // Default UI font
   },
   mutations: {
     SET_THEME(state, theme) {
@@ -462,6 +463,7 @@ const themeModule = {
         'kaiti': "'Kaiti','STKaiti','Kai','楷体',serif",
         'noto-sans': "'Noto Sans SC','Noto Sans CJK SC','Source Han Sans SC','PingFang SC','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif",
         'noto-serif': "'Noto Serif SC','Noto Serif CJK SC','Source Han Serif SC','Songti SC','SimSun',serif",
+        'fusion-pixel': "'Fusion Pixel S', 'Fusion Pixel T'"
       };
       const family = families[fontKey] || families['noto-serif'];
       // Apply CSS variable for main character font
@@ -471,6 +473,19 @@ const themeModule = {
       document.documentElement.style.setProperty('--main-word-scale', scale);
       // Persist
       localStorage.setItem('font', fontKey);
+    },
+    SET_UI_FONT(state, fontKey) {
+      state.currentUiFont = fontKey;
+      const families = {
+        'sf-mono': "'SF Mono Regular','SFMono-Regular','SF Mono',monospace",
+        'fusion-pixel': "'Fusion Pixel S','Fusion Pixel T','SF Mono Regular',monospace",
+        'times': "'Times New Roman','Times',serif"
+      };
+      const family = families[fontKey] || families['sf-mono'];
+      const second = fontKey == 'fusion-pixel' ? families['fusion-pixel'] : "Arial, Helvetica, sans-serif";
+      document.documentElement.style.setProperty('--font-family', family);
+      document.documentElement.style.setProperty('--second-font', second);
+      localStorage.setItem('uiFont', fontKey);
     },
   },
   actions: {
@@ -490,6 +505,10 @@ const themeModule = {
       // Initialize font from localStorage (defaults to noto-serif)
       const font = localStorage.getItem('font') || 'noto-serif';
       commit('SET_FONT', font);
+
+      // Initialize UI font from localStorage (defaults to sf-mono)
+      const uiFont = localStorage.getItem('uiFont') || 'sf-mono';
+      commit('SET_UI_FONT', uiFont);
     },
     toggleTheme({ commit, state }) {
       // Toggle between pairs: light/dark or theme1/theme2
@@ -513,6 +532,9 @@ const themeModule = {
     setFont({ commit }, fontKey) {
       commit('SET_FONT', fontKey);
     },
+    setUiFont({ commit }, fontKey) {
+      commit('SET_UI_FONT', fontKey);
+    },
     setThemeSystem({ commit, state }, system) {
       // 'default' = light/dark, 'custom' = theme1/theme2
       let newTheme;
@@ -533,6 +555,7 @@ const themeModule = {
   getters: {
     getCurrentTheme: state => state.currentTheme,
     getCurrentFont: state => state.currentFont,
+    getCurrentUiFont: state => state.currentUiFont,
     isDefaultThemeSystem: state => ['light', 'dark'].includes(state.currentTheme),
     getCurrentThemeName: state => {
       switch(state.currentTheme) {
