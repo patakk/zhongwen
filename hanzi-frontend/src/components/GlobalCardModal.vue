@@ -3211,16 +3211,16 @@ export default {
     */
 }
 
-@media screen and (max-width: 957px) {
+@media screen and (max-width: 768px) {
     .modal {
       width: 100%;
       max-width: 100%;
-      height: 100%;
+      height: 100vh;
       top: 0;
       left: 0;
       transform: translate(0%, 0%);
       position: absolute;
-      max-height: 100%;
+      max-height: 100vh;
       padding: 3rem 1rem 1rem 1rem;
       border: none;
     }
