@@ -119,6 +119,14 @@
   [data-theme="dark"] {
     --overlay-background: var(--bg);
   }
+
+  [data-theme="theme1"] {
+    --overlay-background: var(--bg);
+  }
+
+  [data-theme="theme2"] {
+    --overlay-background: var(--bg);
+  }
 }
 
 [data-theme="theme2"] {
