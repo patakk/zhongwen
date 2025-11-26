@@ -2240,7 +2240,7 @@ export default {
   width: 100%;
   box-sizing: border-box;
   min-width: 0;
-  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
+  /*background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));*/
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 }
 
@@ -2541,8 +2541,7 @@ export default {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  border-bottom: 1.5px solid color-mix(in oklab, var(--fg) 55%, var(--bg) 50%);
-  border: none;
+  border-bottom: var(--thin-border-width) solid var(--fg-dim);
   position: relative;
   overflow: visible;
 }
@@ -2564,15 +2563,32 @@ export default {
   flex-shrink: 0;
   position: relative;
   z-index: 1;
-  border-bottom: 3.5px solid #0000;
   border-bottom: none;
+  border-bottom: 3.5px solid #0000;
   transform: translate(0, 3.5px);
+}
+
+
+
+.tab-btn {
+	border: var(--thin-border-width) solid #0000 !important;
+	border-bottom: var(--thin-border-width) solid #0000 !important;
+	transform: translate(0, var(--thin-border-width));
+}
+
+
+.tab-btn.active {
+	border: var(--thin-border-width) solid var(--fg-dim) !important;
+	transform: translate(0, calc(var(--thin-border-width) + 0.2px)) !important;
+	border-bottom: var(--thin-border-width) solid #0000 !important;
+  background: color-mix(in srgb, var(--fg), var(--bg) 100%);
 }
 
 .tab-open-word {
   position: absolute;
   top: 0rem;
-  font-size: 0.95rem;
+  right: 0.05rem;
+  font-size: 0.8rem;
   opacity: 0.75;
   cursor: pointer;
   color: var(--fg);
@@ -2581,7 +2597,7 @@ export default {
 .tab-btn.active {
   opacity: 1;
   z-index: 2;
-  transform: translate(0, 3.5px);
+  transform: translate(0, var(--thin-border-width));
 }
 
 .char-details {
@@ -3129,7 +3145,7 @@ export default {
   flex-wrap: wrap;
   gap: 0.0rem;
   padding: .5em .5em .5em .5em;
-  background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));
+  /*background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));*/
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 }
 
@@ -3245,7 +3261,6 @@ export default {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    border-bottom: 2px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
     position: relative;
     overflow: visible;
   }
