@@ -2548,7 +2548,7 @@ export default {
 
 .tab-btn {
   position: relative;
-  font-size: 1.5rem;
+  font-size: 2rem;
   padding: 0.5rem 1rem;
   border: none;
   cursor: pointer;
@@ -2582,6 +2582,7 @@ export default {
 	transform: translate(0, calc(var(--thin-border-width) + 0.2px)) !important;
 	border-bottom: var(--thin-border-width) solid #0000 !important;
   background: color-mix(in srgb, var(--fg), var(--bg) 100%);
+  font-size: 3.5rem;
 }
 
 .tab-open-word {
