@@ -111,6 +111,16 @@
   --decks-shadow: 5px 5px 16px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
 }
 
+@media screen and (max-width: 768px) {
+  :root {
+    --overlay-background: var(--bg);
+  }
+
+  [data-theme="dark"] {
+    --overlay-background: var(--bg);
+  }
+}
+
 [data-theme="theme2"] {
   --pinyin-color: #b39cc9;
   --first-t: #6a95a5;
