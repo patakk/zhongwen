@@ -3215,12 +3215,12 @@ export default {
     .modal {
       width: 100%;
       max-width: 100%;
-      height: 100vh;
+      height: 100%;
       top: 0;
       left: 0;
       transform: translate(0%, 0%);
       position: absolute;
-      max-height: 100vh;
+      max-height: 100%;
       padding: 3rem 1rem 1rem 1rem;
       border: none;
     }
