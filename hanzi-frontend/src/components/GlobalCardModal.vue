@@ -3211,7 +3211,7 @@ export default {
     */
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 957px) {
     .modal {
       width: 100%;
       max-width: 100%;
