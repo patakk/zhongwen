@@ -320,7 +320,6 @@ def search():
             inferred = build_mixed_pinyin_query(tokens, dictionary)
             if inferred:
                 append_unique(search_pinyin_term(inferred, mark_exact=True, source_query=inferred))
-            # Also surface direct hanzi lookups for hanzi tokens
             for tok in tokens:
                 if any(regex.match(r'\p{Han}', ch) for ch in tok if ch.strip()):
                     try:
