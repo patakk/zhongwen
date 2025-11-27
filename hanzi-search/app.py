@@ -331,11 +331,10 @@ def search():
         if len(results) == 0:
             query_norm = normalize_query(query)
             res = list({r[:-1] if r.endswith("的") else r for r in dictionary.search_by_english(query_norm)})
-
+            res = [r for r in res if not any(regex.match(r'\p{Han}', ch) and HanziConv.toSimplified(ch) != ch for ch in r)]
             for r in res:
                 dd = dictionary.definition_lookup(r, default_def="---")
                 for idx, d in enumerate(dd): # here i take into account the order of the definitions
-                    print(d['definition'].lower())
                     if d and query_norm in d['definition'].lower():
                         results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': idx})
             qwords = query_norm.split(" ") 
