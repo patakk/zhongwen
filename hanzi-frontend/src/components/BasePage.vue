@@ -57,7 +57,6 @@
   padding: 1.5em 1em 1em 1em;
   text-align: left;
   box-sizing: border-box;
-  font-family: var(--second-font);
   border-bottom: var(--h1-border);
   /* opacity: 0; */
 }

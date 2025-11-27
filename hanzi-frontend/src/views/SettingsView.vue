@@ -6,7 +6,7 @@
       <div class="settings-section theme-settings">
         <h3>Appearance</h3>
         <div class="section-divider"></div>
-        <div class="theme-selection">
+        <!--<div class="theme-selection">
           <div class="theme-option-label">Theme:</div>
           <div class="theme-buttons">
             <button 
@@ -24,9 +24,9 @@
               Tooney
             </button>
           </div>
-        </div>
+        </div>-->
         <div class="theme-selection" style="margin-top: 1rem;">
-          <div class="theme-option-label">Default Font:</div>
+          <div class="theme-option-label">Hanzi Font:</div>
           <div class="theme-buttons">
             <button 
               class="theme-button" 
@@ -58,6 +58,7 @@
             </button>
           </div>
         </div>
+        <div class="font-preview">你好</div>
         <div class="theme-selection" style="margin-top: 1rem;">
           <div class="theme-option-label">UI Font:</div>
           <div class="theme-buttons">
@@ -77,15 +78,14 @@
             </button>
             <button
               class="theme-button"
-              :class="{ 'active': currentUiFont === 'times' }"
-              @click="selectUiFont('times')"
+              :class="{ 'active': currentUiFont === 'source-serif' }"
+              @click="selectUiFont('source-serif')"
             >
-              Times New Roman
+              Source Serif
             </button>
           </div>
         </div>
-        <div class="ui-font-preview">Abc 汉字</div>
-        <div class="font-preview">你好</div>
+        <div class="ui-font-preview">Abc 123</div>
         <!-- <div class="current-theme">
           <div class="theme-option-label">Current Theme:</div>
           <div class="theme-value">{{ currentThemeName }}</div>
@@ -373,7 +373,7 @@ function selectFont(fontKey) {
 
 function selectUiFont(fontKey) {
   store.dispatch('theme/setUiFont', fontKey);
-  const label = fontKey === 'fusion-pixel' ? 'Fusion Pixel S' : fontKey === 'times' ? 'Times New Roman' : 'SF Mono Regular';
+  const label = fontKey === 'fusion-pixel' ? 'Fusion Pixel S' : fontKey === 'source-serif' ? 'JetBrains Mono' : 'SF Mono Regular';
   showSuccessToast(`UI font set to ${label}`);
 }
 
@@ -1063,7 +1063,6 @@ h3 {
   color: var(--fg);
   /* transition: all 0.2s; */
   
-	font-weight: bold;
 	border: 2px solid var(--black) !important;
 	background: var(--bg) !important;
 	opacity: .5;

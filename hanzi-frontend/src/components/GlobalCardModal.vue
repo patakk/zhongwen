@@ -1,6 +1,6 @@
 <template>
   <div v-if="isVisible || pageMode" :class="['global-modal-container', { 'page-mode-container': pageMode }]">
-    <div :class="['card-modal-overlay', { 'page-mode-overlay': pageMode }]" @click="closeModal">
+    <!--<div :class="['card-modal-overlay', { 'page-mode-overlay': pageMode }]" @click="closeModal">-->
       <div v-if="isLoading" class="loading-state">
         <div class="spinner"></div>
         <div>Loading...</div>
@@ -13,39 +13,19 @@
         @touchstart="onTouchStart"
         @touchmove="onTouchMove"
         @touchend="onTouchEnd"
-      @click="historyOpen = false"
       >
         <!-- Swipe hint overlay (fades in/out quickly) -->
         <div class="swipe-hint" :class="{ visible: swipeHintVisible }">{{ swipeHintDirection === 'right' ? '→' : '←' }}</div>
 
-
-        <div class="history-controls" v-if="modalHistory.length > 1">
-          <div class="history-btn-wrap">
-            <button v-if="showBackButton" @click.stop="loadPrevious" class="back-btn" ref="backButton">
-              <span class="plus-icon"><</span>
-            </button>
-            <button class="history-btn" @click.stop="historyOpen = !historyOpen">
-                <font-awesome-icon :icon="['fas', 'clock-rotate-left']" />
-            </button>
-          </div>
-          <div v-if="historyOpen" class="history-menu">
-            <button
-              v-for="(entry, idx) in modalHistory"
-              :key="idx"
-              :class="['history-item', { active: idx === modalHistoryIndex }]"
-              @click.stop="jumpToHistory(idx)"
-            >
-              <span class="history-idx">{{ idx + 1 }}.</span>
-              <span class="history-entry">{{ entry }}</span>
-            </button>
-          </div>
-        </div>
-
         <!-- Add to wordlist dropdown button - now shown to all users -->
+        <button @click="closeModal" class="close-btn-tl">
+          <span class="x-centered">×</span>
+        </button>
+        <button @click.stop="toggleWordlistDropdown" class="wordlist-btn" ref="dropdownButton">
+          <span class="x-centered">+</span>
+        </button>
         <div class="wordlist-dropdown">
-          <button @click.stop="toggleWordlistDropdown" class="wordlist-btn" ref="dropdownButton">
-            <span class="plus-icon">+</span>
-          </button>
+          
           <div v-if="showWordlistDropdown" class="dropdown-content" ref="dropdownContent" @click.stop>
             <div v-if="!isLoggedIn" class="no-lists">
               Adding to custom wordlists is possible only upon <router-link to="/register" class="register-link">registration</router-link> or <router-link to="/login" class="register-link">login</router-link>.
@@ -86,7 +66,7 @@
                   <PreloadWrapper
                         :character="char"
                         :showBubbles="false"
-                        class="hanzi-link trad-char main-word-char"
+                        class="hanzi-link main-word-char"
                       >
                     {{ char }}
                 </PreloadWrapper>
@@ -111,7 +91,7 @@
                       v-if="tchar !== '-'"
                         :character="tchar"
                         :showBubbles="false"
-                        class="hanzi-link trad-char main-word-char"
+                        class="hanzi-link trad-char"
                       >
                     {{ tchar }}
                 </PreloadWrapper>
@@ -248,7 +228,7 @@
             >
               {{ char }}
               <span v-if="activeChar === char" class="tab-open-word" @click.stop="openCharAsWord(char)">
-                <font-awesome-icon :icon="['fas','magnifying-glass']" />
+                >>
               </span>
             </button>
           </div>
@@ -338,24 +318,26 @@
                 </div>
               </div>
 
-              <div v-if="activeDetailTab === 'strokes' && hasStrokes">
+              <div v-if="activeDetailTab === 'strokes' && hasStrokes" class="strokes-section">
                 <div class="medium-label">Strokes:</div>
-                </div>
-              <div v-if="activeDetailTab === 'strokes' && hasStrokes">
-
                 <div class="hanzi-anim-wrap">
-
                   <div class="hanzi-anim">
-                  <AnimatedHanzi
-                    :character="activeCharData.character"
-                    :strokes="activeCharData.strokes"
-                    :animatable="true"
-                    :drawThin="false"
-                    :animSpeed="0.1"
-                  />
+                    <AnimatedHanzi
+                      ref="hanziAnim"
+                      :character="activeCharData.character"
+                      :strokes="activeCharData.strokes"
+                      :animatable="true"
+                      :drawThin="false"
+                      :animSpeed="0.1"
+                      @step-change="onStepChange"
+                    />
+                  </div>
+                  <div class="hanzi-anim-controls">
+                    <div class="anim-btn" @click="playStrokeAnimation">Play</div>
+                    <div class="anim-btn" @click="stepStroke">></div>
+                    <div class="stroke-counter">{{ strokeCounter }}</div>
                   </div>
                 </div>
-
               </div>
 
               <div v-if="activeDetailTab === 'examples' && hasExamples" class="medium-label">Words containing {{ activeChar }}:</div>
@@ -531,11 +513,11 @@
           </div>
         </div>
       </div>
-    </div> <!-- end modal -->
+   <!--  </div> end modal -->
   </div> <!-- end overlay -->
 
   <!-- Fixed position close button at bottom right - only show in modal mode -->
-  <button v-if="!pageMode" @click="closeModal" class="close-btn fixed-close"><span class="x-centered">×</span></button>
+  <button @click="closeModal" class="close-btn fixed-close"><span class="x-centered">×</span></button>
 
   <ToastNotification
     v-model:visible="notificationVisible"
@@ -648,12 +630,8 @@ export default {
       fontOrder: ['kaiti', 'noto-sans', 'noto-serif'],
       fontCycleIndex: 0,
       activeDetailTab: 'dict',
-      // Local history of viewed chars/words within an open modal
-      modalHistory: [],
-      modalHistoryIndex: -1,
-      historyAction: 'reset',
-      historyOpen: false,
-      mainDefIndex: 0
+      mainDefIndex: 0,
+      strokeCounter: '0/0'
     }
   },
   provide() {
@@ -790,9 +768,6 @@ export default {
     showTraditionalLine() {
       if (!this.cardData || !this.cardData.character) return false;
       return this.traditionalChars.some(t => t && t !== '-');
-    },
-    showBackButton() {
-      return this.modalHistoryIndex > 0;
     },
     validChars() {
       if (!this.cardData || !this.cardData.character) return [];
@@ -1014,22 +989,6 @@ export default {
           } catch (e) {}
           // Always keep definition order as provided; we only move the index
 
-          if (this.historyAction === 'reset') {
-            this.modalHistory = [newData.character];
-            this.modalHistoryIndex = 0;
-          } else if (this.historyAction === 'historyBack' || this.historyAction === 'jump') {
-            const idx = this.modalHistoryIndex >= 0 ? this.modalHistoryIndex : this.modalHistory.length - 1;
-            this.modalHistoryIndex = idx;
-          } else {
-            const upto = this.modalHistoryIndex >= 0 ? this.modalHistoryIndex + 1 : this.modalHistory.length;
-            this.modalHistory = this.modalHistory.slice(0, upto);
-            const last = this.modalHistory[this.modalHistory.length - 1];
-            if (last !== newData.character) {
-              this.modalHistory.push(newData.character);
-            }
-            this.modalHistoryIndex = this.modalHistory.length - 1;
-          }
-          this.historyAction = 'append';
 
           this.showRelatedConcepts = false;
           this.showOppositeConcepts = false;
@@ -1056,9 +1015,6 @@ export default {
         if (newChar && this.validChars.includes(newChar)) {
           this.activeChar = newChar;
           this.mainDefIndex = 0;
-          if (this.historyAction !== 'historyBack' && this.historyAction !== 'jump') {
-            this.historyAction = 'append';
-          }
         }
       }
     },
@@ -1104,7 +1060,6 @@ export default {
     window.addEventListener('keydown', this.handleDebugKey); // Add the debug key handler
     window.addEventListener('keydown', this.handleArrowNav);
     document.addEventListener('click', this.handleOutsideClick);
-    document.addEventListener('global-modal-closed', this.resetLocalHistory);
     // Fetch custom definition for current word if logged in
     if (this.isLoggedIn && this.cardData && this.cardData.character) {
       this.$store.dispatch('fetchCustomDefinition', this.cardData.character);
@@ -1118,7 +1073,6 @@ export default {
     window.removeEventListener('keydown', this.handleDebugKey); // Remove the debug key handler
     window.removeEventListener('keydown', this.handleArrowNav);
     document.removeEventListener('click', this.handleOutsideClick);
-    document.removeEventListener('global-modal-closed', this.resetLocalHistory);
 
     if (this.isVisible) {
       document.body.classList.remove('modal-open');
@@ -1137,23 +1091,24 @@ export default {
       fetchCardData: 'cardModal/fetchCardData'
       // Removed fetchDecompositionData to prevent direct calls
     }),
-    resetLocalHistory() {
-      this.modalHistory = [];
-      this.modalHistoryIndex = -1;
-      this.historyAction = 'reset';
-      this.historyOpen = false;
+
+    onStepChange(payload) {
+      const total = (payload && payload.total) ? payload.total : 0;
+      const current = (payload && payload.current) ? payload.current : 0;
+      this.strokeCounter = total ? `${(current-1+total)%total+1}/${total}` : '0/0';
     },
+
+    playStrokeAnimation() {
+      const ref = this.$refs.hanziAnim;
+      if (ref && ref.playAnimation) ref.playAnimation();
+    },
+    stepStroke() {
+      const ref = this.$refs.hanziAnim;
+      if (ref && ref.stepStroke) ref.stepStroke();
+    },
+   
     openCharAsWord(char) {
-      this.historyAction = 'append';
-      this.historyOpen = false;
       this.updateModalContent(char);
-    },
-    jumpToHistory(idx) {
-      if (idx < 0 || idx >= this.modalHistory.length) return;
-      this.historyAction = 'jump';
-      this.modalHistoryIndex = idx;
-      this.historyOpen = false;
-      this.showCardModal(this.modalHistory[idx]);
     },
 
     stripTones(val) {
@@ -1218,31 +1173,6 @@ export default {
       if (tab === 'decomp' && !this.hasDecomposition) return;
       if (tab === 'extra' && !this.hasExtraInfo) return;
       this.activeDetailTab = tab;
-    },
-    pushModalHistory(char) {
-      if (!char) return;
-      const last = this.modalHistory[this.modalHistory.length - 1];
-      if (last === char) return;
-      // truncate any forward history when appending
-      if (this.modalHistoryIndex >= 0 && this.modalHistoryIndex < this.modalHistory.length - 1) {
-        this.modalHistory = this.modalHistory.slice(0, this.modalHistoryIndex + 1);
-      }
-      this.modalHistory.push(char);
-      this.modalHistoryIndex = this.modalHistory.length - 1;
-    },
-    loadPrevious() {
-      if (this.modalHistoryIndex > 0) {
-        const prev = this.modalHistory[this.modalHistoryIndex - 1];
-        this.historyAction = 'historyBack';
-        this.modalHistoryIndex -= 1;
-        if (prev) this.showCardModal(prev);
-      }
-    },
-    resetLocalHistory() {
-      this.modalHistory = [];
-      this.modalHistoryIndex = -1;
-      this.historyAction = 'reset';
-      this.historyOpen = false;
     },
     cycleMainWordFont() {
       try {
@@ -1598,19 +1528,17 @@ export default {
     },
     updateModalContent(word) {
       this.clearHoverTimer();
-
-      // Don't call showCardModal if we're already showing this word
+      // Reset stroke counter/steps when switching words
+      this.strokeCounter = '0/0';
+      if (this.$refs.hanziAnim && this.$refs.hanziAnim.resetStep) {
+        this.$refs.hanziAnim.resetStep();
+      }
       if (this.isVisible && this.cardData && this.cardData.character === word) {
-
-        // Just update the active character if needed
         if (this.validChars.includes(word) && this.activeChar !== word) {
           this.activeChar = word;
         }
         return;
       }
-
-      // This will trigger fetchCardData, which will then fetch decomp data ONCE
-
       this.showCardModal(word);
     },
     toggleWordlistDropdown() {
@@ -1849,12 +1777,7 @@ export default {
 
 <style scoped>
 .global-modal-container {
-  position: fixed;
-  z-index: 20;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  
 }
 
 .hanzi-link {
@@ -2126,32 +2049,25 @@ export default {
   display: inline-flex;
   gap: 0.2rem;
   align-items: baseline;
+  padding-left: .25em;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .trad-bracket {
-  opacity: 0.7;
-  font-size: 0.85em;
+  opacity: 0.5;
+  font-size: 0.75em;
   font-weight: 200;
 }
 
 .trad-char {
-  font-size: 0.85em;
+  font-size: .75em;
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
   opacity: 0.75;
 }
 
 .main-word-char {
   font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
-  font-weight: 400;
-  display: inline-flex;
-  height: 1.1em;
-  line-height: 1em;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-  padding: 0px !important;
-  margin: 0px !important;
 }
 
 .main-word-inverted {
@@ -2464,87 +2380,6 @@ export default {
 .modal.invert.mright { transform: translateX(-2%) rotate(-2deg);}*/
 
 
-.history-controls {
-  position: absolute;
-  top: 1rem;
-  left: 0.7rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  z-index: 6;
-}
-
-.history-btn-wrap {
-  display: flex;
-  gap: 0.3rem;
-  align-items: flex-start;
-}
-
-.back-btn,
-.history-btn {
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 75%);
-  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
-  color: var(--fg);
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.9rem;
-}
-
-.history-btn {
-  font-size: 1.0rem;
-  padding: 0.65rem 0.85rem;
-}
-
-.history-menu {
-  position: absolute;
-  top: 3.1rem;
-  left: 0;
-  background: var(--modal-bg);
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
-  padding: 0.25rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.15rem;
-  z-index: 7;
-  max-width: 8rem;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.history-item {
-  border: none;
-  background: color-mix(in oklab, var(--bg) 95%, var(--fg) 5%);
-  color: var(--fg);
-  text-align: left;
-  padding: 0.25rem 0.5rem;
-  width: 100%;
-  cursor: pointer;
-  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.35rem;
-}
-
-.history-idx {
-  flex: 0 0 auto;
-}
-
-.history-entry {
-  flex: 1 1 auto;
-  text-align: right;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.history-item.active {
-  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 90%);
-}
-
-
 
 .tabs {
   display: flex;
@@ -2596,22 +2431,20 @@ export default {
 	border-bottom: var(--thin-border-width) solid #0000 !important;
   background: color-mix(in srgb, var(--fg), var(--bg) 100%);
   font-size: 3.5rem;
+  opacity: 1;
+  z-index: 2;
+  transform: translate(0, var(--thin-border-width));
+  cursor: default;
 }
 
 .tab-open-word {
   position: absolute;
-  top: 0rem;
-  right: 0.05rem;
+  top: 0.0rem;
+  right: 0.2rem;
   font-size: 0.8rem;
   opacity: 0.75;
   cursor: pointer;
   color: var(--fg);
-}
-
-.tab-btn.active {
-  opacity: 1;
-  z-index: 2;
-  transform: translate(0, var(--thin-border-width));
 }
 
 .char-details {
@@ -2713,6 +2546,39 @@ export default {
   /* font-size: 12rem;
   font-family: 'Kaiti', 'STKaiti', 'Kai', '楷体'; */
   box-sizing: border-box;
+}
+
+
+.hanzi-anim-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.anim-btn {
+  border: 1px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 90%);
+  background: color-mix(in oklab, var(--fg) 6%, var(--bg) 100%);
+  color: var(--fg);
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--border-radius, 4px);
+  cursor: pointer;
+  font-family: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+.anim-btn:hover {
+  background: color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
+}
+
+.stroke-counter {
+  border: 1px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 90%);
+  background: color-mix(in oklab, var(--fg) 6%, var(--bg) 100%);
+  color: var(--fg);
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--border-radius, 4px);
+  cursor: default;
+  font-family: inherit;
 }
 
 .radicals {
@@ -2840,27 +2706,44 @@ export default {
 .wordlist-dropdown {
   position: fixed;
   top: 1rem;
-  right: 1rem;
+  left: 1rem;
   z-index: 30;
 }
 
 .wordlist-btn {
-  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  color: var(--fg);
-  border: none;
-  padding: 0.5rem 1rem;
-  font-size: .9rem;
-  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 2rem;
   aspect-ratio: 1;
+  padding: 1rem;
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--fg);
+  cursor: pointer;
 }
 
 .wordlist-btn:hover {
-  background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
+}
+
+.close-btn-tl{
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 1.7rem;
+  aspect-ratio: 1;
+  padding: 1rem;
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--fg);
+  cursor: pointer;
+
 }
 
 
 .plus-icon {
-  font-size: 1.2rem;
 }
 
 .back-btn {
@@ -2877,7 +2760,7 @@ export default {
 .dropdown-content {
   position: absolute;
   top: 2.5rem;
-  right: 0;
+  left: 0;
   background-color: var(--bg);
   border: 1px solid var(--fg);
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
@@ -3178,7 +3061,7 @@ export default {
   font-family: "Noto Serif SC" !important; */
   font-family: "Kaiti";
   font-size: 1.5em;
-  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif) !important;
 }
 
 
@@ -3232,21 +3115,23 @@ export default {
       top: 0;
       left: 0;
       transform: translate(0%, 0%);
-      position: absolute;
       max-height: 100%;
       padding: 3rem 1rem 1rem 1rem;
       border: none;
     }
 
-    /*.modal.invert { filter: invert(0.24); }
-    .modal.invert.mleft { transform: translate(2%, 0%) rotate(2deg);}
-    .modal.invert.mright { transform: translate(-2%, 0%) rotate(-2deg);}
-    */
+    .close-btn-tl, .wordlist-btn {
+      top: 1.2em;
+    }
+
+    .close-btn-tl {
+      display: none;
+    }
 
     .wordlist-dropdown {
       position: fixed;
       top: 3em;
-      right: 1rem;
+      left: 1rem;
     }
 
     .main-word {
@@ -3287,15 +3172,14 @@ export default {
     border-radius: 50%;
 
     position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    background-color: color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+    bottom: 0rem;
+    right: 0rem;
+    background: none;
     width: 3.5rem;
     height: 3.5rem;
     align-items: center;
     justify-content: center;
     font-size: 2.5rem;
-    box-shadow: 0 4px 8px rgba(124, 98, 98, 0.2);
     opacity: 0.8;
     z-index: 30;
     line-height: 0;

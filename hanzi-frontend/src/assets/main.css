@@ -29,7 +29,6 @@
   src: url('https://assets.hanzi.abcrgb.xyz/fusion-pixel-12px-proportional-zh_hant.ttf') format('truetype');
 }
 
-
 #app{
 }
 
@@ -102,7 +101,7 @@
 }
 
 [data-theme="dark"] {
-  --bg: rgb(12, 12, 12);
+  --bg: rgb(34, 32, 40);
   --fg: rgb(255, 255, 255);
   --fg-dim: rgb(129, 129, 129);
   --pinyin-color: #b39cc9;
@@ -267,9 +266,12 @@ button:hover {
   border: none;
   font-size: 1.5em;
   cursor: pointer;
-  transform: translate(-50%, -50%);
-  left: 1em;
-  top: 1em;
+  padding: .35rem .65em;
+  aspect-ratio: 1;
+  left: 0;
+  top: 0;
+
+  
 }
 
 .theme-toggle {

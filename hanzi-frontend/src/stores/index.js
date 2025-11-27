@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import router from '../router';
+import ziHistory from './zihistory';
 
 // Create a sub-module for card modal state
 const cardModalModule = {
@@ -98,9 +99,11 @@ const cardModalModule = {
       const prevChar = state.navList[prevIdx];
       if (prevChar) dispatch('showCardModal', { character: prevChar, index: prevIdx });
     },
-    async showCardModal({ commit, dispatch, state }, payload) {
-      const { character, overrides, index } = typeof payload === 'string' ? { character: payload } : (payload || {});
+    async showCardModal({ commit, dispatch, state, rootState }, payload) {
+      const { character, overrides, index, preserveHistoryOrder } = typeof payload === 'string' ? { character: payload } : (payload || {});
       if (!character) return;
+
+      dispatch('zihistory/addEntry', { character, preserveOrder: !!preserveHistoryOrder }, { root: true });
 
       if (state.visible && state.currentCharacter === character && !overrides && typeof index !== 'number') {
         return;
@@ -214,7 +217,6 @@ const cardModalModule = {
           console.error(err);
         }
       });
-      // Tell modal to reset local history
       try { document.dispatchEvent(new CustomEvent('global-modal-closed')); } catch(e) {}
     },
     async fetchCardData({ commit, state }, character) {
@@ -479,7 +481,7 @@ const themeModule = {
       const families = {
         'sf-mono': "'SF Mono Regular','SFMono-Regular','SF Mono',monospace",
         'fusion-pixel': "'Fusion Pixel S','Fusion Pixel T','SF Mono Regular',monospace",
-        'times': "'Times New Roman','Times',serif"
+        'source-serif': "'JetBrains Mono',serif"
       };
       const family = families[fontKey] || families['sf-mono'];
       const second = fontKey == 'fusion-pixel' ? families['fusion-pixel'] : "Arial, Helvetica, sans-serif";
@@ -539,7 +541,7 @@ const themeModule = {
       // 'default' = light/dark, 'custom' = theme1/theme2
       let newTheme;
       
-      if (system === 'default') {
+      if (system === 'default' || true) {
         // Switch to default light/dark system
         newTheme = ['light', 'dark'].includes(state.currentTheme) ? 
           state.currentTheme : 'light';
@@ -575,7 +577,8 @@ const store = createStore({
   modules: {
     cardModal: cardModalModule,
     bubbleTooltip: bubbleTooltipModule,
-    theme: themeModule
+    theme: themeModule,
+    zihistory: ziHistory
   },
   state: {
     staticDictionaryData: null,

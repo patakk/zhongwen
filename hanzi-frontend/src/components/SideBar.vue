@@ -226,9 +226,13 @@ export default {
     border: none;
     font-size: 1.5em;
     cursor: pointer;
-    transform: translate(20%, -50%);
-    right: 1em;
-    top: 1em;
+    right: 0;
+    top: 0;
+
+
+  top: 0;
+  right: 0;
+  padding: 1em;
   }
 
   .toggle-icon {

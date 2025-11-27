@@ -1,15 +1,12 @@
 <template>
-  <div class="preload-wrapper">
     <div
       @mouseenter="startHoverTimer($event)"
       @mouseleave="handleMouseLeave"
       @mousemove="handleMouseMove"
       @click="handleClick"
       @auxclick="handleAuxClick"
-      class="preload-wrapper"
     >
      <slot></slot>
-    </div>
   </div>
 </template>
 

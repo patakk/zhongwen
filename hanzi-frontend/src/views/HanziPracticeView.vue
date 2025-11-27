@@ -407,7 +407,6 @@ export default defineComponent({
     updateUrlParam(key, value) {
       const newUrl = new URL(window.location);
       newUrl.searchParams.set(key, value);
-      history.pushState({}, '', newUrl);
     },
     
     resetPractice() {

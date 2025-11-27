@@ -1302,10 +1302,14 @@ export default class HanziPlotter {
         this.clearBg();
       
         const numStrokes = this.originalStrokes.length;
+        this.totalStrokes = numStrokes;
       
         // Helper function to animate a single stroke from 0 to 1
         const animateStroke = (strokeIndex) =>
           new Promise(resolve => {
+            if (typeof this.onStrokeProgress === 'function') {
+              try { this.onStrokeProgress(strokeIndex + 1, numStrokes); } catch (e) {}
+            }
             let startTime = null;
             let progressDuration = 10 * strokes[strokeIndex].length;
       
@@ -1403,6 +1407,12 @@ export default class HanziPlotter {
         // Reset any ongoing animation state
         this.strokeStartTime = null;
         this.startTime = null;
+        if (typeof this.onStrokeProgress === 'function') {
+            try { this.onStrokeProgress(0, this.totalStrokes || 0); } catch (e) {}
+        }
+        if (typeof this.onStrokeProgress === 'function') {
+            try { this.onStrokeProgress(0, this.totalStrokes || 0); } catch (e) {}
+        }
         this.currentAnimationId = null;
         this.demoMode = false;
         

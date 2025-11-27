@@ -6,6 +6,21 @@
       <font-awesome-icon :icon="['fas', 'moon']" v-else-if="currentTheme === 'theme2'" />
       <font-awesome-icon :icon="['fas', 'sun']" v-else />
     </button>
+    <div class="history-rail-wrapper" v-if="history.length > 0">
+      <div class="history-rail">
+        <div class="history-title">History</div>
+        <div class="history-list">
+          <button
+            v-for="(item, idx) in history"
+            :key="item"
+            class="history-item"
+            @click="openHistory(item)"
+          >
+            {{ item }}
+          </button>
+        </div>
+      </div>
+    </div>
     <router-view />
     <GlobalCardModal />
     <BubbleTooltip 
@@ -20,7 +35,7 @@
 </template>
 
 <script setup>
-import { onMounted, nextTick, watch, computed } from 'vue'
+import { onMounted, nextTick, watch, computed, ref } from 'vue'
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import GlobalCardModal from './components/GlobalCardModal.vue';
@@ -28,10 +43,12 @@ import BubbleTooltip from './components/BubbleTooltip.vue';
 
 const store = useStore()
 const router = useRouter()
+const preserveHistoryRef = ref(false)
 
 // Use theme from Vuex store
 const currentTheme = computed(() => store.getters['theme/getCurrentTheme'])
 const bubbleData = computed(() => store.getters['bubbleTooltip/getBubbleData'])
+const history = computed(() => store.getters['zihistory/getHistory'])
 
 // Close modal/bubble when navigating to a different path
 watch(
@@ -56,8 +73,11 @@ watch(
     // Ignore dedicated word pages
     if (path.startsWith('/word/')) return;
     if (newWord) {
-      store.dispatch('cardModal/showCardModal', newWord);
+      const preserve = preserveHistoryRef.value;
+      preserveHistoryRef.value = false;
+      store.dispatch('cardModal/showCardModal', { character: newWord, preserveHistoryOrder: preserve });
     } else {
+      preserveHistoryRef.value = false;
       if (store.getters['cardModal/isCardModalVisible']) {
         store.dispatch('cardModal/hideCardModal');
       }
@@ -123,12 +143,14 @@ const toggleTheme = () => {
   
   // Add the spin animation class
   const button = document.querySelector('.theme-toggle');
-  button.classList.add('spin');
 
   // Remove the spin class after the animation ends
-  setTimeout(() => {
-    button.classList.remove('spin');
-  }, 200); // Match the duration of the animation
+}
+
+const openHistory = (word) => {
+  if (!word) return;
+  preserveHistoryRef.value = true;
+  store.dispatch('cardModal/showCardModal', { character: word, preserveHistoryOrder: true });
 }
 
 onMounted(async () => {
@@ -156,5 +178,60 @@ onMounted(async () => {
 </script>
 
 <style>
+  /* History rail */
+  
+  .history-rail-wrapper {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .history-rail {
+    position: fixed;
+    top: 1rem;
+    z-index: 10;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    top: 50%;
+    transform: translateY(-50%);
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
+    background: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
+    border-radius: var(--border-radius, 4px);
+  }
+  .history-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+    color: color-mix(in oklab, var(--fg) 70%, var(--bg) 30%);
+    letter-spacing: 0.04em;
+  }
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .history-item {
+    cursor: pointer;
+    border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+    background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+    color: var(--fg);
+    font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+    font-size: 1.1rem;
+    padding: 0.35rem 0.25rem;
+    text-align: center;
+    border-radius: var(--border-radius, 4px);
+  }
+  .history-item:hover {
+    background: color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
+  }
+
   
 </style>

@@ -1079,6 +1079,7 @@ export default {
 }
 
 /* Scroll to top button styles */
+
 .scroll-to-top-button {
   position: fixed;
   bottom: 1em;
@@ -1088,10 +1089,10 @@ export default {
   cursor: pointer;
   font-family: inherit;
   color: var(--fg);
-  font-size: 2.1em;
-  padding: 0.5em;
-  width: 1.8em;
-  height: 1.8em;
+  font-size: 1.1em;
+  padding: 1em;
+  width: 1em;
+  height: 1em;
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   z-index: 20;

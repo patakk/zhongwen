@@ -52,8 +52,8 @@
         <div v-else-if="!selectedWordlist" class="empty-list">
           <p>Please select a wordlist from the dropdown above.</p>
         </div>
-  
-        <div v-else>
+
+        <div class="wordlist-inner-container" v-else>
           <!-- Show add-word-section even if wordlist is empty -->
           <div class="add-word-section">
             <input

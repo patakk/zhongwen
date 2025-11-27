@@ -211,7 +211,7 @@
                 :navList="navCharList"
                 :showBubbles="false"
               >
-                <div class="list-item">
+                  <div class="list-item">
                   <div class="hanzipinyin">
                     <div class="list-hanzi" :style="{ 
                       fontFamily: `'${selectedFont}'`,
@@ -223,7 +223,7 @@
                     <div class="list-pinyin" :class="{ 'pinyin-hidden': !showPinyin }">{{ displayListPinyin(entry.character, (entry.pinyin && entry.pinyin[0]) || '') }}</div>
                   </div>
                   <div class="list-english">{{ displayListEnglish(entry.character, (entry.english && entry.english[0]) || '') }}</div>
-                </div>
+                  </div>
               </PreloadWrapper>
             </div>
           </div>
@@ -1115,7 +1115,7 @@ html, body {
 .list-container {
   display: flex;
   flex-direction: column;
-  gap: 0rem;
+  gap: 0.5rem;
   width: 100%;
 }
 
@@ -1132,7 +1132,7 @@ html, body {
   display: flex;
   /* border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%); */
   /* box-shadow: 0px -1.25px color-mix(in oklab, var(--fg) 10%, var(--bg) 10%); */
-  padding: .25em;
+  padding: .5em;
   font-family: inherit;
   text-align: left;
   background: var(--bg);
@@ -1141,10 +1141,13 @@ html, body {
   font-size: .75em;
   box-shadow: none;
   border-bottom: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
+  border: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
+  border: none;
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
 }
 
 .list-item:hover {
-  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  background: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
 }
 
 .hanzipinyin {
@@ -1181,7 +1184,6 @@ html, body {
   color: var(--fg);
   opacity: 0.6;
   flex: 12;
-  align-self: center;
   min-width: 0;        /* prevent flex item from forcing overflow */
   max-width: 100%;
   white-space: normal; /* allow wrapping */
@@ -1240,10 +1242,10 @@ select {
   cursor: pointer;
   font-family: inherit;
   color: var(--fg);
-  font-size: 2.1em;
-  padding: 0.5em;
-  width: 1.8em;
-  height: 1.8em;
+  font-size: 1.1em;
+  padding: 1em;
+  width: 1em;
+  height: 1em;
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   z-index: 20;
@@ -1290,6 +1292,7 @@ select {
   display: block;
   color: var(--fg);
   opacity: 0.7;
+  padding:
 }
 
 .close-button:hover {
