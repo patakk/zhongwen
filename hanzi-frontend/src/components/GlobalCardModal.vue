@@ -707,7 +707,11 @@ export default {
     },
     displayPinyin() {
       let ppp = this.cardData.pinyin;
-      if (ppp[0] === "N/A") ppp = this.cardData.chars_breakdown[this.cardData.character].pinyin;
+      if (Array.isArray(ppp)) {
+        if (ppp.length === 1 && ppp[0] === "N/A" && this.cardData.character.length === 1) {
+          ppp = this.cardData.chars_breakdown[this.cardData.character].pinyin;
+        }
+      }
       const custom = this.customDef && this.customDef.pinyin ? this.customDef.pinyin : '';
       if (custom) return custom;
       const list = (Array.isArray(ppp)) ? ppp : [];
@@ -719,8 +723,11 @@ export default {
     displayEnglish() {
 
       let ppp = this.cardData.english;
-      if (ppp[0] === "N/A") ppp = this.cardData.chars_breakdown[this.cardData.character].english;
-
+      if (Array.isArray(ppp)) {
+        if (ppp.length === 1 && ppp[0] === "N/A" && this.cardData.character.length === 1) {
+          ppp = this.cardData.chars_breakdown[this.cardData.character].english;
+        }
+      }
       const custom = this.customDef && this.customDef.english ? this.customDef.english : '';
       if (custom) return this.splitMeaning(custom);
       const list = (this.cardData && Array.isArray(ppp)) ? ppp : [];

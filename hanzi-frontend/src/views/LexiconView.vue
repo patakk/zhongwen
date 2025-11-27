@@ -1326,16 +1326,18 @@
   
   .word-item {
     border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 22%, var(--bg) 12%);
+    border: none;
     background: var(--bg);
     align-items: stretch;
     width: 100%;
     box-sizing: border-box;
     padding: .3rem;
+    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
   }
 
   
   .word-item:hover {
-    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+    background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
   }
   
   .word-cell {

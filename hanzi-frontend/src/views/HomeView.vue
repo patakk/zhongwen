@@ -201,7 +201,7 @@ export default {
         // Any remaining
         const extras = annotated.filter(e => !used.has(e.originalIdx));
         if (extras.length) {
-          groups.push({ key: 'pinyin-other', label: 'Other', collapsible: true, items: extras });
+          groups.push({ key: 'pinyin-other', label: (query || '').trim() || 'Other', collapsible: true, items: extras });
         }
 
         // Numbering
