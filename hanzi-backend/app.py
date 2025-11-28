@@ -647,9 +647,8 @@ def move_tone_number_to_end(pinyin):
 def get_search_results(query):
     url = "http://127.0.0.1:8001/search"
     headers = {"X-API-Key": auth_keys.get('ZHONGWEN_SEARCH_KEY', '')}
-    params = {"query": query}
     try:
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.post(url, headers=headers, json={"query": query})
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -668,10 +667,15 @@ def search_results():
     else: 
         query = request.args.get('query', '')
 
-    results = get_search_results(query) if query else []
+    upstream = get_search_results(query) if query else {}
     search_time = time.time() - start_time
 
-    return jsonify({'results': results, 'query': query, 'search_time': search_time})
+    groups = upstream.get('groups') if isinstance(upstream, dict) else None
+    # Backward compatibility if upstream still returns flat results
+    if groups is None and isinstance(upstream, dict):
+        groups = upstream.get('results', [])
+
+    return jsonify({'results': groups or [], 'query': query, 'search_time': search_time})
 
     
 @app.route('/hanzi_strokes_history')

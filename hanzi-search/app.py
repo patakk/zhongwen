@@ -200,6 +200,135 @@ def normalize_query(text):
     text = lemmatizer.lemmatize(text)
     return text
 
+
+def norm_basic(s):
+    return remove_all_numbers(remove_tones((s or '').lower()).replace(' ', ''))
+
+
+def group_results(results, query, only_hanzi):
+    annotated = [{"item": r, "originalIdx": idx} for idx, r in enumerate(results or [])]
+    if not annotated:
+        return []
+    query = (query or '').strip()
+
+    def add_display(groups_list):
+        disp = 0
+        for g in groups_list:
+            for e in g.get('items', []):
+                e['displayIdx'] = disp
+                disp += 1
+        return [g for g in groups_list if g.get('items')]
+
+    if not only_hanzi:
+        tokens = [t for t in query.split() if t]
+        def norm(s):
+            return ''.join(ch for ch in norm_basic(s) if ch.isalnum())
+        queryNorm = norm(query)
+        joinedNorm = queryNorm.replace(' ', '')
+        groups = []
+        used = set()
+
+        backend_exact = [e for e in annotated if e['item'].get('is_pinyin_exact')]
+        for e in backend_exact:
+            used.add(e['originalIdx'])
+        if backend_exact:
+            groups.append({'key': 'pinyin-exact', 'label': query or '', 'collapsible': True, 'items': backend_exact})
+
+        if len(tokens) > 1 and not backend_exact:
+            exactItems = [e for e in annotated if e['originalIdx'] not in used and (queryNorm in norm(e['item'].get('pinyin')) or joinedNorm in norm(e['item'].get('pinyin')))]
+            for e in exactItems:
+                used.add(e['originalIdx'])
+            if exactItems:
+                groups.append({'key': 'pinyin-exact', 'label': query or '', 'collapsible': True, 'items': exactItems})
+
+        for idx, tok in enumerate(tokens):
+            tnorm = norm(tok)
+            hanziTok = ''.join(ch for ch in tok if regex.match(r'\p{Han}', ch or ''))
+            if hanziTok:
+                tokItems = [e for e in annotated if e['originalIdx'] not in used and hanziTok in (e['item'].get('hanzi') or '')]
+                for e in tokItems:
+                    used.add(e['originalIdx'])
+                if tokItems:
+                    groups.append({'key': f'hanzi-{idx}-{hanziTok}', 'label': hanziTok, 'collapsible': True, 'items': tokItems})
+                continue
+            tokItems = [e for e in annotated if e['originalIdx'] not in used and tnorm in norm(e['item'].get('pinyin'))]
+            for e in tokItems:
+                used.add(e['originalIdx'])
+            if tokItems:
+                groups.append({'key': f'pinyin-{idx}-{tok}', 'label': tok, 'collapsible': True, 'items': tokItems})
+                continue
+            engItems = [e for e in annotated if e['originalIdx'] not in used and tnorm in (e['item'].get('english','').lower())]
+            for e in engItems:
+                used.add(e['originalIdx'])
+            if engItems:
+                groups.append({'key': f'english-{idx}-{tok}', 'label': tok, 'collapsible': True, 'items': engItems})
+
+        extras = [e for e in annotated if e['originalIdx'] not in used]
+        if extras:
+            groups.append({'key': 'pinyin-other', 'label': query or 'Other', 'collapsible': True, 'items': extras})
+
+        return add_display(groups)
+
+    # Hanzi-only grouping
+    tokens = [t for t in regex.split(r'\s+', query) if t]
+    charOrder = []
+    for ch in query:
+        if ch.strip() and ch not in charOrder:
+            charOrder.append(ch)
+    effectiveQuery = ''.join(charOrder)
+    used = set()
+    exactItems = [e for e in annotated if e['item'].get('hanzi') == effectiveQuery]
+    for e in exactItems:
+        used.add(e['originalIdx'])
+
+    groups_h = []
+    if len(tokens) > 1:
+        for idx, tok in enumerate(tokens):
+            tokItems = [e for e in annotated if e['originalIdx'] not in used and e['item'].get('hanzi') == tok]
+            for e in tokItems:
+                used.add(e['originalIdx'])
+            if tokItems:
+                groups_h.append({'key': f'token-{idx}-{tok}', 'label': tok, 'collapsible': False, 'items': tokItems, 'anchor': None})
+
+    perChar = {}
+    extras = []
+    for e in annotated:
+        if e['originalIdx'] in used:
+            continue
+        hanzi = e['item'].get('hanzi','')
+        bucket = None
+        for ch in charOrder:
+            if ch in hanzi:
+                bucket = ch
+                break
+        if bucket:
+            perChar.setdefault(bucket, []).append(e)
+        else:
+            extras.append(e)
+
+    if len(charOrder) == 1:
+        ch = charOrder[0]
+        combined = []
+        seenIdx = set()
+        for e in exactItems + perChar.get(ch, []) + extras:
+            if e['originalIdx'] not in seenIdx:
+                combined.append(e)
+                seenIdx.add(e['originalIdx'])
+        if combined:
+            groups_h.append({'key': f'char-{ch}', 'label': ch, 'collapsible': False, 'items': combined, 'anchor': ch})
+    else:
+        if exactItems:
+            groups_h.append({'key': f'exact-{effectiveQuery}', 'label': effectiveQuery, 'collapsible': True, 'items': exactItems, 'anchor': None})
+        for ch in charOrder:
+            items = perChar.get(ch)
+            if items:
+                groups_h.append({'key': f'char-{ch}', 'label': ch, 'collapsible': True, 'items': items, 'anchor': ch})
+        if extras:
+            groups_h.append({'key': 'other', 'label': 'Other matches', 'collapsible': True, 'items': extras, 'anchor': None})
+
+    return add_display(groups_h)
+
+
 def append_unique(results, seen, seen_map, entries):
     for r in entries:
         key = (r.get('hanzi'), r.get('pinyin'), r.get('english'))
@@ -319,40 +448,36 @@ def search_pinyin(query):
 def search_english(query):
     results = []
     query_norm = normalize_query(query)
-    english_results = dictionary.search_by_english(query_norm)
-    res = list({r[:-1] if r.endswith("的") else r for r in english_results})
-    res = [r for r in res if not any(regex.match(r'\p{Han}', ch) and HanziConv.toSimplified(ch) != ch for ch in r)]
-    for r in res:
-        dd = dictionary.definition_lookup(r, default_def="---")
-        for idx, d in enumerate(dd): # here i take into account the order of the definitions
-            query_in_def = False
-            for qword in query_norm.split(" "):
-                if qword in d.get('definition', '').lower():
-                    query_in_def = True
-            if d and query_in_def:
-                results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': idx})
-    qwords = query_norm.split(" ") 
-    if len(qwords) > 1:
-        fresults = []
-        for r in results:
-            definition = r['english'].lower()
-            if any(qw in definition for qw in qwords):
-                if r not in fresults:
-                    fresults.append(r)
-        def order_key(r):
-            definition = r['english']
-            indices = [definition.find(qw) for qw in qwords]
-            return [i if i != -1 else float('inf') for i in indices]  # Handle missing words
-        results = sorted(fresults, key=order_key)
+    tokens = [t for t in query_norm.split() if t]
+    if not tokens:
+        return results
+    seen = set()
+    for tok in tokens:
+        english_results = dictionary.search_by_english(tok)
+        res = list({r[:-1] if r.endswith("的") else r for r in english_results})
+        res = [r for r in res if not any(regex.match(r'\p{Han}', ch) and HanziConv.toSimplified(ch) != ch for ch in r)]
+        for r in res:
+            dd = dictionary.definition_lookup(r, default_def="---")
+            for idx, d in enumerate(dd):
+                if d and tok in d.get('definition', '').lower():
+                    key = (r, d['pinyin'], d['definition'])
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': idx})
     return results
 
-@app.route('/search', methods=['GET'])
+@app.route('/search', methods=['GET','POST'])
 def search():
     api_key = request.headers.get('X-API-Key')
     if api_key != auth_keys.get('ZHONGWEN_SEARCH_KEY', ''):
         return jsonify({"error": "Unauthorized"}), 401
-    query = request.args.get('query', '')
-    query = query.strip().lower()
+    if request.method == 'POST':
+        payload = request.get_json(silent=True) or {}
+        query = payload.get('query', '')
+    else:
+        query = request.args.get('query', '')
+    query = str(query).strip().lower()
     results = []
     logger.debug("Received search request")
     logger.debug(f"Query: {query}")
@@ -360,14 +485,12 @@ def search():
     if only_hanzi:
         results = search_hanzi(query)
     else:
-        # Prefer full query first (with spaces preserved)
         results = search_pinyin(query)
-
         if len(results) == 0:
             results = search_english(query)
-
     results = [r for r in results if 'variant of' not in r.get('english', '').lower()]
-    return jsonify(results)
+    grouped = group_results(results, query, only_hanzi)
+    return jsonify({'groups': grouped})
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8001, debug=True)
