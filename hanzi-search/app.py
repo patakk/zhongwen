@@ -200,6 +200,151 @@ def normalize_query(text):
     text = lemmatizer.lemmatize(text)
     return text
 
+def append_unique(results, seen, seen_map, entries):
+    for r in entries:
+        key = (r.get('hanzi'), r.get('pinyin'), r.get('english'))
+        if key in seen_map:
+            existing = seen_map[key]
+            if r.get('is_pinyin_exact') and not existing.get('is_pinyin_exact'):
+                existing['is_pinyin_exact'] = True
+                existing['matched_query'] = r.get('matched_query', existing.get('matched_query'))
+            continue
+        seen.add(key)
+        seen_map[key] = r
+        results.append(r)
+
+def search_pinyin_term(term, mark_exact=False, source_query=None):
+    res_local = []
+    hard_results_local = []
+    normalized_term = ensure_pinyin_wildcards(ensure_neutral_tone(term))
+    candidate_terms = expand_pinyin_wildcards(normalized_term)
+    for cand in candidate_terms:
+        res = dictionary.search_by_pinyin(cand)
+        for r in res:
+            dd = dictionary.definition_lookup(r)
+            for idx, d in enumerate(dd):
+                order = idx
+                piny_removed = remove_tones(d['pinyin'].lower())
+                piny_removed_numbers = remove_all_numbers(d['pinyin'].lower())
+                cand_lower = cand.lower()
+                cand_no_numbers = remove_all_numbers(cand_lower)
+                base_entry = {'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'pinyin', 'order': order, 'is_pinyin_exact': mark_exact, 'matched_query': source_query or term}
+                if d and cand_lower in piny_removed:
+                    if 'surname' in d['definition']:
+                        order = 1000
+                        base_entry['order'] = order
+                    hard_results_local.append(base_entry)
+                if d and (cand_lower in piny_removed_numbers or (cand_no_numbers and cand_no_numbers in piny_removed_numbers)):
+                    if 'surname' in d['definition']:
+                        order = 1000
+                    res_entry = dict(base_entry)
+                    res_entry['order'] = order
+                    res_local.append(res_entry)
+    if len(res_local) == 0:
+        res_local = hard_results_local
+    return res_local
+
+def search_hanzi(query):
+    results = []
+    seen = set()
+    # Tokenize on whitespace to support semi-exact matches like "对不起 吧"
+    tokens = [t for t in regex.split(r'\s+', query) if t]
+    joined = ''.join(tokens)
+    is_multi_token = len(tokens) > 1
+
+    def safe_gather(term, include_examples=True):
+        try:
+            return gather_hanzi_results(term, dictionary, include_other_examples=include_examples)
+        except KeyError:
+            return [], False
+
+    def append_lookup(term, include_examples=True):
+        res, _ = safe_gather(term, include_examples=include_examples)
+        add_unique_entries(results, res, seen)
+
+    # 1) Full query (joined tokens) if available
+    if joined:
+        full_results, full_has_direct = safe_gather(joined, include_examples=True)
+        add_unique_entries(results, full_results, seen)
+    else:
+        full_has_direct = False
+
+    # 2) Per-token exact lookups (preserve token order)
+    if is_multi_token:
+        for tok in tokens:
+            append_lookup(tok, include_examples=True)
+
+    # 3) Per-character lookups in order (unique)
+    ordered_chars = []
+    source_chars = joined if joined else query
+    for ch in source_chars:
+        if not ch.strip():
+            continue
+        if ch not in ordered_chars:
+            ordered_chars.append(ch)
+    include_other = full_has_direct or is_multi_token
+    for ch in ordered_chars:
+        per_char, _ = safe_gather(ch, include_examples=True)
+        add_unique_entries(results, per_char, seen)
+    return results
+
+def search_pinyin(query):
+    results = []
+    seen = set()
+    seen_map = {}
+    tokens = [t for t in query.split() if t]
+    joined = ''.join(tokens)
+    has_hanzi_token = any(any(regex.match(r'\p{Han}', ch) for ch in tok if ch.strip()) for tok in tokens)
+    append_unique(results, seen, seen_map, search_pinyin_term(query))
+    if len(tokens) > 1:
+        # Also try a joined form for multi-syllable exacts
+        append_unique(results, seen, seen_map, search_pinyin_term(joined))
+        for tok in tokens:
+            append_unique(results, seen, seen_map, search_pinyin_term(tok))
+
+    # Mixed hanzi + pinyin: infer combined pinyin and try exact lookup
+    if has_hanzi_token:
+        inferred = build_mixed_pinyin_query(tokens, dictionary)
+        if inferred:
+            append_unique(results, seen, seen_map, search_pinyin_term(inferred, mark_exact=True, source_query=inferred))
+        for tok in tokens:
+            if any(regex.match(r'\p{Han}', ch) for ch in tok if ch.strip()):
+                try:
+                    hanzi_res, _ = gather_hanzi_results(tok, dictionary, include_other_examples=True)
+                    append_unique(results, seen, seen_map, hanzi_res)
+                except KeyError:
+                    pass
+    return results
+
+def search_english(query):
+    results = []
+    query_norm = normalize_query(query)
+    english_results = dictionary.search_by_english(query_norm)
+    res = list({r[:-1] if r.endswith("的") else r for r in english_results})
+    res = [r for r in res if not any(regex.match(r'\p{Han}', ch) and HanziConv.toSimplified(ch) != ch for ch in r)]
+    for r in res:
+        dd = dictionary.definition_lookup(r, default_def="---")
+        for idx, d in enumerate(dd): # here i take into account the order of the definitions
+            query_in_def = False
+            for qword in query_norm.split(" "):
+                if qword in d.get('definition', '').lower():
+                    query_in_def = True
+            if d and query_in_def:
+                results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': idx})
+    qwords = query_norm.split(" ") 
+    if len(qwords) > 1:
+        fresults = []
+        for r in results:
+            definition = r['english'].lower()
+            if any(qw in definition for qw in qwords):
+                if r not in fresults:
+                    fresults.append(r)
+        def order_key(r):
+            definition = r['english']
+            indices = [definition.find(qw) for qw in qwords]
+            return [i if i != -1 else float('inf') for i in indices]  # Handle missing words
+        results = sorted(fresults, key=order_key)
+    return results
 
 @app.route('/search', methods=['GET'])
 def search():
@@ -213,143 +358,13 @@ def search():
     logger.debug(f"Query: {query}")
     only_hanzi = all(regex.match(r'\p{Han}', char) for char in query if char.strip())
     if only_hanzi:
-        seen = set()
-        results = []
-
-        # Tokenize on whitespace to support semi-exact matches like "对不起 吧"
-        tokens = [t for t in regex.split(r'\s+', query) if t]
-        joined = ''.join(tokens)
-        is_multi_token = len(tokens) > 1
-
-        def safe_gather(term, include_examples=True):
-            try:
-                return gather_hanzi_results(term, dictionary, include_other_examples=include_examples)
-            except KeyError:
-                return [], False
-
-        def append_lookup(term, include_examples=True):
-            res, _ = safe_gather(term, include_examples=include_examples)
-            add_unique_entries(results, res, seen)
-
-        # 1) Full query (joined tokens) if available
-        if joined:
-            full_results, full_has_direct = safe_gather(joined, include_examples=True)
-            add_unique_entries(results, full_results, seen)
-        else:
-            full_has_direct = False
-
-        # 2) Per-token exact lookups (preserve token order)
-        if is_multi_token:
-            for tok in tokens:
-                append_lookup(tok, include_examples=True)
-
-        # 3) Per-character lookups in order (unique)
-        ordered_chars = []
-        source_chars = joined if joined else query
-        for ch in source_chars:
-            if not ch.strip():
-                continue
-            if ch not in ordered_chars:
-                ordered_chars.append(ch)
-        include_other = full_has_direct or is_multi_token
-        for ch in ordered_chars:
-            per_char, _ = safe_gather(ch, include_examples=True)
-            add_unique_entries(results, per_char, seen)
-
+        results = search_hanzi(query)
     else:
-        seen = set()
-        seen_map = {}
-        def append_unique(entries):
-            for r in entries:
-                key = (r.get('hanzi'), r.get('pinyin'), r.get('english'))
-                if key in seen_map:
-                    existing = seen_map[key]
-                    if r.get('is_pinyin_exact') and not existing.get('is_pinyin_exact'):
-                        existing['is_pinyin_exact'] = True
-                        existing['matched_query'] = r.get('matched_query', existing.get('matched_query'))
-                    continue
-                seen.add(key)
-                seen_map[key] = r
-                results.append(r)
-
-        def search_pinyin_term(term, mark_exact=False, source_query=None):
-            res_local = []
-            hard_results_local = []
-            normalized_term = ensure_pinyin_wildcards(ensure_neutral_tone(term))
-            candidate_terms = expand_pinyin_wildcards(normalized_term)
-            for cand in candidate_terms:
-                res = dictionary.search_by_pinyin(cand)
-                for r in res:
-                    dd = dictionary.definition_lookup(r)
-                    for idx, d in enumerate(dd):
-                        order = idx
-                        piny_removed = remove_tones(d['pinyin'].lower())
-                        piny_removed_numbers = remove_all_numbers(d['pinyin'].lower())
-                        cand_lower = cand.lower()
-                        cand_no_numbers = remove_all_numbers(cand_lower)
-                        base_entry = {'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'pinyin', 'order': order, 'is_pinyin_exact': mark_exact, 'matched_query': source_query or term}
-                        if d and cand_lower in piny_removed:
-                            if 'surname' in d['definition']:
-                                order = 1000
-                                base_entry['order'] = order
-                            hard_results_local.append(base_entry)
-                        if d and (cand_lower in piny_removed_numbers or (cand_no_numbers and cand_no_numbers in piny_removed_numbers)):
-                            if 'surname' in d['definition']:
-                                order = 1000
-                            res_entry = dict(base_entry)
-                            res_entry['order'] = order
-                            res_local.append(res_entry)
-            if len(res_local) == 0:
-                res_local = hard_results_local
-            return res_local
-
-        tokens = [t for t in query.split() if t]
-        joined = ''.join(tokens)
-        has_hanzi_token = any(any(regex.match(r'\p{Han}', ch) for ch in tok if ch.strip()) for tok in tokens)
-
         # Prefer full query first (with spaces preserved)
-        append_unique(search_pinyin_term(query))
-        if len(tokens) > 1:
-            # Also try a joined form for multi-syllable exacts
-            append_unique(search_pinyin_term(joined))
-            for tok in tokens:
-                append_unique(search_pinyin_term(tok))
-
-        # Mixed hanzi + pinyin: infer combined pinyin and try exact lookup
-        if has_hanzi_token:
-            inferred = build_mixed_pinyin_query(tokens, dictionary)
-            if inferred:
-                append_unique(search_pinyin_term(inferred, mark_exact=True, source_query=inferred))
-            for tok in tokens:
-                if any(regex.match(r'\p{Han}', ch) for ch in tok if ch.strip()):
-                    try:
-                        hanzi_res, _ = gather_hanzi_results(tok, dictionary, include_other_examples=True)
-                        append_unique(hanzi_res)
-                    except KeyError:
-                        pass
+        results = search_pinyin(query)
 
         if len(results) == 0:
-            query_norm = normalize_query(query)
-            res = list({r[:-1] if r.endswith("的") else r for r in dictionary.search_by_english(query_norm)})
-            res = [r for r in res if not any(regex.match(r'\p{Han}', ch) and HanziConv.toSimplified(ch) != ch for ch in r)]
-            for r in res:
-                dd = dictionary.definition_lookup(r, default_def="---")
-                for idx, d in enumerate(dd): # here i take into account the order of the definitions
-                    if d and query_norm in d['definition'].lower():
-                        results.append({'hanzi': r, 'pinyin': d['pinyin'], 'english': d['definition'], 'match_type': 'english', 'order': idx})
-            qwords = query_norm.split(" ") 
-            if len(qwords) > 1:
-                fresults = []
-                for r in results:
-                    definition = r['english'].lower()
-                    if all(qw in definition for qw in qwords):
-                        if r not in fresults:
-                            fresults.append(r)
-                def order_key(r):
-                    definition = r['english']
-                    indices = [definition.find(qw) for qw in qwords]
-                    return [i if i != -1 else float('inf') for i in indices]  # Handle missing words
-                results = sorted(fresults, key=order_key)
+            results = search_english(query)
 
     results = [r for r in results if 'variant of' not in r.get('english', '').lower()]
     return jsonify(results)

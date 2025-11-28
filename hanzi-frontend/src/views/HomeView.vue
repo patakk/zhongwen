@@ -170,6 +170,7 @@ export default {
         }
 
         // Token-ordered groups (preserve query order)
+        let tokenGroupsAdded = false;
         if (tokens.length) {
           tokens.forEach((tok, idx) => {
             const hanziTok = this.extractHanzi(tok).join('');
@@ -182,11 +183,12 @@ export default {
               tokItems.forEach(e => used.add(e.originalIdx));
               if (tokItems.length) {
                 groups.push({ key: `hanzi-${idx}-${hanziTok}`, label: hanziTok, collapsible: true, items: tokItems });
+                tokenGroupsAdded = true;
               }
               return;
             }
             const tnorm = norm(tok);
-            const tokItems = annotated.filter(entry => {
+            let tokItems = annotated.filter(entry => {
               if (used.has(entry.originalIdx)) return false;
               const p = norm(entry.item?.pinyin || '');
               return p.includes(tnorm);
@@ -194,6 +196,19 @@ export default {
             tokItems.forEach(e => used.add(e.originalIdx));
             if (tokItems.length) {
               groups.push({ key: `pinyin-${idx}-${tok}`, label: tok, collapsible: true, items: tokItems });
+              tokenGroupsAdded = true;
+              return;
+            }
+            // Fallback: group by English definition match
+            const engItems = annotated.filter(entry => {
+              if (used.has(entry.originalIdx)) return false;
+              const def = (entry.item?.english || '').toString().toLowerCase();
+              return def.includes(tnorm);
+            });
+            engItems.forEach(e => used.add(e.originalIdx));
+            if (engItems.length) {
+              groups.push({ key: `english-${idx}-${tok}`, label: tok, collapsible: true, items: engItems });
+              tokenGroupsAdded = true;
             }
           });
         }
