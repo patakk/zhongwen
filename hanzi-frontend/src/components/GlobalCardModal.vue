@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isVisible || pageMode" :class="['global-modal-container', { 'page-mode-container': pageMode }]">
+  <div v-if="isVisible || pageMode" :class="['global-modal-container', { 'page-mode-container': pageMode }]" @click="closeModal">
     <!--<div :class="['card-modal-overlay', { 'page-mode-overlay': pageMode }]" @click="closeModal">-->
       <div v-if="isLoading" class="loading-state">
         <div class="spinner"></div>
@@ -1784,7 +1784,12 @@ export default {
 
 <style scoped>
 .global-modal-container {
-  
+  background-color: #00f0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 .hanzi-link {
@@ -1963,50 +1968,11 @@ export default {
   color: var(--fg);
   cursor: pointer;
   padding: 0.25rem 0.5rem;
-  border-radius: 999px;
-  min-width: 2rem;
+  border-radius: .7rem;
+  width: 2rem;
+  height: 1rem;
   text-align: center;
-}
-
-.def-counter {
-  font-size: 0.9rem;
-  opacity: 0.75;
-}
-
-.main-def-flex {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.main-def-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  flex: 1 1 auto;
-}
-
-.main-pinyin {
-  font-size: 1.3rem;
-}
-
-.def-nav {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.def-btn {
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
-  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
-  color: var(--fg);
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  border-radius: 999px;
-  min-width: 2rem;
-  text-align: center;
+  line-height: 0;
 }
 
 .def-counter {

@@ -97,9 +97,11 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
   words.forEach(word => {
     [...word.character].forEach(char => {if(char !== '，') uniqueChars.add(char);});
   });
+  if(words.length === 1){
+    strokesData[words[0].character] = strokesData;
+  }
   // Filter out excluded characters
   const charList = Array.from(uniqueChars).filter(char => !excludedSet.has(char));
-  console.log(charList);
   // Preprocess: calculate vertical centering offsets for each character
   const charYOffsetMap = {};
   for (const char of charList) {
@@ -140,7 +142,7 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
   const adjustedRowHeight = (A4_HEIGHT - 2 * gridOffsetY) / (ROWS_PER_PAGE - .5);
 
   // Calculate how many chars fit per page
-  const rowsForChar = selectedPracticeOption === 'two_rows' ? 2 : 1;
+  const rowsForChar = Math.max(1, Number(selectedPracticeOption) || 1);
   const charsPerPage = Math.floor(ROWS_PER_PAGE / rowsForChar);
   const totalPages = Math.ceil(charList.length / charsPerPage);
   const startCharIdx = page * charsPerPage;
@@ -160,79 +162,43 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
       if (rowsForChar === 2 && r === 1) {
         y -= (PINYIN_GAP - SECOND_ROW_GAP); // move second row up
       }
-      let fadedPinyinSVG = '';
+      let pinyinAndBreakdownSVG = '';
       const wordObj = words.find(w => w.character.includes(char));
       if (wordObj && wordObj.pinyin && wordObj.pinyin[0]) {
-        const pinyinSyllables = wordObj.pinyin[0].split(/\s+/);
-        const chars = [...wordObj.character];
-        const charIndices = chars.reduce((arr, c, i) => {
-          if (c === char) arr.push(i);
-          return arr;
-        }, []);
+        const pinyinSyllables = wordObj.pinyin;
+        const sylString = pinyinSyllables.join(' / ').replace(/[^a-zA-ZüÜ0-9\/ ]/g, ''); // Clean first syllable
         // Calculate total syllable width for the word
         let totalSyllableWidth = 0;
         let syllablePositions = [];
-        if (showFadedPinyin) {
-          for (let j = 0; j < pinyinSyllables.length; j++) {
-            if (pinyinSyllables[j]) {
-              let width = pinyinSyllables[j].length * FONT_SIZE_PINYIN * 0.6;
-              syllablePositions.push(width);
-              totalSyllableWidth += width;
-            }
-          }
-        } else {
-          // Only count the relevant syllable(s) for this char
-          for (let i = 0; i < chars.length; i++) {
-            if (charIndices.includes(i) && pinyinSyllables[i]) {
-              let width = pinyinSyllables[i].length * FONT_SIZE_PINYIN * 0.6;
-              syllablePositions.push(width);
-              totalSyllableWidth += width;
-            }
-          }
-        }
+          let width = sylString.length * FONT_SIZE_PINYIN * 0.6;
+          syllablePositions.push(width);
+          totalSyllableWidth += width;
+        let x = gridOffsetX;
+        const pinyinText = noAccents ? sylString.replace("5", "") : toAccentedPinyin(sylString);
+        pinyinAndBreakdownSVG += `<text x="${x}" y="${y - 5}" font-size="${FONT_SIZE_PINYIN}" fill="#000" font-family="sans-serif" font-style="italic" opacity="1" text-anchor="left">${pinyinText}</text>`;
 
-        for (let i = 0; i < chars.length; i++) {
-          if (pinyinSyllables[i]) {
-            let syllableWidth = pinyinSyllables[i].length * FONT_SIZE_PINYIN * 0.6;
-            let x = gridOffsetX;
-            if (showFadedPinyin) {
-              for (let j = 0; j < i; j++) {
-                if (pinyinSyllables[j]) {
-                  x += pinyinSyllables[j].length * FONT_SIZE_PINYIN * 0.6;
-                }
+        if (strokesData[char] && strokesData[char].strokes && r === 0) {
+          const breakdownCount = strokesData[char].strokes.length;
+          const breakdownSize = FONT_SIZE_PINYIN * 1.2;
+          let breakdownX = gridOffsetX+totalSyllableWidth*0.6 + 20; // start a bit to the right of pinyin
+          for (let b = 1; b <= breakdownCount; b++) {
+            pinyinAndBreakdownSVG += `<g transform="translate(${breakdownX},${y - 3}) scale(${breakdownSize/1000}, ${-breakdownSize/1000})">`;
+            //pinyinAndBreakdownSVG += `<rect y="-100" width="${1000}" height="${1000}" fill="none" stroke="#000" opacity="1" stroke-width="33"/>`;
+            for (let s = 0; s < breakdownCount; s++) {
+              if(s < b){
+                pinyinAndBreakdownSVG += `<path d='${strokesData[char].strokes[s]}' fill="#000" stroke="none" opacity="1"/>`;
               }
-              x += (syllableWidth) / 2;
-            } else {
-              // Only position the relevant syllable(s) centered
-              if (!charIndices.includes(i)) continue;
-              x += totalSyllableWidth / 2;
-            }
-            const isCurrent = charIndices.includes(i);
-            const pinyinText = noAccents ? pinyinSyllables[i].replace("5", "") : toAccentedPinyin(pinyinSyllables[i]);
-            if (showFadedPinyin) {
-              fadedPinyinSVG += `<text x="${x}" y="${y - 8}" font-size="${FONT_SIZE_PINYIN}" fill="#222" font-family="sans-serif" font-style="italic" opacity="${isCurrent ? 1 : OPACITY_FADED}" text-anchor="middle">${pinyinText}</text>`;
-            } else if (isCurrent) {
-              fadedPinyinSVG += `<text x="${x}" y="${y - 8}" font-size="${FONT_SIZE_PINYIN}" fill="#222" font-family="sans-serif" font-style="italic" opacity="1" text-anchor="middle">${pinyinText}</text>`;
-            }
-            // --- Breakdown SVGs ---
-            if (isCurrent && strokesData[char] && strokesData[char].strokes && r === 0) {
-              const breakdownCount = strokesData[char].strokes.length;
-              const breakdownSize = FONT_SIZE_PINYIN * 1.2;
-              let breakdownX = gridOffsetX*1.1+totalSyllableWidth; // start a bit to the right of pinyin
-              for (let b = 1; b <= breakdownCount; b++) {
-                fadedPinyinSVG += `<g transform="translate(${breakdownX},${y - 4}) scale(${breakdownSize/1000}, ${-breakdownSize/1000})">`;
-                for (let s = 0; s < breakdownCount; s++) {
-                  fadedPinyinSVG += `<path d='${strokesData[char].strokes[s]}' fill="#222" stroke="none" opacity="${s < b ? 1 : OPACITY_FADED}"/>`;
-                }
-                fadedPinyinSVG += `</g>`;
-                breakdownX += breakdownSize * 1.1; // space between breakdowns
+              else{
+                pinyinAndBreakdownSVG += `<path d='${strokesData[char].strokes[s]}' fill="#000" stroke="none" opacity="0.2"/>`;
               }
             }
+            pinyinAndBreakdownSVG += `</g>`;
+            breakdownX += breakdownSize * 1.1; // space between breakdowns
           }
         }
       }
       if(r === 0) {
-        svg += fadedPinyinSVG;
+        svg += pinyinAndBreakdownSVG;
       }
       for (let i = 0; i < SQUARES_PER_ROW; i++) {
         const x = gridOffsetX + i * SQUARE_SIZE;
@@ -247,7 +213,7 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
             svg += `<g transform="translate(${x + SQUARE_SIZE/2},${y + SQUARE_SIZE/2}) scale(0.9) translate(${-SQUARE_SIZE/2},${-SQUARE_SIZE/2})">`;
             svg += `<g transform=\"translate(0,${SQUARE_SIZE}) scale(${SQUARE_SIZE/1000},-${SQUARE_SIZE/1000}) translate(0,${charYOffsetMap[char]})\">`;
             strokesData[char].strokes.forEach(path => {
-              svg += `<path d=\"${path}\" fill=\"#222\" stroke=\"none\"/>`;
+              svg += `<path d=\"${path}\" fill=\"#000\" stroke=\"none\"/>`;
             });
             svg += `</g></g>`;
           }
@@ -257,7 +223,7 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
             svg += `<g transform="translate(${x + SQUARE_SIZE/2},${y + SQUARE_SIZE/2}) scale(0.9) translate(${-SQUARE_SIZE/2},${-SQUARE_SIZE/2})" opacity="${OPACITY_FADED}">`;
             svg += `<g transform=\"translate(0,${SQUARE_SIZE}) scale(${SQUARE_SIZE/1000},-${SQUARE_SIZE/1000}) translate(0,${charYOffsetMap[char]})\">`;
             strokesData[char].strokes.forEach(path => {
-              svg += `<path d=\"${path}\" fill=\"#222\" stroke=\"none\"/>`;
+              svg += `<path d=\"${path}\" fill=\"#000\" stroke=\"none\"/>`;
             });
             svg += `</g></g>`;
           }
@@ -282,12 +248,12 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
       if (dateStrokesData && dateStrokesData[char] && dateStrokesData[char].strokes) {
         svg += `<g transform="translate(${startX + i * (dateSize + margin)},${y}) scale(${dateSize/1000},-${dateSize/1000})">`;
         dateStrokesData[char].strokes.forEach(path => {
-          svg += `<path d='${path}' fill="#222" stroke="none"/>`;
+          svg += `<path d='${path}' fill="#000" stroke="none"/>`;
         });
         svg += `</g>`;
       } else {
         // fallback: render as text if no stroke data
-        svg += `<text x="${startX + i * (dateSize + margin) + dateSize/2}" y="${y-dateSize/4}" font-size="${dateSize * 0.9}" fill="#222" text-anchor="middle" alignment-baseline="middle">${char}</text>`;
+        svg += `<text x="${startX + i * (dateSize + margin) + dateSize/2}" y="${y-dateSize/4}" font-size="${dateSize * 0.9}" fill="#000" text-anchor="middle" alignment-baseline="middle">${char}</text>`;
       }
     });
   }
@@ -296,7 +262,7 @@ export function generatePracticeSheetSVG(words, strokesData, options = {}) {
     const pageNum = page + 1;
     const pageText = `${pageNum} / ${totalPages}`;
     const fontSize = SQUARE_SIZE * 0.22;
-    svg += `<text x="${A4_WIDTH - .25*PADDING_X}" y="${A4_HEIGHT - .25*PADDING_Y}" font-size="${fontSize}" fill="#222" text-anchor="end" alignment-baseline="middle">${pageText}</text>`;
+    svg += `<text x="${A4_WIDTH - .25*PADDING_X}" y="${A4_HEIGHT - .25*PADDING_Y}" font-size="${fontSize}" fill="#000" text-anchor="end" alignment-baseline="middle">${pageText}</text>`;
   }
   svg += '</svg>';
   return { svg, totalPages };

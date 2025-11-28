@@ -263,26 +263,78 @@
       </div>
     </div>
 
-    <PracticeSheetModal
-      v-model="showPracticeSheetModal"
-      :initial-chars="words.map(w => w.character).join('')"
-      :words="words"
-      :sheet-name="selectedWordlist || 'practice_sheet'"
-    />
+    <!-- Practice Sheet Modal -->
+    <div v-if="showPracticeSheetModal" class="modal-overlay" @click="closePracticeSheetModal">
+      <div class="modal-content" @click.stop>
+        <h3>Get Practice Sheet</h3>
+        <div class="svg-modal-form">
+          <div class="practice-options">
+            <div
+              v-for="opt in practiceOptions"
+              :key="opt.value"
+              class="practice-option"
+              :class="{ selected: selectedPracticeOption === opt.value, faded: selectedPracticeOption !== opt.value }"
+              @click="selectedPracticeOption = opt.value"
+            >
+              {{ opt.label }}
+            </div>
+          </div>
+          <div style="margin-top:1.5rem;">
+            <label>Included Characters (click to exclude/include):</label>
+            <div class="practice-char-list">
+              <span
+                v-for="char in getPracticeSheetUniqueChars()"
+                :key="char"
+                class="practice-char"
+                :class="{ excluded: practiceSheetExcludedChars.has(char) }"
+                @click="togglePracticeSheetChar(char)"
+                :title="practiceSheetExcludedChars.has(char) ? 'Click to include' : 'Click to exclude'"
+              >
+                {{ char }}
+              </span>
+            </div>
+            <div v-if="getPracticeSheetUniqueChars().length === 0" style="opacity:0.7; font-style:italic; margin-top:0.5rem;">No characters in this wordlist.</div>
+            <!-- <button v-if="practiceSheetExcludedChars.size > 0" @click="resetPracticeSheetExcludedChars" class="reset-excluded-button">Reset Excluded</button> -->
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button @click="closePracticeSheetModal" class="cancel-button">Cancel</button>
+          <button @click="createPracticeSheet" class="confirm-button">Create</button>
+        </div>
+      </div>
+    </div>
 
+    <!-- Practice Sheet SVG Preview Modal -->
+    <div v-if="showPracticeSheetSVG" class="modal-overlay" @click="showPracticeSheetSVG = false">
+      <div class="modal-content-svg" @click.stop>
+        <h3>Practice Sheet Preview</h3>
+        <div class="modal-svg-preview">
+          <div class="modal-svg-content" v-html="practiceSheetSVG"></div>
+        </div>
+        <div class="svg-modal-buttons">
+          <!-- <button @click="showPracticeSheetSVG = false" class="cancel-button">Close</button> -->
+          <button @click="downloadPracticeSheetSVG" class="confirm-button">Download SVG</button>
+          <button @click="downloadPracticeSheetPDF" class="confirm-button">Download PDF</button>
+        </div>
+        <div v-if="practiceSheetTotalPages > 1" class="modal-buttons" style="justify-content:center;">
+          <button @click="updatePracticeSheetPage(currentPracticeSheetPage-1)" :disabled="currentPracticeSheetPage === 0">Previous Page</button>
+          <span style="margin:0 1rem;">Page {{ currentPracticeSheetPage+1 }} / {{ practiceSheetTotalPages }}</span>
+          <button @click="updatePracticeSheetPage(currentPracticeSheetPage+1)" :disabled="currentPracticeSheetPage >= practiceSheetTotalPages-1">Next Page</button>
+        </div>
+      </div>
+    </div>
   </template>
   
   <script>
   import BasePage from '../components/BasePage.vue';
   import PreloadWrapper from '../components/PreloadWrapper.vue';
-  import PracticeSheetModal from '../components/PracticeSheetModal.vue';
+  import { generatePracticeSheetSVG, generatePracticeSheetPDF } from '../lib/practiceSheetExport.js';
   
   export default {
     name: 'MySpaceView',
     components: {
       BasePage,
       PreloadWrapper,
-      PracticeSheetModal,
     },
     data() {
       return {
@@ -1251,19 +1303,13 @@
     /* border-radius: 8px; */
     text-decoration: none;
     user-select: none;
-    /* box-shadow: 0 2px 6px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%); */
-    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
-  }
-
-
-  .nav-button:active {
-    border-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 75%);
+    box-shadow: 0 2px 6px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   }
 
   
   .data-button {
-    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
     outline: none;
+    border: none;
     cursor: pointer;
   }
   
@@ -1312,7 +1358,6 @@
     width: 110px;
     min-width: 110px;
     margin-right: 1rem;
-    margin-left: .5rem;
     user-select: text;
   }
   
@@ -1388,15 +1433,12 @@
   
   .action-button {
     padding: 0.5rem 1rem;
+    border: none;
     background: var(--bg);
     color: var(--fg);
     cursor: pointer;
     font-family: inherit;
-    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
-  }
-
-  .action-button:active {
-    border-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 75%);
+    box-shadow: 0 2px 4px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   }
 
 
@@ -1427,6 +1469,7 @@
     color: var(--fg);
     cursor: pointer;
     font-family: inherit;
+    box-shadow: 0 2px 4px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   }
 
   /* Modal styles */

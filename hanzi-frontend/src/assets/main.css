@@ -96,7 +96,7 @@
 
 @media (max-width: 1700px) and (orientation: landscape) {
   html {
-    font-size: 90%;
+    /*font-size: 100%;*/
   }
 }
 

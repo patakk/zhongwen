@@ -10,6 +10,7 @@ import Flashcards from '../views/FlashcardsView.vue'
 import HanziPractice from '../views/HanziPracticeView.vue'
 import PageInfo from '../views/PageInfoView.vue'
 import Lexicon from '../views/LexiconView.vue'
+import Tools from '../views/ToolsView.vue'
 import WordView from '../views/WordView.vue'
 import HanziTree from '../views/HanziTree.vue'
 
@@ -26,6 +27,7 @@ const routes = [
   { path: '/practice', component: HanziPractice },
   { path: '/page-info', component: PageInfo },
   { path: '/lexicon', component: Lexicon },
+  { path: '/tools', component: Tools },
   { path: '/word/:word', name: 'WordPage', component: WordView },
   { path: '/:pathMatch(.*)*', component: Home } 
 ]

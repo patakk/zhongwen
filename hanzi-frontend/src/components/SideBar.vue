@@ -17,6 +17,7 @@
           <RouterLink to="/search" class="top-link">Search</RouterLink>-->
             <RouterLink to="/about" class="top-link">About</RouterLink>
           <RouterLink to="/settings" class="top-link">Settings</RouterLink>
+          <RouterLink to="/tools" class="top-link">Tools</RouterLink>
           <template v-if="!authStatus">
             <RouterLink to="/login" class="top-link">Login</RouterLink>
           </template>
@@ -36,6 +37,7 @@
         <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
         <RouterLink to="/search" class="top-link">Search</RouterLink>-->
         <RouterLink to="/settings" class="top-link">Settings</RouterLink>
+        <RouterLink to="/tools" class="top-link">Tools</RouterLink>
         <template v-if="!authStatus">
           <RouterLink to="/login" class="top-link">Login</RouterLink>
         </template>

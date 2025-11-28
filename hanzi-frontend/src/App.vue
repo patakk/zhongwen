@@ -197,8 +197,9 @@ onMounted(async () => {
     right: 1rem;
     display: flex;
     flex-direction: column;
-    top: 50%;
-    transform: translateY(-50%);
+    /*top: 50%;
+    transform: translateY(-50%);*/
+    top: 3rem;
     gap: 0.5rem;
     padding: 0.5rem;
     border: 1px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);

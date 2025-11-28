@@ -1132,7 +1132,7 @@ html, body {
   display: flex;
   /* border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%); */
   /* box-shadow: 0px -1.25px color-mix(in oklab, var(--fg) 10%, var(--bg) 10%); */
-  padding: .5em;
+  padding: .5em .5em;
   font-family: inherit;
   text-align: left;
   background: var(--bg);
@@ -1157,6 +1157,7 @@ html, body {
   align-items: flex-start;
   flex: 2;
   min-width: 0; /* allow flex child to shrink and wrap */
+  margin-left: .25rem;
 }
 
 .list-hanzi {
@@ -1463,7 +1464,6 @@ label {
   }
 
   .list-item {
-    padding: 1em 0;
   }
 
 
