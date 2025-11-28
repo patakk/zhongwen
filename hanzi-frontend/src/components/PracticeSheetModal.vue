@@ -14,6 +14,7 @@
           <label for="practice-chars">Characters (max 20)</label>
           <input
             id="practice-chars"
+            class="practice-chars-input"
             v-model="charInput"
             @input="filterChars"
             placeholder="Enter characters"
@@ -334,32 +335,11 @@ export default {
   justify-content: space-between;
   margin-top: 1rem;
 }
+
+.practice-chars-input {
+  letter-spacing: 0.25em;
+}
+.practice-chars-input::placeholder {
+  letter-spacing: 0.0em;
+}
 </style>
-
-.modal-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 0.75rem;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.pagination button {
-  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
-  background: color-mix(in oklab, var(--fg) 6%, var(--bg) 100%);
-  color: var(--fg);
-  padding: 0.4rem 0.6rem;
-  border-radius: var(--border-radius, 4px);
-  cursor: pointer;
-}
-.page-indicator {
-  font-weight: 600;
-  opacity: 0.8;
-}
-
-.pager { justify-content: space-between; }

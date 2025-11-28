@@ -6,7 +6,7 @@
         <h3>Practice Sheet Generator</h3>
         <p>Create a practice sheet from any characters.</p>
       </div>
-      <button class="tool-button" @click="showModal = true">Open Generator</button>
+      <button class="tool-button" @click="showModal = true">Open</button>
     </div>
     <PracticeSheetModal
       v-model="showModal"
