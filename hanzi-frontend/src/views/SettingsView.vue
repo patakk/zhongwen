@@ -54,7 +54,7 @@
               :class="{ 'active': currentFont === 'fusion-pixel' }" 
               @click="selectFont('fusion-pixel')"
             >
-              Fusion Pixel
+              Pixel
             </button>
           </div>
         </div>
@@ -74,7 +74,7 @@
               :class="{ 'active': currentUiFont === 'fusion-pixel' }"
               @click="selectUiFont('fusion-pixel')"
             >
-              Fusion Pixel
+              Pixel
             </button>
             <button
               class="theme-button"
@@ -367,7 +367,13 @@ function toggleCurrentTheme() {
 
 function selectFont(fontKey) {
   store.dispatch('theme/setFont', fontKey);
-  const label = fontKey === 'kaiti' ? 'Kaiti' : fontKey === 'noto-sans' ? 'Noto Sans' : fontKey === 'noto-serif' ? 'Noto Serif' : fontKey === 'fusion-pixel' ? 'Fusion Pixel S' : 'Unknown';
+  let fontmap = {
+    'kaiti': 'Kaiti',
+    'noto-sans': 'Noto Sans',
+    'noto-serif': 'Noto Serif',
+    'fusion-pixel': 'Fusion Pixel S',
+  };
+  let label = fontmap[fontKey] || 'Unknown';
   showSuccessToast(`Character font set to ${label}`);
 }
 
@@ -901,11 +907,10 @@ h2 {
   left: 0;
   right: 0;
   bottom: 0;
-  background: color-mix(in oklab, var(--bg) 13%, var(--bg) 83%);
+  background: color-mix(in srgb, var(--bg) 50%, rgba(0, 0, 0, 0.6) 40%);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 20;
 }
 
 .modal-content {

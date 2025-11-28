@@ -1448,6 +1448,8 @@
     padding: 2rem;
     width: 90%;
     max-width: 600px;
+    background-color: var(--bg);
+    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
   }
   
   .modal-form {

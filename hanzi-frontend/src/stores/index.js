@@ -465,7 +465,7 @@ const themeModule = {
         'kaiti': "'Kaiti','STKaiti','Kai','楷体',serif",
         'noto-sans': "'Noto Sans SC','Noto Sans CJK SC','Source Han Sans SC','PingFang SC','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif",
         'noto-serif': "'Noto Serif SC','Noto Serif CJK SC','Source Han Serif SC','Songti SC','SimSun',serif",
-        'fusion-pixel': "'Fusion Pixel S', 'Fusion Pixel T'"
+        'fusion-pixel': "'Fusion Pixel S', 'Fusion Pixel T'",
       };
       const family = families[fontKey] || families['noto-serif'];
       // Apply CSS variable for main character font
