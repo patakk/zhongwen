@@ -123,3 +123,5 @@ var noise = function(x, y = 0, z = 0) {
       perlin[i] = lcg.rand();
     }
   };
+
+export { noise, noiseDetail, noiseSeed };

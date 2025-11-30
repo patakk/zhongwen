@@ -4,29 +4,62 @@
     <div class="tool-card">
       <div class="tool-header">
         <h3>Practice Sheet Generator</h3>
-        <p>Create a practice sheet from any characters.</p>
+        <p>Create a practice sheet from given characters.</p>
       </div>
       <button class="tool-button" @click="showModal = true">Open</button>
     </div>
+    <div class="tool-card">
+      <div class="tool-header">
+        <h3>Stroke Viewer</h3>
+        <p>Color strokes.</p>
+      </div>
+      <button class="tool-button" @click="showStrokeModal = true">Open</button>
+    </div>
     <PracticeSheetModal
       v-model="showModal"
-      :initial-chars="''"
+      :initial-chars="historyChars"
       :words="[]"
       sheet-name="practice_sheet"
     />
+    <StrokeExplorer v-model="showStrokeModal" :initial-char="lastHistoryChar" />
   </div>
 </template>
 
 <script>
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 import BasePage from '../components/BasePage.vue';
 import PracticeSheetModal from '../components/PracticeSheetModal.vue';
+import StrokeExplorer from '../components/StrokeExplorer.vue';
 
 export default {
   name: 'ToolsView',
-  components: { BasePage, PracticeSheetModal },
+  components: { BasePage, PracticeSheetModal, StrokeExplorer },
+  setup() {
+    const store = useStore();
+
+    // Get history from store and join characters
+    const historyChars = computed(() => {
+      const history = store.getters['zihistory/getHistory'] || [];
+      const joined = Array.from(history).join('');
+      const unique = Array.from(new Set(joined)).join('');
+      return unique;
+    });
+
+    // Get last opened character for stroke explorer
+    const lastHistoryChar = computed(() => {
+      return store.getters['zihistory/getLastOpened'] || '';
+    });
+
+    return {
+      historyChars,
+      lastHistoryChar
+    };
+  },
   data() {
     return {
       showModal: false,
+      showStrokeModal: false,
     };
   },
 };

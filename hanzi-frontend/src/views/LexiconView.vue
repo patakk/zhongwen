@@ -265,7 +265,7 @@
 
     <PracticeSheetModal
       v-model="showPracticeSheetModal"
-      :initial-chars="words.map(w => w.character).join('')"
+      :initial-chars="uniqueChars"
       :words="words"
       :sheet-name="selectedWordlist || 'practice_sheet'"
     />
@@ -316,6 +316,15 @@
       loggedIn() {
         return this.$store.getters.getAuthStatus;
       },
+      uniqueChars() {
+        const charSet = new Set();
+        this.words.forEach(word => {
+          for (const char of word.character) {
+            charSet.add(char);
+          }
+        });
+        return Array.from(charSet).join('');
+      },  
       defaultFontKey() {
         try { return this.$store.getters['theme/getCurrentFont'] || 'noto-serif'; } catch (e) { return 'noto-serif'; }
       },
@@ -669,11 +678,6 @@
         this.showDeleteConfirmModal = false;
       },
 
-      closePracticeSheetModal() {
-        this.showPracticeSheetModal = false;
-        this.resetPracticeSheetExcludedChars(); // Reset on close
-      },
-
       // Methods for description editing
       openEditDescriptionModal() {
         if (!this.selectedWordlist) return;
@@ -724,97 +728,6 @@
           this.$store.dispatch('fetchUserData');
         });
       },
-
-      // --- PRACTICE SHEET CHAR FILTERING ---
-      getPracticeSheetUniqueChars() {
-        // Return all unique characters in the current word list
-        const uniqueChars = new Set();
-        this.words.forEach(word => {
-          [...word.character].forEach(char => uniqueChars.add(char));
-        });
-        return Array.from(uniqueChars);
-      },
-      togglePracticeSheetChar(char) {
-        if (this.practiceSheetExcludedChars.has(char)) {
-          this.practiceSheetExcludedChars.delete(char);
-        } else {
-          this.practiceSheetExcludedChars.add(char);
-        }
-        // Force reactivity
-        this.practiceSheetExcludedChars = new Set(this.practiceSheetExcludedChars);
-      },
-      resetPracticeSheetExcludedChars() {
-        this.practiceSheetExcludedChars = new Set();
-      },
-
-      async createPracticeSheet() {
-        // Gather all unique characters from the wordlist, minus excluded
-        const uniqueChars = new Set();
-        this.words.forEach(word => {
-          [...word.character].forEach(char => {
-            if (!this.practiceSheetExcludedChars.has(char)) uniqueChars.add(char);
-          });
-        });
-        const charList = Array.from(uniqueChars).join('');
-        // --- Date in Chinese ---
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth() + 1;
-        const day = now.getDate();
-        // e.g. 2025年5月22日
-        const dateStr = `${year}年${month}月${day}日`;
-        const dateCharSet = new Set([...dateStr]);
-        // Remove any ASCII digits, keep only Chinese chars and 年月日
-        const dateChars = Array.from(dateCharSet).filter(c => /[\u4e00-\u9fa5年月日0-9]/.test(c)).join('');
-        try {
-          // Fetch main strokes
-          const response = await fetch(`/api/getStrokes/${charList}`);
-          if (!response.ok) {
-            console.error('Network response was not ok for characters:', charList);
-            return;
-          }
-          const strokesData = await response.json();
-          // Fetch date strokes
-          const dateResponse = await fetch(`/api/getStrokes/${dateChars}`);
-          let dateStrokesData = null;
-          if (dateResponse.ok) {
-            dateStrokesData = await dateResponse.json();
-          }
-          // No need to filter words here, let the SVG generator handle exclusion
-          const { svg, totalPages } = generatePracticeSheetSVG(this.words, strokesData, {
-            selectedPracticeOption: this.selectedPracticeOption,
-            windowHeight: 1123,
-            page: 0,
-            excludedChars: Array.from(this.practiceSheetExcludedChars),
-            dateStr,
-            dateStrokesData
-          });
-          this.practiceSheetSVG = svg;
-          this.practiceSheetTotalPages = totalPages;
-          this.currentPracticeSheetPage = 0;
-          this.practiceSheetStrokesData = strokesData; // Save for PDF export
-          this.practiceSheetDateStr = dateStr;
-          this.practiceSheetDateStrokesData = dateStrokesData;
-          this.showPracticeSheetSVG = true;
-        } catch (err) {
-          console.error('Error fetching strokes:', err);
-        }
-      },
-      // Add a method to change the preview page
-      updatePracticeSheetPage(page) {
-        if (!this.practiceSheetStrokesData) return;
-        const { svg } = generatePracticeSheetSVG(this.words, this.practiceSheetStrokesData, {
-          selectedPracticeOption: this.selectedPracticeOption,
-          windowHeight: 1123,
-          page,
-          excludedChars: Array.from(this.practiceSheetExcludedChars),
-          dateStr: this.practiceSheetDateStr,
-          dateStrokesData: this.practiceSheetDateStrokesData
-        });
-        this.practiceSheetSVG = svg;
-        this.currentPracticeSheetPage = page;
-      },
-
       downloadAnkiDeck() {
         if (!this.selectedWordlist || this.words.length === 0) {
           alert('This wordlist is empty. Please add words before downloading an Anki deck.');

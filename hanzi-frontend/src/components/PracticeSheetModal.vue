@@ -6,21 +6,22 @@
         <div class="practice-input">
           <label for="rows-per-char">Rows per character</label>
           <select id="rows-per-char" v-model.number="rowsPerChar" style="margin-left: .5em;">
-            <option v-for="n in 12" :key="n" :value="n">{{ n }} row{{ n > 1 ? 's' : '' }}</option>
+            <option v-for="n in [1,2,3,4,6,12]" :key="n" :value="n">{{ n }} row{{ n > 1 ? 's' : '' }}</option>
           </select>
         </div>
 
         <div class="practice-input">
-          <label for="practice-chars">Characters (max 20)</label>
-          <input
+          <label for="practice-chars">Characters</label>
+          <textarea
             id="practice-chars"
             class="practice-chars-input"
             v-model="charInput"
             @input="filterChars"
             placeholder="Enter characters"
             autocomplete="off"
+            rows="3"
           />
-          <div class="input-hint">{{ filteredChars.length }}/20 characters</div>
+          <div class="input-hint">{{ filteredChars.length }}/100 characters</div>
         </div>
       </div>
 
@@ -83,10 +84,11 @@ export default {
   computed: {
     filteredChars() {
       const cleaned = onlyHanzi(this.charInput);
-      return cleaned.slice(0, 20);
+      const uniqueChars = Array.from(new Set(cleaned.split(''))).join('');
+      return uniqueChars.slice(0, 100);
     },
     canCreate() {
-      return this.filteredChars.length > 0 && this.filteredChars.length <= 20;
+      return this.filteredChars.length > 0 && this.filteredChars.length <= 100;
     },
     workingWords() {
       const chars = this.filteredChars.split('');
@@ -115,7 +117,11 @@ export default {
       this.charInput = newVal || '';
     },
     modelValue(val) {
-      if (val) { this.ensureCharInfo(); }
+      if (val) {
+        this.ensureCharInfo();
+        // Reset charInput from initialChars when modal opens
+        this.charInput = this.initialChars || '';
+      }
       if (val) {
         this.practiceSheetSVG = '';
         this.practiceSheetStrokesData = null;
@@ -145,7 +151,9 @@ export default {
     },
     filterChars() {
       const cleaned = onlyHanzi(this.charInput);
-      this.charInput = cleaned.slice(0, 20);
+      // Remove duplicates by converting to a Set, then back to string
+      const uniqueChars = Array.from(new Set(cleaned.split(''))).join('');
+      this.charInput = uniqueChars.slice(0, 100);
     },
     async createPracticeSheet() {
       if (!this.canCreate) return;
@@ -285,7 +293,8 @@ export default {
 .practice-option.selected {
   background: color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
 }
-.practice-input input {
+.practice-input input,
+.practice-input textarea {
   width: 100%;
   padding: 0.5rem;
   border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
@@ -293,6 +302,8 @@ export default {
   background: var(--bg);
   color: var(--fg);
   box-sizing: border-box;
+  font-family: inherit;
+  resize: vertical;
 }
 .input-hint {
   font-size: 0.85rem;

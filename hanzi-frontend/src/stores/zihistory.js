@@ -3,13 +3,18 @@ const MAX_HISTORY = 10;
 export default {
   namespaced: true,
   state: {
-    history: []
+    history: [],
+    lastOpened: ''
   },
   mutations: {
     ADD(state, payload) {
       const character = typeof payload === 'string' ? payload : (payload && payload.character);
       const preserveOrder = !!(payload && payload.preserveOrder);
       if (!character) return;
+
+      // Always record the last opened character
+      state.lastOpened = character;
+
       const exists = state.history.includes(character);
       if (exists && preserveOrder) return;
       state.history = state.history.filter(c => c !== character);
@@ -25,6 +30,7 @@ export default {
     }
   },
   getters: {
-    getHistory: state => state.history
+    getHistory: state => state.history,
+    getLastOpened: state => state.lastOpened
   }
 };

@@ -3,9 +3,7 @@
   <div class="container">
     <div class="about-section">
       <div>
-        HanziLab is a personal learning tool I'm developing alongside my Mandarin Chinese 
-        studies.
-        I've made it public hoping others might find it useful too, but please keep in mind that this is a work in progress and may contain errors or incomplete features.  <br />
+        <i>hanzi.abcrgb.xyz</i> is a work in progress and may contain errors or incomplete features.  <br />
         Your feedback, suggestions and contributions are welcome!
       </div>
       <br />
@@ -59,7 +57,7 @@
               <br />
               <span class="smallh">Fonts:</span><br />
               <p style="margin-left:20px;">
-                Fusion Pixel fonts (S/T) from the <a class="links" href="https://github.com/TakWolf/fusion-pixel-font" target="_blank">fusion-pixel-font</a> project, used under SIL Open Font License 1.1 and MIT (see the project licenses).
+                Fusion Pixel font from the <a class="links" href="https://github.com/TakWolf/fusion-pixel-font" target="_blank">fusion-pixel-font</a> project, used under SIL Open Font License 1.1 and MIT (see the project licenses).
               </p>
             </div>
           </div>
@@ -117,6 +115,7 @@ export default {
   max-width: 1200px;
   padding: 2rem;
   margin: 0 auto;
+  box-sizing: border-box;
   scrollbar-width: none; /* For Firefox */
   /* background: color-mix(in oklab, var(--fg) 5%, var(--bg) 80%); */
 }

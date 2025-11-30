@@ -1,313 +1,315 @@
 <template>
     <BasePage page_title="Settings" />
 
-    <!-- Theme Settings Section (Available to all users) -->
-    <div class="account-container">
-      <div class="settings-section theme-settings">
-        <h3>Appearance</h3>
-        <div class="section-divider"></div>
-        <!--<div class="theme-selection">
-          <div class="theme-option-label">Theme:</div>
-          <div class="theme-buttons">
-            <button 
-              class="theme-button" 
-              :class="{ 'active': isDefaultThemeSystem }" 
-              @click="selectThemeSystem('default')"
-            >
-              Classic
-            </button>
-            <button 
-              class="theme-button" 
-              :class="{ 'active': !isDefaultThemeSystem }" 
-              @click="selectThemeSystem('custom')"
-            >
-              Tooney
-            </button>
+    <div class="settings-page">
+      <!-- Theme Settings Section (Available to all users) -->
+      <div class="account-container">
+        <div class="settings-section theme-settings">
+          <h3>Appearance</h3>
+          <div class="section-divider"></div>
+          <!--<div class="theme-selection">
+            <div class="theme-option-label">Theme:</div>
+            <div class="theme-buttons">
+              <button 
+                class="theme-button" 
+                :class="{ 'active': isDefaultThemeSystem }" 
+                @click="selectThemeSystem('default')"
+              >
+                Classic
+              </button>
+              <button 
+                class="theme-button" 
+                :class="{ 'active': !isDefaultThemeSystem }" 
+                @click="selectThemeSystem('custom')"
+              >
+                Tooney
+              </button>
+            </div>
+          </div>-->
+          <div class="theme-selection" style="margin-top: 1rem;">
+            <div class="theme-option-label">Hanzi Font:</div>
+            <div class="theme-buttons">
+              <button 
+                class="theme-button" 
+                :class="{ 'active': currentFont === 'kaiti' }" 
+                @click="selectFont('kaiti')"
+              >
+                Kaiti
+              </button>
+              <button 
+                class="theme-button" 
+                :class="{ 'active': currentFont === 'noto-sans' }" 
+                @click="selectFont('noto-sans')"
+              >
+                Noto Sans
+              </button>
+              <button 
+                class="theme-button" 
+                :class="{ 'active': currentFont === 'noto-serif' }" 
+                @click="selectFont('noto-serif')"
+              >
+                Noto Serif
+              </button>
+              <button 
+                class="theme-button" 
+                :class="{ 'active': currentFont === 'fusion-pixel' }" 
+                @click="selectFont('fusion-pixel')"
+              >
+                Pixel
+              </button>
+            </div>
           </div>
-        </div>-->
-        <div class="theme-selection" style="margin-top: 1rem;">
-          <div class="theme-option-label">Hanzi Font:</div>
-          <div class="theme-buttons">
-            <button 
-              class="theme-button" 
-              :class="{ 'active': currentFont === 'kaiti' }" 
-              @click="selectFont('kaiti')"
-            >
-              Kaiti
-            </button>
-            <button 
-              class="theme-button" 
-              :class="{ 'active': currentFont === 'noto-sans' }" 
-              @click="selectFont('noto-sans')"
-            >
-              Noto Sans
-            </button>
-            <button 
-              class="theme-button" 
-              :class="{ 'active': currentFont === 'noto-serif' }" 
-              @click="selectFont('noto-serif')"
-            >
-              Noto Serif
-            </button>
-            <button 
-              class="theme-button" 
-              :class="{ 'active': currentFont === 'fusion-pixel' }" 
-              @click="selectFont('fusion-pixel')"
-            >
-              Pixel
-            </button>
+          <div class="font-preview">你好</div>
+          <div class="theme-selection" style="margin-top: 1rem;">
+            <div class="theme-option-label">UI Font:</div>
+            <div class="theme-buttons">
+              <button
+                class="theme-button"
+                :class="{ 'active': currentUiFont === 'sf-mono' }"
+                @click="selectUiFont('sf-mono')"
+              >
+                SF Mono
+              </button>
+              <button
+                class="theme-button"
+                :class="{ 'active': currentUiFont === 'fusion-pixel' }"
+                @click="selectUiFont('fusion-pixel')"
+              >
+                Pixel
+              </button>
+              <button
+                class="theme-button"
+                :class="{ 'active': currentUiFont === 'source-serif' }"
+                @click="selectUiFont('source-serif')"
+              >
+                Source Serif
+              </button>
+            </div>
           </div>
-        </div>
-        <div class="font-preview">你好</div>
-        <div class="theme-selection" style="margin-top: 1rem;">
-          <div class="theme-option-label">UI Font:</div>
-          <div class="theme-buttons">
-            <button
-              class="theme-button"
-              :class="{ 'active': currentUiFont === 'sf-mono' }"
-              @click="selectUiFont('sf-mono')"
-            >
-              SF Mono
-            </button>
-            <button
-              class="theme-button"
-              :class="{ 'active': currentUiFont === 'fusion-pixel' }"
-              @click="selectUiFont('fusion-pixel')"
-            >
-              Pixel
-            </button>
-            <button
-              class="theme-button"
-              :class="{ 'active': currentUiFont === 'source-serif' }"
-              @click="selectUiFont('source-serif')"
-            >
-              Source Serif
-            </button>
-          </div>
-        </div>
-        <div class="ui-font-preview">Abc 123</div>
-        <!-- <div class="current-theme">
-          <div class="theme-option-label">Current Theme:</div>
-          <div class="theme-value">{{ currentThemeName }}</div>
-          <button class="btn theme-toggle-btn" @click="toggleCurrentTheme">Toggle Theme</button>
-        </div> -->
-      </div>
-    </div>
-
-    <!-- Account Settings Section (Only for logged-in users) -->
-    <div v-if="loggedIn" class="account-container">
-        <h3>Account</h3>
-        <div class="section-divider"></div>
-
-      <div class="profile-info-grid">
-        <div class="profile-row">
-          <div class="profile-label">Username:</div>
-          <div class="profile-value">
-            {{ username }}
-            <button @click="openUsernameModal" class="btn-small btn-change-username btn">Change Username</button>
-          </div>
-        </div>
-        <div class="profile-row">
-          <div class="profile-label">Email:</div>
-          <div class="profile-value">
-            {{ email || 'Not set' }}
-            <span v-if="email" :class="{ 'status-verified': emailVerified, 'status-unverified': !emailVerified }">
-              ({{ emailVerified ? 'Verified' : 'Unverified' }})
-            </span>
-            <button v-if="email && !emailVerified && !googleLinked" @click="resendVerification" class="btn-small btn-verify">Resend Verification</button>
-          </div>
-        </div>
-        <div class="profile-row">
-          <div class="profile-label">Profile Picture:</div>
-          <div class="profile-value">
-            <img v-if="image" :src="image" alt="Profile" class="profile-pic" />
-            <span v-else>No profile picture</span>
-          </div>
-        </div>
-        <div class="profile-row">
-          <div class="profile-label">Login Method:</div>
-          <div class="profile-value">{{ googleLinked ? "Google Account" : (hasPassword ? "Password" : "Unknown") }}</div>
+          <div class="ui-font-preview">Abc 123</div>
+          <!-- <div class="current-theme">
+            <div class="theme-option-label">Current Theme:</div>
+            <div class="theme-value">{{ currentThemeName }}</div>
+            <button class="btn theme-toggle-btn" @click="toggleCurrentTheme">Toggle Theme</button>
+          </div> -->
         </div>
       </div>
 
-      <div class="account-actions">
-        <template v-if="!googleLinked">
-            <button v-if="!email" @click="openEmailModal('add')" class="btn">Add Email</button>
-            <button v-else @click="openEmailModal('change')" class="btn">Change Email</button>
-        </template>
+      <!-- Account Settings Section (Only for logged-in users) -->
+      <div v-if="loggedIn" class="account-container">
+          <h3>Account</h3>
+          <div class="section-divider"></div>
 
-        <template v-if="!googleLinked">
-            <button v-if="hasPassword" @click="openPasswordModal('change')" class="btn">Change Password</button>
-            <button v-else @click="openPasswordModal('add')" class="btn">Set Password</button>
-        </template>
-
-        <button v-if="!googleLinked" class="btn google-btn" @click="linkGoogle">
-          <img class="google-logo" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg" alt="Google" width="20" style="vertical-align:middle; margin-right:8px;">
-          Link Google Account
-        </button>
-        <button v-else class="btn" @click="openUnlinkModal">Unlink Google Account</button>
-
-        <LogoutButton v-if="authStatus" />
-      </div>
-      
-      <div class="danger-zone">
-        <h3>Danger Zone</h3>
-        <p>Permanently delete your account and all associated data.</p>
-        <button @click="openDeleteConfirmModal" class="btn btn-danger delete-account-btn">Delete Account</button>
-      </div>
-    </div>
-
-    <!-- Rest of modals and ui components -->
-    <div v-if="showEmailModal" class="modal-overlay" @click="closeEmailModal">
-      <div class="modal-content" @click.stop>
-        <h3>{{ emailModalMode === 'add' ? 'Add' : 'Change' }} Email</h3>
-        <p v-if="emailModalMode === 'change'">A verification link will be sent to the new address.</p>
-        <div class="modal-form">
-          <label for="email-input">Email Address:</label>
-          <input
-            id="email-input"
-            type="email"
-            v-model="emailInput"
-            placeholder="Enter email address"
-            @keyup.enter="submitEmail"
-            @keyup.esc="closeEmailModal"
-            ref="emailModalInput"
-            autocomplete="email"
-          />
+        <div class="profile-info-grid">
+          <div class="profile-row">
+            <div class="profile-label">Username:</div>
+            <div class="profile-value">
+              {{ username }}
+              <button @click="openUsernameModal" class="btn-small btn-change-username btn">Change Username</button>
+            </div>
+          </div>
+          <div class="profile-row">
+            <div class="profile-label">Email:</div>
+            <div class="profile-value">
+              {{ email || 'Not set' }}
+              <span v-if="email" :class="{ 'status-verified': emailVerified, 'status-unverified': !emailVerified }">
+                ({{ emailVerified ? 'Verified' : 'Unverified' }})
+              </span>
+              <button v-if="email && !emailVerified && !googleLinked" @click="resendVerification" class="btn-small btn-verify">Resend Verification</button>
+            </div>
+          </div>
+          <div class="profile-row">
+            <div class="profile-label">Profile Picture:</div>
+            <div class="profile-value">
+              <img v-if="image" :src="image" alt="Profile" class="profile-pic" />
+              <span v-else>No profile picture</span>
+            </div>
+          </div>
+          <div class="profile-row">
+            <div class="profile-label">Login Method:</div>
+            <div class="profile-value">{{ googleLinked ? "Google Account" : (hasPassword ? "Password" : "Unknown") }}</div>
+          </div>
         </div>
-        <div v-if="modalError" class="modal-error">{{ modalError }}</div>
-        <div class="modal-buttons">
-          <button @click="closeEmailModal" class="cancel-button">Cancel</button>
-          <button @click="submitEmail" class="confirm-button" :disabled="modalLoading">
-            {{ modalLoading ? 'Sending...' : 'Submit' }}
+
+        <div class="account-actions">
+          <template v-if="!googleLinked">
+              <button v-if="!email" @click="openEmailModal('add')" class="btn">Add Email</button>
+              <button v-else @click="openEmailModal('change')" class="btn">Change Email</button>
+          </template>
+
+          <template v-if="!googleLinked">
+              <button v-if="hasPassword" @click="openPasswordModal('change')" class="btn">Change Password</button>
+              <button v-else @click="openPasswordModal('add')" class="btn">Set Password</button>
+          </template>
+
+          <button v-if="!googleLinked" class="btn google-btn" @click="linkGoogle">
+            <img class="google-logo" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg" alt="Google" width="20" style="vertical-align:middle; margin-right:8px;">
+            Link Google Account
           </button>
+          <button v-else class="btn" @click="openUnlinkModal">Unlink Google Account</button>
+
+          <LogoutButton v-if="authStatus" />
+        </div>
+        
+        <div class="danger-zone">
+          <h3>Danger Zone</h3>
+          <p>Permanently delete your account and all associated data.</p>
+          <button @click="openDeleteConfirmModal" class="btn btn-danger delete-account-btn">Delete Account</button>
         </div>
       </div>
-    </div>
 
-    <div v-if="showPasswordModal" class="modal-overlay" @click="closePasswordModal">
-      <div class="modal-content" @click.stop>
-        <h3>{{ passwordModalMode === 'add' ? 'Set' : 'Change' }} Password</h3>
-        <div class="modal-form">
-          <label v-if="passwordModalMode === 'change'" for="current-password-input">Current Password:</label>
-          <input
-            v-if="passwordModalMode === 'change'"
-            id="current-password-input"
-            type="password"
-            v-model="currentPasswordInput"
-            placeholder="Enter current password"
-            ref="currentPasswordModalInput"
-            autocomplete="current-password"
-          />
-          <label for="new-password-input">New Password:</label>
-          <input
-            id="new-password-input"
-            type="password"
-            v-model="newPasswordInput"
-            placeholder="Enter new password (min 6 chars)"
-            @keyup.enter="submitPassword"
-            @keyup.esc="closePasswordModal"
-            ref="newPasswordModalInput"
-            autocomplete="new-password"
-          />
-          <label for="confirm-password-input">Confirm New Password:</label>
-          <input
-            id="confirm-password-input"
-            type="password"
-            v-model="confirmPasswordInput"
-            placeholder="Confirm new password"
-            @keyup.enter="submitPassword"
-            @keyup.esc="closePasswordModal"
-            autocomplete="new-password"
-          />
-        </div>
-        <div v-if="modalError" class="modal-error">{{ modalError }}</div>
-        <div class="modal-buttons">
-          <button @click="closePasswordModal" class="cancel-button">Cancel</button>
-          <button @click="submitPassword" class="confirm-button" :disabled="modalLoading">
-            {{ modalLoading ? 'Saving...' : 'Save Password' }}
-          </button>
+      <!-- Rest of modals and ui components -->
+      <div v-if="showEmailModal" class="modal-overlay" @click="closeEmailModal">
+        <div class="modal-content" @click.stop>
+          <h3>{{ emailModalMode === 'add' ? 'Add' : 'Change' }} Email</h3>
+          <p v-if="emailModalMode === 'change'">A verification link will be sent to the new address.</p>
+          <div class="modal-form">
+            <label for="email-input">Email Address:</label>
+            <input
+              id="email-input"
+              type="email"
+              v-model="emailInput"
+              placeholder="Enter email address"
+              @keyup.enter="submitEmail"
+              @keyup.esc="closeEmailModal"
+              ref="emailModalInput"
+              autocomplete="email"
+            />
+          </div>
+          <div v-if="modalError" class="modal-error">{{ modalError }}</div>
+          <div class="modal-buttons">
+            <button @click="closeEmailModal" class="cancel-button">Cancel</button>
+            <button @click="submitEmail" class="confirm-button" :disabled="modalLoading">
+              {{ modalLoading ? 'Sending...' : 'Submit' }}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div v-if="showUnlinkModal" class="modal-overlay" @click="closeUnlinkModal">
-      <div class="modal-content" @click.stop>
-        <h3>Set Password to Unlink Google</h3>
-        <p>To unlink your Google account, please set a password for standard login.</p>
-        <div class="modal-form">
-          <label for="unlink-new-password-input">New Password:</label>
-          <input
-            id="unlink-new-password-input"
-            type="password"
-            v-model="newPasswordInput"
-            placeholder="Enter new password (min 6 chars)"
-            @keyup.enter="submitUnlink"
-            @keyup.esc="closeUnlinkModal"
-            ref="unlinkModalInput"
-            autocomplete="new-password"
-          />
-          <label for="unlink-confirm-password-input">Confirm New Password:</label>
-          <input
-            id="unlink-confirm-password-input"
-            type="password"
-            v-model="confirmPasswordInput"
-            placeholder="Confirm new password"
-            @keyup.enter="submitUnlink"
-            @keyup.esc="closeUnlinkModal"
-            autocomplete="new-password"
-          />
-        </div>
-        <div v-if="modalError" class="modal-error">{{ modalError }}</div>
-        <div class="modal-buttons">
-          <button @click="closeUnlinkModal" class="cancel-button">Cancel</button>
-          <button @click="submitUnlink" class="confirm-button" :disabled="modalLoading">
-            {{ modalLoading ? 'Processing...' : 'Set Password & Unlink' }}
-          </button>
+      <div v-if="showPasswordModal" class="modal-overlay" @click="closePasswordModal">
+        <div class="modal-content" @click.stop>
+          <h3>{{ passwordModalMode === 'add' ? 'Set' : 'Change' }} Password</h3>
+          <div class="modal-form">
+            <label v-if="passwordModalMode === 'change'" for="current-password-input">Current Password:</label>
+            <input
+              v-if="passwordModalMode === 'change'"
+              id="current-password-input"
+              type="password"
+              v-model="currentPasswordInput"
+              placeholder="Enter current password"
+              ref="currentPasswordModalInput"
+              autocomplete="current-password"
+            />
+            <label for="new-password-input">New Password:</label>
+            <input
+              id="new-password-input"
+              type="password"
+              v-model="newPasswordInput"
+              placeholder="Enter new password (min 6 chars)"
+              @keyup.enter="submitPassword"
+              @keyup.esc="closePasswordModal"
+              ref="newPasswordModalInput"
+              autocomplete="new-password"
+            />
+            <label for="confirm-password-input">Confirm New Password:</label>
+            <input
+              id="confirm-password-input"
+              type="password"
+              v-model="confirmPasswordInput"
+              placeholder="Confirm new password"
+              @keyup.enter="submitPassword"
+              @keyup.esc="closePasswordModal"
+              autocomplete="new-password"
+            />
+          </div>
+          <div v-if="modalError" class="modal-error">{{ modalError }}</div>
+          <div class="modal-buttons">
+            <button @click="closePasswordModal" class="cancel-button">Cancel</button>
+            <button @click="submitPassword" class="confirm-button" :disabled="modalLoading">
+              {{ modalLoading ? 'Saving...' : 'Save Password' }}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div v-if="showDeleteConfirmModal" class="modal-overlay" @click="closeDeleteConfirmModal">
-      <div class="modal-content" @click.stop>
-        <h3>Confirm Account Deletion</h3>
-        <div class="modal-message">
-          <p><strong>Warning:</strong> {{ confirmDeleteData.message }}</p>
-          <p>All your data, including wordlists and progress, will be lost. This action cannot be undone.</p>
-        </div>
-         <div v-if="modalError" class="modal-error">{{ modalError }}</div>
-        <div class="modal-buttons">
-          <button @click="closeDeleteConfirmModal" class="cancel-button">Cancel</button>
-          <button @click="deleteAccountConfirmed" class="confirm-button delete-confirm-button" :disabled="modalLoading">
-             {{ modalLoading ? 'Deleting...' : 'Delete My Account' }}
-          </button>
+      <div v-if="showUnlinkModal" class="modal-overlay" @click="closeUnlinkModal">
+        <div class="modal-content" @click.stop>
+          <h3>Set Password to Unlink Google</h3>
+          <p>To unlink your Google account, please set a password for standard login.</p>
+          <div class="modal-form">
+            <label for="unlink-new-password-input">New Password:</label>
+            <input
+              id="unlink-new-password-input"
+              type="password"
+              v-model="newPasswordInput"
+              placeholder="Enter new password (min 6 chars)"
+              @keyup.enter="submitUnlink"
+              @keyup.esc="closeUnlinkModal"
+              ref="unlinkModalInput"
+              autocomplete="new-password"
+            />
+            <label for="unlink-confirm-password-input">Confirm New Password:</label>
+            <input
+              id="unlink-confirm-password-input"
+              type="password"
+              v-model="confirmPasswordInput"
+              placeholder="Confirm new password"
+              @keyup.enter="submitUnlink"
+              @keyup.esc="closeUnlinkModal"
+              autocomplete="new-password"
+            />
+          </div>
+          <div v-if="modalError" class="modal-error">{{ modalError }}</div>
+          <div class="modal-buttons">
+            <button @click="closeUnlinkModal" class="cancel-button">Cancel</button>
+            <button @click="submitUnlink" class="confirm-button" :disabled="modalLoading">
+              {{ modalLoading ? 'Processing...' : 'Set Password & Unlink' }}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div v-if="showUsernameModal" class="modal-overlay" @click="closeUsernameModal">
-      <div class="modal-content" @click.stop>
-        <h3>Change Username</h3>
-        <p>This will change your username and you'll need to use the new username to log in.</p>
-        <div class="modal-form">
-          <label for="username-input">New Username:</label>
-          <input
-            id="username-input"
-            type="text"
-            v-model="usernameInput"
-            placeholder="Enter new username (min 3 chars)"
-            @keyup.enter="submitUsername"
-            @keyup.esc="closeUsernameModal"
-            ref="usernameModalInput"
-            autocomplete="username"
-          />
+      <div v-if="showDeleteConfirmModal" class="modal-overlay" @click="closeDeleteConfirmModal">
+        <div class="modal-content" @click.stop>
+          <h3>Confirm Account Deletion</h3>
+          <div class="modal-message">
+            <p><strong>Warning:</strong> {{ confirmDeleteData.message }}</p>
+            <p>All your data, including wordlists and progress, will be lost. This action cannot be undone.</p>
+          </div>
+          <div v-if="modalError" class="modal-error">{{ modalError }}</div>
+          <div class="modal-buttons">
+            <button @click="closeDeleteConfirmModal" class="cancel-button">Cancel</button>
+            <button @click="deleteAccountConfirmed" class="confirm-button delete-confirm-button" :disabled="modalLoading">
+              {{ modalLoading ? 'Deleting...' : 'Delete My Account' }}
+            </button>
+          </div>
         </div>
-        <div v-if="modalError" class="modal-error">{{ modalError }}</div>
-        <div class="modal-buttons">
-          <button @click="closeUsernameModal" class="cancel-button">Cancel</button>
-          <button @click="submitUsername" class="confirm-button" :disabled="modalLoading">
-            {{ modalLoading ? 'Updating...' : 'Update Username' }}
-          </button>
+      </div>
+
+      <div v-if="showUsernameModal" class="modal-overlay" @click="closeUsernameModal">
+        <div class="modal-content" @click.stop>
+          <h3>Change Username</h3>
+          <p>This will change your username and you'll need to use the new username to log in.</p>
+          <div class="modal-form">
+            <label for="username-input">New Username:</label>
+            <input
+              id="username-input"
+              type="text"
+              v-model="usernameInput"
+              placeholder="Enter new username (min 3 chars)"
+              @keyup.enter="submitUsername"
+              @keyup.esc="closeUsernameModal"
+              ref="usernameModalInput"
+              autocomplete="username"
+            />
+          </div>
+          <div v-if="modalError" class="modal-error">{{ modalError }}</div>
+          <div class="modal-buttons">
+            <button @click="closeUsernameModal" class="cancel-button">Cancel</button>
+            <button @click="submitUsername" class="confirm-button" :disabled="modalLoading">
+              {{ modalLoading ? 'Updating...' : 'Update Username' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -724,6 +726,10 @@ h2 {
   margin-top: 0;
 }
 
+.settings-page{
+  padding-bottom: 1rem;
+}
+
 .account-container {
   max-width: 600px;
   margin: 2rem auto;
@@ -734,7 +740,7 @@ h2 {
   border-radius: var(--modal-border-radius);
   border: var(--thin-border-width) solid var(--fg);
   box-shadow: var(--card-shadow);
-
+  box-sizing: border-box;
 }
 
 .font-preview {

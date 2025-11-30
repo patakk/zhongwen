@@ -7,17 +7,17 @@
 
       <div v-if="isOpen" class="sidebar" @click.stop>
         <nav class="sidebar-nav">
-          <RouterLink to="/" class="top-link">Home</RouterLink>
+          <RouterLink to="/" class="top-link">Search</RouterLink>
           <template v-if="authStatus">
             <RouterLink to="/lexicon" class="top-link">Lexicon</RouterLink>
           </template>
-          <RouterLink :to="{ path: '/explorer', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Explorer</RouterLink>
+          <RouterLink :to="{ path: '/explorer', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Lists</RouterLink>
           <!--<RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
           <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
           <RouterLink to="/search" class="top-link">Search</RouterLink>-->
-            <RouterLink to="/about" class="top-link">About</RouterLink>
           <RouterLink to="/settings" class="top-link">Settings</RouterLink>
           <RouterLink to="/tools" class="top-link">Tools</RouterLink>
+            <RouterLink to="/about" class="top-link">About</RouterLink>
           <template v-if="!authStatus">
             <RouterLink to="/login" class="top-link">Login</RouterLink>
           </template>
@@ -28,20 +28,20 @@
     
     <div class="topbar" :style="{ opacity: topbarOpacity }">
       <div class="top-nav">
-        <RouterLink to="/" class="top-link">Home</RouterLink>
+        <RouterLink to="/" class="top-link">Search</RouterLink>
         <template v-if="authStatus">
           <RouterLink to="/lexicon" class="top-link">Lexicon</RouterLink>
         </template>
-        <RouterLink :to="{ path: '/explorer', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Explorer</RouterLink>
+        <RouterLink :to="{ path: '/explorer', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Lists</RouterLink>
         <!--<RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
         <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
         <RouterLink to="/search" class="top-link">Search</RouterLink>-->
         <RouterLink to="/settings" class="top-link">Settings</RouterLink>
         <RouterLink to="/tools" class="top-link">Tools</RouterLink>
+        <RouterLink to="/about" class="top-link">About</RouterLink>
         <template v-if="!authStatus">
           <RouterLink to="/login" class="top-link">Login</RouterLink>
         </template>
-        <RouterLink to="/about" class="top-link">About</RouterLink>
       </div>
     </div>
   </div>
