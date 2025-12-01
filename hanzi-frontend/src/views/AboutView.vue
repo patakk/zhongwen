@@ -47,7 +47,7 @@
                 Custom implementation using data from 
                 <a class="links" href="https://github.com/chanind/hanzi-writer-data" target="_blank">hanzi-writer-data</a> and the 
                 <a class="links" href="https://github.com/skishore/makemeahanzi" target="_blank">Make Me A Hanzi project</a>, using Arphic Technology fonts under the 
-                <a class="links" href="/licenses/ARPHICPL.TXT" target="_blank">Arphic Public License</a>.
+                <a class="links" href="/licenses/ARPHICPL.txt" target="_blank">Arphic Public License</a>.
               </p>
               <p style="margin-left:20px;">
                 For character recognition, 
