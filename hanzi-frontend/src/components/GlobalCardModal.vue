@@ -2024,7 +2024,7 @@ export default {
 .english-idx { margin-right: 0.35rem; opacity: 0.8; }
 .english-text { display: inline; }
 .hanzi-link { color: var(--fg); cursor: pointer; }
-.hanzi-link:hover { text-decoration: underline; color: #00f; opacity: 1 !important; }
+.hanzi-link:hover { text-decoration: underline; color: inherit; opacity: 1 !important; }
 
 
 .similars-list .similar-link {

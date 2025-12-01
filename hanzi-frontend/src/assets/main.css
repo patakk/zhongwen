@@ -195,10 +195,10 @@ input[type="text"]:focus-visible {
 }
 
 
-.hanzi-link:hover { color: #00f !important; }
+/*.hanzi-link:hover { color: #00f !important; }
 [data-theme="theme1"] .hanzi-link:hover { color: #00f !important; }
 [data-theme="theme2"] .hanzi-link:hover { color: #0f0 !important; }
-[data-theme="dark"] .hanzi-link:hover { color: #0f0 !important; }
+[data-theme="dark"] .hanzi-link:hover { color: #0f0 !important; }*/
 
 
 .loginregister-container {
