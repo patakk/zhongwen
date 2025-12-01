@@ -1100,9 +1100,17 @@ h3 {
   margin-bottom: 1rem;
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
-  width: 70%;
-  margin: 1em auto 2em auto;
+  width: 100%;
+  margin: 1em auto 1em auto;
+  padding: 0em 3em 1em 3em;
+  border-bottom: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
+  box-sizing: border-box;
+}
 
+.theme-selection:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .theme-option-label {
