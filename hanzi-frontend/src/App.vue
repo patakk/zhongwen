@@ -7,8 +7,14 @@
       <font-awesome-icon :icon="['fas', 'sun']" v-else />
     </button>
     <div class="history-rail-wrapper" v-if="history.length > 0">
-      <div class="history-rail">
-        <div class="history-title">History</div>
+      <div class="history-rail" :style="{ top: railTop + 'px' }" ref="historyRail">
+        <div
+          class="history-title"
+          @mousedown="startDrag"
+          @touchstart="startDrag"
+        >
+          History
+        </div>
         <div class="history-list">
           <button
             v-for="(item, idx) in history"
@@ -44,6 +50,13 @@ import BubbleTooltip from './components/BubbleTooltip.vue';
 const store = useStore()
 const router = useRouter()
 const preserveHistoryRef = ref(false)
+
+// History rail dragging
+const historyRail = ref(null)
+const isDragging = ref(false)
+const railTop = ref(48) // Initial top position (3rem = 48px)
+const dragStartY = ref(0)
+const dragStartTop = ref(0)
 
 // Use theme from Vuex store
 const currentTheme = computed(() => store.getters['theme/getCurrentTheme'])
@@ -153,6 +166,52 @@ const openHistory = (word) => {
   store.dispatch('cardModal/showCardModal', { character: word, preserveHistoryOrder: true });
 }
 
+// Drag functions
+const startDrag = (e) => {
+  isDragging.value = true
+  const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY
+  dragStartY.value = clientY
+  dragStartTop.value = railTop.value
+
+  // Add event listeners
+  document.addEventListener('mousemove', onDrag)
+  document.addEventListener('mouseup', stopDrag)
+  document.addEventListener('touchmove', onDrag)
+  document.addEventListener('touchend', stopDrag)
+
+  // Prevent text selection
+  e.preventDefault()
+}
+
+const onDrag = (e) => {
+  if (!isDragging.value || !historyRail.value) return
+
+  const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY
+  const deltaY = clientY - dragStartY.value
+  let newTop = dragStartTop.value + deltaY
+
+  // Get rail dimensions
+  const railHeight = historyRail.value.offsetHeight
+  const viewportHeight = window.innerHeight
+
+  // Constrain within viewport
+  const minTop = 0
+  const maxTop = viewportHeight - railHeight
+  newTop = Math.max(minTop, Math.min(maxTop, newTop))
+
+  railTop.value = newTop
+}
+
+const stopDrag = () => {
+  isDragging.value = false
+
+  // Remove event listeners
+  document.removeEventListener('mousemove', onDrag)
+  document.removeEventListener('mouseup', stopDrag)
+  document.removeEventListener('touchmove', onDrag)
+  document.removeEventListener('touchend', stopDrag)
+}
+
 onMounted(async () => {
   // Initialize theme from localStorage or system preference
   store.dispatch('theme/initTheme');
@@ -192,14 +251,10 @@ onMounted(async () => {
 
   .history-rail {
     position: fixed;
-    top: 1rem;
     z-index: 10;
     right: 1rem;
     display: flex;
     flex-direction: column;
-    /*top: 50%;
-    transform: translateY(-50%);*/
-    top: 3rem;
     gap: 0.5rem;
     padding: 0.5rem;
     border: 1px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
@@ -213,6 +268,13 @@ onMounted(async () => {
     text-align: center;
     color: color-mix(in oklab, var(--fg) 70%, var(--bg) 30%);
     letter-spacing: 0.04em;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    padding: 0.25rem 0;
+  }
+  .history-title:active {
+    cursor: grabbing;
   }
   .history-list {
     display: flex;
