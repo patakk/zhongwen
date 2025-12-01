@@ -3,75 +3,71 @@
       
 
     <div class="input-row">
-      <div
-        class="drop-area"
-        :class="{ 'is-active': isDragOver }"
-        @dragover.prevent="isDragOver = true"
-        @dragleave.prevent="isDragOver = false"
-        @drop.prevent="handleDrop"
-        @click="openFilePicker"
-      >
-        <input
-          ref="fileInput"
-          type="file"
-          accept="image/*"
-          class="file-input"
-          @change="handleFileChange"
-        />
-        <div class="drop-copy">
-          <div class="drop-title" v-if="!file">Drop an image or click to choose</div>
-          <div class="drop-hint" v-if="!file">PNG, JPG, screenshots. Nothing is uploaded to our servers.</div>
-          <div v-if="fileName" class="file-chip">{{ fileName }}</div>
+      <div class="drop-area-wrapper">
+        <div
+          class="drop-area"
+          :class="{ 'is-active': isDragOver }"
+          @dragover.prevent="isDragOver = true"
+          @dragleave.prevent="isDragOver = false"
+          @drop.prevent="handleDrop"
+          @click="openFilePicker"
+        >
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            class="file-input"
+            @change="handleFileChange"
+          />
+          <div class="drop-copy" v-if="!file">
+            <div class="drop-title" v-if="!file">Drop an image or click to choose</div>
+            <div class="drop-hint" v-if="!file">PNG, JPG, screenshots. Nothing is uploaded to our servers.</div>
+            <!--<div v-if="fileName" class="file-chip>">{{ fileName }}</div>-->
+          </div>
+          <div v-if="previewUrl" class="preview">
+            <img :src="previewUrl" alt="Selected for OCR" />
+          </div>
+          <div class="drop-actions" v-if="file">
+            <button
+              type="button"
+              class="crop-btn"
+              @click.stop="openCropper"
+            >
+              Crop image
+            </button>
+            <button
+              type="button"
+              class="btn-primary run-btn"
+              :class="{ processing: isProcessing }"
+              @click.stop="runOcr"
+              :disabled="!file || isProcessing || !isReady"
+              :style="runButtonStyle"
+            >
+              <span v-if="isProcessing">Running OCR...</span>
+              <span v-else-if="!isReady">Preparing OCR...</span>
+              <span v-else>Run OCR</span>
+            </button>
+          </div>
         </div>
-        <div v-if="previewUrl" class="preview">
-          <img :src="previewUrl" alt="Selected for OCR" />
+      </div>
+      <div v-if="hasOcrResult || ocrText" class="result result-wrapper">
+        <div class="result-header">
+          <div class="result-actions">
+            <button type="button" class="chip" @click="copyResult" :disabled="copySuccess">
+              {{ copySuccess ? 'Copied' : 'Copy' }}
+            </button>
+            <button type="button" class="chip primary" @click="emitToSearch">
+              Add to search
+            </button>
+          </div>
         </div>
-        <div class="drop-actions">
-          <button
-            v-if="file"
-            type="button"
-            class="crop-btn"
-            @click.stop="openCropper"
-          >
-            Crop image
-          </button>
-          <button
-            type="button"
-            class="btn-primary run-btn"
-            :class="{ processing: isProcessing }"
-            @click.stop="runOcr"
-            :disabled="!file || isProcessing || !isReady"
-            :style="runButtonStyle"
-          >
-            <span v-if="isProcessing">Running OCR...</span>
-            <span v-else-if="!isReady">Preparing OCR...</span>
-            <span v-else>Run OCR</span>
-          </button>
+        <div class="result-body">
+          <textarea v-model="ocrText" style="box-sizing: border-box;"></textarea>
         </div>
       </div>
     </div>
 
     <div v-if="error" class="error">{{ error }}</div>
-
-    <div v-if="ocrText" class="result">
-      <div class="result-header">
-        <div>
-          <div class="result-title">OCR result</div>
-          <div class="result-subtitle">Review and refine before searching.</div>
-        </div>
-        <div class="result-actions">
-          <button type="button" class="chip" @click="copyResult" :disabled="copySuccess">
-            {{ copySuccess ? 'Copied' : 'Copy' }}
-          </button>
-          <button type="button" class="chip primary" @click="emitToSearch">
-            Add to search
-          </button>
-        </div>
-      </div>
-      <div class="result-body">
-        <textarea v-model="ocrText" style="box-sizing: border-box;"></textarea>
-      </div>
-    </div>
   </div>
 
     <div v-if="showCropper" class="crop-modal">
@@ -129,6 +125,7 @@ export default {
       ocrText: '',
       copySuccess: false,
       tesseract: null,
+      hasOcrResult: false,
       // crop state
       showCropper: false,
       cropSelection: null,
@@ -197,6 +194,7 @@ export default {
       this.copySuccess = false;
       this.progressValue = 0;
       this.progressMessage = '';
+      this.hasOcrResult = false;
       this.showCropper = false;
     },
     openCropper() {
@@ -287,6 +285,11 @@ export default {
       h = Math.min(h, maxH - y);
       return { x, y, w, h };
     },
+    cleanOcrText(text) {
+      if (!text) return '';
+      const han = text.replace(/[^\p{Script=Han}\s]/gu, '');
+      return han.replace(/\s+/g, ' ').trim();
+    },
     async applyCrop() {
       const img = this.$refs.cropImg;
       if (!img || !this.cropSelection) return;
@@ -361,16 +364,20 @@ export default {
       this.isProcessing = true;
       this.error = '';
       this.ocrText = '';
+      this.copySuccess = false;
       this.progressValue = 0;
       this.progressMessage = 'Preparing...';
+      this.hasOcrResult = false;
 
       try {
         const { data } = await this.tesseract.recognize(this.file, 'chi_sim', {
           logger: (m) => this.handleProgress(m),
         });
-        this.ocrText = (data?.text || '').trim();
+        const raw = (data?.text || '').trim();
+        this.ocrText = this.cleanOcrText(raw);
         this.progressValue = 1;
         this.progressMessage = 'Done';
+        this.hasOcrResult = true;
       } catch (e) {
         console.error('OCR failed', e);
         this.error = 'OCR failed. Please try a clearer image or retry.';
@@ -416,6 +423,12 @@ export default {
   display: flex;
   gap: 0.75rem;
   align-items: stretch;
+  flex-direction: row;
+}
+
+.input-row > * {
+  flex: 1 1 50%;
+  min-width: 0;
 }
 
 .ocr-head {
@@ -447,6 +460,11 @@ export default {
   align-self: flex-start;
 }
 
+.drop-area-wrapper {
+  flex: 1;
+  display: flex;
+}
+
 .drop-area {
   position: relative;
   border: 2px dashed color-mix(in oklab, var(--fg) 35%, var(--bg) 50%);
@@ -461,8 +479,10 @@ export default {
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;
   width: 100%;
+  height: 100%;
   box-sizing: border-box;
-  min-height: 200px;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .drop-area.is-active {
@@ -521,6 +541,7 @@ export default {
 .crop-btn {
   margin-top: 0.25rem;
   padding: 0.4rem 0.75rem;
+  min-height: 48px;
   border-radius: 8px;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 70%);
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 8%);
@@ -537,7 +558,6 @@ export default {
   width: 100%;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: auto;
   gap: 0.5rem;
 }
 
@@ -599,6 +619,11 @@ export default {
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 22%, var(--bg) 70%);
   border-radius: 12px;
   padding: 1rem;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%;
 }
 
 .result-header {
@@ -728,11 +753,16 @@ export default {
   .input-row {
     flex-direction: column;
   }
-  
+
+  .drop-area, .result {
+    width: 100%;
+  }
 
   .drop-area {
     flex-direction: column;
     align-items: flex-start;
+    justify-content: space-between;
+    display: flex;
   }
 
   .preview {
@@ -750,9 +780,9 @@ export default {
     flex-wrap: wrap;
   }
 
-
   .ocr-panel {
     flex-direction: column;
   }
 }
 </style>
+
