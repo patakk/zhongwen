@@ -12,6 +12,9 @@
       <button type="button" class="stroke-toggle" @click="toggleStrokePad" :aria-pressed="showStrokePad" title="Draw search">
         <font-awesome-icon :icon="['fas','pen-fancy']" />
       </button>
+      <button type="button" class="ocr-toggle" @click="toggleOcrPanel" :aria-pressed="showOcrPanel" title="Image OCR search">
+        <font-awesome-icon :icon="['fas','camera']" />
+      </button>
       <!-- Search button kept but hidden by default -->
       <button type="submit" class="search-button" style="display: none;">Search</button>
     </form>
@@ -53,6 +56,14 @@
         </div>
       </div>
     </div>
+    <Suspense v-if="showOcrPanel">
+      <template #default>
+        <OcrPanel class="ocr-panel-wrap" @insert-text="handleOcrInsert" />
+      </template>
+      <template #fallback>
+        <div class="ocr-loading">Loading OCR tools...</div>
+      </template>
+    </Suspense>
     <div v-if="!isLoading && groupedResults.length" class="results">
       <div
         v-for="group in groupedResults"
@@ -107,6 +118,7 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
 import BasePage from '../components/BasePage.vue';
 import PreloadWrapper from '../components/PreloadWrapper.vue';
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
@@ -115,6 +127,7 @@ export default {
   components: {
     BasePage,
     PreloadWrapper,
+    OcrPanel: defineAsyncComponent(() => import('../components/OcrPanel.vue')),
   },
   computed: {
     // Navigation list matches current search results order
@@ -149,6 +162,8 @@ export default {
       latestQuery: '', // Track the latest query to ensure no inputs are lost
       // Stroke search state
       showStrokePad: false,
+      // OCR
+      showOcrPanel: false,
       strokes: [],
       currentStroke: [],
       isDrawing: false,
@@ -427,6 +442,21 @@ export default {
           this.refreshStrokeColors();
         }
       });
+    },
+    toggleOcrPanel() {
+      this.showOcrPanel = !this.showOcrPanel;
+    },
+    handleOcrInsert(text) {
+      if (!text) return;
+      const existing = (this.query || '').trim();
+      const addition = (text || '').trim();
+      const combined = [existing, addition].filter(Boolean).join(' ').trim();
+      this.query = combined;
+      this.latestQuery = this.query;
+      if (combined.length) {
+        this.isSearching = true;
+        this.doSearch();
+      }
     },
     setupThemeObserver() {
       try {
@@ -784,7 +814,8 @@ export default {
 }
 
 
-.stroke-toggle {
+.stroke-toggle,
+.ocr-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -793,6 +824,30 @@ export default {
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
   color: var(--fg);
   cursor: pointer;
+}
+
+.stroke-toggle[aria-pressed="true"],
+.ocr-toggle[aria-pressed="true"] {
+  background: color-mix(in oklab, var(--fg) 12%, var(--bg) 82%);
+  border-color: color-mix(in oklab, var(--fg) 32%, var(--bg) 60%);
+}
+
+.ocr-panel-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.ocr-loading {
+  width: 100%;
+  max-width: 900px;
+  margin: 1rem auto;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--bg) 92%, var(--fg) 6%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 22%, var(--bg) 70%);
+  color: var(--fg);
 }
 
 .stroke-draw-wrap {
