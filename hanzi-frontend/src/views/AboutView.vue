@@ -24,15 +24,6 @@
         <li>
           <div class="about-section">
             <div>
-              <span class="smallh">This Project:</span><br />
-              <p style="margin-left:20px;">
-                This project is open source and licensed under the
-                <a class="links" href="/licenses/LICENSE.txt" target="_blank">MIT License</a>.
-              </p>
-              
-              <br />
-              <span class="smallh">Third-Party Components:</span><br />
-              <br />
               <span class="smallh">Chinese-English translations:</span><br />
               <p style="margin-left:20px;">
                 CC-CEDICT database, licensed under a 
@@ -51,11 +42,11 @@
                 <a class="links" href="/licenses/ARPHICPL.txt" target="_blank">Arphic Public License</a>.
               </p>
               <p style="margin-left:20px;">
-                For character recognition, 
-                <a class="links" href="https://github.com/gugray/HanziLookupJS/tree/master">HanziLookupJS</a> by 
-                <a class="links" href="https://github.com/gugray">gugray</a> is used. It is based on Jordan Kiang's 
-                <a class="links" href="https://kiang.org/jordan/software/hanzilookup/">HanziLookup</a>, which is under 
-                <a class="links" href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL</a>.
+                For character recognition,
+                <a class="links" href="https://github.com/gugray/HanziLookupJS/tree/master">HanziLookupJS</a> by
+                <a class="links" href="https://github.com/gugray">gugray</a> is used. It is based on Jordan Kiang's
+                <a class="links" href="https://kiang.org/jordan/software/hanzilookup/">HanziLookup</a>, which is under
+                <a class="links" href="/licenses/GPL-3.0.txt" target="_blank">GNU GPL 3.0</a>.
               </p>
               <br />
               <span class="smallh">Chinese-English examples:</span><br />
@@ -75,6 +66,14 @@
                 Fusion Pixel font from the <a class="links" href="https://github.com/TakWolf/fusion-pixel-font" target="_blank">fusion-pixel-font</a> project, licensed under
                 <a class="links" href="/licenses/OFL.txt" target="_blank">SIL Open Font License 1.1</a> and
                 <a class="links" href="/licenses/MIT-FusionPixel.txt" target="_blank">MIT License</a>.
+              </p>
+              <br />
+              <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0; opacity: 0.35;" />
+              <br />
+
+              <p style="margin-left:20px;">
+                This project is open source and licensed under the
+                <a class="links" href="/licenses/LICENSE.txt" target="_blank">MIT License</a>.
               </p>
             </div>
           </div>
