@@ -2726,7 +2726,7 @@ export default {
   border: none;
   color: var(--fg);
   cursor: pointer;
-
+  z-index: 25;
 }
 
 
