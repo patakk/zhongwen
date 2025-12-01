@@ -69,7 +69,7 @@
         </div>
       </div>
       <div class="result-body">
-        <textarea readonly :value="ocrText" style="box-sizing: border-box;"></textarea>
+        <textarea v-model="ocrText" style="box-sizing: border-box;"></textarea>
       </div>
     </div>
   </div>

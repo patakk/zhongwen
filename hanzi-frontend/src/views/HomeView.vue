@@ -42,7 +42,7 @@
         @touchend.prevent="stopDrawing"
       ></canvas>
       <div class="stroke-results" v-if="strokeResults.length">
-        <span class="stroke-label">tap to add:</span>
+        <span class="stroke-label">Add to search:</span>
         <div class="stroke-result-list">
           <button
             v-for="(res, idx) in strokeResults"
