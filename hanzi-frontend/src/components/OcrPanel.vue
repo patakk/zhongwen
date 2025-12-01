@@ -615,7 +615,6 @@ export default {
 .result {
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 6%);
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 22%, var(--bg) 70%);
-  border-radius: 12px;
   padding: 1rem;
   flex: 1 1 0;
   display: flex;
@@ -661,7 +660,6 @@ export default {
   width: 100%;
   min-height: 140px;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 70%);
-  border-radius: 10px;
   padding: 0.8rem;
   background: color-mix(in oklab, var(--bg) 92%, var(--fg) 4%);
   color: var(--fg);
@@ -687,7 +685,6 @@ export default {
   width: min(900px, 95vw);
   max-height: 90vh;
   overflow: hidden;
-  border-radius: 12px;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 70%);
   padding: 1rem;
   display: flex;
@@ -716,7 +713,6 @@ export default {
   position: relative;
   background: color-mix(in oklab, var(--bg) 92%, var(--fg) 6%);
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 70%);
-  border-radius: 10px;
   overflow: hidden;
   min-height: 200px;
   display: flex;

@@ -421,7 +421,6 @@ export default {
   width: 100%;
   background-color: var(--bg);
   border: var(--card-border);
-  border-radius: var(--modal-border-radius, 0);
   box-shadow: var(--card-shadow);
   cursor: crosshair;
   touch-action: none;
@@ -469,10 +468,6 @@ export default {
   margin-top: 1rem;
 }
 
-.result-wrapper {
-  flex: 0 0 auto;
-  width: auto;
-}
 
 .result-cell {
   border: var(--card-border);
