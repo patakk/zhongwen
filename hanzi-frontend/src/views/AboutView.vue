@@ -27,7 +27,7 @@
               <span class="smallh">This Project:</span><br />
               <p style="margin-left:20px;">
                 This project is open source and licensed under the
-                <a class="links" href="/LICENSE.txt" target="_blank">MIT License</a>.
+                <a class="links" href="/licenses/LICENSE.txt" target="_blank">MIT License</a>.
               </p>
               <br />
               <span class="smallh">Third-Party Components:</span><br />
