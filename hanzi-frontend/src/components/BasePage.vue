@@ -58,6 +58,7 @@
   text-align: left;
   box-sizing: border-box;
   border-bottom: var(--h1-border);
+  line-height: 1em;
   /* opacity: 0; */
 }
 

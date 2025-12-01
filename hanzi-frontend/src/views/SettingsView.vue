@@ -56,7 +56,9 @@
                 :class="{ 'active': currentFont === 'kaiti' }" 
                 @click="selectFont('kaiti')"
               >
-                <span style="font-size: 1.1em; font-family: 'Kaiti'">你好</span>
+                <span style="font-size: 1.1em; font-family: 'Kaiti'">
+                  你好<br/>世界
+                </span>
               </button>
               <button 
                 class="font-button" 
@@ -64,7 +66,7 @@
                 @click="selectFont('noto-sans')"
                 :style="{ 'font-family': 'Noto Sans SC' }"
               >
-                你好
+                你好<br/>世界
               </button>
               <button 
                 class="font-button" 
@@ -72,7 +74,7 @@
                 @click="selectFont('noto-serif')"
                 :style="{ 'font-family': 'Noto Serif SC' }"
               >
-                你好
+                你好<br/>世界
               </button>
               <button 
                 class="font-button" 
@@ -80,7 +82,7 @@
                 @click="selectFont('fusion-pixel')"
                 :style="{ 'font-family': 'Fusion Pixel S' }"
               >
-                你好
+                你好<br/>世界
               </button>
             </div>
           </div>
@@ -1100,6 +1102,8 @@ h3 {
   gap: 0.5rem 1rem;
   width: 70%;
   margin: 1em auto 2em auto;
+  min-height: 5em;
+
 }
 
 .theme-option-label {
@@ -1136,9 +1140,9 @@ h3 {
   color: var(--fg);
   /* transition: all 0.2s; */
   border: 2px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
-  font-size: 1.5em;
-  
+  font-size: 1.25em;
 	opacity: .5;
+  border: none;
 }
 
 
@@ -1146,6 +1150,7 @@ h3 {
   background: var(--bg);
   color: var(--fg);
 	opacity: 1;
+  font-size: 1.5em;
   border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
 }
 
@@ -1193,6 +1198,7 @@ h3 {
   justify-content: center;
   justify-content: space-between;
   text-align: left;
+  border: none;
 }
 
 .tone-choice.active {
