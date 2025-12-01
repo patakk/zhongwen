@@ -434,8 +434,9 @@
                   <div v-if="activeCharData.radical" class="extra-info-item">
                     <span class="basic-label">Radical:</span> {{ activeCharData.radical }}
                   </div>
-                  <div v-if="activeCharData.stroke_count" class="extra-info-item">
-                    <span class="basic-label">Stroke Count:</span> {{ activeCharData.stroke_count }}
+                  <div v-if="activeCharData.radicals" class="extra-info-item">
+                    <span class="basic-label">Radicals:</span>
+                    <span v-for="(desc, rad) in activeCharData.radicals" :key="rad" class="radical-char hanzi-link" @click.stop="openCharAsWord(rad)">{{ rad }} </span>
                   </div>
                   <div v-if="activeCharData.rank" class="extra-info-item">
                     <span class="basic-label">Frequency Rank:</span> {{ activeCharData.rank }}
@@ -1941,7 +1942,6 @@ export default {
   scrollbar-width: none;
   border-radius: var(--modal-border-radius);
   touch-action: pan-y; /* allow vertical scroll by default; JS prevents during horizontal swipe */
-  transition: background-color 30ms ease-in-out, filter 150ms ease-in-out;
   border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 20%);
 }
 
@@ -2060,7 +2060,6 @@ export default {
 }
 
 .main-word-inverted {
-  transition: filter 150ms ease-out opacity 150ms ease-out, transform 150ms ease-out;
   filter: invert(0);
 }
 
@@ -2587,7 +2586,6 @@ export default {
 }
 
 .radical-char {
-  padding-right: .5em;
 }
 
 .basic-label {
@@ -3049,6 +3047,11 @@ export default {
   /* font-family: "Noto Sans SC" !important;
   font-family: "Noto Serif SC" !important; */
   font-family: "Kaiti";
+  font-size: 1.5em;
+  font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif) !important;
+}
+
+.radical-char {
   font-size: 1.5em;
   font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif) !important;
 }
