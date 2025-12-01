@@ -1102,7 +1102,6 @@ h3 {
   gap: 0.5rem 1rem;
   width: 70%;
   margin: 1em auto 2em auto;
-  min-height: 5em;
 
 }
 
@@ -1260,6 +1259,7 @@ h3 {
     border-radius: 8px;
     box-shadow: none !important;
     background: none;
+    background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   }
 
   .profile-row {
