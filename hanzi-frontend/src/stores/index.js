@@ -2,6 +2,34 @@ import { createStore } from 'vuex'
 import router from '../router';
 import ziHistory from './zihistory';
 
+export const CHAR_FONT_FAMILIES = {
+  'kaiti': "'Kaiti','STKaiti','Kai','楷体',serif",
+  'noto-sans': "'Noto Sans SC','Noto Sans CJK SC','Source Han Sans SC','PingFang SC','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif",
+  'noto-serif': "'Noto Serif SC','Noto Serif CJK SC','Source Han Serif SC','Songti SC','SimSun',serif",
+  'fusion-pixel': "'Fusion Pixel S', 'Fusion Pixel T'",
+};
+
+export const CHAR_FONT_LABELS = {
+  'kaiti': 'Kaiti',
+  'noto-sans': 'Noto Sans',
+  'noto-serif': 'Noto Serif',
+  'fusion-pixel': 'Fusion Pixel S',
+};
+
+export const UI_FONT_FAMILIES = {
+  'sf-mono': "'SF Mono Regular','SFMono-Regular','SF Mono',monospace",
+  'noto': "'Noto Sans SC'",
+  'fusion-pixel': "'Fusion Pixel S','Fusion Pixel T','SF Mono Regular',monospace",
+  'nunito': "'Nunito'",
+};
+
+export const UI_FONT_LABELS = {
+  'sf-mono': 'SF Mono',
+  'noto': 'Noto',
+  'fusion-pixel': 'Fusion Pixel S',
+  'nunito': 'Nunito',
+};
+
 // Create a sub-module for card modal state
 const cardModalModule = {
   namespaced: true, // Ensure this is set to true to properly namespace the module
@@ -451,6 +479,8 @@ const themeModule = {
     currentTheme: 'theme1', // Default theme
     currentFont: 'noto-serif', // Default character font
     currentUiFont: 'sf-mono', // Default UI font
+    toneColorEnabled: true,
+    toneColorScheme: 'default',
   },
   mutations: {
     SET_THEME(state, theme) {
@@ -461,13 +491,7 @@ const themeModule = {
     },
     SET_FONT(state, fontKey) {
       state.currentFont = fontKey;
-      const families = {
-        'kaiti': "'Kaiti','STKaiti','Kai','楷体',serif",
-        'noto-sans': "'Noto Sans SC','Noto Sans CJK SC','Source Han Sans SC','PingFang SC','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif",
-        'noto-serif': "'Noto Serif SC','Noto Serif CJK SC','Source Han Serif SC','Songti SC','SimSun',serif",
-        'fusion-pixel': "'Fusion Pixel S', 'Fusion Pixel T'",
-      };
-      const family = families[fontKey] || families['noto-serif'];
+      const family = CHAR_FONT_FAMILIES[fontKey] || CHAR_FONT_FAMILIES['noto-serif'];
       // Apply CSS variable for main character font
       document.documentElement.style.setProperty('--main-word-font', family);
       // Apply a mild scale for Kaiti in contexts that use the default
@@ -478,16 +502,23 @@ const themeModule = {
     },
     SET_UI_FONT(state, fontKey) {
       state.currentUiFont = fontKey;
-      const families = {
-        'sf-mono': "'SF Mono Regular','SFMono-Regular','SF Mono',monospace",
-        'fusion-pixel': "'Fusion Pixel S','Fusion Pixel T','SF Mono Regular',monospace",
-        'source-serif': "'JetBrains Mono',serif"
-      };
+      const families = UI_FONT_FAMILIES;
       const family = families[fontKey] || families['sf-mono'];
       const second = fontKey == 'fusion-pixel' ? families['fusion-pixel'] : "Arial, Helvetica, sans-serif";
       document.documentElement.style.setProperty('--font-family', family);
       document.documentElement.style.setProperty('--second-font', second);
       localStorage.setItem('uiFont', fontKey);
+    },
+    SET_TONE_COLOR_ENABLED(state, enabled) {
+      state.toneColorEnabled = !!enabled;
+      localStorage.setItem('toneColorEnabled', state.toneColorEnabled ? '1' : '0');
+    },
+    SET_TONE_COLOR(state, num){
+      state.toneColorEnabled = num !== 0;
+    },
+    SET_TONE_COLOR_SCHEME(state, scheme) {
+      state.toneColorScheme = scheme === 'alt' ? 'alt' : 'default';
+      localStorage.setItem('toneColorScheme', state.toneColorScheme);
     },
   },
   actions: {
@@ -511,6 +542,14 @@ const themeModule = {
       // Initialize UI font from localStorage (defaults to sf-mono)
       const uiFont = localStorage.getItem('uiFont') || 'sf-mono';
       commit('SET_UI_FONT', uiFont);
+
+      // Initialize tone colorization preference (defaults to on)
+      const tonePref = localStorage.getItem('toneColorEnabled');
+      const toneEnabled = tonePref === null ? true : tonePref !== '0' && tonePref !== 'false';
+      commit('SET_TONE_COLOR_ENABLED', toneEnabled);
+
+      const toneScheme = localStorage.getItem('toneColorScheme') || 'default';
+      commit('SET_TONE_COLOR_SCHEME', toneScheme);
     },
     toggleTheme({ commit, state }) {
       // Toggle between pairs: light/dark or theme1/theme2
@@ -537,6 +576,15 @@ const themeModule = {
     setUiFont({ commit }, fontKey) {
       commit('SET_UI_FONT', fontKey);
     },
+    setToneColorEnabled({ commit }, enabled) {
+      commit('SET_TONE_COLOR_ENABLED', enabled);
+    },
+    setToneColor({ commit }, num) {
+      commit('SET_TONE_COLOR', num);
+    },
+    setToneColorScheme({ commit }, scheme) {
+      commit('SET_TONE_COLOR_SCHEME', scheme);
+    },
     setThemeSystem({ commit, state }, system) {
       // 'default' = light/dark, 'custom' = theme1/theme2
       let newTheme;
@@ -558,6 +606,10 @@ const themeModule = {
     getCurrentTheme: state => state.currentTheme,
     getCurrentFont: state => state.currentFont,
     getCurrentUiFont: state => state.currentUiFont,
+    isToneColorEnabled: state => state.toneColorEnabled !== false,
+    getToneColorScheme: state => state.toneColorScheme || 'default',
+    getFontLabelMap: () => ({ ...CHAR_FONT_LABELS }),
+    getUiFontLabelMap: () => ({ ...UI_FONT_LABELS }),
     isDefaultThemeSystem: state => ['light', 'dark'].includes(state.currentTheme),
     getCurrentThemeName: state => {
       switch(state.currentTheme) {

@@ -152,12 +152,10 @@
                     :showBubbles="false"
                 >
                     <div class="word-cell">
-                        <div class="hanzipinyin">
-                          <div class="word-hanzi" :style="{ fontFamily: defaultFontFamily }">
-                            {{ word.character }}
+                        <div class="word-hanzipinyin">
+                          <div class="word-hanzi" :style="{ fontFamily: defaultFontFamily }" v-html="colorizeHanzi(word.character, displayPinyin(word.character, (word.pinyin && word.pinyin[0]) || ''))">
                           </div>
-                            <div class="word-pinyin">
-                                {{ displayPinyin(word.character, (word.pinyin && word.pinyin[0]) || '') }}
+                            <div class="word-pinyin" v-html="colorizePinyin(displayPinyin(word.character, (word.pinyin && word.pinyin[0]) || ''))">
                             </div>
                         </div>
                         <div class="word-english">{{ displayEnglish(word.character, (word.english && word.english[0]) || '') }}</div>
@@ -276,6 +274,7 @@
   import BasePage from '../components/BasePage.vue';
   import PreloadWrapper from '../components/PreloadWrapper.vue';
   import PracticeSheetModal from '../components/PracticeSheetModal.vue';
+import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
   
   export default {
     name: 'MySpaceView',
@@ -335,6 +334,12 @@
           'noto-serif': "Noto Serif SC"
         };
         return map[this.defaultFontKey] || 'Noto Serif SC';
+      },
+      toneColorEnabled() {
+        try { return this.$store.getters['theme/isToneColorEnabled'] !== false; } catch (e) { return true; }
+      },
+      toneColorScheme() {
+        try { return this.$store.getters['theme/getToneColorScheme'] || 'default'; } catch (e) { return 'default'; }
       },
       customDecks() {
         return this.$store.getters.getCustomDecks; // Use the original getter
@@ -442,6 +447,12 @@
         } catch (err) {
           return base || '';
         }
+      },
+      colorizeHanzi(hanzi, pinyin) {
+        return toneColorizeHanzi(hanzi, pinyin, { enabled: this.toneColorEnabled, palette: this.toneColorScheme });
+      },
+      colorizePinyin(pinyin) {
+        return toneColorizePinyin(pinyin, { enabled: this.toneColorEnabled, palette: this.toneColorScheme });
       },
       ensureNavContextForUrlWord() {
         try {
@@ -1160,7 +1171,7 @@
   .nav-button {
     background: var(--bg);
     color: color-mix(in oklab, var(--fg) 100%, var(--bg) 50%);
-    padding: 0.5rem 1.2rem;
+    padding: 0.25rem .5rem;
     /* border-radius: 8px; */
     text-decoration: none;
     user-select: none;
@@ -1200,6 +1211,7 @@
     box-sizing: border-box;
     padding: .3rem;
     background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+    font-size: .9em;
   }
 
   
@@ -1214,48 +1226,8 @@
     cursor: pointer;
     user-select: none;
     flex-direction: row;
-    align-items: center;
     justify-content: space-between;
     position: relative;
-  }
-  
-  .hanzipinyin {
-    display: flex;
-    flex-direction: column;
-    width: 110px;
-    min-width: 110px;
-    margin-right: 1rem;
-    margin-left: .5rem;
-    user-select: text;
-  }
-  
-  .word-hanzi {
-    font-size: 1.7rem;
-    font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif) !important;
-    user-select: text;
-  }
-  
-  .word-pinyin {
-    font-size: .8em;
-    font-style: italic;
-    color: var(--fg);
-    opacity: 0.6;
-    user-select: text;
-  }
-  
-  .word-english {
-    font-size: .8em;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    font-weight: 500;
-    user-select: text;
-    /* Prevent long text from causing horizontal overflow */
-    min-width: 0;
-    max-width: 100%;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
   }
   
   .remove-button {
@@ -1335,11 +1307,11 @@
 
   .add-word-button {
     padding: 0.5rem 1rem;
-    border: none;
     background: var(--bg);
     color: var(--fg);
     cursor: pointer;
     font-family: inherit;
+    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
   }
 
   /* Modal styles */

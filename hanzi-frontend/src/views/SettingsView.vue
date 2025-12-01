@@ -9,7 +9,7 @@
           <div class="section-divider"></div>
           <!--<div class="theme-selection">
             <div class="theme-option-label">Theme:</div>
-            <div class="theme-buttons">
+            <div class="theme-buttons spread">
               <button 
                 class="theme-button" 
                 :class="{ 'active': isDefaultThemeSystem }" 
@@ -26,67 +26,88 @@
               </button>
             </div>
           </div>-->
+
+            <div class="theme-option-label">UI Font:</div>
+          <div class="theme-selection">
+            <div class="theme-buttons spread" style="justify-content: space-around;">
+              <button
+                class="font-button"
+                :class="{ 'active': currentUiFont === 'sf-mono' }"
+                @click="selectUiFont('sf-mono')"
+                :style="{ 'font-family': 'SF Mono Regular' }"
+              >
+                nǐ hǎo
+              </button>
+              <button
+                class="font-button"
+                :class="{ 'active': currentUiFont === 'fusion-pixel' }"
+                @click="selectUiFont('fusion-pixel')"
+                :style="{ 'font-family': 'Fusion Pixel S' }"
+              >
+                nǐ hǎo
+              </button>
+            </div>
+          </div>
+          <div class="theme-option-label">Hanzi Font:</div>
           <div class="theme-selection" style="margin-top: 1rem;">
-            <div class="theme-option-label">Hanzi Font:</div>
-            <div class="theme-buttons">
-              <button 
-                class="theme-button" 
+            <div class="theme-buttons spread">
+                <button 
+                class="font-button" 
                 :class="{ 'active': currentFont === 'kaiti' }" 
                 @click="selectFont('kaiti')"
               >
-                Kaiti
+                <span style="font-size: 1.1em; font-family: 'Kaiti'">你好</span>
               </button>
               <button 
-                class="theme-button" 
+                class="font-button" 
                 :class="{ 'active': currentFont === 'noto-sans' }" 
                 @click="selectFont('noto-sans')"
+                :style="{ 'font-family': 'Noto Sans SC' }"
               >
-                Noto Sans
+                你好
               </button>
               <button 
-                class="theme-button" 
+                class="font-button" 
                 :class="{ 'active': currentFont === 'noto-serif' }" 
                 @click="selectFont('noto-serif')"
+                :style="{ 'font-family': 'Noto Serif SC' }"
               >
-                Noto Serif
+                你好
               </button>
               <button 
-                class="theme-button" 
+                class="font-button" 
                 :class="{ 'active': currentFont === 'fusion-pixel' }" 
                 @click="selectFont('fusion-pixel')"
+                :style="{ 'font-family': 'Fusion Pixel S' }"
               >
-                Pixel
+                你好
               </button>
             </div>
           </div>
-          <div class="font-preview">你好</div>
-          <div class="theme-selection" style="margin-top: 1rem;">
-            <div class="theme-option-label">UI Font:</div>
-            <div class="theme-buttons">
-              <button
-                class="theme-button"
-                :class="{ 'active': currentUiFont === 'sf-mono' }"
-                @click="selectUiFont('sf-mono')"
-              >
-                SF Mono
-              </button>
-              <button
-                class="theme-button"
-                :class="{ 'active': currentUiFont === 'fusion-pixel' }"
-                @click="selectUiFont('fusion-pixel')"
-              >
-                Pixel
-              </button>
-              <button
-                class="theme-button"
-                :class="{ 'active': currentUiFont === 'source-serif' }"
-                @click="selectUiFont('source-serif')"
-              >
-                Source Serif
-              </button>
+          <div class="theme-option-label">Tone colors:</div>
+          <div class="theme-selection tone-choices" style="margin-top: 1rem;">
+            <div class="tone-choice" :class="{ active: toneColorEnabled && toneColorScheme === 'default' }" @click="setToneColors(1)">
+              <div class="tonehanzipinyin" style="color: var(--first-t);"><div>妈</div><div>mā</div></div>
+              <div class="tonehanzipinyin" style="color: var(--second-t);"><div>麻</div><div>má</div></div>
+              <div class="tonehanzipinyin" style="color: var(--third-t);"><div>马</div><div>mǎ</div></div>
+              <div class="tonehanzipinyin" style="color: var(--fourth-t);"><div>骂</div><div>mà</div></div>
+              <div class="tonehanzipinyin" style="color: var(--neutral-t);"><div>吗</div><div>ma</div></div>
+            </div>
+            <div class="tone-choice" :class="{ active: toneColorEnabled && toneColorScheme === 'alt' }" @click="setToneColors(2)">
+              <div class="tonehanzipinyin" style="color: var(--first-t-p);"><div>妈</div><div>mā</div></div>
+              <div class="tonehanzipinyin" style="color: var(--second-t-p);"><div>麻</div><div>má</div></div>
+              <div class="tonehanzipinyin" style="color: var(--third-t-p);"><div>马</div><div>mǎ</div></div>
+              <div class="tonehanzipinyin" style="color: var(--fourth-t-p);"><div>骂</div><div>mà</div></div>
+              <div class="tonehanzipinyin" style="color: var(--neutral-t-p);"><div>吗</div><div>ma</div></div>
+            </div>
+            <div class="tone-choice" :class="{ active: !toneColorEnabled }" @click="setToneColors(0)">
+              <div class="tonehanzipinyin"><div>妈</div><div>mā</div></div>
+              <div class="tonehanzipinyin"><div>麻</div><div>má</div></div>
+              <div class="tonehanzipinyin"><div>马</div><div>mǎ</div></div>
+              <div class="tonehanzipinyin"><div>骂</div><div>mà</div></div>
+              <div class="tonehanzipinyin"><div>吗</div><div>ma</div></div>
             </div>
           </div>
-          <div class="ui-font-preview">Abc 123</div>
           <!-- <div class="current-theme">
             <div class="theme-option-label">Current Theme:</div>
             <div class="theme-value">{{ currentThemeName }}</div>
@@ -329,6 +350,7 @@ import BasePage from '../components/BasePage.vue'
 import LogoutButton from '../components/LogoutButton.vue'
 import ToastNotification from '../components/ToastNotification.vue'
 import { computed, onMounted, watch, ref, nextTick } from 'vue'
+import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -342,6 +364,16 @@ const isDefaultThemeSystem = computed(() => store.getters['theme/isDefaultThemeS
 const currentThemeName = computed(() => store.getters['theme/getCurrentThemeName'])
 const currentFont = computed(() => store.getters['theme/getCurrentFont'])
 const currentUiFont = computed(() => store.getters['theme/getCurrentUiFont'])
+const toneColorEnabled = computed(() => store.getters['theme/isToneColorEnabled'])
+const toneColorScheme = computed(() => store.getters['theme/getToneColorScheme'] || 'default')
+const toneSampleHanzi =  '妈麻马骂吗';
+const toneSamplePinyin = 'mā má mǎ mà ma';
+const toneSampleHanziColor = computed(() => toneColorizeHanzi(toneSampleHanzi, toneSamplePinyin, { enabled: true, palette: 'default' }));
+const toneSamplePinyinColor = computed(() => toneColorizePinyin(toneSamplePinyin, { enabled: true, palette: 'default' }));
+const toneSampleHanziColorAlt = computed(() => toneColorizeHanzi(toneSampleHanzi, toneSamplePinyin, { enabled: true, palette: 'alt' }));
+const toneSamplePinyinColorAlt = computed(() => toneColorizePinyin(toneSamplePinyin, { enabled: true, palette: 'alt' }));
+const toneSampleHanziPlain = computed(() => toneColorizeHanzi(toneSampleHanzi, toneSamplePinyin, { enabled: false }));
+const toneSamplePinyinPlain = computed(() => toneColorizePinyin(toneSamplePinyin, { enabled: false }));
 
 // Theme system functions
 function selectThemeSystem(system) {
@@ -369,20 +401,34 @@ function toggleCurrentTheme() {
 
 function selectFont(fontKey) {
   store.dispatch('theme/setFont', fontKey);
-  let fontmap = {
-    'kaiti': 'Kaiti',
-    'noto-sans': 'Noto Sans',
-    'noto-serif': 'Noto Serif',
-    'fusion-pixel': 'Fusion Pixel S',
-  };
-  let label = fontmap[fontKey] || 'Unknown';
+  const label = (store.getters['theme/getFontLabelMap'] || {})[fontKey] || fontKey;
   showSuccessToast(`Character font set to ${label}`);
 }
 
 function selectUiFont(fontKey) {
   store.dispatch('theme/setUiFont', fontKey);
-  const label = fontKey === 'fusion-pixel' ? 'Fusion Pixel S' : fontKey === 'source-serif' ? 'JetBrains Mono' : 'SF Mono Regular';
+  const label = (store.getters['theme/getUiFontLabelMap'] || {})[fontKey] || fontKey;
   showSuccessToast(`UI font set to ${label}`);
+}
+
+function setToneColors(num) {
+  if (num === 0) {
+    store.dispatch('theme/setToneColorEnabled', false);
+    showSuccessToast('Tone colors disabled');
+    return;
+  }
+  if (num === 1) {
+    store.dispatch('theme/setToneColorEnabled', true);
+    store.dispatch('theme/setToneColorScheme', 'default');
+    showSuccessToast('Tone colors set to palette 1');
+    return;
+  }
+  if (num === 2) {
+    store.dispatch('theme/setToneColorEnabled', true);
+    store.dispatch('theme/setToneColorScheme', 'alt');
+    showSuccessToast('Tone colors set to palette 2');
+    return;
+  }
 }
 
 const showEmailModal = ref(false)
@@ -1052,6 +1098,8 @@ h3 {
   margin-bottom: 1rem;
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
+  width: 70%;
+  margin: 1em auto 2em auto;
 }
 
 .theme-option-label {
@@ -1077,17 +1125,112 @@ h3 {
 	border: 2px solid var(--black) !important;
 	background: var(--bg) !important;
 	opacity: .5;
+  border: var(--thin-border-width) solid var(--black) !important;
+}
+
+.font-button {
+  padding: 0.2rem 0.4rem;
+  background: none;
+  border-radius: 0px;
+  cursor: pointer;
+  color: var(--fg);
+  /* transition: all 0.2s; */
+  border: 2px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
+  font-size: 1.5em;
+  
+	opacity: .5;
+}
+
+
+.font-button.active {
+  background: var(--bg);
+  color: var(--fg);
+	opacity: 1;
+  border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
 }
 
 .theme-button.active {
   background: color-mix(in oklab, var(--green-btn-clr, #f11) 30%, var(--bg) 100%);
-  border-color: color-mix(in oklab, var(--green-btn-clr, #f11) 80%, var(--bg) 100%);
-  color: color-mix(in oklab, var(--green-btn-clr, #f11) 90%, var(--fg) 100%);
+  border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
+  color: var(--fg);
 	opacity: 1;
 }
 
 .theme-button:hover:not(.active) {
   background: color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
+}
+
+
+.theme-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.theme-buttons.spread {
+  flex: 1;
+  justify-content: space-between;
+}
+
+.tone-choices {
+  gap: 0.75rem;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tone-choice {
+  border: 2px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 6%, var(--bg) 100%);
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  gap: 0.2rem;
+  min-width: 10rem;
+  align-items: flex-start;
+  justify-content: center;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.tone-choice.active {
+  background: var(--bg);
+  border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
+  opacity: 1;
+}
+
+.tone-choice:not(.active) {
+  opacity: 0.7;
+}
+
+.tone-hanzi {
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tone-pinyin {
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tone-hanzi2 {
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+  font-size: 1.2rem;
+  word-spacing: 2em;
+  width: 100%;
+}
+
+.tone-pinyin2 {
+  font-size: 0.95rem;
+  width: 100%;
 }
 
 .theme-value {
@@ -1125,7 +1268,6 @@ h3 {
 
   .theme-selection, .current-theme {
     flex-direction: column;
-    align-items: flex-start;
   }
   
   .theme-option-label {
@@ -1133,4 +1275,10 @@ h3 {
   }
 }
 
+.tonehanzipinyin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
 </style>

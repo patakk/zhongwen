@@ -1379,7 +1379,9 @@
     font-size: .8em;
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    vertical-align: top;
+    margin-bottom: auto;
     font-weight: 500;
     user-select: text;
     /* Prevent long text from causing horizontal overflow */
@@ -1464,12 +1466,11 @@
 
   .add-word-button {
     padding: 0.5rem 1rem;
-    border: none;
+    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
     background: var(--bg);
     color: var(--fg);
     cursor: pointer;
     font-family: inherit;
-    box-shadow: 0 2px 4px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   }
 
   /* Modal styles */

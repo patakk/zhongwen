@@ -209,8 +209,8 @@ export default {
 }
 
 /* Media query for vertical screens (assuming mobile devices) */
-@media (max-aspect-ratio: 1/1) or (max-width: 1024px) {
-  /* @media (max-width: 1024px) { */
+@media (max-aspect-ratio: 1/1) or (max-width: 784px) {
+  /* @media (max-width: 784px) { */
   .sidebar-container {
     height: auto;
     display: flex;
@@ -300,7 +300,7 @@ export default {
   opacity: 1;
 }
 
-@media (max-aspect-ratio: 1/1) or (max-width: 1024px) {
+@media (max-aspect-ratio: 1/1) or (max-width: 784px) {
   .top-nav {
     display: none;
   }

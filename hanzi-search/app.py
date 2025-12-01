@@ -345,9 +345,9 @@ def append_unique(results, seen, seen_map, entries):
 def search_pinyin_term(term, mark_exact=False, source_query=None):
     res_local = []
     hard_results_local = []
-    normalized_term = ensure_pinyin_wildcards(ensure_neutral_tone(term))
-    candidate_terms = expand_pinyin_wildcards(normalized_term)
-    for cand in candidate_terms:
+    #normalized_term = ensure_pinyin_wildcards(ensure_neutral_tone(term))
+    #candidate_terms = expand_pinyin_wildcards(normalized_term)
+    for cand in [ensure_neutral_tone(term)]:
         res = dictionary.search_by_pinyin(cand)
         for r in res:
             dd = dictionary.definition_lookup(r)
@@ -486,8 +486,7 @@ def search():
         results = search_hanzi(query)
     else:
         results = search_pinyin(query)
-        if len(results) == 0:
-            results = search_english(query)
+        results += search_english(query)
     results = [r for r in results if 'variant of' not in r.get('english', '').lower()]
     grouped = group_results(results, query, only_hanzi)
     return jsonify({'groups': grouped})

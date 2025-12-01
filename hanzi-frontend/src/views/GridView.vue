@@ -203,7 +203,7 @@
             </div>
             
             <!-- List View still using PreloadWrapper since performance is less critical -->
-            <div v-else class="list-container" :style="{fontSize: `${fontScale*1.1}em` }">
+            <div v-else class="list-container" :style="{fontSize: `${fontScale*1.0}em` }">
               <PreloadWrapper
                 v-for="(entry, index) in visibleChars"
                 :key="entry.character"
@@ -212,17 +212,15 @@
                 :showBubbles="false"
               >
                   <div class="list-item">
-                  <div class="hanzipinyin">
-                    <div class="list-hanzi" :style="{ 
+                  <div class="word-hanzipinyin">
+                    <div class="word-hanzi" :style="{ 
                       fontFamily: `'${selectedFont}'`,
                       transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none',
-                      fontWeight: selectedFont === 'Noto Serif SC' ? 600 : 400
-                    }">
-                      {{ entry.character }}
-                    </div>
-                    <div class="list-pinyin" :class="{ 'pinyin-hidden': !showPinyin }">{{ displayListPinyin(entry.character, (entry.pinyin && entry.pinyin[0]) || '') }}</div>
+                      fontWeight: selectedFont === 'Noto Sans SC' ? 400 : 400
+                    }" v-html="colorizeHanzi(entry.character, displayListPinyin(entry.character, (entry.pinyin && entry.pinyin[0]) || ''))"></div>
+                    <div class="word-pinyin" :class="{ 'pinyin-hidden': !showPinyin }" v-html="colorizePinyin(displayListPinyin(entry.character, (entry.pinyin && entry.pinyin[0]) || ''))"></div>
                   </div>
-                  <div class="list-english">{{ displayListEnglish(entry.character, (entry.english && entry.english[0]) || '') }}</div>
+                  <div class="word-english">{{ displayListEnglish(entry.character, (entry.english && entry.english[0]) || '') }}</div>
                   </div>
               </PreloadWrapper>
             </div>
@@ -239,6 +237,7 @@
 import PreloadWrapper from '../components/PreloadWrapper.vue';
 import BasePage from '../components/BasePage.vue';
 import { useStore } from 'vuex';
+import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
 
 const defaultVisibleCount = 180; // Default number of characters to show
 
@@ -340,6 +339,12 @@ export default {
     // Full navigation list for current wordlist
     navCharList() {
       return (this.slicedChars || []).map(e => e.character);
+    },
+    toneColorEnabled() {
+      try { return this.$store.getters['theme/isToneColorEnabled'] !== false; } catch (e) { return true; }
+    },
+    toneColorScheme() {
+      try { return this.$store.getters['theme/getToneColorScheme'] || 'default'; } catch (e) { return 'default'; }
     }
   },
   methods: {
@@ -360,6 +365,12 @@ export default {
       } catch (err) {
         return base || '';
       }
+    },
+    colorizePinyin(pinyin) {
+      return toneColorizePinyin(pinyin, { enabled: this.toneColorEnabled, palette: this.toneColorScheme });
+    },
+    colorizeHanzi(hanzi, pinyin) {
+      return toneColorizeHanzi(hanzi, pinyin, { enabled: this.toneColorEnabled, palette: this.toneColorScheme });
     },
     ensureNavContextForUrlWord() {
       try {
@@ -1138,12 +1149,14 @@ html, body {
   background: var(--bg);
   width: 100%;
   cursor: pointer;
-  font-size: .75em;
   box-shadow: none;
   border-bottom: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
   border: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
   border: none;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+  box-sizing: border-box;
+  font-size: .9em;
+
 }
 
 .list-item:hover {
@@ -1151,30 +1164,8 @@ html, body {
 }
 
 .hanzipinyin {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  flex: 2;
-  min-width: 0; /* allow flex child to shrink and wrap */
-  margin-left: .25rem;
 }
 
-.list-hanzi {
-  font-size: 1.75em;
-  padding-right: 1em;
-}
-
-.list-pinyin {
-  font-size: 1em;
-  font-style: italic;
-  color: var(--fg);
-  opacity: 0.4;
-}
-
-.list-pinyin.pinyin-hidden {
-  visibility: hidden;
-}
 
 .list-item:hover .list-pinyin.pinyin-hidden {
   visibility: visible;
@@ -1184,6 +1175,7 @@ html, body {
   font-size: 1em;
   color: var(--fg);
   opacity: 0.6;
+  opacity: 1.0;
   flex: 12;
   min-width: 0;        /* prevent flex item from forcing overflow */
   max-width: 100%;

@@ -105,7 +105,7 @@
 
           <div class="main-def-flex">
             <div class="main-def-text">
-              <div class="main-pinyin">{{ $toAccentedPinyin(displayPinyin || '') }}</div>
+              <div class="main-pinyin" v-html="colorizePinyin($toAccentedPinyin(displayPinyin || ''))"></div>
               <div class="main-english">
                 <div v-for="(item, index) in displayEnglish" :key="index" class="english-item">
                   <span class="english-idx">{{ index + 1 }}.</span>
@@ -275,7 +275,7 @@
                   <div class="detail-group pinyin-meaning-group">
                     <div class="pinyin-meaning-pairs">
                       <div v-for="(pinyin, index) in activeCharData.main_word_pinyin" :key="index" class="pinyin-meaning-pair">
-                        <div class="pm-pinyin" :class="getToneClass(pinyin)"><span class="pinyinshadow">{{ $toAccentedPinyin(pinyin) }}</span></div>
+                        <div class="pm-pinyin" :class="getToneClass(pinyin)" v-html="colorizePinyinForce($toAccentedPinyin(pinyin))"></div>
                         <div class="pm-meaning">
                           <div v-for="(meaning, mIdx) in splitMeaning(activeCharData.main_word_english[index])" :key="mIdx">
                             <span class="english-idx">{{ mIdx + 1 }}.</span>
@@ -559,6 +559,7 @@ import ToastNotification from './ToastNotification.vue'
 import RecursiveDecomposition from './RecursiveDecomposition.vue'
 import PreloadWrapper from './PreloadWrapper.vue'
 import { mapGetters, mapActions } from 'vuex'
+import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer'
 
 export default {
   components: {
@@ -653,6 +654,12 @@ export default {
       navIndex: 'cardModal/getNavIndex',
       displayOverrides: 'cardModal/getDisplayOverrides'
     }),
+    toneColorEnabled() {
+      try { return this.$store.getters['theme/isToneColorEnabled'] !== false; } catch (e) { return true; }
+    },
+    toneColorScheme() {
+      try { return this.$store.getters['theme/getToneColorScheme'] || 'default'; } catch (e) { return 'default'; }
+    },
     currentFontKey() {
       try { return this.$store.getters['theme/getCurrentFont'] || 'noto-serif'; } catch(e) { return 'noto-serif'; }
     },
@@ -1098,6 +1105,15 @@ export default {
       fetchCardData: 'cardModal/fetchCardData'
       // Removed fetchDecompositionData to prevent direct calls
     }),
+    colorizeHanzi(hanzi, pinyin) {
+      return toneColorizeHanzi(hanzi, pinyin, { enabled: this.toneColorEnabled, palette: this.toneColorScheme });
+    },
+    colorizePinyin(pinyin) {
+      return toneColorizePinyin(pinyin, { enabled: this.toneColorEnabled, palette: this.toneColorScheme });
+    },
+    colorizePinyinForce(pinyin) {
+      return toneColorizePinyin(pinyin, { enabled: true, palette: this.toneColorScheme });
+    },
 
     onStepChange(payload) {
       const total = (payload && payload.total) ? payload.total : 0;

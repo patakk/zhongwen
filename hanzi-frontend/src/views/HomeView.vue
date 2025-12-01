@@ -83,11 +83,11 @@
           >
             <div class="result-cell">
               <div class="result-number">{{ entry.displayIdx + 1 }}</div>
-              <div class="hanzipinyin">
-                <div class="rhanzi">{{ entry.item.hanzi }}</div>
-                <div class="rpinyin" v-html="highlightMatch($toAccentedPinyin(entry.item.pinyin))"></div>
+              <div class="word-hanzipinyin">
+                <div class="word-hanzi" v-html="colorizeHanzi(entry.item.hanzi, $toAccentedPinyin(entry.item.pinyin))"></div>
+                <div class="word-pinyin" v-html="colorizePinyin($toAccentedPinyin(entry.item.pinyin))"></div>
               </div>
-              <div class="renglish" v-html="highlightMatch($toAccentedPinyin(entry.item.english))"></div>
+              <div class="word-english" v-html="highlightMatch($toAccentedPinyin(entry.item.english))"></div>
             </div>
           </PreloadWrapper>
         </div>
@@ -109,6 +109,7 @@
 <script>
 import BasePage from '../components/BasePage.vue';
 import PreloadWrapper from '../components/PreloadWrapper.vue';
+import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
 
 export default {
   components: {
@@ -129,6 +130,12 @@ export default {
     groupedResults() {
       const groups = Array.isArray(this.results) ? this.results : [];
       return groups;
+    },
+    toneColorEnabled() {
+      try { return this.$store.getters['theme/isToneColorEnabled'] !== false; } catch (e) { return true; }
+    },
+    toneColorScheme() {
+      try { return this.$store.getters['theme/getToneColorScheme'] || 'default'; } catch (e) { return 'default'; }
     }
   },
   data() {
@@ -153,6 +160,7 @@ export default {
       strokeCanvasSize: 0,
       themeObserver: null,
       groupCollapsed: {},
+      isDarkTheme: false,
     };
   },
   created() {
@@ -395,7 +403,12 @@ export default {
 
       return result;
     },
-    
+    colorizePinyin(pinyin) {
+      return toneColorizePinyin(pinyin, { enabled: this.toneColorEnabled, palette: this.toneColorScheme });
+    },
+    colorizeHanzi(hanzi, pinyin) {
+      return toneColorizeHanzi(hanzi, pinyin, { enabled: this.toneColorEnabled, palette: this.toneColorScheme });
+    },
     // New methods for scroll to top functionality
     scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'auto' });
@@ -418,10 +431,17 @@ export default {
     setupThemeObserver() {
       try {
         this.themeObserver = new MutationObserver(() => {
+          this.updateThemeFromDom();
           this.refreshStrokeColors();
         });
         this.themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        this.updateThemeFromDom();
       } catch (e) {}
+    },
+    updateThemeFromDom() {
+      const dark = document.documentElement.getAttribute('data-theme');
+      const isDark = dark === 'dark' || dark === 'theme2';
+      this.isDarkTheme = isDark;
     },
     refreshStrokeColors() {
       if (!this.showStrokePad || !this.strokeCanvasCtx) return;
@@ -703,14 +723,16 @@ export default {
 
 .result-cell {
   border:var(--thin-border-width) solid color-mix(in oklab, var(--fg) 35%, var(--bg) 50%);
-  padding: .5rem;
+  padding: .15rem .5rem;
   font-family: inherit;
   text-align: left;
   background: var(--bg);
   width: 100%;
   display: flex;
   box-sizing: border-box;
-  position: relative; /* Added for absolute positioning of number indicator */
+  position: relative;
+  font-size: .9em;
+
 }
 
 .result-cell:first-child {
@@ -743,36 +765,21 @@ export default {
   justify-content: flex-start;
   align-items: flex-start;
   flex: 2;
+  padding-right: auto;
+
 }
 
-.rhanzi {
-  font-size: 2rem;
-  padding-right: 2rem;
-  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
-}
 
-.rpinyin {
-  font-style: italic;
-  color: var(--fg);
-  opacity: 0.6;
-}
-
-.renglish {
-  color: var(--fg);
-  flex: 12;
-  margin-right: 1em;
-  word-wrap: break-word;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-
-@media (max-width: 600px) {
+@media (max-width: 1024px) {
   .result-cell {
     flex-direction: column;
     align-items: flex-start;
   }
   .search-view {
     padding: 1rem;
+  }
+
+  .hanzipinyin {
   }
 }
 

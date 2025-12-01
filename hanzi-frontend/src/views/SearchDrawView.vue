@@ -495,7 +495,6 @@ export default {
 }
 
 .rhanzi {
-  font-size: 2rem;
   font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
 }
 
