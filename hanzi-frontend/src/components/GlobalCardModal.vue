@@ -68,7 +68,10 @@
                         :showBubbles="false"
                         class="hanzi-link main-word-char"
                       >
-                    {{ char }}
+                    <span
+                      class="hanzi-link main-word-char"
+                      v-html="colorizeHanzi(char, getDisplaySyllable(index))"
+                    ></span>
                 </PreloadWrapper>
               </span>
 
@@ -78,7 +81,10 @@
                 :class="['main-word-char']"
                 @click="setActiveChar(char)"
               >
-                  {{ char }}
+                  <span
+                    class="hanzi-link main-word-char"
+                    v-html="colorizeHanzi(char, getDisplaySyllable(index))"
+                  ></span>
               </span>
 
               <span v-if="showTraditionalLine" class="main-word-trad">
@@ -93,7 +99,10 @@
                         :showBubbles="false"
                         class="hanzi-link trad-char"
                       >
-                    {{ tchar }}
+                    <span
+                      class="hanzi-link trad-char"
+                      v-html="colorizeHanzi(tchar, getDisplaySyllable(index))"
+                    ></span>
                 </PreloadWrapper>
                   <span v-else class="trad-char main-word-char">-</span>
                 </span>
@@ -359,12 +368,16 @@
                     >
                       <template #default>
                         <div class="example-chinese-pinyin">
-                          <span class="example-chinese">{{ word }}</span>
-                          <span class="example-pinyin">
-                            {{ $toAccentedPinyin(activeCharData.pinyin[index]) }}
-                          </span>
+                          <span
+                            class="word-hanzi"
+                            v-html="colorizeHanzi(word, $toAccentedPinyin(activeCharData.pinyin[index]))"
+                          ></span>
+                          <span
+                            class="word-pinyin"
+                            v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index]))"
+                          ></span>
                         </div>
-                        <span class="example-meaning">{{ activeCharData.english[index] }}</span>
+                        <span class="word-english">{{ activeCharData.english[index] }}</span>
                       </template>
                     </ClickableRow>
                   </div>
@@ -380,10 +393,14 @@
                     >
                       <template #default>
                         <div class="example-chinese-pinyin">
-                          <span class="example-chinese">{{ word }}</span>
-                          <span class="example-pinyin">
-                            {{ $toAccentedPinyin(activeCharData.pinyin[index + 3]) }}
-                          </span>
+                          <span
+                            class="example-chinese"
+                            v-html="colorizeHanzi(word, $toAccentedPinyin(activeCharData.pinyin[index + 3]))"
+                          ></span>
+                          <span
+                            class="example-pinyin"
+                            v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index + 3]))"
+                          ></span>
                         </div>
                         <span class="example-meaning">{{ activeCharData.english[index + 3] }}</span>
                       </template>
@@ -1114,6 +1131,14 @@ export default {
     },
     colorizePinyinForce(pinyin) {
       return toneColorizePinyin(pinyin, { enabled: true, palette: this.toneColorScheme });
+    },
+    getDisplaySyllable(idx) {
+      const accented = this.$toAccentedPinyin(this.displayPinyin || '').trim();
+      if (!accented) return '';
+      const syllables = accented.split(/\s+/).filter(Boolean);
+      if (!syllables.length) return '';
+      if (idx < syllables.length) return syllables[idx];
+      return syllables[syllables.length - 1];
     },
 
     onStepChange(payload) {
@@ -2173,6 +2198,7 @@ export default {
   box-sizing: border-box;
   cursor: pointer;
   border-bottom: 2px dashed color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  font-size: 0.8em;
 }
 
 .example-word-content.therest:last-child {

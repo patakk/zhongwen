@@ -107,7 +107,7 @@ def gather_hanzi_results(query, dict_client, include_other_examples=True):
             elif include_other_examples:
                 other_examples.append(entry)
 
-    combined = results + exact_examples + (other_examples if include_other_examples else [])
+    combined = results + exact_examples + (other_examples[:10] if include_other_examples else [])
     return combined, has_direct
 
 def add_unique_entries(results, new_entries, seen):
