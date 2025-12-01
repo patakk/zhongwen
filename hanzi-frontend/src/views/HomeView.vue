@@ -2,13 +2,24 @@
   <BasePage page_title="Hanzi" />
   <div class="search-view">
     <form @submit.prevent="doSearch" class="search-form">
-      <input
-        v-model="query"
-        type="text"
-        placeholder="enter search term"
-        class="search-input"
-        @input="handleInput"
-      />
+      <div class="search-input-wrapper">
+        <input
+          v-model="query"
+          type="text"
+          placeholder="enter search term"
+          class="search-input"
+          @input="handleInput"
+        />
+        <button
+          v-if="query"
+          type="button"
+          class="clear-btn"
+          @click="clearSearch"
+          title="Clear search"
+        >
+          ×
+        </button>
+      </div>
       <button type="button" class="stroke-toggle" @click="toggleStrokePad" :aria-pressed="showStrokePad" title="Draw search">
         <font-awesome-icon :icon="['fas','pen-fancy']" />
       </button>
@@ -56,14 +67,7 @@
         </div>
       </div>
     </div>
-    <Suspense v-if="showOcrPanel">
-      <template #default>
-        <OcrPanel class="ocr-panel-wrap" @insert-text="handleOcrInsert" />
-      </template>
-      <template #fallback>
-        <div class="ocr-loading">Loading OCR tools...</div>
-      </template>
-    </Suspense>
+    <OcrPanel v-if="showOcrPanel" class="ocr-panel-wrap" @insert-text="handleOcrInsert" />
     <div v-if="!isLoading && groupedResults.length" class="results">
       <div
         v-for="group in groupedResults"
@@ -244,6 +248,13 @@ export default {
     toggleGroup(key) {
       const next = !this.isGroupCollapsed(key);
       this.groupCollapsed = { ...this.groupCollapsed, [key]: next };
+    },
+
+    clearSearch() {
+      this.query = '';
+      this.results = [];
+      this.groupedResults = [];
+      this.updateUrlQuery();
     },
 
     updateUrlQuery() {
@@ -698,6 +709,44 @@ export default {
   flex-wrap: wrap; /* Add this line to make input and button wrap on narrow screens */
 }
 
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
+  color: var(--fg);
+}
+
+.clear-btn {
+  position: absolute;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  border: none;
+  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 80%);
+  color: var(--fg);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: background 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
+}
+
 .loading-indicator {
   margin-top: 2rem;
   font-size: 1.5rem;
@@ -821,14 +870,14 @@ export default {
   justify-content: center;
   padding: 0.4rem 0.6rem;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
-  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
+  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 5%);
   color: var(--fg);
   cursor: pointer;
 }
 
 .stroke-toggle[aria-pressed="true"],
 .ocr-toggle[aria-pressed="true"] {
-  background: color-mix(in oklab, var(--fg) 12%, var(--bg) 82%);
+  background: color-mix(in oklab, var(--fg) 22%, var(--bg) 82%);
   border-color: color-mix(in oklab, var(--fg) 32%, var(--bg) 60%);
 }
 

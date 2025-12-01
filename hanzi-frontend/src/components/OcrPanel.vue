@@ -1,8 +1,9 @@
 <template>
-  <div class="ocr-panel">
-      
+  <div class="ocr-panel-container">
+    <div class="ocr-panel">
 
-    <div class="input-row">
+
+      <div class="input-row">
       <div class="drop-area-wrapper">
         <div
           class="drop-area"
@@ -67,8 +68,8 @@
       </div>
     </div>
 
-    <div v-if="error" class="error">{{ error }}</div>
-  </div>
+      <div v-if="error" class="error">{{ error }}</div>
+    </div>
 
     <div v-if="showCropper" class="crop-modal">
       <div class="crop-dialog">
@@ -102,7 +103,7 @@
         </div>
       </div>
     </div>
-
+  </div>
 </template>
 
 <script>
@@ -404,6 +405,10 @@ export default {
 </script>
 
 <style scoped>
+.ocr-panel-container {
+  display: contents;
+}
+
 .ocr-panel {
   width: 100%;
   max-width: 900px;
@@ -411,7 +416,6 @@ export default {
   padding: 1.5rem;
   background: color-mix(in oklab, var(--bg) 92%, var(--fg) 6%);
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
-  border-radius: 14px;
   display: flex;
   flex-direction: row;
   gap: 0.9rem;
@@ -462,14 +466,12 @@ export default {
 
 .drop-area-wrapper {
   flex: 1;
-  display: flex;
 }
 
 .drop-area {
   position: relative;
   border: 2px dashed color-mix(in oklab, var(--fg) 35%, var(--bg) 50%);
   background: color-mix(in oklab, var(--bg) 85%, var(--fg) 4%);
-  border-radius: 12px;
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
@@ -481,7 +483,6 @@ export default {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  flex-direction: column;
   justify-content: space-between;
 }
 
@@ -522,12 +523,11 @@ export default {
 
 .preview {
   width: 100%;
-  max-width: 320px;
   max-height: 70px;
   overflow: hidden;
-  border-radius: 10px;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 70%);
   background: var(--bg);
+  box-sizing: border-box;
 }
 
 .preview img {
@@ -542,7 +542,6 @@ export default {
   margin-top: 0.25rem;
   padding: 0.4rem 0.75rem;
   min-height: 48px;
-  border-radius: 8px;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 70%);
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 8%);
   cursor: pointer;
@@ -565,7 +564,6 @@ export default {
 .btn-secondary {
   border: none;
   padding: 0.7rem 1rem;
-  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
@@ -651,11 +649,9 @@ export default {
 .chip {
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 70%);
   background: color-mix(in oklab, var(--bg) 85%, var(--fg) 10%);
-  border-radius: 999px;
   padding: 0.4rem 0.8rem;
   cursor: pointer;
   color: var(--fg);
-  border-radius: .5rem;
 }
 
 .chip.primary {
