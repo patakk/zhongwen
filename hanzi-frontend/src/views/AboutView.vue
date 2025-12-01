@@ -55,6 +55,12 @@
                 <a class="links" href="https://creativecommons.org/licenses/by/2.0/fr/" target="_blank">Creative Commons Attribution 2.0 FR</a>.
               </p>
               <br />
+              <span class="smallh">OCR (Optical Character Recognition):</span><br />
+              <p style="margin-left:20px;">
+                <a class="links" href="https://github.com/naptha/tesseract.js" target="_blank">Tesseract.js</a>, a JavaScript port of the Tesseract OCR engine, licensed under
+                <a class="links" href="/licenses/Apache-2.0.txt" target="_blank">Apache License 2.0</a>.
+              </p>
+              <br />
               <span class="smallh">Fonts:</span><br />
               <p style="margin-left:20px;">
                 Fusion Pixel font from the <a class="links" href="https://github.com/TakWolf/fusion-pixel-font" target="_blank">fusion-pixel-font</a> project, used under SIL Open Font License 1.1 and MIT (see the project licenses).
