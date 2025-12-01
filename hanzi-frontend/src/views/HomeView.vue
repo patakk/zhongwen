@@ -41,29 +41,31 @@
           <button type="button" @click="clearCanvas" :disabled="strokes.length === 0">Clear</button>
         </div>
       </div>
-      <canvas
-        ref="strokeCanvas"
-        class="stroke-canvas"
-        @mousedown="startDrawing"
-        @mousemove="draw"
-        @mouseup="stopDrawing"
-        @mouseleave="stopDrawing"
-        @touchstart.prevent="handleTouchStart"
-        @touchmove.prevent="handleTouchMove"
-        @touchend.prevent="stopDrawing"
-      ></canvas>
-      <div class="stroke-results" v-if="strokeResults.length">
-        <span class="stroke-label">Add to search:</span>
-        <div class="stroke-result-list">
-          <button
-            v-for="(res, idx) in strokeResults"
-            :key="idx"
-            type="button"
-            class="stroke-result-btn"
-            @click="appendCharFromStroke(res.character)"
-          >
-            {{ res.character }}
-          </button>
+      <div class="stroke-content">
+        <canvas
+          ref="strokeCanvas"
+          class="stroke-canvas"
+          @mousedown="startDrawing"
+          @mousemove="draw"
+          @mouseup="stopDrawing"
+          @mouseleave="stopDrawing"
+          @touchstart.prevent="handleTouchStart"
+          @touchmove.prevent="handleTouchMove"
+          @touchend.prevent="stopDrawing"
+        ></canvas>
+        <div class="stroke-results" v-if="strokeResults.length">
+          <span class="stroke-label">Add to search:</span>
+          <div class="stroke-result-list">
+            <button
+              v-for="(res, idx) in strokeResults"
+              :key="idx"
+              type="button"
+              class="stroke-result-btn"
+              @click="appendCharFromStroke(res.character)"
+            >
+              {{ res.character }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -195,7 +197,8 @@ export default {
         window.pendingSearchPromise
           .then(res => res.json())
           .then(data => {
-            this.results = data.results || data.groups || [];
+            const rawResults = data.results || data.groups || [];
+            this.results = this.filterResults(rawResults);
             this.resetGroupCollapse();
             this.isLoading = false;
           })
@@ -383,7 +386,8 @@ export default {
           body: JSON.stringify({ query: this.latestQuery }),
         });
         const data = await res.json();
-        this.results = data.results || data.groups || [];
+        const rawResults = data.results || data.groups || [];
+        this.results = this.filterResults(rawResults);
         this.resetGroupCollapse();
         this.$nextTick(() => this.ensureNavContextForUrlWord());
       } catch (error) {
@@ -392,6 +396,39 @@ export default {
         this.isLoading = false;
         this.isSearching = false;
       }
+    },
+    filterResults(results) {
+      // Filter out multi-character results without definition and pinyin
+      return results.map(group => {
+        if (!group.items || !Array.isArray(group.items)) return group;
+
+        const filteredItems = group.items.filter(entry => {
+          if (!entry) return false;
+
+          const item = entry.item;
+          if (!item) return false;
+
+          const hanzi = item.hanzi || '';
+          const pinyin = (item.pinyin || '').trim();
+          const english = (item.english || '').trim();
+
+          // Count actual Chinese characters (not just string length)
+          const chineseChars = Array.from(hanzi).filter(ch => /\p{Script=Han}/u.test(ch));
+
+          // If it's a single Chinese character, keep it
+          if (chineseChars.length <= 1) return true;
+
+          // If it has more than 1 character, only keep if it has meaningful pinyin OR english
+          // Check for empty, null, undefined, "-", "---", "N/A", etc.
+          const isPlaceholder = (str) => !str || str === '-' || str === '--' || str === '---' || str === 'N/A';
+          const hasPinyin = !isPlaceholder(pinyin);
+          const hasEnglish = !isPlaceholder(english);
+
+          return hasPinyin || hasEnglish;
+        });
+
+        return { ...group, items: filteredItems };
+      }).filter(group => group.items && group.items.length > 0);
     },
     highlightMatch(text) {
       if (!this.query) return text;
@@ -646,6 +683,11 @@ export default {
         matcher.match(analyzed, 8, matches => {
           if (matches && matches.length) {
             this.strokeResults = matches.map(m => ({ character: m.character }));
+            // Automatically search with all characters separated by spaces
+            const searchQuery = matches.map(m => m.character).join(' ');
+            this.query = searchQuery;
+            this.latestQuery = searchQuery;
+            this.doSearch();
           }
         });
       } catch (e) {
@@ -698,6 +740,7 @@ export default {
   align-items: center;
   padding: 2rem;
   flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
 .search-form {
@@ -707,6 +750,7 @@ export default {
   max-width: 600px;
   margin: 0 auto 2rem auto;
   flex-wrap: wrap; /* Add this line to make input and button wrap on narrow screens */
+  box-sizing: border-box;
 }
 
 .search-input-wrapper {
@@ -767,6 +811,7 @@ export default {
 .result-group {
   overflow: hidden;
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 5%);
+  box-sizing: border-box;
 }
 
 .group-header {
@@ -900,11 +945,12 @@ export default {
 
 .stroke-draw-wrap {
   width: 100%;
-  max-width: 600px;
+  max-width: 900px;
   margin: 0.5rem auto 1rem auto;
+  padding: 1em;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 80%);
-  padding: 0.75rem;
   background: color-mix(in oklab, var(--bg) 95%, var(--fg) 5%);
+  box-sizing: border-box;
 }
 
 .stroke-controls {
@@ -912,6 +958,13 @@ export default {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.35rem;
+  box-sizing: border-box;
+}
+
+.stroke-content {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
 .stroke-label { font-size: 0.95rem; opacity: 0.7; }
@@ -926,7 +979,7 @@ export default {
 }
 
 .stroke-canvas {
-  width: 100%;
+  flex-shrink: 0;
   background: color-mix(in oklab, var(--bg) 97%, var(--fg) 3%);
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   touch-action: none;
@@ -934,13 +987,30 @@ export default {
 }
 
 .stroke-results {
-  margin-top: 0.35rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .stroke-result-list {
   display: flex;
   gap: 0.35rem;
   flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .stroke-content {
+    flex-direction: column;
+  }
+
+  .stroke-canvas {
+    width: 100%;
+  }
+
+  .stroke-results {
+    width: 100%;
+  }
 }
 
 .stroke-result-btn {

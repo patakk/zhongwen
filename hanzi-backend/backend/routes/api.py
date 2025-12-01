@@ -460,73 +460,10 @@ def get_characters_simple_info():
     return jsonify(cinfos)
 
 
-
-@api_bp.route("/get_characters_pinyinenglish", methods=["GET", "POST"])
-@session_required
-def get_characters_pinyinenglish():
-    inserted = []
-    characters = None
-    if request.method == "POST":
-        data = request.get_json()
-        characters = data.get("characters") if data else None
-
-    if characters and isinstance(characters, list) and len(characters) > 0:
-        characters = sorted(characters)
-    else:
-        characters = []
-        for deck in CARDDECKS:
-            for character in CARDDECKS[deck]["chars"]:
-                characters.append(character)
-        characters = sorted(characters)
-    return jsonify({"characters": get_chars_info(characters)})
-
-
-
-
-@api_bp.route("/get_all_chars_pinyinenglish", methods=["GET", "POST"])
-@session_required
-def get_all_chars_pinyinenglish():
-    characters = {}
-    for deck in CARDDECKS:
-        for character in CARDDECKS[deck]["chars"]:
-            characters[deck] = get_chars_info(CARDDECKS[deck]["chars"], pinyin=True)
-    return jsonify(characters)
-
-
-@api_bp.route("/change_font", methods=["POST"])
-def change_font():
-    session["font"] = request.args.get("font")
-    logger.info(f"Font changed to {session['font']}")
-    return jsonify({"message": "font changed successfully to " + session["font"]})
-
-
-@api_bp.route("/setdarkmode", methods=["POST"])
-@session_required
-def setdarkmode():
-    darkmode = request.args.get("darkmode")
-    if darkmode not in ["true", "false"]:
-        return jsonify({"error": "Invalid darkmode value"}), 400
-    if darkmode == "true":
-        session["darkmode"] = True
-    else:
-        session["darkmode"] = False
-    return jsonify(
-        {"message": "darkmode changed successfully to " + str(session.get("darkmode"))}
-    )
-
-
 @api_bp.route("/getdarkmode", methods=["GET"])
 @session_required
 def getdarkmode():
     return jsonify({"darkmode": session.get("darkmode")})
-
-
-@api_bp.route("/get_font")
-@session_required
-def get_font():
-    response = jsonify({"font": session.get("font", "Noto Sans SC")})
-    logger.info(f"Current font: {session.get('font', 'Noto Sans SC')}")
-    return response
 
 
 @api_bp.route('/openaiexplain', methods=['POST'])
