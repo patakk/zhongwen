@@ -931,7 +931,6 @@ export default {
           }
         });
       }
-      console.log('Good indices:', shortindices);
 
       return breakdown ? {
         ...breakdown,
@@ -945,8 +944,6 @@ export default {
     mainPinyinMeaningPairs() {
       const data = this.activeCharData;
       if (!data) return [];
-      console.log(data.main_word_pinyin);
-      console.log(this.cardData.chars_breakdown[this.activeChar].pinyin);
       const pList = Array.isArray(data.main_word_pinyin) ? data.main_word_pinyin : [];
       const eList = Array.isArray(data.main_word_english) ? data.main_word_english : [];
       const seen = new Set();
