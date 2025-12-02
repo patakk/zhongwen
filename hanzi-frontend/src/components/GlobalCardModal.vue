@@ -2308,13 +2308,30 @@ export default {
 }
 
 
+.rest-words:first-child {
+    border-top: none;
+    border-top: none;
+    border-top-left-radius: 0!important;
+    border-top-right-radius: 0!important;
+    padding-top: 0;
+}
+
+
+.first-words {
+  border-bottom: none;
+}
+.first-words.collapsed-words {
+  border-bottom: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+}
+
+
 .example-word-content {
   display: flex;
   box-sizing: border-box;
   gap: 1rem;
   align-items: center;
   flex-direction: row;
-  padding: 0.5rem 0.5rem;
+  padding: 0.1rem 0.25rem;
   width: 100%;
   box-sizing: border-box;
   cursor: pointer;
@@ -2328,7 +2345,6 @@ export default {
 
 .example-word-content:hover {
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%) !important;
-  color: var(--bg) !important;
 }
 
 .example-chinese-pinyin {
@@ -3333,7 +3349,6 @@ export default {
 
 }
 
-/* X centering element */
 .x-centered {
   display: flex;
   align-items: center;
@@ -3341,7 +3356,7 @@ export default {
   justify-content: center;
   width: 100%;
   height: 100%;
-  margin-bottom: 3px; /* Fine-tune vertical positioning */
+  margin-bottom: 3px;
 }
 </style>
 
