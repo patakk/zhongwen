@@ -506,32 +506,76 @@ def chat():
     )
 
 
-def _get_combined_audio(characters):
+def _strip_tone_marks(pinyin_syllable):
+    tone_map = {
+        'ā': ('a', 1), 'á': ('a', 2), 'ǎ': ('a', 3), 'à': ('a', 4),
+        'ē': ('e', 1), 'é': ('e', 2), 'ě': ('e', 3), 'è': ('e', 4),
+        'ī': ('i', 1), 'í': ('i', 2), 'ǐ': ('i', 3), 'ì': ('i', 4),
+        'ō': ('o', 1), 'ó': ('o', 2), 'ǒ': ('o', 3), 'ò': ('o', 4),
+        'ū': ('u', 1), 'ú': ('u', 2), 'ǔ': ('u', 3), 'ù': ('u', 4),
+        'ǖ': ('v', 1), 'ǘ': ('v', 2), 'ǚ': ('v', 3), 'ǜ': ('v', 4),
+    }
+    tone = None
+    letters = []
+    for ch in pinyin_syllable:
+        if ch in tone_map:
+            base, t = tone_map[ch]
+            letters.append(base)
+            tone = t
+        elif ch.isdigit() and ch in '12345':
+            tone = int(ch)
+        elif ch.isalpha() or ch in ['ü', 'v']:
+            letters.append('v' if ch == 'ü' else ch)
+    if tone is None:
+        tone = 5
+    base = ''.join(letters)
+    return base + str(tone) if base else ''
+
+
+def _normalize_pinyin(pinyin):
+    if not pinyin:
+        return []
+    raw = pinyin.strip().lower().replace("'", " ")
+    syllables = [s for s in raw.split() if s]
+    normalized = []
+    for syl in syllables:
+        syl = syl.replace('u:', 'v').replace('ü', 'v')
+        # If tone number appears inside, move it to the end (e.g., ha3o -> hao3)
+        digit = None
+        for ch in syl:
+            if ch.isdigit() and ch in '12345':
+                digit = ch
+        if digit:
+            base = ''.join(ch for ch in syl if ch.isalpha() or ch in ['v'])
+            if base:
+                normalized.append(f"{base}{digit}")
+            continue
+
+        norm = _strip_tone_marks(syl)
+        if norm:
+            normalized.append(norm)
+    return [s for s in normalized if s]
+
+
+def _get_combined_audio(pinyin=None):
     audio_chunks = []
-    for char in characters:
-        if char in AUDIO_MAPPINGS and "audio" in AUDIO_MAPPINGS[char]:
-            file_name = AUDIO_MAPPINGS[char]["audio"]
-            file_path = os.path.join(DATA_DIR, "chinese_audio_clips", file_name)
-            
-            if os.path.exists(file_path):
-                with open(file_path, "rb") as f:
-                    audio_chunks.append(f.read())
-            # else:
-            #     # print(f"Audio file not found for character: {char}")
-            #     pass
-        # else:
-        #     # print(f"No audio mapping found for character: {char}")
-        #     pass
-    
+    syllables = _normalize_pinyin(pinyin) if pinyin else []
+    for syl in syllables:
+        file_name = f"{syl}.mp3"
+        file_path = os.path.join(DATA_DIR, "chinese_audio_clips", file_name)
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as f:
+                audio_chunks.append(f.read())
     return b"".join(audio_chunks) if audio_chunks else b""
 
 @api_bp.route("/get_audio", methods=["POST", "GET"])
 def get_audio():
-    characters = request.args.get("chars", "")
-    if not characters:
-        return "No characters provided", 400
-    
-    combined_audio = _get_combined_audio(characters)
+    pinyin = request.args.get("pinyin", "")
+
+    if not pinyin:
+        return "No pinyin provided", 400
+
+    combined_audio = _get_combined_audio(pinyin)
     
     if not combined_audio:
         return "No audio found for the provided characters", 404
@@ -672,7 +716,17 @@ def get_random_characters_with_audio():
             char_dict = {'character': char_info}
         
         # Add audio data
-        audio_data = _get_combined_audio(char_dict['character'])
+        candidate_pinyin = None
+        try:
+            if char_dict.get('pinyin'):
+                if isinstance(char_dict['pinyin'], list) and len(char_dict['pinyin']):
+                    candidate_pinyin = char_dict['pinyin'][0]
+                elif isinstance(char_dict['pinyin'], str):
+                    candidate_pinyin = char_dict['pinyin']
+        except Exception:
+            candidate_pinyin = None
+
+        audio_data = _get_combined_audio(candidate_pinyin)
         if audio_data:
             char_dict['audio'] = base64.b64encode(audio_data).decode('utf-8')
         else:

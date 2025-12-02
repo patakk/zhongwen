@@ -118,7 +118,7 @@
                 <div class="main-pinyin" v-html="colorizePinyin($toAccentedPinyin(displayPinyin || ''))"></div>
                 <button
                   class="audio-btn"
-                  :disabled="audioLoading || !cardData.character"
+                  :disabled="audioLoading || !cardData.character || !displayPinyin"
                   @click.stop="playAudio"
                   :aria-busy="audioLoading"
                   title="Play pronunciation"
@@ -295,10 +295,10 @@
                 <div class="freq-trad">
                   <div class="detail-group pinyin-meaning-group">
                     <div class="pinyin-meaning-pairs">
-                      <div v-for="(pinyin, index) in activeCharData.main_word_pinyin" :key="index" class="pinyin-meaning-pair">
-                        <div class="pm-pinyin" :class="getToneClass(pinyin)" v-html="colorizePinyinForce($toAccentedPinyin(pinyin))"></div>
+                      <div v-for="(pair, index) in mainPinyinMeaningPairs" :key="index" class="pinyin-meaning-pair">
+                        <div class="pm-pinyin" :class="getToneClass(pair.pinyin)" v-html="colorizePinyinForce($toAccentedPinyin(pair.pinyin))"></div>
                         <div class="pm-meaning">
-                          <div v-for="(meaning, mIdx) in splitMeaning(activeCharData.main_word_english[index])" :key="mIdx">
+                          <div v-for="(meaning, mIdx) in splitMeaning(pair.english)" :key="mIdx">
                             <span class="english-idx">{{ mIdx + 1 }}.</span>
                             <span class="english-text">
                               <template v-for="(tok, tIdx) in tokenizeHanziText(meaning)" :key="tIdx">
@@ -309,7 +309,7 @@
                           </div>
                         </div>
                       </div>
-                      <div v-if="activeCharData.main_word_pinyin.length === 0" class="no-pinyin-meaning">
+                      <div v-if="mainPinyinMeaningPairs.length === 0" class="no-pinyin-meaning">
                         No definition data available
                       </div>
                     </div>
@@ -931,6 +931,7 @@ export default {
           }
         });
       }
+      console.log('Good indices:', shortindices);
 
       return breakdown ? {
         ...breakdown,
@@ -940,6 +941,28 @@ export default {
         main_word_pinyin: breakdown.pinyin?.filter((_, index) => shortindices.includes(index)) || [],
         main_word_english: breakdown.english?.filter((_, index) => shortindices.includes(index)) || [],
       } : null;
+    },
+    mainPinyinMeaningPairs() {
+      const data = this.activeCharData;
+      if (!data) return [];
+      console.log(data.main_word_pinyin);
+      console.log(this.cardData.chars_breakdown[this.activeChar].pinyin);
+      const pList = Array.isArray(data.main_word_pinyin) ? data.main_word_pinyin : [];
+      const eList = Array.isArray(data.main_word_english) ? data.main_word_english : [];
+      const seen = new Set();
+      const pairs = [];
+      const duplicates = [];
+      pList.forEach((p, idx) => {
+        const eng = eList[idx] || '';
+        const key = `${p}||${eng}`;
+        if (seen.has(key)) {
+          duplicates.push({ pinyin: p, english: eng, index: idx });
+          return;
+        }
+        seen.add(key);
+        pairs.push({ pinyin: p, english: eng });
+      });
+      return pairs;
     },
     limitedPresentInChars() {
       if (!this.activeChar || !this.decompositionData || !this.decompositionData[this.activeChar] || !this.decompositionData[this.activeChar].present_in) {
@@ -1148,18 +1171,26 @@ export default {
     async playAudio() {
       if (this.audioLoading) return;
       const chars = this.cardData && this.cardData.character;
-      if (!chars) return;
+      const rawPinyin = (this.displayPinyin || '').trim();
+      if (!chars || !rawPinyin) return;
+
       this.audioLoading = true;
+      const params = new URLSearchParams();
+      params.set('pinyin', rawPinyin);
+
       try {
-        const res = await fetch(`/api/get_audio?chars=${encodeURIComponent(chars)}`);
-        if (!res.ok) throw new Error('Audio request failed');
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        const cleanup = () => URL.revokeObjectURL(url);
-        audio.addEventListener('ended', cleanup, { once: true });
-        audio.addEventListener('pause', cleanup, { once: true });
-        await audio.play().catch(() => cleanup());
+        const res = await fetch(`/api/get_audio?${params.toString()}`);
+        if (res.ok) {
+          const blob = await res.blob();
+          if (blob.size > 0) {
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            const cleanup = () => URL.revokeObjectURL(url);
+            audio.addEventListener('ended', cleanup, { once: true });
+            audio.addEventListener('pause', cleanup, { once: true });
+            await audio.play().catch(() => cleanup());
+          }
+        }
       } catch (e) {
         console.error('Audio playback failed', e);
       } finally {
