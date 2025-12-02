@@ -62,10 +62,16 @@
   --fourth-t-p: #9672cc;
   --neutral-t-p: #787878;
 
-  --first-t: color-mix(in oklab, #f00 100%, #fff 10%);
+  --first-t-p: color-mix(in oklab, #f00 100%, #fff 10%);
+  --second-t-p: rgb(14, 221, 110);
+  --third-t-p: color-mix(in oklab, #00f 100%, #fff 10%);
+  --fourth-t-p: color-mix(in oklab, #f0f 100%, #fff 10%);
+  --neutral-t-p: #787878;
+
+  --first-t: color-mix(in oklab, #00f 100%, #fff 10%);
   --second-t: rgb(14, 221, 110);
-  --third-t: color-mix(in oklab, #00f 100%, #fff 10%);
-  --fourth-t: color-mix(in oklab, #f0f 100%, #fff 10%);
+  --third-t: color-mix(in oklab, #f0f 100%, #fff 10%);
+  --fourth-t: color-mix(in oklab, #f00 100%, #fff 10%);
   --neutral-t: #787878;
 
   --success-color: #54da92;
@@ -129,11 +135,23 @@
   --fourth-t-p: #ac96ff;
   --neutral-t-p: #e0e0e0;
 
-  --first-t: color-mix(in oklab, #f00 100%, #fff 10%);
+  --first-t-p: #6aabc3;
+  --second-t-p: #c0ae0f;
+  --third-t-p: #8d67c7;
+  --fourth-t-p: #d44e4e;
+  --neutral-t-p: #e0e0e0;
+
+  --first-t-p: color-mix(in oklab, #f00 100%, #fff 10%);
+  --second-t-p: color-mix(in oklab, #0f0 100%, #fff 10%);
+  --third-t-p: color-mix(in oklab, rgb(0, 8, 255) 100%, #fff 50%);
+  --fourth-t-p: color-mix(in oklab, #f0f 100%, #fff 10%);
+  --neutral-t-p: color-mix(in oklab, #eee 100%, #fff 10%);
+
+  --first-t: color-mix(in oklab, rgb(0, 8, 255) 100%, #fff 50%);
   --second-t: color-mix(in oklab, #0f0 100%, #fff 10%);
-  --third-t: color-mix(in oklab, rgb(0, 8, 255) 100%, #fff 50%);
-  --fourth-t: color-mix(in oklab, #f0f 100%, #fff 10%);
-  --neutral-t: color-mix(in oklab, #eee 100%, #fff 10%);
+  --third-t: color-mix(in oklab, #f0f 100%, #fff 10%);
+  --fourth-t: color-mix(in oklab, #f00 100%, #fff 10%);
+  --neutral-t: #e0e0e0;
 
   --overlay-background: rgba(0, 0, 0, 0.5);
   --primary-color: #b39cc9;

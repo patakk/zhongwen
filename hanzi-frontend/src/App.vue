@@ -7,15 +7,20 @@
       <font-awesome-icon :icon="['fas', 'sun']" v-else />
     </button>
     <div class="history-rail-wrapper" v-if="history.length > 0">
-      <div class="history-rail" :style="{ top: railTop + 'px' }" ref="historyRail">
+      <div
+        class="history-rail"
+        :style="{ top: railTop + 'px' }"
+        ref="historyRail"
+        @mousedown="startDrag"
+        @touchstart="startDrag"
+      >
         <div
           class="history-title"
-          @mousedown="startDrag"
-          @touchstart="startDrag"
+          @click.stop="toggleHistoryCollapse"
         >
           <font-awesome-icon :icon="['fas', 'clipboard-list']" />
         </div>
-        <div class="history-list">
+        <div class="history-list" :class="{ collapsed: historyCollapsed }">
           <button
             v-for="(item, idx) in history"
             :key="item"
@@ -54,9 +59,12 @@ const preserveHistoryRef = ref(false)
 // History rail dragging
 const historyRail = ref(null)
 const isDragging = ref(false)
+const isDragCandidate = ref(false)
 const railTop = ref(48) // Initial top position (3rem = 48px)
 const dragStartY = ref(0)
 const dragStartTop = ref(0)
+const historyCollapsed = ref(false)
+const suppressClick = ref(false)
 
 // Use theme from Vuex store
 const currentTheme = computed(() => store.getters['theme/getCurrentTheme'])
@@ -162,14 +170,21 @@ const toggleTheme = () => {
 }
 
 const openHistory = (word) => {
+  if (suppressClick.value) return
   if (!word) return;
   preserveHistoryRef.value = true;
   store.dispatch('cardModal/showCardModal', { character: word, preserveHistoryOrder: true });
 }
 
+const toggleHistoryCollapse = () => {
+  if (suppressClick.value) return
+  historyCollapsed.value = !historyCollapsed.value
+}
+
 // Drag functions
 const startDrag = (e) => {
-  isDragging.value = true
+  isDragCandidate.value = true
+  isDragging.value = false
   const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY
   dragStartY.value = clientY
   dragStartTop.value = railTop.value
@@ -185,10 +200,14 @@ const startDrag = (e) => {
 }
 
 const onDrag = (e) => {
-  if (!isDragging.value || !historyRail.value) return
+  if ((!isDragCandidate.value && !isDragging.value) || !historyRail.value) return
 
   const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY
   const deltaY = clientY - dragStartY.value
+  if (!isDragging.value) {
+    if (Math.abs(deltaY) < 4) return
+    isDragging.value = true
+  }
   let newTop = dragStartTop.value + deltaY
 
   // Get rail dimensions
@@ -204,7 +223,7 @@ const onDrag = (e) => {
 
   // Emit character confetti while dragging if history exists
   if (history.value && history.value.length) {
-    //emitHistoryConfetti()
+    emitHistoryConfetti()
   }
 }
 
@@ -239,6 +258,9 @@ const emitHistoryConfetti = () => {
 
 const stopDrag = () => {
   isDragging.value = false
+  isDragCandidate.value = false
+  suppressClick.value = true
+  setTimeout(() => { suppressClick.value = false }, 120)
 
   // Remove event listeners
   document.removeEventListener('mousemove', onDrag)
@@ -314,6 +336,14 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+    max-height: 60vh;
+    overflow: hidden;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+  }
+  .history-list.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
   }
   .history-item {
     cursor: pointer;
