@@ -118,13 +118,12 @@
                 <div class="main-pinyin" v-html="colorizePinyin($toAccentedPinyin(displayPinyin || ''))"></div>
                 <button
                   class="audio-btn"
-                  :disabled="audioBusyKey !== null && audioBusyKey !== 'main' || !cardData.character || !displayPinyin"
+                  :disabled="!!audioBusy['main'] || !cardData.character || !displayPinyin"
                   @click.stop="playAudio"
-                  :aria-busy="audioBusyKey !== null"
+                  :aria-busy="!!audioBusy['main']"
                   title="Play pronunciation"
                 >
-                  <span v-if="audioBusyKey !== null">…</span>
-                  <font-awesome-icon v-else :icon="['fas','volume-high']" />
+                  <font-awesome-icon :icon="['fas','volume-high']" />
                 </button>
               </div>
               <div class="main-english">
@@ -300,7 +299,7 @@
                           <div class="pm-pinyin" :class="getToneClass(pair.pinyin)" v-html="colorizePinyinForce($toAccentedPinyin(pair.pinyin))"></div>
                           <button
                             class="pinyin-audio-btn"
-                            :disabled="audioBusyKey !== null && audioBusyKey !== pair.pinyin || !pair.pinyin"
+                            :disabled="!!audioBusy[pair.pinyin] || !pair.pinyin"
                             @click.stop="playSinglePinyin(pair.pinyin)"
                             title="Play this pronunciation"
                           >
@@ -673,7 +672,7 @@ export default {
       activeDetailTab: 'dict',
       mainDefIndex: 0,
       strokeCounter: '0/0',
-      audioBusyKey: null
+      audioBusy: {}
     }
   },
   provide() {
@@ -1185,8 +1184,10 @@ export default {
       await this.fetchAndPlayPinyin(pinyin, pinyin);
     },
     async fetchAndPlayPinyin(pinyin, key) {
-      if (!pinyin || this.audioBusyKey !== null) return;
-      this.audioBusyKey = key || pinyin || 'audio';
+      if (!pinyin) return;
+      const busyKey = key || pinyin || 'audio';
+      if (this.audioBusy[busyKey]) return;
+      this.audioBusy = { ...this.audioBusy, [busyKey]: true };
       const params = new URLSearchParams();
       params.set('pinyin', pinyin);
 
@@ -1206,7 +1207,8 @@ export default {
       } catch (e) {
         console.error('Audio playback failed', e);
       } finally {
-        this.audioBusyKey = null;
+        const { [busyKey]: _remove, ...rest } = this.audioBusy || {};
+        this.audioBusy = rest;
       }
     },
     getDisplaySyllable(idx) {
