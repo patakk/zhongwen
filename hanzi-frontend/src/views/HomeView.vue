@@ -1050,6 +1050,13 @@ export default {
   .stroke-results {
     width: 100%;
   }
+
+
+  .stroke-toggle,
+  .ocr-toggle {
+    font-size: 1.25rem;
+    padding: 0.7rem 1.2rem;
+  }
 }
 
 .stroke-result-btn {
