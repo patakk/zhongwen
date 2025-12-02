@@ -36,6 +36,7 @@ from backend.common import CARDDECKS
 from backend.common import STROKES_CACHE
 from backend.common import DECKNAMES
 from backend.common import AUDIO_MAPPINGS
+from backend.common import DATA_DIR
 
 from backend.common import get_tatoeba_page
 from backend.common import get_char_info
@@ -504,13 +505,33 @@ def chat():
         content_type='text/event-stream'
     )
 
+
+def _get_combined_audio(characters):
+    audio_chunks = []
+    for char in characters:
+        if char in AUDIO_MAPPINGS and "audio" in AUDIO_MAPPINGS[char]:
+            file_name = AUDIO_MAPPINGS[char]["audio"]
+            file_path = os.path.join(DATA_DIR, "chinese_audio_clips", file_name)
+            
+            if os.path.exists(file_path):
+                with open(file_path, "rb") as f:
+                    audio_chunks.append(f.read())
+            # else:
+            #     # print(f"Audio file not found for character: {char}")
+            #     pass
+        # else:
+        #     # print(f"No audio mapping found for character: {char}")
+        #     pass
+    
+    return b"".join(audio_chunks) if audio_chunks else b""
+
 @api_bp.route("/get_audio", methods=["POST", "GET"])
 def get_audio():
     characters = request.args.get("chars", "")
     if not characters:
         return "No characters provided", 400
     
-    combined_audio = get_combined_audio(characters)
+    combined_audio = _get_combined_audio(characters)
     
     if not combined_audio:
         return "No audio found for the provided characters", 404
@@ -621,29 +642,6 @@ def get_random_characters():
 
 
 
-def get_combined_audio(characters):
-    audio_chunks = []
-    for char in characters:
-        if char in AUDIO_MAPPINGS and "audio" in AUDIO_MAPPINGS[char]:
-            file_name = AUDIO_MAPPINGS[char]["audio"]
-            file_path = os.path.join("..", "chinese_audio_clips", file_name)
-            file_path2 = os.path.join("chinese_audio_clips", file_name)
-            
-            if os.path.exists(file_path):
-                with open(file_path, "rb") as f:
-                    audio_chunks.append(f.read())
-            elif os.path.exists(file_path2):
-                with open(file_path2, "rb") as f:
-                    audio_chunks.append(f.read())
-            # else:
-            #     # print(f"Audio file not found for character: {char}")
-            #     pass
-        # else:
-        #     # print(f"No audio mapping found for character: {char}")
-        #     pass
-    
-    return b"".join(audio_chunks) if audio_chunks else b""
-
 @api_bp.route("/get_random_characters_with_audio", methods=["POST"])
 @session_required
 def get_random_characters_with_audio():
@@ -674,7 +672,7 @@ def get_random_characters_with_audio():
             char_dict = {'character': char_info}
         
         # Add audio data
-        audio_data = get_combined_audio(char_dict['character'])
+        audio_data = _get_combined_audio(char_dict['character'])
         if audio_data:
             char_dict['audio'] = base64.b64encode(audio_data).decode('utf-8')
         else:

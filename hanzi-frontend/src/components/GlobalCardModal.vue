@@ -114,7 +114,19 @@
 
           <div class="main-def-flex">
             <div class="main-def-text">
-              <div class="main-pinyin" v-html="colorizePinyin($toAccentedPinyin(displayPinyin || ''))"></div>
+              <div class="main-pinyin-row">
+                <div class="main-pinyin" v-html="colorizePinyin($toAccentedPinyin(displayPinyin || ''))"></div>
+                <button
+                  class="audio-btn"
+                  :disabled="audioLoading || !cardData.character"
+                  @click.stop="playAudio"
+                  :aria-busy="audioLoading"
+                  title="Play pronunciation"
+                >
+                  <span v-if="audioLoading">…</span>
+                  <font-awesome-icon v-else :icon="['fas','volume-high']" />
+                </button>
+              </div>
               <div class="main-english">
                 <div v-for="(item, index) in displayEnglish" :key="index" class="english-item">
                   <span class="english-idx">{{ index + 1 }}.</span>
@@ -650,7 +662,8 @@ export default {
       fontCycleIndex: 0,
       activeDetailTab: 'dict',
       mainDefIndex: 0,
-      strokeCounter: '0/0'
+      strokeCounter: '0/0',
+      audioLoading: false
     }
   },
   provide() {
@@ -1131,6 +1144,27 @@ export default {
     },
     colorizePinyinForce(pinyin) {
       return toneColorizePinyin(pinyin, { enabled: true, palette: this.toneColorScheme });
+    },
+    async playAudio() {
+      if (this.audioLoading) return;
+      const chars = this.cardData && this.cardData.character;
+      if (!chars) return;
+      this.audioLoading = true;
+      try {
+        const res = await fetch(`/api/get_audio?chars=${encodeURIComponent(chars)}`);
+        if (!res.ok) throw new Error('Audio request failed');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        const cleanup = () => URL.revokeObjectURL(url);
+        audio.addEventListener('ended', cleanup, { once: true });
+        audio.addEventListener('pause', cleanup, { once: true });
+        await audio.play().catch(() => cleanup());
+      } catch (e) {
+        console.error('Audio playback failed', e);
+      } finally {
+        this.audioLoading = false;
+      }
     },
     getDisplaySyllable(idx) {
       const accented = this.$toAccentedPinyin(this.displayPinyin || '').trim();
@@ -2057,6 +2091,28 @@ export default {
   align-items: baseline;
   gap: 0.0rem;
   flex-wrap: wrap;
+}
+
+.main-pinyin-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.audio-btn {
+  background: none;
+  border: none;
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.1rem;
+  margin-right: 0.2rem;
+}
+
+.audio-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .main-word-trad {
