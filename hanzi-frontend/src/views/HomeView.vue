@@ -796,6 +796,7 @@ export default {
   flex: 1;
   display: flex;
   align-items: center;
+  box-sizing: border-box;
 }
 
 .search-input {

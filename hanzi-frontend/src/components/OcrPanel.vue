@@ -745,6 +745,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: none;
 }
 
 .crop-stage img {

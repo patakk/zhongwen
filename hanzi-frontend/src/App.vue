@@ -62,6 +62,7 @@ const dragStartTop = ref(0)
 const currentTheme = computed(() => store.getters['theme/getCurrentTheme'])
 const bubbleData = computed(() => store.getters['bubbleTooltip/getBubbleData'])
 const history = computed(() => store.getters['zihistory/getHistory'])
+const lastConfettiTime = ref(0)
 
 // Close modal/bubble when navigating to a different path
 watch(
@@ -200,6 +201,40 @@ const onDrag = (e) => {
   newTop = Math.max(minTop, Math.min(maxTop, newTop))
 
   railTop.value = newTop
+
+  // Emit character confetti while dragging if history exists
+  if (history.value && history.value.length) {
+    emitHistoryConfetti()
+  }
+}
+
+const emitHistoryConfetti = () => {
+  const now = performance.now()
+  if (now - lastConfettiTime.value < 90) return
+  lastConfettiTime.value = now
+  const railEl = historyRail.value
+  if (!railEl) return
+  const rect = railEl.getBoundingClientRect()
+  const char = history.value[Math.floor(Math.random() * history.value.length)] || ''
+  if (!char) return
+  const span = document.createElement('span')
+  span.className = 'history-confetti'
+  span.textContent = char
+  span.style.left = `${rect.left - 8}px`
+  span.style.top = `${rect.top + rect.height / 2}px`
+  const x0 = 0
+  const y0 = -100 + Math.random() * 200
+  const dx = -40 - Math.random() * 60
+  const dy = 40 + Math.random() * 140
+  const rot = (Math.random() * 60 - 30).toFixed(1)
+  span.style.setProperty('--x0', `${x0}px`)
+  span.style.setProperty('--y0', `${y0}px`)
+  span.style.setProperty('--dx', `${dx}px`)
+  span.style.setProperty('--dy', `${dy}px`)
+  span.style.setProperty('--rot', `${rot}deg`)
+  document.body.appendChild(span)
+  const remove = () => span.remove()
+  span.addEventListener('animationend', remove, { once: true })
 }
 
 const stopDrag = () => {
@@ -293,6 +328,21 @@ onMounted(async () => {
   }
   .history-item:hover {
     background: color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
+  }
+
+  .history-confetti {
+    position: fixed;
+    pointer-events: none;
+    font-size: 1.2rem;
+    color: var(--fg);
+    opacity: 0.9;
+    animation: history-confetti-fall 0.8s ease-in forwards;
+    will-change: transform, opacity;
+  }
+
+  @keyframes history-confetti-fall {
+    0% { transform: translate3d(var(--x0), var(--y0), 0) rotate(0deg) scale(1); opacity: 1; }
+    100% { transform: translate3d(var(--dx), var(--dy), 0) rotate(var(--rot)) scale(0.9); opacity: 0.0; }
   }
 
   
