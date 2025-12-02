@@ -118,12 +118,12 @@
                 <div class="main-pinyin" v-html="colorizePinyin($toAccentedPinyin(displayPinyin || ''))"></div>
                 <button
                   class="audio-btn"
-                  :disabled="audioLoading || !cardData.character || !displayPinyin"
+                  :disabled="audioBusyKey !== null || !cardData.character || !displayPinyin"
                   @click.stop="playAudio"
-                  :aria-busy="audioLoading"
+                  :aria-busy="audioBusyKey !== null"
                   title="Play pronunciation"
                 >
-                  <span v-if="audioLoading">…</span>
+                  <span v-if="audioBusyKey !== null">…</span>
                   <font-awesome-icon v-else :icon="['fas','volume-high']" />
                 </button>
               </div>
@@ -296,7 +296,17 @@
                   <div class="detail-group pinyin-meaning-group">
                     <div class="pinyin-meaning-pairs">
                       <div v-for="(pair, index) in mainPinyinMeaningPairs" :key="index" class="pinyin-meaning-pair">
-                        <div class="pm-pinyin" :class="getToneClass(pair.pinyin)" v-html="colorizePinyinForce($toAccentedPinyin(pair.pinyin))"></div>
+                        <div class="pm-pinyin-row">
+                          <div class="pm-pinyin" :class="getToneClass(pair.pinyin)" v-html="colorizePinyinForce($toAccentedPinyin(pair.pinyin))"></div>
+                          <button
+                            class="pinyin-audio-btn"
+                            :disabled="audioBusyKey !== null && audioBusyKey !== pair.pinyin || !pair.pinyin"
+                            @click.stop="playSinglePinyin(pair.pinyin)"
+                            title="Play this pronunciation"
+                          >
+                            <font-awesome-icon :icon="['fas','volume-high']" />
+                          </button>
+                        </div>
                         <div class="pm-meaning">
                           <div v-for="(meaning, mIdx) in splitMeaning(pair.english)" :key="mIdx">
                             <span class="english-idx">{{ mIdx + 1 }}.</span>
@@ -663,7 +673,7 @@ export default {
       activeDetailTab: 'dict',
       mainDefIndex: 0,
       strokeCounter: '0/0',
-      audioLoading: false
+      audioBusyKey: null
     }
   },
   provide() {
@@ -1171,9 +1181,17 @@ export default {
       const rawPinyin = (this.displayPinyin || '').trim();
       if (!chars || !rawPinyin) return;
 
+      await this.fetchAndPlayPinyin(rawPinyin);
+    },
+    async playSinglePinyin(pinyin) {
+      if (!pinyin || this.audioLoading) return;
+      await this.fetchAndPlayPinyin(pinyin);
+    },
+    async fetchAndPlayPinyin(pinyin) {
+      if (!pinyin) return;
       this.audioLoading = true;
       const params = new URLSearchParams();
-      params.set('pinyin', rawPinyin);
+      params.set('pinyin', pinyin);
 
       try {
         const res = await fetch(`/api/get_audio?${params.toString()}`);
@@ -2128,6 +2146,12 @@ export default {
   flex-wrap: wrap;
 }
 
+.pm-pinyin-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .audio-btn {
   background: none;
   border: none;
@@ -2140,6 +2164,20 @@ export default {
 
 .audio-btn[disabled] {
   opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pinyin-audio-btn {
+  background: none;
+  border: none;
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.05rem;
+}
+
+.pinyin-audio-btn[disabled] {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -2290,7 +2328,7 @@ export default {
 }
 
 .example-word-content:hover {
-  background-color: color-mix(in oklab, var(--fg) 85%, var(--bg) 50%) !important;
+  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%) !important;
   color: var(--bg) !important;
 }
 
