@@ -60,6 +60,7 @@ const preserveHistoryRef = ref(false)
 const historyRail = ref(null)
 const isDragging = ref(false)
 const isDragCandidate = ref(false)
+const hadDragged = ref(false)
 const railTop = ref(48) // Initial top position (3rem = 48px)
 const dragStartY = ref(0)
 const dragStartTop = ref(0)
@@ -207,6 +208,7 @@ const onDrag = (e) => {
   if (!isDragging.value) {
     if (Math.abs(deltaY) < 4) return
     isDragging.value = true
+    hadDragged.value = true
   }
   let newTop = dragStartTop.value + deltaY
 
@@ -223,7 +225,7 @@ const onDrag = (e) => {
 
   // Emit character confetti while dragging if history exists
   if (history.value && history.value.length) {
-    emitHistoryConfetti()
+    //emitHistoryConfetti()
   }
 }
 
@@ -259,8 +261,11 @@ const emitHistoryConfetti = () => {
 const stopDrag = () => {
   isDragging.value = false
   isDragCandidate.value = false
-  suppressClick.value = true
-  setTimeout(() => { suppressClick.value = false }, 120)
+  if (hadDragged.value) {
+    suppressClick.value = true
+    setTimeout(() => { suppressClick.value = false }, 80)
+  }
+  hadDragged.value = false
 
   // Remove event listeners
   document.removeEventListener('mousemove', onDrag)
@@ -312,7 +317,7 @@ onMounted(async () => {
     right: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.0rem;
     padding: 0.5rem;
     border: 1px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
     background: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
@@ -336,6 +341,7 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+    padding-top: 0.5em;
     max-height: 60vh;
     overflow: hidden;
     transition: max-height 0.25s ease, padding 0.25s ease;

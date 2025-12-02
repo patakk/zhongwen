@@ -67,11 +67,9 @@
                 <a class="links" href="/licenses/OFL.txt" target="_blank">SIL Open Font License 1.1</a> and
                 <a class="links" href="/licenses/MIT-FusionPixel.txt" target="_blank">MIT License</a>.
               </p>
-              <br />
               <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0; opacity: 0.35;" />
-              <br />
 
-              <p style="margin-left:20px;">
+              <p style="margin: 0 20px; padding-top: 0;">
                 This project is open source and licensed under the
                 <a class="links" href="/licenses/LICENSE.txt" target="_blank">MIT License</a>.
               </p>

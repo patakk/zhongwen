@@ -67,11 +67,8 @@
                         :character="char"
                         :showBubbles="false"
                         class="hanzi-link main-word-char"
+                        v-html="colorizeHanzi(char, getDisplaySyllable(index))"
                       >
-                    <span
-                      class="hanzi-link main-word-char"
-                      v-html="colorizeHanzi(char, getDisplaySyllable(index))"
-                    ></span>
                 </PreloadWrapper>
               </span>
 
@@ -471,10 +468,6 @@
                 <div class="extra-info-details">
                   <div v-if="activeCharData.radical" class="extra-info-item">
                     <span class="basic-label">Radical:</span> {{ activeCharData.radical }}
-                  </div>
-                  <div v-if="activeCharData.radicals" class="extra-info-item">
-                    <span class="basic-label">Radicals:</span>
-                    <span v-for="(desc, rad) in activeCharData.radicals" :key="rad" class="radical-char hanzi-link" @click.stop="openCharAsWord(rad)">{{ rad }} </span>
                   </div>
                   <div v-if="activeCharData.rank" class="extra-info-item">
                     <span class="basic-label">Frequency Rank:</span> {{ activeCharData.rank }}
@@ -1913,10 +1906,6 @@ export default {
   left: 0;
 }
 
-.hanzi-link {
-  padding: .25rem 0.25rem;
-}
-
 .extra-info-details {
   /*background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));*/
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
@@ -2102,8 +2091,16 @@ export default {
 
 .english-idx { margin-right: 0.35rem; opacity: 0.8; }
 .english-text { display: inline; }
-.hanzi-link { color: var(--fg); cursor: pointer; }
-.hanzi-link:hover { text-decoration: underline; color: inherit; opacity: 1 !important; }
+.hanzi-link { 
+  padding: .25rem 0.25rem;
+  color: var(--fg); cursor: pointer;
+}
+.hanzi-link:hover { text-decoration: underline; }
+.hanzi-link.main-word-char:hover { text-decoration: none; opacity: 0.4; }
+
+
+.hanzi-link.trad-char:hover { text-decoration: none; opacity: 0.4; }
+
 
 
 .similars-list .similar-link {

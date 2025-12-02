@@ -60,6 +60,6 @@ export function colorizeHanzi(hanzi, pinyin, { enabled = true, palette = 'defaul
     const syllable = syllables.length ? (syllables[idx] || syllables[syllables.length - 1]) : '';
     if (!enabled) return escapeHtml(ch);
     const color = getToneColor(syllable, colors);
-    return `<span style="color:${color}; font-family: var(--main-word-font)">${escapeHtml(ch)}</span>`;
+    return `<span class="hanzi-link-char" style="color:${color}; font-family: var(--main-word-font)">${escapeHtml(ch)}</span>`;
   }).join('');
 }
