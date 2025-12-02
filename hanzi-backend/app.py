@@ -655,6 +655,15 @@ def get_search_results(query):
         print(f"Error querying search endpoint: {e}")
         return {"error": str(e)}
 
+def trim_query(q, limit=30):
+    q = q.strip()
+    if len(q) <= limit:
+        return q
+
+    cut = q.rfind(" ", 0, limit + 1)
+    if cut == -1:
+        return q[:limit]
+    return q[:cut]
 
 @app.route('/api/search_results', methods=['GET', 'POST'])
 @limiter.limit("10 per second")
@@ -666,6 +675,9 @@ def search_results():
         query = data.get('query', '') if data else ''
     else: 
         query = request.args.get('query', '')
+
+    if query:
+        query = trim_query(query, limit=30)
 
     upstream = get_search_results(query) if query else {}
     search_time = time.time() - start_time

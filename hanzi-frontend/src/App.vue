@@ -204,7 +204,7 @@ const onDrag = (e) => {
 
   // Emit character confetti while dragging if history exists
   if (history.value && history.value.length) {
-    emitHistoryConfetti()
+    //emitHistoryConfetti()
   }
 }
 
