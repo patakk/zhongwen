@@ -803,11 +803,13 @@ export default {
 
 .search-input {
   flex: 1;
-  padding: 0.5rem 2rem 0.5rem 0.75rem;
-  padding: 0.5rem;
-  font-size: 1rem;
+  height: 2.2rem;
+  padding: 0 1.75rem 0 0.65rem;
+  font-size: 0.95rem;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   color: var(--fg);
+  line-height: 1.2;
+  box-sizing: border-box;
 }
 
 .clear-btn {
@@ -838,6 +840,7 @@ export default {
   gap: 0.5rem;
   flex-wrap: nowrap;
   flex-shrink: 0;
+  align-items: stretch;
 }
 
 @media (orientation: portrait) {
@@ -849,7 +852,8 @@ export default {
   .search-actions {
     width: 100%;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: flex-end;
+    align-items: center;
   }
 }
 
@@ -967,23 +971,14 @@ export default {
   }
 }
 
-@media (orientation: portrait) {
-  .search-form {
-    align-items: stretch;
-  }
-
-  .search-actions {
-    justify-content: flex-start;
-  }
-}
 
 
 .stroke-toggle,
 .ocr-toggle {
-  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.4rem 0.6rem;
+  padding: 0 0.65rem;
+  height: 2.2rem;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 5%);
   color: var(--fg);
@@ -1087,8 +1082,6 @@ export default {
 
   .stroke-toggle,
   .ocr-toggle {
-    font-size: 1.25rem;
-    padding: 0.7rem 1.2rem;
   }
 }
 

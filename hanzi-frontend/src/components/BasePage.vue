@@ -74,7 +74,7 @@
   cursor: pointer;
 }
 
-@media (max-width: 784px) {
+@media (max-aspect-ratio: 1/1) {
   #maintitle {
     font-size: 2em;
     margin: 0;
