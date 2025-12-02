@@ -118,7 +118,7 @@
                 <div class="main-pinyin" v-html="colorizePinyin($toAccentedPinyin(displayPinyin || ''))"></div>
                 <button
                   class="audio-btn"
-                  :disabled="audioBusyKey !== null || !cardData.character || !displayPinyin"
+                  :disabled="audioBusyKey !== null && audioBusyKey !== 'main' || !cardData.character || !displayPinyin"
                   @click.stop="playAudio"
                   :aria-busy="audioBusyKey !== null"
                   title="Play pronunciation"
@@ -1176,20 +1176,17 @@ export default {
       return toneColorizePinyin(pinyin, { enabled: true, palette: this.toneColorScheme });
     },
     async playAudio() {
-      if (this.audioLoading) return;
-      const chars = this.cardData && this.cardData.character;
       const rawPinyin = (this.displayPinyin || '').trim();
-      if (!chars || !rawPinyin) return;
-
-      await this.fetchAndPlayPinyin(rawPinyin);
+      if (!rawPinyin) return;
+      await this.fetchAndPlayPinyin(rawPinyin, 'main');
     },
     async playSinglePinyin(pinyin) {
-      if (!pinyin || this.audioLoading) return;
-      await this.fetchAndPlayPinyin(pinyin);
-    },
-    async fetchAndPlayPinyin(pinyin) {
       if (!pinyin) return;
-      this.audioLoading = true;
+      await this.fetchAndPlayPinyin(pinyin, pinyin);
+    },
+    async fetchAndPlayPinyin(pinyin, key) {
+      if (!pinyin || this.audioBusyKey !== null) return;
+      this.audioBusyKey = key || pinyin || 'audio';
       const params = new URLSearchParams();
       params.set('pinyin', pinyin);
 
@@ -1209,7 +1206,7 @@ export default {
       } catch (e) {
         console.error('Audio playback failed', e);
       } finally {
-        this.audioLoading = false;
+        this.audioBusyKey = null;
       }
     },
     getDisplaySyllable(idx) {
