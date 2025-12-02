@@ -65,7 +65,6 @@
               class="stroke-result-btn ocr-result-btn"
               @click="copyToken(tok)"
             >
-              <span class="clipboard-icon">📋</span>
               <span class="stroke-result-text">{{ tok }}</span>
             </button>
           </div>
@@ -674,7 +673,6 @@ export default {
   cursor: pointer;
   font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
   font-size: 1.2rem;
-  padding-right: 1.6rem;
 }
 
 .stroke-result-btn:hover {

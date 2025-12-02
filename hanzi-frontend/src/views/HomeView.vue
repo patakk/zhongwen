@@ -60,7 +60,6 @@
               class="stroke-result-btn"
               @click="copyStrokeResult(res.character)"
             >
-              <span class="clipboard-icon">📋</span>
               <span class="stroke-result-text">{{ res.character }}</span>
             </button>
           </div>
@@ -562,7 +561,7 @@ export default {
       const canvas = this.$refs.strokeCanvas;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      const size = Math.min(340, window.innerWidth - 40);
+      const size = Math.min(200, window.innerWidth - 40);
       this.strokeCanvasSize = size;
       canvas.style.width = `${size}px`;
       canvas.style.height = `${size}px`;
@@ -1023,6 +1022,7 @@ export default {
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   touch-action: none;
   display: block;
+  box-sizing: border-box;
 }
 
 .stroke-results {
@@ -1068,7 +1068,6 @@ export default {
   cursor: pointer;
   font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
   font-size: 1.2rem;
-  padding-right: 1.6rem;
 }
 
 .stroke-result-btn:hover {
