@@ -422,13 +422,13 @@ function setToneColors(num) {
   if (num === 1) {
     store.dispatch('theme/setToneColorEnabled', true);
     store.dispatch('theme/setToneColorScheme', 'default');
-    showSuccessToast('Tone colors set to palette 1');
+    showSuccessToast('Tone colors set to natural palette');
     return;
   }
   if (num === 2) {
     store.dispatch('theme/setToneColorEnabled', true);
     store.dispatch('theme/setToneColorScheme', 'alt');
-    showSuccessToast('Tone colors set to palette 2');
+    showSuccessToast('Tone colors set to Pleco palette');
     return;
   }
 }

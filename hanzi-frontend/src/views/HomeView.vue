@@ -20,14 +20,16 @@
           ×
         </button>
       </div>
-      <button type="button" class="stroke-toggle" @click="toggleStrokePad" :aria-pressed="showStrokePad" title="Draw search">
-        <font-awesome-icon :icon="['fas','pen-fancy']" />
-      </button>
-      <button type="button" class="ocr-toggle" @click="toggleOcrPanel" :aria-pressed="showOcrPanel" title="Image OCR search">
-        <font-awesome-icon :icon="['fas','camera']" />
-      </button>
-      <!-- Search button kept but hidden by default -->
-      <button type="submit" class="search-button" style="display: none;">Search</button>
+      <div class="search-actions">
+        <button type="button" class="stroke-toggle" @click="toggleStrokePad" :aria-pressed="showStrokePad" title="Draw search">
+          <font-awesome-icon :icon="['fas','pen-fancy']" />
+        </button>
+        <button type="button" class="ocr-toggle" @click="toggleOcrPanel" :aria-pressed="showOcrPanel" title="Image OCR search">
+          <font-awesome-icon :icon="['fas','camera']" />
+        </button>
+        <!-- Search button kept but hidden by default -->
+        <button type="submit" class="search-button" style="display: none;">Search</button>
+      </div>
     </form>
 
     <div v-if="showStrokePad" class="stroke-draw-wrap">
@@ -782,11 +784,12 @@ export default {
 
 .search-form {
   display: flex;
+  flex-direction: row;
+  align-items: center;
   gap: 0.5rem;
   width: 100%;
   max-width: 600px;
   margin: 2em auto;
-  flex-wrap: wrap; /* Add this line to make input and button wrap on narrow screens */
   box-sizing: border-box;
 }
 
@@ -828,6 +831,26 @@ export default {
 
 .clear-btn:hover {
   background: color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
+}
+
+.search-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+@media (orientation: portrait) {
+  .search-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
 }
 
 .loading-indicator {
@@ -941,6 +964,16 @@ export default {
   }
 
   .hanzipinyin {
+  }
+}
+
+@media (orientation: portrait) {
+  .search-form {
+    align-items: stretch;
+  }
+
+  .search-actions {
+    justify-content: flex-start;
   }
 }
 
