@@ -13,7 +13,7 @@
           @mousedown="startDrag"
           @touchstart="startDrag"
         >
-          History
+          <font-awesome-icon :icon="['fas', 'clipboard-list']" />
         </div>
         <div class="history-list">
           <button
@@ -262,8 +262,7 @@ onMounted(async () => {
     border-radius: var(--border-radius, 4px);
   }
   .history-title {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 1.25rem;
     text-transform: uppercase;
     text-align: center;
     color: color-mix(in oklab, var(--fg) 70%, var(--bg) 30%);

@@ -29,9 +29,6 @@
       <!-- Search button kept but hidden by default -->
       <button type="submit" class="search-button" style="display: none;">Search</button>
     </form>
-    <div v-if="isSearching" class="loading-indicator">
-      searching...
-    </div>
 
     <div v-if="showStrokePad" class="stroke-draw-wrap">
       <div class="stroke-controls">
@@ -54,16 +51,17 @@
           @touchend.prevent="stopDrawing"
         ></canvas>
         <div class="stroke-results" v-if="strokeResults.length">
-          <span class="stroke-label">Add to search:</span>
+          <span class="stroke-label">Candidate chars:</span>
           <div class="stroke-result-list">
             <button
               v-for="(res, idx) in strokeResults"
               :key="idx"
               type="button"
               class="stroke-result-btn"
-              @click="appendCharFromStroke(res.character)"
+              @click="copyStrokeResult(res.character)"
             >
-              {{ res.character }}
+              <span class="clipboard-icon">📋</span>
+              <span class="stroke-result-text">{{ res.character }}</span>
             </button>
           </div>
         </div>
@@ -111,6 +109,9 @@
       </div>
     </div>
     
+    <div v-if="isSearching" class="loading-indicator">
+      searching...
+    </div>
     <!-- Scroll to top button -->
     <button 
       v-if="showScrollTop" 
@@ -374,16 +375,26 @@ export default {
       }
     },
     
-    async doSearch() {
+    async doSearch(queryOverride = null) {
+      const searchQuery = ((queryOverride ?? this.latestQuery ?? this.query) || '').trim();
+      if (!searchQuery) {
+        this.isSearching = false;
+        return;
+      }
+      // Keep latestQuery aligned with the actual query being searched
+      this.latestQuery = searchQuery;
+      // Only sync URL when the visible input drives the search
+      if (!queryOverride) {
+        this.updateUrlQuery();
+      }
       this.isLoading = true;
-      this.updateUrlQuery();
       try {
         const res = await fetch('/api/search_results', {
           method: 'POST',
           headers: {
         'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ query: this.latestQuery }),
+          body: JSON.stringify({ query: searchQuery }),
         });
         const data = await res.json();
         const rawResults = data.results || data.groups || [];
@@ -482,7 +493,12 @@ export default {
       this.showScrollTop = scrollTop > 200;
     },
     toggleStrokePad() {
-      this.showStrokePad = !this.showStrokePad;
+      const next = !this.showStrokePad;
+      // If opening stroke pad, ensure OCR panel is closed
+      if (next) {
+        this.showOcrPanel = false;
+      }
+      this.showStrokePad = next;
       this.$nextTick(() => {
         if (this.showStrokePad) {
           this.initStrokeCanvas();
@@ -492,19 +508,35 @@ export default {
       });
     },
     toggleOcrPanel() {
-      this.showOcrPanel = !this.showOcrPanel;
+      const next = !this.showOcrPanel;
+      // If opening OCR, close stroke pad
+      if (next) {
+        this.showStrokePad = false;
+      }
+      this.showOcrPanel = next;
     },
     handleOcrInsert(text) {
-      if (!text) return;
-      const existing = (this.query || '').trim();
-      const addition = (text || '').trim();
-      const combined = [existing, addition].filter(Boolean).join(' ').trim();
-      this.query = combined;
-      this.latestQuery = this.query;
-      if (combined.length) {
-        this.isSearching = true;
-        this.doSearch();
-      }
+      const cleaned = this.cleanHanText(text);
+      if (!cleaned) return;
+      const tokens = this.uniqueTokens(cleaned);
+      if (!tokens.length) return;
+      const combined = tokens.join(' ');
+      this.isSearching = true;
+      this.doSearch(combined);
+    },
+    cleanHanText(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/[^\p{Script=Han}\s]/gu, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    },
+    uniqueTokens(text) {
+      const parts = String(text || '')
+        .split(/\s+/)
+        .map(t => t.trim())
+        .filter(Boolean);
+      return Array.from(new Set(parts));
     },
     setupThemeObserver() {
       try {
@@ -683,11 +715,12 @@ export default {
         matcher.match(analyzed, 8, matches => {
           if (matches && matches.length) {
             this.strokeResults = matches.map(m => ({ character: m.character }));
-            // Automatically search with all characters separated by spaces
-            const searchQuery = matches.map(m => m.character).join(' ');
-            this.query = searchQuery;
-            this.latestQuery = searchQuery;
-            this.doSearch();
+            const tokens = this.uniqueTokens(matches.map(m => m.character).join(' '));
+            if (tokens.length) {
+              const searchQuery = tokens.join(' ');
+              this.isSearching = true;
+              this.doSearch(searchQuery);
+            }
           }
         });
       } catch (e) {
@@ -714,12 +747,17 @@ export default {
       script.onerror = () => { this._loadingLookup = false; };
       document.head.appendChild(script);
     },
-    appendCharFromStroke(char) {
-      this.query += char;
-      this.latestQuery = this.query;
-      this.clearCanvas();
-      this.doSearch();
-      this.showStrokePad = false;
+    async copyStrokeResult(char) {
+      await this.copyToClipboard(char);
+    },
+    async copyToClipboard(text) {
+      try {
+        if (navigator?.clipboard && text) {
+          await navigator.clipboard.writeText(text);
+        }
+      } catch (e) {
+        console.error('Copy failed', e);
+      }
     }
   },
   watch: {
@@ -738,7 +776,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
+  padding: 0rem 2rem 2rem 2rem;
   flex-wrap: wrap;
   box-sizing: border-box;
 }
@@ -748,7 +786,7 @@ export default {
   gap: 0.5rem;
   width: 100%;
   max-width: 600px;
-  margin: 0 auto 2rem auto;
+  margin: 2em auto;
   flex-wrap: wrap; /* Add this line to make input and button wrap on narrow screens */
   box-sizing: border-box;
 }
@@ -899,7 +937,6 @@ export default {
     align-items: flex-start;
   }
   .search-view {
-    padding: 1rem;
   }
 
   .hanzipinyin {
@@ -946,7 +983,7 @@ export default {
 .stroke-draw-wrap {
   width: 100%;
   max-width: 900px;
-  margin: 0.5rem auto 1rem auto;
+  margin: 0em auto 2em auto;
   padding: 1em;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 80%);
   background: color-mix(in oklab, var(--bg) 95%, var(--fg) 5%);
@@ -1014,6 +1051,7 @@ export default {
 }
 
 .stroke-result-btn {
+  position: relative;
   padding: 0.35rem 0.55rem;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
@@ -1021,10 +1059,24 @@ export default {
   cursor: pointer;
   font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
   font-size: 1.2rem;
+  padding-right: 1.6rem;
 }
 
 .stroke-result-btn:hover {
   background: color-mix(in oklab, var(--bg) 80%, var(--fg) 20%);
+}
+
+.stroke-result-text {
+  display: block;
+}
+
+.clipboard-icon {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  font-size: 0.75rem;
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 /* Scroll to top button styles */

@@ -8,13 +8,13 @@
       </div>
       <button class="tool-button" @click="showModal = true">Open</button>
     </div>
-    <div class="tool-card">
+    <!--<div class="tool-card">
       <div class="tool-header">
         <h3>Stroke Viewer</h3>
         <p>Color strokes.</p>
       </div>
       <button class="tool-button" @click="showStrokeModal = true">Open</button>
-    </div>
+    </div>-->
     <PracticeSheetModal
       v-model="showModal"
       :initial-chars="historyChars"

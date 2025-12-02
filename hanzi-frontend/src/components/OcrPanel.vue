@@ -53,17 +53,22 @@
       </div>
       <div v-if="hasOcrResult || ocrText" class="result result-wrapper">
         <div class="result-header">
-          <div class="result-actions">
-            <button type="button" class="chip" @click="copyResult" :disabled="copySuccess">
-              {{ copySuccess ? 'Copied' : 'Copy' }}
-            </button>
-            <button type="button" class="chip primary" @click="emitToSearch">
-              Add to search
+          <div class="result-title">Detected words</div>
+        </div>
+        <div class="result-body token-body">
+          <div v-if="!ocrTokens.length" class="token-empty">No text detected.</div>
+          <div v-else class="token-list">
+            <button
+              v-for="(tok, idx) in ocrTokens"
+              :key="idx"
+              type="button"
+              class="stroke-result-btn ocr-result-btn"
+              @click="copyToken(tok)"
+            >
+              <span class="clipboard-icon">📋</span>
+              <span class="stroke-result-text">{{ tok }}</span>
             </button>
           </div>
-        </div>
-        <div class="result-body">
-          <textarea v-model="ocrText" style="box-sizing: border-box;"></textarea>
         </div>
       </div>
     </div>
@@ -124,7 +129,6 @@ export default {
       progressMessage: '',
       error: '',
       ocrText: '',
-      copySuccess: false,
       tesseract: null,
       hasOcrResult: false,
       // crop state
@@ -159,6 +163,12 @@ export default {
         backgroundImage: `linear-gradient(90deg, ${fill} ${pct}%, ${base} ${pct}%)`,
       };
     },
+    ocrTokens() {
+      const cleaned = this.cleanOcrText(this.ocrText);
+      if (!cleaned) return [];
+      const uniq = new Set(cleaned.split(/\s+/).filter(Boolean));
+      return Array.from(uniq);
+    },
   },
   async mounted() {
     await this.ensureLibLoaded();
@@ -192,7 +202,6 @@ export default {
       this.previewUrl = URL.createObjectURL(file);
       this.error = '';
       this.ocrText = '';
-      this.copySuccess = false;
       this.progressValue = 0;
       this.progressMessage = '';
       this.hasOcrResult = false;
@@ -365,7 +374,6 @@ export default {
       this.isProcessing = true;
       this.error = '';
       this.ocrText = '';
-      this.copySuccess = false;
       this.progressValue = 0;
       this.progressMessage = 'Preparing...';
       this.hasOcrResult = false;
@@ -379,6 +387,10 @@ export default {
         this.progressValue = 1;
         this.progressMessage = 'Done';
         this.hasOcrResult = true;
+        // Auto-send cleaned OCR text to search
+        if (this.ocrText) {
+          this.emitToSearch();
+        }
       } catch (e) {
         console.error('OCR failed', e);
         this.error = 'OCR failed. Please try a clearer image or retry.';
@@ -386,19 +398,17 @@ export default {
         this.isProcessing = false;
       }
     },
-    async copyResult() {
-      if (!this.ocrText || !navigator?.clipboard) return;
-      try {
-        await navigator.clipboard.writeText(this.ocrText);
-        this.copySuccess = true;
-        setTimeout(() => { this.copySuccess = false; }, 1500);
-      } catch (e) {
-        console.error('Copy failed', e);
-      }
-    },
     emitToSearch() {
       if (!this.ocrText) return;
       this.$emit('insert-text', this.ocrText.trim());
+    },
+    async copyToken(tok) {
+      if (!tok || !navigator?.clipboard) return;
+      try {
+        await navigator.clipboard.writeText(tok);
+      } catch (e) {
+        console.error('Copy failed', e);
+      }
     },
   },
 };
@@ -412,7 +422,7 @@ export default {
 .ocr-panel {
   width: 100%;
   max-width: 900px;
-  margin: 1.5rem auto;
+  margin: 0em auto 2em auto;
   padding: 1.5rem;
   background: color-mix(in oklab, var(--bg) 92%, var(--fg) 6%);
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
@@ -640,31 +650,48 @@ export default {
   font-size: 0.95rem;
 }
 
-.result-actions {
+.token-body {
+  padding: 0.25rem 0;
+}
+
+.token-list {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  flex-wrap: wrap;
 }
 
-.chip {
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 70%);
-  background: color-mix(in oklab, var(--bg) 85%, var(--fg) 10%);
-  padding: 0.4rem 0.8rem;
+.token-empty {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.stroke-result-btn {
+  position: relative;
+  padding: 0.35rem 0.55rem;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
+  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
+  color: var(--fg);
   cursor: pointer;
-  color: var(--fg);
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+  font-size: 1.2rem;
+  padding-right: 1.6rem;
 }
 
-.chip.primary {
+.stroke-result-btn:hover {
+  background: color-mix(in oklab, var(--bg) 80%, var(--fg) 20%);
 }
 
-.result-body textarea {
-  width: 100%;
-  min-height: 140px;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 70%);
-  padding: 0.8rem;
-  background: color-mix(in oklab, var(--bg) 92%, var(--fg) 4%);
-  color: var(--fg);
-  font-family: inherit;
-  resize: vertical;
+.stroke-result-text {
+  display: block;
+}
+
+.clipboard-icon {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  font-size: 0.75rem;
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 
@@ -777,4 +804,3 @@ export default {
   }
 }
 </style>
-
