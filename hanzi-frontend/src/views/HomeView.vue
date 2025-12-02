@@ -802,6 +802,7 @@ export default {
 .search-input {
   flex: 1;
   padding: 0.5rem 2rem 0.5rem 0.75rem;
+  padding: 0.5rem;
   font-size: 1rem;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   color: var(--fg);
