@@ -1,12 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask import send_file
 from flask import flash
-from flask_mail import Mail, Message
-from datetime import timedelta
-from datetime import datetime
-from datetime import timezone
-from functools import wraps
-from urllib.parse import unquote
 import logging
 import random
 import json
@@ -21,20 +15,13 @@ from flask import make_response
 import glob
 import requests
 from backend.decorators import session_required
-from backend.decorators import hard_session_required
 from backend.db.models import User
 from backend.db.ops import db_user_exists
 from backend.db.ops import db_authenticate_user
 from backend.db.ops import db_create_user
-from backend.db.ops import db_get_all_stroke_data
-from backend.db.ops import db_store_user_string
-from backend.db.ops import db_get_user_string
-from backend.db.ops import db_get_all_words_by_list_as_dict
 from backend.db.ops import db_get_word_list_names_only
 from backend.db.ops import db_get_user_wordlists
-from backend.db.ops import db_delete_user
 
-from backend.common import DECKS_INFO
 from backend.common import CARDDECKS
 from backend.common import DECOMPOSE_CACHE
 from backend.common import DECKNAMES
@@ -48,7 +35,6 @@ from backend.common import send_bot_notification
 from backend.common import default_darkmode
 from backend.common import get_pinyin
 from backend.common import get_char_info
-from backend.common import get_chars_info
 from backend.common import auth_keys
 from backend.common import DATA_DIR
 from backend.routes.manage import validate_password
@@ -533,7 +519,6 @@ def get_user_data():
         'email_verified': user.email_verified,
         'has_password': user.password_hash is not None, 
         "custom_deck_names": custom_decks_data,
-        "theme": user.get_metainfo("theme", None)  # Get theme from metainfo or return None if not set
     }
     return jsonify(user_data)
 
@@ -689,26 +674,6 @@ def search_results():
 
     return jsonify({'results': groups or [], 'query': query, 'search_time': search_time})
 
-    
-@app.route('/hanzi_strokes_history')
-@session_required
-# @hard_session_required
-def hanzi_strokes_history():
-    strokes_per_character = db_get_all_stroke_data(session['username'])
-    return render_template('hanzistats.html', darkmode=session.get('darkmode', default_darkmode), username=session.get('username'), decks=DECKS_INFO, strokes_per_character=strokes_per_character)
-
-@app.route('/hanzi_strokes_charlist')
-@session_required
-# @hard_session_required
-def hanzi_strokes_charlist():
-    strokes_per_character = db_get_all_stroke_data(session['username'])
-    return jsonify(list(strokes_per_character.keys()))
-    
-@app.route('/strokerender')
-# @hard_session_required
-def strokerender():
-    return render_template('strokerender.html')
-    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5117, debug=True)

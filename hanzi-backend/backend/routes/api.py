@@ -12,23 +12,16 @@ from urllib.parse import unquote
 
 from flask import Blueprint, jsonify, request, send_file, session
 
-from backend.db.ops import db_add_stroke_data
 from backend.decorators import session_required
 from backend.decorators import hard_session_required
-from backend.db.ops import db_update_or_create_note
 from backend.db.ops import db_add_words_to_set
 from backend.db.ops import db_create_word_list
 from backend.db.ops import db_add_words_to_set
-from backend.db.ops import db_get_user_wordlists
-from backend.db.ops import db_store_user_theme
 from backend.db.ops import db_get_word_list
 from backend.db.ops import db_rename_word_list
 from backend.db.ops import db_delete_word_list
-from backend.db.ops import db_get_stroke_data_for_character
 from backend.db.ops import db_remove_word_from_set
 from backend.db.ops import db_update_wordlist_description
-from backend.db.ops import db_set_custom_definition, db_delete_custom_definition, db_get_custom_definition, db_list_custom_definitions
-from backend.db.ops import db_get_all_stroke_data
 
 from backend.db.models import Card, UserNotes, User
 
@@ -169,7 +162,7 @@ def get_examples_page():
 # =============================
 # User Custom Definitions CRUD
 # =============================
-@api_bp.route("/custom_definitions/get", methods=["GET"])
+'''@api_bp.route("/custom_definitions/get", methods=["GET"])
 @session_required
 def get_custom_definition():
     hanzi = request.args.get('hanzi') or (request.get_json() or {}).get('hanzi')
@@ -221,48 +214,7 @@ def list_custom_definitions():
     username = session.get("username")
     items = db_list_custom_definitions(username)
     return jsonify({"items": items})
-
-import datetime
-from datetime import timezone
-
-@api_bp.route('/get_progress_data_for_chars', methods=["POST"])
-@session_required
-def get_progress_data_for_chars():
-    data = request.get_json()
-    
-    username = data.get('user', session.get('username'))
-    if not username:
-        return "User or deck not specified", 400
-
-    acards = data.get('chars', [])
-
-    if not acards:
-        return jsonify([])
-
-    progress_stats = []
-    for character in acards:
-        char_progress = {}
-        correct_answers = char_progress.get('answers', []).count('correct')
-        total_answers = len(char_progress.get('answers', []))
-        accuracy = (correct_answers / total_answers * 100) if total_answers > 0 else 0
-        simple_char_info = get_char_info(character)
-        stats = {
-            'character': character,
-            'english': simple_char_info.get('english', ['N/A']),
-            'pinyin': simple_char_info.get('pinyin', ['N/A']),
-            'box': char_progress.get('box', 0),
-            'views': char_progress.get('views', 0),
-            'streak': char_progress.get('streak', 0),
-            'difficulty': char_progress.get('difficulty', None),
-            'accuracy': round(accuracy, 2),
-            'num_incorrect': char_progress.get('num_incorrect', 0),
-            'next_review': char_progress.get('next_review', None),
-            'is_due': char_progress.get('next_review') and datetime.fromisoformat(char_progress['next_review']).replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc),
-        }
-        progress_stats.append(stats)
-
-    return jsonify({'progress_stats': progress_stats})
-
+'''
 
 @api_bp.route("/add_word_learning_with_data", methods=["POST"])
 @session_required
@@ -392,22 +344,6 @@ def load_deck():
     return jsonify(characters_data)
 
 
-
-
-@api_bp.route('/storeNotes', methods=['POST'])
-@session_required
-def store_notes():
-    data = request.get_json()
-    success, error = db_update_or_create_note(
-        username=session.get('username'),
-        word=data.get('word'),
-        notes=data.get('notes'),
-        is_public=data.get('is_public', False)
-    )
-    if not success:
-        print(f"Error storing notes: {error}")
-        return jsonify({"status": "error", "message": error}), 404
-    return jsonify({"status": "success"})
 
 
 # @api_bp.route("/get_characters")
@@ -605,137 +541,10 @@ def get_strokes(character):
         return jsonify(strokesPerChar)
 
 
-@api_bp.route("/save_stroke_data", methods=["POST"])
-@hard_session_required
-def save_stroke_data():
-    data = request.json
-    character: str = data.get("character")
-    strokes: dict[dict[str, float]] = data.get("strokes")
-    username: str = session["username"]
-    chardata = {
-        "character": character,
-        "strokes": strokes,
-        "username": username,
-    }
-    db_add_stroke_data(chardata)
-    print(f"Stroke data saved for {character}")
-    return jsonify({"message": "Stroke data saved successfully"})
-
-
 from io import BytesIO
 
 from flask import send_file
 from PIL import Image, ImageDraw
-
-
-@api_bp.route("/character_animation/<character>", methods=["GET"])
-@session_required
-def character_animation(character):
-    strokes_datas = db_get_stroke_data_for_character(session["username"], character)
-    if len(strokes_datas) < 2:
-        return jsonify({"status": "insufficient_data"}), 204 
-    
-    frames = []
-    width, height = 100, 100
-    background_color = (255, 255, 255) 
-    point_color = (0, 0, 0) 
-
-    for data in strokes_datas:
-        img = Image.new("RGB", (width, height), background_color)
-        draw = ImageDraw.Draw(img)
-        strokes = data["strokes"]
-        for stroke in strokes:
-            for point in stroke:
-                x = int(point[0] * width)
-                y = int(point[1] * height)
-                draw.ellipse([x - 2, y - 2, x + 2, y + 2], fill=point_color)
-        frames.append(img)
-    output = BytesIO()
-    frames[0].save(
-        output,
-        format="GIF",
-        save_all=True,
-        append_images=frames[1:],
-        duration=100,
-        loop=0,
-    )
-    output.seek(0)
-
-    return send_file(output, mimetype="image/gif")
-
-
-@api_bp.route("/get_random_characters", methods=["POST"])
-@session_required
-def get_random_characters():
-    username = session.get('username')
-    
-    custom_wordlists = db_get_user_wordlists(username, with_data=False)
-    cd = {
-        **custom_wordlists,
-        **CARDDECKS
-    }
-
-    data = request.get_json()
-    deck = data.get("wordlist")
-    num = int(data.get("num", 24))
-    random_chars = cd[deck]['chars'][:]
-    random.shuffle(random_chars)
-    random_chars = random_chars[:num]
-    characters_data = get_chars_info(random_chars)
-    return jsonify(characters_data)
-
-
-
-@api_bp.route("/get_random_characters_with_audio", methods=["POST"])
-@session_required
-def get_random_characters_with_audio():
-    username = session.get('username')
-    
-    custom_wordlists = db_get_user_wordlists(username)
-    cd = {
-        **custom_wordlists,
-        **CARDDECKS
-    }
-
-    data = request.get_json()
-    deck = data.get("wordlist")
-    num = int(data.get("num", 24))
-    random_chars = cd[deck]['chars']
-    random.shuffle(random_chars)
-    random_chars = random_chars[:num]
-    characters_data = get_chars_info(random_chars)
-
-    # Create a list of dictionaries with character and audio data
-    result = []
-    for char_info in characters_data:
-        # If char_info is already a dictionary, use it as is; otherwise create a new dictionary
-        if isinstance(char_info, dict):
-            char_dict = char_info
-        else:
-            # Assuming char_info is the character itself if it's not a dictionary
-            char_dict = {'character': char_info}
-        
-        # Add audio data
-        candidate_pinyin = None
-        try:
-            if char_dict.get('pinyin'):
-                if isinstance(char_dict['pinyin'], list) and len(char_dict['pinyin']):
-                    candidate_pinyin = char_dict['pinyin'][0]
-                elif isinstance(char_dict['pinyin'], str):
-                    candidate_pinyin = char_dict['pinyin']
-        except Exception:
-            candidate_pinyin = None
-
-        audio_data = _get_combined_audio(candidate_pinyin)
-        if audio_data:
-            char_dict['audio'] = base64.b64encode(audio_data).decode('utf-8')
-        else:
-            char_dict['audio'] = None
-            
-        result.append(char_dict)
-
-    return jsonify(result)
-
 
 
 import time
@@ -747,36 +556,6 @@ def get_char_decomp_info():
     characters = data.get("characters")
     decomp = char_decomp_info(characters)
     return jsonify(decomp)
-
-
-
-@api_bp.route("/get_all_stroke_data", methods=["GET"])
-@session_required
-def get_all_stroke_data():
-    username = session.get("username")
-    return jsonify(db_get_all_stroke_data(username))
-
-
-# with open("data/examples.json", "r", encoding="utf-8") as f:
-#     parsed_data = json.load(f)
-
-# with open("data/stories.json", "r", encoding="utf-8") as f:
-#     stories_data = json.load(f)
-
-
-# @api_bp.route("/get_examples_data/<category>/<subcategory>/<chinese>")
-# @session_required
-# def get_examples_data(category, subcategory, chinese):
-#     category = unquote(category)
-#     subcategory = unquote(subcategory)
-#     chinese = unquote(chinese)
-
-#     logger.info(f"Category: {category}, Subcategory: {subcategory}, Chinese: {chinese}")
-#     if category in parsed_data and subcategory in parsed_data[category]:
-#         for item in parsed_data[category][subcategory]:
-#             if item["chinese"] == chinese:
-#                 return jsonify(item)
-#     return jsonify({"error": "Translation not found"}), 404
 
 
 @api_bp.route("/get_stories_data/<uri>")
@@ -802,23 +581,3 @@ def record_answer():
     logger.info(f"Answer recorded for {character}: {correct}")
     # flashcard_app.record_answer(username, character, correct)
     return jsonify({"message": "Answer recorded successfully"})
-
-
-@api_bp.route("/save_theme", methods=["POST"])
-@session_required
-def save_theme():
-    data = request.get_json()
-    if not data or "theme" not in data:
-        return jsonify({"error": "Missing theme value"}), 400
-    
-    theme = data["theme"]
-    username = session.get("username")
-    
-    if not username:
-        return jsonify({"error": "User not authenticated"}), 401
-    
-    db_store_user_theme(username, theme)
-    session["theme"] = theme
-    logger.info(f"Theme preference saved for {username}: {theme}")
-    
-    return jsonify({"message": f"Theme preference saved successfully", "theme": theme})

@@ -16,7 +16,6 @@ static/css/hanzipractice_backup.js
 static/js/hanzipractice_backup.js
 templates/hanzipractice_backup.html
 alter_db.py
-migrations/versions/
 fire
 
 extract_fontawesome.py

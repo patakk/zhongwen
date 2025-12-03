@@ -34,40 +34,20 @@ class User(db.Model):
     oauth_token = db.Column(db.String(200), nullable=True)
     oauth_token_expiry = db.Column(db.DateTime, nullable=True)
 
-    notes = db.relationship("UserNotes", backref="user", lazy=True)
-    user_string = db.relationship("UserString", backref="user", uselist=False)
-    stroke_entries = db.relationship("StrokeData", backref="user_ref", lazy=True)
+    #notes = db.relationship("UserNotes", backref="user", lazy=True)
+    #user_string = db.relationship("UserString", backref="user", uselist=False)
+    #stroke_entries = db.relationship("StrokeData", backref="user_ref", lazy=True)
     word_lists = db.relationship("WordList", backref="user", lazy=True)
     # Per-user custom definitions for custom words (hanzi/pinyin/english)
-    custom_definitions = db.relationship(
-        "UserCustomDefinition",
-        backref="user",
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
+    #custom_definitions = db.relationship(
+    #    "UserCustomDefinition",
+    #    backref="user",
+    #    lazy=True,
+    #    cascade="all, delete-orphan"
+    #)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
-
-    def set_metainfo(self, key, value):
-        """Set a value in the metainfo dictionary."""
-        if self.metainfo is None:
-            self.metainfo = {}
-        self.metainfo[key] = value
-        # MutableDict will track this change automatically
-        return self.metainfo
-
-    def get_metainfo(self, key, default=None):
-        """Get a value from the metainfo dictionary."""
-        if not self.metainfo:
-            return default
-        return self.metainfo.get(key, default)
-    
-    def has_metainfo(self, key):
-        """Check if a key exists in the metainfo dictionary."""
-        if not self.metainfo:
-            return False
-        return key in self.metainfo 
 
     def set_email(self, email, verified=False):
         self.email = email
