@@ -129,8 +129,13 @@ def get_card_data():
     if not character:
         return jsonify({'message': 'No cards available', 'chars_breakdown': None})
     chars_breakdown = breakdown_chars(character)
-    return jsonify({'message': '', **main_card_data(character), 'chars_breakdown': chars_breakdown})
-
+    response = make_response({
+        'message': '',
+        **main_card_data(character),
+        'chars_breakdown': chars_breakdown,
+    })
+    response.headers["Cache-Control"] = "public, max-age=31536000"
+    return response
 
 @app.before_request
 def before_request():
