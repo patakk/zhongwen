@@ -14,8 +14,6 @@
         @touchmove="onTouchMove"
         @touchend="onTouchEnd"
       >
-        <!-- Swipe hint overlay (fades in/out quickly) -->
-        <div class="swipe-hint" :class="{ visible: swipeHintVisible }">{{ swipeHintDirection === 'right' ? '→' : '←' }}</div>
 
         <!-- Add to wordlist dropdown button - now shown to all users -->
         <button @click="closeModal" class="close-btn-tl">
@@ -59,7 +57,6 @@
               <span
                 v-if="cardData.character.length > 1"
                 v-for="(char, index) in cardData.character.split('')"
-                :class="['main-word-char']"
                 @click="setActiveChar(char)"
               >
 
@@ -79,7 +76,7 @@
                 @click="setActiveChar(char)"
               >
                   <span
-                    class="hanzi-link main-word-char"
+                    class="main-word-char"
                     v-html="colorizeHanzi(char, getDisplaySyllable(index))"
                   ></span>
               </span>
@@ -101,7 +98,7 @@
                       v-html="colorizeHanzi(tchar, getDisplaySyllable(index))"
                     ></span>
                 </PreloadWrapper>
-                  <span v-else class="trad-char main-word-char">-</span>
+                  <span v-else class="trad-char main-word-char" style="opacity: 0.35;">-</span>
                 </span>
                 <span class="trad-bracket">]</span>
               </span>
@@ -2120,7 +2117,7 @@ export default {
 
 .main-word {
   font-size: calc(5rem * var(--main-word-scale, 1) * var(--main-word-len-scale, 1));
-  margin: 0.1em 0 0.2em 0;
+  margin: 0.78em 0 0.2em 0;
   line-height: 1;
   width: 100%;
   text-align: left;
