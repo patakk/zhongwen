@@ -137,7 +137,7 @@ export default {
       // Calculate tree depth based on maxDepth, not full tree
       const treeDepth = Math.min(this.maxDepth, d3.hierarchy(treeData).height || 1);
       const svgHeight = 100 * (Math.max(treeDepth,2));
-      let bottomv = 30;
+      let bottomv = 60;
     //   if (treeDepth == 1) {
     //     bottomv = -150;
     //   }
@@ -191,6 +191,7 @@ export default {
   overflow-x: auto;
   overflow-y: visible;
   padding: 1em;
+  box-sizing: border-box;
 }
 .node-container {
   display: flex;
