@@ -1020,7 +1020,6 @@ html, body {
   width: 100%;
   max-width: 300px;
   max-height: 0;
-  overflow: hidden;
   background-color: var(--bg);
   z-index: 1;
   left: 1em;
@@ -1517,7 +1516,6 @@ label {
     width: 100%;
     max-width: 300px;
     max-height: 0;
-    overflow: hidden;
     background-color: var(--bg);
     z-index: 1;
     left: 50%;
