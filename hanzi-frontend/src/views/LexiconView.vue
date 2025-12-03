@@ -1203,29 +1203,12 @@ import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyi
     overflow-y: auto;
   }
   
-  .word-item {
-    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 22%, var(--bg) 12%);
-    border: none;
-    background: var(--bg);
-    align-items: stretch;
-    width: 100%;
-    box-sizing: border-box;
-    padding: .3rem;
-    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-    font-size: .9em;
-  }
-
-  
-  .word-item:hover {
-    background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
-  }
   
   .word-cell {
     width: 100%;
     display: flex;
     /* padding: .3rem; */
     cursor: pointer;
-    user-select: none;
     flex-direction: row;
     justify-content: space-between;
     position: relative;

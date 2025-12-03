@@ -355,6 +355,7 @@ onMounted(async () => {
     padding: 0.35rem 0.25rem;
     text-align: center;
     border-radius: var(--border-radius, 4px);
+    font-weight: 200 !important;
   }
   .history-item:hover {
     background: color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);

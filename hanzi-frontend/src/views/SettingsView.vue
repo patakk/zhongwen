@@ -1150,6 +1150,7 @@ h3 {
   font-size: 1.25em;
 	opacity: .5;
   border: none;
+  font-weight: 200 !important;
 }
 
 

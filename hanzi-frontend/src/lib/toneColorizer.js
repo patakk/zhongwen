@@ -47,7 +47,7 @@ export function colorizePinyin(pinyin, { enabled = true, palette = 'default' } =
   return syllables.map(syllable => {
     if (!enabled) return escapeHtml(syllable);
     const color = getToneColor(syllable, colors);
-    return `<span style="color:${color}">${escapeHtml(syllable)}</span>`;
+    return `<span style="color:${color};}">${escapeHtml(syllable)}</span>`;
   }).join(' ');
 }
 

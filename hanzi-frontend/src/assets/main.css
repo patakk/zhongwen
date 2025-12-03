@@ -60,19 +60,20 @@
   --second-t-p: #4bc499;
   --third-t-p: #39a6d2;
   --fourth-t-p: #9672cc;
-  --neutral-t-p: #787878;
+  --neutral-t-p: #afafaf;
 
   --first-t-p: color-mix(in oklab, #f00 100%, #fff 10%);
   --second-t-p: rgb(14, 221, 110);
   --third-t-p: color-mix(in oklab, #00f 100%, #fff 10%);
   --fourth-t-p: color-mix(in oklab, #f0f 100%, #fff 10%);
-  --neutral-t-p: #787878;
+  --neutral-t-p: #afafaf;
 
-  --first-t: color-mix(in oklab, #00f 100%, #fff 10%);
+  --first-t: color-mix(in oklab, #00f 100%, #fff 0%);
   --second-t: rgb(14, 221, 110);
   --third-t: color-mix(in oklab, #f0f 100%, #fff 10%);
   --fourth-t: color-mix(in oklab, #f00 100%, #fff 10%);
-  --neutral-t: #787878;
+  --neutral-t: #afafaf;
+  --first-t: color-mix(in oklab, #00f 100%, #fff 20%);
 
   --success-color: #54da92;
   --danger-color: #dc3545;
@@ -133,13 +134,13 @@
   --second-t-p: #7ef4a3;
   --third-t-p: #7bb1ff;
   --fourth-t-p: #ac96ff;
-  --neutral-t-p: #e0e0e0;
+  --neutral-t-p: #a7a7a7;
 
   --first-t-p: #6aabc3;
   --second-t-p: #c0ae0f;
   --third-t-p: #8d67c7;
   --fourth-t-p: #d44e4e;
-  --neutral-t-p: #e0e0e0;
+  --neutral-t-p: #a7a7a7;
 
   --first-t-p: color-mix(in oklab, #f00 100%, #fff 10%);
   --second-t-p: color-mix(in oklab, #0f0 100%, #fff 10%);
@@ -147,11 +148,13 @@
   --fourth-t-p: color-mix(in oklab, #f0f 100%, #fff 10%);
   --neutral-t-p: color-mix(in oklab, #eee 100%, #fff 10%);
 
-  --first-t: color-mix(in oklab, rgb(0, 8, 255) 100%, #fff 50%);
+  --first-t: color-mix(in oklab, rgb(0, 10, 255) 100%, #fff 20%);
   --second-t: color-mix(in oklab, #0f0 100%, #fff 10%);
   --third-t: color-mix(in oklab, #f0f 100%, #fff 10%);
   --fourth-t: color-mix(in oklab, #f00 100%, #fff 10%);
-  --neutral-t: #e0e0e0;
+  --neutral-t: #a7a7a7;
+
+  --first-t: oklab(73.223% -0.07699 -0.13423);
 
   --overlay-background: rgba(0, 0, 0, 0.5);
   --primary-color: #b39cc9;
@@ -418,72 +421,86 @@ button:hover {
 
 
 
-  .word-hanzipinyin {
-    display: flex;
-    flex-direction: column;
-    width: 110px;
-    min-width: 110px;
-    margin-left: .25rem;
-    user-select: text;
+.word-hanzipinyin {
+  display: flex;
+  flex-direction: column;
+  width: 110px;
+  min-width: 110px;
+  margin-left: .25rem;
+  user-select: text;
 
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: left;
-    flex: 2;
-    min-width: 100px; /* allow flex child to shrink and wrap */
-    margin-left: .25rem;
-  }
-  
-  .word-hanzi {
-    font-size: 1.7rem;
-    font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif) !important;
-    user-select: text;
-  }
-  
-  .word-pinyin {
-    font-style: italic;
-    color: var(--fg);
-    opacity: 0.6;
-    opacity: 1.0;
-    user-select: text;
-  }
-  
-  .word-english {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: left;
+  flex: 2;
+  min-width: 100px; /* allow flex child to shrink and wrap */
+  cursor: pointer;
+  margin-right: 1rem;
+}
 
-    font-size: 1em;
-    color: var(--fg);
-    opacity: 0.6;
-    opacity: 1.0;
-    flex: 12;
-    min-width: 0;     
-    max-width: 100%;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word; 
-    word-wrap: break-word; 
-  }
-  
-  .word-item {
-    display: flex;
-    /* border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%); */
-    /* box-shadow: 0px -1.25px color-mix(in oklab, var(--fg) 10%, var(--bg) 10%); */
-    padding: .5em .5em;
-    font-family: inherit;
-    text-align: left;
-    background: var(--bg);
-    width: 100%;
-    cursor: pointer;
-    box-shadow: none;
-    border-bottom: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
-    border: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
-    border: none;
-    background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-    box-sizing: border-box;
-  }
+
+.word-hanzipinyin:hover {
+}
+
+
+.word-hanzi {
+  font-size: 1.7rem;
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif) !important;
+  user-select: text;
+  font-weight: 200 !important;
+  line-height: 1.0em;
+}
+
+.word-pinyin {
+  font-style: italic;
+  color: var(--fg);
+  opacity: 0.6;
+  opacity: 1.0;
+  user-select: text;
+  line-height: 1em;
+  padding-top: .5em;
+}
+
+.word-english {
+
+  font-size: 1em;
+  color: var(--fg);
+  opacity: 0.6;
+  opacity: 1.0;
+  flex: 12;
+  min-width: 0;     
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word; 
+  word-wrap: break-word; 
+}
+
+.word-item {
+  display: flex;
+  /* border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%); */
+  /* box-shadow: 0px -1.25px color-mix(in oklab, var(--fg) 10%, var(--bg) 10%); */
+  padding: .25em .25em;
+  font-family: inherit;
+  font-size: 0.9em;
+  text-align: left;
+  background: var(--bg);
+  width: 100%;
+  box-shadow: none;
+  border-bottom: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
+  border: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
+  border: none;
+  box-sizing: border-box;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
+  cursor: pointer;
+}
+
+.word-item:is(:first-child) {
+}
 
 .word-item:hover {
-  background: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
+  /*background: color-mix(in oklab, var(--fg) 2%, var(--bg) 50%);*/
 }
 
 .word-item:hover .word-pinyin.pinyin-hidden {

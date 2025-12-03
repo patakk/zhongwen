@@ -412,15 +412,15 @@
                       <template #default>
                         <div class="example-chinese-pinyin">
                           <span
-                            class="example-chinese"
+                            class="word-hanzi"
                             v-html="colorizeHanzi(word, $toAccentedPinyin(activeCharData.pinyin[index + 3]))"
                           ></span>
                           <span
-                            class="example-pinyin"
+                            class="word-pinyin"
                             v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index + 3]))"
                           ></span>
                         </div>
-                        <span class="example-meaning">{{ activeCharData.english[index + 3] }}</span>
+                        <span class="word-meaning">{{ activeCharData.english[index + 3] }}</span>
                       </template>
                     </ClickableRow>
                   </div>
@@ -2094,12 +2094,14 @@ export default {
 .hanzi-link { 
   padding: .25rem 0.25rem;
   color: var(--fg); cursor: pointer;
+  font-weight: 200 !important;
+
 }
 .hanzi-link:hover { text-decoration: underline; }
-.hanzi-link.main-word-char:hover { text-decoration: none; opacity: 0.4; }
+.hanzi-link.main-word-char:hover { text-decoration: none; opacity: 0.69; }
 
 
-.hanzi-link.trad-char:hover { text-decoration: none; opacity: 0.4; }
+.hanzi-link.trad-char:hover { text-decoration: none; opacity: 0.69; }
 
 
 
@@ -2195,11 +2197,14 @@ export default {
 .trad-char {
   font-size: .75em;
   font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
-  opacity: 0.75;
+  opacity: 1;
+  font-weight: 200 !important;
 }
 
 .main-word-char {
   font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
+  font-weight: 200 !important;
+
 }
 
 .main-word-inverted {
@@ -2341,12 +2346,11 @@ export default {
 }
 
 .example-word-content:hover {
-  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%) !important;
+  background-color: color-mix(in oklab, var(--fg) 2%, var(--bg) 50%) !important;
 }
 
 .example-chinese-pinyin {
   min-width: 20%;
-  width: 20%;
   overflow: hidden;
   white-space: nowrap;
   color: var(--text-secondary);
@@ -2366,6 +2370,7 @@ export default {
 .example-pinyin {
   font-size: .85rem;
   opacity: 0.6;
+  font-style: italic;
 }
 
 .example-meaning {
@@ -2562,6 +2567,7 @@ export default {
   border-bottom: none;
   border-bottom: 3.5px solid #0000;
   transform: translate(0, 3.5px);
+  font-weight: 200 !important;
 }
 
 
@@ -3355,9 +3361,14 @@ export default {
   height: 100%;
   margin-bottom: 3px;
 }
+
+.word-pinyin {
+  opacity: 0.6;
+}
 </style>
 
 <style>
+
 
 body.modal-open {
   overflow: hidden;

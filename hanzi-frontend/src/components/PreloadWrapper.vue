@@ -3,6 +3,7 @@
       @mouseenter="startHoverTimer($event)"
       @mouseleave="handleMouseLeave"
       @mousemove="handleMouseMove"
+      @mousedown="handleMouseDown"
       @click="handleClick"
       @auxclick="handleAuxClick"
     >
@@ -54,7 +55,9 @@ export default {
       hoverTimer: null,
       isHovering: false,
       bubbleData: null,
-      lastMouseEvent: null // Store the last mouse event
+      lastMouseEvent: null, // Store the last mouse event
+      dragStart: null,
+      didDrag: false
     }
   },
   methods: {
@@ -89,6 +92,8 @@ export default {
     handleMouseLeave() {
       this.isHovering = false;
       this.lastMouseEvent = null; // Clear the stored event
+      this.dragStart = null;
+      this.didDrag = false;
       this.clearHoverTimer();
       this.$emit('unhover', this.character);
       // Only hide bubble if showBubbles is true
@@ -97,6 +102,13 @@ export default {
       }
     },
     handleMouseMove(event) {
+      if (this.dragStart) {
+        const dx = event.clientX - this.dragStart.x;
+        const dy = event.clientY - this.dragStart.y;
+        if (Math.hypot(dx, dy) > 4) {
+          this.didDrag = true;
+        }
+      }
       // Store the latest mouse event
       this.lastMouseEvent = event;
       
@@ -104,6 +116,10 @@ export default {
       if (this.isHovering && this.bubbleData && this.showBubbles) {
         this.showBubbleTooltip(event);
       }
+    },
+    handleMouseDown(event) {
+      this.dragStart = { x: event.clientX, y: event.clientY };
+      this.didDrag = false;
     },
     showBubbleTooltip(event) {
       // Only proceed if showBubbles is true
@@ -147,6 +163,12 @@ export default {
       }
     },
     handleClick(event) {
+      if (this.didDrag) {
+        this.didDrag = false;
+        this.dragStart = null;
+        return;
+      }
+      this.dragStart = null;
       // If CTRL key is pressed or preferDedicatedPage is true, navigate to dedicated page
       this.openPopup();
       // if (event.ctrlKey || this.preferDedicatedPage) {

@@ -206,12 +206,12 @@
             <div v-else class="list-container" :style="{fontSize: `${fontScale*1.0}em` }">
               <PreloadWrapper
                 v-for="(entry, index) in visibleChars"
-                :key="entry.character"
-                :character="entry.character"
-                :navList="navCharList"
-                :showBubbles="false"
+                    :key="entry.character"
+                    :character="entry.character"
+                    :navList="navCharList"
+                    :showBubbles="false"
               >
-                  <div class="list-item">
+                <div class="word-item">
                   <div class="word-hanzipinyin">
                     <div class="word-hanzi" :style="{ 
                       fontFamily: `'${selectedFont}'`,
@@ -221,7 +221,7 @@
                     <div class="word-pinyin" :class="{ 'pinyin-hidden': !showPinyin }" v-html="colorizePinyin(displayListPinyin(entry.character, (entry.pinyin && entry.pinyin[0]) || ''))"></div>
                   </div>
                   <div class="word-english">{{ displayListEnglish(entry.character, (entry.english && entry.english[0]) || '') }}</div>
-                  </div>
+                </div>
               </PreloadWrapper>
             </div>
           </div>
@@ -1117,30 +1117,6 @@ html, body {
   }
 }
 
-
-.list-item {
-  display: flex;
-  /* border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%); */
-  /* box-shadow: 0px -1.25px color-mix(in oklab, var(--fg) 10%, var(--bg) 10%); */
-  padding: .5em .5em;
-  font-family: inherit;
-  text-align: left;
-  background: var(--bg);
-  width: 100%;
-  cursor: pointer;
-  box-shadow: none;
-  border-bottom: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
-  border: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
-  border: none;
-  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  box-sizing: border-box;
-  font-size: .9em;
-
-}
-
-.list-item:hover {
-  background: color-mix(in oklab, var(--fg) 8%, var(--bg) 50%);
-}
 
 .hanzipinyin {
 }
