@@ -281,12 +281,6 @@ onMounted(async () => {
   // Verify user exists in database on each app load/refresh
   await verifyUserExists();
   
-  // Load dictionary data
-  await Promise.all([
-    store.dispatch("fetchDictionaryData"),
-    store.dispatch("fetchCustomDictionaryData")
-  ]);
-  
   // Wait for the next tick to ensure the router and store are fully initialized
   nextTick(() => {
     // Check for word parameter in URL on initial load
