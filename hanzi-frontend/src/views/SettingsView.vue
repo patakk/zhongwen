@@ -95,13 +95,13 @@
               <div class="tonehanzipinyin" style="color: var(--fourth-t);"><div>骂</div><div>mà</div></div>
               <div class="tonehanzipinyin" style="color: var(--neutral-t);"><div>吗</div><div>ma</div></div>
             </div>
-            <div class="tone-choice" :class="{ active: toneColorEnabled && toneColorScheme === 'alt' }" @click="setToneColors(2)">
+            <!-- <div class="tone-choice" :class="{ active: toneColorEnabled && toneColorScheme === 'alt' }" @click="setToneColors(2)">
               <div class="tonehanzipinyin" style="color: var(--first-t-p);"><div>妈</div><div>mā</div></div>
               <div class="tonehanzipinyin" style="color: var(--second-t-p);"><div>麻</div><div>má</div></div>
               <div class="tonehanzipinyin" style="color: var(--third-t-p);"><div>马</div><div>mǎ</div></div>
               <div class="tonehanzipinyin" style="color: var(--fourth-t-p);"><div>骂</div><div>mà</div></div>
               <div class="tonehanzipinyin" style="color: var(--neutral-t-p);"><div>吗</div><div>ma</div></div>
-            </div>
+            </div>-->
             <div class="tone-choice" :class="{ active: !toneColorEnabled }" @click="setToneColors(0)">
               <div class="tonehanzipinyin"><div>妈</div><div>mā</div></div>
               <div class="tonehanzipinyin"><div>麻</div><div>má</div></div>
@@ -1121,7 +1121,7 @@ h3 {
 
 .theme-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 1.5rem;
 }
 
 .theme-button {
@@ -1157,7 +1157,7 @@ h3 {
   background: var(--bg);
   color: var(--fg);
 	opacity: 1;
-  font-size: 1.5em;
+  font-size: 1.25em;
   border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
 }
 
@@ -1172,11 +1172,6 @@ h3 {
   background: color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
 }
 
-
-.theme-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
 
 .theme-buttons.spread {
   flex: 1;
