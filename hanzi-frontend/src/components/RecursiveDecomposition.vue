@@ -190,6 +190,7 @@ export default {
   background: transparent;
   overflow-x: auto;
   overflow-y: visible;
+  padding: 1em;
 }
 .node-container {
   display: flex;
