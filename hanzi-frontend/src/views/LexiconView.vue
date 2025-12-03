@@ -16,6 +16,7 @@
               <div 
                 id="deck-options" 
                 :class="{ 'show': isDropdownOpen }"
+                v-if="isDropdownOpen"
               >
                 <div 
                   v-for="list in customDecks" 
@@ -1026,7 +1027,7 @@ import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyi
   }
 
   #deck-options.show {
-    max-height: 300px;
+    max-height: 80vh;
     overflow-y: auto;
     border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
   }

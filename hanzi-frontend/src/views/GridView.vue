@@ -1022,7 +1022,6 @@ html, body {
   max-height: 0;
   overflow: hidden;
   background-color: var(--bg);
-  border: var(--thin-border-width) solid #0000;
   z-index: 1;
   left: 1em;
   top: 5em;
@@ -1031,25 +1030,6 @@ html, body {
   transform: translateX(-50%);*/
 }
 
-#deck-options.show {
-  max-height: 300px;
-  overflow-y: auto;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
-}
-
-.option {
-  padding: 10px 15px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.option:hover {
-  background-color: color-mix(in oklab, var(--fg) 6%, var(--bg) 75%);
-}
-
-.option.selected {
-  background-color: var(--selected-bg);
-}
 
 .page-layout {
   display: flex;
@@ -1539,7 +1519,6 @@ label {
     max-height: 0;
     overflow: hidden;
     background-color: var(--bg);
-    border: var(--thin-border-width) solid #0000;
     z-index: 1;
     left: 50%;
     transform: translateX(-50%);

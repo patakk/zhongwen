@@ -31,14 +31,14 @@
               Adding to custom wordlists is possible only upon <router-link to="/register" class="register-link">registration</router-link> or <router-link to="/login" class="register-link">login</router-link>.
             </div>
             <div v-else-if="customWordlists && customWordlists.length === 0" class="no-lists">No custom wordlists available</div>
-            <div v-else>
+            <div v-else id="deck-options">
               <div v-for="wordlist in customWordlists" :key="wordlist.name"
-                  class="wordlist-item"
+                  class="option"
                   @click.stop="addWordToList(wordlist.name)">
                 {{ wordlist.name }}
               </div>
               <!-- Add "Create New List" option at the bottom of dropdown -->
-              <div class="wordlist-item create-list-item" @click.stop="showCreateListModal = true">
+              <div class="option create-list-item" @click.stop="showCreateListModal = true">
                 <span class="create-icon">+</span> Create New List
               </div>
             </div>
