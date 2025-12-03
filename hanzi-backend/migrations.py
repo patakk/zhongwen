@@ -216,7 +216,7 @@ def list_word_lists(username=None):
         return
     
     for wl in word_lists:
-        created_at_str = wl.created_at.strftime('%Y-%m-%d %H:%M:%S') if wl.created_at else 'N/A'
+        created_at_str = wl.created_at.strftime('%Y-%m-%d %H:%M:%S') if hasattr(wl, 'created_at') else 'N/A'
         description_str = f'"{wl.description}"' if wl.description else 'None'
         click.echo(f"- ID: {wl.id}, Name: \"{wl.name}\", Owner: {wl.user.username}, Words: {len(wl.words)}, Created: {created_at_str}, Desc: {description_str}")
 
