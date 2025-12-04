@@ -1200,6 +1200,7 @@ import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyi
     display: flex;
     flex-direction: column;
     gap: .5rem;
+    gap: .0rem;
     overflow-y: auto;
   }
   

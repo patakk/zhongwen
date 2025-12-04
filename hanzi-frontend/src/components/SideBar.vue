@@ -283,21 +283,22 @@ export default {
   font-size: 1em;
   padding: .2em .6em;
   white-space: nowrap;
-  /* border-radius: .2em; */
   background: none;
   text-transform: lowercase;
   opacity: .6;
 }
 
 .top-link:hover {
-  background-color: color-mix(in oklab, var(--primary-color) 25%, var(--bg) 15%);
+  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   opacity: 1;
 }
 
 .top-link.router-link-active, .top-link.router-link-exact-active {
   text-transform: uppercase;
+  text-decoration: underline;
   background-color: color-mix(in oklab, var(--primary-color) 25%, var(--bg) 15%);
   opacity: 1;
+  border: none;
 }
 
 @media (max-aspect-ratio: 1/1) or (max-width: 784px) {

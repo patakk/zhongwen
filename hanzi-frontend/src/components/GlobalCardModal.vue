@@ -417,7 +417,7 @@
                             v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index + 3]))"
                           ></span>
                         </div>
-                        <span class="word-meaning">{{ activeCharData.english[index + 3] }}</span>
+                        <span class="word-english">{{ activeCharData.english[index + 3] }}</span>
                       </template>
                     </ClickableRow>
                   </div>
@@ -2327,7 +2327,7 @@ export default {
 .example-word-content {
   display: flex;
   box-sizing: border-box;
-  gap: 1rem;
+  gap: .5rem;
   align-items: center;
   flex-direction: row;
   padding: 0.1rem 0.25rem;
@@ -3360,7 +3360,8 @@ export default {
 }
 
 .word-pinyin {
-  opacity: 0.6;
+  opacity: 1.0;
+  opacity: 0.8;
 }
 </style>
 

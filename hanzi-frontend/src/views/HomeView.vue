@@ -96,15 +96,14 @@
             :navIndex="entry.displayIdx"
             :cardOverrides="resultOverrides(entry.item)"
             :showBubbles="false"
+            :class="'word-item'"
           >
-            <div class="result-cell">
-              <div class="result-number">{{ entry.displayIdx + 1 }}</div>
               <div class="word-hanzipinyin">
                 <div class="word-hanzi" v-html="colorizeHanzi(entry.item.hanzi, $toAccentedPinyin(entry.item.pinyin))"></div>
                 <div class="word-pinyin" v-html="colorizePinyin($toAccentedPinyin(entry.item.pinyin))"></div>
               </div>
               <div class="word-english" v-html="highlightMatch($toAccentedPinyin(entry.item.english))"></div>
-            </div>
+              <div class="result-number">{{ entry.displayIdx + 1 }}</div>
           </PreloadWrapper>
         </div>
       </div>
@@ -882,7 +881,8 @@ export default {
 
 .group-header {
   display: flex;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 60%);
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 10%, var(--bg) 15%);
+  border-bottom: none;
   border-radius: 1px;
   align-items: center;
   justify-content: space-between;
@@ -928,6 +928,9 @@ export default {
 .result-cell:first-child {
   border-top: none;
 }
+.result-cell:last-child {
+  border-top: none;
+}
 
 .result-cell:hover {
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
@@ -935,7 +938,6 @@ export default {
 }
 
 .result-number {
-  position: absolute;
   top: .25em;
   right: .25em;
   font-size: 0.9rem;

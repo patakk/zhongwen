@@ -210,8 +210,8 @@
                     :character="entry.character"
                     :navList="navCharList"
                     :showBubbles="false"
+                    :class="'word-item'"
               >
-                <div class="word-item">
                   <div class="word-hanzipinyin">
                     <div class="word-hanzi" :style="{ 
                       fontFamily: `'${selectedFont}'`,
@@ -221,7 +221,6 @@
                     <div class="word-pinyin" :class="{ 'pinyin-hidden': !showPinyin }" v-html="colorizePinyin(displayListPinyin(entry.character, (entry.pinyin && entry.pinyin[0]) || ''))"></div>
                   </div>
                   <div class="word-english">{{ displayListEnglish(entry.character, (entry.english && entry.english[0]) || '') }}</div>
-                </div>
               </PreloadWrapper>
             </div>
           </div>
@@ -1106,6 +1105,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  gap: 0.0rem;
   width: 100%;
 }
 
