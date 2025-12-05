@@ -64,6 +64,7 @@ const hadDragged = ref(false)
 const railTop = ref(48) // Initial top position (3rem = 48px)
 const dragStartY = ref(0)
 const dragStartTop = ref(0)
+const dragStartTarget = ref(null)
 const historyCollapsed = ref(false)
 const suppressClick = ref(false)
 
@@ -189,6 +190,7 @@ const startDrag = (e) => {
   const isHistoryItem = targetEl && targetEl.closest('.history-item')
   const isHistoryTitle = targetEl && targetEl.closest('.history-title')
   if (isHistoryItem) return
+  dragStartTarget.value = targetEl
   isDragCandidate.value = true
   isDragging.value = false
   const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY
@@ -268,11 +270,18 @@ const emitHistoryConfetti = () => {
 const stopDrag = () => {
   isDragging.value = false
   isDragCandidate.value = false
+  const startedOnTitle = dragStartTarget.value && dragStartTarget.value.closest('.history-title')
+  if (!hadDragged.value && startedOnTitle) {
+    toggleHistoryCollapse()
+    suppressClick.value = true
+    setTimeout(() => { suppressClick.value = false }, 80)
+  }
   if (hadDragged.value) {
     suppressClick.value = true
     setTimeout(() => { suppressClick.value = false }, 80)
   }
   hadDragged.value = false
+  dragStartTarget.value = null
 
   // Remove event listeners
   document.removeEventListener('mousemove', onDrag)
