@@ -25,7 +25,7 @@
             v-for="(item, idx) in history"
             :key="item"
             class="history-item"
-            @click="openHistory(item)"
+            @click="openHistory(item, idx)"
           >
             {{ item }}
           </button>
@@ -171,11 +171,17 @@ const toggleTheme = () => {
   // Remove the spin class after the animation ends
 }
 
-const openHistory = (word) => {
+const openHistory = (word, idx = null) => {
   if (suppressClick.value) return
   if (!word) return;
   preserveHistoryRef.value = true;
-  store.dispatch('cardModal/showCardModal', { character: word, preserveHistoryOrder: true });
+  const list = history.value || []
+  if (list && list.length) {
+    store.dispatch('cardModal/setNavContext', { list, current: word, index: idx })
+  }
+  const payload = { character: word, preserveHistoryOrder: true }
+  if (typeof idx === 'number') payload.index = idx
+  store.dispatch('cardModal/showCardModal', payload);
 }
 
 const toggleHistoryCollapse = () => {
@@ -371,6 +377,11 @@ onMounted(async () => {
     text-align: center;
     border-radius: var(--border-radius, 4px);
     font-weight: 200 !important;
+  }
+  .history-item:focus,
+  .history-item:focus-visible {
+    outline: none;
+    box-shadow: none;
   }
   .history-item:hover {
     background: color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
