@@ -188,6 +188,7 @@ export default {
       themeObserver: null,
       groupCollapsed: {},
       isDarkTheme: false,
+      _resizePending: null,
     };
   },
   created() {
@@ -586,31 +587,37 @@ export default {
       ctx.strokeStyle = isDark ? '#fff' : '#000';
       this.strokeCanvasCtx = ctx;
       this.clearCanvas();
-      window.addEventListener('resize', this.resizeCanvas);
+      window.addEventListener('resize', this.resizeCanvas, { passive: true });
     },
     resizeCanvas() {
       if (!this.showStrokePad) return;
-      const canvas = this.$refs.strokeCanvas;
-      if (!canvas) return;
-      const data = canvas.toDataURL();
-      const size = this.getStrokeCanvasSize();
-      this.strokeCanvasSize = size;
-      canvas.style.width = `${size}px`;
-      canvas.style.height = `${size}px`;
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
-      ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
-      ctx.lineWidth = Math.max(3, size / 25);
-      const theme = document.documentElement.getAttribute('data-theme');
-      ctx.strokeStyle = (theme === 'dark' || theme === 'theme2') ? '#fff' : '#000';
-      this.strokeCanvasCtx = ctx;
-      const img = new Image();
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0, size, size);
-      };
-      img.src = data;
+      if (this._resizePending) return;
+      this._resizePending = requestAnimationFrame(() => {
+        this._resizePending = null;
+        const canvas = this.$refs.strokeCanvas;
+        if (!canvas) return;
+        const currentSize = this.strokeCanvasSize || canvas.width || 0;
+        const size = this.getStrokeCanvasSize();
+        if (!size || size === currentSize) return;
+        const data = canvas.toDataURL();
+        this.strokeCanvasSize = size;
+        canvas.style.width = `${size}px`;
+        canvas.style.height = `${size}px`;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.lineWidth = Math.max(3, size / 25);
+        const theme = document.documentElement.getAttribute('data-theme');
+        ctx.strokeStyle = (theme === 'dark' || theme === 'theme2') ? '#fff' : '#000';
+        this.strokeCanvasCtx = ctx;
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, size, size);
+        };
+        img.src = data;
+      });
     },
     startDrawing(e) {
       if (!this.strokeCanvasCtx) return;
