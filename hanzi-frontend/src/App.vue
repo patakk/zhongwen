@@ -187,9 +187,7 @@ const toggleHistoryCollapse = () => {
 const startDrag = (e) => {
   const target = e.target
   const targetEl = target && 'closest' in target ? target : target?.parentElement
-  const isHistoryItem = targetEl && targetEl.closest('.history-item')
   const isHistoryTitle = targetEl && targetEl.closest('.history-title')
-  if (isHistoryItem) return
   dragStartTarget.value = targetEl
   isDragCandidate.value = true
   isDragging.value = false
