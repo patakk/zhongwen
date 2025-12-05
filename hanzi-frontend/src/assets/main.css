@@ -33,8 +33,8 @@
 }
 
 :root {
-  --bg: rgb(255, 255, 255);
-  --bg-dim: rgb(238, 238, 238);
+  --bg: rgb(229, 229, 229);
+  --bg-dim: rgb(200, 200, 200);
   --fg: rgb(254, 0, 0);
   --fg: rgb(0, 0, 0);
   --fg-dim: rgb(100, 100, 100);
@@ -45,6 +45,8 @@
   --dim-primary: #b789c733;
   --font-family: 'SF Mono Regular', monospace;
   --second-font: Arial, Helvetica, sans-serif;
+
+  --hanzi-weight: 400;
 
   --font-size: 16px;
   --border-radius: 0px;
@@ -69,11 +71,11 @@
   --neutral-t-p: #afafaf;
 
   --first-t: color-mix(in oklab, #00f 100%, #fff 0%);
-  --second-t: rgb(14, 221, 110);
+  --first-t: color-mix(in oklab, #00f 100%, #fff 20%);
+  --second-t: rgb(0, 169, 79);
   --third-t: color-mix(in oklab, #f0f 100%, #fff 10%);
   --fourth-t: color-mix(in oklab, #f00 100%, #fff 10%);
-  --neutral-t: #afafaf;
-  --first-t: color-mix(in oklab, #00f 100%, #fff 20%);
+  --neutral-t: #787878;
 
   --success-color: #54da92;
   --danger-color: #dc3545;
@@ -448,7 +450,7 @@ button:hover {
   font-size: 1.7rem;
   font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif) !important;
   user-select: text;
-  font-weight: 200 !important;
+  font-weight: var(--hanzi-weight) !important;
   line-height: 1.0em;
 }
 

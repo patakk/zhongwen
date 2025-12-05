@@ -2022,7 +2022,6 @@ export default {
   padding: 2rem;
   box-sizing: border-box;
   z-index: 20;
-  font-weight: 400;
   overflow-y: auto;
   overflow-x: hidden;
   -ms-overflow-style: none;
@@ -2092,7 +2091,7 @@ export default {
 .hanzi-link { 
   padding: .25rem 0.25rem;
   color: var(--fg); cursor: pointer;
-  font-weight: 200 !important;
+  font-weight: var(--hanzi-weight) !important;
 
 }
 .hanzi-link:hover { text-decoration: underline; }
@@ -2189,19 +2188,19 @@ export default {
 .trad-bracket {
   opacity: 0.5;
   font-size: 0.75em;
-  font-weight: 200;
+  font-weight: var(--hanzi-weight) !important;
 }
 
 .trad-char {
   font-size: .75em;
   font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
   opacity: 1;
-  font-weight: 200 !important;
+  font-weight: var(--hanzi-weight) !important;
 }
 
 .main-word-char {
   font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
-  font-weight: 200 !important;
+  font-weight: var(--hanzi-weight) !important;
 
 }
 
@@ -2552,7 +2551,6 @@ export default {
   border: none;
   cursor: pointer;
   font-family: inherit;
-  font-weight: 400;
   color: var(--fg);
   white-space: nowrap;
   opacity: 0.35;
@@ -2565,7 +2563,7 @@ export default {
   border-bottom: none;
   border-bottom: 3.5px solid #0000;
   transform: translate(0, 3.5px);
-  font-weight: 200 !important;
+  font-weight: var(--hanzi-weight) !important;
 }
 
 
@@ -2759,7 +2757,6 @@ export default {
 
 .char-breakdown {
   font-size: 1.25rem;
-  font-weight: normal;
   margin: 0;
   opacity: .75;
   margin-bottom: .5em;
@@ -2803,7 +2800,6 @@ export default {
 
 .decomp-component {
   font-size: 1.2rem;
-  font-weight: normal;
   color: var(--fg);
   margin-bottom: 0.5rem;
 }

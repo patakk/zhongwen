@@ -213,7 +213,7 @@ export default {
   height: 48px;
   line-height: 48px;
   background: transparent;
-  font-weight: 200 !important;
+  font-weight: var(--hanzi-weight) !important;
 }
 
 

@@ -195,7 +195,7 @@
                 <div class="hanzi" :style="{ 
                   fontFamily: `'${selectedFont}'`,
                   transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none',
-                  fontWeight: selectedFont === 'Noto Serif SC' ? 500 : 400
+                  fontWeight: selectedFont === 'Noto Serif SC' ? 200 : 200
                 }">
                   {{ entry.character }}
                 </div>
@@ -1083,6 +1083,7 @@ html, body {
   color: var(--fg);
   opacity: 1;
   white-space: nowrap;
+  font-weight: var(--hanzi-weight) !important;
 }
 
 .pinyin {

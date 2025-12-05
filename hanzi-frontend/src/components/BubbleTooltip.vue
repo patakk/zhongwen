@@ -8,16 +8,16 @@
     }"
   >
     <div class="bubble-content">
-      <div class="bubble-hanzi" :style="{ fontFamily: `'${fontFamily}'` }">
-        {{ character }}
-      </div>
-      <div class="bubble-pinyin">{{ pinyin }}</div>
+      <div class="bubble-hanzi" :style="{ fontFamily: `'${fontFamily}'` }" v-html="colorizedHanzi"></div>
+      <div class="bubble-pinyin" v-html="colorizedPinyin"></div>
       <div class="bubble-english">{{ english }}</div>
     </div>
   </div>
 </template>
 
 <script>
+import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
+
 export default {
   name: 'BubbleTooltip',
   props: {
@@ -44,6 +44,20 @@ export default {
     fontFamily: {
       type: String,
       default: 'Noto Sans SC'
+    }
+  },
+  computed: {
+    toneColorEnabled() {
+      try { return this.$store.getters['theme/isToneColorEnabled'] !== false; } catch (e) { return true; }
+    },
+    toneColorScheme() {
+      try { return this.$store.getters['theme/getToneColorScheme'] || 'default'; } catch (e) { return 'default'; }
+    },
+    colorizedHanzi() {
+      return toneColorizeHanzi(this.character, this.pinyin, { enabled: this.toneColorEnabled, palette: this.toneColorScheme });
+    },
+    colorizedPinyin() {
+      return toneColorizePinyin(this.pinyin, { enabled: this.toneColorEnabled, palette: this.toneColorScheme });
     }
   }
 }
@@ -74,7 +88,7 @@ export default {
 
 .bubble-hanzi {
   font-size: 1.5em;
-  font-weight: 500;
+  font-weight: var(--hanzi-weight) !important;
   color: var(--fg);
 }
 

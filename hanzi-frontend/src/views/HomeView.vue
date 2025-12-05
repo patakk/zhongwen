@@ -988,14 +988,14 @@ export default {
   height: 2.2rem;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 5%);
-  color: var(--fg);
+  color: color-mix(in srgb, var(--fg) 35%, var(--bg) 85%);
   cursor: pointer;
 }
 
 .stroke-toggle[aria-pressed="true"],
 .ocr-toggle[aria-pressed="true"] {
-  background: color-mix(in oklab, var(--fg) 22%, var(--bg) 82%);
   border-color: color-mix(in oklab, var(--fg) 32%, var(--bg) 60%);
+  color: var(--fg);
 }
 
 .ocr-panel-wrap {

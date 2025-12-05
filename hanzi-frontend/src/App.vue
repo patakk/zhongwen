@@ -376,7 +376,7 @@ onMounted(async () => {
     padding: 0.35rem 0.25rem;
     text-align: center;
     border-radius: var(--border-radius, 4px);
-    font-weight: 200 !important;
+    font-weight: var(--hanzi-weight) !important;
   }
   .history-item:focus,
   .history-item:focus-visible {
