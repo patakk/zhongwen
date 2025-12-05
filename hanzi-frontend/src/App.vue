@@ -202,7 +202,6 @@ const startDrag = (e) => {
   document.addEventListener('touchend', stopDrag)
 
   // Prevent text selection
-  if (e.cancelable) e.preventDefault()
 }
 
 const onDrag = (e) => {
