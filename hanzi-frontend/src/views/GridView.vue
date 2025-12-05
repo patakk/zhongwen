@@ -1196,7 +1196,7 @@ select {
   height: 1em;
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  z-index: 20;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;

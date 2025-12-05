@@ -540,3 +540,48 @@ button:hover {
 #deck-options .option.selected {
   background-color: var(--selected-bg);
 }
+
+
+.stroke-results {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1em;
+  box-sizing: border-box;
+}
+
+.stroke-result-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(68px, 1fr));
+  gap: 0.5rem;
+}
+
+
+.stroke-result-btn {
+  position: relative;
+  padding: 0.25rem 0.25rem;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
+  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
+  color: var(--fg);
+  cursor: pointer;
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+  font-size: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stroke-result-btn:hover {
+  background: color-mix(in oklab, var(--bg) 80%, var(--fg) 20%);
+  transform: translateY(-1px);
+}
+
+.stroke-result-btn:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--fg) 60%, var(--bg) 40%);
+  outline-offset: 2px;
+}
+
+.stroke-result-text {
+  display: block;
+}

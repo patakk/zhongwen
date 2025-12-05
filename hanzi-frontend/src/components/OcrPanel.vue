@@ -55,18 +55,20 @@
         <div class="result-header">
           <div class="result-title">Detected words</div>
         </div>
-        <div class="result-body token-body">
-          <div v-if="!ocrTokens.length" class="token-empty">No text detected.</div>
-          <div v-else class="token-list">
-            <button
-              v-for="(tok, idx) in ocrTokens"
-              :key="idx"
-              type="button"
-              class="stroke-result-btn ocr-result-btn"
-              @click="copyToken(tok)"
+        <div class="result-body stroke-result">
+          <div v-if="!ocrTokenObjects.length" class="stroke-label">No text detected.</div>
+          <div v-else class="stroke-result-list">
+            <PreloadWrapper
+              v-for="(res, idx) in ocrTokenObjects"
+              :key="res.character || idx"
+              :character="res.character"
+              :navList="ocrNavList"
+              :navIndex="idx"
+              :showBubbles="false"
+              class="stroke-result-btn"
             >
-              <span class="stroke-result-text">{{ tok }}</span>
-            </button>
+              <span class="stroke-result-text">{{ res.character }}</span>
+            </PreloadWrapper>
           </div>
         </div>
       </div>
@@ -111,6 +113,8 @@
 </template>
 
 <script>
+import PreloadWrapper from './PreloadWrapper.vue';
+
 let sharedTesseract = null;
 export default {
   name: 'OcrPanel',
@@ -136,6 +140,9 @@ export default {
       cropSelecting: false,
       cropImageDims: { displayWidth: 0, displayHeight: 0, offsetX: 0, offsetY: 0 },
     };
+  },
+  components: {
+    PreloadWrapper,
   },
   computed: {
     progressPercent() {
@@ -167,6 +174,12 @@ export default {
       if (!cleaned) return [];
       const uniq = new Set(cleaned.split(/\s+/).filter(Boolean));
       return Array.from(uniq);
+    },
+    ocrTokenObjects() {
+      return this.ocrTokens.map(ch => ({ character: ch }));
+    },
+    ocrNavList() {
+      return this.ocrTokenObjects.map(t => t.character);
     },
   },
   async mounted() {
@@ -664,20 +677,6 @@ export default {
   font-size: 0.9rem;
 }
 
-.stroke-result-btn {
-  position: relative;
-  padding: 0.35rem 0.55rem;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
-  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
-  color: var(--fg);
-  cursor: pointer;
-  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
-  font-size: 1.2rem;
-}
-
-.stroke-result-btn:hover {
-  background: color-mix(in oklab, var(--bg) 80%, var(--fg) 20%);
-}
 
 .stroke-result-text {
   display: block;

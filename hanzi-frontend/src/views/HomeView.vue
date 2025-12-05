@@ -40,7 +40,7 @@
           <button type="button" @click="clearCanvas" :disabled="strokes.length === 0">Clear</button>
         </div>
       </div>
-      <div class="stroke-content">
+      <div class="stroke-content" ref="strokeContent">
         <canvas
           ref="strokeCanvas"
           class="stroke-canvas"
@@ -55,15 +55,17 @@
         <div class="stroke-results" v-if="strokeResults.length">
           <span class="stroke-label">Candidate chars:</span>
           <div class="stroke-result-list">
-            <button
+            <PreloadWrapper
               v-for="(res, idx) in strokeResults"
               :key="idx"
-              type="button"
+              :character="res.character"
+              :navList="strokeNavList"
+              :navIndex="idx"
+              :showBubbles="false"
               class="stroke-result-btn"
-              @click="copyStrokeResult(res.character)"
             >
               <span class="stroke-result-text">{{ res.character }}</span>
-            </button>
+            </PreloadWrapper>
           </div>
         </div>
       </div>
@@ -156,6 +158,9 @@ export default {
     },
     toneColorScheme() {
       try { return this.$store.getters['theme/getToneColorScheme'] || 'default'; } catch (e) { return 'default'; }
+    },
+    strokeNavList() {
+      return this.strokeResults.map(r => r.character);
     }
   },
   data() {
@@ -558,11 +563,16 @@ export default {
       this.clearCanvas(false);
       this.redrawStrokes();
     },
+    getStrokeCanvasSize() {
+      const container = this.$refs.strokeContent;
+      const containerWidth = container?.getBoundingClientRect ? container.getBoundingClientRect().width : window.innerWidth;
+      return Math.min(380, Math.max(220, containerWidth - 24));
+    },
     initStrokeCanvas() {
       const canvas = this.$refs.strokeCanvas;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      const size = Math.min(200, window.innerWidth - 40);
+      const size = this.getStrokeCanvasSize();
       this.strokeCanvasSize = size;
       canvas.style.width = `${size}px`;
       canvas.style.height = `${size}px`;
@@ -570,7 +580,7 @@ export default {
       canvas.height = size;
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
-      ctx.lineWidth = size / 25;
+      ctx.lineWidth = Math.max(3, size / 25);
       const dark = document.documentElement.getAttribute('data-theme');
       const isDark = dark === 'dark' || dark === 'theme2';
       ctx.strokeStyle = isDark ? '#fff' : '#000';
@@ -583,7 +593,7 @@ export default {
       const canvas = this.$refs.strokeCanvas;
       if (!canvas) return;
       const data = canvas.toDataURL();
-      const size = Math.min(340, window.innerWidth - 40);
+      const size = this.getStrokeCanvasSize();
       this.strokeCanvasSize = size;
       canvas.style.width = `${size}px`;
       canvas.style.height = `${size}px`;
@@ -592,7 +602,7 @@ export default {
       const ctx = canvas.getContext('2d');
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
-      ctx.lineWidth = size / 25;
+      ctx.lineWidth = Math.max(3, size / 25);
       const theme = document.documentElement.getAttribute('data-theme');
       ctx.strokeStyle = (theme === 'dark' || theme === 'theme2') ? '#fff' : '#000';
       this.strokeCanvasCtx = ctx;
@@ -746,18 +756,6 @@ export default {
       };
       script.onerror = () => { this._loadingLookup = false; };
       document.head.appendChild(script);
-    },
-    async copyStrokeResult(char) {
-      await this.copyToClipboard(char);
-    },
-    async copyToClipboard(text) {
-      try {
-        if (navigator?.clipboard && text) {
-          await navigator.clipboard.writeText(text);
-        }
-      } catch (e) {
-        console.error('Copy failed', e);
-      }
     }
   },
   watch: {
@@ -1013,11 +1011,15 @@ export default {
 
 .stroke-draw-wrap {
   width: 100%;
-  max-width: 900px;
-  margin: 0em auto 2em auto;
-  padding: 1em;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 80%);
-  background: color-mix(in oklab, var(--bg) 95%, var(--fg) 5%);
+  max-width: 960px;
+  margin: 0.35em auto 2em auto;
+  padding: 1rem 1.25rem;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 22%, var(--bg) 78%);
+  background: color-mix(in oklab, var(--bg) 94%, var(--fg) 6%);
+  box-shadow: 0 10px 28px color-mix(in oklab, var(--fg) 6%, var(--bg) 92%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   box-sizing: border-box;
 }
 
@@ -1025,29 +1027,40 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.35rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   box-sizing: border-box;
 }
 
-.stroke-content {
+.stroke-buttons {
   display: flex;
-  gap: 1rem;
-  align-items: flex-start;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.stroke-label { font-size: 0.95rem; opacity: 0.7; }
+.stroke-content {
+  display: grid;
+  grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  width: 100%;
+}
+
+.stroke-label { font-size: 0.95rem; opacity: 0.75; }
 
 .stroke-buttons button {
-  margin-left: 0.35rem;
-  padding: 0.35rem 0.6rem;
+  padding: 0.35rem 0.75rem;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
-  background: var(--bg);
+  background: color-mix(in oklab, var(--bg) 92%, var(--fg) 8%);
   color: var(--fg);
   cursor: pointer;
 }
 
 .stroke-canvas {
   flex-shrink: 0;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1 / 1;
   background: color-mix(in oklab, var(--bg) 97%, var(--fg) 3%);
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   touch-action: none;
@@ -1055,56 +1068,38 @@ export default {
   box-sizing: border-box;
 }
 
-.stroke-results {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.stroke-result-list {
-  display: flex;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-}
 
 @media (max-width: 768px) {
   .stroke-content {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .stroke-canvas {
     width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
   }
 
   .stroke-results {
     width: 100%;
   }
-
-
-  .stroke-toggle,
-  .ocr-toggle {
+  
+  .stroke-controls {
+    align-items: flex-start;
+  }
+  .stroke-buttons {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .stroke-draw-wrap {
+    padding: 0.85rem 1rem;
+  }
+  .stroke-result-list {
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
   }
 }
 
-.stroke-result-btn {
-  position: relative;
-  padding: 0.35rem 0.55rem;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
-  background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
-  color: var(--fg);
-  cursor: pointer;
-  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
-  font-size: 1.2rem;
-}
-
-.stroke-result-btn:hover {
-  background: color-mix(in oklab, var(--bg) 80%, var(--fg) 20%);
-}
-
-.stroke-result-text {
-  display: block;
-}
 
 .clipboard-icon {
   position: absolute;
