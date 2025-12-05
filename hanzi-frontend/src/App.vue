@@ -202,7 +202,7 @@ const startDrag = (e) => {
   document.addEventListener('touchend', stopDrag)
 
   // Prevent text selection
-  if (!isHistoryTitle && e.cancelable) e.preventDefault()
+  if (e.cancelable) e.preventDefault()
 }
 
 const onDrag = (e) => {
@@ -319,29 +319,31 @@ onMounted(async () => {
     z-index: 10;
   }
 
-  .history-rail {
-    position: fixed;
-    z-index: 10;
-    right: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.0rem;
-    padding: 0.5rem;
-    border: 1px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
-    background: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
-    border-radius: var(--border-radius, 4px);
-  }
-  .history-title {
-    font-size: 1.25rem;
-    text-transform: uppercase;
-    text-align: center;
-    color: color-mix(in oklab, var(--fg) 70%, var(--bg) 30%);
-    letter-spacing: 0.04em;
-    cursor: grab;
-    user-select: none;
-    -webkit-user-select: none;
-    padding: 0.25rem 0;
-  }
+.history-rail {
+  position: fixed;
+  z-index: 10;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.0rem;
+  padding: 0.5rem;
+  border: 1px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
+  border-radius: var(--border-radius, 4px);
+  touch-action: none;
+}
+.history-title {
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  text-align: center;
+  color: color-mix(in oklab, var(--fg) 70%, var(--bg) 30%);
+  letter-spacing: 0.04em;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  padding: 0.25rem 0;
+  touch-action: none;
+}
   .history-title:active {
     cursor: grabbing;
   }
