@@ -186,7 +186,9 @@ const toggleHistoryCollapse = () => {
 const startDrag = (e) => {
   const target = e.target
   const targetEl = target && 'closest' in target ? target : target?.parentElement
-  if (targetEl && targetEl.closest('.history-title, .history-item')) return
+  const isHistoryItem = targetEl && targetEl.closest('.history-item')
+  const isHistoryTitle = targetEl && targetEl.closest('.history-title')
+  if (isHistoryItem) return
   isDragCandidate.value = true
   isDragging.value = false
   const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY
@@ -200,11 +202,13 @@ const startDrag = (e) => {
   document.addEventListener('touchend', stopDrag)
 
   // Prevent text selection
-  e.preventDefault()
+  if (!isHistoryTitle && e.cancelable) e.preventDefault()
 }
 
 const onDrag = (e) => {
   if ((!isDragCandidate.value && !isDragging.value) || !historyRail.value) return
+
+  if (isDragging.value && e.cancelable) e.preventDefault()
 
   const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY
   const deltaY = clientY - dragStartY.value
