@@ -204,6 +204,7 @@ const cardModalModule = {
       
       // Check if we already have preloaded data
       if (state.preloadedData[character]) {
+        console.log('Using preloaded data for character:', character);
         commit('SET_CARD_DATA', state.preloadedData[character]);
         
         // Extract decomposition data from the card data if available

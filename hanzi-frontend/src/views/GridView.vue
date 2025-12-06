@@ -34,126 +34,8 @@
       <font-awesome-icon :icon="isGridView ? ['fas', 'bars'] : ['fas', 'grip']" />
     </button>
 
-    <!-- Toggle button for the leftbar -->
-    <!-- <button 
-      class="leftbar-toggle" 
-      @click="toggleLeftbar"
-      :class="{ 'leftbar-toggle-active': leftbarVisible }"
-    >
-    <font-awesome-icon :icon="['fas', 'gear']" />
-    </button> -->
-
-    <!-- Floating leftbar, positioned outside the main flow -->
-    <div class="leftbar" :class="{ 'leftbar-hidden': !leftbarVisible }">
-        <div class="tab-keyboard-shortcut">[Tab]</div>
-        <div class="leftbar-header">
-          <div class="leftbar-header-label">Settings</div>
-          <button class="close-button" @click="toggleLeftbar">×</button>
-        </div>
-
-        <!-- Dictionary Selector -->
-        <label for="dictionary-select">Choose a Dictionary:</label>
-        <select v-model="selectedCategory" id="dictionary-select"
-                @change="localPageTitle = dictionaryData[selectedCategory].name || selectedCategory">
-          <option v-for="(category, categoryName) in dictionaryData" :key="categoryName" :value="categoryName">
-            {{ category.name || categoryName }}
-          </option>
-        </select>
-
-        <!-- View Toggle -->
-        <label for="view-toggle">Display Mode:</label>
-        <button 
-          class="single-toggle-button" 
-          @click="toggleView"
-        >
-          {{ isGridView ? 'Show List' : 'Show Grid' }}
-        </button>
-
-        <!-- Font Selector -->
-        <label for="font-select">Font:</label>
-        <select v-model="selectedFont" id="font-select">
-          <option value="Kaiti">Kaiti</option>
-          <option value="Noto Sans SC">Noto Sans</option>
-          <option value="Noto Serif SC">Noto Serif</option>
-        </select>
-
-        <!-- Font Size Buttons (replacing the slider) -->
-        <label>Font Size:</label>
-        <div class="font-size-buttons">
-          <button 
-            class="size-button" 
-            :class="{ 'active': fontScale === 0.6 }"
-            @click="setFontSize(0.6)"
-          >
-            <span class="size-icon">小</span>
-          </button>
-          <button 
-            class="size-button" 
-            :class="{ 'active': fontScale === 1.0 }"  
-            @click="setFontSize(1.0)"
-          >
-            <span class="size-icon">中</span>
-          </button>
-          <button 
-            class="size-button" 
-            :class="{ 'active': fontScale === 2.0 }"
-            @click="setFontSize(2.0)"
-          >
-            <span class="size-icon">大</span>
-          </button>
-        </div>
-        
-        <!-- Grid Gap Size Options - only visible in grid mode -->
-        <template v-if="isGridView">
-          <label>Grid Gap Size:</label>
-          <div class="font-size-buttons">
-            <button 
-              class="size-button" 
-              :class="{ 'active': gridGapSize === '0.25em' }"
-              @click="setGridGapSize('0.25em')"
-            >
-              <span class="gap-icon"><font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/><font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/></span>
-            </button>
-            <button 
-              class="size-button" 
-              :class="{ 'active': gridGapSize === '1em' }"
-              @click="setGridGapSize('1em')"
-            >
-              <span class="gap-icon"><font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/>&nbsp;<font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/></span>
-            </button>
-            <button 
-              class="size-button" 
-              :class="{ 'active': gridGapSize === '3em' }"
-              @click="setGridGapSize('3em')"
-            >
-              <span class="gap-icon"><font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/>&nbsp;&nbsp;&nbsp;<font-awesome-icon :icon="['fas', 'square']" class="gap-icon-item"/></span>
-            </button>
-          </div>
-          
-          <!-- Grid Border Toggle - only visible in grid mode -->
-          <label>Grid Borders:</label>
-          <button 
-            class="single-toggle-button" 
-            @click="toggleGridBorders"
-          >
-            {{ showGridBorders ? 'Hide Borders' : 'Show Borders' }}
-          </button>
-        </template>
-        
-        <!-- Pinyin Toggle - only visible in list mode -->
-        <template v-if="!isGridView">
-          <label>Pinyin Display:</label>
-          <button 
-            class="single-toggle-button" 
-            @click="togglePinyin"
-          >
-            {{ showPinyin ? 'Hide Pinyin' : 'Show Pinyin' }}
-          </button>
-        </template>
-    </div>
 
     <!-- Background overlay when leftbar is visible -->
-    <div v-if="leftbarVisible" class="overlay" @click="closeLeftbar"></div>
 
     <!-- Main content takes full width regardless of leftbar state -->
       <div class="main-content" ref="mainContent" @scroll="handleScroll" @click="handleMainClick">
@@ -415,15 +297,6 @@ export default {
         if (this.isSubmenuOpen && !clickedInsideDropdown) {
           this.isSubmenuOpen = false;
         }
-        if (this.leftbarVisible) {
-          const leftbarEl = document.querySelector('.leftbar');
-          const toggleEl = document.querySelector('.leftbar-toggle');
-          const clickedInsideLeftbar = leftbarEl && leftbarEl.contains(event.target);
-          const clickedToggle = toggleEl && toggleEl.contains(event.target);
-          if (!clickedInsideLeftbar && !clickedToggle) {
-            this.closeLeftbar();
-          }
-        }
       } catch (e) {
 
       }
@@ -460,10 +333,6 @@ export default {
       this.$store.dispatch('bubbleTooltip/hideBubble');
     },
     
-    // New method to handle click on BasePage component
-    handleBasepageClick() {
-      this.toggleLeftbar();
-    },
     applyFontScale() {
       this.fontScale = this.tempFontScale;
     },
@@ -762,15 +631,7 @@ export default {
       });
     },
     // New method to toggle sidebar visibility
-    toggleLeftbar() {
-      this.leftbarVisible = !this.leftbarVisible;
-    },
     // Method to close the sidebar (always collapse on outside click)
-    closeLeftbar() {
-      if (this.leftbarVisible) {
-        this.leftbarVisible = false;
-      }
-    },
     
     // Method to set grid gap size with optimized loading
     setGridGapSize(size) {
@@ -797,13 +658,6 @@ export default {
     },
     
     // Handle key down events to detect Tab key
-    handleKeyDown(event) {
-      // Only respond to Tab key, and prevent default behavior
-      if (event.key === 'Tab') {
-        event.preventDefault();
-        this.toggleLeftbar();
-      }
-    },
 
     // Method to scroll to top
     scrollToTop() {
@@ -823,7 +677,6 @@ export default {
     // Close dropdown when clicking anywhere in main content; also collapse leftbar
     handleMainClick() {
       if (this.isSubmenuOpen) this.isSubmenuOpen = false;
-      if (this.leftbarVisible) this.closeLeftbar();
     }
   },
   watch: {
@@ -921,7 +774,6 @@ export default {
     this._onDocClick = (e) => this.handleOutsideClick(e);
     document.addEventListener('click', this._onDocClick);
     // Add event listener for the sidebar opening event
-    document.addEventListener('sidebar-opened', this.closeLeftbar);
     
     // Use window scroll event instead of container scroll event
     window.addEventListener('scroll', this.handleScroll);
@@ -936,7 +788,6 @@ export default {
     window.removeEventListener('keydown', this.handleKeyDown);
     
     // Remove event listener for the sidebar opening event
-    document.removeEventListener('sidebar-opened', this.closeLeftbar);
     
     // Remove window scroll event listener
     window.removeEventListener('scroll', this.handleScroll);
@@ -1147,31 +998,6 @@ select {
   font-size: 1em;
 }
 
-.leftbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 400px;
-  box-sizing: border-box;
-  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  height: 100vh;
-  overflow-y: auto;
-  padding: 1em;
-  z-index: 30;
-  /* box-shadow: 0 0 20px color-mix(in oklab, var(--fg) 16%, var(--bg) 0%); */
-  border-right: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 10%);
-  box-shadow: 0 0 20px color-mix(in oklab, var(--bg) 66%, #7770 0%);
-  box-shadow: 0 0 20px color-mix(in oklab, var(--fg) 66%, #7770 0%);
-  box-shadow: 20px 0 80px var(--bg);
-}
-
-.leftbar-hidden {
-  transform: translateX(-100%);
-  box-shadow: none;
-}
 
 .main-content {
   width: 100%;
@@ -1219,20 +1045,6 @@ select {
   opacity: .5;
 }
 
-.leftbar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-}
-
-.leftbar-header-label {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: var(--fg);
-  margin-top: 1.5em;
-}
-
 .close-button {
   background: none;
   border: none;
@@ -1246,25 +1058,6 @@ select {
 
 .close-button:hover {
   opacity: 1;
-}
-
-.leftbar-toggle {
-  position: fixed;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  justify-content: center;
-  background: none;
-  outline: none;
-  border: none;
-  cursor: pointer;
-  transform: translate(-50%, -50%);
-  color: var(--fg);
-  font-size: 1.5em;
-  cursor: pointer;
-  left: 1.5rem;
-  top: 4rem;
 }
 
 .toggle-icon {
@@ -1379,38 +1172,6 @@ label {
     margin: 1em;
   }
 
-  .leftbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 80% !important; /* Override default width */
-    max-width: 300px;
-    height: 100vh;
-    z-index: 30;
-    padding: 1em;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-  }
-
-  .leftbar-hidden {
-    transform: translateX(-100%);
-    width: 0 !important;
-  }
-
-  .leftbar-toggle {
-    /* position: fixed;
-    top: 10em;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0.5em 1em;
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
-    cursor: pointer;
-    color: var(--fg); */
-  }
-
   .list-item {
   }
 
@@ -1443,10 +1204,6 @@ label {
     display: none;
   }
 
-  .leftbar:not(.leftbar-hidden) + .overlay {
-    display: block;
-    opacity: 0;
-  }
 
   
   .hanzi {
