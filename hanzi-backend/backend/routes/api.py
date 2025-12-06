@@ -56,7 +56,7 @@ def version():
                 return jsonify({"commit": f.read().strip()})
         except IOError:
             return 'Error reading version file', 500
-    return jsonify({"commit": "unknown"})
+    return jsonify({"commit": "unknown"}), 200
 
 @api_bp.route("/rename_wordlist", methods=["POST"])
 @session_required

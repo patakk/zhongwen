@@ -162,7 +162,7 @@ const checkBackendConnectivity = async () => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 2000);
     
-    const response = await fetch('/version', { 
+    const response = await fetch('/api/version', { 
       method: 'GET',
       signal: controller.signal
     });
