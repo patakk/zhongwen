@@ -34,10 +34,10 @@ class User(db.Model):
     oauth_token = db.Column(db.String(200), nullable=True)
     oauth_token_expiry = db.Column(db.DateTime, nullable=True)
 
+    word_lists = db.relationship("WordList", backref="user", lazy=True)
     #notes = db.relationship("UserNotes", backref="user", lazy=True)
     #user_string = db.relationship("UserString", backref="user", uselist=False)
     #stroke_entries = db.relationship("StrokeData", backref="user_ref", lazy=True)
-    word_lists = db.relationship("WordList", backref="user", lazy=True)
     # Per-user custom definitions for custom words (hanzi/pinyin/english)
     #custom_definitions = db.relationship(
     #    "UserCustomDefinition",

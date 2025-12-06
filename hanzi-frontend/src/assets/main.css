@@ -576,7 +576,6 @@ button:hover {
 
 .stroke-result-btn:hover {
   background: color-mix(in oklab, var(--bg) 80%, var(--fg) 20%);
-  transform: translateY(-1px);
 }
 
 .stroke-result-btn:focus-visible {

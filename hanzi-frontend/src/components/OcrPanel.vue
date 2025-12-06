@@ -51,7 +51,7 @@
           </div>
         </div>
       </div>
-      <div v-if="hasOcrResult || ocrText" class="result result-wrapper">
+      <div class="result result-wrapper">
         <div class="result-header">
           <div class="result-title">Detected words</div>
         </div>
@@ -501,7 +501,6 @@ export default {
   justify-content: flex-start;
   gap: 0.5rem;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -588,7 +587,6 @@ export default {
   padding: 0.7rem 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .btn-primary {
