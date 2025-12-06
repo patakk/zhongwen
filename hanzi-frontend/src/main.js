@@ -217,7 +217,7 @@ const initApp = async () => {
             const charToPreload = hsk1Chars[randomIndex];
             
             // Only preload stroke data, not character info since it's already in the dictionary
-            await store.dispatch('preloadPracticeCharacterStrokes', charToPreload);
+            //await store.dispatch('preloadPracticeCharacterStrokes', charToPreload);
           }
         } catch (err) {
           console.error('Error preloading HSK1 character:', err);
