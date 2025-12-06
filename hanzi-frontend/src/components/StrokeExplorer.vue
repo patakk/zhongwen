@@ -204,7 +204,7 @@ export default {
 
       try {
         const charsString = chars.join('');
-        const response = await fetch(`/api/getStrokes/${encodeURIComponent(charsString)}`);
+        const response = await fetch(`/api/getStrokes?character=${encodeURIComponent(charsString)}`);
         if (!response.ok) return;
         const data = await response.json();
 

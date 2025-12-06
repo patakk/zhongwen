@@ -1083,7 +1083,7 @@ const store = createStore({
       
       try {
         // Create promise for the stroke API call
-        const response = await fetch(`/api/getStrokes/${character}`);
+        const response = await fetch(`/api/getStrokes?character=${character}`);
         if (!response.ok) {
           console.error('Network response was not ok for character:', character);
           return null;

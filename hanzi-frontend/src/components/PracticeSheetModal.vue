@@ -165,11 +165,11 @@ export default {
       const dateChars = Array.from(dateCharSet).filter(c => /[\u4e00-\u9fa5年月日0-9]/.test(c)).join('');
       try {
         await this.ensureCharInfo();
-        const response = await fetch(`/api/getStrokes/${uniqueChars}`);
+        const response = await fetch(`/api/getStrokes?character=${uniqueChars}`);
         if (!response.ok) return;
         const strokesData = await response.json();
         let dateStrokesData = null;
-        const dateResponse = await fetch(`/api/getStrokes/${dateChars}`);
+        const dateResponse = await fetch(`/api/getStrokes?character=${dateChars}`);
         if (dateResponse.ok) {
           dateStrokesData = await dateResponse.json();
         }

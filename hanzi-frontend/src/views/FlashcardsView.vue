@@ -288,7 +288,7 @@ export default {
     },
     async loadStrokeData(character) {
       try {
-        const response = await fetch(`/api/getStrokes/${character}`);
+        const response = await fetch(`/api/getStrokes?character=${character}`);
         if (!response.ok) {
           return {
             strokes: { fstrokes: [], offsetX: 0, offsetY: 0 },

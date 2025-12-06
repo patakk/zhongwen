@@ -526,9 +526,12 @@ def get_audio():
 # def debug():
 #     return jsonify({"debug": flashcard_app.debug})
 
-@api_bp.route("/getStrokes/<character>")
+@api_bp.route("/getStrokes")
 @session_required
-def get_strokes(character):
+def get_strokes():
+    if 'character' not in request.args:
+        return jsonify({"error": "Missing 'character' parameter"}), 400
+    character = request.args.get("character")
     if len(character) == 1:
         strokes = STROKES_CACHE.get(character)
         return jsonify(strokes)

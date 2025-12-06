@@ -1668,7 +1668,7 @@ export default class HanziPlotter {
     async loadStrokeData(onReady=null) {
         try {
             this.originalStrokes = undefined;
-            const response = await fetch(`/api/getStrokes/${this.character}`);
+            const response = await fetch(`/api/getStrokes?character=${this.character}`);
             if (!response.ok) {
                 return;
             }

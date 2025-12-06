@@ -820,14 +820,14 @@
         const dateChars = Array.from(dateCharSet).filter(c => /[\u4e00-\u9fa5年月日0-9]/.test(c)).join('');
         try {
           // Fetch main strokes
-          const response = await fetch(`/api/getStrokes/${charList}`);
+          const response = await fetch(`/api/getStrokes?character=${charList}`);
           if (!response.ok) {
             console.error('Network response was not ok for characters:', charList);
             return;
           }
           const strokesData = await response.json();
           // Fetch date strokes
-          const dateResponse = await fetch(`/api/getStrokes/${dateChars}`);
+          const dateResponse = await fetch(`/api/getStrokes?character=${dateChars}`);
           let dateStrokesData = null;
           if (dateResponse.ok) {
             dateStrokesData = await dateResponse.json();

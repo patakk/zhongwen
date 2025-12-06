@@ -585,7 +585,7 @@ export default defineComponent({
           ? Promise.resolve(storeCache.strokeData[character])
           : this.strokeCache[character] 
             ? Promise.resolve(this.strokeCache[character])
-            : fetch(`/api/getStrokes/${character}`).then(response => {
+            : fetch(`/api/getStrokes?character=${character}`).then(response => {
                 if (!response.ok) {
                   console.error('Network response was not ok for character:', character);
                   return null;
