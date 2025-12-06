@@ -395,13 +395,14 @@ export default {
       }
       this.isLoading = true;
       try {
-        const res = await fetch('/api/search_results', {
+        /*const res = await fetch('/api/search_results', {
           method: 'POST',
           headers: {
         'Content-Type': 'application/json',
           },
           body: JSON.stringify({ query: searchQuery }),
-        });
+        });*/
+        const res = await fetch(`/api/search_results?query=${encodeURIComponent(searchQuery)}`);
         const data = await res.json();
         const rawResults = data.results || data.groups || [];
         this.results = this.filterResults(rawResults);
