@@ -252,14 +252,12 @@ const cardModalModule = {
       commit('SET_LOADING', true);
       commit('SET_CARD_DATA', null);
       
-
       try {
         const response = await fetch(`/api/get_card_data?character=${character}`);
         const data = await response.json();
         
         if (data) {
           // Set the card data
-          await new Promise((resolve) => setTimeout(resolve, 1000));
           commit('SET_CARD_DATA', data);
           
           // Extract decomposition data from the card data response
