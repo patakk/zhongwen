@@ -551,8 +551,6 @@ export default {
       };
       // Remove undefined to avoid stray params
       Object.keys(query).forEach(k => (query[k] === undefined ? delete query[k] : null));
-      console.log('qq')
-      console.log(query)
       return query;
     },
     // Replace URL with current state encoded in query params

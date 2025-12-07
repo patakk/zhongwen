@@ -204,7 +204,6 @@ const cardModalModule = {
       
       // Check if we already have preloaded data
       if (state.preloadedData[character]) {
-        console.log('Using preloaded data for character:', character);
         commit('SET_CARD_DATA', state.preloadedData[character]);
         
         // Extract decomposition data from the card data if available
@@ -831,7 +830,6 @@ const store = createStore({
             
             // If we get 'authStatus: false' from server, the user's account likely no longer exists
             if (data.authStatus === false) {
-              console.warn("Server indicates user no longer exists, logging out");
               dispatch('logout');
               return {};
             }
@@ -896,7 +894,6 @@ const store = createStore({
         
         // If we got a response but authStatus is false, log the user out
         if (!userData.authStatus) {
-          console.warn("Server returned non-authenticated status, logging out");
           dispatch('logout');
           commit('SET_LOADING', false);
           return;
