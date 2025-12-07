@@ -533,7 +533,7 @@ button:hover {
   box-shadow: none;
   box-sizing: border-box;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
-  border-top: none;
+  border: none;
   border-bottom: var(--thin-border-width) dashed color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
   cursor: pointer;
 }
@@ -544,6 +544,7 @@ button:hover {
 
 .word-item:is(:last-child) {
   border-bottom: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
+  border-bottom: none;
 }
 
 .word-item:hover {

@@ -890,12 +890,13 @@ export default {
   overflow: hidden;
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 5%);
   box-sizing: border-box;
+  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
 }
 
 .group-header {
   display: flex;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 10%, var(--bg) 15%);
-  border-bottom: none;
+  border: none;
   border-radius: 1px;
   align-items: center;
   justify-content: space-between;
