@@ -1,6 +1,5 @@
 import './assets/main.css'
 import './assets/theme1.css'
-import './assets/theme2.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia' // You can remove if not using Pinia
@@ -174,6 +173,7 @@ const initApp = async () => {
     
     // Only fetch custom dictionary data if the user is logged in
     if (store.getters.isLoggedIn) {
+
       store.dispatch('fetchCustomDictionaryData');
     }
   }

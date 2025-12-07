@@ -2,45 +2,64 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 export default defineConfig(({ command }) => {
+  const isBuild = command === 'build'
+
   const config = {
     server: {
       watch: {
-        usePolling: true
+        usePolling: true,
       },
       hmr: {
-        overlay: true
+        overlay: true,
       },
       proxy: {
         '/api': {
           target: 'http://localhost:5117',
-          changeOrigin: true, 
+          changeOrigin: true,
         },
         '/login/google': {
           target: 'http://localhost:5117',
           changeOrigin: true,
-        }
+        },
       },
       allowedHosts: [
         'localhost',
-        'e4c2-86-33-89-246.ngrok-free.app'
+        'e4c2-86-33-89-246.ngrok-free.app',
       ],
-      port: 5888
+      port: 5888,
     },
+
     plugins: [
       vue(),
-      vueDevTools(),
-    ],
-    
+      !isBuild && vueDevTools(),      // dev only
+    ].filter(Boolean),
+
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url))
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
+    },
+
+    build: {
+      rollupOptions: {
+        plugins: isBuild
+          ? [
+              visualizer({
+                filename: 'stats.html',
+                gzipSize: true,
+                brotliSize: true,
+                open: true,
+              }),
+            ]
+          : [],
       },
     },
   }
 
-  if (command === 'build') {
+  if (isBuild) {
     config.base = '/'
   }
 
