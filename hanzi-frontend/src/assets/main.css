@@ -1,32 +1,41 @@
 @font-face {
   font-family: 'Kaiti';
-  src: url('https://assets.hanzi.abcrgb.xyz/KaiTi.ttf') format('truetype');
+  src: url('https://assets.hanzi.abcrgb.xyz/KaiTi.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
-}
-
-@font-face {
-  font-family: 'SF Mono Regular';
-  src: url('https://assets.hanzi.abcrgb.xyz/SFMono-Regular.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Neuething Sans Test';
-  src: url('https://assets.hanzi.abcrgb.xyz/NeuethingVariableTest-boldExpanded.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'Fusion Pixel S';
-  src: url('https://assets.hanzi.abcrgb.xyz/fusion-pixel-12px-proportional-zh_hans.ttf') format('truetype');
+  src: url('https://assets.hanzi.abcrgb.xyz/fusion-pixel-12px-proportional-zh_hans.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'Fusion Pixel T';
-  src: url('https://assets.hanzi.abcrgb.xyz/fusion-pixel-12px-proportional-zh_hant.ttf') format('truetype');
+  src: url('https://assets.hanzi.abcrgb.xyz/fusion-pixel-12px-proportional-zh_hant.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SF Mono Regular';
+  src: url('https://assets.hanzi.abcrgb.xyz/SFMono-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SF Mono Medium';
+  src: url('https://assets.hanzi.abcrgb.xyz/SFMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
 
 #app{
