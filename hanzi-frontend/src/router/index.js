@@ -29,7 +29,7 @@ const routes = [
   { path: '/lexicon', component: Lexicon },
   { path: '/tools', component: Tools },
   //{ path: '/word/:word', name: 'WordPage', component: WordView },
-  { path: '/:pathMatch(.*)*', component: Home } 
+  { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 
 const router = createRouter({
