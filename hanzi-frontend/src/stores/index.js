@@ -250,7 +250,6 @@ const cardModalModule = {
     },
     async fetchCardData({ commit, state }, character) {
       commit('SET_LOADING', true);
-      commit('SET_CARD_DATA', {});
       
       try {
         const response = await fetch(`/api/get_card_data?character=${character}`);

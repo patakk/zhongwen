@@ -1,12 +1,18 @@
 <template>
   <div v-if="isVisible || pageMode" :class="['global-modal-container', { 'page-mode-container': pageMode }]" @click="closeModal">
     <!--<div :class="['card-modal-overlay', { 'page-mode-overlay': pageMode }]" @click="closeModal">-->
-      <!--<div v-if="isLoading" class="loading-state">
+      <div v-if="isLoading" class="loading-state">
         <div class="spinner"></div>
-        <div>Loading...</div>
-      </div>-->
+        <div class="spinner-label">Loading...</div>
+      </div>
 
       <div
+        v-if="isLoading"
+        class="modal"
+      ></div>
+
+      <div
+        v-else
         :class="['modal', 'card-modal', { invert: swipeDimVisible }, { mleft: swipeHintDirection === 'left' }, { mright: swipeHintDirection === 'right' }]"
         @click.stop="handleModalClick"
         @touchstart="onTouchStart"
@@ -1921,9 +1927,10 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 400px;
+  height: 100%;
   font-size: 1.2em;
   color: #666;
+  z-index: 30;
 }
 
 .spinner {
@@ -1933,7 +1940,12 @@ export default {
   border: 4px solid #ccc;
   border-top-color: #333;
   border-radius: 50%;
+  z-index: 30;
   animation: spin 0.8s linear infinite;
+}
+
+.spinner-label {
+  z-index: 30;
 }
 
 @keyframes spin {
