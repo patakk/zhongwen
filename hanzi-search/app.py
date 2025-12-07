@@ -339,6 +339,7 @@ def append_unique(results, seen, seen_map, entries):
         key = (r.get('hanzi'), r.get('pinyin'), r.get('english'))
         if key in seen_map:
             existing = seen_map[key]
+            print(r.get('is_pinyin_exact'), existing.get('is_pinyin_exact'))
             if r.get('is_pinyin_exact') and not existing.get('is_pinyin_exact'):
                 existing['is_pinyin_exact'] = True
                 existing['matched_query'] = r.get('matched_query', existing.get('matched_query'))
