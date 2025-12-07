@@ -45,7 +45,7 @@ export default defineConfig(({ command }) => {
 
     build: {
       rollupOptions: {
-        plugins: !isBuild
+        plugins: isBuild
           ? [
               visualizer({
                 filename: 'stats.html',

@@ -582,15 +582,17 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
 import ExpandableExamples from './ExpandableExamples.vue'
 import ClickableRow from './ClickableRow.vue'
-import AnimatedHanzi from './AnimatedHanzi.vue'
 import ToastNotification from './ToastNotification.vue'
 import RecursiveDecomposition from './RecursiveDecomposition.vue'
 import PreloadWrapper from './PreloadWrapper.vue'
 import { mapGetters, mapActions } from 'vuex'
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer'
 import { faVolumeHigh } from '@/icons'
+
+
 
 export default {
   setup() {
@@ -601,7 +603,7 @@ export default {
   components: {
     ExpandableExamples,
     ClickableRow,
-    AnimatedHanzi,
+    AnimatedHanzi: defineAsyncComponent(() => import('./AnimatedHanzi.vue')),
     ToastNotification,
     RecursiveDecomposition,
     PreloadWrapper
