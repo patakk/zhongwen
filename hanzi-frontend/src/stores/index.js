@@ -3,10 +3,10 @@ import router from '../router';
 import ziHistory from './zihistory';
 
 export const CHAR_FONT_FAMILIES = {
-  'kaiti': "'Kaiti','STKaiti','Kai','楷体',serif",
-  'noto-sans': "'Noto Sans SC','Noto Sans CJK SC','Source Han Sans SC','PingFang SC','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif",
-  'noto-serif': "'Noto Serif SC','Noto Serif CJK SC','Source Han Serif SC','Songti SC','SimSun',serif",
-  'fusion-pixel': "'Fusion Pixel S', 'Fusion Pixel T'",
+  'kaiti': "'Kaiti','Noto Sans SC',serif",
+  'noto-sans': "'Noto Sans SC','sans-serif'",
+  'noto-serif': "'Noto Serif SC','Noto Sans SC',serif",
+  'fusion-pixel': "'Fusion Pixel S', 'Fusion Pixel T', 'Noto Sans SC', monospace",
 };
 
 export const CHAR_FONT_LABELS = {

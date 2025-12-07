@@ -167,7 +167,7 @@
                 class="concept-item"
                 @click="updateModalContent(item.character)"
               >
-                <div class="concept-character" :style="{ fontFamily: 'var(--main-word-font)' }">{{ item.character }}</div>
+                <div class="concept-character" :style="{ fontFamily: ['var(--main-word-font)', 'Noto Sans SC'] }">{{ item.character }}</div>
                 <div class="concept-pinyin">{{ item.pinyin && item.pinyin.length > 0 ? $toAccentedPinyin(item.pinyin[0]) : '' }}</div>
                 <div class="concept-english">{{ item.english && item.english.length > 0 ? item.english[0].split('/')[0] : '' }}</div>
               </div>
@@ -185,7 +185,7 @@
                 class="concept-item"
                 @click="updateModalContent(item.character)"
               >
-                <div class="concept-character" :style="{ fontFamily: 'var(--main-word-font)' }">{{ item.character }}</div>
+                <div class="concept-character" :style="{ fontFamily: ['var(--main-word-font)', 'Noto Sans SC'] }">{{ item.character }}</div>
                 <div class="concept-pinyin">{{ item.pinyin && item.pinyin.length > 0 ? $toAccentedPinyin(item.pinyin[0]) : '' }}</div>
                 <div class="concept-english">{{ item.english && item.english.length > 0 ? item.english[0].split('/')[0] : '' }}</div>
               </div>
