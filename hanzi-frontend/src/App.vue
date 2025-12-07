@@ -114,29 +114,27 @@ watch(
 
 // Function to verify user on app load and page refreshes
 const verifyUserExists = async () => {
-  if (store.getters.isLoggedIn) {
-    try {
-      // Check if backend is available before trying to fetch user data
-      const backendAvailable = await checkBackendConnectivity();
-      if (!backendAvailable) {
-        console.warn('Backend unavailable during verification, logging out');
-        store.dispatch('logout');
-        return;
-      }
-      
-      // Fetch user data to verify user still exists in the database
-      await store.dispatch('fetchUserData');
-      
-      // If after fetchUserData the auth status is false, user no longer exists
-      if (!store.getters.getAuthStatus) {
-        console.warn('User session invalid, logging out after verification');
-        store.dispatch('logout');
-      }
-    } catch (error) {
-      console.error('Error verifying user:', error);
-      // On error, assume user session is invalid
+  try {
+    // Check if backend is available before trying to fetch user data
+    const backendAvailable = await checkBackendConnectivity();
+    if (!backendAvailable) {
+      console.warn('Backend unavailable during verification, logging out');
+      store.dispatch('logout');
+      return;
+    }
+    
+    // Fetch user data to verify user still exists in the database
+    await store.dispatch('fetchUserData');
+    
+    // If after fetchUserData the auth status is false, user no longer exists
+    if (!store.getters.getAuthStatus) {
+      console.warn('User session invalid, logging out after verification');
       store.dispatch('logout');
     }
+  } catch (error) {
+    console.error('Error verifying user:', error);
+    // On error, assume user session is invalid
+    store.dispatch('logout');
   }
 };
 
@@ -301,8 +299,9 @@ onMounted(async () => {
   store.dispatch('theme/initTheme');
   
   // Verify user exists in database on each app load/refresh
-  await verifyUserExists();
-  
+  if (store.getters.isLoggedIn) {
+    //await verifyUserExists();
+  }
   // Wait for the next tick to ensure the router and store are fully initialized
   nextTick(() => {
     // Check for word parameter in URL on initial load
