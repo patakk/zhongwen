@@ -81,7 +81,7 @@
                 @click="setActiveChar(char)"
               >
                   <span
-                    class="main-word-char"
+                    class="main-word-char main-word-char-single"
                     v-html="colorizeHanzi(char, getDisplaySyllable(index))"
                   ></span>
               </span>
@@ -2215,6 +2215,9 @@ export default {
   font-family: var(--main-word-font, "Noto Serif SC", "Kaiti", sans-serif);
   font-weight: var(--hanzi-weight) !important;
 
+}
+.main-word-char-single {
+  padding: 0.25rem;
 }
 
 .main-word-inverted {
