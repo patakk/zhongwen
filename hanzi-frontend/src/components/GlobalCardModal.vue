@@ -77,11 +77,11 @@
               <span
                 v-else
                 v-for="(char, index) in cardData.character.split('')"
-                :class="['main-word-char']"
+                :class="['main-word-char main-word-char-single']"
                 @click="setActiveChar(char)"
               >
                   <span
-                    class="main-word-char main-word-char-single"
+                    class="main-word-char"
                     v-html="colorizeHanzi(char, getDisplaySyllable(index))"
                   ></span>
               </span>
@@ -2218,6 +2218,7 @@ export default {
 }
 .main-word-char-single {
   padding: 0.25rem;
+  box-sizing: border-box;
 }
 
 .main-word-inverted {
