@@ -6,13 +6,13 @@ import About from '../views/AboutView.vue'
 
 import Grid from '../views/GridView.vue'
 import Home from '../views/HomeView.vue'
-import Flashcards from '../views/FlashcardsView.vue'
-import HanziPractice from '../views/HanziPracticeView.vue'
-import PageInfo from '../views/PageInfoView.vue'
+// import Flashcards from '../views/FlashcardsView.vue'
+// import HanziPractice from '../views/HanziPracticeView.vue'
+// import PageInfo from '../views/PageInfoView.vue'
 import Lexicon from '../views/LexiconView.vue'
 import Tools from '../views/ToolsView.vue'
-import WordView from '../views/WordView.vue'
-import HanziTree from '../views/HanziTree.vue'
+//import WordView from '../views/WordView.vue'
+//import HanziTree from '../views/HanziTree.vue'
 
 const routes = [
   { path: '/', component: Home },
@@ -22,13 +22,13 @@ const routes = [
   { path: '/about', name: 'About', component: About },
 
   { path: '/explorer', component: Grid },
-  { path: '/hanzi-tree', component: HanziTree },
-  { path: '/flashcards', component: Flashcards },
-  { path: '/practice', component: HanziPractice },
-  { path: '/page-info', component: PageInfo },
+  //{ path: '/hanzi-tree', component: HanziTree },
+  //{ path: '/flashcards', component: Flashcards },
+  //{ path: '/practice', component: HanziPractice },
+  //{ path: '/page-info', component: PageInfo },
   { path: '/lexicon', component: Lexicon },
   { path: '/tools', component: Tools },
-  { path: '/word/:word', name: 'WordPage', component: WordView },
+  //{ path: '/word/:word', name: 'WordPage', component: WordView },
   { path: '/:pathMatch(.*)*', component: Home } 
 ]
 

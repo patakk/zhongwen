@@ -24,23 +24,23 @@
             </div>
             <div class="menu-divider"></div>
             <div v-if="selectedNodeData?.data?.nodeType === 'character'" class="menu-option decompose" @click="handleDecompose">
-                <span class="icon"><font-awesome-icon :icon="['fas', 'magnifying-glass']" /></span>
+                <span class="icon"><font-awesome-icon :icon="faMagnifyingGlass" /></span>
                 <span>Decompose</span>
             </div>
             <div v-if="selectedNodeData?.data?.nodeType === 'character'" class="menu-option containing" @click="handleShowContaining">
-                <span class="icon"><font-awesome-icon :icon="['fas', 'sitemap']" /></span>
+                <span class="icon"><font-awesome-icon :icon="faSitemap" /></span>
                 <span>Show Chars Containing</span>
             </div>
             <div v-if="selectedNodeData?.data?.nodeType === 'character'" class="menu-option show-details" @click="handleShowCard">
-                <span class="icon"><font-awesome-icon :icon="['fas', 'file']" /></span>
+                <span class="icon"><font-awesome-icon :icon="faFile" /></span>
                 <span>View Details</span>
             </div>
             <div v-if="isDirectChild" class="menu-option delete-node" @click="handleDeleteNode">
-                <span class="icon"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+                <span class="icon"><font-awesome-icon :icon="faTrash" /></span>
                 <span>Delete Node</span>
             </div>
             <div v-if="hasChildren && selectedNodeData?.data?.nodeType === 'character'" class="menu-option delete-children" @click="handleDeleteChildren">
-                <span class="icon"><font-awesome-icon :icon="['fas', 'scissors']" /></span>
+                <span class="icon"><font-awesome-icon :icon="faScissors" /></span>
                 <span>Delete Children</span>
             </div>
         </div>
@@ -53,8 +53,14 @@ import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { ref, onMounted, watch, nextTick, onUnmounted } from 'vue';
 import * as d3 from 'd3';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faSitemap } from '@fortawesome/free-solid-svg-icons';
+import { faFile } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faScissors } from '@fortawesome/free-solid-svg-icons';
 
 export default {
+    
     components: {
         BasePage,
     },
@@ -1189,7 +1195,12 @@ export default {
             handleDeleteNode,
             handleDeleteChildren,
             inputChar,
-            handleInputChange
+            handleInputChange,
+            faMagnifyingGlass,
+            faSitemap,
+            faFile,
+            faTrash,
+            faScissors
         };
     }
 }

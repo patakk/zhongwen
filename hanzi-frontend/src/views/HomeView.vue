@@ -22,10 +22,10 @@
       </div>
       <div class="search-actions">
         <button type="button" class="stroke-toggle" @click="toggleStrokePad" :aria-pressed="showStrokePad" title="Draw search">
-          <font-awesome-icon :icon="['fas','pen-fancy']" />
+          <font-awesome-icon :icon="faPenFancy" />
         </button>
         <button type="button" class="ocr-toggle" @click="toggleOcrPanel" :aria-pressed="showOcrPanel" title="Image OCR search">
-          <font-awesome-icon :icon="['fas','camera']" />
+          <font-awesome-icon :icon="faCamera" />
         </button>
         <!-- Search button kept but hidden by default -->
         <button type="submit" class="search-button" style="display: none;">Search</button>
@@ -131,12 +131,19 @@ import { defineAsyncComponent } from 'vue';
 import BasePage from '../components/BasePage.vue';
 import PreloadWrapper from '../components/PreloadWrapper.vue';
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
+import { faPenFancy, faCamera } from '@/icons';
 
 export default {
   components: {
     BasePage,
     PreloadWrapper,
     OcrPanel: defineAsyncComponent(() => import('../components/OcrPanel.vue')),
+  },
+  setup() {
+    return {
+      faPenFancy,
+      faCamera,
+    };
   },
   computed: {
     // Navigation list matches current search results order

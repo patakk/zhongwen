@@ -73,7 +73,7 @@ def gather_hanzi_results(query, dict_client, include_other_examples=True):
         return entry.get('traditional') or entry.get('simplified')
 
     try:
-        definition_results = dict_client.definition_lookup(query)
+        definition_results = dict_client.definition_lookup(simplified_query)
     except KeyError:
         definition_results = []
     for idx, d in enumerate(definition_results):
@@ -214,7 +214,12 @@ def group_results(results, query, only_hanzi):
     def add_display(groups_list):
         disp = 0
         for g in groups_list:
-            for e in g.get('items', []):
+            items_sorted = sorted(
+                g.get('items', []),
+                key=lambda e: len((e.get('item') or {}).get('hanzi', ''))
+            )
+            g['items'] = items_sorted
+            for e in items_sorted:
                 e['displayIdx'] = disp
                 disp += 1
         return [g for g in groups_list if g.get('items')]
@@ -415,6 +420,7 @@ def search_hanzi(query):
     for ch in ordered_chars:
         per_char, _ = safe_gather(ch, include_examples=True)
         add_unique_entries(results, per_char, seen)
+    print(results)
     return results
 
 def search_pinyin(query):

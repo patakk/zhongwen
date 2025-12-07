@@ -1,10 +1,10 @@
 <template>
   <div id="app" :data-theme="currentTheme">
     <button class="theme-toggle" @click="toggleTheme">
-      <font-awesome-icon :icon="['fas', 'moon']" v-if="currentTheme === 'dark'" />
-      <font-awesome-icon :icon="['fas', 'sun']" v-else-if="currentTheme === 'theme1'" />
-      <font-awesome-icon :icon="['fas', 'moon']" v-else-if="currentTheme === 'theme2'" />
-      <font-awesome-icon :icon="['fas', 'sun']" v-else />
+      <font-awesome-icon :icon="faMoon" v-if="currentTheme === 'dark'" />
+      <font-awesome-icon :icon="faSun" v-else-if="currentTheme === 'theme1'" />
+      <font-awesome-icon :icon="faMoon" v-else-if="currentTheme === 'theme2'" />
+      <font-awesome-icon :icon="faSun" v-else />
     </button>
     <div class="history-rail-wrapper" v-if="history.length > 0">
       <div
@@ -18,7 +18,7 @@
           class="history-title"
           @click.stop="toggleHistoryCollapse"
         >
-          <font-awesome-icon :icon="['fas', 'clipboard-list']" />
+          <font-awesome-icon :icon="faClipboardList" />
         </div>
         <div class="history-list" :class="{ collapsed: historyCollapsed }">
           <button
@@ -49,6 +49,9 @@
 import { onMounted, nextTick, watch, computed, ref } from 'vue'
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { faSun } from '@/icons';
+import { faMoon } from '@/icons';
+import { faClipboardList } from '@/icons';
 import GlobalCardModal from './components/GlobalCardModal.vue';
 import BubbleTooltip from './components/BubbleTooltip.vue';
 

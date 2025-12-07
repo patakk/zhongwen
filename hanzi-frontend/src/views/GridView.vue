@@ -31,7 +31,9 @@
       :title="isGridView ? 'Show List' : 'Show Grid'"
       aria-label="Toggle view"
     >
-      <font-awesome-icon :icon="isGridView ? ['fas', 'bars'] : ['fas', 'grip']" />
+
+      <font-awesome-icon v-if="isGridView" :icon="faBars" />
+      <font-awesome-icon v-else :icon="faGrip" />
     </button>
 
 
@@ -118,6 +120,7 @@
 import PreloadWrapper from '../components/PreloadWrapper.vue';
 import BasePage from '../components/BasePage.vue';
 import { useStore } from 'vuex';
+import { faBars, faGrip } from '../icons.js'
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
 
 const defaultVisibleCount = 180; // Default number of characters to show

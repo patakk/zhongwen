@@ -85,7 +85,7 @@
                 <p>
                   <strong>Description:</strong>
                   <button @click="openEditDescriptionModal" class="edit-description-button" title="Edit Description">
-                    <font-awesome-icon :icon="['fas', 'pencil']" />
+                    <font-awesome-icon :icon="faPencil" />
                   </button>
                 </p>
                 <p class="description-text">{{ currentWordlistDescription || 'No description yet.' }}</p>
@@ -122,7 +122,7 @@
                 title="Download Anki Deck"
                 :disabled="words.length === 0"
               >
-              <font-awesome-icon :icon="['fas', 'download']" /> anki deck
+              <font-awesome-icon :icon="faDownload" /> anki deck
               </button>
               <button
                 @click="showPracticeSheetModal = true"
@@ -130,7 +130,7 @@
                 title="Get Practice Sheet"
                 :disabled="words.length === 0"
               >
-                <font-awesome-icon :icon="['fas', 'pen']" /> practice sheet
+                <font-awesome-icon :icon="faPen" /> practice sheet
               </button>
               <button
                 @click="copyWordlistToClipboard"
@@ -138,7 +138,7 @@
                 title="Copy Wordlist to Clipboard"
                 :disabled="words.length === 0"
               >
-                <font-awesome-icon :icon="['fas', 'clipboard']" /> copy words
+                <font-awesome-icon :icon="faClipboard" /> copy words
               </button>
             </div>
 
@@ -276,9 +276,17 @@
   import PreloadWrapper from '../components/PreloadWrapper.vue';
   import PracticeSheetModal from '../components/PracticeSheetModal.vue';
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
-  
+import { faDownload, faPen, faClipboard } from '@/icons';
+
   export default {
     name: 'MySpaceView',
+    setup() {
+      return {
+        faDownload,
+        faPen,
+        faClipboard,
+      };
+    },
     components: {
       BasePage,
       PreloadWrapper,

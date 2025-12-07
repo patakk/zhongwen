@@ -2,7 +2,7 @@
   <div>
     <div class="sidebar-container" :class="{ 'sidebar-open': isOpen }">
       <button v-if="!isOpen" class="sidebar-toggle" @click.stop="toggleSidebar">
-          <font-awesome-icon :icon="['fas', 'bars']" />
+          <font-awesome-icon :icon="faBars" />
       </button>
 
       <div v-if="isOpen" class="sidebar" @click.stop>
@@ -50,9 +50,15 @@
 
 <script>
 import LogoutButton from '../components/LogoutButton.vue'
+import { faBars } from '@/icons'
 
 export default {
   name: 'SideBar',
+  setup() {
+    return {
+      faBars
+    }
+  },
   components: {
     LogoutButton
   },

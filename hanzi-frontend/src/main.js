@@ -10,60 +10,7 @@ import App from './App.vue'
 import router from './router'
 import store from './stores'
 //import './lib/fontawesome_unminified.js'; 
-
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { 
-  faSun, 
-  faMoon, 
-  faPencil, 
-  faBars, 
-  faPalette, 
-  faArrowRotateRight, 
-  faPenFancy, 
-  faGear, 
-  faSquare, 
-  faTrash, 
-  faFile, 
-  faMagnifyingGlass,
-  faSitemap,
-  faScissors,
-  faDownload,
-  faCloudArrowDown,
-  faClipboard,
-  faPen,
-  faGrip,
-  faClockRotateLeft,
-  faCamera,
-  faClipboardList,
-  faVolumeHigh
-} from '@fortawesome/free-solid-svg-icons'
-
-library.add(
-  faSun, 
-  faMoon, 
-  faPencil, 
-  faBars, 
-  faPalette, 
-  faArrowRotateRight, 
-  faPenFancy, 
-  faGear, 
-  faSquare, 
-  faTrash, 
-  faFile, 
-  faMagnifyingGlass,
-  faSitemap,
-  faScissors,
-  faDownload,
-  faCloudArrowDown,
-  faClipboard,
-  faPen,
-  faGrip,
-  faClockRotateLeft,
-  faCamera,
-  faClipboardList,
-  faVolumeHigh
-)
+import { FontAwesomeIcon } from '@/icons'
 
 // IMMEDIATELY clear login state on page load before checking backend
 localStorage.removeItem('userData');

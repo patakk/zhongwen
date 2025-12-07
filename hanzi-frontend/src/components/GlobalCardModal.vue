@@ -117,7 +117,7 @@
                   :aria-busy="!!audioBusy['main']"
                   title="Play pronunciation"
                 >
-                  <font-awesome-icon :icon="['fas','volume-high']" />
+                  <font-awesome-icon :icon="faVolumeHigh" />
                 </button>
               </div>
               <div class="main-english">
@@ -138,11 +138,7 @@
               <button class="def-btn" @click="stepDefinition(1)">›</button>
             </div>
           </div>
-          <!--<div v-if="isLoggedIn" class="custom-edit-wrap">
-            <button class="custom-edit-btn" @click.stop="openCustomEdit">
-              <font-awesome-icon :icon="['fas','pen']" />
-            </button>
-          </div>-->
+      
 
           <!-- Concept toggle buttons with dropdown functionality -->
           <div class="concepts-container">
@@ -297,7 +293,7 @@
                             @click.stop="playSinglePinyin(pair.pinyin)"
                             title="Play this pronunciation"
                           >
-                            <font-awesome-icon :icon="['fas','volume-high']" />
+                            <font-awesome-icon :icon="faVolumeHigh" />
                           </button>
                         </div>
                         <div class="pm-meaning">
@@ -589,8 +585,14 @@ import RecursiveDecomposition from './RecursiveDecomposition.vue'
 import PreloadWrapper from './PreloadWrapper.vue'
 import { mapGetters, mapActions } from 'vuex'
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer'
+import { faVolumeHigh } from '@/icons'
 
 export default {
+  setup() {
+    return {
+      faVolumeHigh
+    }
+  },
   components: {
     ExpandableExamples,
     ClickableRow,
