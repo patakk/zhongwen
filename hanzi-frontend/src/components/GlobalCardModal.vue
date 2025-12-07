@@ -7,7 +7,6 @@
       </div>
 
       <div
-        v-else
         :class="['modal', 'card-modal', { invert: swipeDimVisible }, { mleft: swipeHintDirection === 'left' }, { mright: swipeHintDirection === 'right' }]"
         @click.stop="handleModalClick"
         @touchstart="onTouchStart"
