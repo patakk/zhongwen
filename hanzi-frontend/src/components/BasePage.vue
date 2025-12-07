@@ -13,10 +13,11 @@
   <script>
   import SideBar from '../components/SideBar.vue';
   
-  export default {
+export default {
     components: {
       SideBar
     },
+    emits: ['title-click'],
     props: {
       page_title: {
         type: String,
