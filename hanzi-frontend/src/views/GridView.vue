@@ -40,7 +40,7 @@
     <!-- Background overlay when leftbar is visible -->
 
     <!-- Main content takes full width regardless of leftbar state -->
-      <div class="main-content" ref="mainContent" @scroll="handleScroll" @click="handleMainClick">
+      <div class="container" ref="mainContent" @scroll="handleScroll" @click="handleMainClick">
         <!-- Scroll to top button - FIXED: changed showScrollTop to match data property -->
         <button 
           v-if="showScrollTop" 
@@ -966,13 +966,13 @@ html, body {
   gap: 0.5rem;
   gap: 0.0rem;
   width: 100%;
+  box-sizing: border-box;
 }
 
 
-@media (min-width: 1024px) {
+@media (max-width: 768px) {
   .list-container {
-    width: 60%;
-    margin: 0 auto;
+    padding: 1rem;
   }
 }
 
@@ -1011,7 +1011,7 @@ select {
   box-sizing: border-box;
   overflow-y: auto;
   height: 100%;
-  padding: 2em;
+  padding: 2rem;
   position: relative;
 }
 

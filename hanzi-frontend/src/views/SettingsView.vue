@@ -1,7 +1,7 @@
 <template>
     <BasePage page_title="Settings" />
 
-    <div class="settings-page">
+    <div class="container">
       <!-- Theme Settings Section (Available to all users) -->
       <div class="account-container">
         <div class="settings-section theme-settings">
@@ -774,20 +774,15 @@ h2 {
   margin-top: 0;
 }
 
-.settings-page{
-  padding-bottom: 1rem;
-}
 
 .account-container {
-  max-width: 600px;
-  margin: 2rem auto;
+  width: 100%;
   padding: 2rem;
   border: 1px solid color-mix(in oklab, var(--fg) 2%, var(--bg) 100%);
-  border-radius: 8px;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-  border-radius: var(--modal-border-radius);
-  border: var(--thin-border-width) solid var(--fg);
   box-shadow: var(--card-shadow);
+  box-sizing: border-box;
+  padding: 1rem;
   box-sizing: border-box;
 }
 
@@ -1030,6 +1025,9 @@ h2 {
   margin-top: 1.5rem;
 }
 
+.container {
+}
+
 .cancel-button,
 .confirm-button {
   padding: 0.6rem 1.2rem;
@@ -1254,16 +1252,9 @@ h3 {
 }
 
 @media (max-width: 768px) {
+
   
   .account-container {
-    max-width: 600px;
-    margin: 1rem auto;
-    padding: 1rem;
-    border: none;
-    border-radius: 8px;
-    box-shadow: none !important;
-    background: none;
-    background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   }
 
   .profile-row {

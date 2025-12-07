@@ -177,6 +177,26 @@
   --card-shadow: none;
   --decks-shadow: 5px 5px 16px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
 }
+  
+@media (max-width: 768px) {
+
+   .container {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    max-height: none !important;
+    padding: 0rem 0 !important;
+    margin: 0 !important;
+    margin-top: 0em !important;
+    margin-bottom: 12em !important;
+  }
+
+  .account-container, .about-section {
+    background-color: transparent !important;
+    margin: 0 !important;
+  }
+
+}
 
 @media screen and (max-width: 768px) {
   :root {
@@ -194,6 +214,7 @@
   [data-theme="theme2"] {
     --overlay-background: var(--bg) !important;
   }
+
 }
 
 [data-theme="theme2"] {
@@ -285,6 +306,17 @@ input[type="range"]::-webkit-slider-thumb:active {
   cursor: pointer;
 }
 
+.container {
+  width: 60%;
+  max-width: 1200px;
+  padding: 2rem;
+  margin: 0 auto;
+  box-sizing: border-box;
+  scrollbar-width: none; /* For Firefox */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem !important;
+}
 
 * {
   /* font-family: var(--font-family); */
@@ -499,9 +531,6 @@ button:hover {
   background: var(--bg);
   width: 100%;
   box-shadow: none;
-  border-bottom: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
-  border: 1px solid color-mix(in oklab, var(--fg)22%, var(--bg) 10%);
-  border: none;
   box-sizing: border-box;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
   border-top: none;
@@ -576,7 +605,7 @@ button:hover {
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
   color: var(--fg);
   cursor: pointer;
-  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Noto Sans SC', serif);
   font-size: 1.2rem;
   display: inline-flex;
   align-items: center;

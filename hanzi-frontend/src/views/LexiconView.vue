@@ -1,6 +1,6 @@
 <template>
     <BasePage page_title="Lexicon" />
-    <div class="myspace-view" v-if="loggedIn">
+    <div class="container" v-if="loggedIn">
       <div class="wordlist-container">
         <div class="wordlist-header">
           <!-- <h2>My Wordlists</h2> -->
@@ -174,7 +174,7 @@
         </div>
       </div>
     </div>
-    <div v-else class="myspace-view">
+    <div v-else class="container">
       <p>Redirecting to login page...</p>
     </div>
 
@@ -950,7 +950,7 @@ import { faDownload, faPen, faClipboard } from '@/icons';
     background: var(--bg-alt);
     box-shadow: 0 4px 12px color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
     box-shadow: var(--card-shadow);
-    border: var(--thin-border-width) solid var(--fg);
+    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
     padding: 2rem;
     box-sizing: border-box;
   }

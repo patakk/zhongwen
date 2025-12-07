@@ -18,7 +18,7 @@
         </ul>
       </div>
     </div>
-    <div class="attribution-section">
+    <div>
       <div class="licensing">Licensing and Attribution</div>
       <ul>
         <li>
@@ -119,19 +119,10 @@ export default {
   box-sizing: border-box;
 }
 
-.about-section {
+.about-section, .attribution-section {
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 80%);
   padding: 1rem;
 
-}
-.container {
-  width: 60%;
-  max-width: 1200px;
-  padding: 2rem;
-  margin: 0 auto;
-  box-sizing: border-box;
-  scrollbar-width: none; /* For Firefox */
-  /* background: color-mix(in oklab, var(--fg) 5%, var(--bg) 80%); */
 }
 
 .container::-webkit-scrollbar {
@@ -223,16 +214,9 @@ ul {
   margin-top: 0.5rem;
 }
 
+
 @media (max-width: 1024px) {
-  .container {
-    width: 95%;
-    height: 100%;
-    border: none;
-    max-height: none;
-    padding: 1rem;
-    margin-top: 1em;
-    margin-bottom: 12em;
-  }
+ 
 
   .btn {
     padding: 8px 16px;
@@ -264,6 +248,7 @@ ul {
   padding: 0;
   margin-top: 1em;
   padding-top: 1em;
+  margin: 1rem;
 }
 
 .commit-info {

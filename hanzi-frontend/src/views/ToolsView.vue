@@ -1,6 +1,6 @@
 <template>
   <BasePage page_title="Tools" />
-  <div class="tools-page">
+  <div class="container">
     <div class="tool-card">
       <div class="tool-header">
         <h3>Practice Sheet Generator</h3>
@@ -66,16 +66,10 @@ export default {
 </script>
 
 <style scoped>
-.tools-page {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+
+
 .tool-card {
-  border: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
   background: color-mix(in oklab, var(--fg) 4%, var(--bg) 100%);
-  border-radius: var(--border-radius, 6px);
   padding: 1rem;
 }
 .tool-header h3 {
