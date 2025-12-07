@@ -126,6 +126,12 @@ import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyi
 const defaultVisibleCount = 180; // Default number of characters to show
 
 export default {
+  setup() {
+    return {
+      faBars,
+      faGrip
+    };
+  },
   data() {
     return {
       selectedCategory: null,
