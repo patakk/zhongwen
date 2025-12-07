@@ -1,10 +1,10 @@
 <template>
   <div v-if="isVisible || pageMode" :class="['global-modal-container', { 'page-mode-container': pageMode }]" @click="closeModal">
     <!--<div :class="['card-modal-overlay', { 'page-mode-overlay': pageMode }]" @click="closeModal">-->
-      <div v-if="isLoading" class="loading-state">
+      <!--<div v-if="isLoading" class="loading-state">
         <div class="spinner"></div>
         <div>Loading...</div>
-      </div>
+      </div>-->
 
       <div
         :class="['modal', 'card-modal', { invert: swipeDimVisible }, { mleft: swipeHintDirection === 'left' }, { mright: swipeHintDirection === 'right' }]"
