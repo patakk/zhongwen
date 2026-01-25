@@ -545,7 +545,6 @@ export default {
             break;
             
           default:
-            // Log an error for unrecognized commands
             console.warn(`Unrecognized SVG path command: ${cmd}`);
             break;
         }
