@@ -538,7 +538,7 @@ export default {
             }
             break;
             
-          case 'Z': // closepath
+          case 'Z':
             maskRegion.closePath();
             x = startX;
             y = startY;
