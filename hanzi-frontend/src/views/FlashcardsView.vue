@@ -85,6 +85,7 @@ export default {
       currentDeck: deckFromUrl || 'hsk1', // Use URL param if available, otherwise default
       currentFont: 'Noto Sans',
       isSubmenuOpen: false,
+      animationFrameId: null, // Track current animation frame for cleanup
       lineWidth: 6,
       lineType: 'round',
       isDarkMode: false,
@@ -189,6 +190,16 @@ export default {
     document.removeEventListener('click', this.handleOutsideClick);
     window.removeEventListener('resize', this.handleResize);
     document.removeEventListener('keydown', this.handleKeydown);
+
+    // Disconnect theme observer to prevent memory leak
+    if (this.themeObserver) {
+      this.themeObserver.disconnect();
+    }
+
+    // Cancel any pending animation frame
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
   },
   methods: {
     loadDecksFromStore() {
@@ -718,7 +729,13 @@ export default {
         this.redrawCurrentCard();
         return;
       }
-    
+
+      // Cancel any existing animation to prevent multiple loops running simultaneously
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
+      }
+
       let progress = 0;
       const animateFrame = () => {
         progress += 0.04;
@@ -801,13 +818,14 @@ export default {
         }
 
         if (progress < 1 - 0.035 * 8) {
-          requestAnimationFrame(animateFrame);
+          this.animationFrameId = requestAnimationFrame(animateFrame);
         } else {
+          this.animationFrameId = null;
           this.redrawCurrentCard();
         }
       };
-      
-      animateFrame();
+
+      this.animationFrameId = requestAnimationFrame(animateFrame);
     },
     redrawCurrentCard() {
       // this.handleFont();
@@ -1013,7 +1031,6 @@ html, body {
   background-color: var(--card-bg);
   border: var(--card-border);
   border-radius: var(--modal-border-radius, 0);
-  overflow: hidden;
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
@@ -1059,7 +1076,7 @@ html, body {
   background-color: var(--bg);
   border: var(--thin-border-width) solid #0000;
   margin-top: 5px;
-  z-index: 1;
+  z-index: 100;
   /* transition: max-height 0.3s, border 0.3s; */
 }
 
@@ -1092,6 +1109,7 @@ html, body {
   align-items: center;
   font-size: 6em;
   z-index: 5;
+  overflow: hidden; /* Contain the canvas */
 }
 
 .answer {
