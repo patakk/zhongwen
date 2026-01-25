@@ -12,8 +12,8 @@
             <RouterLink to="/lexicon" class="top-link">Lexicon</RouterLink>
           </template>
           <RouterLink :to="{ path: '/explorer', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Lists</RouterLink>
-          <!--<RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
-          <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
+          <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
+          <!--<RouterLink to="/practice" class="top-link">Strokes</RouterLink>
           <RouterLink to="/search" class="top-link">Search</RouterLink>-->
           <RouterLink to="/tools" class="top-link">Tools</RouterLink>
           <RouterLink to="/settings" class="top-link">Settings</RouterLink>
@@ -33,8 +33,8 @@
           <RouterLink to="/lexicon" class="top-link">Lexicon</RouterLink>
         </template>
         <RouterLink :to="{ path: '/explorer', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Lists</RouterLink>
-        <!--<RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
-        <RouterLink to="/practice" class="top-link">Strokes</RouterLink>
+        <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
+        <!--<RouterLink to="/practice" class="top-link">Strokes</RouterLink>
         <RouterLink to="/search" class="top-link">Search</RouterLink>-->
         <RouterLink to="/tools" class="top-link">Tools</RouterLink>
         <RouterLink to="/settings" class="top-link">Settings</RouterLink>

@@ -6,7 +6,7 @@ import About from '../views/AboutView.vue'
 
 import Grid from '../views/GridView.vue'
 import Home from '../views/HomeView.vue'
-// import Flashcards from '../views/FlashcardsView.vue'
+import Flashcards from '../views/FlashcardsView.vue'
 // import HanziPractice from '../views/HanziPracticeView.vue'
 // import PageInfo from '../views/PageInfoView.vue'
 import Lexicon from '../views/LexiconView.vue'
@@ -23,7 +23,7 @@ const routes = [
 
   { path: '/explorer', component: Grid },
   //{ path: '/hanzi-tree', component: HanziTree },
-  //{ path: '/flashcards', component: Flashcards },
+  { path: '/flashcards', component: Flashcards },
   //{ path: '/practice', component: HanziPractice },
   //{ path: '/page-info', component: PageInfo },
   { path: '/lexicon', component: Lexicon },
