@@ -307,7 +307,7 @@ def group_results(results, query, only_hanzi, segments=None):
         hanzi = e['item'].get('hanzi','')
         bucket = None
         for seg in segmentOrder:
-            if seg in hanzi:
+            if any(ch in hanzi for ch in seg):
                 bucket = seg
                 break
         if bucket:
