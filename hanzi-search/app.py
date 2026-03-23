@@ -214,9 +214,13 @@ def group_results(results, query, only_hanzi, segments=None):
     def add_display(groups_list):
         disp = 0
         for g in groups_list:
+            label = g.get('label', '')
             items_sorted = sorted(
                 g.get('items', []),
-                key=lambda e: len((e.get('item') or {}).get('hanzi', ''))
+                key=lambda e: (
+                    0 if (e.get('item') or {}).get('hanzi', '') == label else 1,
+                    len((e.get('item') or {}).get('hanzi', ''))
+                )
             )
             g['items'] = items_sorted
             for e in items_sorted:
