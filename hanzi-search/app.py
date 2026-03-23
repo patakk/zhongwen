@@ -408,18 +408,27 @@ def search_hanzi(query):
         for tok in tokens:
             append_lookup(tok, include_examples=True)
 
-    # 3) Per-character lookups in order (unique)
-    ordered_chars = []
+    # 3) Forward maximum matching segmentation
+    #    Try to find the longest dictionary words, falling back to shorter
+    #    matches, down to individual characters.
     source_chars = joined if joined else query
-    for ch in source_chars:
-        if not ch.strip():
-            continue
-        if ch not in ordered_chars:
-            ordered_chars.append(ch)
-    include_other = full_has_direct or is_multi_token
-    for ch in ordered_chars:
-        per_char, _ = safe_gather(ch, include_examples=True)
-        add_unique_entries(results, per_char, seen)
+    source_chars = ''.join(ch for ch in source_chars if ch.strip())
+    max_word_len = 6
+    seen_segments = set()
+    i = 0
+    while i < len(source_chars):
+        best_len = 1  # fallback: single character
+        for length in range(min(max_word_len, len(source_chars) - i), 1, -1):
+            candidate = source_chars[i:i + length]
+            _, has_direct = safe_gather(candidate, include_examples=False)
+            if has_direct:
+                best_len = length
+                break
+        segment = source_chars[i:i + best_len]
+        if segment not in seen_segments:
+            seen_segments.add(segment)
+            append_lookup(segment, include_examples=True)
+        i += best_len
     return results
 
 def search_pinyin(query):
