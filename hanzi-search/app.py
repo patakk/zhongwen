@@ -205,7 +205,7 @@ def norm_basic(s):
     return remove_all_numbers(remove_tones((s or '').lower()).replace(' ', ''))
 
 
-def group_results(results, query, only_hanzi):
+def group_results(results, query, only_hanzi, segments=None):
     annotated = [{"item": r, "originalIdx": idx} for idx, r in enumerate(results or [])]
     if not annotated:
         return []
@@ -276,11 +276,15 @@ def group_results(results, query, only_hanzi):
 
     # Hanzi-only grouping
     tokens = [t for t in regex.split(r'\s+', query) if t]
-    charOrder = []
-    for ch in query:
-        if ch.strip() and ch not in charOrder:
-            charOrder.append(ch)
-    effectiveQuery = ''.join(charOrder)
+    # Use segments from forward max matching when available, else fall back to individual chars
+    if segments and len(segments) > 0:
+        segmentOrder = segments
+    else:
+        segmentOrder = []
+        for ch in query:
+            if ch.strip() and ch not in segmentOrder:
+                segmentOrder.append(ch)
+    effectiveQuery = ''.join(segmentOrder)
     used = set()
     exactItems = [e for e in annotated if e['item'].get('hanzi') == effectiveQuery]
     for e in exactItems:
@@ -295,39 +299,39 @@ def group_results(results, query, only_hanzi):
             if tokItems:
                 groups_h.append({'key': f'token-{idx}-{tok}', 'label': tok, 'collapsible': False, 'items': tokItems, 'anchor': None})
 
-    perChar = {}
+    perSegment = {}
     extras = []
     for e in annotated:
         if e['originalIdx'] in used:
             continue
         hanzi = e['item'].get('hanzi','')
         bucket = None
-        for ch in charOrder:
-            if ch in hanzi:
-                bucket = ch
+        for seg in segmentOrder:
+            if seg in hanzi:
+                bucket = seg
                 break
         if bucket:
-            perChar.setdefault(bucket, []).append(e)
+            perSegment.setdefault(bucket, []).append(e)
         else:
             extras.append(e)
 
-    if len(charOrder) == 1:
-        ch = charOrder[0]
+    if len(segmentOrder) == 1:
+        seg = segmentOrder[0]
         combined = []
         seenIdx = set()
-        for e in exactItems + perChar.get(ch, []) + extras:
+        for e in exactItems + perSegment.get(seg, []) + extras:
             if e['originalIdx'] not in seenIdx:
                 combined.append(e)
                 seenIdx.add(e['originalIdx'])
         if combined:
-            groups_h.append({'key': f'char-{ch}', 'label': ch, 'collapsible': False, 'items': combined, 'anchor': ch})
+            groups_h.append({'key': f'seg-{seg}', 'label': seg, 'collapsible': False, 'items': combined, 'anchor': seg})
     else:
         if exactItems:
             groups_h.append({'key': f'exact-{effectiveQuery}', 'label': effectiveQuery, 'collapsible': True, 'items': exactItems, 'anchor': None})
-        for ch in charOrder:
-            items = perChar.get(ch)
+        for seg in segmentOrder:
+            items = perSegment.get(seg)
             if items:
-                groups_h.append({'key': f'char-{ch}', 'label': ch, 'collapsible': True, 'items': items, 'anchor': ch})
+                groups_h.append({'key': f'seg-{seg}', 'label': seg, 'collapsible': True, 'items': items, 'anchor': seg[0]})
         if extras:
             groups_h.append({'key': 'other', 'label': 'Other matches', 'collapsible': True, 'items': extras, 'anchor': None})
 
@@ -414,6 +418,7 @@ def search_hanzi(query):
     source_chars = joined if joined else query
     source_chars = ''.join(ch for ch in source_chars if ch.strip())
     max_word_len = 6
+    segments = []
     seen_segments = set()
     i = 0
     while i < len(source_chars):
@@ -427,9 +432,10 @@ def search_hanzi(query):
         segment = source_chars[i:i + best_len]
         if segment not in seen_segments:
             seen_segments.add(segment)
+            segments.append(segment)
             append_lookup(segment, include_examples=True)
         i += best_len
-    return results
+    return results, segments
 
 def search_pinyin(query):
     results = []
@@ -496,13 +502,14 @@ def search():
     logger.debug("Received search request")
     logger.debug(f"Query: {query}")
     only_hanzi = all(regex.match(r'\p{Han}', char) for char in query if char.strip())
+    segments = None
     if only_hanzi:
-        results = search_hanzi(query)
+        results, segments = search_hanzi(query)
     else:
         results = search_pinyin(query)
         results += search_english(query)
     results = [r for r in results if 'variant of' not in r.get('english', '').lower()]
-    grouped = group_results(results, query, only_hanzi)
+    grouped = group_results(results, query, only_hanzi, segments=segments)
     return jsonify({'groups': grouped})
 
 if __name__ == '__main__':
