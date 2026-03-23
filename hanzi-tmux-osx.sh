@@ -11,7 +11,7 @@ tmux send-keys -t zhongweb 'poetry run python app.py' C-m
 tmux split-window -v -t zhongweb
 tmux send-keys -t zhongweb.1 'cd /Users/paolo/programming/hanzilab/repo/hanzi-frontend' C-m
 sleep 0.3
-tmux send-keys -t zhongweb.1 'npm run dev' C-m
+tmux send-keys -t zhongweb.1 'bun run dev' C-m
 
 # Search backend
 tmux split-window -h -t zhongweb.1
