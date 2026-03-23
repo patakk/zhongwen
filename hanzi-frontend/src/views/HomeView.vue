@@ -532,11 +532,9 @@ export default {
     handleOcrInsert(text) {
       const cleaned = this.cleanHanText(text);
       if (!cleaned) return;
-      const tokens = this.uniqueTokens(cleaned);
-      if (!tokens.length) return;
-      const combined = tokens.join(' ');
+      this.searchQuery = cleaned.replace(/\s+/g, '');
       this.isSearching = true;
-      this.doSearch(combined);
+      this.doSearch(this.searchQuery);
     },
     cleanHanText(text) {
       if (!text) return '';

@@ -51,27 +51,6 @@
           </div>
         </div>
       </div>
-      <div class="result result-wrapper">
-        <div class="result-header">
-          <div class="result-title">Detected words</div>
-        </div>
-        <div class="result-body stroke-result">
-          <div v-if="!ocrTokenObjects.length" class="stroke-label">No text detected.</div>
-          <div v-else class="stroke-result-list">
-            <PreloadWrapper
-              v-for="(res, idx) in ocrTokenObjects"
-              :key="res.character || idx"
-              :character="res.character"
-              :navList="ocrNavList"
-              :navIndex="idx"
-              :showBubbles="false"
-              class="stroke-result-btn"
-            >
-              <span class="stroke-result-text">{{ res.character }}</span>
-            </PreloadWrapper>
-          </div>
-        </div>
-      </div>
     </div>
 
       <div v-if="error" class="error">{{ error }}</div>
