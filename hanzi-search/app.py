@@ -309,23 +309,11 @@ def group_results(results, query, only_hanzi, segments=None):
         if e['originalIdx'] in used:
             continue
         hanzi = e['item'].get('hanzi','')
-        bucket = None
-        # Use source segment tag if available
         source_seg = e['item'].get('_source_segment')
         if source_seg and source_seg in segmentOrder:
             bucket = source_seg
-        # Then prefer segment that is a substring of hanzi
-        if not bucket:
-            for seg in segmentOrder:
-                if seg in hanzi:
-                    bucket = seg
-                    break
-        # Then fall back to character overlap
-        if not bucket:
-            for seg in segmentOrder:
-                if any(ch in hanzi for ch in seg):
-                    bucket = seg
-                    break
+        else:
+            bucket = next((seg for seg in segmentOrder if any(ch in hanzi for ch in seg)), None)
         if bucket:
             perSegment.setdefault(bucket, []).append(e)
         else:
