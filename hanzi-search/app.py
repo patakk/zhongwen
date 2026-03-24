@@ -404,7 +404,11 @@ def search_hanzi(query):
         res, _ = safe_gather(term, include_examples=include_examples)
         if source_segment:
             for r in res:
-                r.setdefault('_source_segment', source_segment)
+                r['_source_segment'] = source_segment
+                # Always include the segment's own direct definition
+                if r.get('hanzi') == source_segment:
+                    results.append(r)
+                    continue
         add_unique_entries(results, res, seen)
 
     # 1) Full query (joined tokens) if available
