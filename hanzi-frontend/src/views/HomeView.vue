@@ -910,13 +910,10 @@ export default {
 
 .group-header {
   display: flex;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 10%, var(--bg) 15%);
-  border: none;
-  border-radius: 1px;
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  background: color-mix(in oklab, var(--bg) 80%, var(--fg) 8%);
+  background: color-mix(in oklab, var(--bg) 100%, var(--fg) 0%);
 }
 
 .group-header.clickable {
@@ -925,20 +922,33 @@ export default {
 
 .group-title {
   letter-spacing: 0.01em;
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif) !important;
+  font-size: calc(1.5rem * var(--main-word-scale, 1));
 }
 
 .group-meta {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-left: 0.75rem;
+  gap: 0.85rem;
+  margin-left: 1rem;
   font-size: 0.9rem;
   overflow: hidden;
 }
 
 .group-meta-pinyin {
   white-space: nowrap;
+}
+
+.group-meta-pinyin::before {
+  content: '';
+  margin-right: 0.5rem;
+  opacity: 0.5;
+}
+.group-meta-pinyin::after {
+  content: '';
+  margin-left: 0.5rem;
+  opacity: 0.5;
 }
 
 .group-meta-english {
