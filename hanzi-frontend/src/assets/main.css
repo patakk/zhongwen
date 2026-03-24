@@ -486,7 +486,7 @@ button:hover {
 
 
 .word-hanzi {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif) !important;
   user-select: text;
   font-weight: var(--hanzi-weight) !important;
@@ -537,7 +537,8 @@ button:hover {
 }
 
 .word-item:is(:first-child) {
-  border-top: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
+  /*border-top: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
+*/ border-top: none;
 }
 
 .word-item:is(:last-child) {

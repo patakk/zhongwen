@@ -894,7 +894,7 @@ export default {
 .results {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: .3rem;
   width: 100%;
   justify-content: center;
   align-items: stretch;
@@ -905,7 +905,6 @@ export default {
   overflow: hidden;
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 5%);
   box-sizing: border-box;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 10%);
 }
 
 .group-header {
@@ -913,7 +912,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  background: color-mix(in oklab, var(--bg) 100%, var(--fg) 0%);
+  background: color-mix(in oklab, var(--bg) 100%, var(--fg) 5%);
 }
 
 .group-header.clickable {
@@ -962,7 +961,6 @@ export default {
 }
 
 .result-cell {
-  border:var(--thin-border-width) solid color-mix(in oklab, var(--fg) 35%, var(--bg) 50%);
   padding: .15rem .5rem;
   font-family: inherit;
   text-align: left;
