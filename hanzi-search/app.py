@@ -310,10 +310,22 @@ def group_results(results, query, only_hanzi, segments=None):
             continue
         hanzi = e['item'].get('hanzi','')
         bucket = None
-        for seg in segmentOrder:
-            if any(ch in hanzi for ch in seg):
-                bucket = seg
-                break
+        # Use source segment tag if available
+        source_seg = e['item'].get('_source_segment')
+        if source_seg and source_seg in segmentOrder:
+            bucket = source_seg
+        # Then prefer segment that is a substring of hanzi
+        if not bucket:
+            for seg in segmentOrder:
+                if seg in hanzi:
+                    bucket = seg
+                    break
+        # Then fall back to character overlap
+        if not bucket:
+            for seg in segmentOrder:
+                if any(ch in hanzi for ch in seg):
+                    bucket = seg
+                    break
         if bucket:
             perSegment.setdefault(bucket, []).append(e)
         else:
@@ -400,8 +412,11 @@ def search_hanzi(query):
         except KeyError:
             return [], False
 
-    def append_lookup(term, include_examples=True):
+    def append_lookup(term, include_examples=True, source_segment=None):
         res, _ = safe_gather(term, include_examples=include_examples)
+        if source_segment:
+            for r in res:
+                r.setdefault('_source_segment', source_segment)
         add_unique_entries(results, res, seen)
 
     # 1) Full query (joined tokens) if available
@@ -437,7 +452,7 @@ def search_hanzi(query):
         if segment not in seen_segments:
             seen_segments.add(segment)
             segments.append(segment)
-            append_lookup(segment, include_examples=True)
+            append_lookup(segment, include_examples=True, source_segment=segment)
         i += best_len
     return results, segments
 
