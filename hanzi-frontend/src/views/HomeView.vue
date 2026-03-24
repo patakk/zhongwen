@@ -278,8 +278,9 @@ export default {
     },
     groupHeaderMeta(group) {
       if (!group.items || !group.items.length) return null;
-      const first = group.items[0];
-      const item = first.item || first;
+      const exact = group.items.find(e => (e.item || e).hanzi === group.label);
+      const entry = exact || group.items[0];
+      const item = entry.item || entry;
       if (!item.pinyin && !item.english) return null;
       return { pinyin: item.pinyin || '', english: item.english || '' };
     },
