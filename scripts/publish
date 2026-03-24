@@ -1,5 +1,8 @@
 #!/bin/bash
 
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_patakk
+
 commit_message="${1:-pre build}"
 
 git add .
