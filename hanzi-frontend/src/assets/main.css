@@ -467,8 +467,6 @@ button:hover {
 .word-hanzipinyin {
   display: flex;
   flex-direction: column;
-  width: 110px;
-  min-width: 110px;
   margin-left: .25rem;
   user-select: text;
 
@@ -476,10 +474,10 @@ button:hover {
   flex-direction: column;
   align-items: flex-start;
   justify-content: left;
-  flex: 2;
-  min-width: 100px; /* allow flex child to shrink and wrap */
+  /*flex: 2;*/
   cursor: pointer;
   margin-right: 1rem;
+  min-width: 8em;
 }
 
 

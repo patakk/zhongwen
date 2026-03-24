@@ -940,17 +940,6 @@ export default {
   white-space: nowrap;
 }
 
-.group-meta-pinyin::before {
-  content: '';
-  margin-right: 0.5rem;
-  opacity: 0.5;
-}
-.group-meta-pinyin::after {
-  content: '';
-  margin-left: 0.5rem;
-  opacity: 0.5;
-}
-
 .group-meta-english {
   color: color-mix(in oklab, var(--fg) 60%, var(--bg));
   white-space: nowrap;
