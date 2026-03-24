@@ -84,6 +84,10 @@
           @click="group.collapsible && toggleGroup(group.key)"
         >
           <div class="group-title">{{ group.label }}</div>
+          <div v-if="group.collapsible && groupHeaderMeta(group)" class="group-meta">
+            <span class="group-meta-pinyin" v-html="colorizePinyin($toAccentedPinyin(groupHeaderMeta(group).pinyin))"></span>
+            <span class="group-meta-english">{{ groupHeaderMeta(group).english }}</span>
+          </div>
           <div v-if="group.collapsible" class="group-toggle">
             {{ isGroupCollapsed(group.key) ? '↓' : '↑' }}
           </div>
@@ -265,6 +269,13 @@ export default {
     toggleGroup(key) {
       const next = !this.isGroupCollapsed(key);
       this.groupCollapsed = { ...this.groupCollapsed, [key]: next };
+    },
+    groupHeaderMeta(group) {
+      if (!group.items || !group.items.length) return null;
+      const first = group.items[0];
+      const item = first.item || first;
+      if (!item.pinyin && !item.english) return null;
+      return { pinyin: item.pinyin || '', english: item.english || '' };
     },
 
     clearSearch() {
@@ -910,12 +921,34 @@ export default {
   letter-spacing: 0.01em;
 }
 
+.group-meta {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.75rem;
+  font-size: 0.9rem;
+  overflow: hidden;
+}
+
+.group-meta-pinyin {
+  white-space: nowrap;
+}
+
+.group-meta-english {
+  color: color-mix(in oklab, var(--fg) 60%, var(--bg));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .group-toggle {
   color: var(--fg);
   padding: 0.2rem 0.6rem;
   border-radius: 6px;
   user-select: none;
   font-weight: 700;
+  flex-shrink: 0;
 }
 
 .group-body {
