@@ -261,7 +261,13 @@ export default {
   methods: {
 
     resetGroupCollapse() {
-      this.groupCollapsed = {};
+      const collapsed = {};
+      for (const group of (this.results || [])) {
+        if (group.collapsible) {
+          collapsed[group.key] = true;
+        }
+      }
+      this.groupCollapsed = collapsed;
     },
     isGroupCollapsed(key) {
       return !!this.groupCollapsed[key];
