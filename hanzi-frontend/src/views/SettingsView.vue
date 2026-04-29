@@ -348,9 +348,9 @@
 </template>
 
 <script setup>
-import BasePage from '../components/BasePage.vue'
-import LogoutButton from '../components/LogoutButton.vue'
-import ToastNotification from '../components/ToastNotification.vue'
+import BasePage from '../components/layout/BasePage.vue'
+import LogoutButton from '../components/navigation/LogoutButton.vue'
+import ToastNotification from '../components/shared/ToastNotification.vue'
 import { computed, onMounted, watch, ref, nextTick } from 'vue'
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer'
 import { useStore } from 'vuex'

@@ -28,9 +28,9 @@
 <script>
 import { computed } from 'vue';
 import { useStore } from 'vuex';
-import BasePage from '../components/BasePage.vue';
-import PracticeSheetModal from '../components/PracticeSheetModal.vue';
-import StrokeExplorer from '../components/StrokeExplorer.vue';
+import BasePage from '../components/layout/BasePage.vue';
+import PracticeSheetModal from '../components/tools/PracticeSheetModal.vue';
+import StrokeExplorer from '../components/tools/StrokeExplorer.vue';
 
 export default {
   name: 'ToolsView',

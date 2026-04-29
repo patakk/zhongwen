@@ -1,29 +1,37 @@
-[tool.poetry]
+[project]
 name = "hanzi-backend"
 version = "0.1.0"
 description = "Flask backend for Hanzi app"
-authors = ["Paolo <paolo@patakk.xyz>"]
-package-mode = false
+authors = [{ name = "Paolo", email = "paolo@patakk.xyz" }]
+requires-python = ">=3.10"
+dependencies = [
+    "flask",
+    "Flask-SQLAlchemy",
+    "Flask-Limiter",
+    "Flask-WTF",
+    "Flask-Migrate",
+    "flask-mail",
+    "python-dateutil",
+    "pypinyin",
+    "Pillow",
+    "requests",
+    "regex",
+    "jieba",
+    "hanziconv",
+    "nltk",
+    "flask-dance",
+    "rapidfuzz",
+    "Flask-Session",
+    "flask-cors",
+    "genanki",
+    "gunicorn>=23.0.0",
+    "pyyaml",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-flask = "*"
-Flask-SQLAlchemy = "*"
-Flask-Limiter = "*"
-Flask-WTF = "*"
-Flask-Migrate = "*"
-flask-mail = "*"
-python-dateutil = "*"
-pypinyin = "*"
-Pillow = "*"
-requests = "*"
-regex = "*"
-jieba = "*"
-hanziconv = "*"
-nltk = "*"
-flask-dance = "*"
-rapidfuzz = "*"
-Flask-Session = "*"
-flask-cors = "*"
-genanki = "*"
-gunicorn = "^23.0.0"
+[tool.semantic_release]
+version_variable = "__version__.py:__version__"
+branch = "master"
+version_source = "tag"
+tag_format = "v{version}"
+upload_to_repository = "false"
+build_command = ""

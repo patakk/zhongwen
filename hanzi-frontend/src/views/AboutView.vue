@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import BasePage from '../components/BasePage.vue';
+import BasePage from '../components/layout/BasePage.vue';
 
 export default {
   name: 'AboutView',

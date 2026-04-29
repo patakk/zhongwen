@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { generatePracticeSheetSVG, generatePracticeSheetPDF } from '../lib/practiceSheetExport.js';
+import { generatePracticeSheetSVG, generatePracticeSheetPDF } from '../../lib/practiceSheetExport.js';
 
 const onlyHanzi = (str) => Array.from(str || '')
   .filter(ch => /\p{Script=Han}/u.test(ch))

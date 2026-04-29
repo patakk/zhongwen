@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import GlobalCardModal from '../components/GlobalCardModal.vue';
-import BasePage from '../components/BasePage.vue';
+import GlobalCardModal from '../components/card-modal/GlobalCardModal.vue';
+import BasePage from '../components/layout/BasePage.vue';
 
 export default {
   name: 'WordView',

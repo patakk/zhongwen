@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import GlobalCardModal from '../components/GlobalCardModal.vue';
+import GlobalCardModal from '../components/card-modal/GlobalCardModal.vue';
 
 export default {
   name: 'CharacterView',

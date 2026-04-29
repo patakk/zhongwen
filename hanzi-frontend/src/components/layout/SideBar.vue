@@ -49,7 +49,7 @@
 
 
 <script>
-import LogoutButton from '../components/LogoutButton.vue'
+import LogoutButton from '../navigation/LogoutButton.vue'
 import { faBars } from '@/icons'
 
 export default {

@@ -6,29 +6,12 @@
           <!-- <h2>My Wordlists</h2> -->
   
           <div class="wordlist-selector">
-            <div class="custom-dropdown">
-              <div 
-                id="selected-deck" 
-                @click="isDropdownOpen = !isDropdownOpen"
-              >
-                {{ selectedWordlist || 'Select a wordlist' }}
-              </div>
-              <div 
-                id="deck-options" 
-                :class="{ 'show': isDropdownOpen }"
-                v-if="isDropdownOpen"
-              >
-                <div 
-                  v-for="list in customDecks" 
-                  :key="list.name" 
-                  class="option"
-                  :class="{ 'selected': selectedWordlist === list.name }"
-                  @click="selectWordlist(list.name)"
-                >
-                  {{ list.name }}
-                </div>
-              </div>
-            </div>
+            <DeckSelector
+              v-model="selectedWordlist"
+              :decks="customDecks"
+              placeholder="Select a wordlist"
+              @change="onWordlistChange"
+            />
           </div>
         </div>
         
@@ -272,9 +255,10 @@
   </template>
   
   <script>
-  import BasePage from '../components/BasePage.vue';
-  import PreloadWrapper from '../components/PreloadWrapper.vue';
-  import PracticeSheetModal from '../components/PracticeSheetModal.vue';
+  import BasePage from '../components/layout/BasePage.vue';
+  import PreloadWrapper from '../components/shared/PreloadWrapper.vue';
+  import PracticeSheetModal from '../components/tools/PracticeSheetModal.vue';
+  import DeckSelector from '../components/forms/DeckSelector.vue';
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
 import { faDownload, faPen, faClipboard } from '@/icons';
 
@@ -291,6 +275,7 @@ import { faDownload, faPen, faClipboard } from '@/icons';
       BasePage,
       PreloadWrapper,
       PracticeSheetModal,
+      DeckSelector,
     },
     data() {
       return {
@@ -304,7 +289,6 @@ import { faDownload, faPen, faClipboard } from '@/icons';
         showEditDescriptionModal: false, // Added for description modal
         newWordlistName: '',
         newWordlistDescription: '', // Added for description editing
-        isDropdownOpen: false, // Added for dropdown control
         newWordInput: '', // Added for adding words
         showPracticeSheetModal: false,
         selectedPracticeOption: 'option1',
@@ -408,12 +392,7 @@ import { faDownload, faPen, faClipboard } from '@/icons';
         this.$router.push('/login');
         return;
       }
-      
-      // Set up document click listener for dropdown
-      document.addEventListener('click', this.handleOutsideClick);
-      
-      // Debug logging of wordlists
-      
+
       // Make sure we have wordlist data by dispatching fetchUserData if needed
       if (this.customDecks && this.customDecks.length > 0) {
         this.selectedWordlist = this.customDecks[0].name;
@@ -859,18 +838,9 @@ import { faDownload, faPen, faClipboard } from '@/icons';
         });
       },
 
-      // New method for custom dropdown
-      selectWordlist(name) {
-        this.selectedWordlist = name;
-        this.isDropdownOpen = false;
+      // Handler for DeckSelector change event
+      onWordlistChange() {
         this.loadWordlistWords();
-      },
-      
-      // Method to handle clicks outside the dropdown
-      handleOutsideClick(event) {
-        if (!event.target.closest('.custom-dropdown')) {
-          this.isDropdownOpen = false;
-        }
       },
 
       // New method to copy wordlist to clipboard
@@ -993,66 +963,6 @@ import { faDownload, faPen, faClipboard } from '@/icons';
     max-width: 100%;
     box-sizing: border-box;
     gap: 0.5rem;
-  }
-
-  /* Custom dropdown styles to match FlashcardsView */
-  .custom-dropdown {
-    position: relative;
-    width: 100%;
-    user-select: none;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-  }
-
-  #selected-deck {
-    padding: 10px 15px;
-    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-    color: var(--fg);
-    cursor: pointer;
-    font-weight: bold;
-    text-align: center;
-    min-width: 200px;
-    width: 100%;
-  }
-
-  #selected-deck:hover {
-    background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 75%);
-  }
-
-  #deck-options {
-    position: absolute;
-    top: 100%;
-    width: 100%;
-    max-width: 300px;
-    max-height: 0;
-    overflow: hidden;
-    background-color: var(--bg);
-    border: var(--thin-border-width) solid #0000;
-    margin-top: 5px;
-    z-index: 10;
-    /* transition: max-height 0.3s, border 0.3s; */
-  }
-
-  #deck-options.show {
-    max-height: 80vh;
-    overflow-y: auto;
-    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
-  }
-
-
-  .option {
-    padding: 10px 15px;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .option:hover {
-    background-color: color-mix(in oklab, var(--fg) 6%, var(--bg) 75%);
-  }
-
-  .option.selected {
-    background-color: var(--selected-bg);
   }
 
   select {

@@ -27,25 +27,18 @@
         <button @click.stop="toggleWordlistDropdown" class="wordlist-btn" ref="dropdownButton">
           <span class="x-centered">+</span>
         </button>
-        <div class="wordlist-dropdown">
-          
-          <div v-if="showWordlistDropdown" class="dropdown-content" ref="dropdownContent" @click.stop>
-            <div v-if="!isLoggedIn" class="no-lists">
-              Adding to custom wordlists is possible only upon <router-link to="/register" class="register-link">registration</router-link> or <router-link to="/login" class="register-link">login</router-link>.
-            </div>
-            <div v-else-if="customWordlists && customWordlists.length === 0" class="no-lists">No custom wordlists available</div>
-            <div v-else id="deck-options">
-              <div v-for="wordlist in customWordlists" :key="wordlist.name"
-                  class="option"
-                  @click.stop="addWordToList(wordlist.name)">
-                {{ wordlist.name }}
-              </div>
-              <!-- Add "Create New List" option at the bottom of dropdown -->
-              <div class="option create-list-item" @click.stop="showCreateListModal = true">
-                <span class="create-icon">+</span> Create New List
-              </div>
-            </div>
-          </div>
+        <div class="wordlist-dropdown" @click.stop>
+          <DeckSelector
+            mode="action"
+            :is-open="showWordlistDropdown"
+            :is-logged-in="isLoggedIn"
+            :decks="customWordlists"
+            :show-create-new="true"
+            :search-threshold="5"
+            @select="addWordToList"
+            @create-new="showCreateListModal = true; showWordlistDropdown = false"
+            @close="showWordlistDropdown = false"
+          />
         </div>
 
         <!-- Main word section -->
@@ -585,11 +578,12 @@
 import { defineAsyncComponent } from 'vue';
 import ExpandableExamples from './ExpandableExamples.vue'
 import ClickableRow from './ClickableRow.vue'
-import ToastNotification from './ToastNotification.vue'
+import ToastNotification from '../shared/ToastNotification.vue'
 import RecursiveDecomposition from './RecursiveDecomposition.vue'
-import PreloadWrapper from './PreloadWrapper.vue'
+import PreloadWrapper from '../shared/PreloadWrapper.vue'
+import DeckSelector from '../forms/DeckSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
-import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer'
+import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../../lib/toneColorizer'
 import { faVolumeHigh } from '@/icons'
 
 
@@ -606,7 +600,8 @@ export default {
     AnimatedHanzi: defineAsyncComponent(() => import('./AnimatedHanzi.vue')),
     ToastNotification,
     RecursiveDecomposition,
-    PreloadWrapper
+    PreloadWrapper,
+    DeckSelector
   },
   name: 'GlobalCardModal',
   props: {
@@ -1730,29 +1725,18 @@ export default {
       this.notificationVisible = true;
     },
     handleOutsideClick(event) {
-      // Check if the dropdown is open and if the click is outside the dropdown element itself
+      // Close dropdown if click is outside the dropdown button
       if (this.showWordlistDropdown) {
         const dropdownButton = this.$refs.dropdownButton;
-        const dropdownContent = this.$refs.dropdownContent;
-
-        // Close dropdown if click is outside both the dropdown button and its content
-        if (
-          (!dropdownButton || !dropdownButton.contains(event.target)) &&
-          (!dropdownContent || !dropdownContent.contains(event.target))
-        ) {
+        if (!dropdownButton || !dropdownButton.contains(event.target)) {
           this.showWordlistDropdown = false;
         }
       }
     },
     handleModalClick(event) {
-      // Only close the dropdown if we're clicking on the modal itself
-      // and not on the dropdown button or dropdown content
+      // Close dropdown if clicking on modal but not on dropdown button
       const dropdownButton = this.$refs.dropdownButton;
-      const dropdownContent = this.$refs.dropdownContent;
-
-      if (this.showWordlistDropdown &&
-          dropdownButton && !dropdownButton.contains(event.target) &&
-          dropdownContent && !dropdownContent.contains(event.target)) {
+      if (this.showWordlistDropdown && dropdownButton && !dropdownButton.contains(event.target)) {
         this.showWordlistDropdown = false;
       }
     },
@@ -2870,9 +2854,9 @@ export default {
 }
 
 .wordlist-dropdown {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
+  position: absolute;
+  top: 0;
+  left: 3.5rem;
   z-index: 30;
 }
 
@@ -3267,9 +3251,9 @@ export default {
   }
 
   .wordlist-dropdown {
-      position: fixed;
-      /*top: 3em;
-      right: 1rem;*/
+      position: absolute;
+      top: 0;
+      left: 3.5rem;
     }
 
     /*.modal.invert { filter: invert(0.24); }
@@ -3300,9 +3284,9 @@ export default {
     }
 
     .wordlist-dropdown {
-      position: fixed;
-      top: 3em;
-      left: 1rem;
+      position: absolute;
+      top: 0;
+      left: 3.5rem;
     }
 
     .main-word {

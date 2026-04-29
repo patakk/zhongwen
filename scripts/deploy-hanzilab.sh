@@ -1,10 +1,10 @@
 #!/bin/bash
 
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 
 REPO="git@github.com:patakk/zhongwen.git"
 LOG_FILE="/home/patakk/logs/deploy-hanzilab.log"
-PROJECT_DIR="/home/patakk/hanzilab"
+PROJECT_DIR="/home/patakk/projects/hanzilab"
 REPO_DIR="$PROJECT_DIR/repo"
 FRONTEND_DIR="$REPO_DIR/hanzi-frontend"
 BACKEND_DIR="$REPO_DIR/hanzi-backend"
@@ -49,7 +49,11 @@ fi
 
 # FRONTEND
 if echo "$CHANGED" | grep -q "^hanzi-frontend/"; then
-    echo "$(date): Frontend changed, syncing dist/" >> $LOG_FILE
+    echo "$(date): Frontend changed, building with bun..." >> $LOG_FILE
+    cd "$FRONTEND_DIR"
+    bun install >> $LOG_FILE 2>&1
+    bun run build >> $LOG_FILE 2>&1
+    echo "$(date): Frontend built, syncing dist/" >> $LOG_FILE
     sudo rsync -a --delete "$FRONTEND_DIR/dist/" "$FRONTEND_DEPLOY_DIR/" >> $LOG_FILE 2>&1
     echo "$(date): Frontend dist/ synced successfully." >> $LOG_FILE
 else
@@ -58,16 +62,16 @@ fi
 
 # BACKEND
 if echo "$CHANGED" | grep -q "^hanzi-backend/"; then
-    echo "$(date): Backend changed, installing with Poetry..." >> $LOG_FILE
+    echo "$(date): Backend changed, installing with uv..." >> $LOG_FILE
     cd "$BACKEND_DIR"
-    poetry install --no-root >> $LOG_FILE 2>&1
-    
+    uv sync >> $LOG_FILE 2>&1
+
     # Run database migrations
     echo "$(date): Running database migrations..." >> $LOG_FILE
-    poetry run flask db migrate -m "Auto migration $(date +%Y%m%d%H%M%S)" >> $LOG_FILE 2>&1
-    poetry run flask db upgrade >> $LOG_FILE 2>&1
+    #uv run flask db migrate -m "Auto migration $(date +%Y%m%d%H%M%S)" >> $LOG_FILE 2>&1
+    uv run flask db upgrade >> $LOG_FILE 2>&1
     echo "$(date): Database migrations completed." >> $LOG_FILE
-    
+
     sudo /bin/systemctl restart hanzilab >> $LOG_FILE 2>&1
     echo "$(date): Backend service restarted successfully." >> $LOG_FILE
 else
@@ -76,9 +80,9 @@ fi
 
 # SEARCH
 if echo "$CHANGED" | grep -q "^hanzi-search/" || echo "$CHANGED" | grep -q "^hanzipy/"; then
-    echo "$(date): Search backend or hanzipy changed, installing with Poetry..." >> $LOG_FILE
+    echo "$(date): Search backend or hanzipy changed, installing with uv..." >> $LOG_FILE
     cd "$SEARCH_DIR"
-    poetry install --no-root >> $LOG_FILE 2>&1
+    uv sync >> $LOG_FILE 2>&1
     sudo /bin/systemctl restart hanzilab_search >> $LOG_FILE 2>&1
     echo "$(date): Search service restarted successfully." >> $LOG_FILE
 else
