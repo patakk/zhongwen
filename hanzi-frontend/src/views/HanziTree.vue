@@ -48,7 +48,7 @@
 </template>
   
 <script>
-import BasePage from '../components/BasePage.vue';
+import BasePage from '../components/layout/BasePage.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { ref, onMounted, watch, nextTick, onUnmounted } from 'vue';

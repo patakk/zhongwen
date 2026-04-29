@@ -3,29 +3,13 @@
   <div class="flashcards-view">
     <div id="flashcard_container">
       <div id="flashcard" ref="flashcard" @click="revealOrNew">
-        <div class="top-buttons">
-          <div class="custom-dropdown" @click.stop>
-            <div 
-              id="selected-deck" 
-              @click.stop="isSubmenuOpen = !isSubmenuOpen"
-            >
-              {{ currentDeckName }}
-            </div>
-            <div 
-              id="deck-options" 
-              :class="{ 'show': isSubmenuOpen }"
-            >
-              <div 
-                v-for="(deck, key) in decks" 
-                :key="key" 
-                class="option"
-                :class="{ 'selected': currentDeck === key }"
-                @click.stop="changeDeck(key)"
-              >
-                {{ deck.name }}
-              </div>
-            </div>
-          </div>
+        <div class="top-buttons" @click.stop>
+          <DeckSelector
+            v-model="currentDeck"
+            :decks="decks"
+            placeholder="Select a deck"
+            @change="onDeckChange"
+          />
         </div>
         <div class="hanzi">
           <!-- Canvas will be appended here programmatically -->
@@ -46,11 +30,13 @@
 </template>
 
 <script>
-import BasePage from '../components/BasePage.vue';
+import BasePage from '../components/layout/BasePage.vue';
+import DeckSelector from '../components/forms/DeckSelector.vue';
 
 export default {
   components: {
-    BasePage
+    BasePage,
+    DeckSelector
   },
   data() {
     // Get URL parameter first before setting default
@@ -84,7 +70,6 @@ export default {
       currentIndexInDeck: 0,
       currentDeck: deckFromUrl || 'hsk1', // Use URL param if available, otherwise default
       currentFont: 'Noto Sans',
-      isSubmenuOpen: false,
       animationFrameId: null, // Track current animation frame for cleanup
       lineWidth: 6,
       lineType: 'round',
@@ -93,9 +78,6 @@ export default {
     };
   },
   computed: {
-    currentDeckName() {
-      return this.decks[this.currentDeck]?.name || '';
-    },
     customDefCurrent() {
       try {
         const h = this.currentWordInfo && this.currentWordInfo.character;
@@ -164,7 +146,6 @@ export default {
     this.setupThemeObserver();
     
     // Set up event handlers
-    document.addEventListener('click', this.handleOutsideClick);
     window.addEventListener('resize', this.handleResize);
     document.addEventListener('keydown', this.handleKeydown);
     
@@ -187,7 +168,6 @@ export default {
     }
   },
   beforeUnmount() {
-    document.removeEventListener('click', this.handleOutsideClick);
     window.removeEventListener('resize', this.handleResize);
     document.removeEventListener('keydown', this.handleKeydown);
 
@@ -937,9 +917,7 @@ export default {
         this.decks[this.currentDeck]._shuffledKeys = keys;
       }
     },
-    changeDeck(deckKey) {
-      this.currentDeck = deckKey;
-      this.isSubmenuOpen = false;
+    onDeckChange(deckKey) {
       this.currentIndexInDeck = 0;
       this.shuffleDeck();
       this.updateUrlParam('wordlist', deckKey);
@@ -950,11 +928,6 @@ export default {
       const newUrl = new URL(window.location);
       newUrl.searchParams.set(key, value);
       history.pushState({}, '', newUrl);
-    },
-    handleOutsideClick(event) {
-      if (!event.target.closest('#deckMenu')) {
-        this.isSubmenuOpen = false;
-      }
     },
     handleResize() {
       this.setupCanvas();
@@ -1044,62 +1017,6 @@ html, body {
   flex: 0.1;
 }
 
-.custom-dropdown {
-  position: relative;
-  width: 100%;
-  user-select: none;
-  display: flex;
-  justify-content: center;
-}
-
-#selected-deck {
-  padding: 10px 15px;
-  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-  color: var(--fg);
-  cursor: pointer;
-  font-weight: bold;
-  text-align: center;
-  min-width: 200px;
-}
-
-#selected-deck:hover {
-  background-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 75%);
-}
-
-#deck-options {
-  position: absolute;
-  top: 100%;
-  width: 100%;
-  max-width: 300px;
-  max-height: 0;
-  overflow: hidden;
-  background-color: var(--bg);
-  border: var(--thin-border-width) solid #0000;
-  margin-top: 5px;
-  z-index: 100;
-  /* transition: max-height 0.3s, border 0.3s; */
-}
-
-#deck-options.show {
-  max-height: 300px;
-  overflow-y: auto;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
-}
-
-.option {
-  padding: 10px 15px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.option:hover {
-  background-color: color-mix(in oklab, var(--fg) 6%, var(--bg) 75%);
-}
-
-.option.selected {
-  background-color: var(--selected-bg);
-}
-
 .hanzi {
   top: 50px; /* Position right below the top buttons */
   left: 0;
@@ -1173,18 +1090,6 @@ canvas.plotter {
     padding: 1em;
   }
 
-  #selected-deck {
-    padding: 5px 11px;
-    font-size: 0.8em;
-    background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
-    color: var(--fg);
-    cursor: pointer;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 1em;
-    min-width: 200px;
-  }
-  
   #flashcard {
     height: 50vh;
   }

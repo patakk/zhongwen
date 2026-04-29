@@ -132,8 +132,8 @@
 
 <script>
 import { defineAsyncComponent } from 'vue';
-import BasePage from '../components/BasePage.vue';
-import PreloadWrapper from '../components/PreloadWrapper.vue';
+import BasePage from '../components/layout/BasePage.vue';
+import PreloadWrapper from '../components/shared/PreloadWrapper.vue';
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
 import { faPenFancy, faCamera } from '@/icons';
 
@@ -141,7 +141,7 @@ export default {
   components: {
     BasePage,
     PreloadWrapper,
-    OcrPanel: defineAsyncComponent(() => import('../components/OcrPanel.vue')),
+    OcrPanel: defineAsyncComponent(() => import('../components/forms/OcrPanel.vue')),
   },
   setup() {
     return {

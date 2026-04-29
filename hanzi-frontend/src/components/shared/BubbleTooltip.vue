@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
+import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../../lib/toneColorizer';
 
 export default {
   name: 'BubbleTooltip',

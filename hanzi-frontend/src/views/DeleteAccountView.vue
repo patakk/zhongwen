@@ -17,7 +17,7 @@
   </template>
   
   <script setup>
-  import BasePage from '../components/BasePage.vue'
+  import BasePage from '../components/layout/BasePage.vue'
   import { computed, ref } from 'vue'
   import { useStore } from 'vuex'
   import { useRouter } from 'vue-router'

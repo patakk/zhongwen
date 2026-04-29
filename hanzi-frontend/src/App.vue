@@ -52,8 +52,8 @@ import { useRouter } from "vue-router";
 import { faSun } from '@/icons';
 import { faMoon } from '@/icons';
 import { faClipboardList } from '@/icons';
-import GlobalCardModal from './components/GlobalCardModal.vue';
-import BubbleTooltip from './components/BubbleTooltip.vue';
+import GlobalCardModal from './components/card-modal/GlobalCardModal.vue';
+import BubbleTooltip from './components/shared/BubbleTooltip.vue';
 
 const store = useStore()
 const router = useRouter()

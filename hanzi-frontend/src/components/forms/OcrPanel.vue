@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import PreloadWrapper from './PreloadWrapper.vue';
+import PreloadWrapper from '../shared/PreloadWrapper.vue';
 
 let sharedTesseract = null;
 export default {

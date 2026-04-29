@@ -117,8 +117,8 @@
 
 
 <script>
-import PreloadWrapper from '../components/PreloadWrapper.vue';
-import BasePage from '../components/BasePage.vue';
+import PreloadWrapper from '../components/shared/PreloadWrapper.vue';
+import BasePage from '../components/layout/BasePage.vue';
 import { useStore } from 'vuex';
 import { faBars, faGrip } from '../icons.js'
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';

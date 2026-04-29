@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import HanziPlotter from '../lib/plotter';
+import HanziPlotter from '../../lib/plotter';
 import { defineComponent, ref, onMounted, onBeforeUnmount, nextTick, watch, computed } from 'vue';
 
 export default defineComponent({

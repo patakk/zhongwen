@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { noise } from '../lib/perlin.js';
+import { noise } from '../../lib/perlin.js';
 
 export default {
   name: 'StrokeExplorer',

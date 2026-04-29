@@ -4,8 +4,8 @@
 </template>
 
 <script>
-import PreloadWrapper from '../components/PreloadWrapper.vue';
-import BasePage from '../components/BasePage.vue';
+import PreloadWrapper from '../components/shared/PreloadWrapper.vue';
+import BasePage from '../components/layout/BasePage.vue';
 
 export default {
   name: 'PageInfoView',

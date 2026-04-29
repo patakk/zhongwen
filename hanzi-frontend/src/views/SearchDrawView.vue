@@ -34,8 +34,8 @@
 </template>
 
 <script>
-import BasePage from '../components/BasePage.vue';
-import PreloadWrapper from '../components/PreloadWrapper.vue';
+import BasePage from '../components/layout/BasePage.vue';
+import PreloadWrapper from '../components/shared/PreloadWrapper.vue';
 
 export default {
   components: {

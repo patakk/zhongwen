@@ -99,7 +99,7 @@
 
 <script>
 import { defineComponent } from 'vue';
-import BasePage from '../components/BasePage.vue';
+import BasePage from '../components/layout/BasePage.vue';
 import HanziPlotter from '../lib/plotter';
 
 export default defineComponent({

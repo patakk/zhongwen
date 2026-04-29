@@ -31,7 +31,7 @@
 
 <script>
 import * as d3 from 'd3';
-import PreloadWrapper from './PreloadWrapper.vue';
+import PreloadWrapper from '../shared/PreloadWrapper.vue';
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 
