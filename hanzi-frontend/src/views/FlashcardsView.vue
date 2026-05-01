@@ -12,7 +12,7 @@
           />
         </div>
         <div class="hanzi">
-          <!-- Canvas will be appended here programmatically -->
+          <!-- Canvasis appended here programmatically -->
         </div>
         <div class="answer" :class="{ inactive: revealed }">
           <div class="answer-hanzi-text">{{ currentWordInfo.character }}</div>
