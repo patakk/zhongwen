@@ -118,6 +118,12 @@
   --card-border: 2px solid color-mix(in oklab, var(--fg) 46%, var(--bg) 35%);
   --grid-item-border-transparent: 1.5px solid transparent;
   --grid-item-border: 1.5px solid color-mix(in oklab, var(--fg) 35%, var(--bg) 100%);
+
+  --superellipse-radius: 100px;
+  --supperellipse-2: superellipse(2);
+  --superellipse-2-5: superellipse(2.5);
+  --superellipse-3: superellipse(3);
+  --superellipse-4: superellipse(4);
 }
 
 * {
@@ -125,8 +131,8 @@
 }
 
 button, input, .router-button {
-    corner-shape: superellipse(3);
-    border-radius: 100px;
+    corner-shape: var(--superellipse-3);
+    border-radius: var(--superellipse-radius);
   }
 
 @media (max-width: 1700px) and (orientation: landscape) {
@@ -183,6 +189,10 @@ button, input, .router-button {
 }
   
 @media (max-width: 768px) {
+
+  :root {
+    --superellipse-radius: 10px;
+  }
 
    .container {
     width: 100% !important;

@@ -339,7 +339,7 @@ onMounted(async () => {
   border-radius: var(--border-radius, 4px);
   touch-action: none;
 
-  corner-shape: superellipse(3);
+  corner-shape: var(--superellipse-3);
   border-radius: 100px;
 }
 .history-title {

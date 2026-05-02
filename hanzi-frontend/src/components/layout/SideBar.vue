@@ -292,8 +292,8 @@ export default {
   background: none;
   text-transform: lowercase;
   opacity: .6;
-  corner-shape: superellipse(2.5);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius);
 }
 
 .top-link:hover {

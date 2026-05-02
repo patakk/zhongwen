@@ -72,8 +72,8 @@ export default {
   background: color-mix(in oklab, var(--fg) 4%, var(--bg) 100%);
   padding: 1rem;
 
-  corner-shape: superellipse(3);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-3);
+  border-radius: var(--superellipse-radius);
 }
 .tool-header h3 {
   margin: 0 0 0.25rem 0;

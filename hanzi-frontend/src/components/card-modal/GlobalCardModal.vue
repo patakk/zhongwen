@@ -1902,8 +1902,8 @@ export default {
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   padding: 1em;
 
-  corner-shape: superellipse(4);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-4);
+  border-radius: var(--superellipse-radius);
 }
 
 .extra-info-item {
@@ -2036,8 +2036,8 @@ export default {
   touch-action: pan-y; /* allow vertical scroll by default; JS prevents during horizontal swipe */
   border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 20%);
 
-  corner-shape: superellipse(4);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-4);
+  border-radius: var(--superellipse-radius, 100px);
 }
 
 /* (removed duplicate absolute overlay; using sticky version below) */
@@ -2314,8 +2314,8 @@ export default {
   /*background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));*/
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   
-  corner-shape: superellipse(4);
-  border-radius: 0px 0px 100px 100px;
+  corner-shape: var(--superellipse-4);
+  border-radius: 0px 0px var(--superellipse-radius) var(--superellipse-radius);
 }
 
 
@@ -2330,12 +2330,12 @@ export default {
 
 .first-words {
   border-bottom: none;
-  corner-shape: superellipse(4);
-  border-radius: 100px 100px 0px 0px;
+  corner-shape: var(--superellipse-4);
+  border-radius: var(--superellipse-radius) var(--superellipse-radius) 0px 0px;
 }
 .first-words.collapsed-words {
   border-bottom: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
-  border-radius: 100px;
+  border-radius: var(--superellipse-radius);
 }
 
 
@@ -2588,8 +2588,8 @@ export default {
 	border-bottom: var(--thin-border-width) solid #0000 !important;
 	transform: translate(0, var(--thin-border-width));
 
-  corner-shape: superellipse(4);
-  border-radius: 100px 100px 0px 0px;
+  corner-shape: var(--superellipse-4);
+  border-radius: var(--superellipse-radius) var(--superellipse-radius) 0px 0px;
 }
 
 
@@ -2684,8 +2684,8 @@ export default {
   /* justify-content: space-around; */
   box-sizing: border-box;
 
-  corner-shape: superellipse(3);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-3);
+  border-radius: var(--superellipse-radius, 100px);
 }
 
 .hanzi-anim-wrap {
@@ -2698,8 +2698,8 @@ export default {
   flex: 1;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 
-  corner-shape: superellipse(4);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-4);
+  border-radius: var(--superellipse-radius, 100px);
 }
 
 .hanzi-anim {
@@ -2734,8 +2734,8 @@ export default {
   color: var(--fg);
   padding: 0.45rem 0.75rem;
   
-  corner-shape: superellipse(2.5);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius, 100px);
 
   cursor: pointer;
   font-family: inherit;
@@ -2757,8 +2757,8 @@ export default {
   cursor: default;
   font-family: inherit;
 
-  corner-shape: superellipse(2.5);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius, 100px);
 }
 
 .radicals {
@@ -2814,8 +2814,8 @@ export default {
   height: auto;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 
-  corner-shape: superellipse(4);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-4);
+  border-radius: var(--superellipse-radius, 100px);
 }
 
 .decomposition-items {
@@ -3065,8 +3065,8 @@ export default {
   cursor: pointer;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
 
-  corner-shape: superellipse(2.5);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius, 100px);
 }
 
 .concept-toggle.active {
@@ -3228,8 +3228,8 @@ export default {
   /*background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));*/
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 
-  corner-shape: superellipse(3);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-3);
+  border-radius: var(--superellipse-radius, 100px);
 }
 
 .present-in-chars span {

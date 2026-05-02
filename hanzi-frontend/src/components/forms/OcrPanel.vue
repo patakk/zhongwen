@@ -422,8 +422,8 @@ export default {
   gap: 0.9rem;
   box-sizing: border-box;
 
-  corner-shape: superellipse(4);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-4);
+  border-radius: var(--superellipse-radius);
 }
 
 .input-row {

@@ -110,8 +110,8 @@ export default {
   display: inline-block;
   font-size: .8rem;
 
-  corner-shape: superellipse(2.5);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius);
 }
 
 body [data-theme="dark"] .expand-button {

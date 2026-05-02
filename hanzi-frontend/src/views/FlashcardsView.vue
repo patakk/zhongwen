@@ -1116,8 +1116,8 @@ html, body {
   flex-direction: column;
   touch-action: manipulation; /* Prevents double-tap zoom on the flashcard */
 
-  corner-shape: superellipse(3);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-3);
+  border-radius: var(--superellipse-radius);
 }
 
 .top-buttons {
@@ -1304,8 +1304,8 @@ html, body {
   border-top: 1px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
   z-index: 4;
 
-  corner-shape: superellipse(3);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-3);
+  border-radius: var(--superellipse-radius);
 }
 
 .answer.inactive {

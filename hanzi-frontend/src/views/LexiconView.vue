@@ -1019,8 +1019,8 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
     padding: 2rem;
     box-sizing: border-box;
 
-    corner-shape: superellipse(3);
-    border-radius: 100px;
+    corner-shape: var(--superellipse-3);
+    border-radius: var(--superellipse-radius);
   }
 
   

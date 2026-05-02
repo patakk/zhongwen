@@ -838,8 +838,8 @@ export default {
   color: var(--fg);
   line-height: 1.2;
   box-sizing: border-box;
-  corner-shape: superellipse(2);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-2);
+  border-radius: var(--superellipse-radius);
 }
 
 .clear-btn {
@@ -1075,8 +1075,8 @@ export default {
   gap: 0.75rem;
   box-sizing: border-box;
 
-  corner-shape: superellipse(4);
-  border-radius: 100px;
+  corner-shape: var(--superellipse-4);
+  border-radius: var(--superellipse-radius);
 }
 
 .stroke-controls {
