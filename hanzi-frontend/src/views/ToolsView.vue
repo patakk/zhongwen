@@ -71,6 +71,9 @@ export default {
 .tool-card {
   background: color-mix(in oklab, var(--fg) 4%, var(--bg) 100%);
   padding: 1rem;
+
+  corner-shape: superellipse(3);
+  border-radius: 100px;
 }
 .tool-header h3 {
   margin: 0 0 0.25rem 0;
@@ -84,7 +87,6 @@ export default {
   background: color-mix(in oklab, var(--fg) 8%, var(--bg) 100%);
   color: var(--fg);
   padding: 0.6rem 1rem;
-  border-radius: var(--border-radius, 4px);
   cursor: pointer;
 }
 </style>

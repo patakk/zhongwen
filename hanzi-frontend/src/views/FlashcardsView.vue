@@ -1113,7 +1113,10 @@ html, body {
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
-  touch-action: manipulation;
+  touch-action: manipulation; /* Prevents double-tap zoom on the flashcard */
+
+  corner-shape: superellipse(3);
+  border-radius: 100px;
 }
 
 .top-buttons {

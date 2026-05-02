@@ -421,6 +421,9 @@ export default {
   flex-direction: row;
   gap: 0.9rem;
   box-sizing: border-box;
+
+  corner-shape: superellipse(4);
+  border-radius: 100px;
 }
 
 .input-row {

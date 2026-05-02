@@ -292,6 +292,8 @@ export default {
   background: none;
   text-transform: lowercase;
   opacity: .6;
+  corner-shape: superellipse(2.5);
+  border-radius: 100px;
 }
 
 .top-link:hover {
@@ -305,6 +307,7 @@ export default {
   background-color: color-mix(in oklab, var(--primary-color) 25%, var(--bg) 15%);
   opacity: 1;
   border: none;
+
 }
 
 @media (max-aspect-ratio: 1/1) or (max-width: 784px) {

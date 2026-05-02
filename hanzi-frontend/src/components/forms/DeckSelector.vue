@@ -289,6 +289,9 @@ export default {
   min-width: 200px;
   width: 100%;
   box-sizing: border-box;
+
+  corner-shape: superellipse(2);
+  border-radius: 100px;
 }
 
 .selected-deck:hover {

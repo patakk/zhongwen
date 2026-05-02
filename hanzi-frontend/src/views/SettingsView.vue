@@ -894,6 +894,9 @@ h2 {
   box-sizing: border-box;
   padding: 1rem;
   box-sizing: border-box;
+
+  corner-shape: superellipse(4);
+  border-radius: 100px;
 }
 
 .font-preview {

@@ -109,6 +109,9 @@ export default {
   justify-self: center;
   display: inline-block;
   font-size: .8rem;
+
+  corner-shape: superellipse(2.5);
+  border-radius: 100px;
 }
 
 body [data-theme="dark"] .expand-button {

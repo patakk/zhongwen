@@ -1901,6 +1901,9 @@ export default {
   /*background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));*/
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   padding: 1em;
+
+  corner-shape: superellipse(4);
+  border-radius: 100px;
 }
 
 .extra-info-item {
@@ -2032,6 +2035,9 @@ export default {
   border-radius: var(--modal-border-radius);
   touch-action: pan-y; /* allow vertical scroll by default; JS prevents during horizontal swipe */
   border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 20%);
+
+  corner-shape: superellipse(4);
+  border-radius: 100px;
 }
 
 /* (removed duplicate absolute overlay; using sticky version below) */
@@ -2307,6 +2313,9 @@ export default {
   min-width: 0;
   /*background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));*/
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  
+  corner-shape: superellipse(4);
+  border-radius: 0px 0px 100px 100px;
 }
 
 
@@ -2321,9 +2330,12 @@ export default {
 
 .first-words {
   border-bottom: none;
+  corner-shape: superellipse(4);
+  border-radius: 100px 100px 0px 0px;
 }
 .first-words.collapsed-words {
   border-bottom: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  border-radius: 100px;
 }
 
 
@@ -2575,6 +2587,9 @@ export default {
 	border: var(--thin-border-width) solid #0000 !important;
 	border-bottom: var(--thin-border-width) solid #0000 !important;
 	transform: translate(0, var(--thin-border-width));
+
+  corner-shape: superellipse(4);
+  border-radius: 100px 100px 0px 0px;
 }
 
 
@@ -2639,6 +2654,7 @@ export default {
   font-size: 1rem;
   min-width: 0;
   border-bottom: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 15%);
+
 }
 
 .radicals-group {
@@ -2665,9 +2681,11 @@ export default {
   align-items: center;
 
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
-  border-radius: var(--pinyin-meaning-group-border-radius, 0);
   /* justify-content: space-around; */
   box-sizing: border-box;
+
+  corner-shape: superellipse(3);
+  border-radius: 100px;
 }
 
 .hanzi-anim-wrap {
@@ -2679,6 +2697,9 @@ export default {
   padding: 1em;
   flex: 1;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+
+  corner-shape: superellipse(4);
+  border-radius: 100px;
 }
 
 .hanzi-anim {
@@ -2712,7 +2733,10 @@ export default {
   background: color-mix(in oklab, var(--fg) 6%, var(--bg) 100%);
   color: var(--fg);
   padding: 0.45rem 0.75rem;
-  border-radius: var(--border-radius, 4px);
+  
+  corner-shape: superellipse(2.5);
+  border-radius: 100px;
+
   cursor: pointer;
   font-family: inherit;
   user-select: none;
@@ -2732,6 +2756,9 @@ export default {
   border-radius: var(--border-radius, 4px);
   cursor: default;
   font-family: inherit;
+
+  corner-shape: superellipse(2.5);
+  border-radius: 100px;
 }
 
 .radicals {
@@ -2786,6 +2813,9 @@ export default {
 .decomp-section {
   height: auto;
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+
+  corner-shape: superellipse(4);
+  border-radius: 100px;
 }
 
 .decomposition-items {
@@ -3034,6 +3064,9 @@ export default {
   align-items: center;
   cursor: pointer;
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+
+  corner-shape: superellipse(2.5);
+  border-radius: 100px;
 }
 
 .concept-toggle.active {
@@ -3194,6 +3227,9 @@ export default {
   padding: .5em .5em .5em .5em;
   /*background-color: var(--freq-trad-bg, color-mix(in oklab, var(--fg) 3%, var(--bg) 100%));*/
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+
+  corner-shape: superellipse(3);
+  border-radius: 100px;
 }
 
 .present-in-chars span {

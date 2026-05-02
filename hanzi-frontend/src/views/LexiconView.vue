@@ -1018,6 +1018,9 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
     border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 26%, var(--bg) 25%);
     padding: 2rem;
     box-sizing: border-box;
+
+    corner-shape: superellipse(3);
+    border-radius: 100px;
   }
 
   

@@ -192,6 +192,8 @@ export default {
   overflow-y: visible;
   padding: 1em;
   box-sizing: border-box;
+  corner-shape: superellipse(3);
+  border-radius: 100px;
 }
 .node-container {
   display: flex;

@@ -123,6 +123,9 @@ export default {
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 80%);
   padding: 1rem;
 
+  corner-shape: superellipse(4);
+  border-radius: 100px;
+
 }
 
 .container::-webkit-scrollbar {

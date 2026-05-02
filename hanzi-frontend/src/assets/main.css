@@ -124,6 +124,10 @@
   font-family: var(--font-family);
 }
 
+button, input, .router-button {
+    corner-shape: superellipse(3);
+    border-radius: 100px;
+  }
 
 @media (max-width: 1700px) and (orientation: landscape) {
   html {
