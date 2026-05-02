@@ -207,6 +207,7 @@ export default {
       const q = this.queueState;
       if (!q) return '';
       if (q.review_remaining <= 0 && q.due_count > 0) return 'Daily review limit reached';
+      if (q.reviews_done_today === 0 && q.due_count === 0) return 'Nothing due';
       if (this.canLearnNew) return 'Reviews done!';
       return 'All caught up!';
     },
