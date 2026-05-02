@@ -259,6 +259,10 @@ export default {
     this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark' || document.documentElement.getAttribute('data-theme') === 'theme2';
     this.setupThemeObserver();
 
+    if (window.innerWidth <= 784) {
+      document.body.style.overflow = 'hidden';
+    }
+
     window.addEventListener('resize', this.handleResize);
     document.addEventListener('keydown', this.handleKeydown);
 
@@ -278,6 +282,8 @@ export default {
     }
   },
   beforeUnmount() {
+    document.body.style.overflow = '';
+
     window.removeEventListener('resize', this.handleResize);
     document.removeEventListener('keydown', this.handleKeydown);
 
@@ -1354,7 +1360,7 @@ canvas.plotter {
   }
 
   #flashcard {
-    height: 50vh;
+    height: calc(100dvh - 9em);
     border: none;
   }
 
