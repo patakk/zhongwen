@@ -181,6 +181,61 @@
         </div>
       </div>
 
+      <!-- Flashcards (FSRS) settings -->
+      <div v-if="loggedIn" class="account-container">
+        <h3>Flashcards (Spaced Repetition)</h3>
+        <div class="section-divider"></div>
+
+        <div class="profile-info-grid">
+          <div class="profile-row">
+            <div class="profile-label">Daily new cards:</div>
+            <div class="profile-value">
+              <input
+                type="number"
+                min="0"
+                max="1000"
+                v-model.number="fsrsForm.daily_new_limit"
+                class="fsrs-input"
+              />
+              <span class="fsrs-hint">how many never-seen cards to introduce per day</span>
+            </div>
+          </div>
+          <div class="profile-row">
+            <div class="profile-label">Daily reviews:</div>
+            <div class="profile-value">
+              <input
+                type="number"
+                min="0"
+                max="10000"
+                v-model.number="fsrsForm.daily_review_limit"
+                class="fsrs-input"
+              />
+              <span class="fsrs-hint">cap on review cards shown per day</span>
+            </div>
+          </div>
+          <div class="profile-row">
+            <div class="profile-label">Target retention:</div>
+            <div class="profile-value">
+              <input
+                type="number"
+                min="0.5"
+                max="0.99"
+                step="0.01"
+                v-model.number="fsrsForm.desired_retention"
+                class="fsrs-input"
+              />
+              <span class="fsrs-hint">probability you'll recall a card when it's due (0.5–0.99)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="account-actions">
+          <button class="btn" :disabled="fsrsSaving" @click="saveFsrsSettings">
+            {{ fsrsSaving ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </div>
+
       <!-- Rest of modals and ui components -->
       <div v-if="showEmailModal" class="modal-overlay" @click="closeEmailModal">
         <div class="modal-content" @click.stop>
@@ -523,7 +578,62 @@ onMounted(() => {
   if (!profile.value) {
       store.dispatch('fetchUserData');
   }
+  if (loggedIn.value) loadFsrsSettings();
 })
+
+watch(loggedIn, (now) => {
+  if (now) loadFsrsSettings();
+})
+
+const fsrsForm = ref({
+  daily_new_limit: 20,
+  daily_review_limit: 200,
+  desired_retention: 0.9
+})
+const fsrsSaving = ref(false)
+
+async function loadFsrsSettings() {
+  try {
+    const r = await fetch('/api/fsrs/settings', { credentials: 'same-origin' });
+    if (!r.ok) return;
+    const data = await r.json();
+    fsrsForm.value = {
+      daily_new_limit: data.daily_new_limit,
+      daily_review_limit: data.daily_review_limit,
+      desired_retention: data.desired_retention
+    };
+  } catch (e) {
+    console.error('Failed to load FSRS settings:', e);
+  }
+}
+
+async function saveFsrsSettings() {
+  fsrsSaving.value = true;
+  try {
+    const r = await fetch('/api/fsrs/settings', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fsrsForm.value)
+    });
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      showErrorToast(err.error || 'Failed to save flashcard settings');
+      return;
+    }
+    const data = await r.json();
+    fsrsForm.value = {
+      daily_new_limit: data.daily_new_limit,
+      daily_review_limit: data.daily_review_limit,
+      desired_retention: data.desired_retention
+    };
+    showSuccessToast('Flashcard settings saved');
+  } catch (e) {
+    showErrorToast('Failed to save flashcard settings');
+  } finally {
+    fsrsSaving.value = false;
+  }
+}
 
 function resetModalState() {
     modalLoading.value = false;
@@ -1281,5 +1391,21 @@ h3 {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+}
+
+.fsrs-input {
+  width: 6em;
+  padding: 0.4em 0.6em;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+  background: var(--bg);
+  color: var(--fg);
+  border-radius: 6px;
+  font-size: 1em;
+  font-variant-numeric: tabular-nums;
+}
+
+.fsrs-hint {
+  font-size: 0.85em;
+  opacity: 0.65;
 }
 </style>

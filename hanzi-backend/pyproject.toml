@@ -26,6 +26,7 @@ dependencies = [
     "genanki",
     "gunicorn>=23.0.0",
     "pyyaml",
+    "fsrs (>=6.3.1,<7.0.0)",
 ]
 
 [tool.semantic_release]

@@ -163,3 +163,53 @@ class UserCustomDefinition(db.Model):
 
     def __repr__(self):
         return f"<UserCustomDefinition user_id={self.user_id} hanzi={self.hanzi}>"
+
+
+class FsrsReview(db.Model):
+    """
+    Per-(user, word) FSRS scheduling state. State is shared across all decks:
+    if a word appears in HSK1 and in a custom wordlist, both surfaces show the
+    same review history.
+    """
+    __tablename__ = 'fsrs_review'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    word = db.Column(db.String(64), nullable=False, index=True)
+
+    # FSRS card state. State enum: 1=Learning, 2=Review, 3=Relearning.
+    state = db.Column(db.Integer, nullable=False, default=1)
+    step = db.Column(db.Integer, nullable=True, default=0)
+    stability = db.Column(db.Float, nullable=True)
+    difficulty = db.Column(db.Float, nullable=True)
+    due = db.Column(DateTime(timezone=True), nullable=False, default=func.now(), index=True)
+    last_review = db.Column(DateTime(timezone=True), nullable=True)
+
+    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'word', name='uq_fsrs_review_user_word'),
+    )
+
+    def __repr__(self):
+        return f"<FsrsReview user_id={self.user_id} word={self.word} due={self.due}>"
+
+
+class FsrsDailyStats(db.Model):
+    """
+    Daily counters used to enforce per-user new/review caps. One row per
+    (user, date). 'date' is stored as ISO date string in user-local terms; we
+    use UTC date for simplicity.
+    """
+    __tablename__ = 'fsrs_daily_stats'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    date = db.Column(db.String(10), nullable=False)  # YYYY-MM-DD (UTC)
+
+    new_introduced = db.Column(db.Integer, nullable=False, default=0)
+    reviews_done = db.Column(db.Integer, nullable=False, default=0)
+
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'date', name='uq_fsrs_daily_stats_user_date'),
+    )
