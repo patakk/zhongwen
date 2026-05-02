@@ -1302,6 +1302,9 @@ html, body {
   background-color: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
   border-top: 1px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
   z-index: 4;
+
+  corner-shape: superellipse(3);
+  border-radius: 100px;
 }
 
 .answer.inactive {
