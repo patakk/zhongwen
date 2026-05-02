@@ -8,6 +8,7 @@ from backend.decorators import session_required
 from backend.db.fsrs_ops import (
     get_queue_state,
     get_settings,
+    get_words_state,
     introduce_new_batch,
     record_review,
     set_settings,
@@ -112,6 +113,22 @@ def update_user_settings():
         return _err('auth_required')
     data = request.get_json(silent=True) or {}
     payload, err = set_settings(username, data)
+    if err:
+        return _err(err)
+    return jsonify(payload)
+
+
+@fsrs_bp.route('/words-state', methods=['POST'])
+@session_required
+def words_state():
+    username = _require_auth()
+    if username is None:
+        return _err('auth_required')
+    data = request.get_json(silent=True) or {}
+    words = data.get('words') or []
+    if not isinstance(words, list) or not words:
+        return jsonify({})
+    payload, err = get_words_state(username, words)
     if err:
         return _err(err)
     return jsonify(payload)

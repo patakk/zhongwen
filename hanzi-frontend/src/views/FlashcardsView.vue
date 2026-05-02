@@ -10,10 +10,10 @@
             placeholder="Select a deck"
             @change="onDeckChange"
           />
-          <div v-if="mode === 'fsrs' && queueState" class="queue-stats">
-            <span class="qs-due" title="Due reviews">⏱ {{ queueState.due_count }}</span>
-            <span class="qs-new" title="New cards available">✦ {{ queueState.new_available }}</span>
-            <span class="qs-done" title="Reviewed today">✓ {{ queueState.reviews_done_today }}/{{ queueState.daily_review_limit }}</span>
+          <div v-if="mode === 'fsrs' && queueState" class="queue-stats" @click="showStatsInfo">
+            <span class="qs-due" title="Cards currently due for review in this deck">⏱ {{ queueState.due_count }}</span>
+            <span class="qs-new" title="Never-seen cards remaining in this deck">✦ {{ queueState.new_available }}</span>
+            <span class="qs-done" title="Reviews completed today across all decks vs. your daily review limit">✓ {{ queueState.reviews_done_today }}/{{ queueState.daily_review_limit }}</span>
           </div>
         </div>
 
@@ -47,19 +47,56 @@
             <div v-if="mode === 'fsrs' && revealed" class="rating-buttons" @click.stop>
               <button class="rating-btn rating-again" :disabled="loadingNext" @click="submitRating('again')">
                 <span class="rating-label">Again</span>
+                <span v-if="intervals.again != null" class="rating-interval">{{ formatInterval(intervals.again) }}</span>
                 <span class="rating-key">1</span>
               </button>
               <button class="rating-btn rating-good" :disabled="loadingNext" @click="submitRating('good')">
                 <span class="rating-label">Good</span>
+                <span v-if="intervals.good != null" class="rating-interval">{{ formatInterval(intervals.good) }}</span>
                 <span class="rating-key">2</span>
               </button>
               <button class="rating-btn rating-easy" :disabled="loadingNext" @click="submitRating('easy')">
                 <span class="rating-label">Easy</span>
+                <span v-if="intervals.easy != null" class="rating-interval">{{ formatInterval(intervals.easy) }}</span>
                 <span class="rating-key">3</span>
               </button>
             </div>
           </div>
         </template>
+      </div>
+    </div>
+
+    <!-- Stats info modal -->
+    <div v-if="showStatsModal && queueState" class="stats-overlay" @click="showStatsModal = false">
+      <div class="stats-modal" @click="showStatsModal = false">
+        <h3>Flashcard Queue</h3>
+        <div class="stats-body">
+          <p>
+            <strong>⏱ {{ queueState.due_count }}</strong> —
+            {{ queueState.due_count === 1 ? '1 card is' : queueState.due_count + ' cards are' }}
+            due for review in the <em>{{ currentDeck }}</em> deck. These are cards you've seen before that are scheduled for review today.
+          </p>
+          <p v-if="queueState.review_remaining <= 0 && queueState.due_count > 0">
+            Your daily review limit of {{ queueState.daily_review_limit }} has been reached, so these cards won't be shown until tomorrow.
+          </p>
+          <p>
+            <strong>✦ {{ queueState.new_available }}</strong> —
+            {{ queueState.new_available === 1 ? '1 new card has' : queueState.new_available + ' new cards have' }}
+            never been studied in this deck. {{ queueState.new_introduced_today }} already introduced today.
+          </p>
+          <p v-if="queueState.new_available > 0 && queueState.new_remaining <= 0">
+            Your daily new-card limit of {{ queueState.daily_new_limit }} has been reached, so no more new cards can be introduced today.
+          </p>
+          <p>
+            <strong>✓ {{ queueState.reviews_done_today }}/{{ queueState.daily_review_limit }}</strong> —
+            You've completed {{ queueState.reviews_done_today }} review{{ queueState.reviews_done_today === 1 ? '' : 's' }}
+            today out of your daily cap of {{ queueState.daily_review_limit }}. This limit is shared across all decks.
+          </p>
+          <p class="stats-meta">
+            <em>Your target retention is {{ Math.round(queueState.desired_retention * 100) }}% — the algorithm schedules reviews so you'll recall each card with roughly that probability when it's due.</em>
+          </p>
+        </div>
+        <button class="btn-close-stats" @click="showStatsModal = false">Got it</button>
       </div>
     </div>
   </div>
@@ -77,6 +114,7 @@ export default {
   data() {
     const urlParams = new URLSearchParams(window.location.search);
     const deckFromUrl = urlParams.get('wordlist');
+    const savedDeck = localStorage.getItem('hanzilab_last_deck');
 
     return {
       canvas: null,
@@ -102,7 +140,7 @@ export default {
         english: [],
         strokes: []
       },
-      currentDeck: deckFromUrl || 'hsk1',
+      currentDeck: deckFromUrl || savedDeck || 'hsk1',
       animationFrameId: null,
       lineWidth: 6,
       lineType: 'round',
@@ -112,7 +150,8 @@ export default {
       // FSRS state (only used when authenticated)
       queueState: null,
       loadingNext: false,
-      fsrsLoaded: false
+      fsrsLoaded: false,
+      showStatsModal: false
     };
   },
   computed: {
@@ -151,6 +190,9 @@ export default {
     },
     showEmptyState() {
       return this.fsrsLoaded && this.queueState && !this.queueState.card;
+    },
+    intervals() {
+      return (this.queueState && this.queueState.card && this.queueState.card.intervals) || {};
     },
     canLearnNew() {
       const q = this.queueState;
@@ -201,6 +243,7 @@ export default {
     },
 
     currentDeck(newDeck) {
+      localStorage.setItem('hanzilab_last_deck', newDeck);
       this.updateUrlParam('wordlist', newDeck);
     },
 
@@ -775,7 +818,6 @@ export default {
     },
     onCardClick() {
       if (this.mode === 'fsrs') {
-        // In FSRS mode, click only reveals; rating buttons advance the queue.
         if (this.showEmptyState) return;
         if (!this.revealed && this.currentWord) {
           this.revealed = true;
@@ -784,6 +826,9 @@ export default {
       } else {
         this.revealOrNewRandom();
       }
+    },
+    showStatsInfo() {
+      this.showStatsModal = true;
     },
     revealOrNewRandom() {
       if (this.revealed) {
@@ -835,6 +880,19 @@ export default {
         this.queueState = null;
         this.fsrsLoaded = true;
       }
+    },
+    formatInterval(seconds) {
+      if (seconds == null) return '';
+      if (seconds < 60) return '<1m';
+      const m = Math.round(seconds / 60);
+      if (m < 60) return `${m}m`;
+      const h = Math.round(m / 60);
+      if (h < 24) return `${h}h`;
+      const d = Math.round(h / 24);
+      if (d < 30) return `${d}d`;
+      const mo = Math.round(d / 30);
+      if (mo < 12) return `${mo}mo`;
+      return `${(d / 365).toFixed(1).replace(/\.0$/, '')}y`;
     },
     async submitRating(rating) {
       if (this.loadingNext || !this.currentWord) return;
@@ -1075,6 +1133,12 @@ html, body {
   font-size: 0.85em;
   font-variant-numeric: tabular-nums;
   opacity: 0.75;
+  cursor: help;
+  transition: opacity 0.15s;
+}
+
+.queue-stats:hover {
+  opacity: 1;
 }
 
 .queue-stats span {
@@ -1111,6 +1175,17 @@ html, body {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+
+.btn-learn-new:hover:not(:disabled) {
+  filter: brightness(1.15);
+  transform: scale(1.04);
+}
+
+.btn-learn-new:active:not(:disabled) {
+  filter: brightness(0.9);
+  transform: scale(0.97);
 }
 
 .btn-learn-new:disabled {
@@ -1129,8 +1204,8 @@ html, body {
   flex: 1;
   max-width: 9em;
   padding: 0.7em 0.4em;
-  border: 1px solid rgba(var(--answer-border-rgb), 0.35);
-  background: rgba(var(--answer-bg-rgb), 0.08);
+  border: 1.5px solid color-mix(in oklab, var(--fg) 18%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   border-radius: 8px;
   cursor: pointer;
   display: flex;
@@ -1138,11 +1213,20 @@ html, body {
   align-items: center;
   gap: 0.2em;
   font-size: 1em;
-  color: inherit;
+  color: var(--fg);
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
 }
 
 .rating-btn:hover:not(:disabled) {
-  background: rgba(var(--answer-bg-rgb), 0.18);
+  background: color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
+  border-color: color-mix(in oklab, var(--fg) 32%, var(--bg) 100%);
+  transform: scale(1.03);
+}
+
+.rating-btn:active:not(:disabled) {
+  background: color-mix(in oklab, var(--fg) 18%, var(--bg) 100%);
+  border-color: color-mix(in oklab, var(--fg) 42%, var(--bg) 100%);
+  transform: scale(0.97);
 }
 
 .rating-btn:disabled {
@@ -1159,16 +1243,37 @@ html, body {
   opacity: 0.55;
 }
 
+.rating-btn .rating-interval {
+  font-size: 0.78em;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
 .rating-again {
-  border-color: rgba(220, 80, 80, 0.55);
+  border-color: color-mix(in oklab, #d33 45%, var(--bg) 100%);
+}
+
+.rating-again:hover:not(:disabled) {
+  border-color: color-mix(in oklab, #d33 65%, var(--bg) 100%);
+  background: color-mix(in oklab, #d33 9%, var(--bg) 100%);
 }
 
 .rating-good {
-  border-color: rgba(80, 170, 100, 0.55);
+  border-color: color-mix(in oklab, #4a8 45%, var(--bg) 100%);
+}
+
+.rating-good:hover:not(:disabled) {
+  border-color: color-mix(in oklab, #4a8 65%, var(--bg) 100%);
+  background: color-mix(in oklab, #4a8 9%, var(--bg) 100%);
 }
 
 .rating-easy {
-  border-color: rgba(80, 130, 220, 0.55);
+  border-color: color-mix(in oklab, #48d 45%, var(--bg) 100%);
+}
+
+.rating-easy:hover:not(:disabled) {
+  border-color: color-mix(in oklab, #48d 65%, var(--bg) 100%);
+  background: color-mix(in oklab, #48d 9%, var(--bg) 100%);
 }
 
 .hanzi {
@@ -1191,8 +1296,8 @@ html, body {
   right: 0;
   padding: 2em 1em;
   text-align: center;
-  background-color: rgba(var(--answer-bg-rgb), 0.05);
-  border-top: 1px solid rgba(var(--answer-border-rgb), 0.2);
+  background-color: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
+  border-top: 1px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
   z-index: 4;
 }
 
@@ -1244,5 +1349,59 @@ canvas.plotter {
   #flashcard {
     height: 50vh;
   }
+}
+
+/* FSRS stats info modal */
+.stats-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stats-modal {
+  background: var(--bg);
+  color: var(--fg);
+  border: var(--card-border);
+  border-radius: var(--modal-border-radius, 12px);
+  padding: 2em;
+  max-width: 28em;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.stats-modal h3 {
+  margin: 0 0 1em 0;
+  font-size: 1.3em;
+}
+
+.stats-body p {
+  margin: 0.6em 0;
+  line-height: 1.5;
+}
+
+.stats-meta {
+  margin-top: 1.2em !important;
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.btn-close-stats {
+  margin-top: 1.2em;
+  padding: 0.6em 1.4em;
+  background: var(--primary-color, #4a90e2);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: filter 0.15s;
+}
+
+.btn-close-stats:hover {
+  filter: brightness(1.15);
 }
 </style>

@@ -10,7 +10,7 @@ Daily counters are persisted in fsrs_daily_stats keyed by (user_id, UTC date).
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.attributes import flag_modified
@@ -35,6 +35,8 @@ DEFAULT_SETTINGS = {
     'daily_review_limit': 200,
     'desired_retention': 0.9,
 }
+
+LEARN_AHEAD_MINUTES = 1
 
 RATING_MAP = {
     'again': Rating.Again,
@@ -123,6 +125,18 @@ def _apply_card(rev, card):
     rev.last_review = card.last_review
 
 
+def _preview_intervals(user, rev):
+    """Seconds until next review for each rating, without persisting."""
+    scheduler = _scheduler_for(user)
+    now = _now_utc()
+    out = {}
+    for label, rating in (('again', Rating.Again), ('good', Rating.Good), ('easy', Rating.Easy)):
+        card = _card_from_review(rev)
+        new_card, _log = scheduler.review_card(card, rating, now)
+        out[label] = max(0.0, (new_card.due - now).total_seconds())
+    return out
+
+
 def _get_or_create_daily(user_id, date_iso):
     row = FsrsDailyStats.query.filter_by(user_id=user_id, date=date_iso).first()
     if row is None:
@@ -177,6 +191,7 @@ def _build_queue_payload(user, deck_key, settings, daily, deck_words, due_review
             'word': due_review.word,
             'state': due_review.state,
             'due': _ensure_aware(due_review.due).isoformat(),
+            'intervals': _preview_intervals(user, due_review),
         }
 
     return payload
@@ -202,12 +217,13 @@ def get_queue_state(username, deck_key):
     daily = _get_or_create_daily(user.id, _today_utc_iso())
 
     now = _now_utc()
+    ahead = now + timedelta(minutes=LEARN_AHEAD_MINUTES)
     due_review = (
         db.session.query(FsrsReview)
         .filter(
             FsrsReview.user_id == user.id,
             FsrsReview.word.in_(deck_words),
-            FsrsReview.due <= now,
+            FsrsReview.due <= ahead,
         )
         .order_by(FsrsReview.due.asc())
         .first()
@@ -379,3 +395,36 @@ def set_settings(username, patch):
         return None, f'db_error: {e}'
 
     return _settings_for(user), None
+
+
+# ----- per-word state -------------------------------------------------------
+
+def get_words_state(username, words):
+    """
+    Return per-word FSRS state for a list of words. Returns a dict mapping
+    word → {state, stability, difficulty, due, last_review} or None for words
+    that haven't been introduced yet.
+    """
+    user = _get_user(username)
+    if user is None:
+        return None, 'auth_required'
+
+    if not words:
+        return {}, None
+
+    reviews = (
+        FsrsReview.query
+        .filter(FsrsReview.user_id == user.id, FsrsReview.word.in_(words))
+        .all()
+    )
+
+    return {
+        r.word: {
+            'state': r.state,
+            'stability': r.stability,
+            'difficulty': r.difficulty,
+            'due': _ensure_aware(r.due).isoformat() if r.due else None,
+            'last_review': _ensure_aware(r.last_review).isoformat() if r.last_review else None,
+        }
+        for r in reviews
+    }, None

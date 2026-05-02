@@ -143,6 +143,12 @@
                             </div>
                         </div>
                         <div class="word-english">{{ displayEnglish(word.character, (word.english && word.english[0]) || '') }}</div>
+                        <span
+                          v-if="wordFsrsState[word.character]"
+                          class="fsrs-dot"
+                          :class="'fsrs-' + fsrsLabel(word.character)"
+                          :title="fsrsTooltip(word.character)"
+                        >●</span>
                         <button
                             class="remove-button"
                             @click.stop="removeWord(word.character)"
@@ -260,7 +266,7 @@
   import PracticeSheetModal from '../components/tools/PracticeSheetModal.vue';
   import DeckSelector from '../components/forms/DeckSelector.vue';
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
-import { faDownload, faPen, faClipboard } from '@/icons';
+import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
 
   export default {
     name: 'MySpaceView',
@@ -269,6 +275,7 @@ import { faDownload, faPen, faClipboard } from '@/icons';
         faDownload,
         faPen,
         faClipboard,
+        faPencil,
       };
     },
     components: {
@@ -302,6 +309,7 @@ import { faDownload, faPen, faClipboard } from '@/icons';
         currentPracticeSheetPage: 0, // Track current page for preview
         practiceSheetTotalPages: 1, // Track total pages for preview
         practiceSheetExcludedChars: new Set(), // Track excluded chars for practice sheet
+        wordFsrsState: {}, // word → {state, due, ...} from /api/fsrs/words-state
       };
     },
     computed: {
@@ -353,8 +361,9 @@ import { faDownload, faPen, faClipboard } from '@/icons';
     },
     watch: {
       selectedWordlist(newVal) {
-        // Existing logic to load words remains (implicitly handled by @change on select)
-        this.loadWordlistWords(); 
+        if (newVal) localStorage.setItem('hanzilab_last_deck', newVal);
+        this.loadWordlistWords();
+        this.syncWordlistToUrl(newVal);
       },
       showCreateWordlistModal(newVal) {
         if (newVal) {
@@ -395,7 +404,16 @@ import { faDownload, faPen, faClipboard } from '@/icons';
 
       // Make sure we have wordlist data by dispatching fetchUserData if needed
       if (this.customDecks && this.customDecks.length > 0) {
-        this.selectedWordlist = this.customDecks[0].name;
+        const requested = this.$route.query.wordlist;
+        const saved = localStorage.getItem('hanzilab_last_deck');
+        const names = this.customDecks.map(d => d.name);
+        if (requested && names.includes(requested)) {
+          this.selectedWordlist = requested;
+        } else if (saved && names.includes(saved)) {
+          this.selectedWordlist = saved;
+        } else {
+          this.selectedWordlist = this.customDecks[0].name;
+        }
         
         if (
           this.customDictionaryData &&
@@ -497,6 +515,72 @@ import { faDownload, faPen, faClipboard } from '@/icons';
           console.error('Error loading wordlist words:', error);
           this.words = [];
         }
+        this.fetchFsrsStates();
+      },
+  
+      async fetchFsrsStates() {
+        if (!this.loggedIn || !this.words.length) {
+          console.log('[fsrs] fetchFsrsStates: skipped (loggedIn=%s, words.length=%d)', this.loggedIn, this.words.length);
+          this.wordFsrsState = {};
+          return;
+        }
+        const wordList = this.words.map(w => w.character);
+        console.log('[fsrs] fetchFsrsStates: sending %d words', wordList.length, wordList.slice(0, 5));
+        try {
+          const resp = await fetch('/api/fsrs/words-state', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ words: wordList }),
+          });
+          console.log('[fsrs] fetchFsrsStates: response status=%d', resp.status);
+          if (!resp.ok) {
+            this.wordFsrsState = {};
+            return;
+          }
+          this.wordFsrsState = await resp.json();
+          console.log('[fsrs] fetchFsrsStates: got state for %d words', Object.keys(this.wordFsrsState).length);
+        } catch (e) {
+          console.error('Failed to fetch FSRS states:', e);
+          this.wordFsrsState = {};
+        }
+      },
+      fsrsLabel(character) {
+        const s = this.wordFsrsState[character];
+        if (!s) return '';
+        const labels = { 1: 'learning', 2: 'review', 3: 'relearning' };
+        const parts = [labels[s.state] || ''];
+        if (s.due) {
+          const due = new Date(s.due);
+          const now = new Date();
+          if (due.getTime() - now.getTime() <= 60000) parts.push('due-now');
+        }
+        return parts.join(' ');
+      },
+      fsrsTooltip(character) {
+        const s = this.wordFsrsState[character];
+        if (!s) return '';
+        const names = { 1: 'Learning', 2: 'Review', 3: 'Relearning' };
+        const stateName = names[s.state] || 'Unknown';
+        let dueStr = '';
+        if (s.due) {
+          const due = new Date(s.due);
+          const now = new Date();
+          const diffMs = due - now;
+          const diffMin = Math.round(diffMs / 60000);
+          if (diffMs <= 0) {
+            dueStr = ' — due now';
+          } else if (diffMin < 60) {
+            dueStr = ` — due in ${diffMin}min`;
+          } else if (diffMin < 1440) {
+            const hrs = Math.round(diffMin / 60);
+            dueStr = ` — due in ${hrs}h`;
+          } else {
+            const days = Math.round(diffMin / 1440);
+            dueStr = ` — due in ${days}d`;
+          }
+        }
+        return `${stateName}${dueStr}`;
       },
   
       removeWord(character) {
@@ -843,6 +927,17 @@ import { faDownload, faPen, faClipboard } from '@/icons';
         this.loadWordlistWords();
       },
 
+      syncWordlistToUrl(name) {
+        if (this.$route.query.wordlist === name) return;
+        const newQuery = { ...this.$route.query };
+        if (name) {
+          newQuery.wordlist = name;
+        } else {
+          delete newQuery.wordlist;
+        }
+        this.$router.replace({ query: newQuery }).catch(() => {});
+      },
+
       // New method to copy wordlist to clipboard
       copyWordlistToClipboard() {
         if (!this.words || this.words.length === 0) return;
@@ -1133,6 +1228,20 @@ import { faDownload, faPen, faClipboard } from '@/icons';
     position: relative;
   }
   
+  .fsrs-dot {
+    font-size: 0.65em;
+    line-height: 1;
+    opacity: 0.7;
+    margin-left: 0.5em;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .fsrs-learning { color: #e6a23c; }
+  .fsrs-review { color: #67c23a; }
+  .fsrs-relearning { color: #f56c6c; }
+  .due-now { color: #f56c6c; opacity: 1; }
+
   .remove-button {
     background: transparent;
     border: none;
