@@ -1350,11 +1350,22 @@ canvas.plotter {
 
   .flashcards-view {
     margin-top: 1em;
-    padding: 1em;
+    padding: 0em;
   }
 
   #flashcard {
     height: 50vh;
+    border: none;
+  }
+
+  .top-buttons {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.6em;
+  }
+
+  .queue-stats {
+    padding-bottom: 0.8em;
   }
 }
 
