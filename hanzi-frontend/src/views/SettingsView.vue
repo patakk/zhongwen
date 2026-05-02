@@ -118,6 +118,61 @@
         </div>
       </div>
 
+      <!-- Flashcards (FSRS) settings -->
+      <div v-if="loggedIn" class="account-container">
+        <h3>Flashcards (Spaced Repetition)</h3>
+        <div class="section-divider"></div>
+
+        <div class="profile-info-grid">
+          <div class="profile-row">
+            <div class="profile-label">Daily new cards:</div>
+            <div class="profile-value">
+              <input
+                type="number"
+                min="0"
+                max="1000"
+                v-model.number="fsrsForm.daily_new_limit"
+                class="fsrs-input"
+              />
+              <span class="fsrs-hint">how many never-seen cards to introduce per day</span>
+            </div>
+          </div>
+          <div class="profile-row">
+            <div class="profile-label">Daily reviews:</div>
+            <div class="profile-value">
+              <input
+                type="number"
+                min="0"
+                max="10000"
+                v-model.number="fsrsForm.daily_review_limit"
+                class="fsrs-input"
+              />
+              <span class="fsrs-hint">cap on review cards shown per day</span>
+            </div>
+          </div>
+          <div class="profile-row">
+            <div class="profile-label">Target retention:</div>
+            <div class="profile-value">
+              <input
+                type="number"
+                min="0.5"
+                max="0.99"
+                step="0.01"
+                v-model.number="fsrsForm.desired_retention"
+                class="fsrs-input"
+              />
+              <span class="fsrs-hint">probability you'll recall a card when it's due (0.5–0.99)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="account-actions">
+          <button class="btn" :disabled="fsrsSaving" @click="saveFsrsSettings">
+            {{ fsrsSaving ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </div>
+
       <!-- Account Settings Section (Only for logged-in users) -->
       <div v-if="loggedIn" class="account-container">
           <h3>Account</h3>
@@ -178,61 +233,6 @@
           <h3>Danger Zone</h3>
           <p>Permanently delete your account and all associated data.</p>
           <button @click="openDeleteConfirmModal" class="btn btn-danger delete-account-btn">Delete Account</button>
-        </div>
-      </div>
-
-      <!-- Flashcards (FSRS) settings -->
-      <div v-if="loggedIn" class="account-container">
-        <h3>Flashcards (Spaced Repetition)</h3>
-        <div class="section-divider"></div>
-
-        <div class="profile-info-grid">
-          <div class="profile-row">
-            <div class="profile-label">Daily new cards:</div>
-            <div class="profile-value">
-              <input
-                type="number"
-                min="0"
-                max="1000"
-                v-model.number="fsrsForm.daily_new_limit"
-                class="fsrs-input"
-              />
-              <span class="fsrs-hint">how many never-seen cards to introduce per day</span>
-            </div>
-          </div>
-          <div class="profile-row">
-            <div class="profile-label">Daily reviews:</div>
-            <div class="profile-value">
-              <input
-                type="number"
-                min="0"
-                max="10000"
-                v-model.number="fsrsForm.daily_review_limit"
-                class="fsrs-input"
-              />
-              <span class="fsrs-hint">cap on review cards shown per day</span>
-            </div>
-          </div>
-          <div class="profile-row">
-            <div class="profile-label">Target retention:</div>
-            <div class="profile-value">
-              <input
-                type="number"
-                min="0.5"
-                max="0.99"
-                step="0.01"
-                v-model.number="fsrsForm.desired_retention"
-                class="fsrs-input"
-              />
-              <span class="fsrs-hint">probability you'll recall a card when it's due (0.5–0.99)</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="account-actions">
-          <button class="btn" :disabled="fsrsSaving" @click="saveFsrsSettings">
-            {{ fsrsSaving ? 'Saving…' : 'Save' }}
-          </button>
         </div>
       </div>
 
