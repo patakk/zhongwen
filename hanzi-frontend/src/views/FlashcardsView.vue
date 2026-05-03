@@ -408,7 +408,7 @@ export default {
     this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark' || document.documentElement.getAttribute('data-theme') === 'theme2';
     this.setupThemeObserver();
 
-    document.body.style.overflow = 'hidden';
+    document.body.classList.add('flashcards-page');
 
     window.addEventListener('resize', this.handleResize);
     document.addEventListener('keydown', this.handleKeydown);
@@ -429,7 +429,7 @@ export default {
     }
   },
   beforeUnmount() {
-    document.body.style.overflow = '';
+    document.body.classList.remove('flashcards-page');
 
     window.removeEventListener('resize', this.handleResize);
     document.removeEventListener('keydown', this.handleKeydown);
@@ -1350,7 +1350,10 @@ export default {
 </script>
 
 <style>
-:global(html), :global(body) {
+body.flashcards-page {
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
   touch-action: manipulation;
   -webkit-touch-callout: none;
   user-select: none;
@@ -1358,26 +1361,13 @@ export default {
   -moz-user-select: none;
   -ms-user-select: none;
   overscroll-behavior: none;
-}
-</style>
-
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-  touch-action: manipulation;
-  -webkit-touch-callout: none;
-}
-
-html, body, #app {
   display: flex;
   flex-direction: column;
 }
 
-#app {
+body.flashcards-page #app {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
 }
