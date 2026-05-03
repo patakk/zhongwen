@@ -1979,6 +1979,11 @@ html, body, #app {
   .settings-modal {
     max-width: 80%;
   }
+
+
+  .top-buttons {
+    width: 100vw;
+  }
 }
 
 </style>
