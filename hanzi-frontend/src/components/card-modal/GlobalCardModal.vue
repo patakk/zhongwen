@@ -1179,7 +1179,11 @@ export default {
           return;
         }
       }
-      await this.fetchAudio({ word }, 'main');
+      // Multi-character word: backend tries the word library first, falls back to
+      // concatenating per-syllable clips using `pinyin` for words not in the library.
+      const pinyin = (this.displayPinyin || '').trim();
+      const params = pinyin ? { word, pinyin } : { word };
+      await this.fetchAudio(params, 'main');
     },
     async playSinglePinyin(pinyin) {
       // Per-pinyin pair buttons always play the syllable audio for that specific reading.

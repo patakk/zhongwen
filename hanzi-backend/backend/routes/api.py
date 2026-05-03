@@ -442,26 +442,56 @@ def chat():
     )
 
 
+def _split_pinyin_syllables(pinyin):
+    """Pinyin string (space- or apostrophe-separated, numbered) → list of safe syllable filenames."""
+    if not pinyin:
+        return []
+    raw = pinyin.lower().replace("'", " ")
+    out = []
+    for syl in raw.split():
+        syl = syl.replace('u:', 'v').replace('ü', 'v')
+        if syl and not any(c in syl for c in ('/', '\\', '..')):
+            out.append(syl)
+    return out
+
+
 @api_bp.route("/get_audio", methods=["POST", "GET"])
 def get_audio():
     word = request.args.get("word", "").strip()
     syllable = request.args.get("syllable", "").strip()
+    pinyin = request.args.get("pinyin", "").strip()
 
     if syllable:
         if '/' in syllable or '\\' in syllable or '..' in syllable:
             return "Invalid syllable", 400
         file_path = os.path.join(DATA_DIR, "chinese_syllables_clips", f"{syllable}.mp3")
-    elif word:
+        if not os.path.exists(file_path):
+            return "No audio found", 404
+        return send_file(file_path, mimetype="audio/mpeg")
+
+    if word:
         if '/' in word or '\\' in word or '..' in word:
             return "Invalid word", 400
         file_path = os.path.join(DATA_DIR, "chinese_words_clips", f"{word}.mp3")
-    else:
-        return "No valid word/syllable provided", 400
+        if os.path.exists(file_path):
+            return send_file(file_path, mimetype="audio/mpeg")
 
-    if not os.path.exists(file_path):
-        return "No audio found", 404
+        # Fallback: concatenate per-syllable clips for words not in the word library.
+        chunks = []
+        syllables_dir = os.path.join(DATA_DIR, "chinese_syllables_clips")
+        for syl in _split_pinyin_syllables(pinyin):
+            syl_path = os.path.join(syllables_dir, f"{syl}.mp3")
+            if os.path.exists(syl_path):
+                with open(syl_path, "rb") as f:
+                    chunks.append(f.read())
+        if chunks:
+            buffer = io.BytesIO(b"".join(chunks))
+            buffer.seek(0)
+            return send_file(buffer, mimetype="audio/mpeg")
 
-    return send_file(file_path, mimetype="audio/mpeg")
+        return "No audio found for the provided word", 404
+
+    return "No valid word/syllable provided", 400
 
 
 # @api_bp.route("/debug")
