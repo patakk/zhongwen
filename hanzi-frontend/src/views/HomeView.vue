@@ -838,7 +838,7 @@ export default {
   color: var(--fg);
   line-height: 1.2;
   box-sizing: border-box;
-  corner-shape: var(--superellipse-2);
+  corner-shape: var(--superellipse-2-5);
   border-radius: var(--superellipse-radius);
 }
 
