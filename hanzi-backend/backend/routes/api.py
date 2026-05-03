@@ -442,84 +442,26 @@ def chat():
     )
 
 
-def _strip_tone_marks(pinyin_syllable):
-    tone_map = {
-        'ā': ('a', 1), 'á': ('a', 2), 'ǎ': ('a', 3), 'à': ('a', 4),
-        'ē': ('e', 1), 'é': ('e', 2), 'ě': ('e', 3), 'è': ('e', 4),
-        'ī': ('i', 1), 'í': ('i', 2), 'ǐ': ('i', 3), 'ì': ('i', 4),
-        'ō': ('o', 1), 'ó': ('o', 2), 'ǒ': ('o', 3), 'ò': ('o', 4),
-        'ū': ('u', 1), 'ú': ('u', 2), 'ǔ': ('u', 3), 'ù': ('u', 4),
-        'ǖ': ('v', 1), 'ǘ': ('v', 2), 'ǚ': ('v', 3), 'ǜ': ('v', 4),
-    }
-    tone = None
-    letters = []
-    for ch in pinyin_syllable:
-        if ch in tone_map:
-            base, t = tone_map[ch]
-            letters.append(base)
-            tone = t
-        elif ch.isdigit() and ch in '12345':
-            tone = int(ch)
-        elif ch.isalpha() or ch in ['ü', 'v']:
-            letters.append('v' if ch == 'ü' else ch)
-    if tone is None:
-        tone = 5
-    base = ''.join(letters)
-    return base + str(tone) if base else ''
-
-
-def _normalize_pinyin(pinyin):
-    if not pinyin:
-        return []
-    raw = pinyin.strip().lower().replace("'", " ")
-    syllables = [s for s in raw.split() if s]
-    normalized = []
-    for syl in syllables:
-        syl = syl.replace('u:', 'v').replace('ü', 'v')
-        # If tone number appears inside, move it to the end (e.g., ha3o -> hao3)
-        digit = None
-        for ch in syl:
-            if ch.isdigit() and ch in '12345':
-                digit = ch
-        if digit:
-            base = ''.join(ch for ch in syl if ch.isalpha() or ch in ['v'])
-            if base:
-                normalized.append(f"{base}{digit}")
-            continue
-
-        norm = _strip_tone_marks(syl)
-        if norm:
-            normalized.append(norm)
-    return [s for s in normalized if s]
-
-
-def _get_combined_audio(pinyin=None):
-    audio_chunks = []
-    syllables = _normalize_pinyin(pinyin) if pinyin else []
-    for syl in syllables:
-        file_name = f"{syl}.mp3"
-        file_path = os.path.join(DATA_DIR, "chinese_audio_clips", file_name)
-        if os.path.exists(file_path):
-            with open(file_path, "rb") as f:
-                audio_chunks.append(f.read())
-    return b"".join(audio_chunks) if audio_chunks else b""
-
 @api_bp.route("/get_audio", methods=["POST", "GET"])
 def get_audio():
-    pinyin = request.args.get("pinyin", "")
+    word = request.args.get("word", "").strip()
+    syllable = request.args.get("syllable", "").strip()
 
-    if not pinyin:
-        return "No pinyin provided", 400
+    if syllable:
+        if '/' in syllable or '\\' in syllable or '..' in syllable:
+            return "Invalid syllable", 400
+        file_path = os.path.join(DATA_DIR, "chinese_syllables_clips", f"{syllable}.mp3")
+    elif word:
+        if '/' in word or '\\' in word or '..' in word:
+            return "Invalid word", 400
+        file_path = os.path.join(DATA_DIR, "chinese_words_clips", f"{word}.mp3")
+    else:
+        return "No valid word/syllable provided", 400
 
-    combined_audio = _get_combined_audio(pinyin)
-    
-    if not combined_audio:
-        return "No audio found for the provided characters", 404
-    
-    buffer = io.BytesIO(combined_audio)
-    buffer.seek(0)
-    
-    return send_file(buffer, mimetype="audio/mpeg")
+    if not os.path.exists(file_path):
+        return "No audio found", 404
+
+    return send_file(file_path, mimetype="audio/mpeg")
 
 
 # @api_bp.route("/debug")

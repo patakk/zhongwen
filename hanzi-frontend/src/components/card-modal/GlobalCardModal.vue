@@ -1169,24 +1169,40 @@ export default {
       return toneColorizePinyin(pinyin, { enabled: true, palette: this.toneColorScheme });
     },
     async playAudio() {
-      const rawPinyin = (this.displayPinyin || '').trim();
-      if (!rawPinyin) return;
-      await this.fetchAndPlayPinyin(rawPinyin, 'main');
+      const word = (this.cardData && this.cardData.character) || '';
+      if (!word) return;
+      // Single character with multiple pronunciations → use syllable audio for the current reading.
+      if (word.length === 1 && this.defCount > 1) {
+        const syl = this.normalizeSyllable(this.displayPinyin || '');
+        if (syl) {
+          await this.fetchAudio({ syllable: syl }, 'main');
+          return;
+        }
+      }
+      await this.fetchAudio({ word }, 'main');
     },
     async playSinglePinyin(pinyin) {
-      if (!pinyin) return;
-      await this.fetchAndPlayPinyin(pinyin, pinyin);
+      // Per-pinyin pair buttons always play the syllable audio for that specific reading.
+      const syl = this.normalizeSyllable(pinyin);
+      if (!syl) return;
+      await this.fetchAudio({ syllable: syl }, pinyin);
     },
-    async fetchAndPlayPinyin(pinyin, key) {
-      if (!pinyin) return;
-      const busyKey = key || pinyin || 'audio';
+    normalizeSyllable(pinyin) {
+      let s = (pinyin || '').trim().toLowerCase();
+      if (!s) return '';
+      s = s.split(/\s+/)[0] || '';
+      return s.replace(/u:/g, 'v').replace(/ü/g, 'v');
+    },
+    async fetchAudio(params, key) {
+      const busyKey = key || 'audio';
       if (this.audioBusy[busyKey]) return;
       this.audioBusy = { ...this.audioBusy, [busyKey]: true };
-      const params = new URLSearchParams();
-      params.set('pinyin', pinyin);
-
+      const urlParams = new URLSearchParams();
+      for (const [k, v] of Object.entries(params || {})) {
+        if (v) urlParams.set(k, v);
+      }
       try {
-        const res = await fetch(`/api/get_audio?${params.toString()}`);
+        const res = await fetch(`/api/get_audio?${urlParams.toString()}`);
         if (res.ok) {
           const blob = await res.blob();
           if (blob.size > 0) {
