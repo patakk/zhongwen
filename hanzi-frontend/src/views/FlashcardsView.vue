@@ -38,21 +38,6 @@
           </div>
         </div>
 
-        <div class="card-display">
-          <div class="plotter-area">
-            <div class="canvas-mount" v-show="cardDisplayMode !== 'plain'">
-              <!-- Canvas is appended here programmatically -->
-            </div>
-            <div v-if="cardDisplayMode === 'plain'" class="plain-text" :style="plainTextStyle">
-              {{ currentWordInfo.character }}
-            </div>
-          </div>
-          <div class="meaning" :class="{ inactive: !revealed }">
-            <div class="pinyin">{{ displaySinglePinyin }}</div>
-            <div class="english">{{ displaySingleEnglish }}</div>
-          </div>
-        </div>
-
         <div v-if="mode === 'fsrs' && showEmptyState" class="empty-state" @click.stop>
           <h3>{{ emptyStateTitle }}</h3>
           <p>{{ emptyStateMessage }}</p>
@@ -67,6 +52,20 @@
         </div>
 
         <template v-else>
+          <div class="card-display">
+            <div class="plotter-area">
+              <div class="canvas-mount" v-show="cardDisplayMode !== 'plain'">
+                <!-- Canvas is appended here programmatically -->
+              </div>
+              <div v-if="cardDisplayMode === 'plain'" class="plain-text" :style="plainTextStyle">
+                {{ currentWordInfo.character }}
+              </div>
+            </div>
+            <div class="meaning" :class="{ inactive: !revealed }">
+              <div class="pinyin">{{ displaySinglePinyin }}</div>
+              <div class="english">{{ displaySingleEnglish }}</div>
+            </div>
+          </div>
           <div class="card-actions">
             <div class="action-pre-reveal" :class="{ inactive: revealed }">
               <div class="reveal-chip">Reveal</div>
@@ -354,8 +353,8 @@ export default {
       const w = this.cardWidth;
       if (!w) return {};
       const numchars = Math.max(1, (this.currentWordInfo.character || '').length);
-      const containerWidth = w * 0.5;
-      const containerHeight = w * 0.25;
+      const containerWidth = w * 0.3;
+      const containerHeight = w * 0.20;
       const fontSize = numchars > 1 ? containerWidth / numchars : containerHeight;
       return {
         width: `${containerWidth}px`,
@@ -1355,7 +1354,7 @@ export default {
 }
 </style>
 
-<style scoped>
+<style>
 html, body {
   margin: 0;
   padding: 0;
@@ -1365,6 +1364,19 @@ html, body {
   touch-action: manipulation;
   -webkit-touch-callout: none;
 }
+
+html, body, #app {
+  display: flex;
+  flex-direction: column;
+}
+
+#app {
+  flex: 1;
+  min-height: 0;
+}
+</style>
+
+<style scoped>
 
 .flashcards-view {
   display: flex;
@@ -1380,8 +1392,8 @@ html, body {
 }
 
 #flashcard_container {
-  width: 100%;
-  max-width: 800px;
+  width: 50vw;
+  max-width: 100%;
   margin: 0 auto;
   perspective: 1000px;
 }
@@ -1392,7 +1404,6 @@ html, body {
   height: 60vh;
   max-height: 800px;
   cursor: pointer;
-  transform-style: preserve-3d;
   box-shadow: var(--card-shadow);
   background-color: var(--card-bg);
   border: var(--card-border);
@@ -1874,14 +1885,44 @@ html, body {
   cursor: not-allowed;
 }
 
+.flashcards-view {
+  padding: 0em;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+#flashcard_container {
+  width: 100vw !important;
+  max-width: none;
+  margin: 0;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+#flashcard {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  border: none;
+  border-radius: 0;
+}
+
+
+.top-buttons {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.6em;
+  width: 40vw;
+  margin: 0 auto;
+}
 
 @media (max-width: 784px) {
-  #flashcard_container {
-    width: 100%;
-    margin: 0 auto;
-    perspective: 1000px;
-  }
-
   .action-pre-reveal,
   .action-post-reveal {
     font-size: .76em;
@@ -1889,11 +1930,29 @@ html, body {
 
   .flashcards-view {
     padding: 0em;
+    flex: 1;
+    min-height: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  #flashcard_container {
+    width: 100vw !important;
+    max-width: none;
+    margin: 0;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
   }
 
   #flashcard {
-    height: calc(100dvh);
+    flex: 1;
+    min-height: 0;
+    max-height: none;
     border: none;
+    border-radius: 0;
   }
 
   .top-buttons {
@@ -1905,6 +1964,12 @@ html, body {
 
   .queue-stats {
     padding-bottom: 0.8em;
+  }
+
+  .card-actions {
+    position: relative;
+    flex-shrink: 0;
+    margin-top: auto;
   }
 
   .card-display {
