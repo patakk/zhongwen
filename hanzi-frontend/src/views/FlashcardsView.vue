@@ -404,11 +404,10 @@ export default {
     }
   },
   mounted() {
+    document.body.classList.add('flashcards-page');
     this.setupCanvas();
     this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark' || document.documentElement.getAttribute('data-theme') === 'theme2';
     this.setupThemeObserver();
-
-    document.body.classList.add('flashcards-page');
 
     window.addEventListener('resize', this.handleResize);
     document.addEventListener('keydown', this.handleKeydown);
