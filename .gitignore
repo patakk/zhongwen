@@ -6,6 +6,7 @@ research/
 config.yml
 hanzi-backend/config.yml
 hanzi-backend/static/dist/
+hanzi-frontend/dist/
 hanzi-frontend/.vite
 hanzipy/
 version
