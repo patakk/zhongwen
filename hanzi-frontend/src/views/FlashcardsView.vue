@@ -444,30 +444,36 @@ export default {
   },
   methods: {
     setupCanvas() {
-      const flashcardElement = this.$refs.flashcard;
-      if (!flashcardElement) return;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (!w) return;
+
+      const numchars = Math.max(1, (this.currentWordInfo.character || '').length);
+      const containerWidth = w * 0.3;
+      const containerHeight = h * 0.3;
+      const size = Math.min(containerWidth / numchars, containerHeight);
 
       if (!this.canvas) {
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
 
-        const plotterContainer = flashcardElement.querySelector('.canvas-mount');
+        const plotterContainer = document.querySelector('.canvas-mount');
         if (plotterContainer) {
           plotterContainer.appendChild(this.canvas);
         }
       }
 
-      const maxWidth = flashcardElement.offsetWidth;
-      this.cardWidth = maxWidth;
-      const width = maxWidth * 0.5;
-      this.canvas.width = width * 2;
-      this.canvas.height = width / 2 * 2;
-      this.canvas.style.width = width + 'px';
-      this.canvas.style.height = width / 2 + 'px';
+      const cw = size * numchars;
+      const ch = size;
+      this.cardWidth = cw;
+      this.canvas.width = cw * 2;
+      this.canvas.height = ch * 2;
+      this.canvas.style.width = cw + 'px';
+      this.canvas.style.height = ch + 'px';
       this.canvas.style.left = '0';
       this.canvas.className = 'plotter';
 
-      this.lineWidth = width * 0.025;
+      this.lineWidth = size * 0.025;
     },
     setupThemeObserver() {
       this.themeObserver = new MutationObserver((mutations) => {
