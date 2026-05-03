@@ -13,7 +13,7 @@
     <!-- Dropdown options -->
     <div
       class="deck-options"
-      :class="{ 'show': isOpenState, 'action-mode': mode === 'action' }"
+      :class="{ 'show': isOpenState, 'action-mode': mode === 'action', 'mobile-left': isMobile && mode !== 'action' }"
       v-if="isOpenState"
     >
       <!-- Not logged in state (action mode only) -->
@@ -319,6 +319,11 @@ export default {
   left: 0;
   transform: none;
   top: 1em;
+}
+
+.deck-options.mobile-left {
+  left: 0;
+  transform: none;
 }
 
 .deck-options.show {

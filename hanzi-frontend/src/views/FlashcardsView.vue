@@ -1697,41 +1697,6 @@ html, body {
 }
 
 
-@media (max-width: 784px) {
-  #flashcard_container {
-    width: 100%;
-    margin: 0 auto;
-    perspective: 1000px;
-  }
-
-  .action-pre-reveal,
-  .action-post-reveal {
-    font-size: .76em;
-  }
-
-  .flashcards-view {
-    padding: 0em;
-  }
-
-  #flashcard {
-    height: calc(100dvh);
-    border: none;
-  }
-
-  .top-buttons {
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.6em;
-  }
-
-  .queue-stats {
-    padding-bottom: 0.8em;
-  }
-
-  .card-display {
-    position: relative;
-  }
-}
 
 /* FSRS stats info modal */
 .stats-overlay {
@@ -1908,4 +1873,47 @@ html, body {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+
+@media (max-width: 784px) {
+  #flashcard_container {
+    width: 100%;
+    margin: 0 auto;
+    perspective: 1000px;
+  }
+
+  .action-pre-reveal,
+  .action-post-reveal {
+    font-size: .76em;
+  }
+
+  .flashcards-view {
+    padding: 0em;
+  }
+
+  #flashcard {
+    height: calc(100dvh);
+    border: none;
+  }
+
+  .top-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.6em;
+  }
+
+  .queue-stats {
+    padding-bottom: 0.8em;
+  }
+
+  .card-display {
+    position: relative;
+  }
+
+  .settings-modal {
+    max-width: 80%;
+  }
+}
+
 </style>
