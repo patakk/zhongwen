@@ -212,7 +212,7 @@ button, input, .router-button {
 
 }
 
-@media screen and (max-width: 768px) {
+/*@media screen and (max-width: 768px) {
   :root {
     --overlay-background: var(--bg) !important;
   }
@@ -229,7 +229,7 @@ button, input, .router-button {
     --overlay-background: var(--bg) !important;
   }
 
-}
+}*/
 
 [data-theme="theme2"] {
   --pinyin-color: #b39cc9;
