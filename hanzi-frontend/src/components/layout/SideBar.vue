@@ -1,28 +1,30 @@
 <template>
   <div>
     <div class="sidebar-container" :class="{ 'sidebar-open': isOpen }">
-      <button v-if="!isOpen" class="sidebar-toggle" @click.stop="toggleSidebar">
+      <button class="sidebar-toggle" @click.stop="toggleSidebar">
         <font-awesome-icon :icon="faBars" />
       </button>
 
-      <div v-if="isOpen" class="sidebar" @click.stop>
-        <nav class="sidebar-nav">
-          <RouterLink to="/" class="top-link">Search</RouterLink>
-          <template v-if="authStatus">
-            <RouterLink to="/lexicon" class="top-link">Lexicon</RouterLink>
-          </template>
-          <RouterLink :to="{ path: '/explorer', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="top-link">Lists</RouterLink>
-          <RouterLink to="/flashcards" class="top-link">Flashcards</RouterLink>
-          <RouterLink to="/tools" class="top-link">Tools</RouterLink>
-          <RouterLink to="/settings" class="top-link">Settings</RouterLink>
-          <RouterLink to="/about" class="top-link">About</RouterLink>
-          <template v-if="!authStatus">
-            <RouterLink to="/login" class="top-link">Login</RouterLink>
-          </template>
-        </nav>
-      </div>
+      <Transition name="sidebar">
+        <div v-if="isOpen" class="sidebar" @click.stop>
+          <nav class="sidebar-nav">
+            <RouterLink to="/" class="side-link">Search</RouterLink>
+            <template v-if="authStatus">
+              <RouterLink to="/lexicon" class="side-link">Lexicon</RouterLink>
+            </template>
+            <RouterLink :to="{ path: '/explorer', query: $route.query.wordlist ? { wordlist: $route.query.wordlist } : undefined }" class="side-link">Lists</RouterLink>
+            <RouterLink to="/flashcards" class="side-link">Flashcards</RouterLink>
+            <RouterLink to="/tools" class="side-link">Tools</RouterLink>
+            <RouterLink to="/settings" class="side-link">Settings</RouterLink>
+            <RouterLink to="/about" class="side-link">About</RouterLink>
+            <template v-if="!authStatus">
+              <RouterLink to="/login" class="side-link">Login</RouterLink>
+            </template>
+          </nav>
+        </div>
+      </Transition>
     </div>
-    <div v-if="isOpen" class="overlay" @click.stop="closeSidebar"></div>
+    <div v-show="isOpen" class="overlay" @click.stop="closeSidebar"></div>
   </div>
 </template>
 
@@ -36,7 +38,16 @@ export default {
   },
   data() {
     return {
-      isOpen: false
+      isOpen: document.body.classList.contains('sidebar-push')
+    }
+  },
+  watch: {
+    isOpen(val) {
+      if (val) {
+        document.body.classList.add('sidebar-push')
+      } else {
+        document.body.classList.remove('sidebar-push')
+      }
     }
   },
   computed: {
@@ -53,6 +64,14 @@ export default {
     }
   },
   mounted() {
+    this._onKeydown = (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        this.toggleSidebar()
+      }
+    }
+    document.addEventListener('keydown', this._onKeydown)
+
     this._mq = window.matchMedia('(max-width: 784px)')
     this._onMq = (e) => {
       if (e.matches) {
@@ -68,6 +87,7 @@ export default {
     }
   },
   beforeUnmount() {
+    document.removeEventListener('keydown', this._onKeydown)
     this._mq.removeEventListener('change', this._onMq)
     document.removeEventListener('click', this.closeSidebar)
   }
@@ -78,15 +98,6 @@ export default {
 .sidebar-container {}
 
 .sidebar {
-  width: 0;
-  overflow-x: hidden;
-  transition: all .1s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.sidebar-open .sidebar {
   position: fixed;
   top: 0;
   right: 0;
@@ -96,15 +107,26 @@ export default {
   z-index: 30;
   border-left: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.sidebar-enter-active,
+.sidebar-leave-active {
+  transition: transform 0.1s ease-out;
+}
+
+.sidebar-enter-from,
+.sidebar-leave-to {
+  transform: translateX(100%);
 }
 
 .sidebar-toggle {
   position: fixed;
   top: 0;
   right: 0;
-  width: 1.5em;
-  height: 1.5em;
-  padding: 1em;
+  padding: 0.5em 0.5em 0 0;
   z-index: 1000;
   background: none;
   border: none;
@@ -128,32 +150,49 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: .5em .5em .5em 0em;
+  padding: 3em .5em .5em 0em;
   width: 100%;
+  cursor: default;
 }
 
-.top-link {
+.side-link {
   color: var(--fg);
   text-decoration: none;
   font-size: 1em;
-  padding: .2em .6em;
+  padding: 1em .6em;
   white-space: nowrap;
   background: none;
   text-transform: lowercase;
   opacity: .6;
-  corner-shape: var(--superellipse-2-5);
+  cursor: pointer;
+  corner-shape: var(--superellipse-4);
   border-radius: var(--superellipse-radius);
 }
 
-.top-link:hover {
+.side-link:hover {
   background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   opacity: 1;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
-.top-link.router-link-active,
-.top-link.router-link-exact-active {
+.sidebar-nav .side-link {
+  border-bottom: 1px solid color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
+  width: 100%;
+}
+
+.sidebar-nav .side-link:first-child {
+  border-top: 1px solid color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
+}
+
+.sidebar-nav .side-link:last-child {
+  border-bottom: none;
+}
+
+.side-link.router-link-active,
+.side-link.router-link-exact-active {
   text-transform: uppercase;
-  text-decoration: underline;
+  /*text-decoration: underline;*/
   background-color: color-mix(in oklab, var(--primary-color) 25%, var(--bg) 15%);
   opacity: 1;
 }

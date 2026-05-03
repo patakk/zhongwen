@@ -67,7 +67,7 @@
             </div>
           </div>
           <div class="card-actions">
-            <div class="action-pre-reveal" :class="{ inactive: revealed }">
+            <div class="action-pre-reveal" :class="{ inactive: revealed }" @click.stop="revealCard">
               <div class="reveal-chip">Reveal</div>
             </div>
             <div class="action-post-reveal" :class="{ inactive: !revealed }" @click.stop>
@@ -996,15 +996,14 @@ export default {
       this.drawMasks();
     },
     onCardClick() {
-      if (this.mode === 'fsrs') {
-        if (this.showEmptyState) return;
-        if (!this.revealed && this.currentWord) {
-          this.revealed = true;
-          this.redrawCurrentCard();
-        }
-      } else {
-        this.revealOrNewRandom();
-      }
+      if (!this.revealed) return;
+      if (this.mode === 'fsrs') return;
+      this.revealOrNewRandom();
+    },
+    revealCard() {
+      if (this.revealed) return;
+      this.revealed = true;
+      this.redrawCurrentCard();
     },
     showStatsInfo() {
       this.showStatsModal = true;
@@ -1360,9 +1359,10 @@ export default {
 </script>
 
 <style>
-body.flashcards-page {
+html, body {
+  margin: 0;
+  padding: 0;
   overflow: hidden;
-  height: 100vh;
   width: 100vw;
   touch-action: manipulation;
   -webkit-touch-callout: none;
@@ -1371,15 +1371,6 @@ body.flashcards-page {
   -moz-user-select: none;
   -ms-user-select: none;
   overscroll-behavior: none;
-  display: flex;
-  flex-direction: column;
-}
-
-body.flashcards-page #app {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
 }
 </style>
 
@@ -1390,9 +1381,8 @@ body.flashcards-page #app {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2em;
   box-sizing: border-box;
-  margin: 0 auto;
+  margin: 0;
   position: relative;
   user-select: none;
   -webkit-user-select: none;
@@ -1401,7 +1391,7 @@ body.flashcards-page #app {
 #flashcard_container {
   width: 50vw;
   max-width: 100%;
-  margin: 0 auto;
+  margin: 0;
   perspective: 1000px;
 }
 
@@ -1410,7 +1400,6 @@ body.flashcards-page #app {
   width: 100%;
   height: 60vh;
   max-height: 800px;
-  cursor: pointer;
   box-shadow: var(--card-shadow);
   background-color: var(--card-bg);
   border: var(--card-border);
@@ -1449,9 +1438,21 @@ body.flashcards-page #app {
   box-sizing: border-box;
   padding: 1em;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
   gap: 1em;
+
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.6em;
+
+  width: 10vw;
+  margin: 0 auto 0 0;
+
+}
+
+.top-buttons :deep(.deck-options) {
+  left: 0;
+  transform: none;
 }
 
 .top-left-stack {
@@ -1462,13 +1463,14 @@ body.flashcards-page #app {
 }
 
 .settings-btn {
-  font-size: 0.8em;
+  font-size: 1em;
   padding: 0.35em 0.7em;
   background: transparent;
   color: var(--fg);
   border: 1px solid color-mix(in oklab, var(--fg) 18%, var(--bg) 100%);
   border-radius: 6px;
   cursor: pointer;
+  white-space: nowrap;
   opacity: 0.65;
   transition: opacity 0.15s, border-color 0.15s, background 0.15s;
 }
@@ -1486,6 +1488,7 @@ body.flashcards-page #app {
   font-variant-numeric: tabular-nums;
   opacity: 0.75;
   cursor: help;
+  padding-left: .75em;
 }
 
 .queue-stats:hover {
@@ -1663,7 +1666,7 @@ body.flashcards-page #app {
   border-top: 1px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
 
   corner-shape: var(--superellipse-2-5);
-  border-radius: var(--superellipse-radius);
+  border-radius: var(--superellipse-radius) var(--superellipse-radius) 0 0;
 }
 
 .action-pre-reveal,
@@ -1679,6 +1682,7 @@ body.flashcards-page #app {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .action-pre-reveal.inactive,
@@ -1893,7 +1897,6 @@ body.flashcards-page #app {
 }
 
 .flashcards-view {
-  padding: 0em;
   flex: 1;
   min-height: 0;
   align-items: stretch;
@@ -1901,7 +1904,7 @@ body.flashcards-page #app {
 }
 
 #flashcard_container {
-  width: 100vw !important;
+  width: 100%;
   max-width: none;
   margin: 0;
   flex: 1;
@@ -1917,16 +1920,6 @@ body.flashcards-page #app {
   max-height: none;
   border: none;
   border-radius: 0;
-}
-
-
-.top-buttons {
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  gap: 0.6em;
-  width: 40vw;
-  margin: 0 auto;
 }
 
 @media (max-width: 784px) {

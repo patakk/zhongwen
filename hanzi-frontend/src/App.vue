@@ -32,7 +32,9 @@
         </div>
       </div>
     </div>
-    <router-view />
+    <div class="page-body">
+      <router-view />
+    </div>
     <GlobalCardModal />
     <BubbleTooltip 
       :visible="$store.getters['bubbleTooltip/isBubbleVisible']"
