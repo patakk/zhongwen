@@ -334,10 +334,7 @@ export default {
       return 'All caught up!';
     },
     cardDisplayMode() {
-      if (this.mode === 'fsrs' && this.queueState && this.queueState.card_display_mode) {
-        return this.queueState.card_display_mode;
-      }
-      return 'animated';
+      return this.settingsForm.card_display_mode;
     },
     swipeAlphaLeft() {
       if (!this.swipeIsHorizontal || this.swipeDx >= 0) return 0;
@@ -350,12 +347,13 @@ export default {
       return 0.08 + intensity * 0.32;
     },
     plainTextStyle() {
-      const w = this.cardWidth;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
       if (!w) return {};
       const numchars = Math.max(1, (this.currentWordInfo.character || '').length);
       const containerWidth = w * 0.3;
-      const containerHeight = w * 0.20;
-      const fontSize = numchars > 1 ? containerWidth / numchars : containerHeight;
+      const containerHeight = h * 0.3;
+      const fontSize = Math.min(containerWidth / numchars, containerHeight / numchars);
       return {
         width: `${containerWidth}px`,
         height: `${containerHeight}px`,
@@ -1145,6 +1143,9 @@ export default {
         const payload = await resp.json();
         this.queueState = payload;
         this.fsrsLoaded = true;
+        if (payload.card_display_mode) {
+          this.settingsForm.card_display_mode = payload.card_display_mode;
+        }
         if (payload.card) {
           await this.showWord(payload.card.word, /*animate=*/ this.currentWord !== '');
         } else {
