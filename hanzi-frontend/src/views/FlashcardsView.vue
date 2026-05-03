@@ -1700,7 +1700,7 @@ html, body, #app {
 }
 
 .english {
-  font-size: 1.2em;
+  font-size: 1.0em;
   opacity: .6;
   max-width: 95%;
   padding: 0 2.5%;
