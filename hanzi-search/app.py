@@ -407,7 +407,10 @@ def search_hanzi(query):
                 r['_source_segment'] = source_segment
                 # Always include the segment's own direct definition
                 if r.get('hanzi') == source_segment:
-                    results.append(r)
+                    key = (r.get('hanzi'), r.get('pinyin'), r.get('english'))
+                    if key not in seen:
+                        seen.add(key)
+                        results.append(r)
                     continue
         add_unique_entries(results, res, seen)
 

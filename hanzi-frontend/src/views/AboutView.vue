@@ -55,6 +55,12 @@
                 <a class="links" href="https://creativecommons.org/licenses/by/2.0/fr/" target="_blank">Creative Commons Attribution 2.0 FR</a>.
               </p>
               <br />
+              <span class="smallh">Audio pronunciations:</span><br />
+              <p style="margin-left:20px;">
+                Sourced from <a class="links" href="https://github.com/hugolpz/audio-cmn" target="_blank">audio-cmn</a>, licensed under 
+                <a class="links" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+              </p>
+              <br />
               <span class="smallh">OCR:</span><br />
               <p style="margin-left:20px;">
                 <a class="links" href="https://github.com/naptha/tesseract.js" target="_blank">Tesseract.js</a>, a JavaScript port of the Tesseract OCR engine, licensed under

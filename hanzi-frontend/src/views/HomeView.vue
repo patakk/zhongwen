@@ -4,6 +4,7 @@
     <form @submit.prevent="doSearch" class="search-form">
       <div class="search-input-wrapper">
         <input
+          ref="searchInput"
           v-model="query"
           type="text"
           placeholder="enter search term"
@@ -245,6 +246,10 @@ export default {
     this.$nextTick(() => this.ensureNavContextForUrlWord());
     // Observe theme changes to refresh stroke colors
     this.setupThemeObserver();
+    // Auto-focus search input
+    this.$nextTick(() => {
+      this.$refs.searchInput?.focus();
+    });
   },
   beforeUnmount() {
     // Remove scroll event listener when component is unmounted
@@ -261,13 +266,7 @@ export default {
   methods: {
 
     resetGroupCollapse() {
-      const collapsed = {};
-      for (const group of (this.results || [])) {
-        if (group.collapsible) {
-          collapsed[group.key] = true;
-        }
-      }
-      this.groupCollapsed = collapsed;
+      this.groupCollapsed = {};
     },
     isGroupCollapsed(key) {
       return !!this.groupCollapsed[key];
