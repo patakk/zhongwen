@@ -1171,8 +1171,8 @@ export default {
     async playAudio() {
       const word = (this.cardData && this.cardData.character) || '';
       if (!word) return;
-      // Single character with multiple pronunciations → use syllable audio for the current reading.
-      if (word.length === 1 && this.defCount > 1) {
+      // Single characters always use the syllable library (matched to the current reading).
+      if (word.length === 1) {
         const syl = this.normalizeSyllable(this.displayPinyin || '');
         if (syl) {
           await this.fetchAudio({ syllable: syl }, 'main');
