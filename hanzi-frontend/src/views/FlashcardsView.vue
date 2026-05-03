@@ -773,7 +773,7 @@ export default {
       const copacity = opacity * 0.35;
 
       this.ctx.strokeStyle = this.isDarkMode ? `rgba(255,255,255,${ropacity})` : `rgba(0,0,0,${ropacity})`;
-      this.ctx.strokeRect(x + 1, y + 1, DX - 1, DY - 1);
+      this.ctx.strokeRect(x + 1, y + 1, DX - 2, DY - 2);
 
       this.ctx.strokeStyle = this.isDarkMode ? `rgba(255,255,255,${dopacity})` : `rgba(44,0,0,${dopacity})`;
       this.ctx.beginPath();
@@ -801,7 +801,7 @@ export default {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       this.ctx.strokeStyle = this.isDarkMode ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.16)';
-      this.ctx.lineWidth = 1;
+      this.ctx.lineWidth = 2;
 
       const cx = this.canvas.width / 2;
       const cy = this.canvas.height / 2;
