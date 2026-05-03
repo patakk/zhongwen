@@ -125,8 +125,8 @@
   --superellipse-3: superellipse(3);
   --superellipse-4: superellipse(4);
 
-  --flashcard-days-stats-color: #ba4848;
   --flashcard-days-stats-color: #48ba81;
+  --flashcard-days-stats-color: #ba4848;
   
 }
 
@@ -275,7 +275,7 @@ input[type="text"]:focus-visible {
 
 .loginregister-container {
   max-width: min(calc(100% - 2rem), 400px);
-  margin: 2rem auto;
+  margin: 6rem auto 2rem auto;
   color: var(--fg);
   padding: 2rem;
   border: 1px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
@@ -285,6 +285,8 @@ input[type="text"]:focus-visible {
   align-items: stretch;
   justify-content: center;
   box-sizing: border-box;
+  min-height: 0;
+  flex: none !important;
 }
 
 ::selection {
