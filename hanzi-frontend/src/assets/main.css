@@ -124,6 +124,8 @@
   --superellipse-2-5: superellipse(2.5);
   --superellipse-3: superellipse(3);
   --superellipse-4: superellipse(4);
+
+  --flashcard-days-stats-color: #45bd81;
 }
 
 * {
@@ -149,6 +151,7 @@ button, input, .router-button {
   --first-t: #6a95a5;
   --second-t: #9f9111;
   --third-t: #8a72af;
+  --flashcard-days-stats-color: #ae81dc;
   --fourth-t: #ca5b78;
 
   --first-t-p: #ff8a80;
@@ -672,11 +675,14 @@ body {
 .page-body > .grid-header {
   flex: 1;
 }
+.page-body,
+body {
+  transition: padding-right 0.1s ease;
+}
 
 @media (min-width: 785px) {
   .sidebar-push .page-body,
   .sidebar-push {
     padding-right: 250px !important;
-    transition: padding-right 0.1s ease;
   }
 }

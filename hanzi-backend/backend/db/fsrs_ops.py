@@ -239,11 +239,12 @@ def get_queue_state(username, deck_key):
 
 # ----- review --------------------------------------------------------------
 
-def record_review(username, word, rating_str, deck_key=None):
+def record_review(username, word, rating_str, deck_key=None, time_ms=0):
     """
     Apply a rating to the user's existing FsrsReview for `word`. Increments the
-    daily review counter. If `deck_key` is provided, the response payload also
-    contains the next due card from that deck.
+    daily review counter, the per-rating tally, and total time spent. If
+    `deck_key` is provided, the response payload also contains the next due
+    card from that deck.
     """
     user = _get_user(username)
     if user is None:
@@ -258,6 +259,11 @@ def record_review(username, word, rating_str, deck_key=None):
         return None, 'card_not_introduced'
 
     try:
+        time_ms_int = max(0, min(int(time_ms or 0), 10 * 60 * 1000))
+    except (TypeError, ValueError):
+        time_ms_int = 0
+
+    try:
         scheduler = _scheduler_for(user)
         card = _card_from_review(rev)
         new_card, _log = scheduler.review_card(card, RATING_MAP[rating_str])
@@ -265,6 +271,8 @@ def record_review(username, word, rating_str, deck_key=None):
 
         daily = _get_or_create_daily(user.id, _today_utc_iso())
         daily.reviews_done += 1
+        setattr(daily, f'{rating_str}_count', getattr(daily, f'{rating_str}_count', 0) + 1)
+        daily.time_ms = (daily.time_ms or 0) + time_ms_int
 
         db.session.commit()
     except SQLAlchemyError as e:
@@ -436,4 +444,68 @@ def get_words_state(username, words):
             'last_review': _ensure_aware(r.last_review).isoformat() if r.last_review else None,
         }
         for r in reviews
+    }, None
+
+
+# ----- stats / activity calendar ------------------------------------------
+
+def get_stats(username, year=None):
+    """
+    Return today's review stats and an activity calendar for the given year.
+    """
+    user = _get_user(username)
+    if user is None:
+        return None, 'auth_required'
+
+    if year is None:
+        year = _now_utc().year
+    else:
+        year = int(year)
+
+    today_iso = _today_utc_iso()
+    start_iso = f'{year}-01-01'
+    end_iso = f'{year}-12-31'
+
+    # --- today's stats (read directly off daily counters) ---
+    daily = (
+        db.session.query(FsrsDailyStats)
+        .filter(FsrsDailyStats.user_id == user.id, FsrsDailyStats.date == today_iso)
+        .first()
+    )
+    if daily is None:
+        cards_studied = 0
+        retention = None
+        time_ms = 0
+    else:
+        cards_studied = daily.reviews_done or 0
+        rated = (daily.again_count or 0) + (daily.hard_count or 0) + (daily.good_count or 0) + (daily.easy_count or 0)
+        if rated > 0:
+            retention = round(((daily.good_count or 0) + (daily.easy_count or 0)) / rated, 4)
+        else:
+            retention = None
+        time_ms = daily.time_ms or 0
+
+    # --- activity calendar ---
+    rows = (
+        db.session.query(FsrsDailyStats)
+        .filter(
+            FsrsDailyStats.user_id == user.id,
+            FsrsDailyStats.date >= start_iso,
+            FsrsDailyStats.date <= end_iso,
+        )
+        .all()
+    )
+    activity = {}
+    for row in rows:
+        activity[row.date] = (row.new_introduced or 0) + (row.reviews_done or 0)
+
+    return {
+        'today': {
+            'date': today_iso,
+            'cards_studied': cards_studied,
+            'retention': retention,
+            'time_ms': time_ms,
+        },
+        'activity': activity,
+        'year': year,
     }, None

@@ -8,6 +8,7 @@ from backend.decorators import session_required
 from backend.db.fsrs_ops import (
     get_queue_state,
     get_settings,
+    get_stats,
     get_words_state,
     introduce_new_batch,
     record_review,
@@ -69,9 +70,10 @@ def review():
     word = data.get('word')
     rating = data.get('rating')
     deck = data.get('deck')
+    time_ms = data.get('time_ms', 0)
     if not word or not rating:
         return jsonify({'error': 'missing_fields'}), 400
-    payload, err = record_review(username, word, rating, deck_key=deck)
+    payload, err = record_review(username, word, rating, deck_key=deck, time_ms=time_ms)
     if err:
         return _err(err)
     return jsonify(payload)
@@ -130,6 +132,19 @@ def words_state():
     if not isinstance(words, list) or not words:
         return jsonify({})
     payload, err = get_words_state(username, words)
+    if err:
+        return _err(err)
+    return jsonify(payload)
+
+
+@fsrs_bp.route('/stats', methods=['GET'])
+@session_required
+def stats():
+    username = _require_auth()
+    if username is None:
+        return _err('auth_required')
+    year = request.args.get('year')
+    payload, err = get_stats(username, year=year)
     if err:
         return _err(err)
     return jsonify(payload)

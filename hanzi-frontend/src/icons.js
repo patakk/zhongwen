@@ -24,6 +24,7 @@ import {
   faCamera,
   faClipboardList,
   faVolumeHigh,
+  faChartSimple,
 } from '@fortawesome/free-solid-svg-icons'
 
 export {
@@ -51,4 +52,5 @@ export {
   faCamera,
   faClipboardList,
   faVolumeHigh,
+  faChartSimple,
 }

@@ -210,6 +210,15 @@ class FsrsDailyStats(db.Model):
     new_introduced = db.Column(db.Integer, nullable=False, default=0)
     reviews_done = db.Column(db.Integer, nullable=False, default=0)
 
+    # Per-rating tallies (subset of reviews_done; used for retention).
+    again_count = db.Column(db.Integer, nullable=False, default=0)
+    hard_count = db.Column(db.Integer, nullable=False, default=0)
+    good_count = db.Column(db.Integer, nullable=False, default=0)
+    easy_count = db.Column(db.Integer, nullable=False, default=0)
+
+    # Total time spent answering cards today, in milliseconds.
+    time_ms = db.Column(db.Integer, nullable=False, default=0)
+
     __table_args__ = (
         db.UniqueConstraint('user_id', 'date', name='uq_fsrs_daily_stats_user_date'),
     )

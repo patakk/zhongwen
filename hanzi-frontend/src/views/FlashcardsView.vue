@@ -30,6 +30,15 @@
             >
               ⚙&#xFE0E; Settings
             </button>
+            <button
+              v-if="mode === 'fsrs'"
+              class="settings-btn"
+              type="button"
+              title="Flashcard stats"
+              @click="openStatsModal"
+            >
+              <font-awesome-icon :icon="faChartSimple" /> Stats
+            </button>
           </div>
           <div v-if="mode === 'fsrs' && queueState" class="queue-stats" @click="showStatsInfo">
             <span class="qs-due" title="Cards currently due for review in this deck">⏱&#xFE0E; {{ queueState.due_count }}</span>
@@ -199,14 +208,71 @@
         </div>
       </div>
     </div>
+
+    <!-- Stats modal -->
+    <div v-if="showStatsPanel" class="stats-overlay" @click="closeStatsPanel">
+      <div class="stats-panel" @click.stop>
+        <h3>Flashcard Stats</h3>
+
+        <div class="stats-today">
+          <div class="stat-item">
+            <span class="stat-label">Cards studied today</span>
+            <span class="stat-value">{{ statsData.today ? statsData.today.cards_studied : '...' }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Time spent</span>
+            <span class="stat-value">{{ formattedStudyTime }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Retention</span>
+            <span class="stat-value">
+              {{ statsData.today && statsData.today.retention != null ? (statsData.today.retention * 100).toFixed(0) + '%' : '...' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="stats-year-row">
+          <button class="year-nav" @click="statsYear--; loadStats()" :disabled="statsLoading">◀</button>
+          <span class="year-label">{{ statsYear }}</span>
+          <button class="year-nav" @click="statsYear++; loadStats()" :disabled="statsLoading">▶</button>
+        </div>
+
+        <div class="activity-calendar" v-if="!statsLoading" ref="activityCalendar">
+          <div class="cal-month-labels">
+            <span v-for="m in monthLabels" :key="m.i" class="cal-month" :style="{ gridColumn: m.col }">{{ m.label }}</span>
+          </div>
+          <div class="cal-grid">
+            <span v-for="d in calendarDays" :key="d.key"
+              class="cal-day"
+              :class="'cal-lvl-' + d.level"
+              :title="d.tooltip"
+            ></span>
+          </div>
+          <div class="cal-legend">
+            <span class="cal-legend-label">Less</span>
+            <span class="cal-dot cal-lvl-0"></span>
+            <span class="cal-dot cal-lvl-1"></span>
+            <span class="cal-dot cal-lvl-2"></span>
+            <span class="cal-dot cal-lvl-3"></span>
+            <span class="cal-dot cal-lvl-4"></span>
+            <span class="cal-legend-label">More</span>
+          </div>
+        </div>
+        <div v-else class="stats-loading">Loading…</div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import BasePage from '../components/layout/BasePage.vue';
 import DeckSelector from '../components/forms/DeckSelector.vue';
+import { faChartSimple } from '@/icons';
 
 export default {
+  setup() {
+    return { faChartSimple };
+  },
   components: {
     BasePage,
     DeckSelector
@@ -274,7 +340,16 @@ export default {
       touchStartTime: 0,
       isSwiping: false,
       swipeIsHorizontal: false,
-      swipeDx: 0
+      swipeDx: 0,
+
+      // Stats panel
+      showStatsPanel: false,
+      statsData: {},
+      statsYear: new Date().getFullYear(),
+      statsLoading: false,
+      // Per-card timer: timestamp the current FSRS card was first shown.
+      // Reset to null after rating is submitted so it isn't double-counted.
+      cardShownAt: null
     };
   },
   computed: {
@@ -373,7 +448,61 @@ export default {
         return `Daily new-card limit reached (${q.daily_new_limit}). More tomorrow.`;
       }
       return 'No more cards in this deck right now.';
-    }
+    },
+    formattedStudyTime() {
+      const ms = (this.statsData.today && this.statsData.today.time_ms) || 0;
+      const s = Math.floor(ms / 1000);
+      const m = Math.floor(s / 60);
+      const h = Math.floor(m / 60);
+      if (h > 0) return `${h}h ${m % 60}m`;
+      if (m > 0) return `${m}m ${s % 60}s`;
+      return `${s}s`;
+    },
+    monthLabels() {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const start = new Date(this.statsYear, 0, 1);
+      const startDay = start.getDay() || 7;
+      const weekOffset = startDay - 1;
+      const labels = [];
+      for (let m = 0; m < 12; m++) {
+        const first = new Date(this.statsYear, m, 1);
+        const dayOfYear = Math.floor((first - start) / 86400000) + 1;
+        const cellIdx = weekOffset + dayOfYear - 1;
+        const col = Math.floor(cellIdx / 7) + 1;
+        labels.push({ i: m, label: months[m], col });
+      }
+      return labels;
+    },
+    calendarDays() {
+      const start = new Date(this.statsYear, 0, 1);
+      const end = new Date(this.statsYear, 11, 31);
+      const startDay = start.getDay() || 7;
+      const totalDays = Math.floor((end - start) / 86400000) + 1;
+      const cells = [];
+      for (let d = 0; d < totalDays; d++) {
+        const dt = new Date(start);
+        dt.setDate(dt.getDate() + d);
+        const iso = dt.toISOString().slice(0, 10);
+        const count = this.statsData.activity ? (this.statsData.activity[iso] || 0) : 0;
+        let level = 0;
+        if (count > 0) level = 1;
+        if (count >= 10) level = 2;
+        if (count >= 50) level = 3;
+        if (count >= 100) level = 4;
+        cells.push({
+          key: iso,
+          date: iso,
+          count,
+          level,
+          tooltip: `${iso}: ${count} card${count === 1 ? '' : 's'}`
+        });
+      }
+      const weekOffset = startDay - 1;
+      for (let i = 0; i < weekOffset; i++) {
+        cells.unshift({ key: 'pad-' + i, date: '', count: 0, level: -1, tooltip: '' });
+      }
+      return cells;
+    },
   },
   watch: {
     storeDecks: {
@@ -1009,7 +1138,7 @@ export default {
       this.showStatsModal = true;
     },
     onTouchStart(e) {
-      if (this.showSettingsModal || this.showStatsModal) return;
+      if (this.showSettingsModal || this.showStatsModal || this.showStatsPanel) return;
       if (this.mode !== 'fsrs') return;
       const t = e.changedTouches ? e.changedTouches[0] : (e.touches ? e.touches[0] : null);
       if (!t) return;
@@ -1121,6 +1250,46 @@ export default {
         this.settingsSaving = false;
       }
     },
+    async openStatsModal() {
+      this.showStatsPanel = true;
+      await this.loadStats();
+    },
+    closeStatsPanel() {
+      this.showStatsPanel = false;
+    },
+    async loadStats() {
+      this.statsLoading = true;
+      try {
+        const r = await fetch(`/api/fsrs/stats?year=${this.statsYear}`, { credentials: 'same-origin' });
+        if (!r.ok) { this.statsData = {}; return; }
+        this.statsData = await r.json();
+        if (this.statsData.activity && !this.statsData.activity[new Date().toISOString().slice(0, 10)]) {
+          this.statsData.activity[new Date().toISOString().slice(0, 10)] = 0;
+        }
+      } catch (e) {
+        console.error('Failed to load stats:', e);
+      } finally {
+        this.statsLoading = false;
+        this.$nextTick(() => this.scrollCalendarToCurrentWeek());
+      }
+    },
+    scrollCalendarToCurrentWeek() {
+      // Only auto-scroll when viewing the year that contains "today".
+      const today = new Date();
+      if (today.getFullYear() !== this.statsYear) return;
+      const el = this.$refs.activityCalendar;
+      if (!el) return;
+      const start = new Date(this.statsYear, 0, 1);
+      const startDay = start.getDay() || 7;
+      const weekOffset = startDay - 1;
+      const dayOfYear = Math.floor((today - start) / 86400000) + 1;
+      const cellIdx = weekOffset + dayOfYear - 1;
+      const colIdx = Math.floor(cellIdx / 7);
+      // Grid is 14px per column (12px cell + 2px gap). Center this column in the viewport.
+      const colCenterPx = colIdx * 14 + 7;
+      const target = colCenterPx - el.clientWidth / 2;
+      el.scrollLeft = Math.max(0, target);
+    },
     revealOrNewRandom() {
       if (this.revealed) {
         this.revealed = false;
@@ -1163,10 +1332,12 @@ export default {
         }
         if (payload.card) {
           await this.showWord(payload.card.word, /*animate=*/ this.currentWord !== '');
+          this.cardShownAt = Date.now();
         } else {
           this.currentWord = '';
           this.currentWordInfo = { character: '', pinyin: [], english: [], strokes: [] };
           this.revealed = false;
+          this.cardShownAt = null;
           if (this.ctx) this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
       } catch (e) {
@@ -1190,6 +1361,10 @@ export default {
     },
     async submitRating(rating) {
       if (this.loadingNext || !this.currentWord) return;
+      // Cap any single-card answer at 2 minutes so AFK time doesn't pollute totals.
+      const elapsed = this.cardShownAt ? Date.now() - this.cardShownAt : 0;
+      const time_ms = Math.max(0, Math.min(elapsed, 2 * 60 * 1000));
+      this.cardShownAt = null;
       this.loadingNext = true;
       try {
         const resp = await fetch('/api/fsrs/review', {
@@ -1199,7 +1374,8 @@ export default {
           body: JSON.stringify({
             word: this.currentWord,
             rating,
-            deck: this.currentDeck
+            deck: this.currentDeck,
+            time_ms
           })
         });
         if (!resp.ok) {
@@ -1211,6 +1387,7 @@ export default {
         this.revealed = false;
         if (payload.card) {
           await this.showWord(payload.card.word, /*animate=*/ true);
+          this.cardShownAt = Date.now();
         } else {
           this.currentWord = '';
           this.currentWordInfo = { character: '', pinyin: [], english: [], strokes: [] };
@@ -1240,6 +1417,7 @@ export default {
         this.queueState = payload;
         if (payload.card) {
           await this.showWord(payload.card.word, /*animate=*/ false);
+          this.cardShownAt = Date.now();
         }
       } finally {
         this.loadingNext = false;
@@ -1333,6 +1511,10 @@ export default {
         if (event.key === 'Escape') this.showStatsModal = false;
         return;
       }
+      if (this.showStatsPanel) {
+        if (event.key === 'Escape') this.closeStatsPanel();
+        return;
+      }
       if (this.mode === 'fsrs') {
         if (this.showEmptyState) return;
         if (!this.revealed) {
@@ -1359,7 +1541,7 @@ export default {
 </script>
 
 <style>
-html, body {
+body.flashcards-page {
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -1729,6 +1911,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 .stats-modal {
@@ -1737,9 +1920,10 @@ html, body {
   border: var(--card-border);
   border-radius: var(--modal-border-radius, 12px);
   padding: 2em;
-  max-width: 28em;
-  width: 90%;
+  width: 90vw;
+  max-width: 30vw;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
 }
 
 .stats-modal h3 {
@@ -1780,8 +1964,9 @@ html, body {
   border: var(--card-border);
   border-radius: var(--modal-border-radius, 12px);
   padding: 1.8em 2em;
-  max-width: 30em;
-  width: 92%;
+  max-width: 30vw;
+  width: 90vw;
+  box-sizing: border-box;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   max-height: 90vh;
   overflow-y: auto;
@@ -1977,13 +2162,163 @@ html, body {
   }
 
   .settings-modal {
-    max-width: 80%;
   }
 
 
   .top-buttons {
     width: 100vw;
   }
+}
+
+/* Stats panel */
+.stats-panel {
+  background: var(--bg);
+  color: var(--fg);
+  border: var(--card-border);
+  border-radius: var(--modal-border-radius, 12px);
+
+  padding: 2em;
+  max-width: 50vw;
+  width: 90vw;
+  box-sizing: border-box;
+  
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.stats-panel h3 {
+  margin: 0 0 0.8em 0;
+  font-size: 1.3em;
+}
+
+.stats-today {
+  display: flex;
+  gap: 1.5em;
+  margin-bottom: 1em;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+  min-width: 6em;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.4em;
+  font-weight: 600;
+}
+
+.stats-year-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8em;
+  margin-bottom: 0.8em;
+}
+
+.year-nav {
+  background: none;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+  color: var(--fg);
+  padding: 0.2em 0.6em;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.year-nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.year-label {
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.activity-calendar {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.activity-calendar::-webkit-scrollbar {
+  display: none;
+}
+
+.cal-month-labels {
+  display: grid;
+  grid-template-columns: repeat(53, 14px);
+  gap: 2px;
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.cal-month {
+  font-size: 0.7em;
+  opacity: 0.5;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(53, 14px);
+  grid-template-rows: repeat(7, 12px);
+  grid-auto-flow: column;
+  gap: 2px;
+}
+
+.cal-day {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+}
+
+.cal-lvl-0 { background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%); }
+.cal-lvl-1 { background: color-mix(in oklab, var(--flashcard-days-stats-color) 25%, var(--bg) 30%); }
+.cal-lvl-2 { background: color-mix(in oklab, var(--flashcard-days-stats-color) 50%, var(--bg) 30%); }
+.cal-lvl-3 { background: color-mix(in oklab, var(--flashcard-days-stats-color) 75%, var(--bg) 30%); }
+.cal-lvl-4 { background: color-mix(in oklab, var(--flashcard-days-stats-color) 100%, var(--bg) 30%); }
+
+.cal-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  margin-top: 0.5em;
+}
+
+.cal-legend-label {
+  font-size: 0.7em;
+  opacity: 0.5;
+}
+
+.cal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.stats-loading {
+  text-align: center;
+  padding: 2em;
+  opacity: 0.5;
+}
+
+@media  (max-width: 784px) {
+  .stats-panel, .stats-modal, .settings-modal {
+    max-width: none;
+  }
+  
 }
 
 </style>
