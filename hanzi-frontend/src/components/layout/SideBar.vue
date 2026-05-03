@@ -177,16 +177,8 @@ export default {
 }
 
 .sidebar-nav .side-link {
-  border-bottom: 1px solid color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
-  width: 100%;
-}
-
-.sidebar-nav .side-link:first-child {
   border-top: 1px solid color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
-}
-
-.sidebar-nav .side-link:last-child {
-  border-bottom: none;
+  width: 100%;
 }
 
 .side-link.router-link-active,
