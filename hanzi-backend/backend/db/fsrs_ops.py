@@ -34,7 +34,10 @@ DEFAULT_SETTINGS = {
     'daily_new_limit': 20,
     'daily_review_limit': 200,
     'desired_retention': 0.9,
+    'card_display_mode': 'animated',
 }
+
+CARD_DISPLAY_MODES = {'animated', 'plain'}
 
 LEARN_AHEAD_MINUTES = 1
 
@@ -183,6 +186,7 @@ def _build_queue_payload(user, deck_key, settings, daily, deck_words, due_review
         'new_remaining': new_remaining,
         'review_remaining': review_remaining,
         'desired_retention': settings['desired_retention'],
+        'card_display_mode': settings['card_display_mode'],
         'card': None,
     }
 
@@ -379,6 +383,11 @@ def set_settings(username, patch):
         if not (0.5 <= v <= 0.99):
             return None, 'invalid_desired_retention'
         cleaned['desired_retention'] = v
+    if 'card_display_mode' in patch:
+        v = patch['card_display_mode']
+        if v not in CARD_DISPLAY_MODES:
+            return None, 'invalid_card_display_mode'
+        cleaned['card_display_mode'] = v
 
     if user.metainfo is None:
         user.metainfo = {}

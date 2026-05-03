@@ -269,6 +269,7 @@ export default {
   left: 0;
   width: 100%;
   background: none;
+  padding-top: 1em;
   z-index: 555;
   display: flex;
   justify-content: center;

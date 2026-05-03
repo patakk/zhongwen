@@ -290,8 +290,8 @@ export default {
   width: 100%;
   box-sizing: border-box;
 
-  corner-shape: var(--superellipse-2);
-  border-radius: var(--superellipse-radius)x;
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius);
 }
 
 .selected-deck:hover {

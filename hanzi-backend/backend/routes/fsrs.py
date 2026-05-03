@@ -28,6 +28,7 @@ _ERROR_STATUS = {
     'invalid_daily_new_limit': 400,
     'invalid_daily_review_limit': 400,
     'invalid_desired_retention': 400,
+    'invalid_card_display_mode': 400,
 }
 
 

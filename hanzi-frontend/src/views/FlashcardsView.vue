@@ -2,23 +2,55 @@
   <BasePage page_title="Flashcards" />
   <div class="flashcards-view">
     <div id="flashcard_container">
-      <div id="flashcard" ref="flashcard" @click="onCardClick">
+      <div
+        id="flashcard"
+        ref="flashcard"
+        @click="onCardClick"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
+        @touchend="onTouchEnd"
+        @touchcancel="onTouchEnd"
+      >
+        <div class="swipe-overlay swipe-overlay-left" :style="{ opacity: swipeAlphaLeft }"></div>
+        <div class="swipe-overlay swipe-overlay-right" :style="{ opacity: swipeAlphaRight }"></div>
         <div class="top-buttons" @click.stop>
-          <DeckSelector
-            v-model="currentDeck"
-            :decks="decks"
-            placeholder="Select a deck"
-            @change="onDeckChange"
-          />
+          <div class="top-left-stack">
+            <DeckSelector
+              v-model="currentDeck"
+              :decks="decks"
+              placeholder="Select a deck"
+              @change="onDeckChange"
+            />
+            <button
+              v-if="mode === 'fsrs'"
+              class="settings-btn"
+              type="button"
+              title="Flashcard settings"
+              @click="openSettingsModal"
+            >
+              ⚙&#xFE0E; Settings
+            </button>
+          </div>
           <div v-if="mode === 'fsrs' && queueState" class="queue-stats" @click="showStatsInfo">
-            <span class="qs-due" title="Cards currently due for review in this deck">⏱ {{ queueState.due_count }}</span>
+            <span class="qs-due" title="Cards currently due for review in this deck">⏱&#xFE0E; {{ queueState.due_count }}</span>
             <span class="qs-new" title="Never-seen cards remaining in this deck">✦ {{ queueState.new_available }}</span>
             <span class="qs-done" title="Reviews completed today across all decks vs. your daily review limit">✓ {{ queueState.reviews_done_today }}/{{ queueState.daily_review_limit }}</span>
           </div>
         </div>
 
-        <div class="hanzi">
-          <!-- Canvas is appended here programmatically -->
+        <div class="card-display">
+          <div class="plotter-area">
+            <div class="canvas-mount" v-show="cardDisplayMode !== 'plain'">
+              <!-- Canvas is appended here programmatically -->
+            </div>
+            <div v-if="cardDisplayMode === 'plain'" class="plain-text" :style="plainTextStyle">
+              {{ currentWordInfo.character }}
+            </div>
+          </div>
+          <div class="meaning" :class="{ inactive: !revealed }">
+            <div class="pinyin">{{ displaySinglePinyin }}</div>
+            <div class="english">{{ displaySingleEnglish }}</div>
+          </div>
         </div>
 
         <div v-if="mode === 'fsrs' && showEmptyState" class="empty-state" @click.stop>
@@ -35,31 +67,28 @@
         </div>
 
         <template v-else>
-          <div class="answer" :class="{ inactive: revealed }">
-            <div class="answer-hanzi-text">{{ currentWordInfo.character }}</div>
-            <div class="pinyin" style="opacity: 0;">{{ displaySinglePinyin }}</div>
-            <div class="english" style="opacity: 0;">{{ displaySingleEnglish }}</div>
-          </div>
-          <div class="answer" :class="{ inactive: !revealed }">
-            <div class="answer-hanzi-text">{{ currentWordInfo.character }}</div>
-            <div class="pinyin">{{ displaySinglePinyin }}</div>
-            <div class="english">{{ displaySingleEnglish }}</div>
-            <div v-if="mode === 'fsrs' && revealed" class="rating-buttons" @click.stop>
-              <button class="rating-btn rating-again" :disabled="loadingNext" @click="submitRating('again')">
-                <span class="rating-label">Again</span>
-                <span v-if="intervals.again != null" class="rating-interval">{{ formatInterval(intervals.again) }}</span>
-                <span class="rating-key">1</span>
-              </button>
-              <button class="rating-btn rating-good" :disabled="loadingNext" @click="submitRating('good')">
-                <span class="rating-label">Good</span>
-                <span v-if="intervals.good != null" class="rating-interval">{{ formatInterval(intervals.good) }}</span>
-                <span class="rating-key">2</span>
-              </button>
-              <button class="rating-btn rating-easy" :disabled="loadingNext" @click="submitRating('easy')">
-                <span class="rating-label">Easy</span>
-                <span v-if="intervals.easy != null" class="rating-interval">{{ formatInterval(intervals.easy) }}</span>
-                <span class="rating-key">3</span>
-              </button>
+          <div class="card-actions">
+            <div class="action-pre-reveal" :class="{ inactive: revealed }">
+              <div class="reveal-chip">Reveal</div>
+            </div>
+            <div class="action-post-reveal" :class="{ inactive: !revealed }" @click.stop>
+              <div v-if="mode === 'fsrs'" class="rating-buttons">
+                <button class="rating-btn rating-again" :disabled="loadingNext" @click="submitRating('again')">
+                  <span class="rating-label">Again</span>
+                  <span v-if="intervals.again != null" class="rating-interval">{{ formatInterval(intervals.again) }}</span>
+                  <span class="rating-key">1</span>
+                </button>
+                <button class="rating-btn rating-good" :disabled="loadingNext" @click="submitRating('good')">
+                  <span class="rating-label">Good</span>
+                  <span v-if="intervals.good != null" class="rating-interval">{{ formatInterval(intervals.good) }}</span>
+                  <span class="rating-key">2</span>
+                </button>
+                <button class="rating-btn rating-easy" :disabled="loadingNext" @click="submitRating('easy')">
+                  <span class="rating-label">Easy</span>
+                  <span v-if="intervals.easy != null" class="rating-interval">{{ formatInterval(intervals.easy) }}</span>
+                  <span class="rating-key">3</span>
+                </button>
+              </div>
             </div>
           </div>
         </template>
@@ -97,6 +126,78 @@
           </p>
         </div>
         <button class="btn-close-stats" @click="showStatsModal = false">Got it</button>
+      </div>
+    </div>
+
+    <!-- Settings modal -->
+    <div v-if="showSettingsModal" class="stats-overlay" @click="closeSettingsModal">
+      <div class="settings-modal" @click.stop>
+        <h3>Flashcard Settings</h3>
+        <div class="settings-body">
+          <div class="settings-row">
+            <label class="settings-label">Daily new cards</label>
+            <input
+              type="number"
+              min="0"
+              max="1000"
+              v-model.number="settingsForm.daily_new_limit"
+              class="settings-input"
+            />
+            <div class="settings-hint">never-seen cards introduced per day</div>
+          </div>
+          <div class="settings-row">
+            <label class="settings-label">Daily reviews</label>
+            <input
+              type="number"
+              min="0"
+              max="10000"
+              v-model.number="settingsForm.daily_review_limit"
+              class="settings-input"
+            />
+            <div class="settings-hint">cap on review cards shown per day</div>
+          </div>
+          <div class="settings-row">
+            <label class="settings-label">Target retention</label>
+            <input
+              type="number"
+              min="0.5"
+              max="0.99"
+              step="0.01"
+              v-model.number="settingsForm.desired_retention"
+              class="settings-input"
+            />
+            <div class="settings-hint">probability of recall when due (0.5–0.99)</div>
+          </div>
+          <div class="settings-row">
+            <label class="settings-label">Card display</label>
+            <div class="card-display-toggle">
+              <button
+                type="button"
+                class="card-display-btn"
+                :class="{ active: settingsForm.card_display_mode === 'animated' }"
+                @click="settingsForm.card_display_mode = 'animated'"
+              >
+                Animated strokes
+              </button>
+              <button
+                type="button"
+                class="card-display-btn"
+                :class="{ active: settingsForm.card_display_mode === 'plain' }"
+                @click="settingsForm.card_display_mode = 'plain'"
+              >
+                Plain text
+              </button>
+            </div>
+            <div class="settings-hint">how the character is shown on the card front</div>
+          </div>
+        </div>
+        <div v-if="settingsError" class="settings-error">{{ settingsError }}</div>
+        <div class="settings-modal-buttons">
+          <button class="btn-cancel-settings" type="button" @click="closeSettingsModal">Cancel</button>
+          <button class="btn-save-settings" type="button" :disabled="settingsSaving" @click="saveSettings">
+            {{ settingsSaving ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -151,7 +252,30 @@ export default {
       queueState: null,
       loadingNext: false,
       fsrsLoaded: false,
-      showStatsModal: false
+      showStatsModal: false,
+
+      // Settings modal
+      showSettingsModal: false,
+      settingsSaving: false,
+      settingsError: '',
+      settingsForm: {
+        daily_new_limit: 20,
+        daily_review_limit: 200,
+        desired_retention: 0.9,
+        card_display_mode: 'animated'
+      },
+
+      cardWidth: 0,
+
+      // Swipe-to-rate
+      touchStartX: 0,
+      touchStartY: 0,
+      touchLastX: 0,
+      touchLastY: 0,
+      touchStartTime: 0,
+      isSwiping: false,
+      swipeIsHorizontal: false,
+      swipeDx: 0
     };
   },
   computed: {
@@ -171,10 +295,9 @@ export default {
     },
     displaySingleEnglish() {
       try {
-        const base = (this.currentWordInfo.english && this.currentWordInfo.english[0]) || '';
+        const base = (Array.isArray(this.currentWordInfo.english) && this.currentWordInfo.english.join(' / ')) || '';
         const custom = this.customDefCurrent && this.customDefCurrent.english ? this.customDefCurrent.english : '';
-        const txt = (custom || base) || '';
-        return txt.split('/')[0];
+        return custom || base;
       } catch (e) { return ''; }
     },
     storeDecks() {
@@ -210,6 +333,35 @@ export default {
       if (q.reviews_done_today === 0 && q.due_count === 0) return 'Nothing due';
       if (this.canLearnNew) return 'Reviews done!';
       return 'All caught up!';
+    },
+    cardDisplayMode() {
+      if (this.mode === 'fsrs' && this.queueState && this.queueState.card_display_mode) {
+        return this.queueState.card_display_mode;
+      }
+      return 'animated';
+    },
+    swipeAlphaLeft() {
+      if (!this.swipeIsHorizontal || this.swipeDx >= 0) return 0;
+      const intensity = Math.min(Math.abs(this.swipeDx) / 150, 1);
+      return 0.08 + intensity * 0.32;
+    },
+    swipeAlphaRight() {
+      if (!this.swipeIsHorizontal || this.swipeDx <= 0) return 0;
+      const intensity = Math.min(this.swipeDx / 150, 1);
+      return 0.08 + intensity * 0.32;
+    },
+    plainTextStyle() {
+      const w = this.cardWidth;
+      if (!w) return {};
+      const numchars = Math.max(1, (this.currentWordInfo.character || '').length);
+      const containerWidth = w * 0.5;
+      const containerHeight = w * 0.25;
+      const fontSize = numchars > 1 ? containerWidth / numchars : containerHeight;
+      return {
+        width: `${containerWidth}px`,
+        height: `${containerHeight}px`,
+        fontSize: `${fontSize}px`
+      };
     },
     emptyStateMessage() {
       const q = this.queueState;
@@ -259,9 +411,7 @@ export default {
     this.isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark' || document.documentElement.getAttribute('data-theme') === 'theme2';
     this.setupThemeObserver();
 
-    if (window.innerWidth <= 784) {
-      document.body.style.overflow = 'hidden';
-    }
+    document.body.style.overflow = 'hidden';
 
     window.addEventListener('resize', this.handleResize);
     document.addEventListener('keydown', this.handleKeydown);
@@ -304,13 +454,14 @@ export default {
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
 
-        const hanziContainer = flashcardElement.querySelector('.hanzi');
-        if (hanziContainer) {
-          hanziContainer.appendChild(this.canvas);
+        const plotterContainer = flashcardElement.querySelector('.canvas-mount');
+        if (plotterContainer) {
+          plotterContainer.appendChild(this.canvas);
         }
       }
 
       const maxWidth = flashcardElement.offsetWidth;
+      this.cardWidth = maxWidth;
       const width = maxWidth * 0.5;
       this.canvas.width = width * 2;
       this.canvas.height = width / 2 * 2;
@@ -724,6 +875,10 @@ export default {
         return 1 - 0.5 * Math.pow(2 * (1 - p), g);
     },
     interpolateCards() {
+      if (this.cardDisplayMode === 'plain') {
+        if (this.ctx) this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        return;
+      }
       if (!this.prevWordInfo.strokes || !this.currentWordInfo.strokes) {
         this.redrawCurrentCard();
         return;
@@ -819,6 +974,10 @@ export default {
       this.animationFrameId = requestAnimationFrame(animateFrame);
     },
     redrawCurrentCard() {
+      if (this.cardDisplayMode === 'plain') {
+        if (this.ctx) this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        return;
+      }
       const numchars = this.currentWordInfo.strokes.length;
       this.drawbg(0, numchars, numchars);
       this.drawMasks();
@@ -836,6 +995,119 @@ export default {
     },
     showStatsInfo() {
       this.showStatsModal = true;
+    },
+    onTouchStart(e) {
+      if (this.showSettingsModal || this.showStatsModal) return;
+      if (this.mode !== 'fsrs') return;
+      const t = e.changedTouches ? e.changedTouches[0] : (e.touches ? e.touches[0] : null);
+      if (!t) return;
+      this.touchStartX = this.touchLastX = t.clientX;
+      this.touchStartY = this.touchLastY = t.clientY;
+      this.touchStartTime = Date.now();
+      this.isSwiping = true;
+      this.swipeIsHorizontal = false;
+      this.swipeDx = 0;
+    },
+    onTouchMove(e) {
+      if (!this.isSwiping) return;
+      const t = e.changedTouches ? e.changedTouches[0] : (e.touches ? e.touches[0] : null);
+      if (!t) return;
+      this.touchLastX = t.clientX;
+      this.touchLastY = t.clientY;
+      const dx = this.touchLastX - this.touchStartX;
+      const dy = this.touchLastY - this.touchStartY;
+      if (!this.swipeIsHorizontal && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
+        this.swipeIsHorizontal = true;
+      }
+      if (this.swipeIsHorizontal) {
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        this.swipeDx = this.revealed ? dx : 0;
+      }
+    },
+    onTouchEnd() {
+      if (!this.isSwiping) return;
+      this.isSwiping = false;
+      const dx = this.touchLastX - this.touchStartX;
+      const dy = this.touchLastY - this.touchStartY;
+      const dt = Date.now() - this.touchStartTime;
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+      const wasHorizontal = this.swipeIsHorizontal;
+      this.swipeIsHorizontal = false;
+      this.swipeDx = 0;
+      if (!wasHorizontal) return;
+      // Threshold matches GlobalCardModal: > 50px, fast (< 800ms), predominantly horizontal
+      if (absDx > 50 && absDx > absDy && dt < 800) {
+        if (this.mode !== 'fsrs' || !this.revealed || this.loadingNext || !this.currentWord) return;
+        if (dx < 0) {
+          this.submitRating('again');
+        } else {
+          this.submitRating('good');
+        }
+      }
+    },
+    async openSettingsModal() {
+      this.settingsError = '';
+      // Pre-populate from queueState (already has these fields), then refresh from server
+      if (this.queueState) {
+        this.settingsForm = {
+          daily_new_limit: this.queueState.daily_new_limit ?? this.settingsForm.daily_new_limit,
+          daily_review_limit: this.queueState.daily_review_limit ?? this.settingsForm.daily_review_limit,
+          desired_retention: this.queueState.desired_retention ?? this.settingsForm.desired_retention,
+          card_display_mode: this.queueState.card_display_mode || this.settingsForm.card_display_mode
+        };
+      }
+      this.showSettingsModal = true;
+      try {
+        const r = await fetch('/api/fsrs/settings', { credentials: 'same-origin' });
+        if (r.ok) {
+          const data = await r.json();
+          this.settingsForm = {
+            daily_new_limit: data.daily_new_limit,
+            daily_review_limit: data.daily_review_limit,
+            desired_retention: data.desired_retention,
+            card_display_mode: data.card_display_mode || 'animated'
+          };
+        }
+      } catch (e) {
+        console.error('Failed to load FSRS settings:', e);
+      }
+    },
+    closeSettingsModal() {
+      if (this.settingsSaving) return;
+      this.showSettingsModal = false;
+      this.settingsError = '';
+    },
+    async saveSettings() {
+      this.settingsSaving = true;
+      this.settingsError = '';
+      try {
+        const r = await fetch('/api/fsrs/settings', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(this.settingsForm)
+        });
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          this.settingsError = err.error || 'Failed to save settings';
+          return;
+        }
+        const data = await r.json();
+        if (this.queueState) {
+          this.queueState.daily_new_limit = data.daily_new_limit;
+          this.queueState.daily_review_limit = data.daily_review_limit;
+          this.queueState.desired_retention = data.desired_retention;
+          this.queueState.card_display_mode = data.card_display_mode;
+        }
+        this.showSettingsModal = false;
+        this.redrawCurrentCard();
+      } catch (e) {
+        console.error('Failed to save FSRS settings:', e);
+        this.settingsError = 'Failed to save settings';
+      } finally {
+        this.settingsSaving = false;
+      }
     },
     revealOrNewRandom() {
       if (this.revealed) {
@@ -1038,6 +1310,14 @@ export default {
       this.redrawCurrentCard();
     },
     handleKeydown(event) {
+      if (this.showSettingsModal) {
+        if (event.key === 'Escape') this.closeSettingsModal();
+        return;
+      }
+      if (this.showStatsModal) {
+        if (event.key === 'Escape') this.showStatsModal = false;
+        return;
+      }
       if (this.mode === 'fsrs') {
         if (this.showEmptyState) return;
         if (!this.revealed) {
@@ -1118,23 +1398,67 @@ html, body {
   border: var(--card-border);
 
   display: flex;
-  box-sizing: border-box;
   flex-direction: column;
-  touch-action: manipulation; /* Prevents double-tap zoom on the flashcard */
+  box-sizing: border-box;
+  touch-action: manipulation;
 
   corner-shape: var(--superellipse-3);
   border-radius: var(--superellipse-radius);
+}
+
+.swipe-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 7;
+  opacity: 0;
+  transition: opacity 0.18s ease-out;
+
+  corner-shape: var(--superellipse-3);
+  border-radius: var(--superellipse-radius);
+}
+
+.swipe-overlay-left {
+  background: rgb(210, 60, 60);
+}
+
+.swipe-overlay-right {
+  background: rgb(60, 170, 90);
 }
 
 .top-buttons {
   z-index: 10;
   box-sizing: border-box;
   padding: 1em;
-  flex: 0.1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1em;
+}
+
+.top-left-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.settings-btn {
+  font-size: 0.8em;
+  padding: 0.35em 0.7em;
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid color-mix(in oklab, var(--fg) 18%, var(--bg) 100%);
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.settings-btn:hover {
+  opacity: 1;
+  border-color: color-mix(in oklab, var(--fg) 35%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
 }
 
 .queue-stats {
@@ -1144,7 +1468,6 @@ html, body {
   font-variant-numeric: tabular-nums;
   opacity: 0.75;
   cursor: help;
-  transition: opacity 0.15s;
 }
 
 .queue-stats:hover {
@@ -1185,7 +1508,6 @@ html, body {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: filter 0.15s, transform 0.1s;
 }
 
 .btn-learn-new:hover:not(:disabled) {
@@ -1206,7 +1528,6 @@ html, body {
 .rating-buttons {
   display: flex;
   gap: 0.6em;
-  margin-top: 1em;
   justify-content: center;
 }
 
@@ -1224,19 +1545,16 @@ html, body {
   gap: 0.2em;
   font-size: 1em;
   color: var(--fg);
-  transition: background 0.15s, border-color 0.15s, transform 0.1s;
 }
 
 .rating-btn:hover:not(:disabled) {
   background: color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
   border-color: color-mix(in oklab, var(--fg) 32%, var(--bg) 100%);
-  transform: scale(1.03);
 }
 
 .rating-btn:active:not(:disabled) {
   background: color-mix(in oklab, var(--fg) 18%, var(--bg) 100%);
   border-color: color-mix(in oklab, var(--fg) 42%, var(--bg) 100%);
-  transform: scale(0.97);
 }
 
 .rating-btn:disabled {
@@ -1286,43 +1604,82 @@ html, body {
   background: color-mix(in oklab, #48d 9%, var(--bg) 100%);
 }
 
-.hanzi {
-  top: 50px;
-  left: 0;
-  right: 0;
+.card-display {
+  flex: 1;
+  position: relative;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 6em;
   z-index: 5;
-  overflow: hidden;
 }
 
-.answer {
-  position: absolute;
-  font-size: 1em;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 2em 1em;
+.plotter-area {
+  position: relative;
+}
+
+.plain-text {
+  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  color: var(--fg);
+}
+
+.meaning {
+  margin-top: 1.5em;
   text-align: center;
+}
+
+.meaning.inactive {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-actions {
+  position: relative;
+  display: grid;
+  z-index: 6;
   background-color: color-mix(in oklab, var(--fg) 3%, var(--bg) 100%);
   border-top: 1px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
-  z-index: 4;
 
-  corner-shape: var(--superellipse-3);
+  corner-shape: var(--superellipse-2-5);
   border-radius: var(--superellipse-radius);
 }
 
-.answer.inactive {
-  opacity: 0;
+.action-pre-reveal,
+.action-post-reveal {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 2em 1em;
+  text-align: center;
+  z-index: 4;
 }
 
-.answer-hanzi-text {
-  font-family: var(--main-word-font, 'Noto Serif SC', 'Kaiti', serif);
-  font-size: 2.2em;
-  line-height: 1.1;
-  margin-bottom: 0.25em;
+.action-pre-reveal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-pre-reveal.inactive,
+.action-post-reveal.inactive {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.reveal-chip {
+  display: inline-block;
+  font-size: 1em;
+  padding: 1em 1em;
+  border: 1px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+
+  corner-shape: var(--superellipse-3);
+  border-radius: var(--superellipse-radius);
+  opacity: 0.55;
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 .pinyin {
@@ -1333,14 +1690,12 @@ html, body {
 .english {
   font-size: 1.2em;
   opacity: .6;
+  max-width: 95%;
+  padding: 0 2.5%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-canvas.plotter {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
 
 @media (max-width: 784px) {
   #flashcard_container {
@@ -1349,18 +1704,17 @@ canvas.plotter {
     perspective: 1000px;
   }
 
-  .answer {
-    position: absolute;
+  .action-pre-reveal,
+  .action-post-reveal {
     font-size: .76em;
   }
 
   .flashcards-view {
-    margin-top: 1em;
     padding: 0em;
   }
 
   #flashcard {
-    height: calc(100dvh - 9em);
+    height: calc(100dvh);
     border: none;
   }
 
@@ -1372,6 +1726,10 @@ canvas.plotter {
 
   .queue-stats {
     padding-bottom: 0.8em;
+  }
+
+  .card-display {
+    position: relative;
   }
 }
 
@@ -1422,10 +1780,132 @@ canvas.plotter {
   border-radius: 6px;
   cursor: pointer;
   font-size: 1em;
-  transition: filter 0.15s;
 }
 
 .btn-close-stats:hover {
   filter: brightness(1.15);
+}
+
+/* Flashcard settings modal */
+.settings-modal {
+  background: var(--bg);
+  color: var(--fg);
+  border: var(--card-border);
+  border-radius: var(--modal-border-radius, 12px);
+  padding: 1.8em 2em;
+  max-width: 30em;
+  width: 92%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.settings-modal h3 {
+  margin: 0 0 1em 0;
+  font-size: 1.3em;
+}
+
+.settings-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1em;
+}
+
+.settings-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.settings-label {
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
+.settings-input {
+  width: 7em;
+  padding: 0.4em 0.6em;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+  background: var(--bg);
+  color: var(--fg);
+  border-radius: 6px;
+  font-size: 1em;
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-hint {
+  font-size: 0.82em;
+  opacity: 0.65;
+}
+
+.card-display-toggle {
+  display: inline-flex;
+  gap: 0.4em;
+}
+
+.card-display-btn {
+  padding: 0.45em 0.9em;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+  background: var(--bg);
+  color: var(--fg);
+  border-radius: 6px;
+  font-size: 0.9em;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.card-display-btn:hover:not(.active) {
+  opacity: 0.75;
+}
+
+.card-display-btn.active {
+  opacity: 1;
+  border-color: color-mix(in oklab, var(--fg) 55%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 8%, var(--bg) 100%);
+  font-weight: 600;
+}
+
+.settings-error {
+  margin-top: 1em;
+  color: #d33;
+  font-size: 0.9em;
+}
+
+.settings-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6em;
+  margin-top: 1.4em;
+}
+
+.btn-cancel-settings,
+.btn-save-settings {
+  padding: 0.55em 1.2em;
+  border-radius: 6px;
+  font-size: 0.95em;
+  cursor: pointer;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.btn-cancel-settings:hover {
+  background: color-mix(in oklab, var(--fg) 6%, var(--bg) 100%);
+}
+
+.btn-save-settings {
+  background: var(--primary-color, #4a90e2);
+  color: white;
+  border-color: transparent;
+}
+
+.btn-save-settings:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.btn-save-settings:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>

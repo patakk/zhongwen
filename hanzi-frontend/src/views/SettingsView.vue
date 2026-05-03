@@ -164,6 +164,30 @@
               <span class="fsrs-hint">probability you'll recall a card when it's due (0.5–0.99)</span>
             </div>
           </div>
+          <div class="profile-row">
+            <div class="profile-label">Card display:</div>
+            <div class="profile-value">
+              <div class="card-display-toggle" role="group">
+                <button
+                  type="button"
+                  class="card-display-btn"
+                  :class="{ active: fsrsForm.card_display_mode === 'animated' }"
+                  @click="fsrsForm.card_display_mode = 'animated'"
+                >
+                  Animated strokes
+                </button>
+                <button
+                  type="button"
+                  class="card-display-btn"
+                  :class="{ active: fsrsForm.card_display_mode === 'plain' }"
+                  @click="fsrsForm.card_display_mode = 'plain'"
+                >
+                  Plain text
+                </button>
+              </div>
+              <span class="fsrs-hint">how the character is shown on the card front</span>
+            </div>
+          </div>
         </div>
 
         <div class="account-actions">
@@ -588,7 +612,8 @@ watch(loggedIn, (now) => {
 const fsrsForm = ref({
   daily_new_limit: 20,
   daily_review_limit: 200,
-  desired_retention: 0.9
+  desired_retention: 0.9,
+  card_display_mode: 'animated'
 })
 const fsrsSaving = ref(false)
 
@@ -600,7 +625,8 @@ async function loadFsrsSettings() {
     fsrsForm.value = {
       daily_new_limit: data.daily_new_limit,
       daily_review_limit: data.daily_review_limit,
-      desired_retention: data.desired_retention
+      desired_retention: data.desired_retention,
+      card_display_mode: data.card_display_mode || 'animated'
     };
   } catch (e) {
     console.error('Failed to load FSRS settings:', e);
@@ -625,7 +651,8 @@ async function saveFsrsSettings() {
     fsrsForm.value = {
       daily_new_limit: data.daily_new_limit,
       daily_review_limit: data.daily_review_limit,
-      desired_retention: data.desired_retention
+      desired_retention: data.desired_retention,
+      card_display_mode: data.card_display_mode || 'animated'
     };
     showSuccessToast('Flashcard settings saved');
   } catch (e) {
@@ -1002,7 +1029,6 @@ h2 {
   color: var(--fg);
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
 }
 .btn:hover {
   background-color: color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
@@ -1410,5 +1436,32 @@ h3 {
 .fsrs-hint {
   font-size: 0.85em;
   opacity: 0.65;
+}
+
+.card-display-toggle {
+  display: inline-flex;
+  gap: 0.4em;
+}
+
+.card-display-btn {
+  padding: 0.45em 0.9em;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+  background: var(--bg);
+  color: var(--fg);
+  border-radius: 6px;
+  font-size: 0.95em;
+  cursor: pointer;
+  opacity: 0.45;
+}
+
+.card-display-btn:hover:not(.active) {
+  opacity: 0.75;
+}
+
+.card-display-btn.active {
+  opacity: 1;
+  border-color: color-mix(in oklab, var(--fg) 55%, var(--bg) 100%);
+  background: color-mix(in oklab, var(--fg) 8%, var(--bg) 100%);
+  font-weight: 600;
 }
 </style>
