@@ -401,6 +401,17 @@ export default {
       // Auth flipped mid-session — restart with the appropriate flow.
       this.resetSessionState();
       this.startSession();
+    },
+
+    showEmptyState(now, was) {
+      // Leaving empty state means .canvas-mount just appeared in the DOM —
+      // re-run setupCanvas so the canvas is (re-)appended to it.
+      if (was && !now) {
+        this.$nextTick(() => {
+          this.setupCanvas();
+          this.redrawCurrentCard();
+        });
+      }
     }
   },
   mounted() {
@@ -455,11 +466,11 @@ export default {
       if (!this.canvas) {
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
+      }
 
-        const plotterContainer = document.querySelector('.canvas-mount');
-        if (plotterContainer) {
-          plotterContainer.appendChild(this.canvas);
-        }
+      const plotterContainer = document.querySelector('.canvas-mount');
+      if (plotterContainer && this.canvas.parentNode !== plotterContainer) {
+        plotterContainer.appendChild(this.canvas);
       }
 
       const cw = size * numchars;
