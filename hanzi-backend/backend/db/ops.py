@@ -12,7 +12,8 @@ from backend.db.extensions import db, mail
 from backend.db.models import User, WordList, WordEntry, UserCustomDefinition
 from backend.common import get_chars_info
 from backend.common import getshortdate
-from backend.common import DOMAIN
+from backend.setup import _frontend_url
+
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ def db_create_user(
 
     if len(email) > 0:
         token = user.generate_email_verification_token()
-        verification_link = f"{DOMAIN}/api/verify-email/{token}"
+        verification_link = f"{_frontend_url('/api/verify-email/' + token)}"
         msg = Message('Verify Your Email',
                         recipients=[email])
         msg.body = f'''Please click on the following link to verify your email:

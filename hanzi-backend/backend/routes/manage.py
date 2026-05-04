@@ -11,7 +11,7 @@ from backend.db.models import User
 from backend.db.extensions import db, mail
 from backend.decorators import session_required
 from backend.decorators import hard_session_required
-from backend.common import DOMAIN
+from backend.setup import _frontend_url
 
 
 def validate_password(password):
@@ -66,7 +66,7 @@ def email_management():
         try:
             user.set_email(email, verified=False)
             token = user.generate_email_verification_token()
-            verification_link = f"{DOMAIN}/api/verify-email/{token}"
+            verification_link = f"{_frontend_url('/api/verify-email/' + token)}"
             
             msg = Message('Verify Your Email',
                         recipients=[email])
@@ -98,7 +98,7 @@ def email_management():
 
             user.set_email(email, verified=False)
             token = user.generate_email_verification_token()
-            verification_link = f"{DOMAIN}/api/verify-email/{token}"
+            verification_link = f"{_frontend_url('/api/verify-email/' + token)}"
             
             msg = Message('Verify Your Email',
                          recipients=[email])

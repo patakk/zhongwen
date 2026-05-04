@@ -35,7 +35,7 @@ from backend.common import send_bot_notification
 from backend.common import default_darkmode
 from backend.common import get_pinyin
 from backend.common import get_char_info
-from backend.common import auth_keys
+from backend.setup import auth_keys
 from backend.common import DATA_DIR
 from backend.routes.manage import validate_password
 

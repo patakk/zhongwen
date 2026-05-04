@@ -1,6 +1,5 @@
 import json
 import random
-import requests
 import os
 from datetime import datetime, timezone
 import yaml

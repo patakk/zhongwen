@@ -10,11 +10,10 @@ from backend.db.models import User
 from backend.db.models import WordEntry
 from backend.db.models import WordList
 from backend.common import config
-from backend.common import auth_keys
+from backend.setup import auth_keys
 from backend.decorators import hard_session_required
-from backend.common import LOCAL_DOMAIN
 from backend.routes.manage import validate_password  # Import validation function
-from backend.setup import PROD_MODE
+from backend.setup import PROD_MODE, _frontend_url
 import os
 
 
@@ -31,19 +30,6 @@ google_oauth_bp = make_google_blueprint(
 )
 
 google_auth_bp = Blueprint('google_auth', __name__, url_prefix='/api/google_auth')
-
-
- def _frontend_url(path=''):
-      """Return the frontend origin to redirect to after OAuth.
-      In prod, mirror whichever host the user came from (hanzi.abcrgb.xyz,
-      zi.abcrgb.xyz, ...). In dev, fall back to the configured DOMAIN
-      because the frontend runs on a different port from the backend.
-      """
-      if PROD_MODE:
-          origin = request.host_url.rstrip('/')
-      else:
-          origin = LOCAL_DOMAIN.rstrip('/')
-      return f"{origin}{path}"
 
 
 

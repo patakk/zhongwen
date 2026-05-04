@@ -2,6 +2,7 @@ from datetime import timedelta
 from flask import Flask
 import os
 from backend.db.extensions import db, migrate, mail
+from flask import request
 import yaml
 from pathlib import Path
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -31,6 +32,7 @@ def load_config():
     return config
 
 
+
 config = load_config()
 secrets_path = os.path.join(config['paths']['root'], config['paths']['secrets'])
 auth_keys = load_secrets(secrets_path)
@@ -41,6 +43,19 @@ else:
     PROD_MODE = config.get('prod_mode')
 
 LOCAL_DOMAIN = config.get('google', {}).get('frontend_dev')
+
+
+def _frontend_url(path=''):
+    """Return the frontend origin to redirect to after OAuth.
+    In prod, mirror whichever host the user came from (hanzi.abcrgb.xyz,
+    zi.abcrgb.xyz, ...). In dev, fall back to the configured DOMAIN
+    because the frontend runs on a different port from the backend.
+    """
+    if PROD_MODE:
+        origin = request.host_url.rstrip('/')
+    else:
+        origin = LOCAL_DOMAIN.rstrip('/')
+    return f"{origin}{path}"
 
 
 def create_app():
