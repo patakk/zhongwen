@@ -293,6 +293,7 @@ def record_review(username, word, rating_str, deck_key=None, time_ms=0):
             stability_after=new_card.stability,
             difficulty_after=new_card.difficulty,
             state_after=int(new_card.state),
+            review_duration=time_ms_int or None,
         ))
 
         db.session.commit()

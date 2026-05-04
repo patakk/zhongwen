@@ -235,6 +235,7 @@ class FsrsReviewLog(db.Model):
     stability_after = db.Column(db.Float, nullable=True)
     difficulty_after = db.Column(db.Float, nullable=True)
     state_after = db.Column(db.Integer, nullable=True)
+    review_duration = db.Column(db.Integer, nullable=True)  # ms
     reviewed_at = db.Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
     __table_args__ = (
