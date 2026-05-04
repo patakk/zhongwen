@@ -685,7 +685,7 @@ body {
 }
 
 @media (min-width: 785px) {
-  .sidebar-push .page-body,
+  .sidebar-push,
   .sidebar-push {
     padding-right: 250px !important;
   }
