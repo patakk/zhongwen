@@ -70,7 +70,15 @@
               </div>
             </div>
             <div class="meaning" :class="{ inactive: !revealed }">
-              <div class="pinyin">{{ displaySinglePinyin }}</div>
+              <div class="pinyin-row">
+                <span
+                  v-for="(p, i) in allPinyin"
+                  :key="i"
+                  class="pinyin-item"
+                  :class="{ active: i === selectedPinyinIndex }"
+                  @click.stop="selectPinyin(i)"
+                >{{ p }}</span>
+              </div>
               <div class="english">{{ displaySingleEnglish }}</div>
             </div>
           </div>
@@ -390,6 +398,7 @@ export default {
       statsView: 'overview',
       deckStats: {},
       deckStatsLoading: false,
+      selectedPinyinIndex: 0,
       // Per-card timer: timestamp the current FSRS card was first shown.
       // Reset to null after rating is submitted so it isn't double-counted.
       cardShownAt: null
@@ -405,17 +414,24 @@ export default {
     },
     displaySinglePinyin() {
       try {
-        const base = (this.currentWordInfo.pinyin && this.currentWordInfo.pinyin[0]) || '';
-        const custom = this.customDefCurrent && this.customDefCurrent.pinyin ? this.customDefCurrent.pinyin : '';
-        return this.$toAccentedPinyin((custom || base) || '');
+        const arr = this.allPinyin;
+        return arr[this.selectedPinyinIndex] || '';
       } catch (e) { return ''; }
     },
     displaySingleEnglish() {
       try {
-        const base = (Array.isArray(this.currentWordInfo.english) && this.currentWordInfo.english.join(' / ')) || '';
-        const custom = this.customDefCurrent && this.customDefCurrent.english ? this.customDefCurrent.english : '';
-        return custom || base;
+        const arr = this.currentWordInfo.english || [];
+        return arr[this.selectedPinyinIndex] || '';
       } catch (e) { return ''; }
+    },
+    allPinyin() {
+      try {
+        const arr = this.currentWordInfo.pinyin || [];
+        return arr.map(p => this.$toAccentedPinyin(p || ''));
+      } catch (e) { return []; }
+    },
+    hasMultiplePronunciations() {
+      return this.allPinyin.length > 1;
     },
     storeDecks() {
       const staticData = this.$store.getters.getDictionaryData || {};
@@ -1178,6 +1194,12 @@ export default {
       if (this.revealed) return;
       this.revealed = true;
       this.redrawCurrentCard();
+      this.startStudyTimer();
+    },
+    selectPinyin(index) {
+      if (index >= 0 && index < this.allPinyin.length) {
+        this.selectedPinyinIndex = index;
+      }
     },
     showStatsInfo() {
       this.showStatsModal = true;
@@ -1498,6 +1520,7 @@ export default {
       }
     },
     async showWord(word, animate) {
+      this.selectedPinyinIndex = 0;
       const data = await this.getPinyinEnglishFor(word);
       const newInfo = {
         character: word,
@@ -1529,6 +1552,7 @@ export default {
       const getRandomChar = () => chars[Math.floor(Math.random() * chars.length)];
 
       if (this.currentWord === '') {
+        this.selectedPinyinIndex = 0;
         this.currentWord = getRandomChar();
         const data = await this.getPinyinEnglishFor(this.currentWord);
         this.currentWordInfo.character = this.currentWord;
@@ -1537,6 +1561,7 @@ export default {
         this.currentWordInfo.strokes = data.slice(1);
         this.redrawCurrentCard();
       } else {
+        this.selectedPinyinIndex = 0;
         this.currentWord = this.nextWord;
         this.prevWordInfo = this.cloneWordInfo(this.currentWordInfo);
         this.currentWordInfo = this.cloneWordInfo(this.nextWordInfo);
@@ -1964,9 +1989,28 @@ body.flashcards-page {
   letter-spacing: 0.04em;
 }
 
-.pinyin {
+.pinyin-row {
+  display: flex;
+  gap: 0.6em;
+  justify-content: center;
   font-size: 1.5em;
   margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.pinyin-item {
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.1s;
+}
+
+.pinyin-item.active {
+  opacity: 1;
+  cursor: default;
+}
+
+.pinyin-item:hover:not(.active) {
+  opacity: 0.65;
 }
 
 .english {

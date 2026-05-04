@@ -481,6 +481,7 @@ const themeModule = {
     currentUiFont: 'sf-mono', // Default UI font
     toneColorEnabled: true,
     toneColorScheme: 'default',
+    historyRailEnabled: false,
   },
   mutations: {
     SET_THEME(state, theme) {
@@ -520,6 +521,10 @@ const themeModule = {
       state.toneColorScheme = scheme === 'alt' ? 'alt' : 'default';
       localStorage.setItem('toneColorScheme', state.toneColorScheme);
     },
+    SET_HISTORY_RAIL_ENABLED(state, enabled) {
+      state.historyRailEnabled = !!enabled;
+      localStorage.setItem('historyRailEnabled', state.historyRailEnabled ? '1' : '0');
+    },
   },
   actions: {
     initTheme({ commit }) {
@@ -550,6 +555,10 @@ const themeModule = {
 
       const toneScheme = localStorage.getItem('toneColorScheme') || 'default';
       commit('SET_TONE_COLOR_SCHEME', toneScheme);
+
+      // Initialize history rail preference (defaults to off)
+      const historyPref = localStorage.getItem('historyRailEnabled');
+      commit('SET_HISTORY_RAIL_ENABLED', historyPref === '1');
     },
     toggleTheme({ commit, state }) {
       // Toggle between pairs: light/dark or theme1/theme2
@@ -569,6 +578,9 @@ const themeModule = {
     },
     setTheme({ commit }, theme) {
       commit('SET_THEME', theme);
+    },
+    setHistoryRailEnabled({ commit }, enabled) {
+      commit('SET_HISTORY_RAIL_ENABLED', enabled);
     },
     setFont({ commit }, fontKey) {
       commit('SET_FONT', fontKey);
@@ -608,6 +620,7 @@ const themeModule = {
     getCurrentUiFont: state => state.currentUiFont,
     isToneColorEnabled: state => state.toneColorEnabled !== false,
     getToneColorScheme: state => state.toneColorScheme || 'default',
+    isHistoryRailEnabled: state => state.historyRailEnabled === true,
     getFontLabelMap: () => ({ ...CHAR_FONT_LABELS }),
     getUiFontLabelMap: () => ({ ...UI_FONT_LABELS }),
     isDefaultThemeSystem: state => ['light', 'dark'].includes(state.currentTheme),

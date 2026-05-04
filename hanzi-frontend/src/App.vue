@@ -6,7 +6,7 @@
       <font-awesome-icon :icon="faMoon" v-else-if="currentTheme === 'theme2'" />
       <font-awesome-icon :icon="faSun" v-else />
     </button>
-    <div class="history-rail-wrapper" v-if="history.length > 0">
+    <div class="history-rail-wrapper" v-if="historyRailEnabled && history.length > 0">
       <div
         class="history-rail"
         :style="{ top: railTop + 'px' }"
@@ -77,6 +77,7 @@ const suppressClick = ref(false)
 const currentTheme = computed(() => store.getters['theme/getCurrentTheme'])
 const bubbleData = computed(() => store.getters['bubbleTooltip/getBubbleData'])
 const history = computed(() => store.getters['zihistory/getHistory'])
+const historyRailEnabled = computed(() => store.getters['theme/isHistoryRailEnabled'])
 const lastConfettiTime = ref(0)
 
 // Close modal/bubble when navigating to a different path

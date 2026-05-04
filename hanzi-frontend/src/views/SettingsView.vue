@@ -110,6 +110,14 @@
               <div class="tonehanzipinyin"><div>吗</div><div>ma</div></div>
             </div>
           </div>
+
+          <div class="theme-option-label">History rail:</div>
+          <div class="theme-selection" style="margin-top: 1rem;">
+            <label class="toggle-label">
+              <input type="checkbox" :checked="historyRailEnabled" @change="toggleHistoryRail" />
+              <span>Show recently viewed characters</span>
+            </label>
+          </div>
           <!-- <div class="current-theme">
             <div class="theme-option-label">Current Theme:</div>
             <div class="theme-value">{{ currentThemeName }}</div>
@@ -447,6 +455,7 @@ const currentFont = computed(() => store.getters['theme/getCurrentFont'])
 const currentUiFont = computed(() => store.getters['theme/getCurrentUiFont'])
 const toneColorEnabled = computed(() => store.getters['theme/isToneColorEnabled'])
 const toneColorScheme = computed(() => store.getters['theme/getToneColorScheme'] || 'default')
+const historyRailEnabled = computed(() => store.getters['theme/isHistoryRailEnabled'])
 const toneSampleHanzi =  '妈麻马骂吗';
 const toneSamplePinyin = 'mā má mǎ mà ma';
 const toneSampleHanziColor = computed(() => toneColorizeHanzi(toneSampleHanzi, toneSamplePinyin, { enabled: true, palette: 'default' }));
@@ -510,6 +519,11 @@ function setToneColors(num) {
     showSuccessToast('Tone colors set to Pleco palette');
     return;
   }
+}
+
+function toggleHistoryRail(e) {
+  store.dispatch('theme/setHistoryRailEnabled', e.target.checked)
+  showSuccessToast(e.target.checked ? 'History rail shown' : 'History rail hidden')
 }
 
 const showEmailModal = ref(false)
@@ -1246,7 +1260,6 @@ h3 {
 
 .theme-selection:last-child {
   border-bottom: none;
-  margin-bottom: 0;
   padding-bottom: 0;
 }
 
@@ -1254,6 +1267,43 @@ h3 {
   min-width: 120px;
   font-weight: 500;
   color: color-mix(in oklab, var(--fg) 85%, var(--bg) 100%);
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  cursor: pointer;
+  font-size: 0.95em;
+}
+
+.toggle-label input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 0;
+  background: var(--bg);
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
+  position: relative;
+  border: none;
+}
+
+.toggle-label input[type="checkbox"]:checked {
+}
+
+.toggle-label input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 5%;
+  left: 30%;
+  width: 30%;
+  height: 75%;
+  border: solid var(--fg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 .theme-buttons {
@@ -1320,7 +1370,6 @@ h3 {
   gap: 0.75rem;
   justify-content: center;
   width: 100%;
-  margin: 0 auto;
   flex-wrap: wrap;
   gap: 1rem;
 }

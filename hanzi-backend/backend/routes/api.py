@@ -324,7 +324,6 @@ def remove_word_from_learning():
     character = data["character"]
     set_name = data.get("set_name")
     username = session.get("username")
-    print(f"Removing word '{character}' from list '{set_name}'")
     result = db_remove_word_from_set(username, set_name, character)
     return jsonify({"message": f"Word '{character}' removed from list '{set_name}'"})
 
