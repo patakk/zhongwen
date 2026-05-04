@@ -93,17 +93,6 @@ const cardModalModule = {
     SET_DISPLAY_OVERRIDES(state, overrides) {
       state.displayOverrides = overrides || null;
     },
-    SET_CUSTOM_DEFINITION(state, { hanzi, def }) {
-      state.customDefinitions = {
-        ...state.customDefinitions,
-        [hanzi]: def
-      };
-    },
-    CLEAR_CUSTOM_DEFINITION(state, hanzi) {
-      const defs = { ...state.customDefinitions };
-      delete defs[hanzi];
-      state.customDefinitions = defs;
-    }
   },
   actions: {
     setNavContext({ commit }, { list, current, index, metaList }) {
@@ -440,17 +429,6 @@ const bubbleTooltipModule = {
     HIDE_BUBBLE(state) {
       state.visible = false;
     },
-    SET_CUSTOM_DEFINITION(state, { hanzi, def }) {
-      state.customDefinitions = {
-        ...state.customDefinitions,
-        [hanzi]: def
-      };
-    },
-    CLEAR_CUSTOM_DEFINITION(state, hanzi) {
-      const defs = { ...state.customDefinitions };
-      delete defs[hanzi];
-      state.customDefinitions = defs;
-    }
   },
   actions: {
     showBubble({ commit }, data) {
@@ -1169,6 +1147,48 @@ const store = createStore({
       // Store the promise
       state.pendingSimpleCharRequests = promise;
       return promise;
+    },
+    async setCustomDefinition({ commit }, { hanzi, pinyin, english }) {
+      const r = await fetch('/api/custom_definitions/set', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hanzi, pinyin, english }),
+      });
+      if (r.ok) {
+        commit('SET_CUSTOM_DEFINITION', { hanzi, def: { hanzi, pinyin, english } });
+      }
+    },
+    async deleteCustomDefinition({ commit }, { hanzi }) {
+      const r = await fetch('/api/custom_definitions/delete', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hanzi }),
+      });
+      if (r.ok) {
+        commit('CLEAR_CUSTOM_DEFINITION', hanzi);
+      }
+    },
+    async fetchCustomDefinition({ commit }, hanzi) {
+      const r = await fetch(`/api/custom_definitions/get?hanzi=${encodeURIComponent(hanzi)}`, {
+        credentials: 'same-origin',
+      });
+      if (r.ok) {
+        const data = await r.json();
+        if (data.found) {
+          commit('SET_CUSTOM_DEFINITION', { hanzi, def: data });
+        }
+      }
+    },
+    async fetchAllCustomDefinitions({ commit }) {
+      const r = await fetch('/api/custom_definitions/list', { credentials: 'same-origin' });
+      if (r.ok) {
+        const data = await r.json();
+        for (const item of (data.items || [])) {
+          commit('SET_CUSTOM_DEFINITION', { hanzi: item.hanzi, def: item });
+        }
+      }
     },
   },
   getters: {

@@ -414,12 +414,16 @@ export default {
     },
     displaySinglePinyin() {
       try {
+        const custom = this.customDefCurrent && this.customDefCurrent.pinyin ? this.customDefCurrent.pinyin : '';
+        if (custom) return this.$toAccentedPinyin(custom);
         const arr = this.allPinyin;
         return arr[this.selectedPinyinIndex] || '';
       } catch (e) { return ''; }
     },
     displaySingleEnglish() {
       try {
+        const custom = this.customDefCurrent && this.customDefCurrent.english ? this.customDefCurrent.english : '';
+        if (custom) return custom;
         const arr = this.currentWordInfo.english || [];
         return arr[this.selectedPinyinIndex] || '';
       } catch (e) { return ''; }
@@ -1427,7 +1431,10 @@ export default {
           this.settingsForm.card_display_mode = payload.card_display_mode;
         }
         if (payload.card) {
-          await this.showWord(payload.card.word, /*animate=*/ this.currentWord !== '');
+          await Promise.all([
+            this.showWord(payload.card.word, /*animate=*/ this.currentWord !== ''),
+            this.$store.dispatch('fetchCustomDefinition', payload.card.word),
+          ]);
           this.cardShownAt = Date.now();
         } else {
           this.currentWord = '';
@@ -1522,6 +1529,7 @@ export default {
     async showWord(word, animate) {
       this.selectedPinyinIndex = 0;
       const data = await this.getPinyinEnglishFor(word);
+      this.$store.dispatch('fetchCustomDefinition', word);
       const newInfo = {
         character: word,
         pinyin: data[0].pinyin,

@@ -304,6 +304,7 @@ onMounted(async () => {
   // Verify user exists in database on each app load/refresh
   if (store.getters.isLoggedIn) {
     //await verifyUserExists();
+    store.dispatch('fetchAllCustomDefinitions');
   }
   // Wait for the next tick to ensure the router and store are fully initialized
   nextTick(() => {

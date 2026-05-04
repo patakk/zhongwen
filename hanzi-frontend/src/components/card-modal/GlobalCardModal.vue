@@ -118,15 +118,22 @@
                   <font-awesome-icon :icon="faVolumeHigh" />
                 </button>
               </div>
-              <div class="main-english">
-                <div v-for="(item, index) in displayEnglish" :key="index" class="english-item">
-                  <span class="english-idx">{{ index + 1 }}.</span>
-                  <span class="english-text">
-                    <template v-for="(tok, tIdx) in tokenizeHanziText(item)" :key="tIdx">
-                      <span v-if="tok.isHanzi" class="hanzi-link" @click.stop="openCharAsWord(tok.text)">{{ tok.text }}</span>
-                      <span v-else>{{ tok.text }}</span>
-                    </template>
-                  </span>
+              <div class="main-english-row">
+                <div class="main-english">
+                  <div v-for="(item, index) in displayEnglish" :key="index" class="english-item">
+                    <span class="english-idx">{{ index + 1 }}.</span>
+                    <span class="english-text">
+                      <template v-for="(tok, tIdx) in tokenizeHanziText(item)" :key="tIdx">
+                        <span v-if="tok.isHanzi" class="hanzi-link" @click.stop="openCharAsWord(tok.text)">{{ tok.text }}</span>
+                        <span v-else>{{ tok.text }}</span>
+                      </template>
+                    </span>
+                  </div>
+                </div>
+                <div class="custom-edit-wrap">
+                  <button class="custom-edit-btn" @click.stop="openCustomEdit" title="Edit pinyin & english">
+                    ✎
+                  </button>
                 </div>
               </div>
             </div>
@@ -500,35 +507,24 @@
         </div>
 
       <!-- Custom definition edit modal -->
-      <div v-if="showCustomEditModal" class="custom-edit-overlay" @click.stop="cancelCustomEdit">
+      <div v-if="showCustomEditModal" class="custom-edit-overlay" @mousedown.self="cancelCustomEdit">
         <div class="custom-edit-modal" @click.stop>
-          <input
-            class="edit-input hanzi-input"
-            type="text"
-            v-model="editHanzi"
-            disabled
-            readonly
-            @keydown.stop="onEditKeydown"
-            placeholder="hanzi"
-            autocomplete="off"
-          />
-          <input
-            class="edit-input pinyin-input"
-            type="text"
-            v-model="editPinyin"
-            @input="onPinyinInput"
-            @keydown.stop="onEditKeydown"
-            placeholder="pinyin"
-            autocomplete="off"
-          />
-          <input
-            class="edit-input english-input"
-            type="text"
-            v-model="editEnglish"
-            @keydown.stop="onEditKeydown"
-            placeholder="english"
-            autocomplete="off"
-          />
+          <div class="edit-hanzi-label">{{ editHanzi }}</div>
+          <div
+            v-for="(_, i) in editEnglishList"
+            :key="i"
+            class="edit-pronunciation-row"
+          >
+            <div v-if="editPinyinList[i]" class="edit-pinyin-label">{{ editPinyinList[i] }}</div>
+            <input
+              class="edit-input english-input"
+              type="text"
+              v-model="editEnglishList[i]"
+              @keydown.stop="onEditKeydown"
+              :placeholder="editEnglishList.length > 1 ? `english (${i + 1})` : 'english'"
+              autocomplete="off"
+            />
+          </div>
           <div v-if="editError" class="modal-error">{{ editError }}</div>
           <div class="modal-buttons">
             <button class="cancel-button" @click="cancelCustomEdit">Cancel</button>
@@ -550,7 +546,7 @@
   />
 
   <!-- Add Create New List modal -->
-  <div v-if="showCreateListModal" class="create-list-modal-overlay" @click="closeCreateListModal">
+  <div v-if="showCreateListModal" class="create-list-modal-overlay" @mousedown.self="closeCreateListModal">
     <div class="create-list-modal-container" @click.stop>
       <h3>Create New List</h3>
       <div class="create-list-form">
@@ -652,8 +648,8 @@ export default {
       // Custom edit modal state
       showCustomEditModal: false,
       editHanzi: '',
-      editPinyin: '',
-      editEnglish: '',
+      editPinyinList: [],
+      editEnglishList: [],
       editError: '',
       // Examples pagination state
       examplesPage: 1,
@@ -770,7 +766,12 @@ export default {
         }
       }
       const custom = this.customDef && this.customDef.english ? this.customDef.english : '';
-      if (custom) return this.splitMeaning(custom);
+      if (custom) {
+        const parts = custom.split('\x1F');
+        const idx = this.mainDefIndex % parts.length;
+        const val = parts[idx];
+        if (val) return this.splitMeaning(val);
+      }
       const list = (this.cardData && Array.isArray(ppp)) ? ppp : [];
       if (!list.length) return [];
       const idx = this.mainDefIndex % list.length;
@@ -1083,6 +1084,10 @@ export default {
         if (newChar && this.validChars.includes(newChar)) {
           this.activeChar = newChar;
           this.mainDefIndex = 0;
+          this.showCustomEditModal = false;
+          if (this.isLoggedIn) {
+            this.$store.dispatch('fetchCustomDefinition', newChar);
+          }
         }
       }
     },
@@ -1148,8 +1153,8 @@ export default {
     // Ensure edit modal is closed and cleared when card modal unmounts
     this.showCustomEditModal = false;
     this.editHanzi = '';
-    this.editPinyin = '';
-    this.editEnglish = '';
+    this.editPinyinList = [];
+    this.editEnglishList = [];
     this.editError = '';
   },
   methods: {
@@ -1339,6 +1344,7 @@ export default {
       return 'pinyin-neutral';
     },
     closeModal() {
+      this.showCustomEditModal = false;
       this.hideCardModal();
       this.showWordlistDropdown = false;
       // Reset the loaded present-in characters when modal closes
@@ -1361,19 +1367,17 @@ export default {
       }
     },
     openCustomEdit() {
-      try { } catch (e) {}
       if (!this.cardData || !this.cardData.character) return;
       const hanzi = this.cardData.character;
-      // Prefill with custom def if exists, otherwise defaults (treat 'N/A' as empty)
-      const baseP = (this.cardData.pinyin && this.cardData.pinyin[0] && this.cardData.pinyin[0] !== 'N/A') ? this.cardData.pinyin[0] : '';
-      const baseE = (this.cardData.english && this.cardData.english[0] && this.cardData.english[0] !== 'N/A') ? this.cardData.english[0] : '';
+      const pinyins = Array.isArray(this.cardData.pinyin) ? this.cardData.pinyin.filter(p => p && p !== 'N/A') : [];
+      const n = Math.max(pinyins.length, 1);
+
       const custom = this.customDef || {};
+      const customEnglishList = custom.english ? custom.english.split('\x1F') : [];
+
       this.editHanzi = hanzi;
-      this.editPinyin = (custom.pinyin != null ? custom.pinyin : baseP) || '';
-      // Immediately normalize numbered tones to accented vowels on open
-      // so the input shows accents without needing edits or save.
-      this.editPinyin = this.normalizePinyinInput(this.editPinyin, { preserveSpaces: true });
-      this.editEnglish = (custom.english != null ? custom.english : baseE) || '';
+      this.editPinyinList = pinyins;
+      this.editEnglishList = Array.from({ length: n }, (_, i) => customEnglishList[i] ?? '');
       this.showCustomEditModal = true;
       this.editError = '';
     },
@@ -1381,13 +1385,11 @@ export default {
       try {
         if (!this.cardData || !this.cardData.character) return;
         const hanzi = this.cardData.character;
-        const p = this.normalizePinyinInput((this.editPinyin || '').trim());
-        const e = (this.editEnglish || '').trim();
-        if (p === '' && e === '') {
-          // both empty -> delete custom def for this hanzi
+        const values = this.editEnglishList.map(e => (e || '').trim());
+        if (values.every(e => !e)) {
           await this.$store.dispatch('deleteCustomDefinition', { hanzi });
         } else {
-          await this.$store.dispatch('setCustomDefinition', { hanzi, pinyin: p, english: e });
+          await this.$store.dispatch('setCustomDefinition', { hanzi, pinyin: '', english: values.join('\x1F') });
         }
         this.showCustomEditModal = false;
       } catch (err) {
@@ -2011,16 +2013,33 @@ export default {
   max-width: 420px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
+.edit-hanzi-label {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+.edit-pronunciation-row {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
+  padding-top: 0.5rem;
+  margin-top: 0.25rem;
+}
+.edit-pinyin-label {
+  font-size: 0.85rem;
+  opacity: 0.5;
+  font-style: italic;
+  margin-bottom: 0.15rem;
+}
 .custom-edit-modal .edit-input {
   width: 100%;
   background: transparent;
   color: var(--fg);
   border: none;
   outline: none;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
   font-size: 1rem;
 }
-.custom-edit-modal .pinyin-input { font-style: italic; }
 .custom-edit-modal .english-input { font-style: normal; }
 .custom-edit-modal .edit-input + .edit-input {
   border-top: 1px dashed color-mix(in oklab, var(--fg) 35%, var(--bg) 75%);
@@ -2069,10 +2088,7 @@ export default {
 
 
 .main-def-flex {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
+  position: relative;
   width: 100%;
 }
 
@@ -2080,7 +2096,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  flex: 1 1 auto;
+  width: 100%;
 }
 
 .main-pinyin {
@@ -2088,6 +2104,9 @@ export default {
 }
 
 .def-nav {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -2256,11 +2275,18 @@ export default {
   /*margin-top: 1em;*/
 }
 
+.main-english-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 0.5em;
+}
+
 .main-english {
   font-size: 1rem;
   box-sizing: border-box;
   overflow-wrap: break-word;
-  width: 100%;
+  flex: 1;
   margin-top: 1em;
 
   white-space: wrap;
@@ -3350,25 +3376,18 @@ export default {
     }
 
     .main-pinyin,
-    .main-english {
-      font-size: 1rem;
-    }
+.main-english-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 0.5em;
+}
 
-  .freq-trad-anim {
-    flex-direction: column;
-  }
-
-  .tab-btn {
-    border: none;
-    /* padding: 0.25rem .5rem; */
-  }
-
-  .tabs {
-    display: flex;
-    gap: 0rem;
-    margin-top: 0;
-    margin-bottom: 1rem;
-    width: 100%;
+.main-english {
+  font-size: 1rem;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  flex: 1;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     position: relative;

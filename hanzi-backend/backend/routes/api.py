@@ -22,6 +22,10 @@ from backend.db.ops import db_rename_word_list
 from backend.db.ops import db_delete_word_list
 from backend.db.ops import db_remove_word_from_set
 from backend.db.ops import db_update_wordlist_description
+from backend.db.ops import db_set_custom_definition
+from backend.db.ops import db_delete_custom_definition
+from backend.db.ops import db_get_custom_definition
+from backend.db.ops import db_list_custom_definitions
 
 from backend.db.models import Card, UserNotes, User
 
@@ -162,7 +166,7 @@ def get_examples_page():
 # =============================
 # User Custom Definitions CRUD
 # =============================
-'''@api_bp.route("/custom_definitions/get", methods=["GET"])
+@api_bp.route("/custom_definitions/get", methods=["GET"])
 @session_required
 def get_custom_definition():
     hanzi = request.args.get('hanzi') or (request.get_json() or {}).get('hanzi')
@@ -214,7 +218,6 @@ def list_custom_definitions():
     username = session.get("username")
     items = db_list_custom_definitions(username)
     return jsonify({"items": items})
-'''
 
 @api_bp.route("/add_word_learning_with_data", methods=["POST"])
 @session_required
