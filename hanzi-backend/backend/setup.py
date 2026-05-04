@@ -59,7 +59,7 @@ def _frontend_url(path=''):
     print("****************")
     print("****************")
     print("****************")
-    print("{origin}{path}")
+    print(f"{origin}{path}")
     print("****************")
     return f"{origin}{path}"
 
