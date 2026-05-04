@@ -111,7 +111,7 @@ def _scheduler_for(user):
     custom_params = meta.get('fsrs', {}).get('parameters')
     return Scheduler(
         desired_retention=float(s['desired_retention']),
-        parameters=custom_params if custom_params else DEFAULT_PARAMETERS,
+        **({'parameters': custom_params} if custom_params else {}),
     )
 
 
