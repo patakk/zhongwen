@@ -460,12 +460,12 @@ export default {
     },
     monthLabels() {
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const start = new Date(this.statsYear, 0, 1);
-      const startDay = start.getDay() || 7;
+      const start = new Date(Date.UTC(this.statsYear, 0, 1));
+      const startDay = start.getUTCDay() || 7;
       const weekOffset = startDay - 1;
       const labels = [];
       for (let m = 0; m < 12; m++) {
-        const first = new Date(this.statsYear, m, 1);
+        const first = new Date(Date.UTC(this.statsYear, m, 1));
         const dayOfYear = Math.floor((first - start) / 86400000) + 1;
         const cellIdx = weekOffset + dayOfYear - 1;
         const col = Math.floor(cellIdx / 7) + 1;
@@ -474,14 +474,14 @@ export default {
       return labels;
     },
     calendarDays() {
-      const start = new Date(this.statsYear, 0, 1);
-      const end = new Date(this.statsYear, 11, 31);
-      const startDay = start.getDay() || 7;
+      const start = new Date(Date.UTC(this.statsYear, 0, 1));
+      const end = new Date(Date.UTC(this.statsYear, 11, 31));
+      const startDay = start.getUTCDay() || 7;
       const totalDays = Math.floor((end - start) / 86400000) + 1;
       const cells = [];
       for (let d = 0; d < totalDays; d++) {
         const dt = new Date(start);
-        dt.setDate(dt.getDate() + d);
+        dt.setUTCDate(dt.getUTCDate() + d);
         const iso = dt.toISOString().slice(0, 10);
         const count = this.statsData.activity ? (this.statsData.activity[iso] || 0) : 0;
         let level = 0;
@@ -1274,13 +1274,13 @@ export default {
       }
     },
     scrollCalendarToCurrentWeek() {
-      // Only auto-scroll when viewing the year that contains "today".
+      // Only auto-scroll when viewing the year that contains "today" (UTC).
       const today = new Date();
-      if (today.getFullYear() !== this.statsYear) return;
+      if (today.getUTCFullYear() !== this.statsYear) return;
       const el = this.$refs.activityCalendar;
       if (!el) return;
-      const start = new Date(this.statsYear, 0, 1);
-      const startDay = start.getDay() || 7;
+      const start = new Date(Date.UTC(this.statsYear, 0, 1));
+      const startDay = start.getUTCDay() || 7;
       const weekOffset = startDay - 1;
       const dayOfYear = Math.floor((today - start) / 86400000) + 1;
       const cellIdx = weekOffset + dayOfYear - 1;
