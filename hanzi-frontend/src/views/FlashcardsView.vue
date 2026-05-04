@@ -14,15 +14,15 @@
         <div class="swipe-overlay swipe-overlay-left" :style="{ opacity: swipeAlphaLeft }"></div>
         <div class="swipe-overlay swipe-overlay-right" :style="{ opacity: swipeAlphaRight }"></div>
         <div class="top-buttons" @click.stop>
-          <div class="top-left-stack">
-            <DeckSelector
-              v-model="currentDeck"
-              :decks="decks"
-              placeholder="Select a deck"
-              @change="onDeckChange"
-            />
+          <DeckSelector
+            class="tb-deck"
+            v-model="currentDeck"
+            :decks="decks"
+            placeholder="Select a deck"
+            @change="onDeckChange"
+          />
+          <div v-if="mode === 'fsrs'" class="tb-buttons">
             <button
-              v-if="mode === 'fsrs'"
               class="settings-btn"
               type="button"
               title="Flashcard settings"
@@ -31,7 +31,6 @@
               ⚙&#xFE0E; Settings
             </button>
             <button
-              v-if="mode === 'fsrs'"
               class="settings-btn"
               type="button"
               title="Flashcard stats"
@@ -40,7 +39,7 @@
               <font-awesome-icon :icon="faChartSimple" /> Stats
             </button>
           </div>
-          <div v-if="mode === 'fsrs' && queueState" class="queue-stats" @click="showStatsInfo">
+          <div v-if="mode === 'fsrs' && queueState" class="queue-stats tb-stats" @click="showStatsInfo">
             <span class="qs-due" title="Cards currently due for review in this deck">⏱&#xFE0E; {{ queueState.due_count }}</span>
             <span class="qs-new" title="Never-seen cards remaining in this deck">✦ {{ queueState.new_available }}</span>
             <span class="qs-done" title="Reviews completed today across all decks vs. your daily review limit">✓ {{ queueState.reviews_done_today }}/{{ queueState.daily_review_limit }}</span>
@@ -1619,17 +1618,15 @@ body.flashcards-page {
   z-index: 10;
   box-sizing: border-box;
   padding: 1em;
-  display: flex;
-  gap: 1em;
-
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  gap: 0.6em;
-
-  width: 10vw;
-  margin: 0 auto 0 0;
-
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "deck    stats"
+    "buttons stats";
+  align-items: start;
+  column-gap: 1em;
+  row-gap: 0.6em;
 }
 
 .top-buttons :deep(.deck-options) {
@@ -1637,12 +1634,9 @@ body.flashcards-page {
   transform: none;
 }
 
-.top-left-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5em;
-}
+.tb-deck    { grid-area: deck; justify-self: start; }
+.tb-buttons { grid-area: buttons; display: flex; flex-direction: column; gap: 0.5em; align-items: flex-start; }
+.tb-stats   { grid-area: stats; justify-self: end; align-self: start; }
 
 .settings-btn {
   font-size: 1em;
@@ -2141,11 +2135,13 @@ body.flashcards-page {
   }
 
   .top-buttons {
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
-    gap: 0.6em;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "deck    deck"
+      "buttons stats";
   }
+
+  .tb-deck { justify-self: stretch; }
 
   .queue-stats {
     padding-bottom: 0.8em;
