@@ -1527,7 +1527,7 @@ export default {
           return;
         }
         if (event.key === '1' || event.key === 'a') this.submitRating('again');
-        else if (event.key === '2' || event.key === 'g' || event.key === ' ' || event.key === 'Enter') this.submitRating('good');
+        else if (event.key === '2' || event.key === 'g') this.submitRating('good');
         else if (event.key === '3' || event.key === 'e') this.submitRating('easy');
       } else {
         if (event.key === 'a' || event.key === 'd' || event.key === ' ' || event.key === 'Enter' || event.key === 'r') {
