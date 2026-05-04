@@ -5,36 +5,18 @@
           :is_underlined="true"
           @title-click="toggleDeckDropdown"
         />
-        <!-- Dropdown under the clickable title -->
-        <div 
-          id="deck-options" 
-          :class="{ 'show': isSubmenuOpen }"
-          @click.stop
-          v-if="isSubmenuOpen"
-        >
-          <div 
-            v-for="(deck, key) in decks" 
-            :key="key" 
-            class="option"
-            :class="{ 'selected': selectedCategory === key }"
-            @click.stop="changeDeck(key)"
-          >
-            {{ deck.name || key }}
-          </div>
+        <div v-if="isSubmenuOpen" class="deck-dropdown-wrapper" @click.stop>
+          <DeckSelector
+            mode="action"
+            :is-open="isSubmenuOpen"
+            :is-logged-in="true"
+            :decks="decks"
+            :search-threshold="0"
+            @select="changeDeck"
+            @close="isSubmenuOpen = false"
+          />
         </div>
     </div>
-
-    <!-- Fixed bottom-left toggle for grid/list view -->
-    <button 
-      class="view-toggle-fixed" 
-      @click="toggleView"
-      :title="isGridView ? 'Show List' : 'Show Grid'"
-      aria-label="Toggle view"
-    >
-
-      <font-awesome-icon v-if="isGridView" :icon="faBars" />
-      <font-awesome-icon v-else :icon="faGrip" />
-    </button>
 
 
     <!-- Background overlay when leftbar is visible -->
@@ -112,6 +94,18 @@
         <div v-else>
           <p>Please select a dictionary to view the characters.</p>
         </div>
+
+        <!-- Fixed bottom-left toggle for grid/list view -->
+        <button 
+          class="view-toggle-fixed" 
+          @click="toggleView"
+          :title="isGridView ? 'Show List' : 'Show Grid'"
+          aria-label="Toggle view"
+        >
+          <font-awesome-icon v-if="isGridView" :icon="faBars" />
+          <font-awesome-icon v-else :icon="faGrip" />
+        </button>
+        
       </div>
 </template>
 
@@ -119,6 +113,7 @@
 <script>
 import PreloadWrapper from '../components/shared/PreloadWrapper.vue';
 import BasePage from '../components/layout/BasePage.vue';
+import DeckSelector from '../components/forms/DeckSelector.vue';
 import { useStore } from 'vuex';
 import { faBars, faGrip } from '../icons.js'
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
@@ -172,7 +167,8 @@ export default {
   },
   components: {
     PreloadWrapper,
-    BasePage
+    BasePage,
+    DeckSelector
   },
   computed: {
     // Combine store decks like in Flashcards
@@ -286,29 +282,27 @@ export default {
       console.log('[GridView] header clicked');
       if (this.leftbarVisible) this.closeLeftbar();
     },
-    changeDeck(deckKey) {
-      // Switch deck using same behavior as Flashcards dropdown
+    changeDeck(deckName) {
+      const decks = this.decks;
+      let deckKey = null;
+      for (const key of Object.keys(decks)) {
+        if (key === deckName || (decks[key] && decks[key].name === deckName)) {
+          deckKey = key;
+          break;
+        }
+      }
       if (!deckKey || deckKey === this.selectedCategory) {
         this.isSubmenuOpen = false;
         return;
       }
       this.selectedCategory = deckKey;
-      const deck = this.decks[deckKey];
+      const deck = decks[deckKey];
       this.localPageTitle = deck?.name || deckKey;
       this.updateUrlWithCategory(deckKey);
       this.isSubmenuOpen = false;
     },
     handleOutsideClick(event) {
-      try {
-        // Close deck dropdown when clicking anywhere outside the dropdown
-        const dropdownEl = document.getElementById('deck-options');
-        const clickedInsideDropdown = dropdownEl && dropdownEl.contains(event.target);
-        if (this.isSubmenuOpen && !clickedInsideDropdown) {
-          this.isSubmenuOpen = false;
-        }
-      } catch (e) {
-
-      }
+      // DeckSelector handles its own close via @close event
     },
     // New methods for bubble tooltip
     showBubble(event, entry) {
@@ -856,7 +850,7 @@ html, body {
 }
 
 .view-toggle-fixed {
-  position: fixed;
+  position: absolute;
   bottom: 1rem;
   left: 1rem;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
@@ -865,25 +859,24 @@ html, body {
   padding: 0.6rem 0.8rem;
   cursor: pointer;
   z-index: 10;
+  transition: left 0.1s ease;
 }
 
 .view-toggle-fixed:hover {
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 60%);
 }
 
-#deck-options {
+.deck-dropdown-wrapper {
   position: absolute;
-  top: 100%;
-  width: 100%;
+  top: 7em;
+  left: 3em;
+  z-index: 100;
+  min-width: 200px;
   max-width: 300px;
-  max-height: 0;
-  background-color: var(--bg);
-  z-index: 1;
-  left: 1em;
-  top: 5em;
-  left: 14em;
-  /*left: 50%;
-  transform: translateX(-50%);*/
+}
+
+.sidebar-side-left.sidebar-push .view-toggle-fixed {
+  left: calc(1rem + 250px);
 }
 
 
@@ -1251,16 +1244,10 @@ label {
   }
 
 
-  #deck-options {
-    position: absolute;
-    top: 90%;
-    width: 100%;
-    max-width: 300px;
-    max-height: 0;
-    background-color: var(--bg);
-    z-index: 1;
-    left: 50%;
-    transform: translateX(-50%);
+  .deck-dropdown-wrapper {
+    left: 1em;
+    top: 4.5em;
+    max-width: 250px;
   }
 }
 </style>
