@@ -5,12 +5,8 @@ import os
 from datetime import datetime, timezone
 import yaml
 import re
-import jieba.posseg as pseg
 from hanziconv import HanziConv
 from backend.setup import config
-from backend.setup import auth_keys
-from backend.setup import BASE_DIR
-from backend.setup import DOMAIN
 import copy
 
 import logging
