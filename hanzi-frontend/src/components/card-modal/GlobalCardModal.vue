@@ -728,8 +728,10 @@ export default {
         return count;
       }
       if (this.customDef && this.customDef.english) {
-        this.mainDefIndex = 0;
-        return 1;
+        const parts = this.customDef.english.split('\x1F');
+        const count = parts.length || 1;
+        this.mainDefIndex = this.mainDefIndex % count;
+        return count;
       }
       const base = (this.cardData && Array.isArray(this.cardData.english)) ? this.cardData.english.length : 0;
       const count = base > 0 ? base : 1;
