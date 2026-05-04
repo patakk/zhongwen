@@ -216,53 +216,89 @@
     <!-- Stats modal -->
     <div v-if="showStatsPanel" class="stats-overlay" @click="closeStatsPanel">
       <div class="stats-panel" @click.stop>
-        <h3>Flashcard Stats</h3>
+        <h3>{{ statsView === 'overview' ? 'Flashcard stats (all decks)' : 'Flashcard stats (' + currentDeck + ')' }}</h3>
 
-        <div class="stats-today">
-          <div class="stat-item">
-            <span class="stat-label">Cards studied today</span>
-            <span class="stat-value">{{ statsData.today ? statsData.today.cards_studied : '...' }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Time spent</span>
-            <span class="stat-value">{{ formattedStudyTime }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Retention</span>
-            <span class="stat-value">
-              {{ statsData.today && statsData.today.retention != null ? (statsData.today.retention * 100).toFixed(0) + '%' : '...' }}
-            </span>
-          </div>
+        <div class="stats-view-toggle">
+          <button
+            :class="{ active: statsView === 'overview' }"
+            @click="statsView = 'overview'"
+          >Overview</button>
+          <button
+            :class="{ active: statsView === 'cards' }"
+            @click="switchToCardList"
+          >Deck stats</button>
         </div>
 
-        <div class="stats-year-row">
-          <button class="year-nav" @click="statsYear--; loadStats()" :disabled="statsLoading">◀</button>
-          <span class="year-label">{{ statsYear }}</span>
-          <button class="year-nav" @click="statsYear++; loadStats()" :disabled="statsLoading">▶</button>
-        </div>
+        <template v-if="statsView === 'overview'">
+          <div class="stats-today">
+            <div class="stat-item">
+              <span class="stat-label">Cards studied today</span>
+              <span class="stat-value">{{ statsData.today ? statsData.today.cards_studied : '...' }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Time spent</span>
+              <span class="stat-value">{{ formattedStudyTime }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Retention</span>
+              <span class="stat-value">
+                {{ statsData.today && statsData.today.retention != null ? (statsData.today.retention * 100).toFixed(0) + '%' : '...' }}
+              </span>
+            </div>
+          </div>
 
-        <div class="activity-calendar" v-if="!statsLoading" ref="activityCalendar">
-          <div class="cal-month-labels">
-            <span v-for="m in monthLabels" :key="m.i" class="cal-month" :style="{ gridColumn: m.col }">{{ m.label }}</span>
+          <div class="stats-year-row">
+            <button class="year-nav" @click="statsYear--; loadStats()" :disabled="statsLoading">◀</button>
+            <span class="year-label">{{ statsYear }}</span>
+            <button class="year-nav" @click="statsYear++; loadStats()" :disabled="statsLoading">▶</button>
           </div>
-          <div class="cal-grid">
-            <span v-for="d in calendarDays" :key="d.key"
-              class="cal-day"
-              :class="'cal-lvl-' + d.level"
-              :title="d.tooltip"
-            ></span>
+
+          <div class="activity-calendar" v-if="!statsLoading" ref="activityCalendar">
+            <div class="cal-month-labels">
+              <span v-for="m in monthLabels" :key="m.i" class="cal-month" :style="{ gridColumn: m.col }">{{ m.label }}</span>
+            </div>
+            <div class="cal-grid">
+              <span v-for="d in calendarDays" :key="d.key"
+                class="cal-day"
+                :class="'cal-lvl-' + d.level"
+                :title="d.tooltip"
+              ></span>
+            </div>
+            <div class="cal-legend">
+              <span class="cal-legend-label">Less</span>
+              <span class="cal-dot cal-lvl-0"></span>
+              <span class="cal-dot cal-lvl-1"></span>
+              <span class="cal-dot cal-lvl-2"></span>
+              <span class="cal-dot cal-lvl-3"></span>
+              <span class="cal-dot cal-lvl-4"></span>
+              <span class="cal-legend-label">More</span>
+            </div>
           </div>
-          <div class="cal-legend">
-            <span class="cal-legend-label">Less</span>
-            <span class="cal-dot cal-lvl-0"></span>
-            <span class="cal-dot cal-lvl-1"></span>
-            <span class="cal-dot cal-lvl-2"></span>
-            <span class="cal-dot cal-lvl-3"></span>
-            <span class="cal-dot cal-lvl-4"></span>
-            <span class="cal-legend-label">More</span>
+          <div v-else class="stats-loading">Loading…</div>
+        </template>
+
+        <template v-else>
+          <div class="card-list" v-if="!deckStatsLoading">
+            <div class="card-list-header">
+              <span class="clh-word">Word</span>
+              <span class="clh-state">State</span>
+              <span class="clh-due">Due</span>
+              <span class="clh-reviews">Reviews</span>
+            </div>
+            <div class="card-list-body">
+              <div v-for="card in deckStats.words" :key="card.word" class="card-row">
+                <span class="cr-word">{{ card.word }}</span>
+                <span class="cr-state" :class="'state-' + (card.state || 0)">{{ stateName(card.state) }}</span>
+                <span class="cr-due">{{ dueText(card.due, card.state) }}</span>
+                <span class="cr-reviews">{{ card.total_reviews }}</span>
+              </div>
+              <div v-if="!deckStats.words || deckStats.words.length === 0" class="no-cards">
+                No cards in this deck.
+              </div>
+            </div>
           </div>
-        </div>
-        <div v-else class="stats-loading">Loading…</div>
+          <div v-else class="stats-loading">Loading…</div>
+        </template>
       </div>
     </div>
   </div>
@@ -351,6 +387,9 @@ export default {
       statsData: {},
       statsYear: new Date().getFullYear(),
       statsLoading: false,
+      statsView: 'overview',
+      deckStats: {},
+      deckStatsLoading: false,
       // Per-card timer: timestamp the current FSRS card was first shown.
       // Reset to null after rating is submitted so it isn't double-counted.
       cardShownAt: null
@@ -1257,6 +1296,7 @@ export default {
       }
     },
     async openStatsModal() {
+      this.statsView = 'overview';
       this.showStatsPanel = true;
       await this.loadStats();
     },
@@ -1295,6 +1335,34 @@ export default {
       const colCenterPx = colIdx * 14 + 7;
       const target = colCenterPx - el.clientWidth / 2;
       el.scrollLeft = Math.max(0, target);
+    },
+    async switchToCardList() {
+      this.statsView = 'cards';
+      this.deckStatsLoading = true;
+      try {
+        const r = await fetch(`/api/fsrs/deck-stats?deck=${encodeURIComponent(this.currentDeck)}`, { credentials: 'same-origin' });
+        if (r.ok) this.deckStats = await r.json();
+      } catch (e) {
+        console.error('Failed to load deck stats:', e);
+      } finally {
+        this.deckStatsLoading = false;
+      }
+    },
+    stateName(state) {
+      const names = { 1: 'Learning', 2: 'Review', 3: 'Relearning' };
+      return names[state] || '—';
+    },
+    dueText(due, state) {
+      if (!due || !state) return '—';
+      const now = new Date();
+      const d = new Date(due);
+      const diffMs = d - now;
+      const diffDays = Math.round(diffMs / 86400000);
+      if (diffMs <= 0) return 'due now';
+      if (diffDays === 0) return 'today';
+      if (diffDays === 1) return 'tomorrow';
+      if (diffDays < 7) return `${diffDays}d`;
+      return `${Math.round(diffDays / 7)}w`;
     },
     revealOrNewRandom() {
       if (this.revealed) {
@@ -2321,6 +2389,73 @@ body.flashcards-page {
 }
 
 .stats-loading {
+  text-align: center;
+  padding: 2em;
+  opacity: 0.5;
+}
+
+/* Stats view toggle */
+.stats-view-toggle {
+  display: flex;
+  gap: 0.5em;
+  margin-bottom: 1em;
+}
+
+.stats-view-toggle button {
+  padding: 0.4em 1em;
+  background: none;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+  color: var(--fg);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.stats-view-toggle button.active {
+  background: color-mix(in oklab, var(--primary-color) 25%, var(--bg) 100%);
+  border-color: var(--primary-color, #4a90e2);
+}
+
+/* Card list */
+.card-list {
+  max-height: 55vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-list-header {
+  display: flex;
+  font-size: 0.75em;
+  opacity: 0.5;
+  text-transform: uppercase;
+  padding: 0.5em 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
+  flex-shrink: 0;
+}
+
+.card-list-body {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.card-row {
+  display: flex;
+  padding: 0.5em 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+  font-size: 0.95em;
+}
+
+.clh-word, .cr-word { flex: 2; }
+.clh-state, .cr-state { flex: 1.5; }
+.clh-due, .cr-due { flex: 1.5; }
+.clh-reviews, .cr-reviews { flex: 1; text-align: right; }
+
+.state-1 { color: #e6a23c; }
+.state-2 { color: #67c23a; }
+.state-3 { color: #f56c6c; }
+.state-0 { opacity: 0.4; }
+
+.no-cards {
   text-align: center;
   padding: 2em;
   opacity: 0.5;

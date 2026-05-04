@@ -6,6 +6,7 @@ from flask import Blueprint, jsonify, request, session
 
 from backend.decorators import session_required
 from backend.db.fsrs_ops import (
+    get_deck_stats,
     get_queue_state,
     get_settings,
     get_stats,
@@ -145,6 +146,21 @@ def stats():
         return _err('auth_required')
     year = request.args.get('year')
     payload, err = get_stats(username, year=year)
+    if err:
+        return _err(err)
+    return jsonify(payload)
+
+
+@fsrs_bp.route('/deck-stats', methods=['GET'])
+@session_required
+def deck_stats():
+    username = _require_auth()
+    if username is None:
+        return _err('auth_required')
+    deck = request.args.get('deck')
+    if not deck:
+        return jsonify({'error': 'missing_deck'}), 400
+    payload, err = get_deck_stats(username, deck)
     if err:
         return _err(err)
     return jsonify(payload)

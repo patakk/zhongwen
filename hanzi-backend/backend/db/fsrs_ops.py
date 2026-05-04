@@ -530,3 +530,94 @@ def get_stats(username, year=None):
         'activity': activity,
         'year': year,
     }, None
+
+
+# ----- deck card list with stats ------------------------------------------
+
+def get_deck_stats(username, deck_key):
+    """Return per-word FSRS state and review history for all words in a deck."""
+    user = _get_user(username)
+    if user is None:
+        return None, 'auth_required'
+
+    deck_words = _deck_words(user, deck_key)
+    if deck_words is None:
+        return None, 'unknown_deck'
+    if not deck_words:
+        return {'words': []}, None
+
+    # FSRS state per word
+    states, _ = get_words_state(username, deck_words)
+
+    # Review log stats per word
+    from sqlalchemy import and_, func as safunc
+    log_rows = (
+        db.session.query(
+            FsrsReviewLog.word,
+            safunc.count().label('total'),
+            safunc.max(FsrsReviewLog.reviewed_at).label('last_reviewed'),
+            safunc.coalesce(safunc.sum(FsrsReviewLog.review_duration), 0).label('time_ms'),
+        )
+        .filter(
+            FsrsReviewLog.user_id == user.id,
+            FsrsReviewLog.word.in_(deck_words),
+        )
+        .group_by(FsrsReviewLog.word)
+        .all()
+    )
+    log_map = {
+        r.word: {
+            'total_reviews': r.total,
+            'last_reviewed': _ensure_aware(r.last_reviewed).isoformat() if r.last_reviewed else None,
+            'time_ms': r.time_ms,
+        }
+        for r in log_rows
+    }
+
+    # Last rating per word — use a subquery to avoid N+1
+    subq = (
+        db.session.query(
+            FsrsReviewLog.word,
+            safunc.max(FsrsReviewLog.reviewed_at).label('max_reviewed')
+        )
+        .filter(
+            FsrsReviewLog.user_id == user.id,
+            FsrsReviewLog.word.in_(deck_words),
+        )
+        .group_by(FsrsReviewLog.word)
+        .subquery()
+    )
+    last_rows = (
+        db.session.query(FsrsReviewLog)
+        .join(subq, and_(
+            FsrsReviewLog.word == subq.c.word,
+            FsrsReviewLog.reviewed_at == subq.c.max_reviewed,
+        ))
+        .filter(FsrsReviewLog.user_id == user.id)
+        .all()
+    )
+    last_ratings = {r.word: r.rating for r in last_rows}
+
+    words = []
+    for w in deck_words:
+        state = states.get(w)
+        log = log_map.get(w)
+        words.append({
+            'word': w,
+            'state': state['state'] if state else None,
+            'stability': state['stability'] if state else None,
+            'difficulty': state['difficulty'] if state else None,
+            'due': state['due'] if state else None,
+            'last_review': state['last_review'] if state else None,
+            'total_reviews': log['total_reviews'] if log else 0,
+            'total_time_ms': log['time_ms'] if log else 0,
+            'last_rating': last_ratings.get(w),
+        })
+
+    # Sort: introduced first, then by due date (upcoming first)
+    words.sort(key=lambda w: (
+        w['state'] is None,
+        w['due'] or '',
+    ))
+
+    return {'words': words}, None
