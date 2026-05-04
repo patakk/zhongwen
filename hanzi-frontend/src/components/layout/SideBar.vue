@@ -38,15 +38,19 @@ export default {
   },
   data() {
     return {
-      isOpen: document.body.classList.contains('sidebar-push')
+      isOpen: localStorage.getItem('sidebar-open') === '1' || document.body.classList.contains('sidebar-push')
     }
   },
   watch: {
-    isOpen(val) {
-      if (val) {
-        document.body.classList.add('sidebar-push')
-      } else {
-        document.body.classList.remove('sidebar-push')
+    isOpen: {
+      immediate: true,
+      handler(val) {
+        localStorage.setItem('sidebar-open', val ? '1' : '0')
+        if (val) {
+          document.body.classList.add('sidebar-push')
+        } else {
+          document.body.classList.remove('sidebar-push')
+        }
       }
     }
   },
