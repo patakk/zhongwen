@@ -189,7 +189,7 @@
                 :class="{ active: settingsForm.card_display_mode === 'animated' }"
                 @click="settingsForm.card_display_mode = 'animated'"
               >
-                Animated strokes
+                Animated transition
               </button>
               <button
                 type="button"
@@ -432,7 +432,7 @@ export default {
       const numchars = Math.max(1, (this.currentWordInfo.character || '').length);
       const containerWidth = w * 0.3;
       const containerHeight = h * 0.3;
-      const fontSize = Math.min(containerWidth / numchars, containerHeight / numchars);
+      let fontSize = Math.min(containerWidth / numchars, containerHeight / numchars);
       return {
         width: `${containerWidth}px`,
         height: `${containerHeight}px`,
@@ -943,8 +943,9 @@ export default {
     drawbg(progress, numchars1, numchars2) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-      this.ctx.strokeStyle = this.isDarkMode ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.16)';
-      this.ctx.lineWidth = 2;
+      this.ctx.strokeStyle = this.isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)';
+      let lw = 2;
+      this.ctx.lineWidth = lw;
 
       const cx = this.canvas.width / 2;
       const cy = this.canvas.height / 2;
@@ -964,24 +965,25 @@ export default {
         charheight2 = this.canvas.width / numchars2;
       }
 
+      /*
       if (numchars1 === numchars2) {
         for (let idx = 0; idx < numchars1; idx++) {
           let x0 = cx - (numchars1 * charwidth1) / 2 + idx * charwidth1;
           let y0 = cy - charheight1 / 2;
-          this.cross(Math.round(x0), Math.round(y0), charwidth1, charheight1, 1);
+          this.cross(Math.round(x0)+lw/2, Math.round(y0)+lw/2, charwidth1-lw, charheight1-lw, 0.25);
         }
       } else {
         for (let idx = 0; idx < numchars1; idx++) {
           let x0 = cx - (numchars1 * charwidth1) / 2 + idx * charwidth1;
           let y0 = cy - charheight1 / 2;
-          this.cross(Math.round(x0), Math.round(y0), charwidth1, charheight1, 1 - progress);
+          this.cross(Math.round(x0)+lw/2, Math.round(y0)+lw/2, charwidth1-lw, charheight1-lw, (1 - progress) * 0.25);
         }
         for (let idx = 0; idx < numchars2; idx++) {
           let x0 = cx - (numchars2 * charwidth2) / 2 + idx * charwidth2;
           let y0 = cy - charheight2 / 2;
-          this.cross(Math.round(x0), Math.round(y0), charwidth2, charheight2, progress);
+          this.cross(Math.round(x0)+lw/2, Math.round(y0)+lw/2, charwidth2-lw, charheight2-lw, progress * 0.25);
         }
-      }
+      }*/
     },
     drawMasks() {
       if (!this.currentWordInfo.strokes || !this.currentWordInfo.strokes.length) return;

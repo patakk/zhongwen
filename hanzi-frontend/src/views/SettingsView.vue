@@ -174,7 +174,7 @@
                   :class="{ active: fsrsForm.card_display_mode === 'animated' }"
                   @click="fsrsForm.card_display_mode = 'animated'"
                 >
-                  Animated strokes
+                  Animated transition
                 </button>
                 <button
                   type="button"

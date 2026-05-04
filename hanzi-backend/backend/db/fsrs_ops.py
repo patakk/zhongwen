@@ -174,7 +174,6 @@ def _build_queue_payload(user, deck_key, settings, daily, deck_words, due_review
             FsrsReview.user_id == user.id,
             FsrsReview.word.in_(deck_words),
             FsrsReview.due <= now,
-            FsrsReview.state == int(State.Review),
         )
         .scalar() or 0
     )
