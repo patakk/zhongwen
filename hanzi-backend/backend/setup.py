@@ -40,13 +40,14 @@ if os.getenv('PROD') == 'true':
 else:
     PROD_MODE = config.get('prod_mode')
 
-if PROD_MODE:
-    DOMAIN = config.get('google', {}).get('frontend_prod')
-else:
-    DOMAIN = config.get('google', {}).get('frontend_dev')
+LOCAL_DOMAIN = config.get('google', {}).get('frontend_dev')
+
 
 def create_app():
     app = Flask("hanzi_app")
+    
+    if PROD_MODE:
+        app.config['SESSION_COOKIE_DOMAIN'] = '.abcrgb.xyz'
 
     # Flask core config - using auth_keys for secret
     app.config['SECRET_KEY'] = auth_keys.get('FLASK_SECRET_KEY')

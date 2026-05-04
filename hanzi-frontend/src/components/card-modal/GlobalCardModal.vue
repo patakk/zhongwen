@@ -132,7 +132,7 @@
                 </div>
                 <div class="custom-edit-wrap">
                   <button class="custom-edit-btn" @click.stop="openCustomEdit" title="Edit pinyin & english">
-                    ✎
+                    <font-awesome-icon :icon="faPencil" />
                   </button>
                 </div>
               </div>
@@ -580,14 +580,15 @@ import PreloadWrapper from '../shared/PreloadWrapper.vue'
 import DeckSelector from '../forms/DeckSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../../lib/toneColorizer'
-import { faVolumeHigh } from '@/icons'
+import { faVolumeHigh, faPencil } from '@/icons'
 
 
 
 export default {
-  setup() {
+    setup() {
     return {
-      faVolumeHigh
+      faVolumeHigh,
+      faPencil
     }
   },
   components: {

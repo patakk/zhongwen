@@ -929,7 +929,6 @@ h2 {
 .account-container {
   width: 100%;
   padding: 2rem;
-  border: 1px solid color-mix(in oklab, var(--fg) 2%, var(--bg) 100%);
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
   box-shadow: var(--card-shadow);
   box-sizing: border-box;
@@ -1283,12 +1282,13 @@ h3 {
   width: 1.1em;
   height: 1.1em;
   border-radius: 0;
-  background: var(--bg);
+  background: color-mix(in oklab, var(--fg) 22%, var(--bg) 90%);
   cursor: pointer;
   margin: 0;
   flex-shrink: 0;
   position: relative;
   border: none;
+  margin-right: .5em;
 }
 
 .toggle-label input[type="checkbox"]:checked {
@@ -1322,7 +1322,7 @@ h3 {
   
 	border: 2px solid var(--black) !important;
 	background: var(--bg) !important;
-	opacity: .5;
+	opacity: .35;
   border: var(--thin-border-width) solid var(--black) !important;
 }
 
@@ -1335,14 +1335,13 @@ h3 {
   /* transition: all 0.2s; */
   border: 2px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
   font-size: 1.25em;
-	opacity: .5;
+	opacity: .35;
   border: none;
   font-weight: var(--hanzi-weight) !important;
 }
 
 
 .font-button.active {
-  background: var(--bg);
   color: var(--fg);
 	opacity: 1;
   font-size: 1.25em;
@@ -1350,14 +1349,12 @@ h3 {
 }
 
 .theme-button.active {
-  background: color-mix(in oklab, var(--green-btn-clr, #f11) 30%, var(--bg) 100%);
   border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
   color: var(--fg);
 	opacity: 1;
 }
 
 .theme-button:hover:not(.active) {
-  background: color-mix(in oklab, var(--fg) 10%, var(--bg) 100%);
 }
 
 
@@ -1376,9 +1373,9 @@ h3 {
 
 .tone-choice {
   border: 2px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
-  background: color-mix(in oklab, var(--fg) 6%, var(--bg) 100%);
   padding: 0.5rem 0.75rem;
   cursor: pointer;
+  color: var(--fg);
   display: flex;
   flex-direction: row;
   gap: 0.2rem;
@@ -1391,13 +1388,12 @@ h3 {
 }
 
 .tone-choice.active {
-  background: var(--bg);
   border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
   opacity: 1;
 }
 
 .tone-choice:not(.active) {
-  opacity: 0.7;
+  opacity: .35;
 }
 
 .tone-hanzi {
@@ -1439,31 +1435,6 @@ h3 {
   font-size: 0.9em;
 }
 
-@media (max-width: 768px) {
-
-  
-  .account-container {
-  }
-
-  .profile-row {
-    border-bottom: 2px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-    padding-bottom: 1rem;
-  }
-
-  .account-actions {
-    border-bottom: 2px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
-    padding-bottom: 1rem;
-  }
-
-  .theme-selection, .current-theme {
-    flex-direction: column;
-  }
-  
-  .theme-option-label {
-    margin-bottom: 0.5rem;
-  }
-}
-
 .tonehanzipinyin {
   display: flex;
   flex-direction: column;
@@ -1489,6 +1460,7 @@ h3 {
 
 .card-display-toggle {
   display: inline-flex;
+  flex-direction: row;
   gap: 0.4em;
 }
 
@@ -1513,4 +1485,35 @@ h3 {
   background: color-mix(in oklab, var(--fg) 8%, var(--bg) 100%);
   font-weight: 600;
 }
+
+
+@media (max-width: 768px) {
+
+  
+  .account-container {
+  }
+
+  .profile-row {
+    border-bottom: 2px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+    padding-bottom: 1rem;
+  }
+
+  .account-actions {
+    border-bottom: 2px solid color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+    padding-bottom: 1rem;
+  }
+
+  .theme-selection, .current-theme {
+    flex-direction: column;
+  }
+  
+  .theme-option-label {
+    margin-bottom: 0.5rem;
+  }
+
+  .card-display-toggle {
+    flex-direction: column;
+  }
+}
+
 </style>

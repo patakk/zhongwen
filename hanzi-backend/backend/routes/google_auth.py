@@ -12,12 +12,11 @@ from backend.db.models import WordList
 from backend.common import config
 from backend.common import auth_keys
 from backend.decorators import hard_session_required
-from backend.common import DOMAIN
+from backend.common import LOCAL_DOMAIN
 from backend.routes.manage import validate_password  # Import validation function
+from backend.setup import PROD_MODE
 import os
 
-
-print("Domain set to:", DOMAIN)
 
 google_oauth_bp = make_google_blueprint(
     client_id=auth_keys.get("GOOGLE_OAUTH_CLIENT_ID"),
@@ -32,6 +31,21 @@ google_oauth_bp = make_google_blueprint(
 )
 
 google_auth_bp = Blueprint('google_auth', __name__, url_prefix='/api/google_auth')
+
+
+ def _frontend_url(path=''):
+      """Return the frontend origin to redirect to after OAuth.
+      In prod, mirror whichever host the user came from (hanzi.abcrgb.xyz,
+      zi.abcrgb.xyz, ...). In dev, fall back to the configured DOMAIN
+      because the frontend runs on a different port from the backend.
+      """
+      if PROD_MODE:
+          origin = request.host_url.rstrip('/')
+      else:
+          origin = LOCAL_DOMAIN.rstrip('/')
+      return f"{origin}{path}"
+
+
 
 def create_or_get_google_user(google_info, initial_metainfo=None):
     """Create a new user from Google info or get existing user, with email matching"""
@@ -179,7 +193,7 @@ def login():
 def link_account():
     if 'user_id' not in session:
         flash("Please log in first", "error")
-        return redirect(f'{DOMAIN}/login')   
+        return redirect(_frontend_url('/login'))
     
     # Mark this as a linking flow
     session['linking_account'] = True
@@ -195,13 +209,13 @@ def authorized_handler():
     if not google.authorized:
         flash("Authentication failed", "error")
         #return redirect(url_for("login"))
-        return redirect(f'{DOMAIN}/')  
+        return redirect(_frontend_url(''))  
     
     resp = google.get("/oauth2/v2/userinfo")
     if not resp.ok:
         flash("Failed to get user info", "error")
         #return redirect(url_for("login"))
-        return redirect(f'{DOMAIN}/login')  
+        return redirect(_frontend_url('/login'))
     
     google_info = resp.json()
     google_id = google_info["id"]
@@ -223,7 +237,7 @@ def authorized_handler():
         if existing_google_user and existing_google_user.id != user.id:
             print("This Google account is already linked to another user account")
             #return redirect(url_for("account"))
-            return redirect(f'{DOMAIN}/')  
+            return redirect(_frontend_url(''))  
         
         # Second check: Is this Google email already associated with another account?
         if google_email:
@@ -231,7 +245,7 @@ def authorized_handler():
             if existing_email_user and existing_email_user.id != user.id:
                 print("The email associated with this Google account is already used by another user account")
                 #return redirect(url_for("manage.account_management"))
-                return redirect(f'{DOMAIN}/')  
+                return redirect(_frontend_url(''))  
         
         # Update current user
         user.google_id = google_id
@@ -245,7 +259,7 @@ def authorized_handler():
         
         print("Your account has been linked with Google!")
         #return redirect(url_for("account"))
-        return redirect(f'{DOMAIN}/')  
+        return redirect(_frontend_url(''))  
 
     # NORMAL LOGIN FLOW
     print("Processing normal login flow...")
@@ -255,7 +269,7 @@ def authorized_handler():
     # Handle case where create_or_get_google_user indicated an error (e.g., email conflict)
     if user is None:
         # Flash message was likely set within create_or_get_google_user
-        return redirect(f'{DOMAIN}/login') # Redirect to login page with error flash
+        return redirect(_frontend_url('/login')) # Redirect to login page with error flash
 
     # Log them in
     session.clear()
@@ -267,7 +281,7 @@ def authorized_handler():
     
     flash('Logged in successfully with Google!', 'success')
     #return redirect(url_for("home"))
-    return redirect(f'{DOMAIN}')
+    return redirect(_frontend_url(''))
 
 
 @google_auth_bp.route("/unlink_and_set_password", methods=["POST"])
