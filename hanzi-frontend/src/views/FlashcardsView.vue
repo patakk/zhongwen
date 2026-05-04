@@ -85,15 +85,20 @@
                   <span v-if="intervals.again != null" class="rating-interval">{{ formatInterval(intervals.again) }}</span>
                   <span class="rating-key">1</span>
                 </button>
+                <button class="rating-btn rating-hard" :disabled="loadingNext" @click="submitRating('hard')">
+                  <span class="rating-label">Hard</span>
+                  <span v-if="intervals.hard != null" class="rating-interval">{{ formatInterval(intervals.hard) }}</span>
+                  <span class="rating-key">2</span>
+                </button>
                 <button class="rating-btn rating-good" :disabled="loadingNext" @click="submitRating('good')">
                   <span class="rating-label">Good</span>
                   <span v-if="intervals.good != null" class="rating-interval">{{ formatInterval(intervals.good) }}</span>
-                  <span class="rating-key">2</span>
+                  <span class="rating-key">3</span>
                 </button>
                 <button class="rating-btn rating-easy" :disabled="loadingNext" @click="submitRating('easy')">
                   <span class="rating-label">Easy</span>
                   <span v-if="intervals.easy != null" class="rating-interval">{{ formatInterval(intervals.easy) }}</span>
-                  <span class="rating-key">3</span>
+                  <span class="rating-key">4</span>
                 </button>
               </div>
             </div>
@@ -392,7 +397,7 @@ export default {
     },
     canLearnNew() {
       const q = this.queueState;
-      return !!(q && q.new_available > 0 && q.new_remaining > 0);
+      return !!(q && q.new_available > 0 && q.new_remaining > 0 && q.review_remaining > 0);
     },
     learnNewCount() {
       const q = this.queueState;
@@ -1527,8 +1532,9 @@ export default {
           return;
         }
         if (event.key === '1' || event.key === 'a') this.submitRating('again');
-        else if (event.key === '2' || event.key === 'g') this.submitRating('good');
-        else if (event.key === '3' || event.key === 'e') this.submitRating('easy');
+        else if (event.key === '2' || event.key === 'h') this.submitRating('hard');
+        else if (event.key === '3' || event.key === 'g') this.submitRating('good');
+        else if (event.key === '4' || event.key === 'e') this.submitRating('easy');
       } else {
         if (event.key === 'a' || event.key === 'd' || event.key === ' ' || event.key === 'Enter' || event.key === 'r') {
           this.revealOrNewRandom();
@@ -1781,6 +1787,15 @@ body.flashcards-page {
 .rating-again:hover:not(:disabled) {
   border-color: color-mix(in oklab, #d33 65%, var(--bg) 100%);
   background: color-mix(in oklab, #d33 9%, var(--bg) 100%);
+}
+
+.rating-hard {
+  border-color: color-mix(in oklab, #d93 45%, var(--bg) 100%);
+}
+
+.rating-hard:hover:not(:disabled) {
+  border-color: color-mix(in oklab, #d93 65%, var(--bg) 100%);
+  background: color-mix(in oklab, #d93 9%, var(--bg) 100%);
 }
 
 .rating-good {

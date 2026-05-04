@@ -1,7 +1,7 @@
 from flask_migrate import Migrate
 import yaml
 from backend.db.extensions import db
-from backend.db.models import User, UserNotes, UserString, Card, StrokeData, WordList, WordEntry, UserCustomDefinition, FsrsReview, FsrsDailyStats
+from backend.db.models import User, UserNotes, UserString, Card, StrokeData, WordList, WordEntry, UserCustomDefinition, FsrsReview, FsrsDailyStats, FsrsReviewLog
 import click
 from flask.cli import with_appcontext
 from datetime import datetime

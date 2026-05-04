@@ -222,3 +222,21 @@ class FsrsDailyStats(db.Model):
     __table_args__ = (
         db.UniqueConstraint('user_id', 'date', name='uq_fsrs_daily_stats_user_date'),
     )
+
+
+class FsrsReviewLog(db.Model):
+    """Append-only log of every review event. Used for stats and future parameter optimization."""
+    __tablename__ = 'fsrs_review_log'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    word = db.Column(db.String(64), nullable=False)
+    rating = db.Column(db.String(8), nullable=False)  # again | hard | good | easy
+    stability_after = db.Column(db.Float, nullable=True)
+    difficulty_after = db.Column(db.Float, nullable=True)
+    state_after = db.Column(db.Integer, nullable=True)
+    reviewed_at = db.Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+    __table_args__ = (
+        db.Index('ix_fsrs_review_log_user_reviewed_at', 'user_id', 'reviewed_at'),
+    )

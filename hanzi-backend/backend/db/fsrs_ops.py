@@ -12,6 +12,7 @@ Daily counters are persisted in fsrs_daily_stats keyed by (user_id, UTC date).
 import logging
 from datetime import datetime, timedelta, timezone
 
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.attributes import flag_modified
 
@@ -21,6 +22,7 @@ from backend.db.extensions import db
 from backend.db.models import (
     FsrsDailyStats,
     FsrsReview,
+    FsrsReviewLog,
     User,
     WordEntry,
     WordList,
@@ -99,13 +101,18 @@ def _deck_words(user, deck_key):
 
 def _settings_for(user):
     meta = user.metainfo or {}
-    saved = meta.get('fsrs') or {}
+    saved = meta.get('fsrs', {})
     return {**DEFAULT_SETTINGS, **{k: saved[k] for k in DEFAULT_SETTINGS if k in saved}}
 
 
 def _scheduler_for(user):
     s = _settings_for(user)
-    return Scheduler(desired_retention=float(s['desired_retention']))
+    meta = user.metainfo or {}
+    custom_params = meta.get('fsrs', {}).get('parameters')
+    return Scheduler(
+        desired_retention=float(s['desired_retention']),
+        parameters=custom_params if custom_params else DEFAULT_PARAMETERS,
+    )
 
 
 def _card_from_review(rev):
@@ -133,7 +140,7 @@ def _preview_intervals(user, rev):
     scheduler = _scheduler_for(user)
     now = _now_utc()
     out = {}
-    for label, rating in (('again', Rating.Again), ('good', Rating.Good), ('easy', Rating.Easy)):
+    for label, rating in (('again', Rating.Again), ('hard', Rating.Hard), ('good', Rating.Good), ('easy', Rating.Easy)):
         card = _card_from_review(rev)
         new_card, _log = scheduler.review_card(card, rating, now)
         out[label] = max(0.0, (new_card.due - now).total_seconds())
@@ -153,23 +160,23 @@ def _get_or_create_daily(user_id, date_iso):
 
 def _build_queue_payload(user, deck_key, settings, daily, deck_words, due_review=None):
     """Shape the queue/stats payload returned by every endpoint."""
-    word_set = set(deck_words)
-    existing_words = {
-        w for (w,) in db.session.query(FsrsReview.word)
-        .filter(FsrsReview.user_id == user.id, FsrsReview.word.in_(deck_words))
-        .all()
-    }
-    new_available = len(word_set - existing_words)
-
     now = _now_utc()
+    introduced_count = (
+        db.session.query(func.count(FsrsReview.id))
+        .filter(FsrsReview.user_id == user.id, FsrsReview.word.in_(deck_words))
+        .scalar() or 0
+    )
+    new_available = len(deck_words) - introduced_count
+
     due_count = (
-        db.session.query(FsrsReview)
+        db.session.query(func.count(FsrsReview.id))
         .filter(
             FsrsReview.user_id == user.id,
             FsrsReview.word.in_(deck_words),
             FsrsReview.due <= now,
+            FsrsReview.state == int(State.Review),
         )
-        .count()
+        .scalar() or 0
     )
 
     new_remaining = max(0, settings['daily_new_limit'] - daily.new_introduced)
@@ -190,7 +197,12 @@ def _build_queue_payload(user, deck_key, settings, daily, deck_words, due_review
         'card': None,
     }
 
-    if due_review is not None and review_remaining > 0:
+    # Learning/Relearning cards bypass the daily review cap — their intervals are
+    # minutes, not days, so blocking them mid-session breaks the algorithm.
+    in_active_step = due_review is not None and due_review.state in (
+        int(State.Learning), int(State.Relearning)
+    )
+    if due_review is not None and (review_remaining > 0 or in_active_step):
         payload['card'] = {
             'word': due_review.word,
             'state': due_review.state,
@@ -266,13 +278,22 @@ def record_review(username, word, rating_str, deck_key=None, time_ms=0):
     try:
         scheduler = _scheduler_for(user)
         card = _card_from_review(rev)
-        new_card, _log = scheduler.review_card(card, RATING_MAP[rating_str])
+        new_card, _log = scheduler.review_card(card, RATING_MAP[rating_str], review_duration=time_ms_int or None)
         _apply_card(rev, new_card)
 
         daily = _get_or_create_daily(user.id, _today_utc_iso())
         daily.reviews_done += 1
         setattr(daily, f'{rating_str}_count', getattr(daily, f'{rating_str}_count', 0) + 1)
         daily.time_ms = (daily.time_ms or 0) + time_ms_int
+
+        db.session.add(FsrsReviewLog(
+            user_id=user.id,
+            word=word,
+            rating=rating_str,
+            stability_after=new_card.stability,
+            difficulty_after=new_card.difficulty,
+            state_after=int(new_card.state),
+        ))
 
         db.session.commit()
     except SQLAlchemyError as e:
