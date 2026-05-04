@@ -13,6 +13,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
   <body>
+    <script>
+      // Apply persisted sidebar side before Vue mounts to avoid a flash of wrong position
+      document.body.classList.add('sidebar-side-' + (localStorage.getItem('sidebar-side') || 'right'));
+    </script>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

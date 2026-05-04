@@ -20,6 +20,9 @@
             <template v-if="!authStatus">
               <RouterLink to="/login" class="side-link">Login</RouterLink>
             </template>
+            <button class="side-link side-switch-btn" @click.stop="toggleSide">
+              ⇄ Flip side
+            </button>
           </nav>
         </div>
       </Transition>
@@ -37,8 +40,10 @@ export default {
     return { faBars }
   },
   data() {
+    const savedSide = localStorage.getItem('sidebar-side') || 'right';
     return {
-      isOpen: localStorage.getItem('sidebar-open') === '1' || document.body.classList.contains('sidebar-push')
+      isOpen: localStorage.getItem('sidebar-open') === '1' || document.body.classList.contains('sidebar-push'),
+      sidebarSide: savedSide
     }
   },
   watch: {
@@ -51,6 +56,14 @@ export default {
         } else {
           document.body.classList.remove('sidebar-push')
         }
+      }
+    },
+    sidebarSide: {
+      immediate: true,
+      handler(val) {
+        localStorage.setItem('sidebar-side', val)
+        document.body.classList.remove('sidebar-side-right', 'sidebar-side-left')
+        document.body.classList.add('sidebar-side-' + val)
       }
     }
   },
@@ -65,6 +78,9 @@ export default {
     },
     closeSidebar() {
       this.isOpen = false
+    },
+    toggleSide() {
+      this.sidebarSide = this.sidebarSide === 'right' ? 'left' : 'right'
     }
   },
   mounted() {
@@ -154,7 +170,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 3em .5em .5em 0em;
+  padding: 3em 0em .5em 0em;
   width: 100%;
   cursor: default;
 }
@@ -169,6 +185,7 @@ export default {
   text-transform: lowercase;
   opacity: .6;
   cursor: pointer;
+  box-sizing: border-box;
   corner-shape: var(--superellipse-4);
   border-radius: var(--superellipse-radius);
 }
@@ -193,9 +210,42 @@ export default {
   opacity: 1;
 }
 
+.side-switch-btn {
+  border: none;
+  font-family: inherit;
+  text-transform: none;
+  opacity: 0.4;
+}
+
+.side-switch-btn:hover {
+  opacity: 0.8;
+  text-transform: none;
+  background: none;
+}
+
 @media (max-width: 784px) {
   .overlay {
     display: block;
   }
+}
+</style>
+
+<style>
+.sidebar-side-left .sidebar {
+  right: auto !important;
+  left: 0 !important;
+  border-left: none !important;
+  border-right: 2px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 100%);
+}
+
+.sidebar-side-left .sidebar-toggle {
+  right: auto !important;
+  left: 0 !important;
+  padding: 0.5em 0 0 0.5em !important;
+}
+
+.sidebar-side-left .sidebar-enter-from,
+.sidebar-side-left .sidebar-leave-to {
+  transform: translateX(-100%);
 }
 </style>

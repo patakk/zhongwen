@@ -194,6 +194,12 @@ button, input, .router-button {
   --decks-shadow: 5px 5px 16px 7px color-mix(in oklab, var(--primary-color) 6%, var(--bg) 5%);
 }
   
+@supports not (corner-shape: superellipse(3)) {
+  :root {
+    --superellipse-radius: 10px;
+  }
+}
+
 @media (max-width: 768px) {
 
   :root {
@@ -384,6 +390,11 @@ button:hover {
   top: 0;
 
   
+}
+
+.sidebar-side-left .theme-toggle {
+  left: auto;
+  right: 0;
 }
 
 .theme-toggle {
@@ -682,12 +693,14 @@ body {
 }
 .page-body,
 body {
-  transition: padding-right 0.1s ease;
+  transition: padding-left 0.1s ease, padding-right 0.1s ease;
 }
 
 @media (min-width: 785px) {
-  .sidebar-push,
-  .sidebar-push {
+  .sidebar-side-right.sidebar-push {
     padding-right: 250px !important;
+  }
+  .sidebar-side-left.sidebar-push {
+    padding-left: 250px !important;
   }
 }
