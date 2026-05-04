@@ -1550,7 +1550,6 @@ body.flashcards-page {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  width: 100vw;
   touch-action: manipulation;
   -webkit-touch-callout: none;
   user-select: none;
