@@ -55,6 +55,12 @@ def _frontend_url(path=''):
         origin = request.host_url.rstrip('/')
     else:
         origin = LOCAL_DOMAIN.rstrip('/')
+
+    print("****************")
+    print("****************")
+    print("****************")
+    print("{origin}{path}")
+    print("****************")
     return f"{origin}{path}"
 
 

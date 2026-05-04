@@ -2,7 +2,7 @@ from flask_mail import Mail, Message
 import secrets
 
 from flask import Blueprint, jsonify, render_template, session
-from flask import request, redirect, url_for, flash
+from flask import request, redirect, flash
 
 import logging
 logger = logging.getLogger(__name__)
@@ -135,7 +135,7 @@ def verify_email(token):
     else:
         logger.info(f"User tried to verify email with invalid token: {token}")
         # Redirect to home or an error page if token is invalid
-        return redirect(url_for('home'))
+        return redirect(_frontend_url('/'))
 
 
 @manage_bp.route('/change-password', methods=['POST']) # API endpoint, not rendering template

@@ -47,7 +47,7 @@ from flask import send_file
 import json
 import os
 
-from backend.setup import create_app
+from backend.setup import create_app, _frontend_url
 from flask_limiter.util import get_remote_address
 from flask_limiter import Limiter
 
@@ -377,7 +377,7 @@ def register():
                 return jsonify(result), 201
 
             # Classic HTML fallback
-            return redirect(url_for('home'))
+            return redirect(_frontend_url('/'))
         except Exception as e:
             logger.error(f"Registration error: {str(e)}")
             if request.is_json:
@@ -392,8 +392,8 @@ def register():
 @app.route('/api/logout')
 @session_required
 def logout():
-   session.clear()  # This clears everything in the session, including flash messages
-   return redirect(url_for('home'))
+   session.clear()
+   return jsonify({'message': 'Logged out'})
 
 
 def get_app_context():
