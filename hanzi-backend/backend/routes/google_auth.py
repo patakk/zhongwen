@@ -223,7 +223,7 @@ def authorized_handler():
         if existing_google_user and existing_google_user.id != user.id:
             print("This Google account is already linked to another user account")
             #return redirect(url_for("account"))
-            return redirect(_frontend_url(''))  
+            return redirect(_frontend_url('/'))  
         
         # Second check: Is this Google email already associated with another account?
         if google_email:
@@ -245,7 +245,7 @@ def authorized_handler():
         
         print("Your account has been linked with Google!")
         #return redirect(url_for("account"))
-        return redirect(_frontend_url(''))  
+        return redirect(_frontend_url('/'))  
 
     # NORMAL LOGIN FLOW
     print("Processing normal login flow...")
