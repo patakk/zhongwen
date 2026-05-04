@@ -43,8 +43,6 @@ def load_secrets(secrets_file):
 def load_config():
     with open(CONFIG_PATH) as f:
         config = yaml.safe_load(f)
-    print("Loaded config:")
-    print(yaml.dump(config, default_flow_style=False))
     return config
 
 config = load_config()
