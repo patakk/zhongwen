@@ -56,13 +56,6 @@ def _frontend_url(path=''):
     else:
         origin = LOCAL_DOMAIN.rstrip('/')
 
-    print("****************")
-    print("****************")
-    print("****************")
-    print(f"{origin}{path}")
-    print("****************")
-    return f"{origin}{path}"
-
 
 def create_app():
     app = Flask("hanzi_app")

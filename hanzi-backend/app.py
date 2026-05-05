@@ -148,8 +148,6 @@ def before_request():
 from collections import defaultdict
 
 
-    
-
 
 def main_card_data(character):
     username = session.get('username')

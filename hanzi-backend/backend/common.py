@@ -28,8 +28,8 @@ CHARS_CACHE = json.load(open(os.path.join(DATA_DIR, "chars_cache.json")))
 STROKES_CACHE = json.load(open(os.path.join(DATA_DIR, "strokes_cache.json")))
 WORDS_CACHE = json.load(open(os.path.join(DATA_DIR, "words_cache.json")))
 DECOMPOSE_CACHE = json.load(open(os.path.join(DATA_DIR, "decompose_cache.json")))
-TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_examples.json")))
-TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_example_ids_by_char.json")))
+TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_data_simplified.json")))
+TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_ids_by_simplified_word.json")))
 AUDIO_MAPPINGS = json.load(open(os.path.join(DATA_DIR, "audio_mappings.json")))
 STROKE_COUNT = json.load(open(os.path.join(DATA_DIR, "stroke_count.json")))
 HANZI_DARKNESS_NOTO = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_noto.json")))
@@ -40,7 +40,7 @@ DECKS_INFO = {key : CARDDECKS[key]["name"] for key in CARDDECKS}
 
 cache_json_names = [
     'decks', 'chars_cache', 'strokes_cache', 'words_cache',
-    'decompose_cache', 'tatoeba_examples', 'tatoeba_example_ids_by_char',
+    'decompose_cache', 'tatoeba_data_simplified', 'tatoeba_ids_by_simplified_word',
     'audio_mappings', 'stroke_count', 'hanzi_darkness_noto', 'hanzi_darkness_kaiti',
     'related_cache', 'opposites_cache'
 ]
@@ -73,8 +73,10 @@ def get_pinyin(hanzi):
 
 
 def get_tatoeba_page(character, page):
-    def simplify_hanzi(text):
-        return HanziConv.toSimplified(text)
+    is_trad = character != HanziConv.toSimplified(character)
+    if is_trad:
+        character = HanziConv.toSimplified(character)
+
     tatoebas = []
     tids = TATOEBA_MAP.get(character, [])
     examples = []
@@ -109,6 +111,9 @@ def get_tatoeba_page(character, page):
         except:
             pass'''
 
+    if is_trad:
+        for t in tatoebas:
+            t['cmn'] = HanziConv.toTraditional(t['cmn'])
     return tatoebas, is_last
 
 def remove_variantof(char_info, ew=False):

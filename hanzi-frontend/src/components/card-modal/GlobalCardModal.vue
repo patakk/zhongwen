@@ -198,312 +198,221 @@
           </div>
         </div>
 
-        <!-- Examples view -->
-        <div v-if="showExamples" class="examples-group examples-view">
-          <div class="section-header">
-            <div class="medium-label">Examples</div>
-          </div>
-          <div class="examples-list">
-            <div v-for="(ex, idx) in formattedExamples" :key="idx" class="example-sentence">
-              <div class="ex-chinese">{{ ex.hanzi }}</div>
-                <div class="ex-pinyin">{{ $toAccentedPinyin(ex.pinyin).charAt(0).toUpperCase() + $toAccentedPinyin(ex.pinyin).slice(1) }}</div>
-              <div class="ex-english">{{ ex.english }}</div>
-            </div>
-          </div>
-          <div class="examples-nav">
-            <div
-              class="concept-toggle examples-nav-btn"
-              :class="{ disabled: examplesLoading || examplesPage === 1 }"
-              @click="examplesPage === 1 || examplesLoading ? null : prevExamples()"
-            >
-              ← Prev
-            </div>
-            <div class="examples-page-indicator">Page {{ examplesPage }}</div>
-            <div
-              class="concept-toggle examples-nav-btn"
-              :class="{ disabled: examplesLoading || examplesIsLast }"
-              @click="examplesIsLast || examplesLoading ? null : nextExamples()"
-            >
-              Next →
-            </div>
-          </div>
-        </div>
-
         <!-- Character breakdown section -->
-        <div class="breakdown-section" v-if="!showExamples && cardData.chars_breakdown">
-          <!-- <h3 class="char-breakdown" v-if="cardData.character && cardData.character.length > 1">Character Breakdown ↓</h3>
-        -->
-          <div class="tabs" v-if="cardData.character.length > 1" :style="{ fontFamily: tabFontFamily }">
-            <button
-              v-for="char in validChars"
-              :key="char"
-              :class="['tab-btn', { active: activeChar === char }]"
-              :style="{ fontFamily: tabFontFamily }"
-              @click="activeChar = char"
-            >
-              {{ char }}
-              <span v-if="activeChar === char" class="tab-open-word" @click.stop="openCharAsWord(char)">
-                >>
-              </span>
-            </button>
-          </div>
+        <div class="breakdown-section" v-if="cardData.chars_breakdown">
 
-          <div class="tab-content" v-if="activeCharData">
-            <div class="char-details">
-
-              <div class="detail-toggle-row">
-                <div
-                  class="concept-toggle detail-toggle"
-                  :class="{ active: activeDetailTab === 'dict', disabled: !hasDictSection }"
-                  @click="setDetailTab('dict')"
-                >def</div>
-                <div
-                  class="concept-toggle detail-toggle"
-                  :class="{ active: activeDetailTab === 'examples', disabled: !hasExamples }"
-                  @click="setDetailTab('examples')"
-                >words</div>
-                <div
-                  class="concept-toggle detail-toggle"
-                  :class="{ active: activeDetailTab === 'present', disabled: !hasPresentIn }"
-                  @click="setDetailTab('present')"
-                >comp</div>
-                <div
-                  class="concept-toggle detail-toggle"
-                  :class="{ active: activeDetailTab === 'decomp', disabled: !hasDecomposition }"
-                  @click="setDetailTab('decomp')"
-                >decomp</div>
-                <div
-                  class="concept-toggle detail-toggle"
-                  :class="{ active: activeDetailTab === 'strokes', disabled: !hasStrokes }"
-                  @click="setDetailTab('strokes')"
-                >strokes</div>
-                <div
-                  class="concept-toggle detail-toggle"
-                  :class="{ active: activeDetailTab === 'extra', disabled: !hasExtraInfo }"
-                  @click="setDetailTab('extra')"
-                >extra</div>
-              </div>
-
-              <div v-if="activeDetailTab === 'dict' && hasDictSection" class="freq-trad-anim">
-                <span class="medium-label">Definition:</span>
-                <div class="freq-trad">
-                  <div class="detail-group pinyin-meaning-group">
-                    <div class="pinyin-meaning-pairs">
-                      <div v-for="(pair, index) in mainPinyinMeaningPairs" :key="index" class="pinyin-meaning-pair">
-                        <div class="pm-pinyin-row">
-                          <div class="pm-pinyin" :class="getToneClass(pair.pinyin)" v-html="colorizePinyinForce($toAccentedPinyin(pair.pinyin))"></div>
-                          <button
-                            class="pinyin-audio-btn"
-                            :disabled="!!audioBusy[pair.pinyin] || !pair.pinyin"
-                            @click.stop="playSinglePinyin(pair.pinyin)"
-                            title="Play this pronunciation"
-                          >
-                            <font-awesome-icon :icon="faVolumeHigh" />
-                          </button>
-                        </div>
-                        <div class="pm-meaning">
-                          <div v-for="(meaning, mIdx) in splitMeaning(pair.english)" :key="mIdx">
-                            <span class="english-idx">{{ mIdx + 1 }}.</span>
-                            <span class="english-text">
-                              <template v-for="(tok, tIdx) in tokenizeHanziText(meaning)" :key="tIdx">
-                                <span v-if="tok.isHanzi" class="hanzi-link" @click.stop="openCharAsWord(tok.text)">{{ tok.text }}</span>
-                                <span v-else>{{ tok.text }}</span>
-                              </template>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div v-if="mainPinyinMeaningPairs.length === 0" class="no-pinyin-meaning">
-                        No definition data available
-                      </div>
-                    </div>
-                  </div>
-
-                  <!--<div v-if="activeChar !== activeCharData.traditional" class="detail-group">
-                    <span class="basic-label">Traditional: </span>
-                    <PreloadWrapper
-                      :character="activeCharData.traditional"
-                      :showBubbles="false"
-                      class="trad-simple hanzi-link"
-                    >
-                      {{ activeCharData.traditional }}
-                    </PreloadWrapper>
-                  </div>-->
-
-                  <div v-if="activeChar !== activeCharData.simplified" class="detail-group">
-                    <span class="basic-label">Simplified: </span>
-                    <PreloadWrapper
-                      :character="activeCharData.simplified"
-                      :showBubbles="false"
-                      class="trad-simple hanzi-link"
-                    >
-                      {{ activeCharData.simplified }}
-                    </PreloadWrapper>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="activeDetailTab === 'strokes' && hasStrokes" class="strokes-section">
-                <div class="medium-label">Strokes:</div>
-                <div class="hanzi-anim-wrap">
-                  <div class="hanzi-anim">
-                    <AnimatedHanzi
-                      ref="hanziAnim"
-                      :character="activeCharData.character"
-                      :strokes="activeCharData.strokes"
-                      :animatable="true"
-                      :drawThin="false"
-                      :animSpeed="0.1"
-                      @step-change="onStepChange"
-                    />
-                  </div>
-                  <div class="hanzi-anim-controls">
-                    <div class="anim-btn" @click="playStrokeAnimation">Play</div>
-                    <div class="anim-btn" @click="stepStroke">></div>
-                    <div class="stroke-counter">{{ strokeCounter }}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="activeDetailTab === 'examples' && hasExamples" class="medium-label">Words containing {{ activeChar }}:</div>
-              <ExpandableExamples
-                v-if="activeDetailTab === 'examples' && hasExamples"
-                :itemCount="activeCharData.example_words.length"
-                :thresholdForExpand="3"
-                ref="examplesComponent">
-                <template v-slot:afew="slotProps">
+          <!-- Multi-char: examples + strokes tabs -->
+          <template v-if="cardData.character.length > 1">
+            <div class="tab-content">
+              <div class="char-details">
+                <div class="detail-toggle-row">
                   <div
-                    class="example-words first-words"
-                    :class="{ 'collapsed-words': !slotProps.isExpanded }"
-                  >
-                    <ClickableRow
-                      v-for="(word, index) in activeCharData.example_words.slice(0, 3)"
-                      :key="index"
-                      :word="word"
-                      :class="{ therest: !slotProps.isExpanded }"
-                    >
-                      <template #default>
-                        <div class="example-chinese-pinyin">
-                          <span
-                            class="word-hanzi"
-                            v-html="colorizeHanzi(word, $toAccentedPinyin(activeCharData.pinyin[index]))"
-                          ></span>
-                          <span
-                            class="word-pinyin"
-                            v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index]))"
-                          ></span>
-                        </div>
-                        <span class="word-english">{{ activeCharData.english[index] }}</span>
-                      </template>
-                    </ClickableRow>
-                  </div>
-                </template>
-
-                <template v-slot:therest="slotProps">
-                  <div class="example-words rest-words">
-                    <ClickableRow
-                      v-for="(word, index) in activeCharData.example_words.slice(3)"
-                      :key="index + 3"
-                      :word="word"
-                      class="therest"
-                    >
-                      <template #default>
-                        <div class="example-chinese-pinyin">
-                          <span
-                            class="word-hanzi"
-                            v-html="colorizeHanzi(word, $toAccentedPinyin(activeCharData.pinyin[index + 3]))"
-                          ></span>
-                          <span
-                            class="word-pinyin"
-                            v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index + 3]))"
-                          ></span>
-                        </div>
-                        <span class="word-english">{{ activeCharData.english[index + 3] }}</span>
-                      </template>
-                    </ClickableRow>
-                  </div>
-                </template>
-              </ExpandableExamples>
-
-              <div v-if="activeDetailTab === 'present' && hasPresentIn" class="medium-label">{{ activeChar }} Present in:</div>
-              <div v-if="activeDetailTab === 'present' && hasPresentIn" class="present-in-section">
-                <div class="present-in-chars" style="display: flex; flex-wrap: wrap;">
-                  <PreloadWrapper
-                    v-for="char in limitedPresentInChars"
-                    :key="char"
-                    :character="char"
-                    :showBubbles="false"
-                    class="present-in-char hanzi-link"
-                  >
-                    {{ char }}
-                  </PreloadWrapper>
-                  <span
-                    v-if="hasMorePresentInChars"
-                    class="more-chars"
-                    @click="loadMorePresentInChars"
-                    :class="{ 'loading': isLoadingMoreChars }"
-                  >
-                    +
-                  </span>
+                    class="concept-toggle detail-toggle"
+                    :class="{ active: multiCharTab === 'examples', disabled: !hasTatoebaExamples }"
+                    @click="multiCharTab = 'examples'"
+                  >examples</div>
+                  <div
+                    class="concept-toggle detail-toggle"
+                    :class="{ active: multiCharTab === 'strokes', disabled: !hasMultiCharStrokes }"
+                    @click="multiCharTab = 'strokes'"
+                  >strokes</div>
                 </div>
-              </div>
 
-              <div v-if="activeDetailTab === 'decomp' && hasDecomposition">
-                  <div class="medium-label">Decomposition:</div>
+                <div v-if="multiCharTab === 'examples' && hasTatoebaExamples">
+                  <div class="examples-list" style="margin-top:0.5em">
+                    <div v-for="(ex, idx) in formattedExamples" :key="idx" class="example-sentence">
+                      <div class="ex-chinese">{{ ex.hanzi }}</div>
+                      <div class="ex-pinyin">{{ $toAccentedPinyin(ex.pinyin).charAt(0).toUpperCase() + $toAccentedPinyin(ex.pinyin).slice(1) }}</div>
+                      <div class="ex-english">{{ ex.english }}</div>
+                    </div>
                   </div>
-              <div v-if="activeDetailTab === 'decomp' && hasDecomposition">
-                <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].recursive && Object.keys(decompositionData[activeChar].recursive).length > 0">
-                  <div class="decomp-section">
-                    <RecursiveDecomposition :data="{ [activeChar]: decompositionData[activeChar].recursive }" />
+                  <div class="examples-nav">
+                    <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesPage === 1 }" @click="examplesPage === 1 || examplesLoading ? null : prevExamples()">← Prev</div>
+                    <div class="examples-page-indicator">Page {{ examplesPage }}</div>
+                    <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesIsLast }" @click="examplesIsLast || examplesLoading ? null : nextExamples()">Next →</div>
                   </div>
                 </div>
-              </div>
 
-
-
-              <div v-if="activeDetailTab === 'extra' && hasExtraInfo" class="extra-info-section">
-                <div class="medium-label">Extra:</div>
-                <div class="extra-info-details">
-                  <div v-if="activeCharData.radical" class="extra-info-item">
-                    <span class="basic-label">Radical:</span> {{ activeCharData.radical }}
-                  </div>
-                  <div v-if="activeCharData.rank" class="extra-info-item">
-                    <span class="basic-label">Frequency Rank:</span> {{ activeCharData.rank }}
-                  </div>
-                  <div v-if="activeCharData.similars && !(typeof activeCharData.similars === 'object' && Object.keys(activeCharData.similars).length === 0)" class="extra-info-item">
-                    <span class="basic-label">Similars:</span>
-                    <span class="similars-list">
-                      <span
-                        v-for="(simChar, sIdx) in similarsChars"
-                        :key="sIdx"
-                        class="hanzi-link similar-link"
-                        @click.stop="openCharAsWord(simChar)"
-                      >
-                        {{ simChar }}
-                      </span>
-                    </span>
-                  </div>
-                  <div v-if="activeCharData.grade_level" class="extra-info-item">
-                    <span class="basic-label">Grade Level:</span> {{ activeCharData.grade_level }}
-                  </div>
-                  <div class="extra-info-item">
-                    <span class="basic-label">Alternate fonts:</span>
-                    <div class="extra-fonts">
-                      <div
-                        v-for="font in alternateFontOptions"
-                        :key="font.key"
-                        class="extra-font-item"
-                        :class="font.className"
-                      >
-                        {{ font.char }}
-                      </div>
+                <div v-if="multiCharTab === 'strokes'" class="strokes-section">
+                  <div class="medium-label">Strokes ({{ validChars[multiCharStrokeIndex] }})</div>
+                  <div v-if="multiCharStrokeData && multiCharStrokeData.strokes" class="hanzi-anim-wrap">
+                    <button class="stroke-char-btn stroke-char-left" :disabled="multiCharStrokeIndex === 0" @click="multiCharStrokeIndex--">«</button>
+                    <div class="hanzi-anim">
+                      <AnimatedHanzi
+                        ref="hanziAnim"
+                        :character="multiCharStrokeData.character"
+                        :strokes="multiCharStrokeData.strokes"
+                        :animatable="true"
+                        :drawThin="false"
+                        :animSpeed="0.1"
+                        @step-change="onStepChange"
+                      />
+                    </div>
+                    <button class="stroke-char-btn stroke-char-right" :disabled="multiCharStrokeIndex >= validChars.length - 1" @click="multiCharStrokeIndex++">»</button>
+                    <div class="hanzi-anim-controls">
+                      <div class="anim-btn" @click="playStrokeAnimation">Play</div>
+                      <div class="anim-btn" @click="stepStroke">></div>
+                      <div class="stroke-counter">{{ strokeCounter }}</div>
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
-          </div>
+          </template>
+
+          <!-- Single-char: detail tabs -->
+          <template v-else>
+            <div class="tab-content" v-if="activeCharData">
+              <div class="char-details">
+
+                <div class="detail-toggle-row">
+                  <div
+                    class="concept-toggle detail-toggle"
+                    :class="{ active: activeDetailTab === 'tatoeba', disabled: !hasTatoebaExamples }"
+                    @click="setDetailTab('tatoeba')"
+                  >examples</div>
+                  <div
+                    class="concept-toggle detail-toggle"
+                    :class="{ active: activeDetailTab === 'examples', disabled: !hasExamples }"
+                    @click="setDetailTab('examples')"
+                  >words</div>
+                  <div
+                    class="concept-toggle detail-toggle"
+                    :class="{ active: activeDetailTab === 'present', disabled: !hasPresentIn }"
+                    @click="setDetailTab('present')"
+                  >comp</div>
+                  <div
+                    class="concept-toggle detail-toggle"
+                    :class="{ active: activeDetailTab === 'decomp', disabled: !hasDecomposition }"
+                    @click="setDetailTab('decomp')"
+                  >decomp</div>
+                  <div
+                    class="concept-toggle detail-toggle"
+                    :class="{ active: activeDetailTab === 'strokes', disabled: !hasStrokes }"
+                    @click="setDetailTab('strokes')"
+                  >strokes</div>
+                  <div
+                    class="concept-toggle detail-toggle"
+                    :class="{ active: activeDetailTab === 'extra', disabled: !hasExtraInfo }"
+                    @click="setDetailTab('extra')"
+                  >extra</div>
+                </div>
+
+                <!-- Tatoeba examples tab -->
+                <div v-if="activeDetailTab === 'tatoeba' && hasTatoebaExamples">
+                  <div class="examples-list" style="margin-top:0.5em">
+                    <div v-for="(ex, idx) in formattedExamples" :key="idx" class="example-sentence">
+                      <div class="ex-chinese">{{ ex.hanzi }}</div>
+                      <div class="ex-pinyin">{{ $toAccentedPinyin(ex.pinyin).charAt(0).toUpperCase() + $toAccentedPinyin(ex.pinyin).slice(1) }}</div>
+                      <div class="ex-english">{{ ex.english }}</div>
+                    </div>
+                  </div>
+                  <div class="examples-nav">
+                    <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesPage === 1 }" @click="examplesPage === 1 || examplesLoading ? null : prevExamples()">← Prev</div>
+                    <div class="examples-page-indicator">Page {{ examplesPage }}</div>
+                    <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesIsLast }" @click="examplesIsLast || examplesLoading ? null : nextExamples()">Next →</div>
+                  </div>
+                </div>
+
+                <div v-if="activeDetailTab === 'strokes' && hasStrokes" class="strokes-section">
+                  <div class="medium-label">Strokes:</div>
+                  <div class="hanzi-anim-wrap">
+                    <div class="hanzi-anim">
+                      <AnimatedHanzi
+                        ref="hanziAnim"
+                        :character="activeCharData.character"
+                        :strokes="activeCharData.strokes"
+                        :animatable="true"
+                        :drawThin="false"
+                        :animSpeed="0.1"
+                        @step-change="onStepChange"
+                      />
+                    </div>
+                    <div class="hanzi-anim-controls">
+                      <div class="anim-btn" @click="playStrokeAnimation">Play</div>
+                      <div class="anim-btn" @click="stepStroke">></div>
+                      <div class="stroke-counter">{{ strokeCounter }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="activeDetailTab === 'examples' && hasExamples" class="medium-label">Words containing {{ activeChar }}:</div>
+                <ExpandableExamples
+                  v-if="activeDetailTab === 'examples' && hasExamples"
+                  :itemCount="activeCharData.example_words.length"
+                  :thresholdForExpand="3"
+                  ref="examplesComponent">
+                  <template v-slot:afew="slotProps">
+                    <div class="example-words first-words" :class="{ 'collapsed-words': !slotProps.isExpanded }">
+                      <ClickableRow
+                        v-for="(word, index) in activeCharData.example_words.slice(0, 3)"
+                        :key="index"
+                        :word="word"
+                        :class="{ therest: !slotProps.isExpanded }"
+                      >
+                        <template #default>
+                          <div class="example-chinese-pinyin">
+                            <span class="word-hanzi" v-html="colorizeHanzi(word, $toAccentedPinyin(activeCharData.pinyin[index]))"></span>
+                            <span class="word-pinyin" v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index]))"></span>
+                          </div>
+                          <span class="word-english">{{ activeCharData.english[index] }}</span>
+                        </template>
+                      </ClickableRow>
+                    </div>
+                  </template>
+                  <template v-slot:therest="slotProps">
+                    <div class="example-words rest-words">
+                      <ClickableRow v-for="(word, index) in activeCharData.example_words.slice(3)" :key="index + 3" :word="word" class="therest">
+                        <template #default>
+                          <div class="example-chinese-pinyin">
+                            <span class="word-hanzi" v-html="colorizeHanzi(word, $toAccentedPinyin(activeCharData.pinyin[index + 3]))"></span>
+                            <span class="word-pinyin" v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index + 3]))"></span>
+                          </div>
+                          <span class="word-english">{{ activeCharData.english[index + 3] }}</span>
+                        </template>
+                      </ClickableRow>
+                    </div>
+                  </template>
+                </ExpandableExamples>
+
+                <div v-if="activeDetailTab === 'present' && hasPresentIn" class="medium-label">{{ activeChar }} Present in:</div>
+                <div v-if="activeDetailTab === 'present' && hasPresentIn" class="present-in-section">
+                  <div class="present-in-chars" style="display: flex; flex-wrap: wrap;">
+                    <PreloadWrapper v-for="char in limitedPresentInChars" :key="char" :character="char" :showBubbles="false" class="present-in-char hanzi-link">{{ char }}</PreloadWrapper>
+                    <span v-if="hasMorePresentInChars" class="more-chars" @click="loadMorePresentInChars" :class="{ 'loading': isLoadingMoreChars }">+</span>
+                  </div>
+                </div>
+
+                <div v-if="activeDetailTab === 'decomp' && hasDecomposition">
+                  <div class="medium-label">Decomposition:</div>
+                </div>
+                <div v-if="activeDetailTab === 'decomp' && hasDecomposition">
+                  <div v-if="activeChar && decompositionData && decompositionData[activeChar] && decompositionData[activeChar].recursive && Object.keys(decompositionData[activeChar].recursive).length > 0">
+                    <div class="decomp-section">
+                      <RecursiveDecomposition :data="{ [activeChar]: decompositionData[activeChar].recursive }" />
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="activeDetailTab === 'extra' && hasExtraInfo" class="extra-info-section">
+                  <div class="medium-label">Extra:</div>
+                  <div class="extra-info-details">
+                    <div v-if="activeCharData.radical" class="extra-info-item"><span class="basic-label">Radical:</span> {{ activeCharData.radical }}</div>
+                    <div v-if="activeCharData.rank" class="extra-info-item"><span class="basic-label">Frequency Rank:</span> {{ activeCharData.rank }}</div>
+                    <div v-if="activeCharData.similars && !(typeof activeCharData.similars === 'object' && Object.keys(activeCharData.similars).length === 0)" class="extra-info-item">
+                      <span class="basic-label">Similars:</span>
+                      <span class="similars-list"><span v-for="(simChar, sIdx) in similarsChars" :key="sIdx" class="hanzi-link similar-link" @click.stop="openCharAsWord(simChar)">{{ simChar }}</span></span>
+                    </div>
+                    <div v-if="activeCharData.grade_level" class="extra-info-item"><span class="basic-label">Grade Level:</span> {{ activeCharData.grade_level }}</div>
+                    <div class="extra-info-item">
+                      <span class="basic-label">Alternate fonts:</span>
+                      <div class="extra-fonts"><div v-for="font in alternateFontOptions" :key="font.key" class="extra-font-item" :class="font.className">{{ font.char }}</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
         </div>
 
       <!-- Custom definition edit modal -->
@@ -623,7 +532,6 @@ export default {
       notificationType: 'success',
       showRelatedConcepts: false,
       showOppositeConcepts: false,
-      showExamples: false,
       showCreateListModal: false,
       newListName: '',
       presentInChunkIndex: 0,  // Track the current chunk index
@@ -660,7 +568,9 @@ export default {
       // Local font cycling state for main word
       fontOrder: ['kaiti', 'noto-sans', 'noto-serif'],
       fontCycleIndex: 0,
-      activeDetailTab: 'dict',
+      activeDetailTab: 'tatoeba',
+      multiCharTab: 'examples',
+      multiCharStrokeIndex: 0,
       mainDefIndex: 0,
       strokeCounter: '0/0',
       audioBusy: {}
@@ -784,8 +694,15 @@ export default {
     hasDictSection() {
       return !!this.activeCharData;
     },
+    hasTatoebaExamples() {
+      return !!(this.cardData && Array.isArray(this.cardData.examples) && this.cardData.examples.length);
+    },
     hasStrokes() {
       const s = this.activeCharData && this.activeCharData.strokes;
+      return !!(s && s.medians && s.strokes);
+    },
+    hasMultiCharStrokes() {
+      const s = this.firstCharData && this.firstCharData.strokes;
       return !!(s && s.medians && s.strokes);
     },
     hasExamples() {
@@ -948,6 +865,15 @@ export default {
         main_word_english: breakdown.english?.filter((_, index) => shortindices.includes(index)) || [],
       } : null;
     },
+    firstCharData() {
+      if (!this.cardData || !this.cardData.chars_breakdown || !this.validChars[0]) return null;
+      return this.cardData.chars_breakdown[this.validChars[0]] || null;
+    },
+    multiCharStrokeData() {
+      const idx = this.multiCharStrokeIndex;
+      if (!this.cardData || !this.cardData.chars_breakdown || !this.validChars[idx]) return null;
+      return this.cardData.chars_breakdown[this.validChars[idx]] || null;
+    },
     mainPinyinMeaningPairs() {
       const data = this.activeCharData;
       if (!data) return [];
@@ -1045,7 +971,8 @@ export default {
       handler(newData) {
         if (newData && this.validChars.length > 0) {
           this.activeChar = this.validChars[0];
-          this.activeDetailTab = 'dict';
+          this.activeDetailTab = 'tatoeba';
+          this.multiCharStrokeIndex = 0;
           this.mainDefIndex = 0;
 
           try {
@@ -1112,13 +1039,13 @@ export default {
             this.$refs.examplesComponent.resetExpandedState();
           }
           if (this.activeDetailTab === 'strokes' && !this.hasStrokes) {
-            this.activeDetailTab = 'dict';
+            this.activeDetailTab = 'tatoeba';
           } else if (this.activeDetailTab === 'examples' && !this.hasExamples) {
-            this.activeDetailTab = 'dict';
+            this.activeDetailTab = 'tatoeba';
           } else if (this.activeDetailTab === 'present' && !this.hasPresentIn) {
-            this.activeDetailTab = 'dict';
+            this.activeDetailTab = 'tatoeba';
           } else if (this.activeDetailTab === 'decomp' && !this.hasDecomposition) {
-            this.activeDetailTab = 'dict';
+            this.activeDetailTab = 'tatoeba';
           }
         }
       }
@@ -1315,10 +1242,11 @@ export default {
       this.mainDefIndex = next;
     },
     setDetailTab(tab) {
-      const allowed = ['dict', 'strokes', 'examples', 'present', 'decomp', 'extra'];
+      const allowed = ['tatoeba', 'strokes', 'examples', 'present', 'decomp', 'extra'];
       if (!allowed.includes(tab)) return;
       if (tab === 'strokes' && !this.hasStrokes) return;
       if (tab === 'examples' && !this.hasExamples) return;
+      if (tab === 'tatoeba' && !this.hasTatoebaExamples) return;
       if (tab === 'present' && !this.hasPresentIn) return;
       if (tab === 'decomp' && !this.hasDecomposition) return;
       if (tab === 'extra' && !this.hasExtraInfo) return;
@@ -1788,23 +1716,9 @@ export default {
       if (type === 'related') {
         this.showRelatedConcepts = !this.showRelatedConcepts;
         this.showOppositeConcepts = false;
-        this.showExamples = false;
       } else if (type === 'opposite') {
         this.showOppositeConcepts = !this.showOppositeConcepts;
         this.showRelatedConcepts = false;
-        this.showExamples = false;
-      }
-    },
-    toggleExamples() {
-      this.showExamples = !this.showExamples;
-      if (this.showExamples) {
-        this.showRelatedConcepts = false;
-        this.showOppositeConcepts = false;
-        // reset pagination when opening examples
-        this.examplesPage = 1;
-        this.examplesIsLast = false;
-        this.examplesLoading = false;
-        this.fetchedExamples = {};
       }
     },
     async loadExamplesPage(page) {
@@ -2738,6 +2652,7 @@ export default {
 }
 
 .hanzi-anim-wrap {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2771,6 +2686,36 @@ export default {
   box-sizing: border-box;
 }
 
+
+.stroke-char-btn {
+  background: none;
+  border: 1px solid color-mix(in oklab, var(--fg) 18%, var(--bg) 100%);
+  color: var(--fg);
+  padding: 0.2em 0.5em;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1.1em;
+  border-radius: 3px;
+}
+
+.stroke-char-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.stroke-char-left {
+  position: absolute;
+  top: 0.3em;
+  left: 0.3em;
+  z-index: 2;
+}
+
+.stroke-char-right {
+  position: absolute;
+  top: 0.3em;
+  right: 0.3em;
+  z-index: 2;
+}
 
 .hanzi-anim-controls {
   display: flex;
