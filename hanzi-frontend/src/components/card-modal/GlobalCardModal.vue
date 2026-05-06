@@ -2633,6 +2633,12 @@ export default {
   padding: 0.25rem 0.5rem;
   white-space: nowrap;
   flex-shrink: 0;
+
+  border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+  box-shadow: inset 0 1px 0 var(--highlight);
+}
+
+.detail-toggle.active {
 }
 
 .detail-toggle.disabled {

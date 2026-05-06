@@ -1194,6 +1194,10 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
     user-select: none;
     /* box-shadow: 0 2px 6px color-mix(in oklab, var(--fg) 15%, var(--bg) 50%); */
     border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+
+
+    border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+    box-shadow: inset 0 1px 0 var(--highlight);
   }
 
 
@@ -1201,11 +1205,18 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
     border-color: color-mix(in oklab, var(--fg) 8%, var(--bg) 75%);
   }
 
+  .nav-button:hover, .action-button:hover {
+    background-color: color-mix(in srgb, var(--fg) 10%, var(--bg) 100%);
+  }
+
   
   .data-button {
     border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
     outline: none;
     cursor: pointer;
+
+    border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+    box-shadow: inset 0 1px 0 var(--highlight);
   }
   
   .router-button {
@@ -1293,6 +1304,9 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
     cursor: pointer;
     font-family: inherit;
     border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+
+    border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+    box-shadow: inset 0 1px 0 var(--highlight);
   }
 
   .action-button:active {
@@ -1326,7 +1340,6 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
     color: var(--fg);
     cursor: pointer;
     font-family: inherit;
-    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
   }
 
   /* Modal styles */

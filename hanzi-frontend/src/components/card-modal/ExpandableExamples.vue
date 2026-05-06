@@ -112,6 +112,8 @@ export default {
 
   corner-shape: var(--superellipse-2-5);
   border-radius: var(--superellipse-radius);
+  border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+  box-shadow: inset 0 1px 0 var(--highlight);
 }
 
 body [data-theme="dark"] .expand-button {

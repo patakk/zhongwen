@@ -83,8 +83,13 @@ export default {
   opacity: 0.8;
 }
 .tool-button {
-  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
   background: color-mix(in oklab, var(--fg) 8%, var(--bg) 100%);
+  color: var(--fg);
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+}
+.tool-button:hover {
+  background: color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
   color: var(--fg);
   padding: 0.6rem 1rem;
   cursor: pointer;

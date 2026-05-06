@@ -207,6 +207,7 @@ export default {
   text-transform: uppercase;
   /*text-decoration: underline;*/
   background-color: color-mix(in oklab, var(--primary-color) 25%, var(--bg) 15%);
+
   opacity: 1;
 }
 
