@@ -396,6 +396,9 @@ button:hover {
   left: 0;
   top: 0;
 
+  border: none;
+  box-shadow: none;
+
   
 }
 

@@ -1031,7 +1031,6 @@ export default {
   justify-content: center;
   padding: 0 0.65rem;
   height: 2.2rem;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 5%);
   color: color-mix(in srgb, var(--fg) 35%, var(--bg) 85%);
   cursor: pointer;
@@ -1039,7 +1038,6 @@ export default {
 
 .stroke-toggle[aria-pressed="true"],
 .ocr-toggle[aria-pressed="true"] {
-  border-color: color-mix(in oklab, var(--fg) 32%, var(--bg) 60%);
   color: var(--fg);
 }
 
@@ -1105,7 +1103,6 @@ export default {
 
 .stroke-buttons button {
   padding: 0.35rem 0.75rem;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
   background: color-mix(in oklab, var(--bg) 92%, var(--fg) 8%);
   color: var(--fg);
   cursor: pointer;

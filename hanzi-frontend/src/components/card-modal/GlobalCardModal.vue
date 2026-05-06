@@ -2026,6 +2026,10 @@ export default {
   touch-action: pan-y; /* allow vertical scroll by default; JS prevents during horizontal swipe */
   border: 2px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 20%);
 
+
+  border: 1px solid color-mix(in oklab, var(--fg) 9%, transparent 50%);
+  box-shadow: inset -0.0px 1.0px 0 var(--highlight);
+
   corner-shape: var(--superellipse-4);
   border-radius: var(--superellipse-radius, 100px);
 }
@@ -2936,6 +2940,10 @@ export default {
   border: none;
   color: var(--fg);
   cursor: pointer;
+
+
+  border: none;
+  box-shadow: none;
 }
 
 .wordlist-btn:hover {
@@ -2954,6 +2962,9 @@ export default {
   color: var(--fg);
   cursor: pointer;
   z-index: 25;
+
+  border: none;
+  box-shadow: none;
 }
 
 
