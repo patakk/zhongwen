@@ -226,7 +226,7 @@
                       <div class="ex-english">{{ ex.english }}</div>
                     </div>
                   </div>
-                  <div class="examples-nav">
+                  <div class="examples-nav" v-if="!(examplesIsLast && examplesPage === 1)">
                     <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesPage === 1 }" @click="examplesPage === 1 || examplesLoading ? null : prevExamples()">← Prev</div>
                     <div class="examples-page-indicator">Page {{ examplesPage }}</div>
                     <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesIsLast }" @click="examplesIsLast || examplesLoading ? null : nextExamples()">Next →</div>
@@ -307,7 +307,7 @@
                       <div class="ex-english">{{ ex.english }}</div>
                     </div>
                   </div>
-                  <div class="examples-nav">
+                  <div class="examples-nav" v-if="!(examplesIsLast && examplesPage === 1)">
                     <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesPage === 1 }" @click="examplesPage === 1 || examplesLoading ? null : prevExamples()">← Prev</div>
                     <div class="examples-page-indicator">Page {{ examplesPage }}</div>
                     <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesIsLast }" @click="examplesIsLast || examplesLoading ? null : nextExamples()">Next →</div>
@@ -827,9 +827,6 @@ export default {
     formattedExamples() {
       if (!this.cardData) return [];
       const pageData = this.fetchedExamples[this.examplesPage];
-      const pList = this.cardData.pinyin || [];
-      // Use cardData.examples for page 1 unless we've fetched examples
-      // for a specific pronunciation (multi-pron words)
       const hasFetched = this.fetchedExamples[1] !== undefined;
       const useCardDefault = this.examplesPage === 1 && !hasFetched;
       const examples = Array.isArray(pageData)
@@ -989,25 +986,15 @@ export default {
           this.activeDetailTab = this.hasTatoebaExamples ? 'tatoeba' : 'strokes';
           this.multiCharStrokeIndex = 0;
           this.examplesPage = 1;
-          this.examplesIsLast = false;
+          this.examplesIsLast = !!newData.is_last;
           this.fetchedExamples = {};
 
-          this.$nextTick(() => {
-            const prefPin = this.displayOverrides && this.displayOverrides.preferredPinyin;
-            const prefEng = this.displayOverrides && this.displayOverrides.preferredEnglish;
-            const prefIdx = this.displayOverrides && Number.isInteger(this.displayOverrides.preferredIndex)
-              ? this.displayOverrides.preferredIndex
-              : null;
-            if (prefPin || prefEng || prefIdx !== null) {
-              const idx = this.findPreferredDefIndex(newData, prefPin, prefEng, prefIdx);
-              if (idx >= 0) this.mainDefIndex = idx;
-            }
-          });
-          // Always keep definition order as provided; we only move the index
-
-
-          this.showRelatedConcepts = false;
-          this.showOppositeConcepts = false;
+          const overrides = this.displayOverrides;
+          if (overrides) {
+            const prefIdx = Number.isInteger(overrides.preferredIndex) ? overrides.preferredIndex : null;
+            const idx = this.findPreferredDefIndex(newData, overrides.preferredPinyin, overrides.preferredEnglish, prefIdx);
+            if (idx >= 0) this.mainDefIndex = idx;
+          }
 
           if (this.$refs.examplesComponent) {
             this.$refs.examplesComponent.resetExpandedState();
@@ -1017,6 +1004,7 @@ export default {
     },
 
     displayOverrides: {
+      immediate: true,
       handler(val) {
         if (!this.cardData) return;
         const prefPin = val && val.preferredPinyin;
@@ -1227,7 +1215,7 @@ export default {
         .map(s => s.trim().toLowerCase())
         .filter(Boolean);
     },
-    findPreferredDefIndex(cardData, prefPin, prefEng, prefIdx = null) {
+    findPreferredDefIndex(cardData, _prefPin, prefEng, prefIdx = null) {
       const pins = Array.isArray(cardData?.pinyin) ? cardData.pinyin : [];
       const engs = Array.isArray(cardData?.english) ? cardData.english : [];
       const maxLen = Math.max(pins.length, engs.length);
@@ -1752,9 +1740,8 @@ export default {
       if (!this.cardData || !this.cardData.character) return;
       this.examplesLoading = true;
       try {
-        // If word has multiple pronunciations, include the current pinyin
         const pList = this.cardData.pinyin || [];
-        const body = { character: this.cardData.character, page };
+        const body = { character: this.cardData.character, page: page - 1 };
         if (pList.length > 1) {
           const idx = this.mainDefIndex % pList.length;
           body.pinyin = pList[idx] || '';
@@ -1768,9 +1755,9 @@ export default {
         if (!res.ok) throw new Error('Failed to load examples page');
         const data = await res.json();
         const examples = Array.isArray(data.examples) ? data.examples : [];
-        this.fetchedExamples = { ...this.fetchedExamples, [page]: examples };
-        this.examplesIsLast = Boolean(data.is_last);
         this.examplesPage = page;
+        this.examplesIsLast = Boolean(data.is_last);
+        this.fetchedExamples = { ...this.fetchedExamples, [page]: examples };
       } catch (e) {
         console.error('Error loading examples page:', e);
       } finally {
@@ -2028,10 +2015,16 @@ export default {
 
 
   border: 1px solid color-mix(in oklab, var(--fg) 9%, transparent 50%);
-  box-shadow: inset -0.0px 1.0px 0 var(--highlight), 0 5px 35px color-mix(in oklab, var(--fg) 10%, var(--bg) 90%);
+  box-shadow: inset -0.0px 1.0px 0 var(--highlight), 0 0 55px var(--card-shadow-color);
 
   corner-shape: var(--superellipse-4);
   border-radius: var(--superellipse-radius, 100px);
+}
+
+@media (max-width: 600px) {
+  .modal {
+    box-shadow: none;
+  }
 }
 
 /* (removed duplicate absolute overlay; using sticky version below) */
@@ -2068,7 +2061,6 @@ export default {
 }
 
 .def-btn {
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 80%);
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 10%);
   color: var(--fg);
   cursor: pointer;
@@ -2448,6 +2440,20 @@ export default {
   padding: 0.5rem 0;
 }
 
+@media screen and (max-width: 784px) {
+  .examples-nav {
+    padding: 0.5em 0 3em 0;
+  }
+}
+
+.examples-nav-btn {
+  padding: .5em;
+
+  border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+  box-shadow: inset 0 1.0px 0 var(--highlight);
+}
+
+
 .examples-nav-btn.disabled {
   opacity: 0.5;
   pointer-events: none;
@@ -2768,7 +2774,9 @@ export default {
   margin-top: 0.5rem;
 }
 .anim-btn {
-  border: 1px solid color-mix(in oklab, var(--fg) 25%, var(--bg) 90%);
+  border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+  box-shadow: inset 0 1.0px 0 var(--highlight);
+
   background: color-mix(in oklab, var(--fg) 6%, var(--bg) 100%);
   color: var(--fg);
   padding: 0.45rem 0.75rem;
@@ -2795,6 +2803,8 @@ export default {
   border-radius: var(--border-radius, 4px);
   cursor: default;
   font-family: inherit;
+  width: 3em;
+  text-align: center;
 
   corner-shape: var(--superellipse-2-5);
   border-radius: var(--superellipse-radius, 100px);
@@ -2833,6 +2843,8 @@ export default {
 }
 
 .close-btn {
+
+  corner-shape: round !important;
 }
 
 .close-btn:hover {
@@ -3120,6 +3132,11 @@ export default {
   background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
   background-color: var(--orange);
   color: var(--bg);
+
+  
+  border: 1px solid color-mix(in oklab, var(--fg) 15%, transparent 30%);
+  box-shadow: inset 0 1.0px 0 var(--highlight);
+  
 }
 
 [data-theme="dark"] .concept-toggle.active {

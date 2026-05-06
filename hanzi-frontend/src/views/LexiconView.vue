@@ -1328,7 +1328,7 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
   .add-word-input {
     flex: 1;
     padding: 0.5rem;
-    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
+    border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 50%);
     background: var(--bg);
     color: var(--fg);
     font-family: inherit;

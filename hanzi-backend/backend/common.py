@@ -30,7 +30,7 @@ WORDS_CACHE = json.load(open(os.path.join(DATA_DIR, "words_cache.json")))
 DECOMPOSE_CACHE = json.load(open(os.path.join(DATA_DIR, "decompose_cache.json")))
 TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_data_simplified.json")))
 TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_ids_by_simplified_word.json")))
-DEEPSEEK_INDICES = json.load(open(os.path.join(DATA_DIR, "deepseek_indices.json")))
+DEEPSEEK_INDICES = json.load(open(os.path.join(DATA_DIR, "deepseek_indices_max20.json")))
 with open(os.path.join(DATA_DIR, "deepseek_data.txt"), "r", encoding="utf-8") as f:
     DEEPSEEK_DATA = [line.rstrip('\n') for line in f]
 AUDIO_MAPPINGS = json.load(open(os.path.join(DATA_DIR, "audio_mappings.json")))
@@ -134,6 +134,8 @@ def get_deepseek_examples(character, pinyin=None, page=0):
 
     # Only use the bare character key if no pinyin was provided
     indices = DEEPSEEK_INDICES.get(lookup_key, [])
+    if pinyin:
+        indices = indices + [idx for idx in DEEPSEEK_INDICES.get(character, []) if idx not in indices]
     examples = []
     is_last = False
     if not indices:

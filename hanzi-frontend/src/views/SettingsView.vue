@@ -1036,7 +1036,6 @@ h2 {
 .btn {
   background: var(--bg-alt);
   border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
-  border-radius: 2px;
   padding: .4rem 1rem;
   font-weight: bold;
   color: var(--fg);
@@ -1320,7 +1319,8 @@ h3 {
   color: var(--fg);
   /* transition: all 0.2s; */
   
-	border: 2px solid var(--black) !important;
+  border: none;
+  box-shadow: none;
 	background: var(--bg) !important;
 	opacity: .35;
   border: var(--thin-border-width) solid var(--black) !important;
@@ -1329,14 +1329,13 @@ h3 {
 .font-button {
   padding: 0.2rem 0.4rem;
   background: none;
-  border-radius: 0px;
   cursor: pointer;
   color: var(--fg);
   /* transition: all 0.2s; */
-  border: 2px solid color-mix(in oklab, var(--fg) 12%, var(--bg) 100%);
   font-size: 1.25em;
+  box-shadow: none;
 	opacity: .35;
-  border: none;
+  border: 1px solid transparent;
   font-weight: var(--hanzi-weight) !important;
 }
 
@@ -1345,13 +1344,17 @@ h3 {
   color: var(--fg);
 	opacity: 1;
   font-size: 1.25em;
-  border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
+  border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+  box-shadow: inset 0 1.0px 0 var(--highlight);
+
 }
 
 .theme-button.active {
-  border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
   color: var(--fg);
 	opacity: 1;
+  border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+  box-shadow: inset 0 1.0px 0 var(--highlight);
+
 }
 
 .theme-button:hover:not(.active) {
@@ -1384,11 +1387,17 @@ h3 {
   justify-content: center;
   justify-content: space-between;
   text-align: left;
-  border: none;
+  border: 1px solid transparent;
+  border-radius: var(--superellipse-radius);
+  corner-shape: var(--superellipse-2);
+  box-shadow: none;
 }
 
 .tone-choice.active {
-  border-color: color-mix(in oklab, var(--fg) 40%, var(--bg) 100%);
+  
+  border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+  box-shadow: inset 0 1.0px 0 var(--highlight);
+
   opacity: 1;
 }
 
@@ -1448,7 +1457,8 @@ h3 {
   border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
   background: var(--bg);
   color: var(--fg);
-  border-radius: 6px;
+  border-radius: var(--superellipse-radius);
+  corner-shape: var(--superellipse-2-5);
   font-size: 1em;
   font-variant-numeric: tabular-nums;
 }
@@ -1466,10 +1476,8 @@ h3 {
 
 .card-display-btn {
   padding: 0.45em 0.9em;
-  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
   background: var(--bg);
   color: var(--fg);
-  border-radius: 6px;
   font-size: 0.95em;
   cursor: pointer;
   opacity: 0.45;

@@ -32,10 +32,12 @@
     padding: .4rem 1.2rem;
     background: #e73c3c;
     color: #fff;
-    border: none;
     cursor: pointer;
     font-size: 1em;
     transition: background .15s;
+    
+    border: 1px solid color-mix(in oklab, var(--fg) 15%, transparent 50%);
+    box-shadow: inset 0 1.0px 0 var(--highlight);
   }
   .logout-btn:disabled {
     background: #aaa;
