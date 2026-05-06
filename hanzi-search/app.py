@@ -74,6 +74,7 @@ def gather_hanzi_results(query, dict_client, include_other_examples=True):
         definition_results = dict_client.definition_lookup(simplified_query)
     except KeyError:
         definition_results = []
+
     for idx, d in enumerate(definition_results):
         results.append({
             'hanzi': choose_hanzi(d),
@@ -211,13 +212,19 @@ def group_results(results, query, only_hanzi, segments=None):
 
     def add_display(groups_list):
         disp = 0
+        def _is_surname(e):
+            it = e.get('item') or {}
+            p = it.get('pinyin', '')
+            eng = it.get('english', '')
+            return bool(p and p[0].isupper()) or 'surname' in eng.lower()
         for g in groups_list:
             label = g.get('label', '')
             items_sorted = sorted(
                 g.get('items', []),
                 key=lambda e: (
                     0 if (e.get('item') or {}).get('hanzi', '') == label else 1,
-                    len((e.get('item') or {}).get('hanzi', ''))
+                    len((e.get('item') or {}).get('hanzi', '')),
+                    1 if _is_surname(e) else 0
                 )
             )
             g['items'] = items_sorted

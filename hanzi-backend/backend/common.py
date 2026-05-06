@@ -30,6 +30,9 @@ WORDS_CACHE = json.load(open(os.path.join(DATA_DIR, "words_cache.json")))
 DECOMPOSE_CACHE = json.load(open(os.path.join(DATA_DIR, "decompose_cache.json")))
 TATOEBA_DATA = json.load(open(os.path.join(DATA_DIR, "tatoeba_data_simplified.json")))
 TATOEBA_MAP = json.load(open(os.path.join(DATA_DIR, "tatoeba_ids_by_simplified_word.json")))
+DEEPSEEK_INDICES = json.load(open(os.path.join(DATA_DIR, "deepseek_indices.json")))
+with open(os.path.join(DATA_DIR, "deepseek_data.txt"), "r", encoding="utf-8") as f:
+    DEEPSEEK_DATA = [line.rstrip('\n') for line in f]
 AUDIO_MAPPINGS = json.load(open(os.path.join(DATA_DIR, "audio_mappings.json")))
 STROKE_COUNT = json.load(open(os.path.join(DATA_DIR, "stroke_count.json")))
 HANZI_DARKNESS_NOTO = json.load(open(os.path.join(DATA_DIR, "hanzi_darkness_noto.json")))
@@ -115,6 +118,47 @@ def get_tatoeba_page(character, page):
         for t in tatoebas:
             t['cmn'] = HanziConv.toTraditional(t['cmn'])
     return tatoebas, is_last
+
+
+def get_deepseek_examples(character, pinyin=None, page=0):
+    """
+    Return example sentences from deepseek data for the given word.
+    If pinyin (numbered tones like 'hai2') is provided, use key 'character/pinyin'.
+    Otherwise use just the character as key.
+    Returns (examples_list, is_last).
+    """
+    # Convert accented pinyin to numbered tones for the lookup key
+    lookup_key = character
+    if pinyin:
+        lookup_key = f"{character}/{pinyin}"
+
+    # Only use the bare character key if no pinyin was provided
+    indices = DEEPSEEK_INDICES.get(lookup_key, [])
+    examples = []
+    is_last = False
+    if not indices:
+        return examples, is_last
+
+    perpage = 5
+    start = perpage * page
+    end = start + perpage
+    if end >= len(indices):
+        end = len(indices)
+        is_last = True
+    if start >= len(indices):
+        start = max(0, len(indices) - perpage)
+        is_last = True
+
+    for k in indices[start:end]:
+        idx3 = k * 3
+        if idx3 + 2 < len(DEEPSEEK_DATA):
+            examples.append({
+                'hanzi': DEEPSEEK_DATA[idx3],
+                'pinyin': DEEPSEEK_DATA[idx3 + 1],
+                'english': DEEPSEEK_DATA[idx3 + 2],
+            })
+
+    return examples, is_last
 
 def remove_variantof(char_info, ew=False):
     pinyin = [p for p in char_info.get('pinyin', [])]

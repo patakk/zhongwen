@@ -2,6 +2,9 @@ export function toAccentedPinyin(input) {
 
     if (!input) return input;
 
+    // Normalize ü variants: v → ü, u: → ü
+    let normalized = input.replace(/u:/gi, '\u00FC').replace(/v/gi, '\u00FC');
+
     const toneMap = {
         '1': 'āēīōūǖ',
         '2': 'áéíóúǘ',
@@ -13,7 +16,7 @@ export function toAccentedPinyin(input) {
     function applyToneMark(syllable, tone) {
         if (!tone) return syllable;
         
-        const vowels = ['a', 'e', 'i', 'o', 'u', 'ü'];
+        const vowels = ['a', 'e', 'i', 'o', 'u', '\u00FC'];
         let syllableLower = syllable.toLowerCase();
         
         if (syllableLower.includes('a')) {
@@ -50,11 +53,11 @@ export function toAccentedPinyin(input) {
         return syllable;
     }
 
-    let result = input.replace(/\[([a-z]+)([1-5])?\]/gi, (match, syllable, tone) => {
+    let result = normalized.replace(/\[([^\]]+?)([1-5])?\]/gi, (match, syllable, tone) => {
         return '[' + applyToneMark(syllable, tone) + ']';
     });
     
-    result = result.replace(/\b([a-z]+)([1-5])?\b/gi, (match, syllable, tone) => {
+    result = result.replace(/\b([a-z\u00FC]+)([1-5])?\b/gi, (match, syllable, tone) => {
         return applyToneMark(syllable, tone);
     });
     

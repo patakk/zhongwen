@@ -36,6 +36,7 @@ from backend.common import AUDIO_MAPPINGS
 from backend.common import DATA_DIR
 
 from backend.common import get_tatoeba_page
+from backend.common import get_deepseek_examples
 from backend.common import get_char_info
 from backend.common import get_chars_info
 from backend.common import char_decomp_info
@@ -157,9 +158,8 @@ def get_examples_page():
         return jsonify({"error": "Missing required fields"}), 400
     page = data["page"]
     character = data["character"]
-    examples, is_last = get_tatoeba_page(character, page)
-    # examples = []
-    # is_last = False
+    pinyin = data.get("pinyin")
+    examples, is_last = get_deepseek_examples(character, pinyin=pinyin, page=page)
     return jsonify({"examples": examples, "is_last": is_last})
 
 

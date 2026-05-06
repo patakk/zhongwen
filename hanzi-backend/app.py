@@ -26,11 +26,13 @@ from backend.common import CARDDECKS
 from backend.common import DECOMPOSE_CACHE
 from backend.common import DECKNAMES
 from backend.common import STROKES_CACHE
+from backend.common import WORDS_CACHE
 from backend.common import RELATED_CONCEPTS
 from backend.common import OPPOSITE_CONCEPTS
 from backend.common import get_recursive_decomposition
 
 from backend.common import get_tatoeba_page
+from backend.common import get_deepseek_examples
 from backend.common import send_bot_notification
 from backend.common import default_darkmode
 from backend.common import get_pinyin
@@ -46,6 +48,7 @@ from flask import send_file
 
 import json
 import os
+import unicodedata
 
 from backend.setup import create_app, _frontend_url
 from flask_limiter.util import get_remote_address
@@ -153,12 +156,12 @@ def main_card_data(character):
     username = session.get('username')
     simple_info = get_char_info(character)
 
-    res = get_tatoeba_page(character, 0)
-    #res = None
-    if res:
-        examples, is_last = res
-    else:
-        examples, is_last = [], False
+
+    pinyin = None
+    if len(simple_info.get('pinyin', [None])) > 1:
+        pinyin = simple_info.get('pinyin', [None])[0]
+
+    examples, is_last = get_deepseek_examples(character, pinyin=pinyin, page=0)
 
     return {
         "character": character,
@@ -674,6 +677,30 @@ def search_results():
     # Backward compatibility if upstream still returns flat results
     if groups is None and isinstance(upstream, dict):
         groups = upstream.get('results', [])
+
+    # Fix order field: align with WORDS_CACHE ordering so preferredIndex
+    # matches the card modal's mainDefIndex
+    if isinstance(groups, list):
+        for g in groups:
+            for item in g.get('items', []):
+                it = item.get('item')
+                if not it:
+                    continue
+                h = it.get('hanzi', '')
+                p = it.get('pinyin', '')
+                wc = WORDS_CACHE.get(h)
+                if wc:
+                    pins = wc.get('pinyin') or []
+                    for i, cp in enumerate(pins):
+                        def _norm(s):
+                            s = str(s or '')
+                            s = unicodedata.normalize('NFD', s)
+                            s = ''.join(ch for ch in s if not unicodedata.combining(ch))
+                            s = ''.join(ch for ch in s if not ch.isdigit())
+                            return s.replace(' ', '')
+                        if _norm(cp) == _norm(p):
+                            it['order'] = i
+                            break
 
     return jsonify({'results': groups or [], 'query': query, 'search_time': search_time})
 

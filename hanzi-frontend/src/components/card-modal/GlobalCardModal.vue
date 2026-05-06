@@ -125,7 +125,7 @@
                     <span class="english-text">
                       <template v-for="(tok, tIdx) in tokenizeHanziText(item)" :key="tIdx">
                         <span v-if="tok.isHanzi" class="hanzi-link" @click.stop="openCharAsWord(tok.text)">{{ tok.text }}</span>
-                        <span v-else>{{ tok.text }}</span>
+                        <span v-else>{{ $toAccentedPinyin(tok.text) }}</span>
                       </template>
                     </span>
                   </div>
@@ -174,7 +174,7 @@
               >
                 <div class="concept-character" :style="{ fontFamily: ['var(--main-word-font)', 'Noto Sans SC'] }">{{ item.character }}</div>
                 <div class="concept-pinyin">{{ item.pinyin && item.pinyin.length > 0 ? $toAccentedPinyin(item.pinyin[0]) : '' }}</div>
-                <div class="concept-english">{{ item.english && item.english.length > 0 ? item.english[0].split('/')[0] : '' }}</div>
+                <div class="concept-english">{{ $toAccentedPinyin(item.english && item.english.length > 0 ? item.english[0].split('/')[0] : '') }}</div>
               </div>
             </div>
           </div>
@@ -192,7 +192,7 @@
               >
                 <div class="concept-character" :style="{ fontFamily: ['var(--main-word-font)', 'Noto Sans SC'] }">{{ item.character }}</div>
                 <div class="concept-pinyin">{{ item.pinyin && item.pinyin.length > 0 ? $toAccentedPinyin(item.pinyin[0]) : '' }}</div>
-                <div class="concept-english">{{ item.english && item.english.length > 0 ? item.english[0].split('/')[0] : '' }}</div>
+                <div class="concept-english">{{ $toAccentedPinyin(item.english && item.english.length > 0 ? item.english[0].split('/')[0] : '') }}</div>
               </div>
             </div>
           </div>
@@ -273,6 +273,11 @@
                   >examples</div>
                   <div
                     class="concept-toggle detail-toggle"
+                    :class="{ active: activeDetailTab === 'strokes', disabled: !hasStrokes }"
+                    @click="setDetailTab('strokes')"
+                  >strokes</div>
+                  <div
+                    class="concept-toggle detail-toggle"
                     :class="{ active: activeDetailTab === 'examples', disabled: !hasExamples }"
                     @click="setDetailTab('examples')"
                   >words</div>
@@ -286,11 +291,6 @@
                     :class="{ active: activeDetailTab === 'decomp', disabled: !hasDecomposition }"
                     @click="setDetailTab('decomp')"
                   >decomp</div>
-                  <div
-                    class="concept-toggle detail-toggle"
-                    :class="{ active: activeDetailTab === 'strokes', disabled: !hasStrokes }"
-                    @click="setDetailTab('strokes')"
-                  >strokes</div>
                   <div
                     class="concept-toggle detail-toggle"
                     :class="{ active: activeDetailTab === 'extra', disabled: !hasExtraInfo }"
@@ -355,7 +355,7 @@
                             <span class="word-hanzi" v-html="colorizeHanzi(word, $toAccentedPinyin(activeCharData.pinyin[index]))"></span>
                             <span class="word-pinyin" v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index]))"></span>
                           </div>
-                          <span class="word-english">{{ activeCharData.english[index] }}</span>
+                          <span class="word-english">{{ $toAccentedPinyin(activeCharData.english[index]) }}</span>
                         </template>
                       </ClickableRow>
                     </div>
@@ -568,7 +568,7 @@ export default {
       // Local font cycling state for main word
       fontOrder: ['kaiti', 'noto-sans', 'noto-serif'],
       fontCycleIndex: 0,
-      activeDetailTab: 'tatoeba',
+      activeDetailTab: 'strokes',
       multiCharTab: 'examples',
       multiCharStrokeIndex: 0,
       mainDefIndex: 0,
@@ -695,7 +695,13 @@ export default {
       return !!this.activeCharData;
     },
     hasTatoebaExamples() {
-      return !!(this.cardData && Array.isArray(this.cardData.examples) && this.cardData.examples.length);
+      if (!this.cardData) return false;
+      const pList = this.cardData.pinyin || [];
+      // Multi-pronunciation: check fetched data for current page
+      if (pList.length > 1 && this.fetchedExamples[1]) {
+        return this.fetchedExamples[1].length > 0;
+      }
+      return !!(Array.isArray(this.cardData.examples) && this.cardData.examples.length);
     },
     hasStrokes() {
       const s = this.activeCharData && this.activeCharData.strokes;
@@ -820,13 +826,22 @@ export default {
     },
     formattedExamples() {
       if (!this.cardData) return [];
-      // Use fetched page if available; else use initial examples for page 1
       const pageData = this.fetchedExamples[this.examplesPage];
+      const pList = this.cardData.pinyin || [];
+      // Use cardData.examples for page 1 unless we've fetched examples
+      // for a specific pronunciation (multi-pron words)
+      const hasFetched = this.fetchedExamples[1] !== undefined;
+      const useCardDefault = this.examplesPage === 1 && !hasFetched;
       const examples = Array.isArray(pageData)
         ? pageData
-        : (this.examplesPage === 1 && Array.isArray(this.cardData.examples) ? this.cardData.examples : []);
+        : (useCardDefault && Array.isArray(this.cardData.examples) ? this.cardData.examples : []);
       try {
         return examples.map((ex) => {
+          // DeepSeek format: { hanzi, pinyin, english }
+          if (typeof ex.hanzi === 'string') {
+            return { hanzi: ex.hanzi, pinyin: ex.pinyin || '', english: ex.english || '' };
+          }
+          // Old Tatoeba format: { cmn, pinyin, eng }
           const hanzi = typeof ex.cmn === 'string'
             ? ex.cmn
             : (Array.isArray(ex.cmn) ? ex.cmn.map(part => part.character).join(' ') : '');
@@ -971,11 +986,13 @@ export default {
       handler(newData) {
         if (newData && this.validChars.length > 0) {
           this.activeChar = this.validChars[0];
-          this.activeDetailTab = 'tatoeba';
+          this.activeDetailTab = this.hasTatoebaExamples ? 'tatoeba' : 'strokes';
           this.multiCharStrokeIndex = 0;
-          this.mainDefIndex = 0;
+          this.examplesPage = 1;
+          this.examplesIsLast = false;
+          this.fetchedExamples = {};
 
-          try {
+          this.$nextTick(() => {
             const prefPin = this.displayOverrides && this.displayOverrides.preferredPinyin;
             const prefEng = this.displayOverrides && this.displayOverrides.preferredEnglish;
             const prefIdx = this.displayOverrides && Number.isInteger(this.displayOverrides.preferredIndex)
@@ -985,7 +1002,7 @@ export default {
               const idx = this.findPreferredDefIndex(newData, prefPin, prefEng, prefIdx);
               if (idx >= 0) this.mainDefIndex = idx;
             }
-          } catch (e) {}
+          });
           // Always keep definition order as provided; we only move the index
 
 
@@ -1039,15 +1056,26 @@ export default {
             this.$refs.examplesComponent.resetExpandedState();
           }
           if (this.activeDetailTab === 'strokes' && !this.hasStrokes) {
-            this.activeDetailTab = 'tatoeba';
+            this.activeDetailTab = this.hasTatoebaExamples ? 'tatoeba' : 'examples';
+          } else if (this.activeDetailTab === 'tatoeba' && !this.hasTatoebaExamples) {
+            this.activeDetailTab = 'strokes';
           } else if (this.activeDetailTab === 'examples' && !this.hasExamples) {
-            this.activeDetailTab = 'tatoeba';
+            this.activeDetailTab = this.hasTatoebaExamples ? 'tatoeba' : 'strokes';
           } else if (this.activeDetailTab === 'present' && !this.hasPresentIn) {
-            this.activeDetailTab = 'tatoeba';
+            this.activeDetailTab = this.hasTatoebaExamples ? 'tatoeba' : 'strokes';
           } else if (this.activeDetailTab === 'decomp' && !this.hasDecomposition) {
-            this.activeDetailTab = 'tatoeba';
+            this.activeDetailTab = this.hasTatoebaExamples ? 'tatoeba' : 'strokes';
           }
         }
+      }
+    },
+    mainDefIndex() {
+      const pList = this.cardData && this.cardData.pinyin;
+      if (pList && pList.length > 1) {
+        this.examplesPage = 1;
+        this.examplesIsLast = false;
+        this.fetchedExamples = {};
+        this.loadExamplesPage(1);
       }
     }
 
@@ -1204,24 +1232,23 @@ export default {
       const engs = Array.isArray(cardData?.english) ? cardData.english : [];
       const maxLen = Math.max(pins.length, engs.length);
 
+      const targetEList = this.normalizeEng(prefEng);
+      const targetE = targetEList[0] || '';
+
+      // Match by english definition only
+      for (let i = 0; i < maxLen; i++) {
+        const engTokens = this.normalizeEng(engs[i]);
+        if (targetE && (engTokens.includes(targetE) || engTokens.some(t => targetE.includes(t)))) {
+          return i;
+        }
+      }
+
+      // Fall back to explicit index
       if (Number.isInteger(prefIdx) && prefIdx >= 0 && prefIdx < maxLen) {
         return prefIdx;
       }
 
-      const targetP = this.stripTones(prefPin);
-      const targetEList = this.normalizeEng(prefEng);
-      const targetE = targetEList[0] || '';
-      let found = -1;
-      for (let i = 0; i < maxLen; i++) {
-        const pMatch = targetP && pins[i] && this.stripTones(pins[i]) === targetP;
-        let eMatch = false;
-        if (targetE) {
-          const engTokens = this.normalizeEng(engs[i]);
-          eMatch = engTokens.includes(targetE) || engTokens.some(t => targetE.includes(t));
-        }
-        if (pMatch || eMatch) { found = i; break; }
-      }
-      return found;
+      return 0;
     },
 
     tokenizeHanziText(strVal) {
@@ -1725,11 +1752,18 @@ export default {
       if (!this.cardData || !this.cardData.character) return;
       this.examplesLoading = true;
       try {
+        // If word has multiple pronunciations, include the current pinyin
+        const pList = this.cardData.pinyin || [];
+        const body = { character: this.cardData.character, page };
+        if (pList.length > 1) {
+          const idx = this.mainDefIndex % pList.length;
+          body.pinyin = pList[idx] || '';
+        }
         const res = await fetch('/api/get_examples_page', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ character: this.cardData.character, page })
+          body: JSON.stringify(body)
         });
         if (!res.ok) throw new Error('Failed to load examples page');
         const data = await res.json();

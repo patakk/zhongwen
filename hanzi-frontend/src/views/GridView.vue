@@ -850,7 +850,7 @@ html, body {
 }
 
 .view-toggle-fixed {
-  position: absolute;
+  position: fixed;
   bottom: 1rem;
   left: 1rem;
   background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
