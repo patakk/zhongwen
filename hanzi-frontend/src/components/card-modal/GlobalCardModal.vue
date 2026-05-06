@@ -2028,7 +2028,7 @@ export default {
 
 
   border: 1px solid color-mix(in oklab, var(--fg) 9%, transparent 50%);
-  box-shadow: inset -0.0px 1.0px 0 var(--highlight);
+  box-shadow: inset -0.0px 1.0px 0 var(--highlight), 0 5px 35px color-mix(in oklab, var(--fg) 10%, var(--bg) 90%);
 
   corner-shape: var(--superellipse-4);
   border-radius: var(--superellipse-radius, 100px);
@@ -2154,6 +2154,7 @@ export default {
   font-size: 0.9rem;
   padding: 0.1rem;
   margin-right: 0.2rem;
+  box-shadow: none;
 }
 
 .audio-btn[disabled] {
