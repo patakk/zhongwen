@@ -3,7 +3,8 @@ export function toAccentedPinyin(input) {
     if (!input) return input;
 
     // Normalize ü variants: v → ü, u: → ü
-    let normalized = input.replace(/u:/gi, '\u00FC').replace(/v/gi, '\u00FC');
+    //let normalized = input.replace(/u:/gi, '\u00FC').replace(/v/gi, '\u00FC');
+    let normalized = input.replace(/u:/gi, '\u00FC').replace(/v(?=[1-5])/gi, '\u00FC');
 
     const toneMap = {
         '1': 'āēīōūǖ',

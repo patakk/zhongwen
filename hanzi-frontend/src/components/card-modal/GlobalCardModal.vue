@@ -355,7 +355,9 @@
                             <span class="word-hanzi" v-html="colorizeHanzi(word, $toAccentedPinyin(activeCharData.pinyin[index]))"></span>
                             <span class="word-pinyin" v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index]))"></span>
                           </div>
-                          <span class="word-english">{{ $toAccentedPinyin(activeCharData.english[index]) }}</span>
+                          <div class="word-english-list">
+                            <span v-for="(m, mIdx) in splitMeaning(activeCharData.english[index])" :key="mIdx" class="word-english-item">{{ mIdx + 1 }}. {{ m }}</span>
+                          </div>
                         </template>
                       </ClickableRow>
                     </div>
@@ -368,7 +370,9 @@
                             <span class="word-hanzi" v-html="colorizeHanzi(word, $toAccentedPinyin(activeCharData.pinyin[index + 3]))"></span>
                             <span class="word-pinyin" v-html="colorizePinyin($toAccentedPinyin(activeCharData.pinyin[index + 3]))"></span>
                           </div>
-                          <span class="word-english">{{ activeCharData.english[index + 3] }}</span>
+                          <div class="word-english-list">
+                            <span v-for="(m, mIdx) in splitMeaning(activeCharData.english[index + 3])" :key="mIdx" class="word-english-item">{{ mIdx + 1 }}. {{ m }}</span>
+                          </div>
                         </template>
                       </ClickableRow>
                     </div>
@@ -396,6 +400,8 @@
 
                 <div v-if="activeDetailTab === 'extra' && hasExtraInfo" class="extra-info-section">
                   <div class="medium-label">Extra:</div>
+                </div>
+                <div v-if="activeDetailTab === 'extra' && hasExtraInfo" class="extra-info-section">
                   <div class="extra-info-details">
                     <div v-if="activeCharData.radical" class="extra-info-item"><span class="basic-label">Radical:</span> {{ activeCharData.radical }}</div>
                     <div v-if="activeCharData.rank" class="extra-info-item"><span class="basic-label">Frequency Rank:</span> {{ activeCharData.rank }}</div>
@@ -2337,9 +2343,9 @@ export default {
   display: flex;
   box-sizing: border-box;
   gap: .5rem;
-  align-items: center;
-  flex-direction: row;
-  padding: 0.1rem 0.25rem;
+  align-items: left;
+  flex-direction: column;
+  padding: 0.5rem 0.5rem;
   width: 100%;
   box-sizing: border-box;
   cursor: pointer;
@@ -2389,6 +2395,21 @@ export default {
   align-self: flex-start;
   overflow: hidden;
   box-sizing: border-box;
+}
+
+.word-english-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  min-width: 0;
+  flex: 1;
+}
+
+.word-english-item {
+  font-size: 0.85rem;
+  opacity: 0.6;
+  padding-left: 1em;
+  line-height: 1.3;
 }
 
 .trad-simple {

@@ -1283,7 +1283,6 @@ h3 {
   -webkit-appearance: none;
   width: 1.1em;
   height: 1.1em;
-  border-radius: 0;
   background: color-mix(in oklab, var(--fg) 22%, var(--bg) 90%);
   cursor: pointer;
   margin: 0;
