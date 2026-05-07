@@ -162,4 +162,23 @@ button:hover {
   margin-right: 0.8em;
 }
 
+.google-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: var(--google-color);
+}
+
+.google-divider::before,
+.google-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--bgc-color);
+}
+
+.google-divider span {
+  padding: 0 10px;
+}
+
 </style>

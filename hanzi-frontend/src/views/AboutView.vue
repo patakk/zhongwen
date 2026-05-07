@@ -3,7 +3,7 @@
   <div class="container">
     <div class="about-section">
       <div>
-        <i>hanzi.abcrgb.xyz</i> is a work in progress and may contain errors or incomplete features.  <br />
+        <i>zi.abcrgb.xyz</i> is a work in progress.  <br />
         Your feedback, suggestions and contributions are welcome!
       </div>
       <br />

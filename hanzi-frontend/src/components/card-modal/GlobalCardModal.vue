@@ -424,7 +424,7 @@
             :key="i"
             class="edit-pronunciation-row"
           >
-            <div v-if="editPinyinList[i]" class="edit-pinyin-label">{{ editPinyinList[i] }}</div>
+            <div v-if="editPinyinList[i]" class="edit-pinyin-label">{{ $toAccentedPinyin(editPinyinList[i]) }}</div>
             <input
               class="edit-input english-input"
               type="text"
@@ -2710,8 +2710,8 @@ export default {
   justify-content: center;
   box-sizing: border-box;
   padding: 1em;
+  padding-top: 3em;
   flex: 1;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
 
   corner-shape: var(--superellipse-4);
   border-radius: var(--superellipse-radius, 100px);
@@ -2746,7 +2746,6 @@ export default {
   cursor: pointer;
   font-family: inherit;
   font-size: 1.1em;
-  border-radius: 3px;
 }
 
 .stroke-char-btn:disabled {
@@ -2756,15 +2755,15 @@ export default {
 
 .stroke-char-left {
   position: absolute;
-  top: 0.3em;
-  left: 0.3em;
+  top: 1em;
+  left: 1em;
   z-index: 2;
 }
 
 .stroke-char-right {
   position: absolute;
-  top: 0.3em;
-  right: 0.3em;
+  top: 1em;
+  right: 1em;
   z-index: 2;
 }
 
@@ -3270,17 +3269,24 @@ export default {
   background: none;
 }
 
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
 .cancel-button,
 .confirm-button {
-  border: none;
   color: var(--fg);
-  background: none;
+  background-color: var(--bg);
   opacity: 0.8;
 }
 
 .cancel-button:hover,
 .confirm-button:hover {
   cursor: pointer;
+  background-color: color-mix(in oklab, var(--fg) 10%, var(--bg) 85%);
 }
 
 .present-in-chars {

@@ -66,7 +66,8 @@ def email_management():
         try:
             user.set_email(email, verified=False)
             token = user.generate_email_verification_token()
-            verification_link = f"{_frontend_url('/api/verify-email/' + token)}"
+            backend = request.host_url.rstrip('/')
+            verification_link = f"{backend}/api/verify-email/{token}"
             
             msg = Message('Verify Your Email',
                         recipients=[email])
@@ -98,7 +99,8 @@ def email_management():
 
             user.set_email(email, verified=False)
             token = user.generate_email_verification_token()
-            verification_link = f"{_frontend_url('/api/verify-email/' + token)}"
+            backend = request.host_url.rstrip('/')
+            verification_link = f"{backend}/api/verify-email/{token}"
             
             msg = Message('Verify Your Email',
                          recipients=[email])

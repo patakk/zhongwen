@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask import send_file
 from flask import flash
+from flask_mail import Message
 import logging
 import random
 import json
@@ -21,6 +22,7 @@ from backend.db.ops import db_authenticate_user
 from backend.db.ops import db_create_user
 from backend.db.ops import db_get_word_list_names_only
 from backend.db.ops import db_get_user_wordlists
+from backend.db.extensions import mail
 
 from backend.common import CARDDECKS
 from backend.common import DECOMPOSE_CACHE
@@ -359,6 +361,22 @@ def register():
             # optionally: send email notification, etc
             if len(email) > 0:
                 message = f"New user created: {username}. Email: {email}."
+                # Send verification email
+                try:
+                    token = user.generate_email_verification_token()
+                    backend = request.host_url.rstrip('/')
+                    verification_link = f"{backend}/api/verify-email/{token}"
+                    verify_msg = Message('Verify Your Email',
+                                recipients=[email])
+                    verify_msg.body = f'''Please click the following link to verify your email:
+{verification_link}
+
+If you did not create this account, please ignore this email.'''
+                    mail.send(verify_msg)
+                    db.session.commit()
+                    logger.info(f"Verification email sent to {email} for new user {username}")
+                except Exception as ve:
+                    logger.warning(f"Could not send verification email to {email}: {ve}")
             else:
                 message = f"New user created: {username}. No email provided."
             send_bot_notification(message)

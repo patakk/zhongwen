@@ -55,7 +55,7 @@ def _frontend_url(path=''):
         origin = request.host_url.rstrip('/')
     else:
         origin = LOCAL_DOMAIN.rstrip('/')
-
+    return origin + path
 
 def create_app():
     app = Flask("hanzi_app")

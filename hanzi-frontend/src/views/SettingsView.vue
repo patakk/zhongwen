@@ -1114,12 +1114,15 @@ h2 {
 }
 
 .modal-content {
-  background: var(--bg-alt);
+  background: var(--bg);
   padding: 2rem;
   border-radius: 8px;
   width: 90%;
   max-width: 500px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius);
 }
 
 .modal-content h3 {
@@ -1153,8 +1156,10 @@ h2 {
   background: var(--bg);
   color: var(--fg);
   font-family: inherit;
-  border-radius: 4px;
   font-size: 1rem;
+
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius);
 }
 .modal-form input:focus {
     outline: none;
@@ -1182,8 +1187,6 @@ h2 {
 .cancel-button,
 .confirm-button {
   padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
 }
