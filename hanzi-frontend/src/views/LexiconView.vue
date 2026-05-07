@@ -181,6 +181,7 @@
             @keyup.esc="closeCreateModal"
             ref="createModalInput"
             autocomplete="off"
+            type="text"
           />
         </div>
         <div class="modal-buttons">
@@ -204,6 +205,7 @@
             @keyup.esc="closeRenameModal"
             ref="renameModalInput"
             autocomplete="off"
+            type="text"
           />
         </div>
         <div class="modal-buttons">
@@ -1276,6 +1278,7 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
     bottom: 0;
     height: auto;
     box-sizing: border-box;
+    box-shadow: none;
   }
   
   .remove-button:hover {
@@ -1360,9 +1363,14 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
     background: var(--bg-alt);
     padding: 2rem;
     width: 90%;
+    box-sizing: border-box;
     max-width: 600px;
     background-color: var(--bg);
     border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
+
+
+    corner-shape: var(--superellipse-3);
+    border-radius: var(--superellipse-radius);
   }
   
   .modal-form {
@@ -1549,4 +1557,17 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
   .practice-option.faded {
     opacity: 0.6;
   }
+
+
+.modal-content input[type="text"] {
+  padding: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 1rem;
+
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius);
+}
   </style>
