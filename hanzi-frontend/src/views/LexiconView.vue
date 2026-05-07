@@ -236,7 +236,7 @@
         <h3>Edit Wordlist Description</h3>
         <div class="modal-form">
           <label for="edit-wordlist-description">Description:</label>
-          <textarea
+          <input
             id="edit-wordlist-description"
             v-model="newWordlistDescription"
             placeholder="Enter description (max 500 characters)"
@@ -244,7 +244,8 @@
             maxlength="500"
             @keyup.esc="closeEditDescriptionModal"
             ref="editDescriptionInput"
-          ></textarea>
+            type="text"
+          ></input>
         </div>
         <div class="modal-buttons">
           <button @click="closeEditDescriptionModal" class="cancel-button">Cancel</button>
@@ -1162,7 +1163,8 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
     opacity: 0.5;
     cursor: pointer;
     font-size: 0.9rem;
-    padding: 0.2rem;
+    margin-left: 0.5rem;
+    padding: 0.25rem;
   }
 
   .edit-description-button:hover {
@@ -1366,8 +1368,9 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
     box-sizing: border-box;
     max-width: 600px;
     background-color: var(--bg);
-    border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
 
+    border: 1px solid color-mix(in oklab, var(--fg) 9%, transparent 50%);
+    box-shadow: inset -0.0px 1.0px 0 var(--highlight), 0 5px 15px rgba(0,0,0,0.2);
 
     corner-shape: var(--superellipse-3);
     border-radius: var(--superellipse-radius);
@@ -1568,6 +1571,19 @@ import { faDownload, faPen, faClipboard, faPencil } from '@/icons';
   font-size: 1rem;
 
   corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius);
+}
+
+
+#edit-wordlist-description {
+  padding: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 1rem;
+
+  corner-shape: var(--superellipse-4);
   border-radius: var(--superellipse-radius);
 }
   </style>

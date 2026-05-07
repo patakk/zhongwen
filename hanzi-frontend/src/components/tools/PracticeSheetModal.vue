@@ -261,10 +261,11 @@ export default {
   background-color: var(--bg);
   color: var(--fg);
   padding: 1.5rem;
-  border-radius: var(--modal-border-radius, 8px);
   max-height: 90vh;
   overflow: auto;
-  border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
+  
+  corner-shape: var(--superellipse-3);
+  border-radius: var(--superellipse-radius);
 }
 .modal-content-svg {
   max-width: min(1000px, 95vw);
@@ -352,5 +353,41 @@ export default {
 }
 .practice-chars-input::placeholder {
   letter-spacing: 0.0em;
+}
+
+.cancel-button, .confirm-button {
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+  color: var(--fg);
+  padding: 0.25rem .5rem;
+}
+.cancel-button:hover, .confirm-button:hover {
+  background: color-mix(in oklab, var(--fg) 15%, var(--bg) 100%);
+}
+
+.confirm-button:disabled {
+  background: color-mix(in oklab, var(--fg) 5%, var(--bg) 100%);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#practice-chars {
+  margin-top: 0.5rem;
+}
+
+.practice-chars-input  {
+  padding: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 1rem;
+
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius);
+}
+
+.practice-chars-input:focus {
+    outline: none;
+    border: 1px solid color-mix(in oklab, var(--fg) 20%, var(--bg) 100%);
 }
 </style>

@@ -1956,7 +1956,12 @@ export default {
   width: 90%;
   box-sizing: border-box;
   max-width: 420px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+  border: 1px solid color-mix(in oklab, var(--fg) 9%, transparent 50%);
+  box-shadow: inset -0.0px 1.0px 0 var(--highlight), 0 5px 15px rgba(0,0,0,0.2);
+
+  corner-shape: var(--superellipse-3);
+  border-radius: var(--superellipse-radius);
 }
 .edit-hanzi-label {
   font-size: 1.5rem;

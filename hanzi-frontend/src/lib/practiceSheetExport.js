@@ -1,6 +1,8 @@
 // src/lib/practiceSheetExport.js
 // Utility for generating practice sheet SVG and PDF
 
+import { toAccentedPinyin } from '../helpers.js'
+
 // --- SVG Generation ---
 export function generatePracticeSheetSVG(words, strokesData, options = {}) {
   // Extract options
