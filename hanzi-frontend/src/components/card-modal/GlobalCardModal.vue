@@ -207,12 +207,12 @@
               <div class="char-details">
                 <div class="detail-toggle-row">
                   <div
-                    class="concept-toggle detail-toggle"
+                    class="detail-toggle"
                     :class="{ active: multiCharTab === 'examples', disabled: !hasTatoebaExamples }"
                     @click="multiCharTab = 'examples'"
                   >examples</div>
                   <div
-                    class="concept-toggle detail-toggle"
+                    class="detail-toggle"
                     :class="{ active: multiCharTab === 'strokes', disabled: !hasMultiCharStrokes }"
                     @click="multiCharTab = 'strokes'"
                   >strokes</div>
@@ -227,9 +227,9 @@
                     </div>
                   </div>
                   <div class="examples-nav" v-if="!(examplesIsLast && examplesPage === 1)">
-                    <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesPage === 1 }" @click="examplesPage === 1 || examplesLoading ? null : prevExamples()">← Prev</div>
+                    <div class="examples-nav-btn" :class="{ disabled: examplesLoading || examplesPage === 1 }" @click="examplesPage === 1 || examplesLoading ? null : prevExamples()">← Prev</div>
                     <div class="examples-page-indicator">Page {{ examplesPage }}</div>
-                    <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesIsLast }" @click="examplesIsLast || examplesLoading ? null : nextExamples()">Next →</div>
+                    <div class="examples-nav-btn" :class="{ disabled: examplesLoading || examplesIsLast }" @click="examplesIsLast || examplesLoading ? null : nextExamples()">Next →</div>
                   </div>
                 </div>
 
@@ -267,32 +267,32 @@
 
                 <div class="detail-toggle-row">
                   <div
-                    class="concept-toggle detail-toggle"
+                    class="detail-toggle"
                     :class="{ active: activeDetailTab === 'tatoeba', disabled: !hasTatoebaExamples }"
                     @click="setDetailTab('tatoeba')"
                   >examples</div>
                   <div
-                    class="concept-toggle detail-toggle"
+                    class="detail-toggle"
                     :class="{ active: activeDetailTab === 'strokes', disabled: !hasStrokes }"
                     @click="setDetailTab('strokes')"
                   >strokes</div>
                   <div
-                    class="concept-toggle detail-toggle"
+                    class="detail-toggle"
                     :class="{ active: activeDetailTab === 'examples', disabled: !hasExamples }"
                     @click="setDetailTab('examples')"
                   >words</div>
                   <div
-                    class="concept-toggle detail-toggle"
+                    class="detail-toggle"
                     :class="{ active: activeDetailTab === 'present', disabled: !hasPresentIn }"
                     @click="setDetailTab('present')"
                   >comp</div>
                   <div
-                    class="concept-toggle detail-toggle"
+                    class="detail-toggle"
                     :class="{ active: activeDetailTab === 'decomp', disabled: !hasDecomposition }"
                     @click="setDetailTab('decomp')"
                   >decomp</div>
                   <div
-                    class="concept-toggle detail-toggle"
+                    class="detail-toggle"
                     :class="{ active: activeDetailTab === 'extra', disabled: !hasExtraInfo }"
                     @click="setDetailTab('extra')"
                   >extra</div>
@@ -308,9 +308,9 @@
                     </div>
                   </div>
                   <div class="examples-nav" v-if="!(examplesIsLast && examplesPage === 1)">
-                    <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesPage === 1 }" @click="examplesPage === 1 || examplesLoading ? null : prevExamples()">← Prev</div>
+                    <div class="examples-nav-btn" :class="{ disabled: examplesLoading || examplesPage === 1 }" @click="examplesPage === 1 || examplesLoading ? null : prevExamples()">← Prev</div>
                     <div class="examples-page-indicator">Page {{ examplesPage }}</div>
-                    <div class="concept-toggle examples-nav-btn" :class="{ disabled: examplesLoading || examplesIsLast }" @click="examplesIsLast || examplesLoading ? null : nextExamples()">Next →</div>
+                    <div class="examples-nav-btn" :class="{ disabled: examplesLoading || examplesIsLast }" @click="examplesIsLast || examplesLoading ? null : nextExamples()">Next →</div>
                   </div>
                 </div>
 
@@ -2655,22 +2655,49 @@ export default {
   display: flex;
   gap: 0.35rem;
   flex-wrap: nowrap;
-  overflow-x: auto;
+  overflow: visible;
   padding-bottom: 0.25rem;
   font-size: 1rem;
   justify-content: space-between;
 }
 
 .detail-toggle {
+  font-size: .8rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background-color: color-mix(in oklab, var(--fg) 5%, var(--bg) 50%);
+
+  corner-shape: var(--superellipse-2-5);
+  border-radius: var(--superellipse-radius, 100px);
+
   padding: 0.25rem 0.5rem;
   white-space: nowrap;
   flex-shrink: 0;
 
   border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
   box-shadow: inset 0 1px 0 var(--highlight);
+  transition: transform 0.1s ease;
+}
+
+
+.concept-toggle.active {
+  /* background-color: var(--primary-color); */
+  background-color: color-mix(in oklab, var(--fg) 15%, var(--bg) 50%);
+  background-color: var(--orange);
+  color: var(--bg);
+  
+  border: 1px solid color-mix(in oklab, var(--fg) 15%, transparent 30%);
+  box-shadow: inset 0 1.0px 0 var(--highlight);
+  
+}
+
+.detail-toggle:active:not(.disabled) {
+  transform: scale(1.15);
 }
 
 .detail-toggle.active {
+  background-color: var(--orange);
 }
 
 .detail-toggle.disabled {
