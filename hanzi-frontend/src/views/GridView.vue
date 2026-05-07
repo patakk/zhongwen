@@ -63,7 +63,9 @@
                   transform: selectedFont === 'Kaiti' ? 'scale(1.15)' : 'none',
                   fontWeight: selectedFont === 'Noto Serif SC' ? 200 : 200
                 }">
+                 <!--v-html="colorizeHanzi(entry.character, displayListPinyin(entry.character, (entry.pinyin && entry.pinyin[0]) || ''))">-->
                   {{ entry.character }}
+                
                 </div>
               </div>
             </div>
@@ -117,6 +119,7 @@ import DeckSelector from '../components/forms/DeckSelector.vue';
 import { useStore } from 'vuex';
 import { faBars, faGrip } from '../icons.js'
 import { colorizeHanzi as toneColorizeHanzi, colorizePinyin as toneColorizePinyin } from '../lib/toneColorizer';
+import { html } from 'd3';
 
 const defaultVisibleCount = 180; // Default number of characters to show
 
