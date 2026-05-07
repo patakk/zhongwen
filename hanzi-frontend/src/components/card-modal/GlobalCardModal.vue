@@ -1954,6 +1954,7 @@ export default {
   background: var(--bg);
   padding: 1rem 1.25rem;
   width: 90%;
+  box-sizing: border-box;
   max-width: 420px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
