@@ -53,6 +53,10 @@
       </div>
     </div>
 
+      <div v-if="hasOcrResult" class="result">
+        <div class="ocr-result-text">{{ ocrText }}</div>
+      </div>
+
       <div v-if="error" class="error">{{ error }}</div>
     </div>
 
@@ -418,7 +422,7 @@ export default {
   background: color-mix(in oklab, var(--bg) 92%, var(--fg) 6%);
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 25%, var(--bg) 70%);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 0.9rem;
   box-sizing: border-box;
 
@@ -618,11 +622,9 @@ export default {
   background: color-mix(in oklab, var(--bg) 90%, var(--fg) 6%);
   border: var(--thin-border-width) solid color-mix(in oklab, var(--fg) 22%, var(--bg) 70%);
   padding: 1rem;
-  flex: 1 1 0;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  height: 100%;
 }
 
 .result-header {
@@ -635,6 +637,16 @@ export default {
 
 .result-title {
   font-weight: 700;
+}
+
+.ocr-result-text {
+  width: 100%;
+  color: var(--fg);
+  font-family: var(--font-family);
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: center;
+  word-break: break-all;
 }
 
 .result-subtitle {
