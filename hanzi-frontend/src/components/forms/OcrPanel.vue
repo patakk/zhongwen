@@ -595,7 +595,7 @@ export default {
 
 .btn-primary:not(:disabled):hover,
 .btn-secondary:not(:disabled):hover {
-  transform: translateY(-1px);
+  /*transform: translateY(-1px);*/
 }
 
 .run-btn {
@@ -603,10 +603,13 @@ export default {
   min-width: 140px;
   min-height: 48px;
   background-size: 100% 100%;
+
+  border: 1px solid color-mix(in oklab, var(--fg) 5%, transparent 50%);
+  box-shadow: inset 0 1.0px 0 var(--highlight);
 }
 
 .run-btn.processing {
-  box-shadow: none;
+  
 }
 
 .error {
