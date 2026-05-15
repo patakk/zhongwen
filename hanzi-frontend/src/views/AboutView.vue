@@ -6,8 +6,8 @@
         <i>zi.abcrgb.xyz</i> is a work in progress.  <br />
         Your feedback, suggestions and contributions are welcome!
       </div>
-      <br />
-      <a href='https://ko-fi.com/U7U01BB9OI' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/brandasset/v2/kofi_symbol.png' border='0' alt='contribute' /></a>
+      <!--<br />
+      <a href='https://ko-fi.com/U7U01BB9OI' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/brandasset/v2/kofi_symbol.png' border='0' alt='contribute' /></a>-->
       <br />
       <br />
       <div class="contact-info">
